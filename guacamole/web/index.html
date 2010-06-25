@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+
+<!--
+    Guacamole - Pure JavaScript/HTML VNC Client
+    Copyright (C) 2010  Michael Jumper
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html>
+
+    <head>
+        <link rel="icon" type="image/png" href="images/guacamole-icon-64.png"/>
+        <link rel="stylesheet" type="text/css" href="guacamole.css"/>
+        <link rel="stylesheet" type="text/css" href="keyboard.css"/>
+        <title>Guacamole</title>
+    </head>
+
+    <body>
+
+        <!-- Menu -->
+        <div id="menu">
+
+            <!-- Clipboard -->
+            <button id="showClipboard">Show Clipboard</button>
+            <div id="clipboardDiv">
+                <h2>Clipboard</h2>
+                <p>
+                Text copied/cut within VNC will appear here. Changes to the text will affect the VNC clipboard, and will be pastable within VNC. Use the textbox below as an interface between the client and server clipboards.
+                </p>
+                <textarea rows="10" cols="40" id="clipboard"></textarea>
+            </div>
+
+            <button id="showKeyboard">Show Keyboard</button>
+            <button id="CtrlAltDelete">Ctrl-Alt-Delete</button>
+
+            <!-- Logo and status -->
+            <img id="logo" src="images/guacamole-logo.png" alt="Guacamole"/>
+            <span id="state"></span>
+
+            <a href="agpl-3.0-standalone.html"><img id="license" src="images/agpl-logo.png" alt="AGPLv3"/></a>
+        </div>
+
+
+        <!-- Display -->
+        <div id="display" class="loading">
+            <!-- On-screen keyboard -->
+            <div id="keyboardContainer"></div>
+        </div>
+
+
+        <!-- Error Dialog-->
+        <div id="errorDialog" class="errorDialogOuter">
+            <div class="errorDialogMiddle">
+                <div class="errorDialog">
+                    <h1>Error</h1>
+                    <p id="errorText"></p>
+                    <div class="buttons"><button id="reconnect">Reconnect</button></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Scripts -->
+        <script type="text/javascript" src="javascript/keymap.js"></script>
+        <script type="text/javascript" src="javascript/keyboard.js"></script>
+        <script type="text/javascript" src="javascript/mouse.js"></script>
+        <script type="text/javascript" src="javascript/layer.js"></script>
+        <script type="text/javascript" src="javascript/message.js"></script>
+        <script type="text/javascript" src="javascript/guacamole.js"></script>
+        <script type="text/javascript" src="javascript/oskeyboard.js"></script>
+
+        <!-- Init -->
+        <script type="text/javascript">
+
+            var menu = document.getElementById("menu");
+            var display = document.getElementById("display");
+            var logo = document.getElementById("logo");
+
+            var errorDialog = document.getElementById("errorDialog");
+            var errorDialogText = document.getElementById("errorText");
+
+            // Position display correctly
+            window.onresize = function() {
+                display.style.top = menu.offsetHeight + "px"; 
+            };
+
+            window.onresize();
+
+            // Instantiate client
+            var vncClient = new VNCClient(display);
+
+            var state = document.getElementById("state");
+            vncClient.setOnStateChangeHandler(function(clientState) {
+
+                    switch (clientState) {
+                        case 0:
+                            state.textContent = "Idle."
+                            break;
+                        case 1:
+                            state.textContent = "Connecting...";
+                            break;
+                        case 2:
+                            state.textContent = "Connected, waiting for first update...";
+                            break;
+                        case 3:
+                            display.className = display.className.replace(/loading/, '');
+                            menu.className = "connected";
+                            state.textContent = "Connected.";
+                            break;
+                        case 4:
+                            state.textContent = "Disconnecting...";
+                            break;
+                        case 5:
+                            state.textContent = "Disconnected.";
+                            break;
+                        default:
+                            state.textContent = "Unknown";
+                    }
+            });
+
+            // Cache error image (might not be available when error occurs)
+            var guacErrorImage = new Image();
+            guacErrorImage.src = "images/noguacamole-logo.png";
+
+            vncClient.setErrorHandler(function(error) {
+                menu.className = "error";
+                logo.src = guacErrorImage.src;
+                errorDialogText.textContent = error;
+                errorDialog.style.visibility = "visible";
+            });
+
+            // Reconnect button
+            var reconnect = document.getElementById("reconnect");
+            reconnect.onclick = function() {
+                window.location.reload();
+            };
+
+            // Connect
+            vncClient.connect();
+
+            // Disconnect on close
+            window.onunload = function() {
+                vncClient.disconnect();
+            }
+
+            // Handle clipboard events
+            var clipboardElement = document.getElementById("clipboard");
+            clipboardElement.onchange = function() {
+
+                var text = clipboardElement.value;
+                vncClient.setClipboard(text);
+
+            };
+
+            // Ignore keypresses when clipboard is focused
+            clipboardElement.onfocus = function() {
+                vncClient.disableKeyboard();
+            };
+
+            // Capture keypresses when clipboard is not focused
+            clipboardElement.onblur = function() {
+                vncClient.enableKeyboard();
+            };
+
+            // Server copy handler
+            vncClient.setClipboardHandler(
+                function(data) {
+                    clipboardElement.value = data;
+                }
+            );
+
+
+            // Show/Hide clipboard
+            var clipboardDiv = document.getElementById("clipboardDiv");
+            var showClipboard = document.getElementById("showClipboard");
+            showClipboard.onclick = function() {
+
+                var displayed = clipboardDiv.style.display;
+                if (displayed != "block") {
+                    clipboardDiv.style.display = "block";
+                    showClipboard.innerHTML = "Hide Clipboard";
+                }
+                else {
+                    clipboardDiv.style.display = "none";
+                    showClipboard.innerHTML = "Show Clipboard";
+                    clipboardElement.onchange();
+                }
+
+            };
+
+
+            // Show/Hide keyboard
+            var keyboardContainer = document.getElementById("keyboardContainer");
+            var showKeyboard = document.getElementById("showKeyboard");
+            showKeyboard.onclick = function() {
+
+                var displayed = keyboardContainer.style.display;
+                if (displayed != "block") {
+                    keyboardContainer.style.display = "block";
+                    showKeyboard.textContent = "Hide Keyboard";
+                }
+                else {
+                    keyboardContainer.style.display = "none";
+                    showKeyboard.textContent = "Show Keyboard";
+                }
+
+            };
+
+            // On-screen keyboard
+            var osKeyboard = new GuacamoleOnScreenKeyboard("layouts/en-us-qwerty.xml");
+            keyboardContainer.appendChild(osKeyboard);
+
+            osKeyboard.setKeyPressedHandler(
+                    function(keysym) {
+                        vncClient.pressKey(keysym);
+                    }
+            );
+
+            osKeyboard.setKeyReleasedHandler(
+                    function(keysym) {
+                        vncClient.releaseKey(keysym);
+                    }
+            );
+
+            // Send Ctrl-Alt-Delete
+            var CtrlAltDelete = document.getElementById("CtrlAltDelete");
+
+            CtrlAltDelete.onclick = function() {
+                vncClient.pressKey(KEYSYM_CTRL);
+                vncClient.pressKey(KEYSYM_ALT);
+                vncClient.pressKey(KEYSYM_DELETE);
+                vncClient.releaseKey(KEYSYM_DELETE);
+                vncClient.releaseKey(KEYSYM_ALT);
+                vncClient.releaseKey(KEYSYM_CTRL);
+            }
+
+        </script>
+
+    </body>
+
+</html>

@@ -1,0 +1,184 @@
+
+/*
+ *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Copyright (C) 2010  Michael Jumper
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+body {
+    background: black;
+    font-family: sans-serif;
+}
+
+div.errorDialogOuter {
+    display: table;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    visibility: hidden;
+}
+
+div.errorDialogMiddle {
+    width: 100%;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+div.errorDialog {
+
+    background: #D44;
+    border: 1px solid black;
+    padding: 1em;
+
+    -khtml-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+
+    -moz-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
+    -webkit-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
+    -khtml-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
+    box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
+
+    max-width: 75%;
+    text-align: left;
+
+    display: inline-block;
+}
+
+div.errorDialog h1 {
+    margin: 0;
+    margin-bottom: 0.25em;
+    text-align: center;
+    text-shadow: 0 0 0.25em white;
+}
+
+div.errorDialog div.buttons {
+    margin: 0;
+    margin-top: 0.5em;
+    text-align: center;
+}
+
+div.errorDialog p {
+    margin: 0;
+}
+
+
+#menu {
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 1em;
+    font-size: 0.8em;
+    background: #FEA;
+    border: 1px solid black;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+
+#menu.connected {
+    opacity: 0.5;
+}
+
+#menu.connected:hover {
+    opacity: 1;
+}
+
+#menu.error {
+    background: #D44;
+}
+
+.error #state {
+    font-weight: bold;
+}
+
+img {
+    border: none;
+}
+
+img#license {
+    border: none;
+    float: right;
+    margin: 2px;
+}
+
+div#display {
+    position: relative;
+    width: 640px;
+    height: 480px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div#display.loading {
+    border: 1px dotted gray;
+    background-image: url('images/spinner92.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+div#display.error {
+    border: 1px dotted red;
+    background-image: url('images/noimage92.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#menu img {
+    vertical-align: middle;
+}
+
+#menu button {
+    vertical-align: middle;
+}
+
+#menu span {
+    vertical-align: middle;
+}
+
+div#clipboardDiv {
+    display: none;
+    position: absolute;
+    background: #FA5;
+    padding: 1em;
+
+    border: 1px solid black;
+    -khtml-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+
+    width: 50em;
+}
+
+div#clipboardDiv h2 {
+    margin: 0;
+    font-size: 1em;
+}
+
+div#clipboardDiv textarea {
+    width: 100%;
+}
+
+.hideCursor {
+    cursor: url('images/mouse/dot.gif'),url('images/mouse/blank.cur'),default;
+}
+

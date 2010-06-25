@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Guacamole - Pure JavaScript/HTML VNC Client
+    Copyright (C) 2010  Michael Jumper
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<Context antiJARLocking="true" path="/guacamole" docBase="/var/lib/guacamole/guacamole.war">
+
+    <!-- Change the lines below to match your VNC server -->
+    <Parameter name="host" value="localhost"/>
+    <Parameter name="port" value="5900"/>
+
+
+    <!-- Password (VNC Authentication)
+
+         Uncomment and change the line below if your VNC server is
+         password protected. -->
+
+    <!--
+    <Parameter name="password" value="PASSWORD"/>
+    -->
+
+
+    <!-- Bits-per-pixel
+
+         This parameter controls what color depth should be
+         requested from the VNC server.
+
+         Valid values are "8", "16", or "24". -->
+
+    <!--
+    <Parameter name="bpp" value="24"/>
+    -->
+
+
+    <!-- Output (to web client) bits-per-pixel.
+
+         This parameter controls what color depth will be used
+         in the images sent to the web-based client.
+
+         Valid values are "8" or "24". -->
+
+    <!--
+    <Parameter name="output-bpp" value="24"/>
+    -->
+
+    <Realm className="org.apache.catalina.realm.MemoryRealm" pathname="conf/guacamole-users.xml"/>
+</Context>
+

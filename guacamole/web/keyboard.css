@@ -1,0 +1,123 @@
+
+/*
+ *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Copyright (C) 2010  Michael Jumper
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+div#keyboardContainer {
+    position: fixed;
+    left: 0px;
+    bottom: 0px;
+    text-align: center;
+    width: 100%;
+    display: none;
+    z-index: 1;
+}
+
+div.keyboard {
+
+    font-size: 10pt;
+    white-space: pre;
+
+    border: 1px solid black;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -khtml-border-radius: 0.5em;
+    border-radius: 0.5em;
+    background: #222;
+
+    cursor: default;
+
+    opacity: 0.85;
+
+    padding: 0.25em;
+    margin: 0.25em;
+
+    display: inline-block;
+    text-align: left;
+}
+
+div.key {
+
+    margin: 0;
+    padding: 0;
+
+    width: 5ex;
+    height: 5ex;
+
+    display: inline-block;
+    text-align: center;
+}
+
+div.cap {
+
+    border: 1px solid #888;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
+    border-radius: 0.25em;
+    background: #444;
+
+    margin: 0;
+    padding: 0;
+
+    color: white;
+    text-shadow: 0 0.1em 0.1em black;
+
+    width: 4.5ex;
+    height: 4.5ex;
+    line-height: 4.5ex;
+    white-space: pre;
+
+    display: inline-block;
+    text-align: center;
+}
+
+div.key:hover div.cap {
+    background: #666;
+    border-color: #666;
+    cursor: pointer;
+}
+
+div.key.pressed div.cap {
+    background: #822;
+    border-color: #D44;
+}
+
+div.key.sticky.active div.cap {
+    background: #882;
+    border-color: #DD4;
+}
+
+div.gap {
+    margin: 0;
+    padding: 0;
+
+    width: 5ex;
+    height: 5ex;
+
+    display: inline-block;
+}
+
+div.row {
+    vertical-align: top;
+}
+
+div.col {
+    display: inline-block;
+    vertical-align: top;
+}
+
