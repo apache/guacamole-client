@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.Client;
@@ -39,38 +40,13 @@ public class InstructionStream extends GuacamoleServlet {
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
 
-        // Instruction buffer
-        StringBuilder instructions = new StringBuilder();
+        ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
+        instructionStreamLock.lock();
 
         try {
 
-            // Query new update from VNC server
-            Client client = session.getClient();
-
-            int messageLimit = Integer.parseInt(request.getParameter("messageLimit"));
-
-            // For all messages, up to given message limit.
-            Instruction message = client.nextInstruction(true); // Block until first message is read
-            while (message != null) {
-
-                // Add message
-                instructions.append(message.toString());
-
-                // No more messages if we're exceeding our limit
-                if (instructions.length() >= messageLimit) break;
-
-                message = client.nextInstruction(false); // Read remaining messages, do not block.
-            }
-
-        }
-        catch (GuacamoleException e) {
-            instructions.append(new ErrorInstruction(e.getMessage()).toString());
-        }
-
-        try {
-
-            // Get output bytes
-            byte[] outputBytes = instructions.toString().getBytes("UTF-8");
+            response.setContentType("text/plain");
+            OutputStream out = response.getOutputStream();
 
             // Compress if enabled and supported by browser
             if (session.getConfiguration().getCompressStream()) {
@@ -84,22 +60,14 @@ public class InstructionStream extends GuacamoleServlet {
                         // Use gzip if supported
                         if (encoding.equals("gzip")) {
                             response.setHeader("Content-Encoding", "gzip");
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            OutputStream zout = new GZIPOutputStream(bos);
-                            zout.write(outputBytes);
-                            zout.close();
-                            outputBytes = bos.toByteArray();
+                            out = new GZIPOutputStream(out);
                             break;
                         }
 
                         // Use deflate if supported
                         if (encoding.equals("deflate")) {
                             response.setHeader("Content-Encoding", "deflate");
-                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                            OutputStream zout = new DeflaterOutputStream(bos);
-                            zout.write(outputBytes);
-                            zout.close();
-                            outputBytes = bos.toByteArray();
+                            out = new DeflaterOutputStream(out);
                             break;
                         }
 
@@ -109,19 +77,51 @@ public class InstructionStream extends GuacamoleServlet {
 
             }
 
-            response.setContentType("text/plain");
-            response.setContentLength(outputBytes.length);
+            try {
 
-            // Use default output stream if no compression.
-            OutputStream out = response.getOutputStream();
-            out.write(outputBytes);
+                // Query new update from VNC server
+                Client client = session.getClient();
+
+                // For all messages, until another stream is ready (we send at least one message)
+                Instruction message = client.nextInstruction(true); // Block until first message is read
+                while (message != null) {
+
+                    // Get message output bytes
+                    byte[] outputBytes = message.toString().getBytes("UTF-8");
+                    out.write(outputBytes);
+                    out.flush();
+                    response.flushBuffer();
+
+                    // No more messages another stream can take over
+                    if (instructionStreamLock.hasQueuedThreads())
+                        break;
+
+                    message = client.nextInstruction(false); // Read remaining messages, do not block.
+                }
+
+            }
+            catch (GuacamoleException e) {
+                Instruction message = new ErrorInstruction(e.getMessage());
+                byte[] outputBytes = message.toString().getBytes("UTF-8");
+                out.write(outputBytes);
+                out.flush();
+                response.flushBuffer();
+            }
+
+            // End-of-instructions marker
+            out.write(';');
             out.flush();
+            response.flushBuffer();
+
         }
         catch (UnsupportedEncodingException e) {
             throw new GuacamoleException("UTF-8 not supported by Java.", e);
         }
         catch (IOException e) {
             throw new GuacamoleException("I/O error writing to servlet output stream.", e);
+        }
+        finally {
+            instructionStreamLock.unlock();
         }
 
     }

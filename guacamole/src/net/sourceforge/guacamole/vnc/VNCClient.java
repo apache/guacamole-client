@@ -1036,20 +1036,22 @@ public class VNCClient extends Client {
         synchronized (instructionLock) {
             if (instructions.size() == 0) {
 
-                try {
-                    // Send framebuffer update request
-                    synchronized (output) {
-                        output.writeByte(MESSAGE_FRAMEBUFFER_UPDATE_REQUEST);
-                        output.writeBoolean(!needRefresh); // Incremental
-                        output.writeShort(0); // x
-                        output.writeShort(0); // y
-                        output.writeShort(frameBufferWidth); // width
-                        output.writeShort(frameBufferHeight); // height
-                        output.flush();
+                if (blocking) {
+                    try {
+                        // Send framebuffer update request
+                        synchronized (output) {
+                            output.writeByte(MESSAGE_FRAMEBUFFER_UPDATE_REQUEST);
+                            output.writeBoolean(!needRefresh); // Incremental
+                            output.writeShort(0); // x
+                            output.writeShort(0); // y
+                            output.writeShort(frameBufferWidth); // width
+                            output.writeShort(frameBufferHeight); // height
+                            output.flush();
+                        }
                     }
-                }
-                catch (IOException e) {
-                    throw new GuacamoleException("Could not send framebuffer update request to VNC server (network error).", e);
+                    catch (IOException e) {
+                        throw new GuacamoleException("Could not send framebuffer update request to VNC server (network error).", e);
+                    }
                 }
 
                 // Handle incoming messages, blocking until one message exists
