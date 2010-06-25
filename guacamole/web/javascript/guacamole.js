@@ -487,8 +487,8 @@ function VNCClient(display) {
 
         "size": function(parameters) {
 
-            var width = parameters[0];
-            var height = parameters[1];
+            var width = parseInt(parameters[0]);
+            var height = parseInt(parameters[1]);
 
             // Update (set) display size
             if (display && (background == null || cursor == null)) {
@@ -506,10 +506,10 @@ function VNCClient(display) {
 
         "rect": function(parameters) {
 
-            var x = parameters[0];
-            var y = parameters[1];
-            var w = parameters[2];
-            var h = parameters[3];
+            var x = parseInt(parameters[0]);
+            var y = parseInt(parameters[1]);
+            var w = parseInt(parameters[2]);
+            var h = parseInt(parameters[3]);
             var color = parameters[4];
 
             background.drawRect(
@@ -524,8 +524,8 @@ function VNCClient(display) {
 
         "png": function(parameters) {
 
-            var x = parameters[0];
-            var y = parameters[1];
+            var x = parseInt(parameters[0]);
+            var y = parseInt(parameters[1]);
             var data = parameters[2];
 
             background.draw(
@@ -542,12 +542,12 @@ function VNCClient(display) {
 
         "copy": function(parameters) {
 
-            var srcX = parameters[0];
-            var srcY = parameters[1];
-            var srcWidth = parameters[2];
-            var srcHeight = parameters[3];
-            var dstX = parameters[4];
-            var dstY = parameters[5];
+            var srcX = parseInt(parameters[0]);
+            var srcY = parseInt(parameters[1]);
+            var srcWidth = parseInt(parameters[2]);
+            var srcHeight = parseInt(parameters[3]);
+            var dstX = parseInt(parameters[4]);
+            var dstY = parseInt(parameters[5]);
 
             background.copyRect(
                 srcX,
@@ -562,8 +562,8 @@ function VNCClient(display) {
 
         "cursor": function(parameters) {
 
-            var x = parameters[0];
-            var y = parameters[1];
+            var x = parseInt(parameters[0]);
+            var y = parseInt(parameters[1]);
             var data = parameters[2];
 
             // Start cursor image load
