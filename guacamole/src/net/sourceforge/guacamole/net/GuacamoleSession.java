@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -33,6 +34,7 @@ public class GuacamoleSession {
     private GuacamoleConfiguration config;
     private final HttpSession session;
     private Client client;
+    private ReentrantLock instructionStreamLock;
 
     private class SessionVNCClient extends VNCClient implements HttpSessionBindingListener {
 
@@ -68,6 +70,7 @@ public class GuacamoleSession {
             config = new GuacamoleConfiguration(context);
 
             client = (Client) session.getAttribute("CLIENT");
+            instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");
         }
     }
 
@@ -98,6 +101,9 @@ public class GuacamoleSession {
 
             session.setAttribute("CLIENT", client);
 
+            instructionStreamLock = new ReentrantLock();
+            session.setAttribute("INSTRUCTION_STREAM_LOCK", instructionStreamLock);
+
         }
     }
 
@@ -118,6 +124,10 @@ public class GuacamoleSession {
     public void disconnect() throws GuacamoleException {
         if (client != null)
             client.disconnect();
+    }
+
+    public ReentrantLock getInstructionStreamLock() {
+        return instructionStreamLock;
     }
 
 }

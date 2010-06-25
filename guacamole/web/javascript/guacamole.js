@@ -202,21 +202,12 @@ function VNCClient(display) {
             mouse_xmlhttprequest.open("GET", "pointer?" + mouseEventBuffer);
             mouseEventBuffer = ""; // Clear buffer
 
-            var eventSendStart = new Date().getTime();
-
             // Once response received, send next queued event.
             mouse_xmlhttprequest.onreadystatechange = function() {
 
-                // Update round-trip-time figures
-                if (mouse_xmlhttprequest.readyState == 2) {
-                    var eventSendEnd = new Date().getTime();
-                    totalRoundTrip += eventSendEnd - eventSendStart;
-                    roundTripSamples++;
-                }
-
-                if (mouse_xmlhttprequest.readyState == 4) {
+                if (mouse_xmlhttprequest.readyState == 4)
                     sendPendingMouseEvents();
-                }
+
             };
 
             mouse_xmlhttprequest.send(null);
@@ -239,21 +230,6 @@ function VNCClient(display) {
 
         var clipboard_xmlhttprequest = new XMLHttpRequest();
         clipboard_xmlhttprequest.open("POST", "clipboard");
-
-        var sendStart = new Date().getTime();
-
-        // Update round trip metrics
-        clipboard_xmlhttprequest.onreadystatechange = function() {
-
-            // Update round-trip-time figures
-            if (clipboard_xmlhttprequest.readyState == 2) {
-                var sendEnd = new Date().getTime();
-                totalRoundTrip += sendEnd - sendStart;
-                roundTripSamples++;
-            }
-
-        };
-
         clipboard_xmlhttprequest.send(data);
 
     }
@@ -310,12 +286,6 @@ function VNCClient(display) {
             showError(errors[errorIndex].getMessage());
     }
 
-    // Data transfer statistics
-    var totalTransferred = 0;
-    var totalTime = 0;
-    var totalRoundTrip = 0;
-    var roundTripSamples = 0;
-
     var clipboardHandler = null;
 
     this.setClipboardHandler = function(handler) {
@@ -325,7 +295,6 @@ function VNCClient(display) {
 
     function handleResponse(xmlhttprequest) {
 
-        var start = null; // Start of download time
         var startOffset = null;
 
         var instructionStart = 0;
@@ -345,7 +314,6 @@ function VNCClient(display) {
                 if (nextRequest == null)
                     nextRequest = makeRequest();
 
-                start = new Date().getTime();
                 startOffset = 0;
             }
 
@@ -366,11 +334,6 @@ function VNCClient(display) {
                 var current = xmlhttprequest.responseText;
                 var instructionEnd;
                 
-                if (start == null) {
-                    start = new Date().getTime();
-                    startOffset = current.length;
-                }
-
                 while ((instructionEnd = current.indexOf(";", startIndex)) != -1) {
 
                     // Start next search at next instruction
@@ -383,8 +346,27 @@ function VNCClient(display) {
 
                     var opcodeEnd = instruction.indexOf(":");
 
-                    var opcode = instruction.substr(0, opcodeEnd);
-                    var parameters = instruction.substr(opcodeEnd+1).split(",");
+                    var opcode;
+                    var parameters;
+                    if (opcodeEnd == -1) {
+                        opcode = instruction;
+                        parameters = new Array();
+                    }
+                    else {
+                        opcode = instruction.substr(0, opcodeEnd);
+                        parameters = instruction.substr(opcodeEnd+1).split(",");
+                    }
+
+                    // If we're done parsing, handle the next response.
+                    if (opcode.length == 0) {
+
+                        if (isConnected()) {
+                            delete xmlhttprequest;
+                            handleResponse(nextRequest);
+                        }
+
+                        break;
+                    }
 
                     // Call instruction handler.
                     doInstruction(opcode, parameters);
@@ -395,23 +377,6 @@ function VNCClient(display) {
 
                 delete instruction;
                 delete parameters;
-
-                // If we're done parsing, handle the next response.
-                if (xmlhttprequest.readyState == 4 && isConnected()) {
-
-                    // If we got the start time, do statistics.
-                    if (start) {
-                        var end = new Date().getTime();
-                        var duration = end - start;
-                        var length = current.length;
-
-                        totalTime += duration;
-                        totalTransferred += length;
-                    }
-
-                    delete xmlhttprequest;
-                    handleResponse(nextRequest);
-                }
 
             }
 
@@ -425,17 +390,9 @@ function VNCClient(display) {
 
     function makeRequest() {
 
-        // Calculate message limit as number of bytes likely to be transferred
-        // in one round trip.
-        var messageLimit;
-        if (totalTime == 0 || roundTripSamples == 0)
-            messageLimit = 10240; // Default to a reasonable 10k
-        else
-            messageLimit = Math.round(totalRoundTrip * totalTransferred / totalTime / roundTripSamples);
-
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("GET", "instructions?messageLimit=" + messageLimit);
+        xmlhttprequest.open("GET", "instructions");
         xmlhttprequest.send(null); 
 
         return xmlhttprequest;
