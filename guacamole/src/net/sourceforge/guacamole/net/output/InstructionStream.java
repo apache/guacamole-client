@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.Client;
 import net.sourceforge.guacamole.net.GuacamoleServlet;
-import net.sourceforge.guacamole.net.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.instruction.ErrorInstruction;

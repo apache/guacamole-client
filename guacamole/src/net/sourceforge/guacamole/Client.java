@@ -20,9 +20,9 @@ package net.sourceforge.guacamole;
  */
 
 import net.sourceforge.guacamole.instruction.Instruction;
-import net.sourceforge.guacamole.net.GuacamoleException;
-import net.sourceforge.guacamole.vnc.event.KeyEvent;
-import net.sourceforge.guacamole.vnc.event.PointerEvent;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.event.KeyEvent;
+import net.sourceforge.guacamole.event.PointerEvent;
 
 public abstract class Client {
 

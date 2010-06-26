@@ -23,7 +23,7 @@ import javax.servlet.ServletRequest;
 import org.w3c.dom.Element;
 
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
-import net.sourceforge.guacamole.net.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
 public class Disconnect extends XMLGuacamoleServlet {

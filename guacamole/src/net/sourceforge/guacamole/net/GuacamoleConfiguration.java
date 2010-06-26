@@ -20,29 +20,24 @@ package net.sourceforge.guacamole.net;
  */
 
 import javax.servlet.ServletContext;
+import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleConfiguration extends Configuration {
 
-    private String hostname;
-    private int port;
     private String password;
     private int outputBPP;
     private boolean compressStream;
+    private String protocol;
 
     public GuacamoleConfiguration(ServletContext context) throws GuacamoleException {
 
         super(context);
 
-        hostname       = readParameter("host", null);
-        port           = readIntParameter("port", null);
         password       = context.getInitParameter("password");
         outputBPP      = readIntParameter("output-bpp", 8, 8, 24);
         compressStream = readBooleanParameter("compress-stream", false);
+        protocol       = readParameter("protocol", "vnc", "vnc");
 
-    }
-
-    public String getHostname() {
-        return hostname;
     }
 
     public int getOutputBPP() {
@@ -53,12 +48,12 @@ public class GuacamoleConfiguration extends Configuration {
         return password;
     }
 
-    public int getPort() {
-        return port;
-    }
-
     public boolean getCompressStream() {
         return compressStream;
+    }
+
+    public String getProtocol() {
+        return protocol;
     }
 
 }
