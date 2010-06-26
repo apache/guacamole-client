@@ -19,11 +19,14 @@ package net.sourceforge.guacamole.vnc;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.net.*;
+import net.sourceforge.guacamole.net.Configuration;
+import net.sourceforge.guacamole.GuacamoleException;
 import javax.servlet.ServletContext;
 
 public class VNCConfiguration extends Configuration {
 
+    private String hostname;
+    private int port;
     private String password;
     private int bpp;
 
@@ -31,6 +34,8 @@ public class VNCConfiguration extends Configuration {
 
         super(context);
 
+        hostname       = readParameter("host", null);
+        port           = readIntParameter("port", null);
         password  = context.getInitParameter("password");
         bpp = readIntParameter("bpp", 24, 8, 16, 24);
 
@@ -42,6 +47,14 @@ public class VNCConfiguration extends Configuration {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public int getPort() {
+        return port;
     }
 
 }

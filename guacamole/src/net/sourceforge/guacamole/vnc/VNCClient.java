@@ -22,10 +22,10 @@ import java.awt.image.WritableRaster;
 import net.sourceforge.guacamole.instruction.framebuffer.PNGInstruction;
 import net.sourceforge.guacamole.instruction.framebuffer.CursorInstruction;
 import net.sourceforge.guacamole.instruction.framebuffer.CopyRectInstruction;
-import net.sourceforge.guacamole.vnc.event.PointerEvent;
-import net.sourceforge.guacamole.vnc.event.EventQueue;
-import net.sourceforge.guacamole.vnc.event.KeyEvent;
-import net.sourceforge.guacamole.vnc.event.EventHandler;
+import net.sourceforge.guacamole.event.PointerEvent;
+import net.sourceforge.guacamole.event.EventQueue;
+import net.sourceforge.guacamole.event.KeyEvent;
+import net.sourceforge.guacamole.event.EventHandler;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -58,7 +58,7 @@ import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.instruction.NameInstruction;
 import net.sourceforge.guacamole.instruction.SizeInstruction;
 import net.sourceforge.guacamole.instruction.framebuffer.PNGImage;
-import net.sourceforge.guacamole.net.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleException;
 
 public class VNCClient extends Client {
 
@@ -355,7 +355,7 @@ public class VNCClient extends Client {
 
 
     // Handles all messages, blocking until at least one message is read if desired.
-    private void handleMessages(boolean blocking) throws IOException, VNCException {
+    private void handleMessages(boolean blocking) throws IOException, VNCException, GuacamoleException {
 
         synchronized (input) {
 
@@ -414,7 +414,7 @@ public class VNCClient extends Client {
 
     }
 
-    private void handleFramebufferUpdate() throws IOException, VNCException {
+    private void handleFramebufferUpdate() throws IOException, VNCException, GuacamoleException {
 
         input.read(); // Padding
         int numberOfRectangles = input.readUnsignedShort();

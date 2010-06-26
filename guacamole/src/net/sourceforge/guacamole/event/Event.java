@@ -1,4 +1,5 @@
-package net.sourceforge.guacamole.vnc.event;
+
+package net.sourceforge.guacamole.event;
 
 /*
  *  Guacamole - Pure JavaScript/HTML VNC Client
@@ -18,22 +19,37 @@ package net.sourceforge.guacamole.vnc.event;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class KeyEvent extends Event {
+public abstract class Event implements Comparable<Event> {
 
-    private int keysym;
-    private boolean pressed;
+    private long time;
+    private int index;
 
-    public KeyEvent(int index, int keysym, boolean pressed) {
-        super(index);
-        this.keysym = keysym;
-        this.pressed = pressed;
+    public Event(int index) {
+        this.time = System.currentTimeMillis();
+        this.index = index;
     }
 
-    public int getKeySym() {
-        return keysym;
+    public int getIndex() {
+        return index;
     }
 
-    public boolean getPressed() {
-        return pressed;
+    public long getTime() {
+        return time;
     }
+
+    public int hashCode() {
+        return index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (getClass() != o.getClass()) return false;
+        return getIndex() == ((Event) o).getIndex();
+    }
+
+    public int compareTo(Event e) {
+        return getIndex() - e.getIndex();
+    }
+
 }

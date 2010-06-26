@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.vnc.event;
+package net.sourceforge.guacamole.event;
 
 /*
  *  Guacamole - Pure JavaScript/HTML VNC Client

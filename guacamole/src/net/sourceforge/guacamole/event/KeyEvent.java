@@ -1,5 +1,4 @@
-
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.event;
 
 /*
  *  Guacamole - Pure JavaScript/HTML VNC Client
@@ -19,18 +18,22 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class GuacamoleException extends Exception {
+public class KeyEvent extends Event {
 
-    public GuacamoleException(String message, Throwable cause) {
-        super(message, cause);
+    private int keysym;
+    private boolean pressed;
+
+    public KeyEvent(int index, int keysym, boolean pressed) {
+        super(index);
+        this.keysym = keysym;
+        this.pressed = pressed;
     }
 
-    public GuacamoleException(String message) {
-        super(message);
+    public int getKeySym() {
+        return keysym;
     }
 
-    public GuacamoleException(Throwable cause) {
-        super(cause);
+    public boolean getPressed() {
+        return pressed;
     }
-
 }

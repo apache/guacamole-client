@@ -27,8 +27,7 @@ import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import net.sourceforge.guacamole.vnc.VNCException;
-
+import net.sourceforge.guacamole.GuacamoleException;
 
 public class PNGImage {
 
@@ -36,7 +35,7 @@ public class PNGImage {
     private int height;
     private byte[] data;
 
-    public PNGImage(BufferedImage image) throws VNCException {
+    public PNGImage(BufferedImage image) throws GuacamoleException {
 
         width = image.getWidth();
         height = image.getHeight();
@@ -48,7 +47,7 @@ public class PNGImage {
             bos.flush();
         }
         catch (IOException e) {
-            throw new VNCException("I/O Error while creating PNG.", e);
+            throw new GuacamoleException("I/O Error while creating PNG.", e);
         }
 
         data = bos.toByteArray();
@@ -66,13 +65,13 @@ public class PNGImage {
         return width;
     }
 
-    private static void writeImage(BufferedImage image, OutputStream outputStream) throws VNCException, IOException  {
+    private static void writeImage(BufferedImage image, OutputStream outputStream) throws GuacamoleException, IOException  {
 
         // Obtain list of image writers
         // If no such writers exist, fail with error, exit.
         Iterator<ImageWriter> writers = ImageIO.getImageWritersByMIMEType("image/png");
         if (!writers.hasNext())
-            throw new VNCException("No useful image writers found.");
+            throw new GuacamoleException("No useful image writers found.");
 
         // Obtain JPEG writer
         ImageWriter imageWriter = writers.next();

@@ -20,6 +20,7 @@ package net.sourceforge.guacamole.net;
  */
 
 import javax.servlet.ServletContext;
+import net.sourceforge.guacamole.GuacamoleException;
 
 public abstract class Configuration {
 
