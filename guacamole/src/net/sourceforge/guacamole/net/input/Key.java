@@ -20,9 +20,9 @@ package net.sourceforge.guacamole.net.input;
  */
 
 import javax.servlet.ServletRequest;
-import net.sourceforge.guacamole.net.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleException;
 import org.w3c.dom.Element;
-import net.sourceforge.guacamole.vnc.event.KeyEvent;
+import net.sourceforge.guacamole.event.KeyEvent;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;

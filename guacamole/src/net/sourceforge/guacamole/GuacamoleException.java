@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.vnc.event;
+package net.sourceforge.guacamole;
 
 /*
  *  Guacamole - Pure JavaScript/HTML VNC Client
@@ -19,10 +19,18 @@ package net.sourceforge.guacamole.vnc.event;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
+public class GuacamoleException extends Exception {
 
-public interface EventHandler<E extends Event> {
+    public GuacamoleException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-    public void handle(E e) throws IOException;
+    public GuacamoleException(String message) {
+        super(message);
+    }
+
+    public GuacamoleException(Throwable cause) {
+        super(cause);
+    }
 
 }

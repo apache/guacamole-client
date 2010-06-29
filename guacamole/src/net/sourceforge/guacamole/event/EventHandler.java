@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.vnc.event;
+package net.sourceforge.guacamole.event;
 
 /*
  *  Guacamole - Pure JavaScript/HTML VNC Client
@@ -19,37 +19,10 @@ package net.sourceforge.guacamole.vnc.event;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public abstract class Event implements Comparable<Event> {
+import java.io.IOException;
 
-    private long time;
-    private int index;
+public interface EventHandler<E extends Event> {
 
-    public Event(int index) {
-        this.time = System.currentTimeMillis();
-        this.index = index;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public long getTime() {
-        return time;
-    }
-
-    public int hashCode() {
-        return index;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (getClass() != o.getClass()) return false;
-        return getIndex() == ((Event) o).getIndex();
-    }
-
-    public int compareTo(Event e) {
-        return getIndex() - e.getIndex();
-    }
+    public void handle(E e) throws IOException;
 
 }

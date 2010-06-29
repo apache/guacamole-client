@@ -24,6 +24,10 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import net.sourceforge.guacamole.Client;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.instruction.Instruction;
+import net.sourceforge.guacamole.event.KeyEvent;
+import net.sourceforge.guacamole.event.PointerEvent;
 import net.sourceforge.guacamole.vnc.VNCClient;
 import net.sourceforge.guacamole.vnc.VNCConfiguration;
 import net.sourceforge.guacamole.vnc.VNCException;
@@ -34,10 +38,12 @@ public class GuacamoleSession {
     private final HttpSession session;
     private Client client;
 
-    private class SessionVNCClient extends VNCClient implements HttpSessionBindingListener {
+    private class SessionClient extends Client implements HttpSessionBindingListener {
 
-        public SessionVNCClient(String host, int port, String password, int colorBits, int outputBPP) throws VNCException {
-            super(host, port, password, colorBits, outputBPP);
+        private Client client;
+
+        public SessionClient(Client client) {
+            this.client = client;
         }
 
         public void valueBound(HttpSessionBindingEvent event) {
@@ -51,6 +57,26 @@ public class GuacamoleSession {
             catch (GuacamoleException e) {
                 // Ignore
             }
+        }
+
+        public void send(KeyEvent event) throws GuacamoleException {
+            client.send(event);
+        }
+
+        public void send(PointerEvent event) throws GuacamoleException {
+            client.send(event);
+        }
+
+        public void setClipboard(String clipboard) throws GuacamoleException {
+            client.setClipboard(clipboard);
+        }
+
+        public void disconnect() throws GuacamoleException {
+            client.disconnect();
+        }
+
+        public Instruction nextInstruction(boolean blocking) throws GuacamoleException {
+            return client.nextInstruction(blocking);
         }
 
     }
@@ -77,24 +103,35 @@ public class GuacamoleSession {
             if (client != null)
                 client.disconnect();
 
-            // Connect to VNC server
-            try {
 
-                // Read VNC-specific parameters
-                ServletContext context = session.getServletContext();
-                VNCConfiguration vncconfig = new VNCConfiguration(context);
+            String protocol = config.getProtocol();
+            if (protocol.equals("vnc")) {
 
-                client = new SessionVNCClient(
-                        config.getHostname(),
-                        config.getPort(),
-                        vncconfig.getPassword(),
-                        vncconfig.getBPP(),
-                        config.getOutputBPP()
-                );
+                // Connect to VNC server
+                try {
+
+                    // Read VNC-specific parameters
+                    ServletContext context = session.getServletContext();
+                    VNCConfiguration vncconfig = new VNCConfiguration(context);
+
+                    client = new SessionClient(
+                            new VNCClient(
+                                vncconfig.getHostname(),
+                                vncconfig.getPort(),
+                                vncconfig.getPassword(),
+                                vncconfig.getBPP(),
+                                config.getOutputBPP()
+                            )
+                    );
+
+                }
+                catch (VNCException e) {
+                    throw new GuacamoleException(e);
+                }
+
             }
-            catch (VNCException e) {
-                throw new GuacamoleException(e);
-            }
+            else
+                throw new GuacamoleException("Unsupported protocol: " + protocol);
 
             session.setAttribute("CLIENT", client);
 

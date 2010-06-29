@@ -36,6 +36,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import net.sourceforge.guacamole.Client;
+import net.sourceforge.guacamole.GuacamoleException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
