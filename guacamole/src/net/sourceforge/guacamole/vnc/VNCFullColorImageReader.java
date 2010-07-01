@@ -44,7 +44,7 @@ public class VNCFullColorImageReader extends VNCImageReader {
     private boolean readAsIndexed;
 
     public boolean isBigEndian() {
-        return true;
+        return false;
     }
 
     public int getBitsPerPixel() {
@@ -97,11 +97,11 @@ public class VNCFullColorImageReader extends VNCImageReader {
         this.greenBits = greenBits;
         this.blueBits = blueBits;
 
-        redMax   = (1 << redBits)   - 1;
-        greenMax = (1 << greenBits) - 1;
         blueMax  = (1 << blueBits)  - 1;
+        greenMax = (1 << greenBits) - 1;
+        redMax   = (1 << redBits)   - 1;
 
-        redShift   = greenBits + blueBits;
+        redShift = greenBits + blueBits;
         greenShift = blueBits;
         blueShift  = 0;
 
@@ -120,9 +120,9 @@ public class VNCFullColorImageReader extends VNCImageReader {
         if (redBits != 8 || greenBits != 8 || blueBits != 8)
             return readPixel(input);
 
-        int red   = input.read();
-        int green = input.read();
         int blue  = input.read();
+        int green = input.read();
+        int red   = input.read();
 
         int color = (red << 16) | (green << 8) | blue;
         return color;
@@ -136,10 +136,10 @@ public class VNCFullColorImageReader extends VNCImageReader {
                 value = input.read();
                 break;
             case 16:
-                value = input.readShort();
+                value = Short.reverseBytes(input.readShort());
                 break;
             case 32:
-                value = input.readInt();
+                value = Integer.reverseBytes(input.readInt());
                 break;
             default:
                 throw new IOException("Invalid BPP.");
