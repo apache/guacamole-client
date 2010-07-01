@@ -203,12 +203,7 @@ function VNCClient(display) {
             mouseEventBuffer = ""; // Clear buffer
 
             // Once response received, send next queued event.
-            mouse_xmlhttprequest.onreadystatechange = function() {
-
-                if (mouse_xmlhttprequest.readyState == 4)
-                    sendPendingMouseEvents();
-
-            };
+            setTimeout(sendPendingMouseEvents, 10);
 
             mouse_xmlhttprequest.send(null);
         }
