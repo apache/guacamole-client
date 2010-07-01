@@ -42,9 +42,10 @@ public class VNCFullColorImageReader extends VNCImageReader {
     private int blueShift;
 
     private boolean readAsIndexed;
+    private boolean bigEndian;
 
     public boolean isBigEndian() {
-        return false;
+        return bigEndian;
     }
 
     public int getBitsPerPixel() {
@@ -80,7 +81,7 @@ public class VNCFullColorImageReader extends VNCImageReader {
     }
 
     // Set up BGR reader
-    public VNCFullColorImageReader(int redBits, int greenBits, int blueBits, int outputBPP) throws VNCException {
+    public VNCFullColorImageReader(boolean bigEndian, int redBits, int greenBits, int blueBits, int outputBPP) throws VNCException {
         
         depth = redBits + greenBits + blueBits;
 
@@ -120,9 +121,20 @@ public class VNCFullColorImageReader extends VNCImageReader {
         if (redBits != 8 || greenBits != 8 || blueBits != 8)
             return readPixel(input);
 
-        int blue  = input.read();
-        int green = input.read();
-        int red   = input.read();
+        int red;
+        int green;
+        int blue;
+
+        if (bigEndian) {
+            red   = input.read();
+            green = input.read();
+            blue  = input.read();
+        }
+        else {
+            blue  = input.read();
+            green = input.read();
+            red   = input.read();
+        }
 
         int color = (red << 16) | (green << 8) | blue;
         return color;
@@ -136,10 +148,18 @@ public class VNCFullColorImageReader extends VNCImageReader {
                 value = input.read();
                 break;
             case 16:
-                value = Short.reverseBytes(input.readShort());
+
+                short inputShort = input.readShort();
+                if (!bigEndian) inputShort = Short.reverseBytes(inputShort);
+
+                value = inputShort;
                 break;
             case 32:
-                value = Integer.reverseBytes(input.readInt());
+
+                int inputInt = input.readInt();
+                if (!bigEndian) inputInt = Integer.reverseBytes(inputInt);
+
+                value = inputInt;
                 break;
             default:
                 throw new IOException("Invalid BPP.");
