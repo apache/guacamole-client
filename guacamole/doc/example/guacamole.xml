@@ -58,6 +58,18 @@
     <Parameter name="output-bpp" value="24"/>
     -->
 
+
+    <!-- Swap red and blue components. Some VNC servers may not honor
+         the client's request for certain pixel formats, instead
+         returning RGB as BGR.
+
+         If colors look strange (blues look red or brown) when using
+         Guacamole, uncomment and set this parameter to true. -->
+
+    <!--
+    <Parameter name="swap-red-blue" value="false"/>
+    -->
+
     <Realm className="org.apache.catalina.realm.MemoryRealm" pathname="conf/guacamole-users.xml"/>
 </Context>
 
