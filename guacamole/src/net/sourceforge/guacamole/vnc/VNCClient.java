@@ -165,7 +165,7 @@ public class VNCClient extends Client {
     }
 
     // password = null for no authentication
-    public VNCClient(String host, int port, String password, int colorBits, int outputBPP)
+    public VNCClient(String host, int port, String password, int colorBits, int outputBPP, boolean swapRedAndBlue)
             throws VNCException {
 
         try {
@@ -325,11 +325,11 @@ public class VNCClient extends Client {
             // Set pixel format
             VNCFullColorImageReader fullColorReader;
             if (colorBits == 8)
-                fullColorReader = new VNCFullColorImageReader(bigEndian, 3, 3, 2, 8);
+                fullColorReader = new VNCFullColorImageReader(bigEndian, 3, 3, 2, 8, swapRedAndBlue);
             else if (colorBits == 16)
-                fullColorReader = new VNCFullColorImageReader(bigEndian, 5, 6, 5, outputBPP);
+                fullColorReader = new VNCFullColorImageReader(bigEndian, 5, 6, 5, outputBPP, swapRedAndBlue);
             else if (colorBits == 24)
-                fullColorReader = new VNCFullColorImageReader(bigEndian, 8, 8, 8, outputBPP);
+                fullColorReader = new VNCFullColorImageReader(bigEndian, 8, 8, 8, outputBPP, swapRedAndBlue);
             else
                 throw new VNCException("Color depth " + colorBits + " not supported. Only color depths of 8, 16, or 24 are allowed.");
 

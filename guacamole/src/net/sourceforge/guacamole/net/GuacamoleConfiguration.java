@@ -28,6 +28,7 @@ public class GuacamoleConfiguration extends Configuration {
     private int outputBPP;
     private boolean compressStream;
     private String protocol;
+    private boolean swapRedAndBlue;
 
     public GuacamoleConfiguration(ServletContext context) throws GuacamoleException {
 
@@ -37,6 +38,7 @@ public class GuacamoleConfiguration extends Configuration {
         outputBPP      = readIntParameter("output-bpp", 8, 8, 24);
         compressStream = readBooleanParameter("compress-stream", false);
         protocol       = readParameter("protocol", "vnc", "vnc");
+        swapRedAndBlue = readBooleanParameter("swap-red-blue", false);
 
     }
 
@@ -54,6 +56,10 @@ public class GuacamoleConfiguration extends Configuration {
 
     public String getProtocol() {
         return protocol;
+    }
+
+    public boolean getSwapRedAndBlue() {
+        return swapRedAndBlue;
     }
 
 }

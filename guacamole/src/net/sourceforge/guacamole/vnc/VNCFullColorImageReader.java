@@ -44,6 +44,8 @@ public class VNCFullColorImageReader extends VNCImageReader {
     private boolean readAsIndexed;
     private boolean bigEndian;
 
+    private boolean swapRedAndBlue;
+
     public boolean isBigEndian() {
         return bigEndian;
     }
@@ -81,8 +83,10 @@ public class VNCFullColorImageReader extends VNCImageReader {
     }
 
     // Set up BGR reader
-    public VNCFullColorImageReader(boolean bigEndian, int redBits, int greenBits, int blueBits, int outputBPP) throws VNCException {
+    public VNCFullColorImageReader(boolean bigEndian, int redBits, int greenBits, int blueBits, int outputBPP, boolean swapRedAndBlue) throws VNCException {
         
+        this.swapRedAndBlue = swapRedAndBlue;
+
         depth = redBits + greenBits + blueBits;
 
         if (depth > 0 && depth <= 8)
@@ -136,8 +140,10 @@ public class VNCFullColorImageReader extends VNCImageReader {
             red   = input.read();
         }
 
-        int color = (red << 16) | (green << 8) | blue;
-        return color;
+        if (swapRedAndBlue)
+            return (blue << 16) | (green << 8) | red;
+        else
+            return (red << 16) | (green << 8) | blue;
     }
 
     @Override
@@ -173,8 +179,10 @@ public class VNCFullColorImageReader extends VNCImageReader {
         green <<= 8 - greenBits;
         blue  <<= 8 - blueBits;
 
-        int color = (red << 16) | (green << 8) | blue;
-        return color;
+        if (swapRedAndBlue)
+            return (blue << 16) | (green << 8) | red;
+        else
+            return (red << 16) | (green << 8) | blue;
     }
 
     @Override

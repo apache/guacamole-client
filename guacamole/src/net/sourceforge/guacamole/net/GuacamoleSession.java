@@ -120,7 +120,8 @@ public class GuacamoleSession {
                                 vncconfig.getPort(),
                                 vncconfig.getPassword(),
                                 vncconfig.getBPP(),
-                                config.getOutputBPP()
+                                config.getOutputBPP(),
+                                config.getSwapRedAndBlue()
                             )
                     );
 
