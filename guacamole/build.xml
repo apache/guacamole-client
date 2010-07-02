@@ -46,6 +46,7 @@
         <mkdir dir="${tar.src.dir}"/>
         <copy todir="${tar.src.dir}">
             <fileset dir=".">
+                <exclude name=".git/**"/>
                 <exclude name="**/.svn"/>
                 <exclude name="${tar.dir}/**"/>
                 <exclude name="${tar.src.dir}/**"/>
