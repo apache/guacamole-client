@@ -22,7 +22,14 @@
 		depends="init">
 		<copy todir="${build.dir}">
 			<fileset dir="${web.dir}"/>
-		</copy>
+        </copy>
+
+        <!-- Replace __GUAC_VERSION with declared version -->
+        <replace dir="${build.dir}" value="${guac.version}">
+            <include name="**/*.html"/>
+            <replacetoken><![CDATA[__GUAC_VERSION]]></replacetoken>
+        </replace>
+
 		<javac srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes"
             classpath="${servlet.api.jar}">
             <compilerarg value="-Xlint:unchecked"/>
