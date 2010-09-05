@@ -4,7 +4,7 @@
 all: guacd
 
 guacd: daemon.o proxy.o
-	$(CC) daemon.o proxy.o -o guacd 
+	$(CC) daemon.o proxy.o -l png -o guacd 
 
 proxy.o: proxy.c proxy.h
 	$(CC) -c -ansi -pedantic proxy.c
