@@ -25,6 +25,7 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
 import net.sourceforge.guacamole.Client;
+import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.event.KeyEvent;
@@ -105,7 +106,10 @@ public class GuacamoleSession {
 
 
             client = new SessionClient(
-                    null /* CLIENT GOES HERE */
+                    new GuacamoleClient (
+                        "localhost", // Temporarily hard coded
+                        1234
+                    )
             );
 
             session.setAttribute("CLIENT", client);
