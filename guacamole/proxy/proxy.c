@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <png.h>
 
+#include "base64.h"
 #include "proxy.h"
 
 struct guac_write_info {
@@ -14,13 +15,15 @@ void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 
     client_fd = ((struct guac_write_info*) png->io_ptr)->client_fd;
 
-    /* TODO: */
-    /* write_base64(client_fd, data, length); */
+    if (write_base64(client_fd, data, length) < 0) {
+        perror("Error writing PNG");
+        png_error(png, "Error writing PNG");
+        return;
+    }
 
 }
 
 void guac_write_flush(png_structp png) {
-    printf("HERE!\n");
 }
 
 void proxy(int client_fd) {
@@ -90,10 +93,24 @@ void proxy(int client_fd) {
     }
 
 
-    png_set_rows(png, png_info, png_rows);
-    png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
 
-    write(client_fd, "name:hello;size:1024,768;error:Test finished.;", 46);
+    write(client_fd, "name:hello;size:1024,768;", 25);
+
+    /*for (y=0; y<20; y++) {*/
+        write(client_fd, "png:0,0,", 8);
+        png_set_rows(png, png_info, png_rows);
+        png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
+    
+        if (flush_base64(client_fd) < 0) {
+            perror("Error flushing PNG");
+            png_error(png, "Error flushing PNG");
+            return;
+        }
+
+        write(client_fd, ";", 1);
+    /*}*/
+
+    write(client_fd, "error:Test finished.;", 21);
 
     /* Free PNG data */
     for (y = 0; y<100 /* height */; y++)

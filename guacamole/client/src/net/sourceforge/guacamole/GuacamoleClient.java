@@ -25,8 +25,6 @@ import java.net.Socket;
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
-import java.io.Reader;
-import java.io.InputStreamReader;
 
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -36,13 +34,13 @@ import net.sourceforge.guacamole.event.PointerEvent;
 public class GuacamoleClient extends Client {
 
     private Socket sock;
-    private Reader input;
+    private InputStream input;
 
     public GuacamoleClient(String hostname, int port) throws GuacamoleException {
 
         try {
             sock = new Socket(InetAddress.getByName(hostname), port);
-            input = new InputStreamReader(new BufferedInputStream(sock.getInputStream()));
+            input = new BufferedInputStream(sock.getInputStream());
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
@@ -78,7 +76,7 @@ public class GuacamoleClient extends Client {
         try {
 
             // While we're blocking, or input is available
-            while (blocking || input.ready()) {
+            while (blocking || input.available() > 0) {
 
                 int readChar = input.read();
                 if (readChar == -1)
