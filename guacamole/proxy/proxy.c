@@ -6,17 +6,9 @@
 #include "guacio.h"
 #include "proxy.h"
 
-struct guac_write_info {
-    int client_fd;
-};
-
 void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 
-    int client_fd;
-
-    client_fd = ((struct guac_write_info*) png->io_ptr)->client_fd;
-
-    if (write_base64(client_fd, data, length) < 0) {
+    if (write_base64((GUACIO*) png->io_ptr, data, length) < 0) {
         perror("Error writing PNG");
         png_error(png, "Error writing PNG");
         return;
@@ -29,8 +21,6 @@ void guac_write_flush(png_structp png) {
 
 void proxy(int client_fd) {
 
-    struct guac_write_info write_info;
-
     png_structp png;
     png_infop png_info;
     png_byte** png_rows;
@@ -38,9 +28,9 @@ void proxy(int client_fd) {
 
     int x, y;
 
-    /*** INIT ***/
+    GUACIO* io = guac_open(client_fd);
 
-    write_info.client_fd = client_fd;
+    /*** INIT ***/
 
     /* Allocate rows for PNG */
     png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
@@ -59,7 +49,7 @@ void proxy(int client_fd) {
     }
 
 
-    write(client_fd, "name:hello;size:1024,768;", 25);
+    write(io->fd, "name:hello;size:1024,768;", 25);
 
     for (y=0; y<200; y++) {
 
@@ -86,7 +76,7 @@ void proxy(int client_fd) {
             return;
         }
 
-        png_set_write_fn(png, &write_info, guac_write_png, guac_write_flush);
+        png_set_write_fn(png, io, guac_write_png, guac_write_flush);
 
         /* Set PNG IHDR */
         png_set_IHDR(
@@ -101,11 +91,11 @@ void proxy(int client_fd) {
                 PNG_FILTER_TYPE_DEFAULT
         );
         
-        write(client_fd, "png:0,0,", 8);
+        write(io->fd, "png:0,0,", 8);
         png_set_rows(png, png_info, png_rows);
         png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
     
-        if (flush_base64(client_fd) < 0) {
+        if (flush_base64(io) < 0) {
             perror("Error flushing PNG");
             png_error(png, "Error flushing PNG");
             return;
@@ -113,10 +103,10 @@ void proxy(int client_fd) {
 
         png_destroy_write_struct(&png, &png_info);
 
-        write(client_fd, ";", 1);
+        write(io->fd, ";", 1);
     }
 
-    write(client_fd, "error:Test finished.;", 21);
+    write(io->fd, "error:Test finished.;", 21);
 
     /* Free PNG data */
     for (y = 0; y<100 /* height */; y++)
