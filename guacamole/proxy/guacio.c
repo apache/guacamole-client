@@ -26,6 +26,26 @@ void guac_close(GUACIO* io) {
     free(io);
 }
 
+ssize_t guac_write_int(GUACIO* io, unsigned int i) {
+
+    char buffer[128];
+    char* ptr = &(buffer[127]);
+
+    *ptr = 0;
+
+    do {
+
+        ptr--;
+        *ptr = '0' + (i % 10);
+
+        i /= 10;
+
+    } while (i > 0 && ptr >= buffer);
+
+    return guac_write_string(io, ptr);
+
+}
+
 ssize_t guac_write_string(GUACIO* io, const char* str) {
 
     int fd = io->fd;

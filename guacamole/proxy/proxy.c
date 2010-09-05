@@ -28,6 +28,8 @@ void proxy(int client_fd) {
 
     int x, y;
 
+    int test_index;
+
     GUACIO* io = guac_open(client_fd);
 
     /*** INIT ***/
@@ -35,23 +37,31 @@ void proxy(int client_fd) {
     /* Allocate rows for PNG */
     png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
 
-    /* For now, generate test white image */
-    for (y=0; y<100 /* height */; y++) {
-
-        row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
-        png_rows[y] = row;
-
-        for (x=0; x<100 /* width */; x++) {
-            *row++ = 0xFF;
-            *row++ = 0xFF;
-            *row++ = 0xFF;
-        }
-    }
-
-
     guac_write_string(io, "name:hello;size:1024,768;");
 
-    for (y=0; y<200; y++) {
+    for (test_index=0; test_index<200; test_index++) {
+
+        /* For now, generate test white image */
+        for (y=0; y<100 /* height */; y++) {
+
+            row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
+            png_rows[y] = row;
+
+            for (x=0; x<100 /* width */; x++) {
+                *row++ = random() % 0xFF;
+
+                if (test_index % 2 == 0)
+                    *row++ = random() % 0xFF;
+                else
+                    *row++ = 0x00;
+
+                if (test_index % 3 == 0)
+                    *row++ = random() % 0xFF;
+                else
+                    *row++ = 0x00;
+
+            }
+        }
 
         /* Write image */
 
@@ -91,7 +101,11 @@ void proxy(int client_fd) {
                 PNG_FILTER_TYPE_DEFAULT
         );
         
-        guac_write_string(io, "png:0,0,");
+        guac_write_string(io, "png:");
+        guac_write_int(io, random()%1024);
+        guac_write_string(io, ",");
+        guac_write_int(io, random()%768);
+        guac_write_string(io, ",");
         png_set_rows(png, png_info, png_rows);
         png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
     
