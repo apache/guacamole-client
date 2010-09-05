@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdio.h>
 
+#include "guacio.h"
+
 char characters[64] = {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
     'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -79,15 +81,16 @@ ssize_t __write_base64_byte(int fd, char buf) {
     return 1;
 }
 
-ssize_t write_base64(int fd, const char* buf, size_t count) {
+ssize_t write_base64(int fd, const void* buf, size_t count) {
 
     int retval;
 
-    const char* end = buf + count;
+    const char* char_buf = (const char*) buf;
+    const char* end = char_buf + count;
 
-    while (buf < end) {
+    while (char_buf < end) {
 
-        retval = __write_base64_byte(fd, *(buf++));
+        retval = __write_base64_byte(fd, *(char_buf++));
         if (retval < 0)
             return retval;
 

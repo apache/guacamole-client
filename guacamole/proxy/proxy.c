@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <png.h>
 
-#include "base64.h"
+#include "guacio.h"
 #include "proxy.h"
 
 struct guac_write_info {
@@ -61,7 +61,7 @@ void proxy(int client_fd) {
 
     write(client_fd, "name:hello;size:1024,768;", 25);
 
-    for (y=0; y<20; y++) {
+    for (y=0; y<200; y++) {
 
         /* Write image */
 
