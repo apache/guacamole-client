@@ -8,7 +8,7 @@
 
 void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 
-    if (write_base64((GUACIO*) png->io_ptr, data, length) < 0) {
+    if (guac_write_base64((GUACIO*) png->io_ptr, data, length) < 0) {
         perror("Error writing PNG");
         png_error(png, "Error writing PNG");
         return;
@@ -49,7 +49,7 @@ void proxy(int client_fd) {
     }
 
 
-    write(io->fd, "name:hello;size:1024,768;", 25);
+    guac_write_string(io, "name:hello;size:1024,768;");
 
     for (y=0; y<200; y++) {
 
@@ -91,11 +91,11 @@ void proxy(int client_fd) {
                 PNG_FILTER_TYPE_DEFAULT
         );
         
-        write(io->fd, "png:0,0,", 8);
+        guac_write_string(io, "png:0,0,");
         png_set_rows(png, png_info, png_rows);
         png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
     
-        if (flush_base64(io) < 0) {
+        if (guac_flush_base64(io) < 0) {
             perror("Error flushing PNG");
             png_error(png, "Error flushing PNG");
             return;
@@ -103,15 +103,16 @@ void proxy(int client_fd) {
 
         png_destroy_write_struct(&png, &png_info);
 
-        write(io->fd, ";", 1);
+        guac_write_string(io, ";");
     }
 
-    write(io->fd, "error:Test finished.;", 21);
+    guac_write_string(io, "error:Test finished.;");
 
     /* Free PNG data */
     for (y = 0; y<100 /* height */; y++)
         free(png_rows[y]);
     free(png_rows);
 
+    guac_close(io);
 }
 
