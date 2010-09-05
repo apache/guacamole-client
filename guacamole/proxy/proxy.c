@@ -40,8 +40,6 @@ void proxy(int client_fd) {
 
     /*** INIT ***/
 
-    fprintf(stderr, "INIT\n");
-
     write_info.client_fd = client_fd;
 
     /* Allocate rows for PNG */
@@ -66,7 +64,6 @@ void proxy(int client_fd) {
     for (y=0; y<20; y++) {
 
         /* Write image */
-        fprintf(stderr, "ON %i\n", y);
 
         /* Set up PNG writer */
         png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
