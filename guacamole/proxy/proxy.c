@@ -1,4 +1,5 @@
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <png.h>
 
@@ -37,52 +38,19 @@ void proxy(int client_fd) {
 
     int x, y;
 
-    /* Set up PNG writer */
-    png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png) {
-        perror("Error initializing libpng write structure");
-        return;
-    }
+    /*** INIT ***/
 
-    png_info = png_create_info_struct(png);
-    if (!png_info) {
-        perror("Error initializing libpng info structure");
-        png_destroy_write_struct(&png, NULL);
-        return;
-    }
-
-    /* Set error handler */
-    if (setjmp(png_jmpbuf(png))) {
-        perror("Error setting handler");
-        png_destroy_write_struct(&png, &png_info);
-        return;
-    }
-
-    /* Set PNG IHDR */
-    png_set_IHDR(
-            png,
-            png_info,
-            100, /* width */
-            100, /* height */
-            8,
-            PNG_COLOR_TYPE_RGB,
-            PNG_INTERLACE_NONE,
-            PNG_COMPRESSION_TYPE_DEFAULT,
-            PNG_FILTER_TYPE_DEFAULT
-    );
-
-    /* Allocate rows for PNG */
-    png_rows = png_malloc(png, 100 /* height */ * sizeof(png_byte*));
+    fprintf(stderr, "INIT\n");
 
     write_info.client_fd = client_fd;
-    png_set_write_fn(png, &write_info, guac_write_png, guac_write_flush);
 
-    /*** CREATE AND WRITE IMAGE ***/
+    /* Allocate rows for PNG */
+    png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
 
     /* For now, generate test white image */
     for (y=0; y<100 /* height */; y++) {
 
-        row = (png_byte*) png_malloc(png, sizeof(png_byte) * 3 * 100 /* width */);
+        row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
         png_rows[y] = row;
 
         for (x=0; x<100 /* width */; x++) {
@@ -93,10 +61,49 @@ void proxy(int client_fd) {
     }
 
 
-
     write(client_fd, "name:hello;size:1024,768;", 25);
 
-    /*for (y=0; y<20; y++) {*/
+    for (y=0; y<20; y++) {
+
+        /* Write image */
+        fprintf(stderr, "ON %i\n", y);
+
+        /* Set up PNG writer */
+        png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+        if (!png) {
+            perror("Error initializing libpng write structure");
+            return;
+        }
+
+        png_info = png_create_info_struct(png);
+        if (!png_info) {
+            perror("Error initializing libpng info structure");
+            png_destroy_write_struct(&png, NULL);
+            return;
+        }
+
+        /* Set error handler */
+        if (setjmp(png_jmpbuf(png))) {
+            perror("Error setting handler");
+            png_destroy_write_struct(&png, &png_info);
+            return;
+        }
+
+        png_set_write_fn(png, &write_info, guac_write_png, guac_write_flush);
+
+        /* Set PNG IHDR */
+        png_set_IHDR(
+                png,
+                png_info,
+                100, /* width */
+                100, /* height */
+                8,
+                PNG_COLOR_TYPE_RGB,
+                PNG_INTERLACE_NONE,
+                PNG_COMPRESSION_TYPE_DEFAULT,
+                PNG_FILTER_TYPE_DEFAULT
+        );
+        
         write(client_fd, "png:0,0,", 8);
         png_set_rows(png, png_info, png_rows);
         png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
@@ -107,17 +114,17 @@ void proxy(int client_fd) {
             return;
         }
 
+        png_destroy_write_struct(&png, &png_info);
+
         write(client_fd, ";", 1);
-    /*}*/
+    }
 
     write(client_fd, "error:Test finished.;", 21);
 
     /* Free PNG data */
     for (y = 0; y<100 /* height */; y++)
-        png_free(png, png_rows[y]);
-    png_free(png, png_rows);
-
-    png_destroy_write_struct(&png, &png_info);
+        free(png_rows[y]);
+    free(png_rows);
 
 }
 
