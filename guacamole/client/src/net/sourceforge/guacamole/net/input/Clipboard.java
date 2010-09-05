@@ -2,7 +2,7 @@
 package net.sourceforge.guacamole.net.input;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -25,13 +25,12 @@ import org.w3c.dom.Element;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
-import net.sourceforge.guacamole.vnc.VNCException;
 
 import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Servlet which sets the VNC clipboard data.
+ * Servlet which sets the clipboard data.
  *
  * This servlet takes one parameter:
  *      data: The data to set the clipboard to.

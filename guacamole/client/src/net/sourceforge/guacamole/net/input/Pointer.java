@@ -1,7 +1,7 @@
 package net.sourceforge.guacamole.net.input;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@ import net.sourceforge.guacamole.event.PointerEvent;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
-import net.sourceforge.guacamole.vnc.VNCException;
 
 public class Pointer extends XMLGuacamoleServlet {
 

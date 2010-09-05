@@ -3,7 +3,7 @@ package net.sourceforge.guacamole.instruction.framebuffer;
 import net.sourceforge.guacamole.net.Base64;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify

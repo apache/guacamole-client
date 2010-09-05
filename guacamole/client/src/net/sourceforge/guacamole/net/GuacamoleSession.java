@@ -2,7 +2,7 @@
 package net.sourceforge.guacamole.net;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -29,9 +29,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.event.KeyEvent;
 import net.sourceforge.guacamole.event.PointerEvent;
-import net.sourceforge.guacamole.vnc.VNCClient;
-import net.sourceforge.guacamole.vnc.VNCConfiguration;
-import net.sourceforge.guacamole.vnc.VNCException;
 
 public class GuacamoleSession {
 
@@ -107,35 +104,9 @@ public class GuacamoleSession {
                 client.disconnect();
 
 
-            String protocol = config.getProtocol();
-            if (protocol.equals("vnc")) {
-
-                // Connect to VNC server
-                try {
-
-                    // Read VNC-specific parameters
-                    ServletContext context = session.getServletContext();
-                    VNCConfiguration vncconfig = new VNCConfiguration(context);
-
-                    client = new SessionClient(
-                            new VNCClient(
-                                vncconfig.getHostname(),
-                                vncconfig.getPort(),
-                                vncconfig.getPassword(),
-                                vncconfig.getBPP(),
-                                config.getOutputBPP(),
-                                config.getSwapRedAndBlue()
-                            )
-                    );
-
-                }
-                catch (VNCException e) {
-                    throw new GuacamoleException(e);
-                }
-
-            }
-            else
-                throw new GuacamoleException("Unsupported protocol: " + protocol);
+            client = new SessionClient(
+                    null /* CLIENT GOES HERE */
+            );
 
             session.setAttribute("CLIENT", client);
 

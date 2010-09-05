@@ -2,7 +2,7 @@
 package net.sourceforge.guacamole.net.input;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -26,11 +26,10 @@ import net.sourceforge.guacamole.event.KeyEvent;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
-import net.sourceforge.guacamole.vnc.VNCException;
 
 /**
  * Servlet which accepts keyboard input events, forwards these events to the
- * VNC client associated with the session, and returns the result (if any)
+ * client associated with the session, and returns the result (if any)
  * to the HTTP client via XML.
  *
  * This servlet takes three parameters:

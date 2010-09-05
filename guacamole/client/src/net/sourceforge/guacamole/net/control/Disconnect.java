@@ -1,7 +1,7 @@
 package net.sourceforge.guacamole.net.control;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@ public class Disconnect extends XMLGuacamoleServlet {
             session.disconnect(); // Disconnect client.
         }
         catch (GuacamoleException e) {
-            throw new GuacamoleException("Error disconnecting from VNC server: " + e.getMessage(), e);
+            throw new GuacamoleException("Error disconnecting from server: " + e.getMessage(), e);
         }
 
     } 

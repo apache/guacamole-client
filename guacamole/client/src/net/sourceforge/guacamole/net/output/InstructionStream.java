@@ -1,7 +1,7 @@
 package net.sourceforge.guacamole.net.output;
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -79,7 +79,7 @@ public class InstructionStream extends GuacamoleServlet {
 
             try {
 
-                // Query new update from VNC server
+                // Query new update from server
                 Client client = session.getClient();
 
                 // For all messages, until another stream is ready (we send at least one message)
