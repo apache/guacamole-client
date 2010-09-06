@@ -93,6 +93,22 @@ void guac_send_size(GUACIO* io, int w, int h) {
     guac_write_string(io, ";");
 }
 
+void guac_send_copy(GUACIO* io, int srcx, int srcy, int w, int h, int dstx, int dsty) {
+    guac_write_string(io, "copy:");
+    guac_write_int(io, srcx);
+    guac_write_string(io, ",");
+    guac_write_int(io, srcy);
+    guac_write_string(io, ",");
+    guac_write_int(io, w);
+    guac_write_string(io, ",");
+    guac_write_int(io, h);
+    guac_write_string(io, ",");
+    guac_write_int(io, dstx);
+    guac_write_string(io, ",");
+    guac_write_int(io, dsty);
+    guac_write_string(io, ";");
+}
+
 void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) {
 
     png_structp png;
@@ -210,6 +226,15 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
 }
 
+void guac_vnc_copyrect(rfbClient* client, int src_x, int src_y, int w, int h, int dest_x, int dest_y) {
+
+    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
+
+    guac_send_copy(io, src_x, src_y, w, h, dest_x, dest_y);
+    guac_flush(io);
+
+}
+
 char* guac_vnc_get_password(rfbClient* client) {
 
     /* Freed after use by libvncclient */
@@ -240,6 +265,7 @@ void proxy(int client_fd) {
 
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
+    /*rfb_client->GotCopyRect = guac_vnc_copyrect;*/
 
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
