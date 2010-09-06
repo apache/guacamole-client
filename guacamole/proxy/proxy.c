@@ -1,10 +1,68 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <png.h>
+
+#include <rfb/rfbclient.h>
 
 #include "guacio.h"
 #include "proxy.h"
+
+char __guac_password[] = "potato";
+
+char* guac_escape_string(const char* str) {
+
+    char* escaped;
+    char* current;
+
+    int i;
+    int length = 0;
+
+    /* Determine length */
+    for (i=0; str[i] != '\0'; i++) {
+        switch (str[i]) {
+
+            case ';':
+                length += 2;
+                break;
+
+            case ',':
+                length += 2;
+                break;
+
+            default:
+                length++;
+
+        }
+    }
+
+    /* Allocate new */
+    escaped = malloc(length+1);
+
+    current = escaped;
+    for (i=0; str[i] != '\0'; i++) {
+        switch (str[i]) {
+
+            case ';':
+                *(current++) = '\\';
+                *(current++) = 's';
+                break;
+
+            case ',':
+                *(current++) = '\\';
+                *(current++) = 'c';
+                break;
+
+            default:
+                *(current++) = str[i];
+        }
+
+    }
+
+    return escaped;
+
+}
 
 void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 
@@ -19,12 +77,52 @@ void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 void guac_write_flush(png_structp png) {
 }
 
+rfbBool guac_malloc_framebuffer(rfbClient* client) {
+    /* STUB */
+    fprintf(stderr, "MALLOC FB!\n");
+}
+
+void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
+    /* STUB */
+    fprintf(stderr, "UPDATE!\n");
+}
+
+void guac_send_name(GUACIO* io, const char* name) {
+    guac_write_string(io, "name:");
+    guac_write_string(io, name);
+    guac_write_string(io, ";");
+}
+
+void guac_send_size(GUACIO* io, int w, int h) {
+    guac_write_string(io, "size:");
+    guac_write_int(io, w);
+    guac_write_string(io, ",");
+    guac_write_int(io, h);
+    guac_write_string(io, ";");
+}
+
+char* guac_vnc_get_password(rfbClient* client) {
+
+    /* Freed after use by libvncclient */
+    char* password = malloc(64);
+    strncpy(password, __guac_password, 63);
+
+    fprintf(stderr, "Sending password: %s\n", password);
+
+    return password;
+}
+
 void proxy(int client_fd) {
 
     png_structp png;
     png_infop png_info;
     png_byte** png_rows;
     png_byte* row;
+
+    char* hostname;
+    char* escaped;
+    int wait_result;
+    rfbClient* rfb_client;
 
     int x, y;
 
@@ -34,12 +132,75 @@ void proxy(int client_fd) {
 
     /*** INIT ***/
 
+    rfb_client = rfbGetClient(8, 3, 4); /* 32-bpp client */
+
+    /* Can't handle resizing */
+    /*rfb_client->canHandleNewFBSize = FALSE;
+    rfb_client->MallocFrameBuffer = guac_malloc_framebuffer;*/
+
+    /* Framebuffer update handler */
+    rfb_client->GotFrameBufferUpdate = guac_vnc_update;
+
+    /* Password */
+    rfb_client->GetPassword = guac_vnc_get_password;
+
+    /* No LED / chat */
+    /*rfb_client->HandleKeyboardLedState = 0;
+    rfb_client->HandleTextChat = 0;
+    rfb_client->Bell = 0;
+    rfb_client->HandleCursorPos = 0;
+    rfb_client->SoftCursorLockArea = 0;
+    rfb_client->SoftCursorUnlockScreen = 0;
+    rfb_client->GotXCutText = 0;
+    rfb_client->GotCursorShape = 0;
+    rfb_client->GotCopyRect = 0;*/
+
+    hostname = malloc(64);
+    strcpy(hostname, "localhost");
+
+    rfb_client->serverHost = hostname;
+    rfb_client->serverPort = 5902;
+
+    if (rfbInitClient(rfb_client, NULL, NULL)) {
+        fprintf(stderr, "SUCCESS.\n");
+    }
+
+    escaped = guac_escape_string(rfb_client->desktopName);
+    guac_send_name(io, escaped);
+    free(escaped);
+
+    guac_send_size(io, rfb_client->width, rfb_client->height);
+    guac_flush(io);
+
+    /* VNC Client Loop */
+    for (;;) {
+
+        wait_result = WaitForMessage(rfb_client, 2000);
+        if (wait_result < 0) {
+            fprintf(stderr, "WAIT FAIL\n");
+            break;
+        }
+
+        if (wait_result > 0) {
+
+            if (!HandleRFBServerMessage(rfb_client)) {
+                fprintf(stderr, "HANDLE FAIL\n");
+                break;
+            }
+
+        }
+    }
+
+    /* Clean up */
+
+    rfbClientCleanup(rfb_client);
+
     /* Allocate rows for PNG */
     png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
 
     guac_write_string(io, "name:hello;size:1024,768;");
 
-    for (test_index=0; test_index<200; test_index++) {
+    for (test_index=0; test_index<20; test_index++) {
 
         /* For now, generate test white image */
         for (y=0; y<100 /* height */; y++) {
