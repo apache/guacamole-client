@@ -71,7 +71,7 @@ public class GuacamoleClient extends Client {
         }
     }
 
-    private int bufferPos = 0;
+    private int usedLength = 0;
     private char[] buffer = new char[20000];
 
     public Instruction nextInstruction(boolean blocking) throws GuacamoleException {
@@ -81,11 +81,22 @@ public class GuacamoleClient extends Client {
             // While we're blocking, or input is available
             while (blocking || input.ready()) {
 
-                int numRead = input.read(buffer, bufferPos, buffer.length - bufferPos);
+                // If past threshold, resize buffer before reading
+                if (usedLength > buffer.length/2) {
+                    char[] newbuffer = new char[buffer.length*2];
+                    System.arraycopy(newbuffer, 0, buffer, 0, usedLength);
+                    buffer = newbuffer;
+                }
+
+                // Attempt to fill buffer
+                int numRead = input.read(buffer, usedLength, buffer.length - usedLength);
                 if (numRead == -1)
                     return null;
 
-                for (int i=bufferPos+numRead-1; i>=bufferPos; i--) {
+                int prevLength = usedLength;
+                usedLength += numRead;
+
+                for (int i=usedLength-1; i>=prevLength; i--) {
 
                     char readChar = buffer[i];
 
@@ -96,8 +107,8 @@ public class GuacamoleClient extends Client {
                         final String instruction = new String(buffer, 0, i+1);
 
                         // Reset buffer
-                        bufferPos = bufferPos + numRead - i - 1;
-                        System.arraycopy(buffer, i+1, buffer, 0, bufferPos);
+                        usedLength -= i+1;
+                        System.arraycopy(buffer, i+1, buffer, 0, usedLength);
 
                         // Return instruction string wrapped in Instruction class
                         return new Instruction() {
@@ -111,8 +122,6 @@ public class GuacamoleClient extends Client {
 
                 }
 
-                bufferPos += numRead;
- 
             } // End read loop
 
         }
