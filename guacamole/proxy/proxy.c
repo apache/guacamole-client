@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +9,9 @@
 #include "proxy.h"
 
 char __guac_password[] = "potato";
+
+char* __GUAC_VNC_TAG_IO = "GUACIO";
+char* __GUAC_VNC_TAG_PNG_ROWS = "PNG_ROWS";
 
 char* guac_escape_string(const char* str) {
 
@@ -77,16 +79,6 @@ void guac_write_png(png_structp png, png_bytep data, png_size_t length) {
 void guac_write_flush(png_structp png) {
 }
 
-rfbBool guac_malloc_framebuffer(rfbClient* client) {
-    /* STUB */
-    fprintf(stderr, "MALLOC FB!\n");
-}
-
-void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
-    /* STUB */
-    fprintf(stderr, "UPDATE!\n");
-}
-
 void guac_send_name(GUACIO* io, const char* name) {
     guac_write_string(io, "name:");
     guac_write_string(io, name);
@@ -99,6 +91,92 @@ void guac_send_size(GUACIO* io, int w, int h) {
     guac_write_string(io, ",");
     guac_write_int(io, h);
     guac_write_string(io, ";");
+}
+
+void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) {
+
+    png_structp png;
+    png_infop png_info;
+    png_byte* row;
+
+    /* For now, generate random test image  */
+    for (y=0; y<h; y++) {
+
+        row = png_rows[y];
+
+        for (x=0; x<w; x++) {
+            *row++ = random() % 0xFF;
+            *row++ = random() % 0xFF;
+            *row++ = random() % 0xFF;
+        }
+    }
+
+    /* Write image */
+
+    /* Set up PNG writer */
+    png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) {
+        perror("Error initializing libpng write structure");
+        return;
+    }
+
+    png_info = png_create_info_struct(png);
+    if (!png_info) {
+        perror("Error initializing libpng info structure");
+        png_destroy_write_struct(&png, NULL);
+        return;
+    }
+
+    /* Set error handler */
+    if (setjmp(png_jmpbuf(png))) {
+        perror("Error setting handler");
+        png_destroy_write_struct(&png, &png_info);
+        return;
+    }
+
+    png_set_write_fn(png, io, guac_write_png, guac_write_flush);
+
+    /* Set PNG IHDR */
+    png_set_IHDR(
+            png,
+            png_info,
+            w,
+            h,
+            8,
+            PNG_COLOR_TYPE_RGB,
+            PNG_INTERLACE_NONE,
+            PNG_COMPRESSION_TYPE_DEFAULT,
+            PNG_FILTER_TYPE_DEFAULT
+    );
+    
+    guac_write_string(io, "png:");
+    guac_write_int(io, x);
+    guac_write_string(io, ",");
+    guac_write_int(io, y);
+    guac_write_string(io, ",");
+    png_set_rows(png, png_info, png_rows);
+    png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
+
+    if (guac_flush_base64(io) < 0) {
+        perror("Error flushing PNG");
+        png_error(png, "Error flushing PNG");
+        return;
+    }
+
+    png_destroy_write_struct(&png, &png_info);
+
+    guac_write_string(io, ";");
+
+}
+
+void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
+
+    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
+    png_byte** png_rows = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_ROWS);
+
+    guac_send_png(io, x, y, png_rows, 100, 100);
+    guac_flush(io);
+
 }
 
 char* guac_vnc_get_password(rfbClient* client) {
@@ -114,46 +192,33 @@ char* guac_vnc_get_password(rfbClient* client) {
 
 void proxy(int client_fd) {
 
-    png_structp png;
-    png_infop png_info;
-    png_byte** png_rows;
-    png_byte* row;
-
     char* hostname;
     char* escaped;
     int wait_result;
     rfbClient* rfb_client;
 
+    png_byte** png_rows;
+    png_byte* row;
     int x, y;
-
-    int test_index;
 
     GUACIO* io = guac_open(client_fd);
 
     /*** INIT ***/
 
-    rfb_client = rfbGetClient(8, 3, 4); /* 32-bpp client */
+    /* Allocate rows for PNG */
+    png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
+    for (y=0; y<100 /* height */; y++) {
+        row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
+        png_rows[y] = row;
+    }
 
-    /* Can't handle resizing */
-    /*rfb_client->canHandleNewFBSize = FALSE;
-    rfb_client->MallocFrameBuffer = guac_malloc_framebuffer;*/
+    rfb_client = rfbGetClient(8, 3, 4); /* 32-bpp client */
 
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
 
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
-
-    /* No LED / chat */
-    /*rfb_client->HandleKeyboardLedState = 0;
-    rfb_client->HandleTextChat = 0;
-    rfb_client->Bell = 0;
-    rfb_client->HandleCursorPos = 0;
-    rfb_client->SoftCursorLockArea = 0;
-    rfb_client->SoftCursorUnlockScreen = 0;
-    rfb_client->GotXCutText = 0;
-    rfb_client->GotCursorShape = 0;
-    rfb_client->GotCopyRect = 0;*/
 
     hostname = malloc(64);
     strcpy(hostname, "localhost");
@@ -165,10 +230,16 @@ void proxy(int client_fd) {
         fprintf(stderr, "SUCCESS.\n");
     }
 
+    /* Store Guac data in client */
+    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_IO, io);
+    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_ROWS, png_rows);
+
+    /* Send name */
     escaped = guac_escape_string(rfb_client->desktopName);
     guac_send_name(io, escaped);
     free(escaped);
 
+    /* Send size */
     guac_send_size(io, rfb_client->width, rfb_client->height);
     guac_flush(io);
 
@@ -194,92 +265,6 @@ void proxy(int client_fd) {
     /* Clean up */
 
     rfbClientCleanup(rfb_client);
-
-    /* Allocate rows for PNG */
-    png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
-
-    guac_write_string(io, "name:hello;size:1024,768;");
-
-    for (test_index=0; test_index<20; test_index++) {
-
-        /* For now, generate test white image */
-        for (y=0; y<100 /* height */; y++) {
-
-            row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
-            png_rows[y] = row;
-
-            for (x=0; x<100 /* width */; x++) {
-                *row++ = random() % 0xFF;
-
-                if (test_index % 2 == 0)
-                    *row++ = random() % 0xFF;
-                else
-                    *row++ = 0x00;
-
-                if (test_index % 3 == 0)
-                    *row++ = random() % 0xFF;
-                else
-                    *row++ = 0x00;
-
-            }
-        }
-
-        /* Write image */
-
-        /* Set up PNG writer */
-        png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-        if (!png) {
-            perror("Error initializing libpng write structure");
-            return;
-        }
-
-        png_info = png_create_info_struct(png);
-        if (!png_info) {
-            perror("Error initializing libpng info structure");
-            png_destroy_write_struct(&png, NULL);
-            return;
-        }
-
-        /* Set error handler */
-        if (setjmp(png_jmpbuf(png))) {
-            perror("Error setting handler");
-            png_destroy_write_struct(&png, &png_info);
-            return;
-        }
-
-        png_set_write_fn(png, io, guac_write_png, guac_write_flush);
-
-        /* Set PNG IHDR */
-        png_set_IHDR(
-                png,
-                png_info,
-                100, /* width */
-                100, /* height */
-                8,
-                PNG_COLOR_TYPE_RGB,
-                PNG_INTERLACE_NONE,
-                PNG_COMPRESSION_TYPE_DEFAULT,
-                PNG_FILTER_TYPE_DEFAULT
-        );
-        
-        guac_write_string(io, "png:");
-        guac_write_int(io, random()%1024);
-        guac_write_string(io, ",");
-        guac_write_int(io, random()%768);
-        guac_write_string(io, ",");
-        png_set_rows(png, png_info, png_rows);
-        png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
-    
-        if (guac_flush_base64(io) < 0) {
-            perror("Error flushing PNG");
-            png_error(png, "Error flushing PNG");
-            return;
-        }
-
-        png_destroy_write_struct(&png, &png_info);
-
-        guac_write_string(io, ";");
-    }
 
     guac_write_string(io, "error:Test finished.;");
 
