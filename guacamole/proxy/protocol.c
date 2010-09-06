@@ -60,9 +60,15 @@ char* guac_escape_string(const char* str) {
 }
 
 void guac_send_name(GUACIO* io, const char* name) {
+
+    char* escaped = guac_escape_string(name); 
+
     guac_write_string(io, "name:");
     guac_write_string(io, name);
     guac_write_string(io, ";");
+
+    free(escaped);
+
 }
 
 void guac_send_size(GUACIO* io, int w, int h) {
@@ -106,7 +112,6 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) 
 
     png_structp png;
     png_infop png_info;
-    png_byte* row;
 
     /* Write image */
 

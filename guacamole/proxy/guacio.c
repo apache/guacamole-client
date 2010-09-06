@@ -21,6 +21,8 @@ GUACIO* guac_open(int fd) {
     io->written = 0;
     io->fd = fd;
 
+    return io;
+
 }
 
 void guac_close(GUACIO* io) {

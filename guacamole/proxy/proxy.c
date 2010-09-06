@@ -90,13 +90,12 @@ char* guac_vnc_get_password(rfbClient* client) {
 void proxy(int client_fd) {
 
     char* hostname;
-    char* escaped;
     int wait_result;
     rfbClient* rfb_client;
 
     png_byte** png_rows;
     png_byte* row;
-    int x, y;
+    int y;
 
     GUACIO* io = guac_open(client_fd);
 
@@ -133,9 +132,7 @@ void proxy(int client_fd) {
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_ROWS, png_rows);
 
     /* Send name */
-    escaped = guac_escape_string(rfb_client->desktopName);
-    guac_send_name(io, escaped);
-    free(escaped);
+    guac_send_name(io, rfb_client->desktopName);
 
     /* Send size */
     guac_send_size(io, rfb_client->width, rfb_client->height);
