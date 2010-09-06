@@ -25,6 +25,8 @@ import java.net.Socket;
 
 import java.io.InputStream;
 import java.io.BufferedInputStream;
+import java.io.Reader;
+import java.io.InputStreamReader;
 
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -34,13 +36,13 @@ import net.sourceforge.guacamole.event.PointerEvent;
 public class GuacamoleClient extends Client {
 
     private Socket sock;
-    private InputStream input;
+    private Reader input;
 
     public GuacamoleClient(String hostname, int port) throws GuacamoleException {
 
         try {
             sock = new Socket(InetAddress.getByName(hostname), port);
-            input = new BufferedInputStream(sock.getInputStream());
+            input = new InputStreamReader(sock.getInputStream());
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
@@ -69,39 +71,48 @@ public class GuacamoleClient extends Client {
         }
     }
 
-    private StringBuilder instructionBuffer = new StringBuilder();
+    private int bufferPos = 0;
+    private char[] buffer = new char[20000];
 
     public Instruction nextInstruction(boolean blocking) throws GuacamoleException {
 
         try {
 
             // While we're blocking, or input is available
-            while (blocking || input.available() > 0) {
+            while (blocking || input.ready()) {
 
-                int readChar = input.read();
-                if (readChar == -1)
+                int numRead = input.read(buffer, bufferPos, buffer.length - bufferPos);
+                if (numRead == -1)
                     return null;
 
-                // Add to buffer
-                instructionBuffer.append((char) readChar);
+                for (int i=bufferPos+numRead-1; i>=bufferPos; i--) {
 
-                // If end of instruction, return it.
-                if (readChar == ';') {
+                    char readChar = buffer[i];
 
-                    // Get instruction, reset buffer
-                    final String instruction = instructionBuffer.toString();
-                    instructionBuffer.setLength(0);
+                    // If end of instruction, return it.
+                    if (readChar == ';') {
 
-                    // Return instruction string wrapped in Instruction class
-                    return new Instruction() {
+                        // Get instruction
+                        final String instruction = new String(buffer, 0, i+1);
 
-                        public String toString() {
-                            return instruction;
-                        }
+                        // Reset buffer
+                        bufferPos = bufferPos + numRead - i - 1;
+                        System.arraycopy(buffer, i+1, buffer, 0, bufferPos);
 
-                    };
+                        // Return instruction string wrapped in Instruction class
+                        return new Instruction() {
+
+                            public String toString() {
+                                return instruction;
+                            }
+
+                        };
+                    }
+
                 }
 
+                bufferPos += numRead;
+ 
             } // End read loop
 
         }
