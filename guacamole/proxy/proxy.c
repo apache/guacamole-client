@@ -99,18 +99,6 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) 
     png_infop png_info;
     png_byte* row;
 
-    /* For now, generate random test image  */
-    for (y=0; y<h; y++) {
-
-        row = png_rows[y];
-
-        for (x=0; x<w; x++) {
-            *row++ = random() % 0xFF;
-            *row++ = random() % 0xFF;
-            *row++ = random() % 0xFF;
-        }
-    }
-
     /* Write image */
 
     /* Set up PNG writer */
@@ -171,10 +159,53 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) 
 
 void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
+    int dx, dy;
+
     GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
     png_byte** png_rows = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_ROWS);
+    png_byte* row;
 
-    guac_send_png(io, x, y, png_rows, 100, 100);
+    png_byte** png_row_current = png_rows;
+
+    unsigned int bpp = client->format.bitsPerPixel/8;
+    unsigned int bytesPerRow = bpp * client->width;
+    unsigned char* fb_row_current = client->frameBuffer + (y * bytesPerRow) + (x * bpp);
+    unsigned char* fb_row;
+    unsigned int v;
+
+    /* Copy image data from VNC client to PNG */
+    for (dy = y; dy<y+h; dy++) {
+
+        row = *(png_row_current++);
+
+        fb_row = fb_row_current;
+        fb_row_current += bytesPerRow;
+
+        for (dx = x; dx<x+w; dx++) {
+
+            switch (bpp) {
+                case 4:
+                    v = *((unsigned int*) fb_row);
+                    break;
+
+                case 2:
+                    v = *((unsigned short*) fb_row);
+                    break;
+
+                default:
+                    v = *((unsigned char*) fb_row);
+            }
+
+            *(row++) = (v >> client->format.redShift) * 256 / (client->format.redMax+1);
+            *(row++) = (v >> client->format.greenShift) * 256 / (client->format.greenMax+1);
+            *(row++) = (v >> client->format.blueShift) * 256 / (client->format.blueMax+1);
+
+            fb_row += bpp;
+
+        }
+    }
+
+    guac_send_png(io, x, y, png_rows, w, h);
     guac_flush(io);
 
 }
@@ -205,13 +236,6 @@ void proxy(int client_fd) {
 
     /*** INIT ***/
 
-    /* Allocate rows for PNG */
-    png_rows = (png_byte**) malloc(100 /* height */ * sizeof(png_byte*));
-    for (y=0; y<100 /* height */; y++) {
-        row = (png_byte*) malloc(sizeof(png_byte) * 3 * 100 /* width */);
-        png_rows[y] = row;
-    }
-
     rfb_client = rfbGetClient(8, 3, 4); /* 32-bpp client */
 
     /* Framebuffer update handler */
@@ -228,6 +252,13 @@ void proxy(int client_fd) {
 
     if (rfbInitClient(rfb_client, NULL, NULL)) {
         fprintf(stderr, "SUCCESS.\n");
+    }
+
+    /* Allocate rows for PNG */
+    png_rows = (png_byte**) malloc(rfb_client->height * sizeof(png_byte*));
+    for (y=0; y<rfb_client->width; y++) {
+        row = (png_byte*) malloc(sizeof(png_byte) * 3 * rfb_client->width);
+        png_rows[y] = row;
     }
 
     /* Store Guac data in client */
@@ -262,17 +293,16 @@ void proxy(int client_fd) {
         }
     }
 
-    /* Clean up */
+    /* Free PNG data */
+    for (y = 0; y<rfb_client->height; y++)
+        free(png_rows[y]);
+    free(png_rows);
+
+    /* Clean up VNC client*/
 
     rfbClientCleanup(rfb_client);
 
     guac_write_string(io, "error:Test finished.;");
-
-    /* Free PNG data */
-    for (y = 0; y<100 /* height */; y++)
-        free(png_rows[y]);
-    free(png_rows);
-
     guac_close(io);
 }
 

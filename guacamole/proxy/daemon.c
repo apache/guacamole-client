@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
         }
 
         /* Fork proxy */
-        proxy_pid = 0; /*fork();*/
+        proxy_pid = fork();
         if (proxy_pid < 0) {
             perror("Could not fork child");
         }
