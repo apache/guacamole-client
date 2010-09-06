@@ -12,17 +12,17 @@
 char __guac_password[] = "potato";
 
 char* __GUAC_VNC_TAG_IO = "GUACIO";
-char* __GUAC_VNC_TAG_PNG_ROWS = "PNG_ROWS";
+char* __GUAC_VNC_TAG_PNG_BUFFER = "PNG_BUFFER";
 
 void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
     int dx, dy;
 
     GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
-    png_byte** png_rows = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_ROWS);
+    png_byte** png_buffer = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_BUFFER);
     png_byte* row;
 
-    png_byte** png_row_current = png_rows;
+    png_byte** png_row_current = png_buffer;
 
     unsigned int bpp = client->format.bitsPerPixel/8;
     unsigned int bytesPerRow = bpp * client->width;
@@ -62,7 +62,7 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
         }
     }
 
-    guac_send_png(io, x, y, png_rows, w, h);
+    guac_send_png(io, x, y, png_buffer, w, h);
     guac_flush(io);
 
 }
@@ -87,15 +87,41 @@ char* guac_vnc_get_password(rfbClient* client) {
     return password;
 }
 
+
+png_byte** guac_alloc_png_buffer(int w, int h) {
+
+    png_byte** png_buffer;
+    png_byte* row;
+    int y;
+
+    /* Allocate rows for PNG */
+    png_buffer = (png_byte**) malloc(h * sizeof(png_byte*));
+    for (y=0; y<h; y++) {
+        row = (png_byte*) malloc(sizeof(png_byte) * 3 * w);
+        png_buffer[y] = row;
+    }
+
+    return png_buffer;
+}
+
+void guac_free_png_buffer(png_byte** png_buffer, int h) {
+
+    int y;
+
+    /* Free PNG data */
+    for (y = 0; y<h; y++)
+        free(png_buffer[y]);
+    free(png_buffer);
+
+}
+
 void proxy(int client_fd) {
 
     char* hostname;
     int wait_result;
     rfbClient* rfb_client;
 
-    png_byte** png_rows;
-    png_byte* row;
-    int y;
+    png_byte** png_buffer;
 
     GUACIO* io = guac_open(client_fd);
 
@@ -120,16 +146,11 @@ void proxy(int client_fd) {
         fprintf(stderr, "SUCCESS.\n");
     }
 
-    /* Allocate rows for PNG */
-    png_rows = (png_byte**) malloc(rfb_client->height * sizeof(png_byte*));
-    for (y=0; y<rfb_client->width; y++) {
-        row = (png_byte*) malloc(sizeof(png_byte) * 3 * rfb_client->width);
-        png_rows[y] = row;
-    }
+    png_buffer = guac_alloc_png_buffer(rfb_client->width, rfb_client->height);
 
     /* Store Guac data in client */
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_IO, io);
-    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_ROWS, png_rows);
+    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER, png_buffer);
 
     /* Send name */
     guac_send_name(io, rfb_client->desktopName);
@@ -158,9 +179,7 @@ void proxy(int client_fd) {
     }
 
     /* Free PNG data */
-    for (y = 0; y<rfb_client->height; y++)
-        free(png_rows[y]);
-    free(png_rows);
+    guac_free_png_buffer(png_buffer, rfb_client->height);
 
     /* Clean up VNC client*/
 

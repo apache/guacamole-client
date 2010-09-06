@@ -3,8 +3,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include <png.h>
-
 #include "guacio.h"
 
 char __GUACIO_BAS64_CHARACTERS[64] = {
