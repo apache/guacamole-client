@@ -79,13 +79,13 @@ public class GuacamoleClient extends Client {
         try {
 
             // While we're blocking, or input is available
-            while (blocking || input.ready()) {
+            do {
 
                 // If past threshold, resize buffer before reading
                 if (usedLength > buffer.length/2) {
-                    char[] newbuffer = new char[buffer.length*2];
-                    System.arraycopy(newbuffer, 0, buffer, 0, usedLength);
-                    buffer = newbuffer;
+                    char[] biggerBuffer = new char[buffer.length*2];
+                    System.arraycopy(buffer, 0, biggerBuffer, 0, usedLength);
+                    buffer = biggerBuffer;
                 }
 
                 // Attempt to fill buffer
@@ -122,7 +122,7 @@ public class GuacamoleClient extends Client {
 
                 }
 
-            } // End read loop
+            } while (input.ready()); // End read loop
 
         }
         catch (IOException e) {
