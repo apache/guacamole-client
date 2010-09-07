@@ -162,6 +162,8 @@ void proxy(int client_fd) {
     /* VNC Client Loop */
     for (;;) {
 
+        /* TODO: Separate into THREADS ... no need to do this weird polling thing */
+
         wait_result = WaitForMessage(rfb_client, 2000);
         if (wait_result < 0) {
             fprintf(stderr, "WAIT FAIL\n");
@@ -176,6 +178,12 @@ void proxy(int client_fd) {
             }
 
         }
+
+        wait_result = guac_select(io, 2000);
+        if (wait_result > 0) {
+            guac_read_message(io);
+        }
+
     }
 
     /* Free PNG data */

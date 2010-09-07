@@ -1,7 +1,12 @@
 
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <stdio.h>
+#include <errno.h>
+
+#include <sys/select.h>
 
 #include "guacio.h"
 
@@ -14,10 +19,21 @@ char __GUACIO_BAS64_CHARACTERS[64] = {
 
 GUACIO* guac_open(int fd) {
 
+    int flags;
+
     GUACIO* io = malloc(sizeof(GUACIO));
     io->ready = 0;
     io->written = 0;
     io->fd = fd;
+
+    /* Set O_NONBLOCK */
+    flags = fcntl(io->fd, F_GETFL, 0);
+    fcntl(io->fd, F_SETFL, flags | O_NONBLOCK);
+
+    /* Allocate message buffer */
+    io->messagebuf_size = 1024;
+    io->messagebuf = malloc(io->messagebuf_size);
+    io->messagebuf_used_length = 0;
 
     return io;
 
@@ -191,6 +207,94 @@ ssize_t guac_flush_base64(GUACIO* io) {
     }
 
     return 0;
+
+}
+
+
+int guac_select(GUACIO* io, int usec_timeout) {
+
+    fd_set fds;
+    struct timeval timeout;
+
+    timeout.tv_sec = usec_timeout/1000000;
+    timeout.tv_usec = usec_timeout%1000000;
+
+    FD_ZERO(&fds);
+    FD_SET(io->fd, &fds);
+
+    return select(io->fd + 1, &fds, NULL, NULL, &timeout); 
+
+}
+
+int __guac_fill_messagebuf(GUACIO* io) {
+
+    int retval;
+    
+    /* Attempt to fill buffer */
+    retval = read(
+            io->fd,
+            io->messagebuf + io->messagebuf_used_length,
+            io->messagebuf_size - io->messagebuf_used_length
+    );
+
+    if (retval < 0)
+        return retval;
+
+    io->messagebuf_used_length += retval;
+
+    /* Expand buffer if necessary */
+    if (io->messagebuf_used_length > io->messagebuf_size / 2) {
+        io->messagebuf_size *= 2;
+        io->messagebuf = realloc(io->messagebuf, io->messagebuf_size);
+    }
+
+    return retval;
+
+}
+
+int guac_read_message(GUACIO* io) {
+
+    int retval;
+    int i = 0;
+    
+    /* Loop until a message is read */
+    for (;;) {
+
+        /* Search for end of message */
+        for (; i < io->messagebuf_used_length; i++) {
+
+            if (io->messagebuf[i] == ';') {
+
+                char* message = malloc(i+1);
+                memcpy(message, io->messagebuf, i+1);
+                message[i] = '\0'; /* Replace semicolon with null terminator. */
+
+                fprintf(stderr, "RECEIVED MESSAGE: %s\n", message);
+
+                /* Found. Reset buffer */
+                memmove(io->messagebuf, io->messagebuf + i + 1, io->messagebuf_used_length - i - 1);
+                io->messagebuf_used_length -= i + 1;
+
+                /* Done */
+                return 0;
+            }
+
+        }
+
+        /* No message yet? Get more data ... */
+        retval = guac_select(io, 1000);
+        if (retval < 0)
+            return retval;
+
+        /* Break if descriptor doesn't have enough data */
+        if (retval == 0)
+            return 0; /* SOFT FAIL: No message ... yet, but is still in buffer */
+
+        retval = __guac_fill_messagebuf(io);
+        if (retval < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
+            return retval;
+
+    }
 
 }
 
