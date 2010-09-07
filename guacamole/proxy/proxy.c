@@ -13,7 +13,67 @@ char __guac_password[] = "potato";
 
 char* __GUAC_VNC_TAG_IO = "GUACIO";
 char* __GUAC_VNC_TAG_PNG_BUFFER = "PNG_BUFFER";
+char* __GUAC_VNC_TAG_PNG_BUFFER_ALPHA = "PNG_BUFFER_ALPHA";
 
+void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
+
+    int dx, dy;
+
+    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
+    png_byte** png_buffer = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_BUFFER_ALPHA);
+    png_byte* row;
+
+    png_byte** png_row_current = png_buffer;
+
+    unsigned int bytesPerRow = bpp * w;
+    unsigned char* fb_row_current = client->rcSource;
+    unsigned char* fb_mask = client->rcMask;
+    unsigned char* fb_row;
+    unsigned int v;
+
+    /* Copy image data from VNC client to PNG */
+    for (dy = 0; dy<h; dy++) {
+
+        row = *(png_row_current++);
+
+        fb_row = fb_row_current;
+        fb_row_current += bytesPerRow;
+
+        for (dx = 0; dx<w; dx++) {
+
+            switch (bpp) {
+                case 4:
+                    v = *((unsigned int*) fb_row);
+                    break;
+
+                case 2:
+                    v = *((unsigned short*) fb_row);
+                    break;
+
+                default:
+                    v = *((unsigned char*) fb_row);
+            }
+
+            *(row++) = (v >> client->format.redShift) * 256 / (client->format.redMax+1);
+            *(row++) = (v >> client->format.greenShift) * 256 / (client->format.greenMax+1);
+            *(row++) = (v >> client->format.blueShift) * 256 / (client->format.blueMax+1);
+
+            /* Handle mask */
+            if (*(fb_mask++))
+                *(row++) = 255;
+            else
+                *(row++) = 0;
+
+            fb_row += bpp;
+
+        }
+    }
+
+    /* SEND CURSOR */
+    guac_send_cursor(io, x, y, png_buffer, w, h);
+    guac_flush(io);
+
+}
 void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
     int dx, dy;
@@ -88,7 +148,7 @@ char* guac_vnc_get_password(rfbClient* client) {
 }
 
 
-png_byte** guac_alloc_png_buffer(int w, int h) {
+png_byte** guac_alloc_png_buffer(int w, int h, int bpp) {
 
     png_byte** png_buffer;
     png_byte* row;
@@ -97,7 +157,7 @@ png_byte** guac_alloc_png_buffer(int w, int h) {
     /* Allocate rows for PNG */
     png_buffer = (png_byte**) malloc(h * sizeof(png_byte*));
     for (y=0; y<h; y++) {
-        row = (png_byte*) malloc(sizeof(png_byte) * 3 * w);
+        row = (png_byte*) malloc(sizeof(png_byte) * bpp * w);
         png_buffer[y] = row;
     }
 
@@ -122,6 +182,7 @@ void proxy(int client_fd) {
     rfbClient* rfb_client;
 
     png_byte** png_buffer;
+    png_byte** png_buffer_alpha;
 
     GUACIO* io = guac_open(client_fd);
 
@@ -132,6 +193,10 @@ void proxy(int client_fd) {
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
     /*rfb_client->GotCopyRect = guac_vnc_copyrect;*/
+
+    /* Enable client-side cursor */
+    rfb_client->GotCursorShape = guac_vnc_cursor;
+    rfb_client->appData.useRemoteCursor = TRUE;
 
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
@@ -146,11 +211,13 @@ void proxy(int client_fd) {
         fprintf(stderr, "SUCCESS.\n");
     }
 
-    png_buffer = guac_alloc_png_buffer(rfb_client->width, rfb_client->height);
+    png_buffer = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 3); /* No-alpha */
+    png_buffer_alpha = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 4); /* With alpha */
 
     /* Store Guac data in client */
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_IO, io);
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER, png_buffer);
+    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER_ALPHA, png_buffer_alpha);
 
     /* Send name */
     guac_send_name(io, rfb_client->desktopName);
@@ -210,6 +277,7 @@ void proxy(int client_fd) {
 
     /* Free PNG data */
     guac_free_png_buffer(png_buffer, rfb_client->height);
+    guac_free_png_buffer(png_buffer_alpha, rfb_client->height);
 
     /* Clean up VNC client*/
 

@@ -179,6 +179,70 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) 
 }
 
 
+void guac_send_cursor(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) {
+
+    png_structp png;
+    png_infop png_info;
+
+    /* Write image */
+
+    /* Set up PNG writer */
+    png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) {
+        perror("Error initializing libpng write structure");
+        return;
+    }
+
+    png_info = png_create_info_struct(png);
+    if (!png_info) {
+        perror("Error initializing libpng info structure");
+        png_destroy_write_struct(&png, NULL);
+        return;
+    }
+
+    /* Set error handler */
+    if (setjmp(png_jmpbuf(png))) {
+        perror("Error setting handler");
+        png_destroy_write_struct(&png, &png_info);
+        return;
+    }
+
+    png_set_write_fn(png, io, __guac_write_png, __guac_write_flush);
+
+    /* Set PNG IHDR */
+    png_set_IHDR(
+            png,
+            png_info,
+            w,
+            h,
+            8,
+            PNG_COLOR_TYPE_RGBA,
+            PNG_INTERLACE_NONE,
+            PNG_COMPRESSION_TYPE_DEFAULT,
+            PNG_FILTER_TYPE_DEFAULT
+    );
+    
+    guac_write_string(io, "cursor:");
+    guac_write_int(io, x);
+    guac_write_string(io, ",");
+    guac_write_int(io, y);
+    guac_write_string(io, ",");
+    png_set_rows(png, png_info, png_rows);
+    png_write_png(png, png_info, PNG_TRANSFORM_IDENTITY, NULL);
+
+    if (guac_flush_base64(io) < 0) {
+        perror("Error flushing PNG");
+        png_error(png, "Error flushing PNG");
+        return;
+    }
+
+    png_destroy_write_struct(&png, &png_info);
+
+    guac_write_string(io, ";");
+
+}
+
+
 int __guac_fill_instructionbuf(GUACIO* io) {
 
     int retval;
