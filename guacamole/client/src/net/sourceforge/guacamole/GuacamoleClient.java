@@ -24,9 +24,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 import java.io.InputStream;
-import java.io.BufferedInputStream;
 import java.io.Reader;
 import java.io.InputStreamReader;
+
+import java.io.OutputStream;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
 
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -37,12 +40,14 @@ public class GuacamoleClient extends Client {
 
     private Socket sock;
     private Reader input;
+    private Writer output;
 
     public GuacamoleClient(String hostname, int port) throws GuacamoleException {
 
         try {
             sock = new Socket(InetAddress.getByName(hostname), port);
             input = new InputStreamReader(sock.getInputStream());
+            output = new OutputStreamWriter(sock.getOutputStream());
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
@@ -51,11 +56,38 @@ public class GuacamoleClient extends Client {
     }
 
     public void send(KeyEvent event) throws GuacamoleException {
-        // STUB
+
+        try {
+            int pressed = 0;
+            if (event.getPressed()) pressed = 1;
+
+            output.write("key:" + event.getKeySym() + "," + pressed + ";");
+            output.flush();
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
+
     }
 
     public void send(PointerEvent event) throws GuacamoleException {
-        // STUB
+
+        try {
+            int mask = 0;
+            if (event.isLeftButtonPressed())   mask |= 1;
+            if (event.isMiddleButtonPressed()) mask |= 2;
+            if (event.isRightButtonPressed())  mask |= 4;
+            if (event.isUpButtonPressed())     mask |= 8;
+            if (event.isDownButtonPressed())   mask |= 16;
+
+
+            output.write("mouse:" + event.getX() + "," + event.getY() + "," + mask + ";");
+            output.flush();
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
+
     }
 
     public void setClipboard(String clipboard) throws GuacamoleException {
