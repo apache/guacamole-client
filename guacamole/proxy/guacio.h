@@ -27,7 +27,6 @@ ssize_t guac_write_base64(GUACIO* io, const void* buf, size_t count);
 ssize_t guac_flush_base64(GUACIO* io);
 ssize_t guac_flush(GUACIO* io);
 int guac_select(GUACIO* io, int usec_timeout);
-int guac_read_message(GUACIO* io);
 void guac_close(GUACIO* io);
 
 #endif

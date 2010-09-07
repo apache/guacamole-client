@@ -179,9 +179,13 @@ void proxy(int client_fd) {
 
         }
 
-        wait_result = guac_select(io, 2000);
+        wait_result = guac_messages_waiting(io);
         if (wait_result > 0) {
-            guac_read_message(io);
+            guac_message* message = guac_read_message(io);
+            if (message) {
+                fprintf(stderr, "NEW READ MESSAGE: %s\n", message->opcode);
+                guac_free_message(message);
+            }
         }
 
     }
