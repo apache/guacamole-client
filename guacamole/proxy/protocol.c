@@ -207,6 +207,9 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
     guac_instruction* parsed_instruction;
     int retval;
     int i = 0;
+    int argcount = 0;
+    int j;
+    int current_arg = 0;
     
     /* Loop until a instruction is read */
     for (;;) {
@@ -214,7 +217,14 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
         /* Search for end of instruction */
         for (; i < io->instructionbuf_used_length; i++) {
 
-            if (io->instructionbuf[i] == ';') {
+            /* Count arguments as we look for the end */
+            if (io->instructionbuf[i] == ',')
+                argcount++;
+            else if (io->instructionbuf[i] == ':' && argcount == 0)
+                argcount++;
+
+            /* End found ... */
+            else if (io->instructionbuf[i] == ';') {
 
                 /* Parse new instruction */
                 char* instruction = malloc(i+1);
@@ -222,9 +232,30 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
                 instruction[i] = '\0'; /* Replace semicolon with null terminator. */
 
                 parsed_instruction = malloc(sizeof(guac_instruction));
-                parsed_instruction->opcode = instruction;
-                parsed_instruction->argc = 0;
-                parsed_instruction->argv = NULL;
+                parsed_instruction->opcode = NULL;
+
+                parsed_instruction->argc = argcount;
+                parsed_instruction->argv = malloc(sizeof(char*) * argcount);
+
+                for (j=0; j<i; j++) {
+
+                    /* If encountered a colon, and no opcode parsed yet, set opcode and following argument */
+                    if (instruction[j] == ':' && parsed_instruction->opcode == NULL) {
+                        instruction[j] = '\0';
+                        parsed_instruction->argv[current_arg++] = &(instruction[j+1]);
+                        parsed_instruction->opcode = instruction;
+                    }
+
+                    /* If encountered a comma, set following argument */
+                    else if (instruction[j] == ',') {
+                        instruction[j] = '\0';
+                        parsed_instruction->argv[current_arg++] = &(instruction[j+1]);
+                    }
+                }
+
+                /* If no arguments, set opcode to entire instruction */
+                if (parsed_instruction->opcode == NULL)
+                    parsed_instruction->opcode = instruction;
 
                 /* Found. Reset buffer */
                 memmove(io->instructionbuf, io->instructionbuf + i + 1, io->instructionbuf_used_length - i - 1);

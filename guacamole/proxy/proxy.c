@@ -181,9 +181,27 @@ void proxy(int client_fd) {
 
         wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
-            guac_instruction* instruction = guac_read_instruction(io);
-            if (instruction) {
-                fprintf(stderr, "NEW READ INSTRUCTION: %s\n", instruction->opcode);
+            guac_instruction* instruction;
+           
+            while ((instruction = guac_read_instruction(io))) {
+
+                if (strcmp(instruction->opcode, "mouse") == 0) {
+                    SendPointerEvent(
+                            rfb_client,
+                            atoi(instruction->argv[0]), /* x */
+                            atoi(instruction->argv[1]), /* y */
+                            atoi(instruction->argv[2])  /* mask */
+                    );
+                }
+
+                else if (strcmp(instruction->opcode, "key") == 0) {
+                    SendKeyEvent(
+                            rfb_client,
+                            atoi(instruction->argv[0]), /* keysym */
+                            atoi(instruction->argv[1])  /* pressed */
+                    );
+                }
+
                 guac_free_instruction(instruction);
             }
         }
