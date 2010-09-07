@@ -33,6 +33,8 @@ import java.io.OutputStreamWriter;
 
 import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.event.EventQueue;
+import net.sourceforge.guacamole.event.EventHandler;
 import net.sourceforge.guacamole.event.KeyEvent;
 import net.sourceforge.guacamole.event.PointerEvent;
 
@@ -55,24 +57,24 @@ public class GuacamoleClient extends Client {
 
     }
 
-    public void send(KeyEvent event) throws GuacamoleException {
 
-        try {
+    private static final int EVENT_DEADLINE = 500;
+
+    private EventQueue<KeyEvent> keyEvents = new EventQueue<KeyEvent>(new EventHandler<KeyEvent>() {
+
+        public void handle(KeyEvent event) throws IOException {
             int pressed = 0;
             if (event.getPressed()) pressed = 1;
 
             output.write("key:" + event.getKeySym() + "," + pressed + ";");
             output.flush();
         }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
 
-    }
+    }, EVENT_DEADLINE);
 
-    public void send(PointerEvent event) throws GuacamoleException {
+    private EventQueue<PointerEvent> pointerEvents = new EventQueue<PointerEvent>(new EventHandler<PointerEvent>() {
 
-        try {
+        public void handle(PointerEvent event) throws IOException {
             int mask = 0;
             if (event.isLeftButtonPressed())   mask |= 1;
             if (event.isMiddleButtonPressed()) mask |= 2;
@@ -83,6 +85,26 @@ public class GuacamoleClient extends Client {
 
             output.write("mouse:" + event.getX() + "," + event.getY() + "," + mask + ";");
             output.flush();
+        }
+
+    }, EVENT_DEADLINE);
+
+
+    public void send(KeyEvent event) throws GuacamoleException {
+
+        try {
+            keyEvents.add(event);
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
+
+    }
+
+    public void send(PointerEvent event) throws GuacamoleException {
+
+        try {
+            pointerEvents.add(event);
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
