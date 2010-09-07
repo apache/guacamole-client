@@ -19,10 +19,8 @@ char* guac_escape_string(const char* str) {
         switch (str[i]) {
 
             case ';':
-                length += 2;
-                break;
-
             case ',':
+            case '\\':
                 length += 2;
                 break;
 
@@ -47,6 +45,11 @@ char* guac_escape_string(const char* str) {
             case ',':
                 *(current++) = '\\';
                 *(current++) = 'c';
+                break;
+
+            case '\\':
+                *(current++) = '\\';
+                *(current++) = '\\';
                 break;
 
             default:
