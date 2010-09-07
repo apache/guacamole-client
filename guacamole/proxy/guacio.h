@@ -14,9 +14,9 @@ typedef struct GUACIO {
     int written;
     char out_buf[8192];
 
-    int messagebuf_size;
-    int messagebuf_used_length;
-    char* messagebuf;
+    int instructionbuf_size;
+    int instructionbuf_used_length;
+    char* instructionbuf;
 
 } GUACIO;
 

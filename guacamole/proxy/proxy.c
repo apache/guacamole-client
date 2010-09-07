@@ -179,12 +179,12 @@ void proxy(int client_fd) {
 
         }
 
-        wait_result = guac_messages_waiting(io);
+        wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
-            guac_message* message = guac_read_message(io);
-            if (message) {
-                fprintf(stderr, "NEW READ MESSAGE: %s\n", message->opcode);
-                guac_free_message(message);
+            guac_instruction* instruction = guac_read_instruction(io);
+            if (instruction) {
+                fprintf(stderr, "NEW READ INSTRUCTION: %s\n", instruction->opcode);
+                guac_free_instruction(instruction);
             }
         }
 

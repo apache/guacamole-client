@@ -29,10 +29,10 @@ GUACIO* guac_open(int fd) {
     flags = fcntl(io->fd, F_GETFL, 0);
     fcntl(io->fd, F_SETFL, flags | O_NONBLOCK);
 
-    /* Allocate message buffer */
-    io->messagebuf_size = 1024;
-    io->messagebuf = malloc(io->messagebuf_size);
-    io->messagebuf_used_length = 0;
+    /* Allocate instruction buffer */
+    io->instructionbuf_size = 1024;
+    io->instructionbuf = malloc(io->instructionbuf_size);
+    io->instructionbuf_used_length = 0;
 
     return io;
 

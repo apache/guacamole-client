@@ -176,76 +176,76 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h) 
 }
 
 
-int __guac_fill_messagebuf(GUACIO* io) {
+int __guac_fill_instructionbuf(GUACIO* io) {
 
     int retval;
     
     /* Attempt to fill buffer */
     retval = read(
             io->fd,
-            io->messagebuf + io->messagebuf_used_length,
-            io->messagebuf_size - io->messagebuf_used_length
+            io->instructionbuf + io->instructionbuf_used_length,
+            io->instructionbuf_size - io->instructionbuf_used_length
     );
 
     if (retval < 0)
         return retval;
 
-    io->messagebuf_used_length += retval;
+    io->instructionbuf_used_length += retval;
 
     /* Expand buffer if necessary */
-    if (io->messagebuf_used_length > io->messagebuf_size / 2) {
-        io->messagebuf_size *= 2;
-        io->messagebuf = realloc(io->messagebuf, io->messagebuf_size);
+    if (io->instructionbuf_used_length > io->instructionbuf_size / 2) {
+        io->instructionbuf_size *= 2;
+        io->instructionbuf = realloc(io->instructionbuf, io->instructionbuf_size);
     }
 
     return retval;
 
 }
 
-guac_message* guac_read_message(GUACIO* io) {
+guac_instruction* guac_read_instruction(GUACIO* io) {
 
-    guac_message* parsed_message;
+    guac_instruction* parsed_instruction;
     int retval;
     int i = 0;
     
-    /* Loop until a message is read */
+    /* Loop until a instruction is read */
     for (;;) {
 
-        /* Search for end of message */
-        for (; i < io->messagebuf_used_length; i++) {
+        /* Search for end of instruction */
+        for (; i < io->instructionbuf_used_length; i++) {
 
-            if (io->messagebuf[i] == ';') {
+            if (io->instructionbuf[i] == ';') {
 
-                /* Parse new message */
-                char* message = malloc(i+1);
-                memcpy(message, io->messagebuf, i+1);
-                message[i] = '\0'; /* Replace semicolon with null terminator. */
+                /* Parse new instruction */
+                char* instruction = malloc(i+1);
+                memcpy(instruction, io->instructionbuf, i+1);
+                instruction[i] = '\0'; /* Replace semicolon with null terminator. */
 
-                parsed_message = malloc(sizeof(guac_message));
-                parsed_message->opcode = message;
-                parsed_message->argc = 0;
-                parsed_message->argv = NULL;
+                parsed_instruction = malloc(sizeof(guac_instruction));
+                parsed_instruction->opcode = instruction;
+                parsed_instruction->argc = 0;
+                parsed_instruction->argv = NULL;
 
                 /* Found. Reset buffer */
-                memmove(io->messagebuf, io->messagebuf + i + 1, io->messagebuf_used_length - i - 1);
-                io->messagebuf_used_length -= i + 1;
+                memmove(io->instructionbuf, io->instructionbuf + i + 1, io->instructionbuf_used_length - i - 1);
+                io->instructionbuf_used_length -= i + 1;
 
                 /* Done */
-                return parsed_message;
+                return parsed_instruction;
             }
 
         }
 
-        /* No message yet? Get more data ... */
+        /* No instruction yet? Get more data ... */
         retval = guac_select(io, 1000);
         if (retval < 0)
             return NULL;
 
         /* Break if descriptor doesn't have enough data */
         if (retval == 0)
-            return NULL; /* SOFT FAIL: No message ... yet, but is still in buffer */
+            return NULL; /* SOFT FAIL: No instruction ... yet, but is still in buffer */
 
-        retval = __guac_fill_messagebuf(io);
+        retval = __guac_fill_instructionbuf(io);
         if (retval < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
             return NULL;
 
@@ -253,19 +253,19 @@ guac_message* guac_read_message(GUACIO* io) {
 
 }
 
-void guac_free_message(guac_message* message) {
-    free(message->opcode);
+void guac_free_instruction(guac_instruction* instruction) {
+    free(instruction->opcode);
 
-    if (message->argv)
-        free(message->argv);
+    if (instruction->argv)
+        free(instruction->argv);
 
-    free(message);
+    free(instruction);
 }
 
 
-int guac_messages_waiting(GUACIO* io) {
+int guac_instructions_waiting(GUACIO* io) {
 
-    if (io->messagebuf_used_length > 0)
+    if (io->instructionbuf_used_length > 0)
         return 1;
 
     return guac_select(io, 1000);
