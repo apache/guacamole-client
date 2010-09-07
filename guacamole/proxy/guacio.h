@@ -6,7 +6,7 @@
 
 typedef struct GUACIO {
 
-    int fd;
+    int fd; 
     
     int ready;
     int ready_buf[3];

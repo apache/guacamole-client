@@ -18,16 +18,10 @@ char __GUACIO_BAS64_CHARACTERS[64] = {
 
 GUACIO* guac_open(int fd) {
 
-    int flags;
-
     GUACIO* io = malloc(sizeof(GUACIO));
     io->ready = 0;
     io->written = 0;
     io->fd = fd;
-
-    /* Set O_NONBLOCK */
-    flags = fcntl(io->fd, F_GETFL, 0);
-    fcntl(io->fd, F_SETFL, flags | O_NONBLOCK);
 
     /* Allocate instruction buffer */
     io->instructionbuf_size = 1024;

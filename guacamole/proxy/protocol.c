@@ -4,6 +4,9 @@
 #include <errno.h>
 #include <png.h>
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 #include "guacio.h"
 #include "protocol.h"
 
@@ -181,10 +184,11 @@ int __guac_fill_instructionbuf(GUACIO* io) {
     int retval;
     
     /* Attempt to fill buffer */
-    retval = read(
+    retval = recv(
             io->fd,
             io->instructionbuf + io->instructionbuf_used_length,
-            io->instructionbuf_size - io->instructionbuf_used_length
+            io->instructionbuf_size - io->instructionbuf_used_length,
+            0
     );
 
     if (retval < 0)
