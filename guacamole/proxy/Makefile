@@ -1,5 +1,5 @@
 
-CFLAGS=-O2 -ansi -pedantic -Wall -Werror
+CFLAGS=-O2 -pedantic -Wall -Werror
 LDFLAGS=-lpng -lvncclient
 
 .PHONY: clean

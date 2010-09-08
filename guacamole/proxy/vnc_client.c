@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <png.h>
+#include <time.h>
 
 #include <rfb/rfbclient.h>
 
@@ -175,6 +176,7 @@ void vnc_guac_client_handle_messages(guac_client* client) {
     int wait_result;
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
 
+
     wait_result = WaitForMessage(rfb_client, 2000);
     if (wait_result < 0) {
         fprintf(stderr, "WAIT FAIL\n");
@@ -183,10 +185,20 @@ void vnc_guac_client_handle_messages(guac_client* client) {
 
     if (wait_result > 0) {
 
+        struct timespec sleep_period;
+
         if (!HandleRFBServerMessage(rfb_client)) {
             fprintf(stderr, "HANDLE FAIL\n");
             return;
         }
+
+        /* Wait before returning ... don't want to handle
+         * too many server messages. */
+
+        sleep_period.tv_sec = 0;
+        sleep_period.tv_nsec = 50000000L /* 50 ms */;
+
+        nanosleep(&sleep_period, NULL);
 
     }
 
