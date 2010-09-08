@@ -26,7 +26,6 @@ import net.sourceforge.guacamole.event.PointerEvent;
 
 public abstract class Client {
 
-    public abstract void ready() throws GuacamoleException;
     public abstract void send(KeyEvent event) throws GuacamoleException;
     public abstract void send(PointerEvent event) throws GuacamoleException;
     public abstract void setClipboard(String clipboard) throws GuacamoleException;

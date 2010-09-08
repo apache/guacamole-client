@@ -540,33 +540,7 @@ function VNCClient(display) {
             handler(parameters);
 
     }
-
-
-    function sendReady() {
-
-        // If not ready, do not send ready
-        if (background == null || !background.isReady()) {
-            setTimeout(sendReady, 50);
-            return;
-        }
-
-        // Start heartbeat signal
-        var heartbeat = new XMLHttpRequest();
-        heartbeat.open("GET", "ready");
-
-        heartbeat.onreadystatechange = function() {
-
-            if (heartbeat != null && heartbeat.readyState >= 2) {
-                heartbeat = null;
-                setTimeout(sendReady, 50);
-            }
-
-        };
-
-        heartbeat.send();
-
-    }
-
+        
 
     this.connect = function() {
 
@@ -581,7 +555,6 @@ function VNCClient(display) {
         var message = new GuacamoleMessage(connect_xmlhttprequest.responseXML);
         if (!message.hasErrors()) {
             setState(STATE_WAITING);
-            sendReady();
             handleResponse(makeRequest()); // Start stream if connection successful
         }
         else

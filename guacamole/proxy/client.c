@@ -85,6 +85,12 @@ void guac_start_client(guac_client* client) {
     /* VNC Client Loop */
     for (;;) {
 
+        /* Handle server messages */
+        if (client->handle_messages) {
+            client->handle_messages(client);
+            guac_flush(client->io);
+        }
+
         wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
 
@@ -124,12 +130,6 @@ void guac_start_client(guac_client* client) {
                 return; /* EOF or error */
 
             /* Otherwise, retval == 0 implies unfinished instruction */
-
-            /* Handle server messages */
-            if (client->handle_messages) {
-                client->handle_messages(client);
-                guac_flush(client->io);
-            }
 
         }
         else if (wait_result < 0)
