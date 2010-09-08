@@ -7,7 +7,7 @@
 
 #include "guacio.h"
 #include "protocol.h"
-#include "proxy.h"
+#include "client.h"
 
 char __guac_password[] = "potato";
 
@@ -175,7 +175,7 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-void proxy(int client_fd) {
+void client(int client_fd) {
 
     char* hostname;
     int wait_result;

@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "proxy.h"
+#include "client.h"
 
 int main(int argc, char* argv[]) {
 
@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in client_addr;
     unsigned int client_addr_len;
     int connected_socket_fd;
-    pid_t proxy_pid ;
+    pid_t client_pid ;
 
     /* Get binding address */
     memset(&server_addr, 0, sizeof(server_addr)); /* Zero struct */
@@ -59,15 +59,15 @@ int main(int argc, char* argv[]) {
             return 3;
         }
 
-        /* Fork proxy */
-        proxy_pid = fork();
-        if (proxy_pid < 0) {
+        /* Fork client */
+        client_pid = fork();
+        if (client_pid < 0) {
             perror("Could not fork child");
         }
 
         /* In child ... */
-        else if (proxy_pid == 0) {
-            proxy(connected_socket_fd);
+        else if (client_pid == 0) {
+            client(connected_socket_fd);
 
             /* Close socket */
             if (close(connected_socket_fd) < 0) {

@@ -6,11 +6,11 @@ LDFLAGS=-lpng -lvncclient
 
 all: guacd
 
-guacd: daemon.o proxy.o guacio.o protocol.o
-	$(CC) $(CFLAGS) $(LDFLAGS) daemon.o proxy.o protocol.o guacio.o -o guacd 
+guacd: daemon.o client.o guacio.o protocol.o
+	$(CC) $(CFLAGS) $(LDFLAGS) daemon.o client.o protocol.o guacio.o -o guacd 
 
-proxy.o: proxy.c proxy.h guacio.h
-	$(CC) $(CFLAGS) -c proxy.c
+client.o: client.c client.h guacio.h
+	$(CC) $(CFLAGS) -c client.c
 
 protocol.o: protocol.c protocol.h guacio.h
 	$(CC) $(CFLAGS) -c protocol.c
@@ -18,7 +18,7 @@ protocol.o: protocol.c protocol.h guacio.h
 guacio.o: guacio.c guacio.h
 	$(CC) $(CFLAGS) -c guacio.c
 
-daemon.o: daemon.c proxy.h
+daemon.o: daemon.c client.h
 	$(CC) $(CFLAGS) -c daemon.c
 
 clean:
