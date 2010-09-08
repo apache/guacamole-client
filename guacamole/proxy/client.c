@@ -78,6 +78,7 @@ void guac_free_client(guac_client* client) {
 
 void guac_start_client(guac_client* client) {
 
+    guac_instruction instruction;
     GUACIO* io = client->io;
     int wait_result;
 
@@ -93,36 +94,42 @@ void guac_start_client(guac_client* client) {
         wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
 
-            guac_instruction* instruction;
-           
-            if ((instruction = guac_read_instruction(io))) {
+            int retval;
+            retval = guac_read_instruction(io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
 
+            if (retval > 0) {
+           
                 do {
-                    if (strcmp(instruction->opcode, "mouse") == 0) {
+
+                    if (strcmp(instruction.opcode, "mouse") == 0) {
                         if (client->mouse_handler)
                             client->mouse_handler(
                                 client,
-                                atoi(instruction->argv[0]), /* x */
-                                atoi(instruction->argv[1]), /* y */
-                                atoi(instruction->argv[2])  /* mask */
+                                atoi(instruction.argv[0]), /* x */
+                                atoi(instruction.argv[1]), /* y */
+                                atoi(instruction.argv[2])  /* mask */
                             );
                     }
 
-                    else if (strcmp(instruction->opcode, "key") == 0) {
+                    else if (strcmp(instruction.opcode, "key") == 0) {
                         if (client->key_handler)
                             client->key_handler(
                                 client,
-                                atoi(instruction->argv[0]), /* keysym */
-                                atoi(instruction->argv[1])  /* pressed */
+                                atoi(instruction.argv[0]), /* keysym */
+                                atoi(instruction.argv[1])  /* pressed */
                             );
                     }
 
-                    guac_free_instruction(instruction);
-                } while ((instruction = guac_read_instruction(io)));
+                } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 
+                if (retval < 0)
+                    return;
             }
-            else
-                return;
+
+            if (retval < 0)
+                return; /* EOF or error */
+
+            /* Otherwise, retval == 0 implies unfinished instruction */
 
         }
         else if (wait_result < 0)

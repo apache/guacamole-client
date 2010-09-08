@@ -241,7 +241,7 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
 
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
-    rfb_client->GotCopyRect = guac_vnc_copyrect;
+    /*rfb_client->GotCopyRect = guac_vnc_copyrect;*/
 
     /* Enable client-side cursor */
     rfb_client->GotCursorShape = guac_vnc_cursor;

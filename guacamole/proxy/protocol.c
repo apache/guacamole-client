@@ -290,9 +290,8 @@ int __guac_fill_instructionbuf(GUACIO* io) {
 }
 
 /* Returns new instruction if one exists, or NULL if no more instructions. */
-guac_instruction* guac_read_instruction(GUACIO* io) {
+int guac_read_instruction(GUACIO* io, guac_instruction* parsed_instruction) {
 
-    guac_instruction* parsed_instruction;
     int retval;
     int i = 0;
     int argcount = 0;
@@ -319,7 +318,6 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
                 memcpy(instruction, io->instructionbuf, i+1);
                 instruction[i] = '\0'; /* Replace semicolon with null terminator. */
 
-                parsed_instruction = malloc(sizeof(guac_instruction));
                 parsed_instruction->opcode = NULL;
 
                 parsed_instruction->argc = argcount;
@@ -350,19 +348,22 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
                 io->instructionbuf_used_length -= i + 1;
 
                 /* Done */
-                return parsed_instruction;
+                return 1;
             }
 
         }
 
         /* No instruction yet? Get more data ... */
-        while ((retval = guac_select(io, 2500000)) == 0);
-        if (retval < 0)
-            return NULL; /* If error, no more instructions */
+        retval = guac_select(io, 1000);
+        if (retval <= 0)
+            return retval;
 
         retval = __guac_fill_instructionbuf(io);
-        if (retval <= 0)
-            return NULL; /* If error, or no more data, no instructions remain */
+        if (retval < 0)
+            return retval;
+
+        if (retval == 0)
+            return -1; /* EOF */
     }
 
 }

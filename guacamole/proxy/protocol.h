@@ -43,7 +43,7 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
 void guac_send_cursor(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
 
 int guac_instructions_waiting(GUACIO* io);
-guac_instruction* guac_read_instruction(GUACIO* io);
+int guac_read_instruction(GUACIO* io, guac_instruction* parsed_instruction);
 
 #endif
 
