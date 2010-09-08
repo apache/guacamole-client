@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole;
+package net.sourceforge.guacamole.net.input;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -19,18 +19,25 @@ package net.sourceforge.guacamole;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.instruction.Instruction;
+import javax.servlet.ServletRequest;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.event.KeyEvent;
-import net.sourceforge.guacamole.event.PointerEvent;
+import org.w3c.dom.Element;
 
-public abstract class Client {
+import net.sourceforge.guacamole.net.GuacamoleSession;
+import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
 
-    public abstract void ready() throws GuacamoleException;
-    public abstract void send(KeyEvent event) throws GuacamoleException;
-    public abstract void send(PointerEvent event) throws GuacamoleException;
-    public abstract void setClipboard(String clipboard) throws GuacamoleException;
-    public abstract void disconnect() throws GuacamoleException;
-    public abstract Instruction nextInstruction(boolean blocking) throws GuacamoleException;
+public class Ready extends XMLGuacamoleServlet {
 
+    @Override
+    protected void handleRequest(GuacamoleSession session, ServletRequest request, Element root) throws GuacamoleException {
+
+        try {
+            session.getClient().ready();
+        }
+        catch (GuacamoleException e) {
+            throw new GuacamoleException("Error updating ready status: " + e.getMessage(), e);
+        }
+
+    }
 }
+

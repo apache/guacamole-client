@@ -71,6 +71,10 @@ public class GuacamoleSession {
             client.setClipboard(clipboard);
         }
 
+        public void ready() throws GuacamoleException {
+            client.ready();
+        }
+
         public void disconnect() throws GuacamoleException {
             client.disconnect();
         }

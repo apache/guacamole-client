@@ -57,6 +57,17 @@ public class GuacamoleClient extends Client {
 
     }
 
+    public void ready() throws GuacamoleException {
+
+        try {
+            output.write("ready;");
+            output.flush();
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
+
+    }
 
     private static final int EVENT_DEADLINE = 500;
 

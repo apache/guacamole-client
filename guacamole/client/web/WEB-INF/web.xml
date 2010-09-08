@@ -62,6 +62,15 @@
         <url-pattern>/clipboard</url-pattern>
     </servlet-mapping>
     <servlet>
+        <description>Client "ready-to-receive" heartbeat</description>
+        <servlet-name>Ready</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.input.Ready</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Ready</servlet-name>
+        <url-pattern>/ready</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <description>Key input servlet.</description>
         <servlet-name>Key</servlet-name>
         <servlet-class>net.sourceforge.guacamole.net.input.Key</servlet-class>
