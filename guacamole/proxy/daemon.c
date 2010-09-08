@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
         }
 
         /* Fork client */
-        client_pid = 0; /*fork();*/
+        client_pid = fork();
         if (client_pid < 0) {
             perror("Could not fork child");
             return 4;
