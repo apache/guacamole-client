@@ -122,6 +122,10 @@ function Layer(width, height) {
 
     };
 
+    display.isReady = function() {
+        return nextUpdateToDraw >= currentUpdate;
+    }
+
     return display;
 
 }

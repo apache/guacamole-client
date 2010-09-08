@@ -544,6 +544,12 @@ function VNCClient(display) {
 
     function sendReady() {
 
+        // If not ready, do not send ready
+        if (background == null || !background.isReady()) {
+            setTimeout(sendReady, 50);
+            return;
+        }
+
         // Start heartbeat signal
         var heartbeat = new XMLHttpRequest();
         heartbeat.open("GET", "ready");
