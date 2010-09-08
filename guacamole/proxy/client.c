@@ -53,13 +53,13 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client)) {
+guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client, const char* hostname, int port), const char* hostname, int port) {
 
     guac_client* client = malloc(sizeof(guac_client));
 
     client->io = guac_open(client_fd);
 
-    client_init(client);
+    client_init(client, hostname, port);
 
     return client;
 

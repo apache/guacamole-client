@@ -30,9 +30,9 @@
 
 char __guac_password[] = "potato";
 
-char* __GUAC_VNC_TAG_IO = "GUACIO";
-char* __GUAC_VNC_TAG_PNG_BUFFER = "PNG_BUFFER";
-char* __GUAC_VNC_TAG_PNG_BUFFER_ALPHA = "PNG_BUFFER_ALPHA";
+static char* __GUAC_VNC_TAG_IO = "GUACIO";
+static char* __GUAC_VNC_TAG_PNG_BUFFER = "PNG_BUFFER";
+static char* __GUAC_VNC_TAG_PNG_BUFFER_ALPHA = "PNG_BUFFER_ALPHA";
 
 
 typedef struct vnc_guac_client_data {
@@ -169,8 +169,6 @@ char* guac_vnc_get_password(rfbClient* client) {
     char* password = malloc(64);
     strncpy(password, __guac_password, 63);
 
-    fprintf(stderr, "Sending password: %s\n", password);
-
     return password;
 }
 
@@ -214,8 +212,6 @@ void vnc_guac_client_key_handler(guac_client* client, int keysym, int pressed) {
 
 }
 
-
-
 void vnc_guac_client_free_handler(guac_client* client) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
@@ -232,9 +228,10 @@ void vnc_guac_client_free_handler(guac_client* client) {
 }
 
 
-void vnc_guac_client_init(guac_client* client) {
+void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
 
-    char* hostname;
+    char* hostname_copy;
+
     rfbClient* rfb_client;
 
     png_byte** png_buffer;
@@ -257,11 +254,11 @@ void vnc_guac_client_init(guac_client* client) {
     rfb_client->GetPassword = guac_vnc_get_password;
 
     /* Connect */
-    hostname = malloc(64);
-    strcpy(hostname, "localhost");
+    hostname_copy = malloc(1024);
+    strncpy(hostname_copy, hostname, 1024);
 
-    rfb_client->serverHost = hostname;
-    rfb_client->serverPort = 5902;
+    rfb_client->serverHost = hostname_copy;
+    rfb_client->serverPort = port;
 
     rfbInitClient(rfb_client, NULL, NULL);
 
@@ -273,13 +270,6 @@ void vnc_guac_client_init(guac_client* client) {
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_IO, client->io);
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER, png_buffer);
     rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER_ALPHA, png_buffer_alpha);
-
-    /* Send name */
-    guac_send_name(client->io, rfb_client->desktopName);
-
-    /* Send size */
-    guac_send_size(client->io, rfb_client->width, rfb_client->height);
-    guac_flush(client->io);
 
     /* Set client data */
     vnc_guac_client_data = malloc(sizeof(vnc_guac_client_data));
@@ -293,7 +283,12 @@ void vnc_guac_client_init(guac_client* client) {
     client->mouse_handler = vnc_guac_client_mouse_handler;
     client->key_handler = vnc_guac_client_key_handler;
 
-    fprintf(stderr, "VNC Client loaded.\n");
+    /* Send name */
+    guac_send_name(client->io, rfb_client->desktopName);
+
+    /* Send size */
+    guac_send_size(client->io, rfb_client->width, rfb_client->height);
+    guac_flush(client->io);
 
 }
 

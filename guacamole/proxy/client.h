@@ -36,7 +36,7 @@ typedef struct guac_client {
 
 } guac_client;
 
-guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client));
+guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client, const char* hostname, int port), const char* hostname, int port);
 void guac_start_client(guac_client* client);
 void guac_free_client(guac_client* client);
 png_byte** guac_alloc_png_buffer(int w, int h, int bpp);

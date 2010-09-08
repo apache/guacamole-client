@@ -22,7 +22,7 @@
 
 #include "client.h"
 
-void vnc_guac_client_init(guac_client* client);
+void vnc_guac_client_init(guac_client* client, const char* hostname, int port);
 
 #endif
 

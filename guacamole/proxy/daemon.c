@@ -18,6 +18,7 @@
  */
 
 #include <unistd.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -39,14 +40,25 @@ int main(int argc, char* argv[]) {
     int connected_socket_fd;
     pid_t client_pid ;
 
+    int listen_port;
+    const char* connect_host;
+    int connect_port;
 
-    fprintf(stderr, "Guacamole starting...\n");
+    if (argc < 4) {
+        fprintf(stderr, "USAGE: %s LISTENPORT CONNECTHOST CONNECTPORT\n", argv[0]);
+        return 1;
+    }
+
+    listen_port = atoi(argv[1]);
+    connect_host = argv[2];
+    connect_port = atoi(argv[3]);
+
 
     /* Get binding address */
     memset(&server_addr, 0, sizeof(server_addr)); /* Zero struct */
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
-    server_addr.sin_port = htons(1234);
+    server_addr.sin_port = htons(listen_port);
 
     /* Get socket */
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -62,10 +74,10 @@ int main(int argc, char* argv[]) {
         return 2;
     }
 
+    fprintf(stderr, "[guacamole] listening on port %i, forwarding to %s:%i\n", listen_port, connect_host, connect_port);
+
     /* Daemon loop */
     for (;;) {
-
-        fprintf(stderr, "Listening...\n");
 
         /* Listen for connections */
         if (listen(socket_fd, 5) < 0) {
@@ -82,15 +94,20 @@ int main(int argc, char* argv[]) {
         }
 
         /* Fork client */
-        client_pid = fork();
+        client_pid = 0; /*fork();*/
         if (client_pid < 0) {
             perror("Could not fork child");
+            return 4;
         }
 
         /* In child ... */
         else if (client_pid == 0) {
 
-            guac_client* client = guac_get_client(connected_socket_fd, vnc_guac_client_init); 
+            guac_client* client;
+
+            fprintf(stderr, "[guacamole] spawning client\n");
+
+            client = guac_get_client(connected_socket_fd, vnc_guac_client_init, connect_host, connect_port); 
             guac_start_client(client);
             guac_free_client(client);
 
@@ -100,12 +117,9 @@ int main(int argc, char* argv[]) {
                 return 3;
             }
 
-            fprintf(stderr, "Child exiting.\n");
+            fprintf(stderr, "[guacamole] client finished\n");
             return 0;
         }
-
-        else
-            fprintf(stderr, "Child forked.\n");
 
     }
 
