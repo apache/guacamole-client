@@ -60,6 +60,7 @@ guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* cli
     client->io = guac_open(client_fd);
 
     client_init(client, hostname, port);
+    guac_flush(client->io);
 
     return client;
 
@@ -84,38 +85,48 @@ void guac_start_client(guac_client* client) {
     for (;;) {
 
         /* Handle server messages */
-        if (client->handle_messages)
+        if (client->handle_messages) {
             client->handle_messages(client);
+            guac_flush(client->io);
+        }
 
         wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
 
             guac_instruction* instruction;
            
-            while ((instruction = guac_read_instruction(io))) {
+            if ((instruction = guac_read_instruction(io))) {
 
-                if (strcmp(instruction->opcode, "mouse") == 0) {
-                    if (client->mouse_handler)
-                        client->mouse_handler(
-                            client,
-                            atoi(instruction->argv[0]), /* x */
-                            atoi(instruction->argv[1]), /* y */
-                            atoi(instruction->argv[2])  /* mask */
-                        );
-                }
+                do {
+                    if (strcmp(instruction->opcode, "mouse") == 0) {
+                        if (client->mouse_handler)
+                            client->mouse_handler(
+                                client,
+                                atoi(instruction->argv[0]), /* x */
+                                atoi(instruction->argv[1]), /* y */
+                                atoi(instruction->argv[2])  /* mask */
+                            );
+                    }
 
-                else if (strcmp(instruction->opcode, "key") == 0) {
-                    if (client->key_handler)
-                        client->key_handler(
-                            client,
-                            atoi(instruction->argv[0]), /* keysym */
-                            atoi(instruction->argv[1])  /* pressed */
-                        );
-                }
+                    else if (strcmp(instruction->opcode, "key") == 0) {
+                        if (client->key_handler)
+                            client->key_handler(
+                                client,
+                                atoi(instruction->argv[0]), /* keysym */
+                                atoi(instruction->argv[1])  /* pressed */
+                            );
+                    }
 
-                guac_free_instruction(instruction);
+                    guac_free_instruction(instruction);
+                } while ((instruction = guac_read_instruction(io)));
+
             }
+            else
+                return;
+
         }
+        else if (wait_result < 0)
+            return;
 
     }
 

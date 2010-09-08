@@ -289,6 +289,7 @@ int __guac_fill_instructionbuf(GUACIO* io) {
 
 }
 
+/* Returns new instruction if one exists, or NULL if no more instructions. */
 guac_instruction* guac_read_instruction(GUACIO* io) {
 
     guac_instruction* parsed_instruction;
@@ -355,18 +356,13 @@ guac_instruction* guac_read_instruction(GUACIO* io) {
         }
 
         /* No instruction yet? Get more data ... */
-        retval = guac_select(io, 1000);
+        while ((retval = guac_select(io, 2500000)) == 0);
         if (retval < 0)
-            return NULL;
-
-        /* Break if descriptor doesn't have enough data */
-        if (retval == 0)
-            return NULL; /* SOFT FAIL: No instruction ... yet, but is still in buffer */
+            return NULL; /* If error, no more instructions */
 
         retval = __guac_fill_instructionbuf(io);
-        if (retval < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
-            return NULL;
-
+        if (retval <= 0)
+            return NULL; /* If error, or no more data, no instructions remain */
     }
 
 }

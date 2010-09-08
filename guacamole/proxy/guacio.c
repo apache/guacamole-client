@@ -227,6 +227,9 @@ int guac_select(GUACIO* io, int usec_timeout) {
     fd_set fds;
     struct timeval timeout;
 
+    if (usec_timeout < 0)
+        return select(io->fd + 1, &fds, NULL, NULL, NULL); 
+
     timeout.tv_sec = usec_timeout/1000000;
     timeout.tv_usec = usec_timeout%1000000;
 

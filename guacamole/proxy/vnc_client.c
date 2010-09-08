@@ -98,7 +98,6 @@ void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
 
     /* SEND CURSOR */
     guac_send_cursor(io, x, y, png_buffer, w, h);
-    guac_flush(io);
 
 }
 void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
@@ -150,7 +149,6 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
     }
 
     guac_send_png(io, x, y, png_buffer, w, h);
-    guac_flush(io);
 
 }
 
@@ -159,7 +157,6 @@ void guac_vnc_copyrect(rfbClient* client, int src_x, int src_y, int w, int h, in
     GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
 
     guac_send_copy(io, src_x, src_y, w, h, dest_x, dest_y);
-    guac_flush(io);
 
 }
 
@@ -244,7 +241,7 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
 
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
-    /*rfb_client->GotCopyRect = guac_vnc_copyrect;*/
+    rfb_client->GotCopyRect = guac_vnc_copyrect;
 
     /* Enable client-side cursor */
     rfb_client->GotCursorShape = guac_vnc_cursor;
@@ -288,7 +285,6 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
 
     /* Send size */
     guac_send_size(client->io, rfb_client->width, rfb_client->height);
-    guac_flush(client->io);
 
 }
 
