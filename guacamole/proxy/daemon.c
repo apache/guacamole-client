@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 
 #include "client.h"
+#include "vnc_client.h"
 
 int main(int argc, char* argv[]) {
 
@@ -67,7 +68,10 @@ int main(int argc, char* argv[]) {
 
         /* In child ... */
         else if (client_pid == 0) {
-            client(connected_socket_fd);
+
+            guac_client* client = guac_get_client(connected_socket_fd, vnc_guac_client_init); 
+            guac_start_client(client);
+            guac_free_client(client);
 
             /* Close socket */
             if (close(connected_socket_fd) < 0) {
