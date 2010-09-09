@@ -36,6 +36,9 @@ typedef struct GUACIO {
     int instructionbuf_used_length;
     char* instructionbuf;
 
+    /* Limit */
+    unsigned int transfer_limit; /* KB/sec */
+
 } GUACIO;
 
 GUACIO* guac_open(int fd);

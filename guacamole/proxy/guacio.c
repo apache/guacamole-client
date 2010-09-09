@@ -23,7 +23,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 
+#include <time.h>
 #include <sys/select.h>
+#include <sys/time.h>
 
 #include "guacio.h"
 
@@ -46,6 +48,9 @@ GUACIO* guac_open(int fd) {
     io->instructionbuf = malloc(io->instructionbuf_size);
     io->instructionbuf_used_length = 0;
 
+    /* Set limit */
+    io->transfer_limit = 0;
+
     return io;
 
 }
@@ -53,6 +58,45 @@ GUACIO* guac_open(int fd) {
 void guac_close(GUACIO* io) {
     guac_flush(io);
     free(io);
+}
+
+
+/* Write bytes, limit rate */
+ssize_t __guac_write(GUACIO* io, const char* buf, int count) {
+
+    struct timeval start, end;
+    suseconds_t elapsed;
+
+    suseconds_t required_usecs;
+    struct timespec required_sleep;
+
+    int retval;
+
+    /* Write and time how long the write takes (microseconds) */
+    gettimeofday(&start, NULL);
+    retval = write(io->fd, buf, count);
+    gettimeofday(&end, NULL);
+
+    if (retval < 0)
+        return retval;
+
+    if (io->transfer_limit > 0) {
+
+        /* Get elapsed time */
+        elapsed = (end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec;
+
+        /* Sleep as necessary */
+        required_usecs = retval * 1000 / io->transfer_limit; /* useconds at 128 k/s*/
+        required_sleep.tv_sec = required_usecs / 1000000;
+        required_sleep.tv_nsec = (required_usecs % 1000000) * 1000;
+        nanosleep(&required_sleep, NULL);
+
+        /* Get new elapsed time */
+        gettimeofday(&end, NULL);
+        elapsed = (end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec;
+    }
+
+    return retval;
 }
 
 ssize_t guac_write_int(GUACIO* io, unsigned int i) {
@@ -77,7 +121,6 @@ ssize_t guac_write_int(GUACIO* io, unsigned int i) {
 
 ssize_t guac_write_string(GUACIO* io, const char* str) {
 
-    int fd = io->fd;
     char* out_buf = io->out_buf;
 
     int retval;
@@ -88,9 +131,19 @@ ssize_t guac_write_string(GUACIO* io, const char* str) {
 
         /* Flush when necessary, return on error */
         if (io->written > 8188 /* sizeof(out_buf) - 4 */) {
-            retval = write(fd, out_buf, io->written);
+
+            struct timeval start, end;
+            suseconds_t elapsed;
+
+            gettimeofday(&start, NULL);
+            retval = __guac_write(io, out_buf, io->written);
+            gettimeofday(&end, NULL);
+
             if (retval < 0)
                 return retval;
+
+            /* Get elapsed time */
+            elapsed = (end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec;
 
             io->written = 0;
         }
@@ -103,7 +156,6 @@ ssize_t guac_write_string(GUACIO* io, const char* str) {
 
 ssize_t __guac_write_base64_triplet(GUACIO* io, int a, int b, int c) {
 
-    int fd = io->fd;
     char* out_buf = io->out_buf;
 
     int retval;
@@ -133,7 +185,7 @@ ssize_t __guac_write_base64_triplet(GUACIO* io, int a, int b, int c) {
 
     /* Flush when necessary, return on error */
     if (io->written > 8188 /* sizeof(out_buf) - 4 */) {
-        retval = write(fd, out_buf, io->written);
+        retval = __guac_write(io, out_buf, io->written);
         if (retval < 0)
             return retval;
 
@@ -195,7 +247,7 @@ ssize_t guac_flush(GUACIO* io) {
 
     /* Flush remaining bytes in buffer */
     if (io->written > 0) {
-        retval = write(io->fd, io->out_buf, io->written);
+        retval = __guac_write(io, io->out_buf, io->written);
         if (retval < 0)
             return retval;
 
