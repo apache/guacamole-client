@@ -120,6 +120,14 @@ void guac_start_client(guac_client* client) {
                             );
                     }
 
+                    else if (strcmp(instruction.opcode, "clipboard") == 0) {
+                        if (client->clipboard_handler)
+                            client->clipboard_handler(
+                                client,
+                                guac_unescape_string_inplace(instruction.argv[0]) /* data */
+                            );
+                    }
+
                 } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 
                 if (retval < 0)

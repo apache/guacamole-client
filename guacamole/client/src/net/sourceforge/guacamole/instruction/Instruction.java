@@ -29,7 +29,7 @@ public abstract class Instruction {
     @Override
     public abstract String toString();
 
-    public String escape(String str) {
+    public static String escape(String str) {
 
         StringBuffer sb = new StringBuffer();
 

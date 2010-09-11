@@ -113,7 +113,13 @@ public class GuacamoleClient extends Client {
     }
 
     public void setClipboard(String clipboard) throws GuacamoleException {
-        // STUB
+        try {
+            output.write("clipboard:" + Instruction.escape(clipboard) + ";");
+            output.flush();
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
     }
 
     public void disconnect() throws GuacamoleException {

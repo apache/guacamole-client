@@ -34,10 +34,12 @@ char __guac_password[] = "potato";
 static char* __GUAC_CLIENT = "GUAC_CLIENT";
 
 typedef struct vnc_guac_client_data {
+    
     rfbClient* rfb_client;
     png_byte** png_buffer;
     png_byte** png_buffer_alpha;
     int copy_rect_used;
+
 } vnc_guac_client_data;
 
 void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
@@ -178,6 +180,16 @@ char* guac_vnc_get_password(rfbClient* client) {
 }
 
 
+void guac_vnc_cut_text(rfbClient* client, const char* text, int textlen) {
+
+    guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
+    GUACIO* io = gc->io;
+
+    guac_send_clipboard(io, text);
+
+}
+
+
 void vnc_guac_client_handle_messages(guac_client* client) {
 
     int wait_result;
@@ -228,6 +240,14 @@ void vnc_guac_client_key_handler(guac_client* client, int keysym, int pressed) {
 
 }
 
+void vnc_guac_client_clipboard_handler(guac_client* client, char* data) {
+
+    rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
+
+    SendClientCutText(rfb_client, data, strlen(data));
+
+}
+
 void vnc_guac_client_free_handler(guac_client* client) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
@@ -266,6 +286,9 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
     rfb_client->GotCursorShape = guac_vnc_cursor;
     rfb_client->appData.useRemoteCursor = TRUE;
 
+    /* Clipboard */
+    rfb_client->GotXCutText = guac_vnc_cut_text;
+
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
 
@@ -297,6 +320,7 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
     client->handle_messages = vnc_guac_client_handle_messages;
     client->mouse_handler = vnc_guac_client_mouse_handler;
     client->key_handler = vnc_guac_client_key_handler;
+    client->clipboard_handler = vnc_guac_client_clipboard_handler;
 
     /* Send name */
     guac_send_name(client->io, rfb_client->desktopName);

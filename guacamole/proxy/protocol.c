@@ -81,7 +81,56 @@ char* guac_escape_string(const char* str) {
 
     }
 
+    *current = '\0';
+
     return escaped;
+
+}
+
+char* guac_unescape_string_inplace(char* str) {
+
+    char* from;
+    char* to;
+
+    from = to = str;
+    for (;;) {
+
+        char c = *(from++);
+
+        if (c == '\\') {
+
+            c = *(from++);
+            if (c == 's')
+                *(to++) = ';';
+
+            else if (c == 'c')
+                *(to++) = ',';
+
+            else if (c == '\\')
+                *(to++) = '\\';
+
+            else if (c == '\0') {
+                *(to++) = '\\';
+                break;
+            }
+
+            else {
+                *(to++) = '\\';
+                *(to++) = c;
+            }
+        }
+
+        else if (c == '\0')
+            break;
+
+        else
+            *(to++) = c;
+
+    }
+
+    *to = '\0';
+
+    return str;
 
 }
 
@@ -90,7 +139,7 @@ void guac_send_name(GUACIO* io, const char* name) {
     char* escaped = guac_escape_string(name); 
 
     guac_write_string(io, "name:");
-    guac_write_string(io, name);
+    guac_write_string(io, escaped);
     guac_write_string(io, ";");
 
     free(escaped);
@@ -103,6 +152,30 @@ void guac_send_size(GUACIO* io, int w, int h) {
     guac_write_string(io, ",");
     guac_write_int(io, h);
     guac_write_string(io, ";");
+}
+
+void guac_send_clipboard(GUACIO* io, const char* data) {
+
+    char* escaped = guac_escape_string(data); 
+
+    guac_write_string(io, "clipboard:");
+    guac_write_string(io, escaped);
+    guac_write_string(io, ";");
+
+    free(escaped);
+
+}
+
+void guac_send_error(GUACIO* io, const char* error) {
+
+    char* escaped = guac_escape_string(error); 
+
+    guac_write_string(io, "error:");
+    guac_write_string(io, escaped);
+    guac_write_string(io, ";");
+
+    free(escaped);
+
 }
 
 void guac_send_copy(GUACIO* io, int srcx, int srcy, int w, int h, int dstx, int dsty) {

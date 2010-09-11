@@ -32,6 +32,7 @@ typedef struct guac_client {
     void (*handle_messages)(struct guac_client* client);
     void (*mouse_handler)(struct guac_client* client, int x, int y, int button_mask);
     void (*key_handler)(struct guac_client* client, int keysym, int pressed);
+    void (*clipboard_handler)(struct guac_client* client, char* copied);
     void (*free_handler)(void* client);
 
 } guac_client;
