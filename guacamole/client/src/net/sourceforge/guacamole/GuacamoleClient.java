@@ -133,7 +133,7 @@ public class GuacamoleClient extends Client {
         try {
 
             // While we're blocking, or input is available
-            do {
+            for (;;) {
 
                 // If past threshold, resize buffer before reading
                 if (usedLength > buffer.length/2) {
@@ -176,14 +176,13 @@ public class GuacamoleClient extends Client {
 
                 }
 
-            } while (input.ready()); // End read loop
+            } // End read loop
 
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
         }
 
-        return null;
     }
 
 }

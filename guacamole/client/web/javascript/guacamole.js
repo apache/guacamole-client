@@ -57,7 +57,6 @@ function VNCClient(display) {
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
-
     // FIXME: Make object. Clean up.
     var cursorRectX = 0;
     var cursorRectY = 0;
@@ -282,6 +281,7 @@ function VNCClient(display) {
     }
 
     var clipboardHandler = null;
+    var requests = 0;
 
     this.setClipboardHandler = function(handler) {
         clipboardHandler = handler;
@@ -290,27 +290,19 @@ function VNCClient(display) {
 
     function handleResponse(xmlhttprequest) {
 
-        var startOffset = null;
+        var nextRequest = null;
+
+        function startNextRequest() {
+            nextRequest = makeRequest();
+        }
+
+        // Start next request in 2 seconds.
+        setTimeout(startNextRequest, 2000);
 
         var instructionStart = 0;
         var startIndex = 0;
 
-        // Make request for next before it's too late
-        var nextRequest = null;
-        if (xmlhttprequest.readyState >= 2)
-            nextRequest = makeRequest();
-
         function parseResponse() {
-
-            // Make request the moment we receive headers
-            // If the event handler isn't set by the time headers are available, we will
-            // already have made this request.
-            if (xmlhttprequest.readyState == 2) {
-                if (nextRequest == null)
-                    nextRequest = makeRequest();
-
-                startOffset = 0;
-            }
 
             // Parse stream when data is received and when complete.
             if (xmlhttprequest.readyState == 3 ||
@@ -357,7 +349,8 @@ function VNCClient(display) {
 
                         if (isConnected()) {
                             delete xmlhttprequest;
-                            handleResponse(nextRequest);
+                            if (nextRequest)
+                                handleResponse(nextRequest);
                         }
 
                         break;
@@ -375,21 +368,21 @@ function VNCClient(display) {
 
             }
 
-        };
+        }
 
         xmlhttprequest.onreadystatechange = parseResponse;
-
-        // Handle what we have so far.
         parseResponse();
+
     }
+
 
     function makeRequest() {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("GET", "instructions");
-        xmlhttprequest.send(null); 
 
+        xmlhttprequest.send(null); 
         return xmlhttprequest;
 
     }
@@ -555,7 +548,7 @@ function VNCClient(display) {
         var message = new GuacamoleMessage(connect_xmlhttprequest.responseXML);
         if (!message.hasErrors()) {
             setState(STATE_WAITING);
-            handleResponse(makeRequest()); // Start stream if connection successful
+            handleResponse(makeRequest());
         }
         else
             handleErrors(message);

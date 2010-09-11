@@ -65,11 +65,6 @@ void guac_close(GUACIO* io) {
 ssize_t __guac_write(GUACIO* io, const char* buf, int count) {
 
     struct timeval start, end;
-    suseconds_t elapsed;
-
-    suseconds_t required_usecs;
-    struct timespec required_sleep;
-
     int retval;
 
     /* Write and time how long the write takes (microseconds) */
@@ -82,18 +77,27 @@ ssize_t __guac_write(GUACIO* io, const char* buf, int count) {
 
     if (io->transfer_limit > 0) {
 
+        suseconds_t elapsed;
+        suseconds_t required_usecs;
+
         /* Get elapsed time */
         elapsed = (end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec;
 
-        /* Sleep as necessary */
-        required_usecs = retval * 1000 / io->transfer_limit; /* useconds at 128 k/s*/
-        required_sleep.tv_sec = required_usecs / 1000000;
-        required_sleep.tv_nsec = (required_usecs % 1000000) * 1000;
-        nanosleep(&required_sleep, NULL);
+        /* Calculate how much time we must sleep */
+        required_usecs = retval * 1000 / io->transfer_limit - elapsed; /* useconds at transfer_limit KB/s*/
 
-        /* Get new elapsed time */
-        gettimeofday(&end, NULL);
-        elapsed = (end.tv_sec - start.tv_sec) * 1000000 + end.tv_usec - start.tv_usec;
+        /* Sleep as necessary */
+        if (required_usecs > 0) {
+
+            struct timespec required_sleep;
+
+            required_sleep.tv_sec = required_usecs / 1000000;
+            required_sleep.tv_nsec = (required_usecs % 1000000) * 1000;
+
+            nanosleep(&required_sleep, NULL);
+
+        }
+
     }
 
     return retval;
