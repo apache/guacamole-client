@@ -31,24 +31,22 @@
 
 char __guac_password[] = "potato";
 
-static char* __GUAC_VNC_TAG_IO = "GUACIO";
-static char* __GUAC_VNC_TAG_PNG_BUFFER = "PNG_BUFFER";
-static char* __GUAC_VNC_TAG_PNG_BUFFER_ALPHA = "PNG_BUFFER_ALPHA";
-
+static char* __GUAC_CLIENT = "GUAC_CLIENT";
 
 typedef struct vnc_guac_client_data {
     rfbClient* rfb_client;
     png_byte** png_buffer;
     png_byte** png_buffer_alpha;
+    int copy_rect_used;
 } vnc_guac_client_data;
-
 
 void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
 
     int dx, dy;
 
-    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
-    png_byte** png_buffer = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_BUFFER_ALPHA);
+    guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
+    GUACIO* io = gc->io;
+    png_byte** png_buffer = ((vnc_guac_client_data*) gc->data)->png_buffer_alpha;
     png_byte* row;
 
     png_byte** png_row_current = png_buffer;
@@ -105,8 +103,9 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
     int dx, dy;
 
-    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
-    png_byte** png_buffer = rfbClientGetClientData(client, __GUAC_VNC_TAG_PNG_BUFFER);
+    guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
+    GUACIO* io = gc->io;
+    png_byte** png_buffer = ((vnc_guac_client_data*) gc->data)->png_buffer;
     png_byte* row;
 
     png_byte** png_row_current = png_buffer;
@@ -116,6 +115,12 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
     unsigned char* fb_row_current = client->frameBuffer + (y * bytesPerRow) + (x * bpp);
     unsigned char* fb_row;
     unsigned int v;
+
+    /* Ignore extra update if already handled by copyrect */
+    if (((vnc_guac_client_data*) gc->data)->copy_rect_used) {
+        ((vnc_guac_client_data*) gc->data)->copy_rect_used = 0;
+        return;
+    }
 
     /* Copy image data from VNC client to PNG */
     for (dy = y; dy<y+h; dy++) {
@@ -155,9 +160,11 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
 void guac_vnc_copyrect(rfbClient* client, int src_x, int src_y, int w, int h, int dest_x, int dest_y) {
 
-    GUACIO* io = rfbClientGetClientData(client, __GUAC_VNC_TAG_IO);
+    guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
+    GUACIO* io = gc->io;
 
     guac_send_copy(io, src_x, src_y, w, h, dest_x, dest_y);
+    ((vnc_guac_client_data*) gc->data)->copy_rect_used = 1;
 
 }
 
@@ -253,7 +260,7 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
 
     /* Framebuffer update handler */
     rfb_client->GotFrameBufferUpdate = guac_vnc_update;
-    /*rfb_client->GotCopyRect = guac_vnc_copyrect;*/
+    rfb_client->GotCopyRect = guac_vnc_copyrect;
 
     /* Enable client-side cursor */
     rfb_client->GotCursorShape = guac_vnc_cursor;
@@ -276,15 +283,14 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
     png_buffer_alpha = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 4); /* With alpha */
 
     /* Store Guac data in client */
-    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_IO, client->io);
-    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER, png_buffer);
-    rfbClientSetClientData(rfb_client, __GUAC_VNC_TAG_PNG_BUFFER_ALPHA, png_buffer_alpha);
+    rfbClientSetClientData(rfb_client, __GUAC_CLIENT, client);
 
     /* Set client data */
     vnc_guac_client_data = malloc(sizeof(vnc_guac_client_data));
     vnc_guac_client_data->rfb_client = rfb_client;
     vnc_guac_client_data->png_buffer = png_buffer;
     vnc_guac_client_data->png_buffer_alpha = png_buffer_alpha;
+    vnc_guac_client_data->copy_rect_used = 0;
     client->data = vnc_guac_client_data;
 
     /* Set handlers */
