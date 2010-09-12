@@ -376,15 +376,13 @@ function VNCClient(display) {
     }
 
 
-    var seq = 0;
-
     function makeRequest() {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("GET", "instructions?seq=" + (seq++));
-
+        xmlhttprequest.open("POST", "instructions");
         xmlhttprequest.send(null); 
+
         return xmlhttprequest;
 
     }
