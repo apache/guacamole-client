@@ -295,17 +295,14 @@ function VNCClient(display) {
 
         var nextRequest = null;
 
-        function startNextRequest() {
-            nextRequest = makeRequest();
-        }
-
-        // Start next request in 2 seconds.
-        setTimeout(startNextRequest, 2000);
-
         var instructionStart = 0;
         var startIndex = 0;
 
         function parseResponse() {
+
+            // Start next request as soon as possible
+            if (xmlhttprequest.readyState >= 2 && nextRequest == null)
+                nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
             if (xmlhttprequest.readyState == 3 ||
@@ -379,11 +376,13 @@ function VNCClient(display) {
     }
 
 
+    var seq = 0;
+
     function makeRequest() {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("GET", "instructions");
+        xmlhttprequest.open("GET", "instructions?seq=" + (seq++));
 
         xmlhttprequest.send(null); 
         return xmlhttprequest;
