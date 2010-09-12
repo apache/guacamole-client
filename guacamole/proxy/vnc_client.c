@@ -273,7 +273,7 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
     png_byte** png_buffer;
     png_byte** png_buffer_alpha;
 
-    vnc_guac_client_data* vnc_guac_client_data;
+    vnc_guac_client_data* guac_client_data;
 
     /*** INIT ***/
     rfb_client = rfbGetClient(8, 3, 4); /* 32-bpp client */
@@ -309,12 +309,12 @@ void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
     rfbClientSetClientData(rfb_client, __GUAC_CLIENT, client);
 
     /* Set client data */
-    vnc_guac_client_data = malloc(sizeof(vnc_guac_client_data));
-    vnc_guac_client_data->rfb_client = rfb_client;
-    vnc_guac_client_data->png_buffer = png_buffer;
-    vnc_guac_client_data->png_buffer_alpha = png_buffer_alpha;
-    vnc_guac_client_data->copy_rect_used = 0;
-    client->data = vnc_guac_client_data;
+    guac_client_data = malloc(sizeof(vnc_guac_client_data));
+    guac_client_data->rfb_client = rfb_client;
+    guac_client_data->png_buffer = png_buffer;
+    guac_client_data->png_buffer_alpha = png_buffer_alpha;
+    guac_client_data->copy_rect_used = 0;
+    client->data = guac_client_data;
 
     /* Set handlers */
     client->handle_messages = vnc_guac_client_handle_messages;
