@@ -26,7 +26,6 @@
 #include <netinet/in.h>
 
 #include "client.h"
-#include "vnc_client.h"
 
 int main(int argc, char* argv[]) {
 
@@ -107,7 +106,7 @@ int main(int argc, char* argv[]) {
 
             fprintf(stderr, "[guacamole] spawning client\n");
 
-            client = guac_get_client(connected_socket_fd, vnc_guac_client_init, connect_host, connect_port); 
+            client = NULL; /*guac_get_client(connected_socket_fd, vnc_guac_client_init, connect_host, connect_port); */ /* STUB! */
             guac_start_client(client);
             guac_free_client(client);
 
