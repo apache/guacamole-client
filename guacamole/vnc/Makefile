@@ -1,6 +1,6 @@
 
 CFLAGS=-O2 -fPIC -pedantic -Wall -Werror -I../libguac/include
-LDFLAGS=-L../libguac -lpng -lguac
+LDFLAGS=-L../libguac -lpng -lguac -lvncclient
 
 .PHONY: clean
 

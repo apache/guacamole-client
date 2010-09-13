@@ -264,7 +264,7 @@ void vnc_guac_client_free_handler(guac_client* client) {
 }
 
 
-void vnc_guac_client_init(guac_client* client, const char* hostname, int port) {
+void guac_client_init(guac_client* client, const char* hostname, int port) {
 
     char* hostname_copy;
 

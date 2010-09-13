@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <dlfcn.h>
 
 #include "client.h"
 
@@ -103,10 +104,37 @@ int main(int argc, char* argv[]) {
         else if (client_pid == 0) {
 
             guac_client* client;
+            void* client_plugin_handle;
+
+            union {
+                void (*client_init)(guac_client* client, const char* hostname, int port);
+                void* obj;
+            } alias;
+
+            char* error;
+
 
             fprintf(stderr, "[guacamole] spawning client\n");
 
-            client = NULL; /*guac_get_client(connected_socket_fd, vnc_guac_client_init, connect_host, connect_port); */ /* STUB! */
+            /* Load client plugin */
+            client_plugin_handle = dlopen("libguac_client_vnc.so", RTLD_LAZY);
+            if (!client_plugin_handle) {
+                fprintf(stderr, "[guacamole] could not open client plugin: %s\n", dlerror());
+                return 2;
+            }
+
+            dlerror(); /* Clear errors */
+
+            /* Get init function */
+            alias.obj = dlsym(client_plugin_handle, "guac_client_init");
+
+            if ((error = dlerror()) != NULL) {
+                fprintf(stderr, "[guacamole] could not get guac_client_init in plugin: %s\n", error);
+                return 2;
+            }
+
+            /* Load and start client */
+            client = guac_get_client(connected_socket_fd, alias.client_init, connect_host, connect_port); 
             guac_start_client(client);
             guac_free_client(client);
 
@@ -114,6 +142,12 @@ int main(int argc, char* argv[]) {
             if (close(connected_socket_fd) < 0) {
                 perror("Error closing connection");
                 return 3;
+            }
+
+            /* Load client plugin */
+            if (dlclose(client_plugin_handle)) {
+                fprintf(stderr, "[guacamole] could not close client plugin: %s\n", dlerror());
+                return 2;
             }
 
             fprintf(stderr, "[guacamole] client finished\n");
