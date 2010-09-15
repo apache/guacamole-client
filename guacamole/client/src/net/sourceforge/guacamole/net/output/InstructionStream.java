@@ -18,12 +18,9 @@ package net.sourceforge.guacamole.net.output;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.Writer;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.GZIPOutputStream;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,8 +28,6 @@ import net.sourceforge.guacamole.Client;
 import net.sourceforge.guacamole.net.GuacamoleServlet;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
-import net.sourceforge.guacamole.instruction.Instruction;
-import net.sourceforge.guacamole.instruction.ErrorInstruction;
 
 
 public class InstructionStream extends GuacamoleServlet {
@@ -46,36 +41,7 @@ public class InstructionStream extends GuacamoleServlet {
         try {
 
             response.setContentType("text/plain");
-            OutputStream out = response.getOutputStream();
-
-            // Compress if enabled and supported by browser
-            if (session.getConfiguration().getCompressStream()) {
-
-                String encodingHeader = request.getHeader("Accept-Encoding");
-                if (encodingHeader != null) {
-
-                    String[] encodings = encodingHeader.split(",");
-                    for (String encoding : encodings) {
-
-                        // Use gzip if supported
-                        if (encoding.equals("gzip")) {
-                            response.setHeader("Content-Encoding", "gzip");
-                            out = new GZIPOutputStream(out);
-                            break;
-                        }
-
-                        // Use deflate if supported
-                        if (encoding.equals("deflate")) {
-                            response.setHeader("Content-Encoding", "deflate");
-                            out = new DeflaterOutputStream(out);
-                            break;
-                        }
-
-                    }
-
-                }
-
-            }
+            Writer out = response.getWriter();
 
             try {
 
@@ -83,12 +49,11 @@ public class InstructionStream extends GuacamoleServlet {
                 Client client = session.getClient();
 
                 // For all messages, until another stream is ready (we send at least one message)
-                Instruction message = client.nextInstruction(true); // Block until first message is read
-                while (message != null) {
+                char[] message;
+                while ((message = client.read()) != null) {
 
                     // Get message output bytes
-                    byte[] outputBytes = message.toString().getBytes("UTF-8");
-                    out.write(outputBytes);
+                    out.write(message, 0, message.length);
                     out.flush();
                     response.flushBuffer();
 
@@ -96,14 +61,11 @@ public class InstructionStream extends GuacamoleServlet {
                     if (instructionStreamLock.hasQueuedThreads())
                         break;
 
-                    message = client.nextInstruction(false); // Read remaining messages, do not block.
                 }
 
             }
             catch (GuacamoleException e) {
-                Instruction message = new ErrorInstruction(e.getMessage());
-                byte[] outputBytes = message.toString().getBytes("UTF-8");
-                out.write(outputBytes);
+                out.write("error:" + e.getMessage() + ";");
                 out.flush();
                 response.flushBuffer();
             }

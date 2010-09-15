@@ -21,42 +21,37 @@ package net.sourceforge.guacamole.net.input;
 import javax.servlet.ServletRequest;
 import net.sourceforge.guacamole.GuacamoleException;
 import org.w3c.dom.Element;
-import net.sourceforge.guacamole.event.PointerEvent;
+
+import java.io.Reader;
+import java.io.IOException;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
 
-public class Pointer extends XMLGuacamoleServlet {
+public class Inbound extends XMLGuacamoleServlet {
 
 
     @Override
     protected void handleRequest(GuacamoleSession session, ServletRequest request, Element root) throws GuacamoleException {
-        // Event parameters
-        String[] events = request.getParameterValues("event");
 
-        for (String event : events) {
+        // Send data
+        try {
 
-            String[] parameters = event.split(",");
+            Reader input = request.getReader();
+            char[] buffer = new char[8192];
 
-            int index = Integer.parseInt(parameters[0]);
+            int length;
+            while ((length = input.read(buffer, 0, buffer.length)) != -1)
+                session.getClient().write(buffer, 0, length);
 
-            int x = Integer.parseInt(parameters[1]);
-            int y = Integer.parseInt(parameters[2]);
-
-            boolean left = parameters[3].equals("1");
-            boolean middle = parameters[4].equals("1");
-            boolean right = parameters[5].equals("1");
-            boolean up = parameters[6].equals("1");
-            boolean down = parameters[7].equals("1");
-
-            // Store event
-            try {
-                session.getClient().send(new PointerEvent(index, left, middle, right, up, down, x, y));
-            }
-            catch (GuacamoleException e) {
-                throw new GuacamoleException("Error sending pointer event to server: " + e.getMessage(), e);
-            }
         }
+        catch (IOException e) {
+            throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+        }
+        catch (GuacamoleException e) {
+            throw new GuacamoleException("Error sending data to server: " + e.getMessage(), e);
+        }
+
     }
 
 }

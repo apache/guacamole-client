@@ -46,9 +46,6 @@ function VNCClient(display) {
             || currentState == STATE_WAITING;
     }
 
-    var keyIndex = 0;
-    var xmlIndex = 0;
-
     // Layers
     var background = null;
     var cursor = null;
@@ -118,17 +115,7 @@ function VNCClient(display) {
     this.enableKeyboard();
 
     function sendKeyEvent(pressed, keysym) {
-
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
-
-        var key_xmlhttprequest = new XMLHttpRequest();
-        key_xmlhttprequest.open("GET",
-            "key?index=" + (keyIndex++)
-                + "&pressed=" + pressed
-                + "&keysym=" + keysym);
-        key_xmlhttprequest.send(null);
+        sendMessage("key:" +  keysym + "," + pressed + ";");
     }
 
     this.pressKey = function(keysym) {
@@ -170,47 +157,63 @@ function VNCClient(display) {
     );
 
 
-    var sendingMouseEvents = 0;
-    var mouseEventBuffer = "";
-
     function sendMouseState(mouseState) {
+
+        // Build mask
+        var buttonMask = 0;
+        if (mouseState.getLeft())   buttonMask |= 1;
+        if (mouseState.getMiddle()) buttonMask |= 2;
+        if (mouseState.getRight())  buttonMask |= 4;
+        if (mouseState.getUp())     buttonMask |= 8;
+        if (mouseState.getDown())   buttonMask |= 16;
+
+        // Send message
+        sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
+    }
+
+    var sendingMessages = 0;
+    var outputMessageBuffer = "";
+
+    function sendMessage(message) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
         // Add event to queue, restart send loop if finished.
-        if (mouseEventBuffer.length > 0) mouseEventBuffer += "&";
-        mouseEventBuffer += "event=" + mouseState.toString();
-        if (sendingMouseEvents == 0)
-            sendPendingMouseEvents();
+        outputMessageBuffer += message;
+        if (sendingMessages == 0)
+            sendPendingMessages();
 
     }
 
-    function sendPendingMouseEvents() {
+    function sendPendingMessages() {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        if (mouseEventBuffer.length > 0) {
+        if (outputMessageBuffer.length > 0) {
 
-            sendingMouseEvents = 1;
+            sendingMessages = 1;
 
-            var mouse_xmlhttprequest = new XMLHttpRequest();
-            mouse_xmlhttprequest.open("GET", "pointer?" + mouseEventBuffer);
-            mouseEventBuffer = ""; // Clear buffer
+            var message_xmlhttprequest = new XMLHttpRequest();
+            message_xmlhttprequest.open("POST", "inbound");
+            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            message_xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
 
             // Once response received, send next queued event.
-            mouse_xmlhttprequest.onreadystatechange = function() {
-                if (mouse_xmlhttprequest.readyState == 4)
-                    sendPendingMouseEvents();
+            message_xmlhttprequest.onreadystatechange = function() {
+                if (message_xmlhttprequest.readyState == 4)
+                    sendPendingMessages();
             }
 
-            mouse_xmlhttprequest.send(null);
+            message_xmlhttprequest.send(outputMessageBuffer);
+            outputMessageBuffer = ""; // Clear buffer
+
         }
         else
-            sendingMouseEvents = 0;
+            sendingMessages = 0;
 
     }
 
@@ -225,10 +228,7 @@ function VNCClient(display) {
         if (!isConnected())
             return;
 
-        var clipboard_xmlhttprequest = new XMLHttpRequest();
-        clipboard_xmlhttprequest.open("POST", "clipboard");
-        clipboard_xmlhttprequest.send(data);
-
+        sendMessage("clipboard:" + escapeGuacamoleString(data) + ";");
     }
 
 
@@ -384,6 +384,28 @@ function VNCClient(display) {
         xmlhttprequest.send(null); 
 
         return xmlhttprequest;
+
+    }
+
+    function escapeGuacamoleString(str) {
+
+        var escapedString = "";
+
+        for (var i=0; i<str.length; i++) {
+
+            var c = str.charAt(i);
+            if (c == ",")
+                escapedString += "\\c";
+            else if (c == ";")
+                escapedString += "\\s";
+            else if (c == "\\")
+                escapedString += "\\\\";
+            else
+                escapedString += c;
+
+        }
+
+        return escapedString;
 
     }
 

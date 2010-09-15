@@ -31,7 +31,6 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.io.OutputStreamWriter;
 
-import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.event.EventQueue;
 import net.sourceforge.guacamole.event.EventHandler;
@@ -57,64 +56,9 @@ public class GuacamoleClient extends Client {
 
     }
 
-
-    private static final int EVENT_DEADLINE = 500;
-
-    private EventQueue<KeyEvent> keyEvents = new EventQueue<KeyEvent>(new EventHandler<KeyEvent>() {
-
-        public void handle(KeyEvent event) throws IOException {
-            int pressed = 0;
-            if (event.getPressed()) pressed = 1;
-
-            output.write("key:" + event.getKeySym() + "," + pressed + ";");
-            output.flush();
-        }
-
-    }, EVENT_DEADLINE);
-
-    private EventQueue<PointerEvent> pointerEvents = new EventQueue<PointerEvent>(new EventHandler<PointerEvent>() {
-
-        public void handle(PointerEvent event) throws IOException {
-            int mask = 0;
-            if (event.isLeftButtonPressed())   mask |= 1;
-            if (event.isMiddleButtonPressed()) mask |= 2;
-            if (event.isRightButtonPressed())  mask |= 4;
-            if (event.isUpButtonPressed())     mask |= 8;
-            if (event.isDownButtonPressed())   mask |= 16;
-
-
-            output.write("mouse:" + event.getX() + "," + event.getY() + "," + mask + ";");
-            output.flush();
-        }
-
-    }, EVENT_DEADLINE);
-
-
-    public void send(KeyEvent event) throws GuacamoleException {
-
+    public void write(char[] chunk, int off, int len) throws GuacamoleException {
         try {
-            keyEvents.add(event);
-        }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
-
-    }
-
-    public void send(PointerEvent event) throws GuacamoleException {
-
-        try {
-            pointerEvents.add(event);
-        }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
-
-    }
-
-    public void setClipboard(String clipboard) throws GuacamoleException {
-        try {
-            output.write("clipboard:" + Instruction.escape(clipboard) + ";");
+            output.write(chunk, off, len);
             output.flush();
         }
         catch (IOException e) {
@@ -134,7 +78,7 @@ public class GuacamoleClient extends Client {
     private int usedLength = 0;
     private char[] buffer = new char[20000];
 
-    public Instruction nextInstruction(boolean blocking) throws GuacamoleException {
+    public char[] read() throws GuacamoleException {
 
         try {
 
@@ -164,20 +108,15 @@ public class GuacamoleClient extends Client {
                     if (readChar == ';') {
 
                         // Get instruction
-                        final String instruction = new String(buffer, 0, i+1);
+                        char[] chunk = new char[i+1];
+                        System.arraycopy(buffer, 0, chunk, 0, i+1);
 
                         // Reset buffer
                         usedLength -= i+1;
                         System.arraycopy(buffer, i+1, buffer, 0, usedLength);
 
-                        // Return instruction string wrapped in Instruction class
-                        return new Instruction() {
-
-                            public String toString() {
-                                return instruction;
-                            }
-
-                        };
+                        // Return instruction string
+                        return chunk;
                     }
 
                 }

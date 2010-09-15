@@ -53,31 +53,13 @@
         <url-pattern>/instructions</url-pattern>
     </servlet-mapping>
     <servlet>
-        <description>Clipboard input servlet.</description>
-        <servlet-name>Clipboard</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.input.Clipboard</servlet-class>
+        <description>Input servlet.</description>
+        <servlet-name>Inbound</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.input.Inbound</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Clipboard</servlet-name>
-        <url-pattern>/clipboard</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <description>Key input servlet.</description>
-        <servlet-name>Key</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.input.Key</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Key</servlet-name>
-        <url-pattern>/key</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <description>Pointer input servlet.</description>
-        <servlet-name>Pointer</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.input.Pointer</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Pointer</servlet-name>
-        <url-pattern>/pointer</url-pattern>
+        <servlet-name>Inbound</servlet-name>
+        <url-pattern>/inbound</url-pattern>
     </servlet-mapping>
     <security-constraint>
         <display-name>Guacamole Access Restrictions</display-name>

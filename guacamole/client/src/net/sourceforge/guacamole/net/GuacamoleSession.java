@@ -27,7 +27,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 import net.sourceforge.guacamole.Client;
 import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.event.KeyEvent;
 import net.sourceforge.guacamole.event.PointerEvent;
 
@@ -59,24 +58,16 @@ public class GuacamoleSession {
             }
         }
 
-        public void send(KeyEvent event) throws GuacamoleException {
-            client.send(event);
+        public void write(char[] data, int off, int len) throws GuacamoleException {
+            client.write(data, off, len);
         }
 
-        public void send(PointerEvent event) throws GuacamoleException {
-            client.send(event);
-        }
-
-        public void setClipboard(String clipboard) throws GuacamoleException {
-            client.setClipboard(clipboard);
+        public char[] read() throws GuacamoleException {
+            return client.read();
         }
 
         public void disconnect() throws GuacamoleException {
             client.disconnect();
-        }
-
-        public Instruction nextInstruction(boolean blocking) throws GuacamoleException {
-            return client.nextInstruction(blocking);
         }
 
     }

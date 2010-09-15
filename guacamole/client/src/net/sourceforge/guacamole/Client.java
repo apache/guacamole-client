@@ -19,17 +19,14 @@ package net.sourceforge.guacamole;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.instruction.Instruction;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.event.KeyEvent;
 import net.sourceforge.guacamole.event.PointerEvent;
 
 public abstract class Client {
 
-    public abstract void send(KeyEvent event) throws GuacamoleException;
-    public abstract void send(PointerEvent event) throws GuacamoleException;
-    public abstract void setClipboard(String clipboard) throws GuacamoleException;
+    public abstract void write(char[] chunk, int off, int len) throws GuacamoleException;
+    public abstract char[] read() throws GuacamoleException;
     public abstract void disconnect() throws GuacamoleException;
-    public abstract Instruction nextInstruction(boolean blocking) throws GuacamoleException;
 
 }
