@@ -2,9 +2,15 @@
 CFLAGS=-O2 -fPIC -pedantic -Wall -Werror -Iinclude
 LDFLAGS=-lpng
 
-.PHONY: clean
+.PHONY: clean doc
 
 all: libguac.so
+
+doc:
+	doxygen
+
+clean-doc:
+	$(RM) -R doc/*
 
 libguac.so: client.o guacio.o protocol.o
 	$(CC) $(CFLAGS) -shared $(LDFLAGS) -Wl,-soname,libguac.so.0 -o libguac.so client.o protocol.o guacio.o

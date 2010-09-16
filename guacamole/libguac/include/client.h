@@ -24,9 +24,27 @@
 
 #include "guacio.h"
 
+/**
+ * Guacamole proxy client.
+ *
+ * Represents a Guacamole proxy client (the client which communicates to
+ * a server on behalf of Guacamole, on behalf of the web-client).
+ */
 typedef struct guac_client {
 
+    /**
+     * The GUACIO structure to be used to communicate with the web-client. It is
+     * expected that the implementor of any Guacamole proxy client will provide
+     * their own mechanism of I/O for their protocol. The GUACIO structure is
+     * used only to communicate conveniently with the Guacamole web-client.
+     */
     GUACIO* io;
+
+    /**
+     * Arbitrary reference to proxy client-specific data. Implementors of a
+     * Guacamole proxy client can store any data they want here, which can then
+     * be retrieved as necessary in the message handlers.
+     */
     void* data;
 
     void (*handle_messages)(struct guac_client* client);
