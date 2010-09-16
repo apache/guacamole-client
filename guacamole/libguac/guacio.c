@@ -49,7 +49,7 @@ GUACIO* guac_open(int fd) {
     io->instructionbuf_used_length = 0;
 
     /* Set limit */
-    io->transfer_limit = 0;
+    io->transfer_limit = 256;
 
     return io;
 

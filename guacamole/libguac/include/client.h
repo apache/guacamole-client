@@ -24,13 +24,21 @@
 
 #include "guacio.h"
 
+typedef struct guac_client guac_client;
+
+typedef void guac_client_handle_messages(guac_client* client);
+typedef void guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
+typedef void guac_client_key_handler(guac_client* client, int keysym, int pressed);
+typedef void guac_client_clipboard_handler(guac_client* client, char* copied);
+typedef void guac_client_free_handler(void* client);
+
 /**
  * Guacamole proxy client.
  *
  * Represents a Guacamole proxy client (the client which communicates to
  * a server on behalf of Guacamole, on behalf of the web-client).
  */
-typedef struct guac_client {
+struct guac_client {
 
     /**
      * The GUACIO structure to be used to communicate with the web-client. It is
@@ -47,15 +55,16 @@ typedef struct guac_client {
      */
     void* data;
 
-    void (*handle_messages)(struct guac_client* client);
-    void (*mouse_handler)(struct guac_client* client, int x, int y, int button_mask);
-    void (*key_handler)(struct guac_client* client, int keysym, int pressed);
-    void (*clipboard_handler)(struct guac_client* client, char* copied);
-    void (*free_handler)(void* client);
+    guac_client_handle_messages* handle_messages;
+    guac_client_mouse_handler* mouse_handler;
+    guac_client_key_handler* key_handler;
+    guac_client_clipboard_handler* clipboard_handler;
+    guac_client_free_handler* free_handler;
 
-} guac_client;
+};
 
-guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client, const char* hostname, int port), const char* hostname, int port);
+typedef void guac_client_init_handler(guac_client* client, const char* hostname, int port);
+guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port);
 void guac_start_client(guac_client* client);
 void guac_free_client(guac_client* client);
 png_byte** guac_alloc_png_buffer(int w, int h, int bpp);

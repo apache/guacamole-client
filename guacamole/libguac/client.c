@@ -53,7 +53,7 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-guac_client* guac_get_client(int client_fd, void (*client_init)(guac_client* client, const char* hostname, int port), const char* hostname, int port) {
+guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port) {
 
     guac_client* client = malloc(sizeof(guac_client));
 
