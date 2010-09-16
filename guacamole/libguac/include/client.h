@@ -55,10 +55,106 @@ struct guac_client {
      */
     void* data;
 
+    /**
+     * Handler for server messages. If set, this function will be called
+     * occasionally by the Guacamole proxy to give the client a chance to
+     * handle messages from whichever server it is connected to.
+     *
+     * Example:
+     * @code
+     *     void handle_messages(guac_client* client);
+     *
+     *     void guac_client_init(guac_client* client) {
+     *         client->handle_messages = handle_messages;
+     *     }
+     * @endcode
+     */
     guac_client_handle_messages* handle_messages;
+
+    /**
+     * Handler for mouse events sent by the Gaucamole web-client.
+     *
+     * The handler takes the integer mouse X and Y coordinates, as well as
+     * a button mask containing the bitwise OR of all button values currently
+     * being pressed. Those values are:
+     *
+     * <table>
+     *     <tr><th>Button</th>          <th>Value</th></tr>
+     *     <tr><td>Left</td>            <td>1</td></tr>
+     *     <tr><td>Middle</td>          <td>2</td></tr>
+     *     <tr><td>Right</td>           <td>4</td></tr>
+     *     <tr><td>Scrollwheel Up</td>  <td>8</td></tr>
+     *     <tr><td>Scrollwheel Down</td><td>16</td></tr>
+     * </table>
+
+     * Example:
+     * @code
+     *     void mouse_handler(guac_client* client, int x, int y, int button_mask);
+     *
+     *     void guac_client_init(guac_client* client) {
+     *         client->mouse_handler = mouse_handler;
+     *     }
+     * @endcode
+     */
     guac_client_mouse_handler* mouse_handler;
+
+    /**
+     * Handler for key events sent by the Guacamole web-client.
+     *
+     * The handler takes the integer X11 keysym associated with the key
+     * being pressed/released, and an integer representing whether the key
+     * is being pressed (1) or released (0).
+     *
+     * Example:
+     * @code
+     *     void key_handler(guac_client* client, int keysym, int pressed);
+     *
+     *     void guac_client_init(guac_client* client) {
+     *         client->key_handler = key_handler;
+     *     }
+     * @endcode
+     */
     guac_client_key_handler* key_handler;
+
+    /**
+     * Handler for clipboard events sent by the Guacamole web-client. This
+     * handler will be called whenever the web-client sets the data of the
+     * clipboard.
+     *
+     * This handler takes a single string which contains the text which
+     * has been set in the clipboard. This text is already unescaped from
+     * the Guacamole escaped version sent within the clipboard message
+     * in the protocol.
+     *
+     * Example:
+     * @code
+     *     void clipboard_handler(guac_client* client, char* copied);
+     *
+     *     void guac_client_init(guac_client* client) {
+     *         client->clipboard_handler = clipboard_handler;
+     *     }
+     * @endcode
+     */
     guac_client_clipboard_handler* clipboard_handler;
+
+    /**
+     * Handler for freeing data when the client is being unloaded.
+     *
+     * This handler will be called when the client needs to be unloaded
+     * by the proxy, and any data allocated by the proxy client should be
+     * freed.
+     *
+     * Implement this handler if you store data inside the client.
+     *
+     * Example:
+     * @code
+     *     void free_handler(guac_client* client);
+     *
+     *     void guac_client_init(guac_client* client) {
+     *         client->free_handler = free_handler;
+     *     }
+     * @endcode
+     */
     guac_client_free_handler* free_handler;
 
 };
