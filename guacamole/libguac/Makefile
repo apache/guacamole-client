@@ -10,7 +10,7 @@ doc:
 	doxygen
 
 clean-doc:
-	$(RM) -R doc/*
+	$(RM) -R doc
 
 libguac.so: client.o guacio.o protocol.o
 	$(CC) $(CFLAGS) -shared $(LDFLAGS) -Wl,-soname,libguac.so.0 -o libguac.so client.o protocol.o guacio.o
