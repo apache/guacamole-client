@@ -24,6 +24,12 @@
 
 #include "guacio.h"
 
+/**
+ * Provides functions and structures required for defining (and handling) a proxy client.
+ *
+ * @file client.h
+ */
+
 typedef struct guac_client guac_client;
 
 typedef void guac_client_handle_messages(guac_client* client);
