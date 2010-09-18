@@ -27,6 +27,122 @@
 #include "client.h"
 
 
+
+guac_client_registry_node* guac_create_client_registry() {
+
+    guac_client_registry_node* registry = malloc(sizeof(guac_client_registry_node));
+
+    registry->used = 0;
+    memset(registry->next, 0, sizeof(registry->next));
+
+    return registry;
+
+}
+
+void guac_register_client(guac_client_registry_node* registry, guac_client* client) {
+
+    guac_client_registry_node* current = registry;
+    int i;
+    unsigned char index;
+
+    for (i=0; i<sizeof(uuid_t)-1; i++) {
+
+        guac_client_registry_node* next;
+
+        /* Get next registry node */
+        index = ((unsigned char*) client->uuid)[i];
+        next = ((guac_client_registry_node**) current->next)[index];
+
+        /* If no node, allocate one */
+        if (next == NULL) {
+            current->used++;
+            next = guac_create_client_registry();
+            ((guac_client_registry_node**) current->next)[index] = next;
+        }
+
+        current = next;
+    }
+
+    /* Register client */
+    index = ((unsigned char*) client->uuid)[i];
+    ((guac_client**) current->next)[index] = client;
+
+}
+
+guac_client* guac_find_client(guac_client_registry_node* registry, uuid_t uuid) {
+
+    guac_client_registry_node* current = registry;
+    int i;
+    unsigned char index;
+
+    for (i=0; i<sizeof(uuid_t)-1; i++) {
+
+        /* Get next registry node */
+        index = ((unsigned char*) uuid)[i];
+        current = ((guac_client_registry_node**) current->next)[index];
+
+        /* If no node, client not registered */
+        if (current == NULL)
+            return NULL;
+
+    }
+
+    /* Return client found (if any) */
+    index = ((unsigned char*) uuid)[i];
+    return ((guac_client**) current->next)[index];
+
+}
+
+void guac_remove_client(guac_client_registry_node* registry, guac_client* client) {
+
+    guac_client_registry_node* current = registry;
+    int i;
+    unsigned char index;
+
+    for (i=0; i<sizeof(uuid_t)-1; i++) {
+
+        /* Get next registry node */
+        index = ((unsigned char*) client->uuid)[i];
+        current = ((guac_client_registry_node**) current->next)[index];
+
+        /* If no node, client not registered */
+        if (current == NULL)
+            return;
+
+    }
+
+    /* Remove client, if registered */
+    if (((guac_client**) current->next)[index]) {
+        ((guac_client**) current->next)[index] = NULL;
+        current->used--;
+
+        /* FIXME: If no more clients at this node, clean up */
+        if (current->used == 0) {
+            /* STUB */
+        }
+
+    }
+
+}
+
+void guac_cleanup_client_registry(guac_client_registry_node* registry) {
+
+    int i;
+    for (i=0; i<sizeof(registry->next); i++) {
+
+        if (registry->next[i] != NULL) {
+            guac_cleanup_client_registry(registry->next[i]);
+            registry->next[i] = NULL;
+        }
+
+    }
+
+    free(registry);
+
+}
+
+
+
 png_byte** guac_alloc_png_buffer(int w, int h, int bpp) {
 
     png_byte** png_buffer;
@@ -67,7 +183,7 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 }
 
 
-guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port) {
+guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, const char* hostname, int port) {
 
     guac_client* client;
     GUACIO* io = guac_open(client_fd);
@@ -83,7 +199,15 @@ guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_ini
            
             /* connect -> create new client connection */
             if (strcmp(instruction.opcode, "connect") == 0) {
+                
+                /* Create new client */
                 client = __guac_alloc_client(io);
+
+                /* Register client */
+                if (registry)
+                    guac_register_client(registry, client);
+
+                /* Send UUID to web-client */
                 guac_send_uuid(io, client->uuid);
                 break;
             }
@@ -105,11 +229,14 @@ guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_ini
 }
 
 
-void guac_free_client(guac_client* client) {
+void guac_free_client(guac_client* client, guac_client_registry_node* registry) {
+
     if (client->free_handler)
         client->free_handler(client);
 
     guac_close(client->io);
+
+    guac_remove_client(registry, client);
 
     free(client);
 }

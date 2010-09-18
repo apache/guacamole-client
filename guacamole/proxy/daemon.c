@@ -30,6 +30,8 @@
 
 int main(int argc, char* argv[]) {
 
+    guac_client_registry_node* registry;
+
     /* Server */
     int socket_fd;
     struct sockaddr_in server_addr;
@@ -75,6 +77,9 @@ int main(int argc, char* argv[]) {
     }
 
     fprintf(stderr, "[guacamole] listening on port %i, forwarding to %s:%i\n", listen_port, connect_host, connect_port);
+
+    /* Allocate registry */
+    registry = guac_create_client_registry();
 
     /* Daemon loop */
     for (;;) {
@@ -134,9 +139,9 @@ int main(int argc, char* argv[]) {
             }
 
             /* Load and start client */
-            client = guac_get_client(connected_socket_fd, alias.client_init, connect_host, connect_port); 
+            client = guac_get_client(connected_socket_fd, registry, alias.client_init, connect_host, connect_port); 
             guac_start_client(client);
-            guac_free_client(client);
+            guac_free_client(client, registry);
 
             /* Close socket */
             if (close(connected_socket_fd) < 0) {
@@ -155,6 +160,8 @@ int main(int argc, char* argv[]) {
         }
 
     }
+
+    /* FIXME: Cleanup client registry (and all other objects) on exit */
 
     /* Close socket */
     if (close(socket_fd) < 0) {

@@ -32,6 +32,7 @@
  */
 
 typedef struct guac_client guac_client;
+typedef struct guac_client_registry_node guac_client_registry_node;
 
 typedef void guac_client_handle_messages(guac_client* client);
 typedef void guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
@@ -178,6 +179,7 @@ typedef void guac_client_init_handler(guac_client* client, const char* hostname,
  * Initialize and return a new guac_client using the specified client init handler (guac_client_init_handler).
  * This will normally be the guac_client_init function as provided by any of the pluggable proxy clients.
  *
+ * @param registry The registry to use to register/find the client we need to return.
  * @param client_fd The file descriptor associated with the socket associated with the connection to the
  *                  web-client tunnel.
  * @param client_init Function pointer to the client init handler which will initialize the new guac_client
@@ -186,7 +188,7 @@ typedef void guac_client_init_handler(guac_client* client, const char* hostname,
  * @param port The port of the host that the proxy client should connect to.
  * @return A pointer to the newly initialized client.
  */
-guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port);
+guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, const char* hostname, int port);
 
 /**
  * Enter the main network message handling loop for the given client.
@@ -199,8 +201,9 @@ void guac_start_client(guac_client* client);
  * Free all resources associated with the given client.
  *
  * @param client The proxy client to free all reasources of.
+ * @param registry The registry to remove this client from when freed.
  */
-void guac_free_client(guac_client* client);
+void guac_free_client(guac_client* client, guac_client_registry_node* registry);
 
 /**
  * Allocate a libpng-compatible buffer to hold raw image data.
@@ -220,5 +223,69 @@ png_byte** guac_alloc_png_buffer(int w, int h, int bpp);
  * @param h The height of the buffer to free.
  */
 void guac_free_png_buffer(png_byte** png_buffer, int h);
+
+
+/**
+ * Represents a single node of the Guacamole client registry. The
+ * Guacamole client registry contains references to all active clients,
+ * indexed by client UUID.
+ */
+struct guac_client_registry_node {
+
+    /**
+     * The number of pointers used inside the next array.
+     */
+    int used;
+
+    /**
+     * The next guac_client_registry_node if currently looking at any byte
+     * of the UUID except the last, or the guac_client if looking at the
+     * last byte of the UUID.
+     */
+    void* next[256];
+
+};
+
+/**
+ * Registers the given client in the client registry by that client's UUID.
+ *
+ * @param registry The registry to register the client within.
+ * @param client The client to register.
+ */
+void guac_register_client(guac_client_registry_node* registry, guac_client* client);
+
+/**
+ * Returns the client from the client registry associated with the given UUID.
+ *
+ * @param registry The registry to search.
+ * @param uuid The uuid of the client to lookup.
+ * @return The client, if found, or NULL if no such client has been registered.
+ */
+guac_client* guac_find_client(guac_client_registry_node* registry, uuid_t uuid);
+
+/**
+ * Removes the given client from the client registry.
+ *
+ * @param registry The registry to remove the client from.
+ * @param client The client to remove.
+ */
+void guac_remove_client(guac_client_registry_node* registry, guac_client* client);
+
+/**
+ * Creates a new client registry.
+ * 
+ * @return The newly allocated and initialized registry.
+ */
+guac_client_registry_node* guac_create_client_registry();
+
+/**
+ * Frees all memory associated with the given client registry.
+ *
+ * @param registry The registry to clean up.
+ */
+void guac_cleanup_client_registry(guac_client_registry_node* registry);
+
+
+
 
 #endif
