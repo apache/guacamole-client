@@ -184,7 +184,7 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 }
 
 
-guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, const char* hostname, int port) {
+guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, int argc, char** argv) {
 
     guac_client* client;
     GUACIO* io = guac_open(client_fd);
@@ -214,7 +214,7 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
                 }
 
                 /* FIXME: hostname and port should not be required. Should be made available in some sort of client-contained argc/argv, specified after the protocol on the commandline */
-                client_init(client, hostname, port);
+                client_init(client, argc, argv);
                 break;
             }
 

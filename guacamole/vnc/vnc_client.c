@@ -264,7 +264,7 @@ void vnc_guac_client_free_handler(guac_client* client) {
 }
 
 
-void guac_client_init(guac_client* client, const char* hostname, int port) {
+void guac_client_init(guac_client* client, int argc, char** argv) {
 
     char* hostname_copy;
 
@@ -294,10 +294,10 @@ void guac_client_init(guac_client* client, const char* hostname, int port) {
 
     /* Connect */
     hostname_copy = malloc(1024);
-    strncpy(hostname_copy, hostname, 1024);
+    strncpy(hostname_copy, argv[0], 1024);
 
     rfb_client->serverHost = hostname_copy;
-    rfb_client->serverPort = port;
+    rfb_client->serverPort = atoi(argv[1]);
 
     rfbInitClient(rfb_client, NULL, NULL);
 

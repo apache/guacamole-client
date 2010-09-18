@@ -78,7 +78,7 @@ struct guac_client {
      * @code
      *     void handle_messages(guac_client* client);
      *
-     *     void guac_client_init(guac_client* client) {
+     *     void guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->handle_messages = handle_messages;
      *     }
      * @endcode
@@ -105,7 +105,7 @@ struct guac_client {
      * @code
      *     void mouse_handler(guac_client* client, int x, int y, int button_mask);
      *
-     *     void guac_client_init(guac_client* client) {
+     *     void guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->mouse_handler = mouse_handler;
      *     }
      * @endcode
@@ -123,7 +123,7 @@ struct guac_client {
      * @code
      *     void key_handler(guac_client* client, int keysym, int pressed);
      *
-     *     void guac_client_init(guac_client* client) {
+     *     void guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->key_handler = key_handler;
      *     }
      * @endcode
@@ -144,7 +144,7 @@ struct guac_client {
      * @code
      *     void clipboard_handler(guac_client* client, char* copied);
      *
-     *     void guac_client_init(guac_client* client) {
+     *     void guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->clipboard_handler = clipboard_handler;
      *     }
      * @endcode
@@ -164,7 +164,7 @@ struct guac_client {
      * @code
      *     void free_handler(guac_client* client);
      *
-     *     void guac_client_init(guac_client* client) {
+     *     void guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->free_handler = free_handler;
      *     }
      * @endcode
@@ -173,7 +173,7 @@ struct guac_client {
 
 };
 
-typedef void guac_client_init_handler(guac_client* client, const char* hostname, int port);
+typedef void guac_client_init_handler(guac_client* client, int argc, char** argv);
 
 /**
  * Initialize and return a new guac_client using the specified client init handler (guac_client_init_handler).
@@ -184,11 +184,11 @@ typedef void guac_client_init_handler(guac_client* client, const char* hostname,
  *                  web-client tunnel.
  * @param client_init Function pointer to the client init handler which will initialize the new guac_client
  *                    when called. The given hostname and port will be passed to this handler.
- * @param hostname The hostname of the host that the proxy client should connect to.
- * @param port The port of the host that the proxy client should connect to.
- * @return A pointer to the newly initialized client.
+ * @param argc The number of arguments being passed to this client. 
+ * @param argv The arguments being passed to this client.
+ * @return A pointer to the newly initialized (or found) client.
  */
-guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, const char* hostname, int port);
+guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, int argc, char** argv);
 
 /**
  * Enter the main network message handling loop for the given client.

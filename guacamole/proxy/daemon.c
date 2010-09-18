@@ -28,17 +28,58 @@
 
 #include "client.h"
 
+
+typedef struct client_thread_data {
+
+    int fd;
+    guac_client_init_handler* client_init;
+    guac_client_registry_node* registry;
+
+    int argc;
+    char** argv;
+
+} client_thread_data;
+
+
+void* start_client_thread(void* data) {
+
+    guac_client* client;
+    client_thread_data* thread_data = (client_thread_data*) data;
+
+    fprintf(stderr, "[guacamole] spawning client\n");
+
+    /* Load and start client */
+    client = guac_get_client(thread_data->fd, thread_data->registry, thread_data->client_init, thread_data->argc, thread_data->argv); 
+    guac_start_client(client);
+
+    /* FIXME: Need to free client, but only if the client is not
+     * being used. This line will be reached if handoff occurs
+     */
+    guac_free_client(client, thread_data->registry);
+
+    /* Close socket */
+    if (close(thread_data->fd) < 0) {
+        perror("Error closing connection");
+        free(data);
+        return NULL;
+    }
+
+    fprintf(stderr, "[guacamole] client finished\n");
+    free(data);
+    return NULL;
+
+}
+
 int main(int argc, char* argv[]) {
 
     /* Client registry */
     guac_client_registry_node* registry;
 
     /* Pluggable client */
-    guac_client* client;
     void* client_plugin_handle;
 
     union {
-        void (*client_init)(guac_client* client, const char* hostname, int port);
+        guac_client_init_handler* client_init;
         void* obj;
     } alias;
 
@@ -55,18 +96,23 @@ int main(int argc, char* argv[]) {
     pid_t client_pid ;
 
     int listen_port;
-    const char* connect_host;
-    int connect_port;
 
-    if (argc < 4) {
-        fprintf(stderr, "USAGE: %s LISTENPORT CONNECTHOST CONNECTPORT\n", argv[0]);
+    int client_argc;
+    char** client_argv;
+
+    char protocol_lib[256] = "libguac_client_";
+
+    if (argc < 3) {
+        fprintf(stderr, "USAGE: %s LISTENPORT PROTOCOL [PROTOCOL OPTIONS]\n", argv[0]);
         return 1;
     }
 
     listen_port = atoi(argv[1]);
-    connect_host = argv[2];
-    connect_port = atoi(argv[3]);
+    strcat(protocol_lib, argv[2]);
+    strcat(protocol_lib, ".so");
 
+    client_argc = argc - 3;
+    client_argv = &(argv[3]);
 
     /* Get binding address */
     memset(&server_addr, 0, sizeof(server_addr)); /* Zero struct */
@@ -91,7 +137,7 @@ int main(int argc, char* argv[]) {
     fprintf(stderr, "[guacamole] loading pluggable client\n");
 
     /* Load client plugin */
-    client_plugin_handle = dlopen("libguac_client_vnc.so", RTLD_LAZY);
+    client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
     if (!client_plugin_handle) {
         fprintf(stderr, "[guacamole] could not open client plugin: %s\n", dlerror());
         return 2;
@@ -109,13 +155,15 @@ int main(int argc, char* argv[]) {
 
 
 
-    fprintf(stderr, "[guacamole] listening on port %i, forwarding to %s:%i\n", listen_port, connect_host, connect_port);
+    fprintf(stderr, "[guacamole] listening on port %i\n", listen_port);
 
     /* Allocate registry */
     registry = guac_create_client_registry();
 
     /* Daemon loop */
     for (;;) {
+
+        client_thread_data* data;
 
         /* Listen for connections */
         if (listen(socket_fd, 5) < 0) {
@@ -141,25 +189,16 @@ int main(int argc, char* argv[]) {
         /* In child ... */
         else if (client_pid == 0) {
 
-            fprintf(stderr, "[guacamole] spawning client\n");
+            data = malloc(sizeof(client_thread_data));
 
-            /* Load and start client */
-            client = guac_get_client(connected_socket_fd, registry, alias.client_init, connect_host, connect_port); 
-            guac_start_client(client);
+            data->fd = connected_socket_fd;
+            data->client_init = alias.client_init;
+            data->registry = registry;
+            data->argc = client_argc;
+            data->argv = client_argv;
 
-            /* FIXME: Need to free client, but only if the client is not
-             * being used. This line will be reached if handoff occurs
-             */
-            guac_free_client(client, registry);
+            start_client_thread(data);
 
-            /* Close socket */
-            if (close(connected_socket_fd) < 0) {
-                perror("Error closing connection");
-                return 3;
-            }
-
-            fprintf(stderr, "[guacamole] client finished\n");
-            return 0;
         }
 
     }
