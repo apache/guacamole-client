@@ -575,16 +575,7 @@ function VNCClient(display) {
                 && currentState != STATE_DISCONNECTING) {
 
             setState(STATE_DISCONNECTING);
-
-            // Attempt disdisconnection
-            var disconnect_xmlhttprequest = new XMLHttpRequest();
-            disconnect_xmlhttprequest.open("GET", "disconnect", false);
-            disconnect_xmlhttprequest.send(null);
-
-            // Handle result (and check for errors) 
-            var message = new GuacamoleMessage(disconnect_xmlhttprequest.responseXML);
-            handleErrors(message);
-
+            sendMessage("disconnect;"); // End session
             setState(STATE_DISCONNECTED);
         }
 

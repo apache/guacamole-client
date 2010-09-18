@@ -167,6 +167,10 @@ void guac_start_client(guac_client* client) {
                             );
                     }
 
+                    else if (strcmp(instruction.opcode, "disconnect") == 0) {
+                        return;
+                    }
+
                 } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 
                 if (retval < 0)
