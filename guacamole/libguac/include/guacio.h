@@ -42,7 +42,6 @@ typedef struct GUACIO {
 } GUACIO;
 
 GUACIO* guac_open(int fd);
-void guac_transfer(GUACIO* io, int fd);
 ssize_t guac_write_int(GUACIO* io, unsigned int i);
 ssize_t guac_write_string(GUACIO* io, const char* str);
 ssize_t guac_write_base64(GUACIO* io, const void* buf, size_t count);

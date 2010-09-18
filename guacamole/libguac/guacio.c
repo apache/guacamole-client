@@ -55,14 +55,6 @@ GUACIO* guac_open(int fd) {
 
 }
 
-void guac_transfer(GUACIO* io, int fd) {
-
-    guac_flush(io);
-    close(fd);
-    io->fd = fd;
-   
-}
-
 void guac_close(GUACIO* io) {
     guac_flush(io);
     free(io);

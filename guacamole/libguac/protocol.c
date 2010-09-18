@@ -148,6 +148,58 @@ void guac_send_name(GUACIO* io, const char* name) {
 
 }
 
+unsigned char __guac_get_base64_char_value(char c) {
+
+    if (c >= 'A' && c <= 'Z')
+        return c - 'A';
+
+    if (c >= 'a' && c <= 'z')
+        return c - 'a' + 26;
+
+    if (c >= '0' && c <= '9')
+        return c - '0' + 52;
+
+    if (c == '+')
+        return 62;
+
+    if (c == '/')
+        return 63;
+
+    return 0;
+
+}
+
+char* guac_decode_base64_inplace(char* str) {
+
+    char* from;
+    char* to;
+
+    from = to = str;
+    for (;;) {
+
+        unsigned char v1, v2, v3, v4;
+        char first = *(from++);
+
+        if (first == '\0')
+            break;
+
+        v1 = __guac_get_base64_char_value(first);
+        v2 = __guac_get_base64_char_value(*(from++));
+        v3 = __guac_get_base64_char_value(*(from++));
+        v4 = __guac_get_base64_char_value(*(from++));
+
+        *(to++) = (char) ((v1 << 2) | (v2 >> 4));
+        *(to++) = (char) ((v2 << 4) | (v3 >> 2));
+        *(to++) = (char) ((v3 << 6) | v4);
+
+    }
+
+    *to = '\0';
+
+    return str;
+
+}
+
 void guac_send_size(GUACIO* io, int w, int h) {
     guac_write_string(io, "size:");
     guac_write_int(io, w);

@@ -177,7 +177,8 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 
     /* Init new client */
     client->io = io;
-    uuid_generate(client->uuid); 
+    uuid_generate(client->uuid);
+    strncpy((char*) client->uuid, "0123456789ABCDEF", 16);
 
     return client;
 }
@@ -204,12 +205,51 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
                 client = __guac_alloc_client(io);
 
                 /* Register client */
-                if (registry)
+                if (registry) {
                     guac_register_client(registry, client);
 
-                /* Send UUID to web-client */
-                guac_send_uuid(io, client->uuid);
+                    /* Send UUID to web-client */
+                    guac_send_uuid(io, client->uuid);
+                    guac_flush(client->io);
+                }
+
+                /* FIXME: hostname and port should not be required. Should be made available in some sort of client-contained argc/argv, specified after the protocol on the commandline */
+                client_init(client, hostname, port);
                 break;
+            }
+
+            if (strcmp(instruction.opcode, "handoff") == 0) {
+                
+                fprintf(stderr, "HANDOFF!\n");
+
+                /* Get UUID from instruction */
+                guac_decode_base64_inplace(instruction.argv[0]);
+
+                fprintf(stderr, "Decoded.\n");
+
+                /* Find client associated with UUID*/
+                if (registry) {
+                    fprintf(stderr, "Locating.\n");
+                    client = guac_find_client(registry, (unsigned char*) "0123456789ABCDEF" /*instruction.argv[0]*/);
+                    fprintf(stderr, "@%p\n", (void*) client);
+
+                    /* Transfer client I/O to new connection, if client exists */
+                    if (client) {
+
+                        int fd = client->io->fd;
+                        guac_close(client->io);
+                        close(fd);
+
+                        client->io = io;
+                        break;
+                    }
+                    /* TODO: Send error if client not found */
+
+                    fprintf(stderr, "OK\n");
+                }
+                
+                /* TODO: Send error if handoff sent to client without registry */
+
             }
 
         }
@@ -221,9 +261,6 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
 
     }
 
-    /* FIXME: hostname and port should not be required. Should be made available in some sort of client-contained argc/argv, specified after the protocol on the commandline */
-    client_init(client, hostname, port);
-    guac_flush(client->io);
     return client;
 
 }

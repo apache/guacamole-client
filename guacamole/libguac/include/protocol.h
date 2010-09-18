@@ -38,6 +38,7 @@ typedef struct guac_instruction {
 void guac_free_instruction(guac_instruction* instruction);
 char* guac_escape_string(const char* str);
 char* guac_unescape_string_inplace(char* str);
+char* guac_decode_base64_inplace(char* str);
 void guac_send_name(GUACIO* io, const char* name);
 void guac_send_error(GUACIO* io, const char* error);
 void guac_send_clipboard(GUACIO* io, const char* data);
