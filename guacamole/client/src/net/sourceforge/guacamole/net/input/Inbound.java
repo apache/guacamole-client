@@ -30,9 +30,15 @@ import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
 
 public class Inbound extends XMLGuacamoleServlet {
 
+    protected boolean shouldCreateSession() {
+        return true;
+    }
 
     @Override
     protected void handleRequest(GuacamoleSession session, ServletRequest request, Element root) throws GuacamoleException {
+
+        if (!session.isConnected())
+            session.connect();
 
         // Send data
         try {

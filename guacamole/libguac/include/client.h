@@ -21,6 +21,7 @@
 #define _CLIENT_H
 
 #include <png.h>
+#include <uuid/uuid.h>
 
 #include "guacio.h"
 
@@ -45,6 +46,12 @@ typedef void guac_client_free_handler(void* client);
  * a server on behalf of Guacamole, on behalf of the web-client).
  */
 struct guac_client {
+
+    /**
+     * UUID identifying this client. Useful when identifying a client
+     * for connection handoff/resume.
+     */
+    uuid_t uuid;
 
     /**
      * The GUACIO structure to be used to communicate with the web-client. It is

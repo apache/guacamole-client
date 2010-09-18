@@ -32,8 +32,15 @@ import net.sourceforge.guacamole.net.GuacamoleSession;
 
 public class InstructionStream extends GuacamoleServlet {
 
+    protected boolean shouldCreateSession() {
+        return true;
+    }
+
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+
+        if (!session.isConnected())
+            session.connect();
 
         ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
         instructionStreamLock.lock();

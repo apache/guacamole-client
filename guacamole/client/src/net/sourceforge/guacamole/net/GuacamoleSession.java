@@ -111,6 +111,12 @@ public class GuacamoleSession {
         }
     }
 
+    public boolean isConnected() {
+        synchronized (session) {
+            return client != null;
+        }
+    }
+
     public GuacamoleConfiguration getConfiguration() {
         return config;
     }
@@ -126,8 +132,12 @@ public class GuacamoleSession {
     }
 
     public void disconnect() throws GuacamoleException {
-        if (client != null)
+        if (client != null) {
             client.disconnect();
+
+            session.removeAttribute("CLIENT");
+            client = null;
+        }
     }
 
     public ReentrantLock getInstructionStreamLock() {

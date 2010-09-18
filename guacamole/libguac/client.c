@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <uuid/uuid.h>
 
 #include "guacio.h"
 #include "protocol.h"
@@ -53,18 +54,56 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port) {
+guac_client* __guac_alloc_client(GUACIO* io) {
 
+    /* Allocate new client (not handoff) */
     guac_client* client = malloc(sizeof(guac_client));
 
-    client->io = guac_open(client_fd);
+    /* Init new client */
+    client->io = io;
+    uuid_generate(client->uuid); 
 
+    return client;
+}
+
+
+guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, const char* hostname, int port) {
+
+    guac_client* client;
+    GUACIO* io = guac_open(client_fd);
+    guac_instruction instruction;
+
+    /* Wait for handshaking messages */
+    for (;;) {
+
+        int retval;
+        retval = guac_read_instruction(io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
+
+        if (retval > 0) {
+           
+            /* connect -> create new client connection */
+            if (strcmp(instruction.opcode, "connect") == 0) {
+                client = __guac_alloc_client(io);
+                guac_send_uuid(io, client->uuid);
+                break;
+            }
+
+        }
+
+        if (retval < 0)
+            return NULL; /* EOF or error */
+
+        /* Otherwise, retval == 0 implies unfinished instruction */
+
+    }
+
+    /* FIXME: hostname and port should not be required. Should be made available in some sort of client-contained argc/argv, specified after the protocol on the commandline */
     client_init(client, hostname, port);
     guac_flush(client->io);
-
     return client;
 
 }
+
 
 void guac_free_client(guac_client* client) {
     if (client->free_handler)

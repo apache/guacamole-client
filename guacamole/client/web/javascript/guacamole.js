@@ -115,6 +115,10 @@ function VNCClient(display) {
     this.enableKeyboard();
 
     function sendKeyEvent(pressed, keysym) {
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
         sendMessage("key:" +  keysym + "," + pressed + ";");
     }
 
@@ -159,6 +163,10 @@ function VNCClient(display) {
 
     function sendMouseState(mouseState) {
 
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
         // Build mask
         var buttonMask = 0;
         if (mouseState.getLeft())   buttonMask |= 1;
@@ -176,10 +184,6 @@ function VNCClient(display) {
 
     function sendMessage(message) {
 
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
-
         // Add event to queue, restart send loop if finished.
         outputMessageBuffer += message;
         if (sendingMessages == 0)
@@ -188,10 +192,6 @@ function VNCClient(display) {
     }
 
     function sendPendingMessages() {
-
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
 
         if (outputMessageBuffer.length > 0) {
 
@@ -560,20 +560,11 @@ function VNCClient(display) {
     this.connect = function() {
 
         // Attempt connection
-        var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("GET", "connect", false);
-
         setState(STATE_CONNECTING);
-        connect_xmlhttprequest.send(null);
+        sendMessage("connect;"); // Start new guacamole session
 
-        // Handle result (and check for errors) 
-        var message = new GuacamoleMessage(connect_xmlhttprequest.responseXML);
-        if (!message.hasErrors()) {
-            setState(STATE_WAITING);
-            handleResponse(makeRequest());
-        }
-        else
-            handleErrors(message);
+        setState(STATE_WAITING);
+        handleResponse(makeRequest());
 
     };
 

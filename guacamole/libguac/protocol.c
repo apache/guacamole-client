@@ -26,6 +26,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include <uuid/uuid.h>
+
 #include "guacio.h"
 #include "protocol.h"
 
@@ -152,6 +154,15 @@ void guac_send_size(GUACIO* io, int w, int h) {
     guac_write_string(io, ",");
     guac_write_int(io, h);
     guac_write_string(io, ";");
+}
+
+void guac_send_uuid(GUACIO* io, uuid_t uuid) {
+
+    guac_write_string(io, "uuid:");
+    guac_write_base64(io, uuid, 16);
+    guac_flush_base64(io);
+    guac_write_string(io, ";");
+
 }
 
 void guac_send_clipboard(GUACIO* io, const char* data) {

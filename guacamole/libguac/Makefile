@@ -1,6 +1,6 @@
 
 CFLAGS=-O2 -fPIC -pedantic -Wall -Werror -Iinclude
-LDFLAGS=-lpng
+LDFLAGS=-lpng -luuid
 
 .PHONY: clean doc
 
