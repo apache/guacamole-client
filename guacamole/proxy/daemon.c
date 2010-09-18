@@ -30,7 +30,19 @@
 
 int main(int argc, char* argv[]) {
 
+    /* Client registry */
     guac_client_registry_node* registry;
+
+    /* Pluggable client */
+    guac_client* client;
+    void* client_plugin_handle;
+
+    union {
+        void (*client_init)(guac_client* client, const char* hostname, int port);
+        void* obj;
+    } alias;
+
+    char* error;
 
     /* Server */
     int socket_fd;
@@ -74,7 +86,28 @@ int main(int argc, char* argv[]) {
                 sizeof(server_addr)) < 0) {
         perror("Error binding socket");
         return 2;
+    } 
+
+    fprintf(stderr, "[guacamole] loading pluggable client\n");
+
+    /* Load client plugin */
+    client_plugin_handle = dlopen("libguac_client_vnc.so", RTLD_LAZY);
+    if (!client_plugin_handle) {
+        fprintf(stderr, "[guacamole] could not open client plugin: %s\n", dlerror());
+        return 2;
     }
+
+    dlerror(); /* Clear errors */
+
+    /* Get init function */
+    alias.obj = dlsym(client_plugin_handle, "guac_client_init");
+
+    if ((error = dlerror()) != NULL) {
+        fprintf(stderr, "[guacamole] could not get guac_client_init in plugin: %s\n", error);
+        return 2;
+    }
+
+
 
     fprintf(stderr, "[guacamole] listening on port %i, forwarding to %s:%i\n", listen_port, connect_host, connect_port);
 
@@ -108,51 +141,21 @@ int main(int argc, char* argv[]) {
         /* In child ... */
         else if (client_pid == 0) {
 
-            guac_client* client;
-            void* client_plugin_handle;
-
-            union {
-                void (*client_init)(guac_client* client, const char* hostname, int port);
-                void* obj;
-            } alias;
-
-            char* error;
-
-
             fprintf(stderr, "[guacamole] spawning client\n");
-
-            /* Load client plugin */
-            client_plugin_handle = dlopen("libguac_client_vnc.so", RTLD_LAZY);
-            if (!client_plugin_handle) {
-                fprintf(stderr, "[guacamole] could not open client plugin: %s\n", dlerror());
-                return 2;
-            }
-
-            dlerror(); /* Clear errors */
-
-            /* Get init function */
-            alias.obj = dlsym(client_plugin_handle, "guac_client_init");
-
-            if ((error = dlerror()) != NULL) {
-                fprintf(stderr, "[guacamole] could not get guac_client_init in plugin: %s\n", error);
-                return 2;
-            }
 
             /* Load and start client */
             client = guac_get_client(connected_socket_fd, registry, alias.client_init, connect_host, connect_port); 
             guac_start_client(client);
+
+            /* FIXME: Need to free client, but only if the client is not
+             * being used. This line will be reached if handoff occurs
+             */
             guac_free_client(client, registry);
 
             /* Close socket */
             if (close(connected_socket_fd) < 0) {
                 perror("Error closing connection");
                 return 3;
-            }
-
-            /* Load client plugin */
-            if (dlclose(client_plugin_handle)) {
-                fprintf(stderr, "[guacamole] could not close client plugin: %s\n", dlerror());
-                return 2;
             }
 
             fprintf(stderr, "[guacamole] client finished\n");
@@ -168,6 +171,13 @@ int main(int argc, char* argv[]) {
         perror("Error closing socket");
         return 3;
     }
+
+    /* Load client plugin */
+    if (dlclose(client_plugin_handle)) {
+        fprintf(stderr, "[guacamole] could not close client plugin: %s\n", dlerror());
+        return 2;
+    }
+
 
     return 0;
 
