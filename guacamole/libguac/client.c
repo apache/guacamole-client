@@ -190,6 +190,14 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
     GUACIO* io = guac_open(client_fd);
     guac_instruction instruction;
 
+    /* Make copies of arguments */
+    char** safe_argv = malloc(argc * sizeof(char*));
+    char** scratch_argv = malloc(argc * sizeof(char*));
+
+    int i;
+    for (i=0; i<argc; i++)
+        scratch_argv[i] = safe_argv[i] = strdup(argv[i]);
+
     /* Wait for handshaking messages */
     for (;;) {
 
@@ -213,8 +221,7 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
                     guac_flush(client->io);
                 }
 
-                /* FIXME: hostname and port should not be required. Should be made available in some sort of client-contained argc/argv, specified after the protocol on the commandline */
-                client_init(client, argc, argv);
+                client_init(client, argc, scratch_argv);
                 break;
             }
 
@@ -260,6 +267,13 @@ guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry,
         /* Otherwise, retval == 0 implies unfinished instruction */
 
     }
+
+    /* Free memory used for arg copy */
+    for (i=0; i<argc; i++)
+        free(safe_argv[i]);
+    
+    free(safe_argv);
+    free(scratch_argv);
 
     return client;
 

@@ -25,6 +25,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <dlfcn.h>
+#include <pthread.h>
 
 #include "client.h"
 
@@ -93,7 +94,6 @@ int main(int argc, char* argv[]) {
     struct sockaddr_in client_addr;
     unsigned int client_addr_len;
     int connected_socket_fd;
-    pid_t client_pid ;
 
     int listen_port;
 
@@ -163,6 +163,7 @@ int main(int argc, char* argv[]) {
     /* Daemon loop */
     for (;;) {
 
+        pthread_t thread;
         client_thread_data* data;
 
         /* Listen for connections */
@@ -179,26 +180,17 @@ int main(int argc, char* argv[]) {
             return 3;
         }
 
-        /* Fork client */
-        client_pid = fork();
-        if (client_pid < 0) {
-            perror("Could not fork child");
-            return 4;
-        }
+        data = malloc(sizeof(client_thread_data));
 
-        /* In child ... */
-        else if (client_pid == 0) {
+        data->fd = connected_socket_fd;
+        data->client_init = alias.client_init;
+        data->registry = registry;
+        data->argc = client_argc;
+        data->argv = client_argv;
 
-            data = malloc(sizeof(client_thread_data));
-
-            data->fd = connected_socket_fd;
-            data->client_init = alias.client_init;
-            data->registry = registry;
-            data->argc = client_argc;
-            data->argv = client_argv;
-
-            start_client_thread(data);
-
+        if (pthread_create(&thread, NULL, start_client_thread, (void*) data)) {
+            perror("Error creating client thread");
+            return 3;
         }
 
     }
