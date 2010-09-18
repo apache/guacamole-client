@@ -28,22 +28,6 @@
     </session-config>
     <!-- Servlets -->
     <servlet>
-        <servlet-name>Connect</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.control.Connect</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Connect</servlet-name>
-        <url-pattern>/connect</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>Disconnect</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.control.Disconnect</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Disconnect</servlet-name>
-        <url-pattern>/disconnect</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <description>Instruction stream servlet.</description>
         <servlet-name>InstructionStream</servlet-name>
         <servlet-class>net.sourceforge.guacamole.net.output.InstructionStream</servlet-class>
