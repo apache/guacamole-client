@@ -6,3 +6,6 @@
 # Backup files
 *~
 
+# Files currently being edited by vim or vi
+*.swp
+
