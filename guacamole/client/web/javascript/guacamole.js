@@ -559,10 +559,18 @@ function VNCClient(display) {
 
     this.connect = function() {
 
-        // Attempt connection
-        setState(STATE_CONNECTING);
-        sendMessage("connect;"); // Start new guacamole session
+        var message = "connect;";
 
+        setState(STATE_CONNECTING);
+
+        // Send connect message (synchronously... as necessary until handoff is implemented)
+        var connect_xmlhttprequest = new XMLHttpRequest();
+        connect_xmlhttprequest.open("POST", "inbound", false);
+        connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        connect_xmlhttprequest.setRequestHeader("Content-length", message.length);
+        connect_xmlhttprequest.send(message);
+
+        // Start reading data
         setState(STATE_WAITING);
         handleResponse(makeRequest());
 
