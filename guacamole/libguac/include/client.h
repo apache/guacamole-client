@@ -22,6 +22,7 @@
 
 #include <png.h>
 #include <uuid/uuid.h>
+#include "uuidtree.h"
 
 #include "guacio.h"
 
@@ -32,7 +33,7 @@
  */
 
 typedef struct guac_client guac_client;
-typedef struct guac_client_registry_node guac_client_registry_node;
+typedef struct guac_client_registry guac_client_registry;
 
 typedef void guac_client_handle_messages(guac_client* client);
 typedef void guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
@@ -188,7 +189,7 @@ typedef void guac_client_init_handler(guac_client* client, int argc, char** argv
  * @param argv The arguments being passed to this client.
  * @return A pointer to the newly initialized (or found) client.
  */
-guac_client* guac_get_client(int client_fd, guac_client_registry_node* registry, guac_client_init_handler* client_init, int argc, char** argv);
+guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac_client_init_handler* client_init, int argc, char** argv);
 
 /**
  * Enter the main network message handling loop for the given client.
@@ -203,7 +204,7 @@ void guac_start_client(guac_client* client);
  * @param client The proxy client to free all reasources of.
  * @param registry The registry to remove this client from when freed.
  */
-void guac_free_client(guac_client* client, guac_client_registry_node* registry);
+void guac_free_client(guac_client* client, guac_client_registry* registry);
 
 /**
  * Allocate a libpng-compatible buffer to hold raw image data.
@@ -226,66 +227,22 @@ void guac_free_png_buffer(png_byte** png_buffer, int h);
 
 
 /**
- * Represents a single node of the Guacamole client registry. The
- * Guacamole client registry contains references to all active clients,
- * indexed by client UUID.
+ * Represent the Guacamole "client registry" in which all
+ * currently connected clients are stored, indexed by UUID.
  */
-struct guac_client_registry_node {
+struct guac_client_registry {
 
     /**
-     * The number of pointers used inside the next array.
+     * Root of the uuid tree
      */
-    int used;
-
-    /**
-     * The next guac_client_registry_node if currently looking at any byte
-     * of the UUID except the last, or the guac_client if looking at the
-     * last byte of the UUID.
-     */
-    void* next[256];
+    guac_uuid_tree_node* root;
 
 };
 
-/**
- * Registers the given client in the client registry by that client's UUID.
- *
- * @param registry The registry to register the client within.
- * @param client The client to register.
- */
-void guac_register_client(guac_client_registry_node* registry, guac_client* client);
-
-/**
- * Returns the client from the client registry associated with the given UUID.
- *
- * @param registry The registry to search.
- * @param uuid The uuid of the client to lookup.
- * @return The client, if found, or NULL if no such client has been registered.
- */
-guac_client* guac_find_client(guac_client_registry_node* registry, uuid_t uuid);
-
-/**
- * Removes the given client from the client registry.
- *
- * @param registry The registry to remove the client from.
- * @param client The client to remove.
- */
-void guac_remove_client(guac_client_registry_node* registry, guac_client* client);
-
-/**
- * Creates a new client registry.
- * 
- * @return The newly allocated and initialized registry.
- */
-guac_client_registry_node* guac_create_client_registry();
-
-/**
- * Frees all memory associated with the given client registry.
- *
- * @param registry The registry to clean up.
- */
-void guac_cleanup_client_registry(guac_client_registry_node* registry);
-
-
-
+guac_client_registry* guac_create_client_registry();
+void guac_register_client(guac_client_registry* registry, guac_client* client);
+guac_client* guac_find_client(guac_client_registry* registry, uuid_t uuid);
+void guac_remove_client(guac_client_registry* registry, uuid_t uuid);
+void guac_cleanup_registry(guac_client_registry* registry);
 
 #endif

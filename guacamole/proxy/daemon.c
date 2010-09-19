@@ -34,7 +34,7 @@ typedef struct client_thread_data {
 
     int fd;
     guac_client_init_handler* client_init;
-    guac_client_registry_node* registry;
+    guac_client_registry* registry;
 
     int argc;
     char** argv;
@@ -74,7 +74,7 @@ void* start_client_thread(void* data) {
 int main(int argc, char* argv[]) {
 
     /* Client registry */
-    guac_client_registry_node* registry;
+    guac_client_registry* registry;
 
     /* Pluggable client */
     void* client_plugin_handle;
