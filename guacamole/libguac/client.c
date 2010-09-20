@@ -58,6 +58,7 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 
     /* Allocate new client (not handoff) */
     guac_client* client = malloc(sizeof(guac_client));
+    memset(client, 0, sizeof(guac_client));
 
     /* Init new client */
     client->io = io;
