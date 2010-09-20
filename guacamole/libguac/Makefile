@@ -1,5 +1,5 @@
 
-CFLAGS=-O2 -fPIC -pedantic -Wall -Werror -Iinclude
+CFLAGS+=-O2 -fPIC -pedantic -Wall -Werror -Iinclude
 LDFLAGS=-lpng -luuid
 
 .PHONY: clean doc
@@ -13,7 +13,7 @@ clean-doc:
 	$(RM) -R doc
 
 libguac.so: client.o guacio.o protocol.o clientreg.o uuidtree.o
-	$(CC) $(CFLAGS) -shared $(LDFLAGS) -Wl,-soname,libguac.so.0 -o libguac.so client.o protocol.o guacio.o clientreg.o uuidtree.o
+	$(CC) -shared $(LDFLAGS) -Wl,-soname,libguac.so.0 -o libguac.so client.o protocol.o guacio.o clientreg.o uuidtree.o
 
 client.o: client.c include/client.h include/guacio.h
 	$(CC) $(CFLAGS) -c client.c

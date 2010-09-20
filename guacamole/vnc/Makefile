@@ -1,5 +1,5 @@
 
-CFLAGS=-O2 -fPIC -pedantic -Wall -Werror -I../libguac/include
+CFLAGS+=-O2 -fPIC -pedantic -Wall -Werror -I../libguac/include
 LDFLAGS=-L../libguac -lpng -lguac -lvncclient
 
 .PHONY: clean
@@ -7,7 +7,7 @@ LDFLAGS=-L../libguac -lpng -lguac -lvncclient
 all: libguac_client_vnc.so
 
 libguac_client_vnc.so: vnc_client.o
-	$(CC) $(CFLAGS) -shared $(LDFLAGS) -Wl,-soname,libguac_client_vnc.so.0 -o libguac_client_vnc.so vnc_client.o
+	$(CC) -shared $(LDFLAGS) -Wl,-soname,libguac_client_vnc.so.0 -o libguac_client_vnc.so vnc_client.o
 
 vnc_client.o: vnc_client.c
 	$(CC) $(CFLAGS) -c vnc_client.c

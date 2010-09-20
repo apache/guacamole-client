@@ -1,5 +1,5 @@
 
-CFLAGS=-O2 -pedantic -Wall -Werror -I../libguac/include
+CFLAGS+=-O2 -pedantic -Wall -Werror -I../libguac/include
 LDFLAGS=-L../libguac -lpng -lguac -ldl -lpthread
 
 .PHONY: clean
@@ -7,7 +7,7 @@ LDFLAGS=-L../libguac -lpng -lguac -ldl -lpthread
 all: guacd
 
 guacd: daemon.o 
-	$(CC) $(CFLAGS) $(LDFLAGS) daemon.o -o guacd 
+	$(CC) $(LDFLAGS) daemon.o -o guacd 
 
 daemon.o: daemon.c
 	$(CC) $(CFLAGS) -c daemon.c
