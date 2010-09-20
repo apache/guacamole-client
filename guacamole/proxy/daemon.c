@@ -27,8 +27,10 @@
 #include <dlfcn.h>
 #include <pthread.h>
 
-#include "client.h"
+#include <errno.h>
+#include <syslog.h>
 
+#include "client.h"
 
 typedef struct client_thread_data {
 
@@ -47,7 +49,7 @@ void* start_client_thread(void* data) {
     guac_client* client;
     client_thread_data* thread_data = (client_thread_data*) data;
 
-    fprintf(stderr, "[guacamole] spawning client\n");
+    syslog(LOG_INFO, "Spawning client");
 
     /* Load and start client */
     client = guac_get_client(thread_data->fd, thread_data->registry, thread_data->client_init, thread_data->argc, thread_data->argv); 
@@ -60,12 +62,12 @@ void* start_client_thread(void* data) {
 
     /* Close socket */
     if (close(thread_data->fd) < 0) {
-        perror("Error closing connection");
+        syslog(LOG_ERR, "Error closing connection: %s", strerror(errno));
         free(data);
         return NULL;
     }
 
-    fprintf(stderr, "[guacamole] client finished\n");
+    syslog(LOG_INFO, "Client finished");
     free(data);
     return NULL;
 
@@ -123,23 +125,23 @@ int main(int argc, char* argv[]) {
     /* Get socket */
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_fd < 0) {
-        perror("Error opening socket");
+        syslog(LOG_ERR, "Error opening socket: %s", strerror(errno));
         return 1;
     }
 
     /* Bind socket to address */
     if (bind(socket_fd, (struct sockaddr*) &server_addr,
                 sizeof(server_addr)) < 0) {
-        perror("Error binding socket");
+        syslog(LOG_ERR, "Error binding socket: %s", strerror(errno));
         return 2;
     } 
 
-    fprintf(stderr, "[guacamole] loading pluggable client\n");
+    syslog(LOG_INFO, "Loading client plugin");
 
     /* Load client plugin */
     client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
     if (!client_plugin_handle) {
-        fprintf(stderr, "[guacamole] could not open client plugin: %s\n", dlerror());
+        syslog(LOG_ERR, "Could not open client plugin: %s", dlerror());
         return 2;
     }
 
@@ -149,13 +151,13 @@ int main(int argc, char* argv[]) {
     alias.obj = dlsym(client_plugin_handle, "guac_client_init");
 
     if ((error = dlerror()) != NULL) {
-        fprintf(stderr, "[guacamole] could not get guac_client_init in plugin: %s\n", error);
+        syslog(LOG_ERR, "Could not get guac_client_init in  plugin: %s", error);
         return 2;
     }
 
 
+    syslog(LOG_INFO, "Listening on port %i", listen_port);
 
-    fprintf(stderr, "[guacamole] listening on port %i\n", listen_port);
 
     /* Allocate registry */
     registry = guac_create_client_registry();
@@ -168,7 +170,7 @@ int main(int argc, char* argv[]) {
 
         /* Listen for connections */
         if (listen(socket_fd, 5) < 0) {
-            perror("Error listening on socket");
+            syslog(LOG_ERR, "Could not listen on socket: %s", strerror(errno));
             return 3;
         }
 
@@ -176,7 +178,7 @@ int main(int argc, char* argv[]) {
         client_addr_len = sizeof(client_addr);
         connected_socket_fd = accept(socket_fd, (struct sockaddr*) &client_addr, &client_addr_len);
         if (connected_socket_fd < 0) {
-            perror("Error accepting client");
+            syslog(LOG_ERR, "Could not accept client connection: %s", strerror(errno));
             return 3;
         }
 
@@ -189,7 +191,7 @@ int main(int argc, char* argv[]) {
         data->argv = client_argv;
 
         if (pthread_create(&thread, NULL, start_client_thread, (void*) data)) {
-            perror("Error creating client thread");
+            syslog(LOG_ERR, "Could not create client thread: %s", strerror(errno));
             return 3;
         }
 
@@ -199,13 +201,13 @@ int main(int argc, char* argv[]) {
 
     /* Close socket */
     if (close(socket_fd) < 0) {
-        perror("Error closing socket");
+        syslog(LOG_ERR, "Could not close socket: %s", strerror(errno));
         return 3;
     }
 
     /* Load client plugin */
     if (dlclose(client_plugin_handle)) {
-        fprintf(stderr, "[guacamole] could not close client plugin: %s\n", dlerror());
+        syslog(LOG_ERR, "Could not close client plugin: %s", dlerror());
         return 2;
     }
 
