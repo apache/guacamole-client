@@ -63,6 +63,11 @@ public class InstructionStream extends GuacamoleServlet {
 
                 }
 
+                if (message == null) {
+                    session.disconnect();
+                    throw new GuacamoleException("Disconnected.");
+                }
+
             }
             catch (GuacamoleException e) {
                 out.write("error:" + e.getMessage() + ";");

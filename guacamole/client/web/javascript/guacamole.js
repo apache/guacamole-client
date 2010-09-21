@@ -576,14 +576,23 @@ function VNCClient(display) {
 
     };
 
+    
     function disconnect() {
 
         // Only attempt disconnection not disconnected.
         if (currentState != STATE_DISCONNECTED
                 && currentState != STATE_DISCONNECTING) {
 
+            var message = "disconnect;";
             setState(STATE_DISCONNECTING);
-            sendMessage("disconnect;"); // End session
+
+            // Send disconnect message (synchronously... as necessary until handoff is implemented)
+            var disconnect_xmlhttprequest = new XMLHttpRequest();
+            disconnect_xmlhttprequest.open("POST", "inbound", false);
+            disconnect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            disconnect_xmlhttprequest.setRequestHeader("Content-length", message.length);
+            disconnect_xmlhttprequest.send(message);
+
             setState(STATE_DISCONNECTED);
         }
 
