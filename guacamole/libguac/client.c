@@ -22,6 +22,8 @@
 #include <string.h>
 #include <uuid/uuid.h>
 
+#include <syslog.h>
+
 #include "guacio.h"
 #include "protocol.h"
 #include "client.h"
@@ -136,8 +138,10 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
 
 void guac_free_client(guac_client* client, guac_client_registry* registry) {
 
-    if (client->free_handler)
-        client->free_handler(client);
+    if (client->free_handler) {
+        if (client->free_handler(client))
+            syslog(LOG_ERR, "Error calling client free handler");
+    }
 
     guac_close(client->io);
 
@@ -158,7 +162,13 @@ void guac_start_client(guac_client* client) {
 
         /* Handle server messages */
         if (client->handle_messages) {
-            client->handle_messages(client);
+
+            int retval = client->handle_messages(client);
+            if (retval) {
+                syslog(LOG_ERR, "Error handling server messages");
+                return;
+            }
+
             guac_flush(client->io);
         }
 
@@ -174,49 +184,77 @@ void guac_start_client(guac_client* client) {
 
                     if (strcmp(instruction.opcode, "mouse") == 0) {
                         if (client->mouse_handler)
-                            client->mouse_handler(
-                                client,
-                                atoi(instruction.argv[0]), /* x */
-                                atoi(instruction.argv[1]), /* y */
-                                atoi(instruction.argv[2])  /* mask */
-                            );
+                            if (
+                                    client->mouse_handler(
+                                        client,
+                                        atoi(instruction.argv[0]), /* x */
+                                        atoi(instruction.argv[1]), /* y */
+                                        atoi(instruction.argv[2])  /* mask */
+                                    )
+                               ) {
+
+                                syslog(LOG_ERR, "Error handling mouse instruction");
+                                return;
+
+                            }
                     }
 
                     else if (strcmp(instruction.opcode, "key") == 0) {
                         if (client->key_handler)
-                            client->key_handler(
-                                client,
-                                atoi(instruction.argv[0]), /* keysym */
-                                atoi(instruction.argv[1])  /* pressed */
-                            );
+                            if (
+                                    client->key_handler(
+                                        client,
+                                        atoi(instruction.argv[0]), /* keysym */
+                                        atoi(instruction.argv[1])  /* pressed */
+                                    )
+                               ) {
+
+                                syslog(LOG_ERR, "Error handling key instruction");
+                                return;
+
+                            }
                     }
 
                     else if (strcmp(instruction.opcode, "clipboard") == 0) {
                         if (client->clipboard_handler)
-                            client->clipboard_handler(
-                                client,
-                                guac_unescape_string_inplace(instruction.argv[0]) /* data */
-                            );
+                            if (
+                                    client->clipboard_handler(
+                                        client,
+                                        guac_unescape_string_inplace(instruction.argv[0]) /* data */
+                                    )
+                               ) {
+
+                                syslog(LOG_ERR, "Error handling clipboard instruction");
+                                return;
+
+                            }
                     }
 
                     else if (strcmp(instruction.opcode, "disconnect") == 0) {
+                        syslog(LOG_INFO, "Client requested disconnect");
                         return;
                     }
 
                 } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 
-                if (retval < 0)
+                if (retval < 0) {
+                    syslog(LOG_ERR, "Error reading instruction from stream");
                     return;
+                }
             }
 
-            if (retval < 0)
+            if (retval < 0) {
+                syslog(LOG_ERR, "Error or end of stream");
                 return; /* EOF or error */
+            }
 
             /* Otherwise, retval == 0 implies unfinished instruction */
 
         }
-        else if (wait_result < 0)
+        else if (wait_result < 0) {
+            syslog(LOG_ERR, "Error waiting for next instruction");
             return;
+        }
 
     }
 

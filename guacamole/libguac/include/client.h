@@ -35,11 +35,11 @@
 typedef struct guac_client guac_client;
 typedef struct guac_client_registry guac_client_registry;
 
-typedef void guac_client_handle_messages(guac_client* client);
-typedef void guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
-typedef void guac_client_key_handler(guac_client* client, int keysym, int pressed);
-typedef void guac_client_clipboard_handler(guac_client* client, char* copied);
-typedef void guac_client_free_handler(void* client);
+typedef int guac_client_handle_messages(guac_client* client);
+typedef int guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
+typedef int guac_client_key_handler(guac_client* client, int keysym, int pressed);
+typedef int guac_client_clipboard_handler(guac_client* client, char* copied);
+typedef int guac_client_free_handler(void* client);
 
 /**
  * Guacamole proxy client.

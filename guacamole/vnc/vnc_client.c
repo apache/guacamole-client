@@ -23,6 +23,8 @@
 #include <png.h>
 #include <time.h>
 
+#include <syslog.h>
+
 #include <rfb/rfbclient.h>
 
 #include "guacio.h"
@@ -192,7 +194,7 @@ void guac_vnc_cut_text(rfbClient* client, const char* text, int textlen) {
 }
 
 
-void vnc_guac_client_handle_messages(guac_client* client) {
+int vnc_guac_client_handle_messages(guac_client* client) {
 
     int wait_result;
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
@@ -200,8 +202,8 @@ void vnc_guac_client_handle_messages(guac_client* client) {
 
     wait_result = WaitForMessage(rfb_client, 2000);
     if (wait_result < 0) {
-        fprintf(stderr, "WAIT FAIL\n");
-        return;
+        syslog(LOG_ERR, "Error waiting for VNC server message\n");
+        return 1;
     }
 
     if (wait_result > 0) {
@@ -209,8 +211,8 @@ void vnc_guac_client_handle_messages(guac_client* client) {
         struct timespec sleep_period;
 
         if (!HandleRFBServerMessage(rfb_client)) {
-            fprintf(stderr, "HANDLE FAIL\n");
-            return;
+            syslog(LOG_ERR, "Error handling VNC server message\n");
+            return 1;
         }
 
         /* Wait before returning ... don't want to handle
@@ -223,34 +225,39 @@ void vnc_guac_client_handle_messages(guac_client* client) {
 
     }
 
+    return 0;
+
 }
 
 
-void vnc_guac_client_mouse_handler(guac_client* client, int x, int y, int mask) {
+int vnc_guac_client_mouse_handler(guac_client* client, int x, int y, int mask) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
 
     SendPointerEvent(rfb_client, x, y, mask);
 
+    return 0;
 }
 
-void vnc_guac_client_key_handler(guac_client* client, int keysym, int pressed) {
+int vnc_guac_client_key_handler(guac_client* client, int keysym, int pressed) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
 
     SendKeyEvent(rfb_client, keysym, pressed);
 
+    return 0;
 }
 
-void vnc_guac_client_clipboard_handler(guac_client* client, char* data) {
+int vnc_guac_client_clipboard_handler(guac_client* client, char* data) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
 
     SendClientCutText(rfb_client, data, strlen(data));
 
+    return 0;
 }
 
-void vnc_guac_client_free_handler(guac_client* client) {
+int vnc_guac_client_free_handler(guac_client* client) {
 
     rfbClient* rfb_client = ((vnc_guac_client_data*) client->data)->rfb_client;
     png_byte** png_buffer = ((vnc_guac_client_data*) client->data)->png_buffer;
@@ -263,6 +270,7 @@ void vnc_guac_client_free_handler(guac_client* client) {
     /* Clean up VNC client*/
     rfbClientCleanup(rfb_client);
 
+    return 0;
 }
 
 
