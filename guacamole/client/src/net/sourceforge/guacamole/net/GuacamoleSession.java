@@ -98,8 +98,8 @@ public class GuacamoleSession {
 
             client = new SessionClient(
                     new GuacamoleClient (
-                        "localhost", // Temporarily hard coded
-                        1234
+                        config.getHostname(),
+                        config.getPort()
                     )
             );
 

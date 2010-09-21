@@ -24,36 +24,23 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleConfiguration extends Configuration {
 
-    private String password;
-    private int outputBPP;
-    private boolean compressStream;
-    private boolean swapRedAndBlue;
+    private String hostname;
+    private int port;
 
     public GuacamoleConfiguration(ServletContext context) throws GuacamoleException {
 
         super(context);
 
-        password       = context.getInitParameter("password");
-        outputBPP      = readIntParameter("output-bpp", 8, 8, 24);
-        compressStream = readBooleanParameter("compress-stream", false);
-        swapRedAndBlue = readBooleanParameter("swap-red-blue", false);
+        hostname       = context.getInitParameter("hostname");
+        port           = readIntParameter("port", null);
 
     }
 
-    public int getOutputBPP() {
-        return outputBPP;
+    public int getPort() {
+        return port;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHostname() {
+        return hostname;
     }
-
-    public boolean getCompressStream() {
-        return compressStream;
-    }
-
-    public boolean getSwapRedAndBlue() {
-        return swapRedAndBlue;
-    }
-
 }
