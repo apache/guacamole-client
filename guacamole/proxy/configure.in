@@ -1,0 +1,26 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.65])
+AC_INIT(guacd, 0.0.1, zhangmaike@users.sourceforge.net)
+AC_CONFIG_SRCDIR([src/daemon.c])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CC
+
+# Checks for libraries.
+AC_CHECK_LIB([dl], [dlopen])
+AC_CHECK_LIB([guac], [guac_get_client])
+AC_CHECK_LIB([png], [png_write_png])
+AC_CHECK_LIB([pthread], [pthread_create])
+
+# Checks for header files.
+AC_CHECK_HEADERS([netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h])
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([memset socket strerror])
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
