@@ -1,4 +1,7 @@
 AUTOMAKE_OPTIONS = gnu
+
+AM_CFLAGS = -Werror -Wall -Iinclude
+
 lib_LTLIBRARIES = libguac.la
 
 libguac_la_SOURCES = client.c clientreg.c guacio.c protocol.c uuidtree.c
