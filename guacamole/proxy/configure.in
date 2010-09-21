@@ -8,10 +8,11 @@ AM_INIT_AUTOMAKE(guacd, 0.0.1)
 AC_PROG_CC
 
 # Checks for libraries.
-AC_CHECK_LIB([dl], [dlopen])
-AC_CHECK_LIB([guac], [guac_get_client])
+AC_CHECK_LIB([dl], [dlopen],, AC_MSG_ERROR("libdl is required for loading client plugins"))
+AC_CHECK_LIB([guac], [guac_get_client],, AC_MSG_ERROR("libguac must be installed first"))
 AC_CHECK_LIB([png], [png_write_png])
-AC_CHECK_LIB([pthread], [pthread_create])
+AC_CHECK_LIB([pthread], [pthread_create],, AC_MSG_ERROR("POSIX threads (libpthread) must be installed"))
+
 
 # Checks for header files.
 AC_CHECK_HEADERS([netinet/in.h stdlib.h string.h sys/socket.h syslog.h unistd.h])

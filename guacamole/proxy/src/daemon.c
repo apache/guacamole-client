@@ -30,7 +30,7 @@
 #include <errno.h>
 #include <syslog.h>
 
-#include "client.h"
+#include <client.h>
 
 typedef struct client_thread_data {
 
