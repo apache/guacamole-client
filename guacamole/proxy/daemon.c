@@ -53,6 +53,12 @@ void* start_client_thread(void* data) {
 
     /* Load and start client */
     client = guac_get_client(thread_data->fd, thread_data->registry, thread_data->client_init, thread_data->argc, thread_data->argv); 
+
+    if (client == NULL) {
+        syslog(LOG_ERR, "Client retrieval failed");
+        return NULL;
+    }
+
     guac_start_client(client);
 
     /* FIXME: Need to free client, but only if the client is not

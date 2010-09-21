@@ -104,7 +104,9 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
                     guac_flush(client->io);
                 }
 
-                client_init(client, argc, scratch_argv);
+                if (client_init(client, argc, scratch_argv) != 0)
+                    return NULL;
+
                 break;
             }
 

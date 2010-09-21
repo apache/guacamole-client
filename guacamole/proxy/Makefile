@@ -1,5 +1,5 @@
 
-CFLAGS+=-O2 -pedantic -Wall -Werror -I../libguac/include
+CFLAGS+= -pedantic -Wall -Werror -I../libguac/include
 LDFLAGS=-L../libguac -lpng -lguac -ldl -lpthread
 
 .PHONY: clean

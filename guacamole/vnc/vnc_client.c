@@ -101,6 +101,8 @@ void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
     guac_send_cursor(io, x, y, png_buffer, w, h);
 
 }
+
+
 void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 
     int dx, dy;
@@ -264,7 +266,7 @@ void vnc_guac_client_free_handler(guac_client* client) {
 }
 
 
-void guac_client_init(guac_client* client, int argc, char** argv) {
+int guac_client_init(guac_client* client, int argc, char** argv) {
 
     char* hostname_copy;
 
@@ -299,7 +301,9 @@ void guac_client_init(guac_client* client, int argc, char** argv) {
     rfb_client->serverHost = hostname_copy;
     rfb_client->serverPort = atoi(argv[1]);
 
-    rfbInitClient(rfb_client, NULL, NULL);
+    if (!rfbInitClient(rfb_client, NULL, NULL)) {
+        return 1;
+    }
 
     /* Allocate buffers */
     png_buffer = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 3); /* No-alpha */
@@ -327,6 +331,8 @@ void guac_client_init(guac_client* client, int argc, char** argv) {
 
     /* Send size */
     guac_send_size(client->io, rfb_client->width, rfb_client->height);
+
+    return 0;
 
 }
 

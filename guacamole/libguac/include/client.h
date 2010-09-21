@@ -79,7 +79,7 @@ struct guac_client {
      * @code
      *     void handle_messages(guac_client* client);
      *
-     *     void guac_client_init(guac_client* client, int argc, char** argv) {
+     *     int guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->handle_messages = handle_messages;
      *     }
      * @endcode
@@ -106,7 +106,7 @@ struct guac_client {
      * @code
      *     void mouse_handler(guac_client* client, int x, int y, int button_mask);
      *
-     *     void guac_client_init(guac_client* client, int argc, char** argv) {
+     *     int guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->mouse_handler = mouse_handler;
      *     }
      * @endcode
@@ -124,7 +124,7 @@ struct guac_client {
      * @code
      *     void key_handler(guac_client* client, int keysym, int pressed);
      *
-     *     void guac_client_init(guac_client* client, int argc, char** argv) {
+     *     int guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->key_handler = key_handler;
      *     }
      * @endcode
@@ -145,7 +145,7 @@ struct guac_client {
      * @code
      *     void clipboard_handler(guac_client* client, char* copied);
      *
-     *     void guac_client_init(guac_client* client, int argc, char** argv) {
+     *     int guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->clipboard_handler = clipboard_handler;
      *     }
      * @endcode
@@ -165,7 +165,7 @@ struct guac_client {
      * @code
      *     void free_handler(guac_client* client);
      *
-     *     void guac_client_init(guac_client* client, int argc, char** argv) {
+     *     int guac_client_init(guac_client* client, int argc, char** argv) {
      *         client->free_handler = free_handler;
      *     }
      * @endcode
@@ -174,7 +174,7 @@ struct guac_client {
 
 };
 
-typedef void guac_client_init_handler(guac_client* client, int argc, char** argv);
+typedef int guac_client_init_handler(guac_client* client, int argc, char** argv);
 
 /**
  * Initialize and return a new guac_client using the specified client init handler (guac_client_init_handler).
