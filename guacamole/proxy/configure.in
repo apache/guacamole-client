@@ -1,10 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.65])
-AC_INIT(guacd, 0.0.1, zhangmaike@users.sourceforge.net)
-AC_CONFIG_SRCDIR([src/daemon.c])
-AC_CONFIG_HEADERS([config.h])
+AC_INIT(src/daemon.c)
+AM_INIT_AUTOMAKE(guacd, 0.0.1)
 
 # Checks for programs.
 AC_PROG_CC
