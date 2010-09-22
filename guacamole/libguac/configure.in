@@ -10,6 +10,7 @@ AC_PROG_LIBTOOL
 
 # Checks for libraries.
 AC_CHECK_LIB([png], [png_write_png])
+AC_CHECK_LIB([pthread], [sem_init])
 AC_CHECK_LIB([uuid], [uuid_generate])
 
 # Checks for header files.
