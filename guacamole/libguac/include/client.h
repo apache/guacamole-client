@@ -65,6 +65,11 @@ struct guac_client {
     GUACIO* io;
 
     /**
+     * Semaphore which will be locked while I/O is owned.
+     */
+    sem_t io_lock;
+
+    /**
      * Arbitrary reference to proxy client-specific data. Implementors of a
      * Guacamole proxy client can store any data they want here, which can then
      * be retrieved as necessary in the message handlers.

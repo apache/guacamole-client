@@ -56,6 +56,15 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
+void __guac_set_client_io(guac_client* client, GUACIO* io) {
+    sem_wait(&(client->io_lock)); /* Acquire I/O */
+    client->io = io;
+}
+
+void __guac_release_client_io(guac_client* client) {
+    sem_post(&(client->io_lock));
+}
+
 guac_client* __guac_alloc_client(GUACIO* io) {
 
     /* Allocate new client (not handoff) */
@@ -65,6 +74,7 @@ guac_client* __guac_alloc_client(GUACIO* io) {
     /* Init new client */
     client->io = io;
     uuid_generate(client->uuid);
+    sem_init(&(client->io_lock), 0, 0); /* I/O starts locked */
 
     return client;
 }
@@ -113,7 +123,27 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
                 break;
             }
 
-            /* TODO: implement handoff */
+            /* resume -> resume existing connection (when that connection pauses) */
+            if (strcmp(instruction.opcode, "resume") == 0) {
+
+                if (registry) {
+
+                    client = guac_find_client(
+                            registry,
+                            (unsigned char*) guac_decode_base64_inplace(instruction.argv[0])
+                    );
+
+                    if (client) {
+                        __guac_set_client_io(client, io);
+                        return NULL; /* Returning NULL, so old client loop is used */
+                        /* FIXME: Fix semantics of returning NULL vs ptr. This function needs redocumentation, and callers
+                         * need to lose their "error" handling. */
+                    }
+                }
+
+                return NULL;
+
+            }
 
         }
 
@@ -153,30 +183,41 @@ void guac_free_client(guac_client* client, guac_client_registry* registry) {
 
 void guac_start_client(guac_client* client) {
 
+    guac_client client_copy;
     guac_instruction instruction;
-    GUACIO* io = client->io;
     int wait_result;
+
+    /* Maintained copy of client used for all calls to handlers, thus changes to I/O
+     * are controlled without starvation-prone blocking
+     */
+    memcpy(&client_copy, client, sizeof(guac_client));
 
     /* VNC Client Loop */
     for (;;) {
 
+        /* Accept changes to client I/O only before handling messages */
+        if (client_copy.io != client->io) {
+            guac_close(client_copy.io); /* Close old I/O */
+            client_copy.io = client->io;
+        }
+
         /* Handle server messages */
         if (client->handle_messages) {
 
-            int retval = client->handle_messages(client);
+            int retval = client->handle_messages(&client_copy);
             if (retval) {
                 syslog(LOG_ERR, "Error handling server messages");
                 return;
             }
 
-            guac_flush(client->io);
+            guac_flush(client_copy.io);
         }
 
-        wait_result = guac_instructions_waiting(io);
+        wait_result = guac_instructions_waiting(client_copy.io);
         if (wait_result > 0) {
 
             int retval;
-            retval = guac_read_instruction(io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
+            retval = guac_read_instruction(client_copy.io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
 
             if (retval > 0) {
            
@@ -230,12 +271,19 @@ void guac_start_client(guac_client* client) {
                             }
                     }
 
+                    else if (strcmp(instruction.opcode, "pause") == 0) {
+
+                        /* Allow other connection to take over I/O */
+                        __guac_release_client_io(client);
+                        
+                    }
+
                     else if (strcmp(instruction.opcode, "disconnect") == 0) {
                         syslog(LOG_INFO, "Client requested disconnect");
                         return;
                     }
 
-                } while ((retval = guac_read_instruction(io, &instruction)) > 0);
+                } while ((retval = guac_read_instruction(client_copy.io, &instruction)) > 0);
 
                 if (retval < 0) {
                     syslog(LOG_ERR, "Error reading instruction from stream");
