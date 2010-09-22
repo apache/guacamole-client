@@ -27,9 +27,9 @@
 
 #include <rfb/rfbclient.h>
 
-#include "guacio.h"
-#include "protocol.h"
-#include "client.h"
+#include <guacamole/guacio.h>
+#include <guacamole/protocol.h>
+#include <guacamole/client.h>
 
 char __guac_password[] = "potato";
 
