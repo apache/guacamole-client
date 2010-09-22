@@ -13,7 +13,7 @@ AC_CHECK_LIB([png], [png_write_png])
 AC_CHECK_LIB([uuid], [uuid_generate])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h stdlib.h string.h sys/socket.h sys/time.h syslog.h unistd.h semaphore.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T

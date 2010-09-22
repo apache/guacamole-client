@@ -22,8 +22,9 @@
 
 #include <png.h>
 #include <uuid/uuid.h>
-#include "uuidtree.h"
+#include <semaphore.h>
 
+#include "uuidtree.h"
 #include "guacio.h"
 
 /**
@@ -236,6 +237,11 @@ struct guac_client_registry {
      * Root of the uuid tree
      */
     guac_uuid_tree_node* root;
+
+    /**
+     * Semaphore controlling access to UUID tree.
+     */
+    sem_t tree_lock;
 
 };
 
