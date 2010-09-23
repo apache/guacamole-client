@@ -186,37 +186,8 @@ function VNCClient(display) {
 
         // Add event to queue, restart send loop if finished.
         outputMessageBuffer += message;
-        if (sendingMessages == 0)
-            sendPendingMessages();
 
     }
-
-    function sendPendingMessages() {
-
-        if (outputMessageBuffer.length > 0) {
-
-            sendingMessages = 1;
-
-            var message_xmlhttprequest = new XMLHttpRequest();
-            message_xmlhttprequest.open("POST", "inbound");
-            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            message_xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
-
-            // Once response received, send next queued event.
-            message_xmlhttprequest.onreadystatechange = function() {
-                if (message_xmlhttprequest.readyState == 4)
-                    sendPendingMessages();
-            }
-
-            message_xmlhttprequest.send(outputMessageBuffer);
-            outputMessageBuffer = ""; // Clear buffer
-
-        }
-        else
-            sendingMessages = 0;
-
-    }
-
 
 	/*****************************************/
 	/*** Clipboard                         ***/
@@ -301,7 +272,7 @@ function VNCClient(display) {
         function parseResponse() {
 
             // Start next request as soon as possible
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null)
+            if (xmlhttprequest.readyState >= 2 && nextRequest == null && uuid)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
@@ -378,10 +349,19 @@ function VNCClient(display) {
 
     function makeRequest() {
 
+        if (uuid)
+            outputMessageBuffer = "resume:" + uuid + ";" + outputMessageBuffer;
+
+        outputMessageBuffer += "pause;";
+
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", "instructions");
-        xmlhttprequest.send(null); 
+        xmlhttprequest.open("POST", "tunnel.php");
+        xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
+
+        xmlhttprequest.send(outputMessageBuffer);
+        outputMessageBuffer = "";
 
         return xmlhttprequest;
 
@@ -438,7 +418,13 @@ function VNCClient(display) {
 
     }
 
+    var uuid = null;
+
     var instructionHandlers = {
+
+        "uuid": function(parameters) {
+            uuid = parameters[0];
+        },
 
         "error": function(parameters) {
             showError(unescapeGuacamoleString(parameters[0]));
@@ -559,16 +545,8 @@ function VNCClient(display) {
 
     this.connect = function() {
 
-        var message = "connect;";
-
         setState(STATE_CONNECTING);
-
-        // Send connect message (synchronously... as necessary until handoff is implemented)
-        var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("POST", "inbound", false);
-        connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        connect_xmlhttprequest.setRequestHeader("Content-length", message.length);
-        connect_xmlhttprequest.send(message);
+        sendMessage("connect;");
 
         // Start reading data
         setState(STATE_WAITING);
@@ -583,15 +561,9 @@ function VNCClient(display) {
         if (currentState != STATE_DISCONNECTED
                 && currentState != STATE_DISCONNECTING) {
 
-            var message = "disconnect;";
             setState(STATE_DISCONNECTING);
 
-            // Send disconnect message (synchronously... as necessary until handoff is implemented)
-            var disconnect_xmlhttprequest = new XMLHttpRequest();
-            disconnect_xmlhttprequest.open("POST", "inbound", false);
-            disconnect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            disconnect_xmlhttprequest.setRequestHeader("Content-length", message.length);
-            disconnect_xmlhttprequest.send(message);
+            sendMessage("disconnect;");
 
             setState(STATE_DISCONNECTED);
         }
