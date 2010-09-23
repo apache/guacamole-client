@@ -197,7 +197,7 @@ void guac_start_client(guac_client* client) {
 
         /* Accept changes to client I/O only before handling messages */
         if (client_copy.io != client->io) {
-            guac_close(client_copy.io); /* Close old I/O */
+            guac_close_final(client_copy.io); /* Close old I/O and fd */
             client_copy.io = client->io;
         }
 

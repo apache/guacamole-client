@@ -49,6 +49,7 @@ ssize_t guac_flush_base64(GUACIO* io);
 ssize_t guac_flush(GUACIO* io);
 int guac_select(GUACIO* io, int usec_timeout);
 void guac_close(GUACIO* io);
+void guac_close_final(GUACIO* io);
 
 #endif
 
