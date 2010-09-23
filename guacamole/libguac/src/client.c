@@ -271,7 +271,7 @@ void guac_start_client(guac_client* client) {
                             }
                     }
 
-                    else if (strcmp(instruction.opcode, "pause") == 0) {
+                    else if (strcmp(instruction.opcode, "yield") == 0) {
 
                         /* Allow other connection to take over I/O */
                         __guac_release_client_io(client);

@@ -273,7 +273,7 @@ function VNCClient(display) {
 
             // Start next request as soon as possible
             if (xmlhttprequest.readyState >= 2 && nextRequest == null && uuid)
-                nextRequest = makeRequest();
+                nextRequest = makeRequest("resume:" + uuid + ";yield;");
 
             // Parse stream when data is received and when complete.
             if (xmlhttprequest.readyState == 3 ||
@@ -347,21 +347,18 @@ function VNCClient(display) {
     }
 
 
-    function makeRequest() {
+    function makeRequest(message) {
 
-        if (uuid)
-            outputMessageBuffer = "resume:" + uuid + ";" + outputMessageBuffer;
-
-        outputMessageBuffer += "pause;";
+        if (message == null)
+            message = "";
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("POST", "tunnel.php");
         xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
+        xmlhttprequest.setRequestHeader("Content-length", message.length);
 
-        xmlhttprequest.send(outputMessageBuffer);
-        outputMessageBuffer = "";
+        xmlhttprequest.send(message);
 
         return xmlhttprequest;
 
@@ -546,11 +543,10 @@ function VNCClient(display) {
     this.connect = function() {
 
         setState(STATE_CONNECTING);
-        sendMessage("connect;");
 
         // Start reading data
         setState(STATE_WAITING);
-        handleResponse(makeRequest());
+        handleResponse(makeRequest("connect;yield;"));
 
     };
 
