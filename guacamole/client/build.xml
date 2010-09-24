@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+
+<project name="guacamole" default="compile" basedir=".">
+
+	<property file="ant/build.properties"/>
+
+	<target name="clean" description="Removes build and dist dirs.">
+		<delete dir="${build.dir}"/>
+		<delete dir="${dist.dir}"/>
+		<delete dir="${tar.dir}"/>
+		<delete dir="${tar.src.dir}"/>
+        <delete file="${tar.dir}.tar.gz"/>
+	</target>
+
+	<target name="init" description="Creates build and dist dirs.">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/WEB-INF/classes"/>
+		<mkdir dir="${dist.dir}"/>
+	</target>
+
+	<target name="compile" description="Compiles Guacamole."
+		depends="init">
+		<copy todir="${build.dir}">
+			<fileset dir="${web.dir}"/>
+        </copy>
+
+        <!-- Replace __GUAC_VERSION with declared version -->
+        <replace dir="${build.dir}" value="${guac.version}">
+            <include name="**/*.html"/>
+            <replacetoken><![CDATA[__GUAC_VERSION]]></replacetoken>
+        </replace>
+
+		<javac srcdir="${src.dir}" destdir="${build.dir}/WEB-INF/classes"
+            classpath="${servlet.api.jar}">
+            <compilerarg value="-Xlint:unchecked"/>
+        </javac>
+	</target>
+
+	<target name="war" description="Builds Guacamole .war file."
+		depends="compile">
+		<war destfile="${dist.dir}/guacamole.war"
+			webxml="${build.dir}/WEB-INF/web.xml">
+            <fileset dir="${build.dir}">
+                <exclude name="META-INF/**"/>
+            </fileset>
+		</war>
+	</target>
+
+    <target name="tar" description="Build distributable .tar.gz file"
+        depends="war">
+        <mkdir dir="${tar.dir}"/>
+
+        <mkdir dir="${tar.src.dir}"/>
+        <copy todir="${tar.src.dir}">
+            <fileset dir=".">
+                <exclude name=".git/**"/>
+                <exclude name="**/.svn"/>
+                <exclude name="${tar.dir}/**"/>
+                <exclude name="${tar.src.dir}/**"/>
+                <exclude name="${dist.dir}/**"/>
+                <exclude name="${build.dir}/**"/>
+            </fileset>
+        </copy>
+        <tar basedir="." includes="${tar.src.dir}/**" destfile="${tar.dir}/${tar.src.dir}.tar" longfile="gnu"/>
+        <delete dir="${tar.src.dir}"/>
+
+        <copy todir="${tar.dir}">
+            <fileset file="${doc.dir}/example/guacamole.xml"/>
+            <fileset file="${doc.dir}/example/guacamole-users.xml"/>
+            <fileset file="${dist.dir}/guacamole.war"/>
+            <fileset file="LICENSE.txt"/>
+        </copy>
+
+        <tar basedir="." includes="${tar.dir}/**" destfile="${tar.dir}.tar.gz" compression="gzip" longfile="gnu"/>
+    </target>
+
+</project>
