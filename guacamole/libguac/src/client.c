@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <uuid/uuid.h>
 
 #include <syslog.h>
 
@@ -56,15 +55,6 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-void __guac_set_client_io(guac_client* client, GUACIO* io) {
-    sem_wait(&(client->io_lock)); /* Acquire I/O */
-    client->io = io;
-}
-
-void __guac_release_client_io(guac_client* client) {
-    sem_post(&(client->io_lock));
-}
-
 guac_client* __guac_alloc_client(GUACIO* io) {
 
     /* Allocate new client (not handoff) */
@@ -73,18 +63,15 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 
     /* Init new client */
     client->io = io;
-    uuid_generate(client->uuid);
-    sem_init(&(client->io_lock), 0, 0); /* I/O starts locked */
 
     return client;
 }
 
 
-guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac_client_init_handler* client_init, int argc, char** argv) {
+guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, int argc, char** argv) {
 
     guac_client* client;
     GUACIO* io = guac_open(client_fd);
-    guac_instruction instruction;
 
     /* Make copies of arguments */
     char** safe_argv = malloc(argc * sizeof(char*));
@@ -94,65 +81,11 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
     for (i=0; i<argc; i++)
         scratch_argv[i] = safe_argv[i] = strdup(argv[i]);
 
-    /* Wait for handshaking messages */
-    for (;;) {
+    /* Create new client */
+    client = __guac_alloc_client(io);
 
-        int retval;
-        retval = guac_read_instruction(io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
-
-        if (retval > 0) {
-           
-            /* connect -> create new client connection */
-            if (strcmp(instruction.opcode, "connect") == 0) {
-                
-                /* Create new client */
-                client = __guac_alloc_client(io);
-
-                /* Register client */
-                if (registry) {
-                    guac_register_client(registry, client);
-
-                    /* Send UUID to web-client */
-                    guac_send_uuid(io, client->uuid);
-                    guac_flush(client->io);
-                }
-
-                if (client_init(client, argc, scratch_argv) != 0)
-                    return NULL;
-
-                break;
-            }
-
-            /* resume -> resume existing connection (when that connection pauses) */
-            if (strcmp(instruction.opcode, "resume") == 0) {
-
-                if (registry) {
-
-                    client = guac_find_client(
-                            registry,
-                            (unsigned char*) guac_decode_base64_inplace(instruction.argv[0])
-                    );
-
-                    if (client) {
-                        __guac_set_client_io(client, io);
-                        return NULL; /* Returning NULL, so old client loop is used */
-                        /* FIXME: Fix semantics of returning NULL vs ptr. This function needs redocumentation, and callers
-                         * need to lose their "error" handling. */
-                    }
-                }
-
-                return NULL;
-
-            }
-
-        }
-
-        if (retval < 0)
-            return NULL; /* EOF or error */
-
-        /* Otherwise, retval == 0 implies unfinished instruction */
-
-    }
+    if (client_init(client, argc, scratch_argv) != 0)
+        return NULL;
 
     /* Free memory used for arg copy */
     for (i=0; i<argc; i++)
@@ -166,7 +99,7 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
 }
 
 
-void guac_free_client(guac_client* client, guac_client_registry* registry) {
+void guac_free_client(guac_client* client) {
 
     if (client->free_handler) {
         if (client->free_handler(client))
@@ -174,8 +107,6 @@ void guac_free_client(guac_client* client, guac_client_registry* registry) {
     }
 
     guac_close(client->io);
-
-    guac_remove_client(registry, client->uuid);
 
     free(client);
 }
@@ -269,13 +200,6 @@ void guac_start_client(guac_client* client) {
                                 return;
 
                             }
-                    }
-
-                    else if (strcmp(instruction.opcode, "pause") == 0) {
-
-                        /* Allow other connection to take over I/O */
-                        __guac_release_client_io(client);
-                        
                     }
 
                     else if (strcmp(instruction.opcode, "disconnect") == 0) {

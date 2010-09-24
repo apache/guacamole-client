@@ -21,10 +21,7 @@
 #define _CLIENT_H
 
 #include <png.h>
-#include <uuid/uuid.h>
-#include <semaphore.h>
 
-#include "uuidtree.h"
 #include "guacio.h"
 
 /**
@@ -34,7 +31,6 @@
  */
 
 typedef struct guac_client guac_client;
-typedef struct guac_client_registry guac_client_registry;
 
 typedef int guac_client_handle_messages(guac_client* client);
 typedef int guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
@@ -51,23 +47,12 @@ typedef int guac_client_free_handler(void* client);
 struct guac_client {
 
     /**
-     * UUID identifying this client. Useful when identifying a client
-     * for connection handoff/resume.
-     */
-    uuid_t uuid;
-
-    /**
      * The GUACIO structure to be used to communicate with the web-client. It is
      * expected that the implementor of any Guacamole proxy client will provide
      * their own mechanism of I/O for their protocol. The GUACIO structure is
      * used only to communicate conveniently with the Guacamole web-client.
      */
     GUACIO* io;
-
-    /**
-     * Semaphore which will be locked while I/O is owned.
-     */
-    sem_t io_lock;
 
     /**
      * Arbitrary reference to proxy client-specific data. Implementors of a
@@ -186,7 +171,6 @@ typedef int guac_client_init_handler(guac_client* client, int argc, char** argv)
  * Initialize and return a new guac_client using the specified client init handler (guac_client_init_handler).
  * This will normally be the guac_client_init function as provided by any of the pluggable proxy clients.
  *
- * @param registry The registry to use to register/find the client we need to return.
  * @param client_fd The file descriptor associated with the socket associated with the connection to the
  *                  web-client tunnel.
  * @param client_init Function pointer to the client init handler which will initialize the new guac_client
@@ -195,7 +179,7 @@ typedef int guac_client_init_handler(guac_client* client, int argc, char** argv)
  * @param argv The arguments being passed to this client.
  * @return A pointer to the newly initialized (or found) client.
  */
-guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac_client_init_handler* client_init, int argc, char** argv);
+guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, int argc, char** argv);
 
 /**
  * Enter the main network message handling loop for the given client.
@@ -208,9 +192,8 @@ void guac_start_client(guac_client* client);
  * Free all resources associated with the given client.
  *
  * @param client The proxy client to free all reasources of.
- * @param registry The registry to remove this client from when freed.
  */
-void guac_free_client(guac_client* client, guac_client_registry* registry);
+void guac_free_client(guac_client* client);
 
 /**
  * Allocate a libpng-compatible buffer to hold raw image data.
@@ -230,30 +213,5 @@ png_byte** guac_alloc_png_buffer(int w, int h, int bpp);
  * @param h The height of the buffer to free.
  */
 void guac_free_png_buffer(png_byte** png_buffer, int h);
-
-
-/**
- * Represent the Guacamole "client registry" in which all
- * currently connected clients are stored, indexed by UUID.
- */
-struct guac_client_registry {
-
-    /**
-     * Root of the uuid tree
-     */
-    guac_uuid_tree_node* root;
-
-    /**
-     * Semaphore controlling access to UUID tree.
-     */
-    sem_t tree_lock;
-
-};
-
-guac_client_registry* guac_create_client_registry();
-void guac_register_client(guac_client_registry* registry, guac_client* client);
-guac_client* guac_find_client(guac_client_registry* registry, uuid_t uuid);
-void guac_remove_client(guac_client_registry* registry, uuid_t uuid);
-void guac_cleanup_registry(guac_client_registry* registry);
 
 #endif
