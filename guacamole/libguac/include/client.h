@@ -62,7 +62,8 @@ struct guac_client {
      * their own mechanism of I/O for their protocol. The GUACIO structure is
      * used only to communicate conveniently with the Guacamole web-client.
      */
-    GUACIO* io;
+    GUACIO* io_in;
+    GUACIO* io_out;
 
     /**
      * Semaphore which will be locked while I/O is owned.

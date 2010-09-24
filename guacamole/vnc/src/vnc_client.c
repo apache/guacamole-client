@@ -49,7 +49,7 @@ void guac_vnc_cursor(rfbClient* client, int x, int y, int w, int h, int bpp) {
     int dx, dy;
 
     guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
-    GUACIO* io = gc->io;
+    GUACIO* io = gc->io_out;
     png_byte** png_buffer = ((vnc_guac_client_data*) gc->data)->png_buffer_alpha;
     png_byte* row;
 
@@ -110,7 +110,7 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
     int dx, dy;
 
     guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
-    GUACIO* io = gc->io;
+    GUACIO* io = gc->io_out;
     png_byte** png_buffer = ((vnc_guac_client_data*) gc->data)->png_buffer;
     png_byte* row;
 
@@ -167,7 +167,7 @@ void guac_vnc_update(rfbClient* client, int x, int y, int w, int h) {
 void guac_vnc_copyrect(rfbClient* client, int src_x, int src_y, int w, int h, int dest_x, int dest_y) {
 
     guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
-    GUACIO* io = gc->io;
+    GUACIO* io = gc->io_out;
 
     guac_send_copy(io, src_x, src_y, w, h, dest_x, dest_y);
     ((vnc_guac_client_data*) gc->data)->copy_rect_used = 1;
@@ -187,7 +187,7 @@ char* guac_vnc_get_password(rfbClient* client) {
 void guac_vnc_cut_text(rfbClient* client, const char* text, int textlen) {
 
     guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
-    GUACIO* io = gc->io;
+    GUACIO* io = gc->io_out;
 
     guac_send_clipboard(io, text);
 
@@ -335,10 +335,10 @@ int guac_client_init(guac_client* client, int argc, char** argv) {
     client->clipboard_handler = vnc_guac_client_clipboard_handler;
 
     /* Send name */
-    guac_send_name(client->io, rfb_client->desktopName);
+    guac_send_name(client->io_out, rfb_client->desktopName);
 
     /* Send size */
-    guac_send_size(client->io, rfb_client->width, rfb_client->height);
+    guac_send_size(client->io_out, rfb_client->width, rfb_client->height);
 
     return 0;
 

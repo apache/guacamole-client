@@ -273,7 +273,7 @@ function VNCClient(display) {
 
             // Start next request as soon as possible
             if (xmlhttprequest.readyState >= 2 && nextRequest == null && uuid)
-                nextRequest = makeRequest("resume:" + uuid + ";yield;");
+                nextRequest = makeRequest("transfer:out," + uuid + ";");
 
             // Parse stream when data is received and when complete.
             if (xmlhttprequest.readyState == 3 ||

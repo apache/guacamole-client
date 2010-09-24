@@ -56,12 +56,16 @@ void guac_free_png_buffer(png_byte** png_buffer, int h) {
 
 }
 
-void __guac_set_client_io(guac_client* client, GUACIO* io) {
-    sem_wait(&(client->io_lock)); /* Acquire I/O */
-    client->io = io;
+void __guac_set_client_io_out(guac_client* client, GUACIO* io) {
+    client->io_out = io;
 }
 
-void __guac_release_client_io(guac_client* client) {
+void __guac_set_client_io_in(guac_client* client, GUACIO* io) {
+    sem_wait(&(client->io_lock)); /* Acquire I/O */
+    client->io_in = io;
+}
+
+void __guac_release_client_io_in(guac_client* client) {
     sem_post(&(client->io_lock));
 }
 
@@ -72,7 +76,7 @@ guac_client* __guac_alloc_client(GUACIO* io) {
     memset(client, 0, sizeof(guac_client));
 
     /* Init new client */
-    client->io = io;
+    client->io_in = client->io_out = io;
     uuid_generate(client->uuid);
     sem_init(&(client->io_lock), 0, 0); /* I/O starts locked */
 
@@ -114,7 +118,7 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
 
                     /* Send UUID to web-client */
                     guac_send_uuid(io, client->uuid);
-                    guac_flush(client->io);
+                    guac_flush(io);
                 }
 
                 if (client_init(client, argc, scratch_argv) != 0)
@@ -124,17 +128,28 @@ guac_client* guac_get_client(int client_fd, guac_client_registry* registry, guac
             }
 
             /* resume -> resume existing connection (when that connection pauses) */
-            if (strcmp(instruction.opcode, "resume") == 0) {
+            if (strcmp(instruction.opcode, "transfer") == 0) {
 
                 if (registry) {
 
                     client = guac_find_client(
                             registry,
-                            (unsigned char*) guac_decode_base64_inplace(instruction.argv[0])
+                            (unsigned char*) guac_decode_base64_inplace(instruction.argv[1])
                     );
 
                     if (client) {
-                        __guac_set_client_io(client, io);
+
+                        if (strcmp(instruction.argv[0], "in") == 0)
+                            __guac_set_client_io_in(client, io);
+
+                        else if (strcmp(instruction.argv[0], "out") == 0)
+                            __guac_set_client_io_out(client, io);
+
+                        else if (strcmp(instruction.argv[0], "both") == 0) {
+                            __guac_set_client_io_in(client, io);
+                            __guac_set_client_io_out(client, io);
+                        }
+
                         return NULL; /* Returning NULL, so old client loop is used */
                         /* FIXME: Fix semantics of returning NULL vs ptr. This function needs redocumentation, and callers
                          * need to lose their "error" handling. */
@@ -173,7 +188,9 @@ void guac_free_client(guac_client* client, guac_client_registry* registry) {
             syslog(LOG_ERR, "Error calling client free handler");
     }
 
-    guac_close(client->io);
+    if (client->io_in != client->io_out)
+        guac_close(client->io_in);
+    guac_close(client->io_out);
 
     guac_remove_client(registry, client->uuid);
 
@@ -196,9 +213,20 @@ void guac_start_client(guac_client* client) {
     for (;;) {
 
         /* Accept changes to client I/O only before handling messages */
-        if (client_copy.io != client->io) {
-            guac_close_final(client_copy.io); /* Close old I/O and fd */
-            client_copy.io = client->io;
+        if (client_copy.io_in != client->io_in) {
+            /* Close and free previous I/O if unused */
+            if (client_copy.io_in != client_copy.io_out
+                    && client_copy.io_in != client->io_out)
+                guac_close_final(client_copy.io_in);
+            client_copy.io_in = client->io_in;
+        }
+
+        if (client_copy.io_out != client->io_out) {
+            /* Close and free previous I/O if unused */
+            if (client_copy.io_out != client_copy.io_in
+                    && client_copy.io_out != client->io_in)
+                guac_close_final(client_copy.io_out);
+            client_copy.io_out = client->io_out;
         }
 
         /* Handle server messages */
@@ -210,14 +238,14 @@ void guac_start_client(guac_client* client) {
                 return;
             }
 
-            guac_flush(client_copy.io);
+            guac_flush(client_copy.io_out);
         }
 
-        wait_result = guac_instructions_waiting(client_copy.io);
+        wait_result = guac_instructions_waiting(client_copy.io_in);
         if (wait_result > 0) {
 
             int retval;
-            retval = guac_read_instruction(client_copy.io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
+            retval = guac_read_instruction(client_copy.io_in, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
 
             if (retval > 0) {
            
@@ -274,7 +302,7 @@ void guac_start_client(guac_client* client) {
                     else if (strcmp(instruction.opcode, "yield") == 0) {
 
                         /* Allow other connection to take over I/O */
-                        __guac_release_client_io(client);
+                        __guac_release_client_io_in(client);
                         
                     }
 
@@ -283,7 +311,7 @@ void guac_start_client(guac_client* client) {
                         return;
                     }
 
-                } while ((retval = guac_read_instruction(client_copy.io, &instruction)) > 0);
+                } while ((retval = guac_read_instruction(client_copy.io_in, &instruction)) > 0);
 
                 if (retval < 0) {
                     syslog(LOG_ERR, "Error reading instruction from stream");
