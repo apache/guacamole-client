@@ -36,7 +36,6 @@ typedef struct client_thread_data {
 
     int fd;
     guac_client_init_handler* client_init;
-    guac_client_registry* registry;
 
     int argc;
     char** argv;
@@ -52,7 +51,7 @@ void* start_client_thread(void* data) {
     syslog(LOG_INFO, "Spawning client");
 
     /* Load and start client */
-    client = guac_get_client(thread_data->fd, thread_data->registry, thread_data->client_init, thread_data->argc, thread_data->argv); 
+    client = guac_get_client(thread_data->fd, thread_data->client_init, thread_data->argc, thread_data->argv); 
 
     if (client == NULL) {
         syslog(LOG_ERR, "Client retrieval failed");
@@ -61,10 +60,7 @@ void* start_client_thread(void* data) {
 
     guac_start_client(client);
 
-    /* FIXME: Need to free client, but only if the client is not
-     * being used. This line will be reached if handoff occurs
-     */
-    guac_free_client(client, thread_data->registry);
+    guac_free_client(client);
 
     /* Close socket */
     if (close(thread_data->fd) < 0) {
@@ -80,9 +76,6 @@ void* start_client_thread(void* data) {
 }
 
 int main(int argc, char* argv[]) {
-
-    /* Client registry */
-    guac_client_registry* registry;
 
     /* Pluggable client */
     void* client_plugin_handle;
@@ -165,9 +158,6 @@ int main(int argc, char* argv[]) {
     syslog(LOG_INFO, "Listening on port %i", listen_port);
 
 
-    /* Allocate registry */
-    registry = guac_create_client_registry();
-
     /* Daemon loop */
     for (;;) {
 
@@ -192,7 +182,6 @@ int main(int argc, char* argv[]) {
 
         data->fd = connected_socket_fd;
         data->client_init = alias.client_init;
-        data->registry = registry;
         data->argc = client_argc;
         data->argv = client_argv;
 
@@ -202,8 +191,6 @@ int main(int argc, char* argv[]) {
         }
 
     }
-
-    /* FIXME: Cleanup client registry (and all other objects) on exit */
 
     /* Close socket */
     if (close(socket_fd) < 0) {
