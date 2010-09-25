@@ -60,13 +60,6 @@ void guac_close(GUACIO* io) {
     free(io);
 }
 
-void guac_close_final(GUACIO* io) {
-    guac_flush(io);
-    close(io->fd);
-    free(io);
-}
-
-
 /* Write bytes, limit rate */
 ssize_t __guac_write(GUACIO* io, const char* buf, int count) {
 
