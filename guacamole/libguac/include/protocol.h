@@ -21,31 +21,146 @@
 #define __PROTOCOL_H
 
 #include <png.h>
-#include <uuid/uuid.h>
 
 #include "guacio.h"
 
+/**
+ * Provides functions and structures required for communicating using the
+ * Guacamole protocol over a GUACIO connection, such as that provided by
+ * guac_client objects.
+ *
+ * @file protocol.h
+ */
+
+
+/**
+ * Represents a single instruction within the Guacamole protocol.
+ */
 typedef struct guac_instruction {
 
+    /**
+     * The opcode of the instruction.
+     */
     char* opcode;
 
+    /**
+     * The number of arguments passed to this instruction.
+     */
     int argc;
+
+    /**
+     * Array of all arguments passed to this instruction. Strings
+     * are not already unescaped.
+     */
     char** argv;
 
 } guac_instruction;
 
 
+/**
+ * Frees all memory allocated to the given instruction.
+ *
+ * @param instruction The instruction to free.
+ */
 void guac_free_instruction(guac_instruction* instruction);
+
+/**
+ * Escapes the given string as necessary to be passed within
+ * a Guacamole instruction. The returned string must later be
+ * released with a call to free().
+ *
+ * @param str The string to escape.
+ * @return A new escaped string, which must be freed with free().
+ */
 char* guac_escape_string(const char* str);
+
+/**
+ * Unescapes the given string in-place, as an unescaped string
+ * is always the same length or shorter than the original.
+ *
+ * @param str The string to unescape.
+ * @return A pointer to the original string, which is now unescaped.
+ */
 char* guac_unescape_string_inplace(char* str);
-char* guac_decode_base64_inplace(char* str);
+
+/**
+ * Sends a name instruction over the given GUACIO connection. The
+ * name given will be automatically escaped for transmission.
+ *
+ * @param io The GUACIO connection to use.
+ * @param name The name to send within the name instruction.
+ */
 void guac_send_name(GUACIO* io, const char* name);
+
+/**
+ * Sends an error instruction over the given GUACIO connection. The
+ * error description given will be automatically escaped for
+ * transmission.
+ *
+ * @param io The GUACIO connection to use.
+ * @param error The description associated with the error.
+ */
 void guac_send_error(GUACIO* io, const char* error);
+
+/**
+ * Sends a clipboard instruction over the given GUACIO connection. The
+ * clipboard data given will be automatically escaped for transmission.
+ *
+ * @param io The GUACIO connection to use.
+ * @param data The clipboard data to send.
+ */
 void guac_send_clipboard(GUACIO* io, const char* data);
-void guac_send_uuid(GUACIO* io, uuid_t uuid);
+
+/**
+ * Sends a size instruction over the given GUACIO connection.
+ *
+ * @param io The GUACIO connection to use.
+ * @param w The width of the display.
+ * @param h The height of the display.
+ */
 void guac_send_size(GUACIO* io, int w, int h);
+
+/**
+ * Sends a copy instruction over the given GUACIO connection.
+ *
+ * @param io The GUACIO connection to use.
+ * @param srcx The X coordinate of the source rectangle.
+ * @param srcy The Y coordinate of the source rectangle.
+ * @param w The width of the source rectangle.
+ * @param h The height of the source rectangle.
+ * @param dstx The X coordinate of the destination, where the source rectangle
+ *             should be copied.
+ * @param dsty The Y coordinate of the destination, where the source rectangle
+ *             should be copied.
+ */
 void guac_send_copy(GUACIO* io, int srcx, int srcy, int w, int h, int dstx, int dsty);
+
+/**
+ * Sends a png instruction over the given GUACIO connection. The PNG image data
+ * given will be automatically base64-encoded for transmission.
+ *
+ * @param io The GUACIO connection to use.
+ * @param x The destination X coordinate.
+ * @param y The destination Y coordinate.
+ * @param png_rows A libpng-compatible PNG image buffer containing the image
+ *                 data to send.
+ * @param w The width of the image in the image buffer.
+ * @param h The height of the image in the image buffer.
+ */
 void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
+
+/**
+ * Sends a cursor instruction over the given GUACIO connection. The PNG image
+ * data given will be automatically base64-encoded for transmission.
+ *
+ * @param io The GUACIO connection to use.
+ * @param x The destination X coordinate.
+ * @param y The destination Y coordinate.
+ * @param png_rows A libpng-compatible PNG image buffer containing the image
+ *                 data to send.
+ * @param w The width of the image in the image buffer.
+ * @param h The height of the image in the image buffer.
+ */
 void guac_send_cursor(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
 
 int guac_instructions_waiting(GUACIO* io);
