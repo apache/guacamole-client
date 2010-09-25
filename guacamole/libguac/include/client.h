@@ -32,10 +32,31 @@
 
 typedef struct guac_client guac_client;
 
+/**
+ * Handler for server messages (where "server" refers to the server that
+ * the proxy client is connected to).
+ */
 typedef int guac_client_handle_messages(guac_client* client);
+
+/**
+ * Handler for Guacamole mouse events.
+ */
 typedef int guac_client_mouse_handler(guac_client* client, int x, int y, int button_mask);
+
+/**
+ * Handler for Guacamole key events.
+ */
 typedef int guac_client_key_handler(guac_client* client, int keysym, int pressed);
+
+/**
+ * Handler for Guacamole clipboard events.
+ */
 typedef int guac_client_clipboard_handler(guac_client* client, char* copied);
+
+/**
+ * Handler for freeing up any extra data allocated by the client
+ * implementation.
+ */
 typedef int guac_client_free_handler(void* client);
 
 /**
@@ -165,6 +186,9 @@ struct guac_client {
 
 };
 
+/**
+ * Handler which should initialize the given guac_client.
+ */
 typedef int guac_client_init_handler(guac_client* client, int argc, char** argv);
 
 /**

@@ -163,7 +163,28 @@ void guac_send_png(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
  */
 void guac_send_cursor(GUACIO* io, int x, int y, png_byte** png_rows, int w, int h);
 
+/**
+ * Returns whether new instruction data is available on the given GUACIO
+ * connection for parsing.
+ *
+ * @param io The GUACIO connection to use.
+ * @return A positive value if data is available, negative on error, or
+ *         zero if no data is currently available.
+ */
 int guac_instructions_waiting(GUACIO* io);
+
+/**
+ * Reads a single instruction from the given GUACIO connection.
+ *
+ * @param io The GUACIO connection to use.
+ * @param parsed_instruction A pointer to a guac_instruction structure which
+ *                           will be populated with data read from the given
+ *                           GUACIO connection.
+ * @return A positive value if data was successfully read, negative on
+ *         error, or zero if the instrucion could not be read completely,
+ *         in which case, subsequent calls to guac_read_instruction() will
+ *         return the parsed instruction once enough data is available.
+ */
 int guac_read_instruction(GUACIO* io, guac_instruction* parsed_instruction);
 
 #endif
