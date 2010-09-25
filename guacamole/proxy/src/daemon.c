@@ -96,24 +96,52 @@ int main(int argc, char* argv[]) {
     unsigned int client_addr_len;
     int connected_socket_fd;
 
-    int listen_port;
+    int listen_port = -1;
+    char* protocol = NULL;
 
     int client_argc;
     char** client_argv;
 
     char protocol_lib[256] = "libguac_client_";
 
-    if (argc < 3) {
-        fprintf(stderr, "USAGE: %s LISTENPORT PROTOCOL [PROTOCOL OPTIONS]\n", argv[0]);
-        return 1;
+    int opt;
+
+    /* Parse arguments */
+    while ((opt = getopt(argc, argv, "l:p:")) != -1) {
+        if (opt == 'l') {
+            listen_port = atoi(optarg);
+            if (listen_port <= 0) {
+                fprintf(stderr, "Invalid port: %s\n", optarg);
+                exit(EXIT_FAILURE);
+            }
+        }
+        else if (opt == 'p') {
+            protocol = optarg;
+            break;
+        }
+        else {
+            fprintf(stderr, "USAGE: %s [-l LISTENPORT] [-p PROTOCOL [PROTOCOL OPTIONS ...]]\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
     }
 
-    listen_port = atoi(argv[1]);
-    strcat(protocol_lib, argv[2]);
+    /* Validate arguments */
+
+    if (listen_port < 0) {
+        fprintf(stderr, "The port to listen on must be specified.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (protocol == NULL) {
+        fprintf(stderr, "The protocol must be specified.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    strcat(protocol_lib, protocol);
     strcat(protocol_lib, ".so");
 
-    client_argc = argc - 3;
-    client_argv = &(argv[3]);
+    client_argc = argc - optind;
+    client_argv = &(argv[optind]);
 
     /* Get binding address */
     memset(&server_addr, 0, sizeof(server_addr)); /* Zero struct */
@@ -124,24 +152,22 @@ int main(int argc, char* argv[]) {
     /* Get socket */
     socket_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (socket_fd < 0) {
-        syslog(LOG_ERR, "Error opening socket: %s", strerror(errno));
-        return 1;
+        fprintf(stderr, "Error opening socket: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
     }
 
     /* Bind socket to address */
     if (bind(socket_fd, (struct sockaddr*) &server_addr,
                 sizeof(server_addr)) < 0) {
-        syslog(LOG_ERR, "Error binding socket: %s", strerror(errno));
-        return 2;
+        fprintf(stderr, "Error binding socket: %s\n", strerror(errno));
+        exit(EXIT_FAILURE);
     } 
-
-    syslog(LOG_INFO, "Loading client plugin");
 
     /* Load client plugin */
     client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
     if (!client_plugin_handle) {
-        syslog(LOG_ERR, "Could not open client plugin: %s", dlerror());
-        return 2;
+        fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
+        exit(EXIT_FAILURE);
     }
 
     dlerror(); /* Clear errors */
@@ -150,12 +176,12 @@ int main(int argc, char* argv[]) {
     alias.obj = dlsym(client_plugin_handle, "guac_client_init");
 
     if ((error = dlerror()) != NULL) {
-        syslog(LOG_ERR, "Could not get guac_client_init in  plugin: %s", error);
-        return 2;
+        fprintf(stderr, "Could not get guac_client_init in  plugin: %s\n", error);
+        exit(EXIT_FAILURE);
     }
 
 
-    syslog(LOG_INFO, "Listening on port %i", listen_port);
+    syslog(LOG_INFO, "Started, listening on port %i", listen_port);
 
 
     /* Daemon loop */
