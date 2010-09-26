@@ -1,5 +1,6 @@
 AUTOMAKE_OPTIONS = gnu
 
+ACLOCAL_AMFLAGS = -I m4
 AM_CFLAGS = -Werror -Wall -Iinclude
 
 libguacincdir = $(includedir)/guacamole

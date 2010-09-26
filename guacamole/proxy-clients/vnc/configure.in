@@ -3,6 +3,7 @@
 
 AC_INIT(src/vnc_client.c)
 AM_INIT_AUTOMAKE([libguac_client_vnc], 0.0.0)
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC
