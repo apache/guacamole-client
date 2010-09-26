@@ -114,41 +114,30 @@ void guac_free_client(guac_client* client) {
 
 void guac_start_client(guac_client* client) {
 
-    guac_client client_copy;
+    GUACIO* io = client->io;
     guac_instruction instruction;
     int wait_result;
-
-    /* Maintained copy of client used for all calls to handlers, thus changes to I/O
-     * are controlled without starvation-prone blocking
-     */
-    memcpy(&client_copy, client, sizeof(guac_client));
 
     /* VNC Client Loop */
     for (;;) {
 
-        /* Accept changes to client I/O only before handling messages */
-        if (client_copy.io != client->io) {
-            guac_close_final(client_copy.io); /* Close old I/O and fd */
-            client_copy.io = client->io;
-        }
-
         /* Handle server messages */
         if (client->handle_messages) {
 
-            int retval = client->handle_messages(&client_copy);
+            int retval = client->handle_messages(client);
             if (retval) {
                 syslog(LOG_ERR, "Error handling server messages");
                 return;
             }
 
-            guac_flush(client_copy.io);
+            guac_flush(io);
         }
 
-        wait_result = guac_instructions_waiting(client_copy.io);
+        wait_result = guac_instructions_waiting(io);
         if (wait_result > 0) {
 
             int retval;
-            retval = guac_read_instruction(client_copy.io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
+            retval = guac_read_instruction(io, &instruction); /* 0 if no instructions finished yet, <0 if error or EOF */
 
             if (retval > 0) {
            
@@ -207,7 +196,7 @@ void guac_start_client(guac_client* client) {
                         return;
                     }
 
-                } while ((retval = guac_read_instruction(client_copy.io, &instruction)) > 0);
+                } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 
                 if (retval < 0) {
                     syslog(LOG_ERR, "Error reading instruction from stream");
