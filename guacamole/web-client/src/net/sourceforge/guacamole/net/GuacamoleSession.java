@@ -27,8 +27,6 @@ import javax.servlet.http.HttpSessionBindingListener;
 import net.sourceforge.guacamole.Client;
 import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.event.KeyEvent;
-import net.sourceforge.guacamole.event.PointerEvent;
 
 public class GuacamoleSession {
 

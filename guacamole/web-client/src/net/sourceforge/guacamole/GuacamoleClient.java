@@ -32,10 +32,6 @@ import java.io.Writer;
 import java.io.OutputStreamWriter;
 
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.event.EventQueue;
-import net.sourceforge.guacamole.event.EventHandler;
-import net.sourceforge.guacamole.event.KeyEvent;
-import net.sourceforge.guacamole.event.PointerEvent;
 
 public class GuacamoleClient extends Client {
 
