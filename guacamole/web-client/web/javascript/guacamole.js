@@ -1,6 +1,6 @@
 
 /*
- *  Guacamole - Pure JavaScript/HTML VNC Client
+ *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function VNCClient(display) {
+function GuacamoleClient(display) {
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTING    = 1;
@@ -445,7 +445,7 @@ function VNCClient(display) {
         },
 
         "name": function(parameters) {
-            document.title = "Guacamole (" + unescapeGuacamoleString(parameters[0]) + ")";
+            document.title = unescapeGuacamoleString(parameters[0]);
         },
 
         "clipboard": function(parameters) {

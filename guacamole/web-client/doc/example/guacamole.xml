@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Guacamole - Pure JavaScript/HTML VNC Client
+    Guacamole - Clientless Remote Desktop
     Copyright (C) 2010  Michael Jumper
 
     This program is free software: you can redistribute it and/or modify
@@ -20,55 +20,9 @@
 
 <Context antiJARLocking="true" path="/guacamole" docBase="/var/lib/guacamole/guacamole.war">
 
-    <!-- Change the lines below to match your VNC server -->
-    <Parameter name="host" value="localhost"/>
-    <Parameter name="port" value="5900"/>
-
-
-    <!-- Password (VNC Authentication)
-
-         Uncomment and change the line below if your VNC server is
-         password protected. -->
-
-    <!--
-    <Parameter name="password" value="PASSWORD"/>
-    -->
-
-
-    <!-- Bits-per-pixel
-
-         This parameter controls what color depth should be
-         requested from the VNC server.
-
-         Valid values are "8", "16", or "24". -->
-
-    <!--
-    <Parameter name="bpp" value="24"/>
-    -->
-
-
-    <!-- Output (to web client) bits-per-pixel.
-
-         This parameter controls what color depth will be used
-         in the images sent to the web-based client.
-
-         Valid values are "8" or "24". -->
-
-    <!--
-    <Parameter name="output-bpp" value="24"/>
-    -->
-
-
-    <!-- Swap red and blue components. Some VNC servers may not honor
-         the client's request for certain pixel formats, instead
-         returning RGB as BGR.
-
-         If colors look strange (blues look red or brown) when using
-         Guacamole, uncomment and set this parameter to true. -->
-
-    <!--
-    <Parameter name="swap-red-blue" value="false"/>
-    -->
+    <!-- Change the lines below to match your Guacamole proxy -->
+    <Parameter name="hostname" value="localhost"/>
+    <Parameter name="port" value="1234"/>
 
     <Realm className="org.apache.catalina.realm.MemoryRealm" pathname="conf/guacamole-users.xml"/>
 </Context>
