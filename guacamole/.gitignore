@@ -8,6 +8,9 @@
 # Backup files
 *~
 
+# Release files
+*.tar.gz
+
 # Files currently being edited by vim or vi
 *.swp
 
