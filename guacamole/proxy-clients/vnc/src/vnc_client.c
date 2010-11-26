@@ -31,8 +31,6 @@
 #include <guacamole/protocol.h>
 #include <guacamole/client.h>
 
-char __guac_password[256] = "";
-
 static char* __GUAC_CLIENT = "GUAC_CLIENT";
 
 typedef struct vnc_guac_client_data {
@@ -41,6 +39,7 @@ typedef struct vnc_guac_client_data {
     png_byte** png_buffer;
     png_byte** png_buffer_alpha;
     int copy_rect_used;
+    char* password;
 
 } vnc_guac_client_data;
 
@@ -175,12 +174,8 @@ void guac_vnc_copyrect(rfbClient* client, int src_x, int src_y, int w, int h, in
 }
 
 char* guac_vnc_get_password(rfbClient* client) {
-
-    /* Freed after use by libvncclient */
-    char* password = malloc(64);
-    strncpy(password, __guac_password, 63);
-
-    return password;
+    guac_client* gc = rfbClientGetClientData(client, __GUAC_CLIENT);
+    return ((vnc_guac_client_data*) gc->data)->password;
 }
 
 
@@ -276,7 +271,6 @@ int vnc_guac_client_free_handler(guac_client* client) {
 
 int guac_client_init(guac_client* client, int argc, char** argv) {
 
-    char** rfb_argv;
     rfbClient* rfb_client;
 
     png_byte** png_buffer;
@@ -301,45 +295,53 @@ int guac_client_init(guac_client* client, int argc, char** argv) {
     /* Password */
     rfb_client->GetPassword = guac_vnc_get_password;
 
-    /* Parse password from args if provided */
-    if (argc >= 2 && strncmp(argv[0], "-passwd=", 8) == 0) {
-
-        strncpy(__guac_password, &((argv[0])[8]), sizeof(__guac_password));
-
-        /* Continue with next argument */
-        argc--;
-        argv = &(argv[1]);
-    }
-
-    /* Set up argc/argv for libvncclient (expects progname) */
-    rfb_argv = malloc((argc+1) * sizeof(char*));
-
-    rfb_argv[0] = "guac-client-vnc";
-    memcpy(&(rfb_argv[1]), argv, argc*sizeof(char*));
-
-    argc++;
-
-    /* Parse remaining args, connect */
-    if (!rfbInitClient(rfb_client, &argc, rfb_argv)) {
+    if (argc < 3) {
+        guac_send_error(client->io, "VNC client requires hostname and port arguments");
         return 1;
     }
 
-    free(rfb_argv);
+    /* Alloc client data */
+    guac_client_data = malloc(sizeof(vnc_guac_client_data));
+    client->data = guac_client_data;
+
+    /* Store Guac client in rfb client */
+    rfbClientSetClientData(rfb_client, __GUAC_CLIENT, client);
+
+    /* Parse password from args if provided */
+    if (argc >= 4) {
+
+        /* Freed after use by libvncclient */
+        guac_client_data->password = malloc(64);
+        strncpy(guac_client_data->password, argv[3], 63);
+
+    }
+    else {
+
+        /* Freed after use by libvncclient */
+        guac_client_data->password = malloc(64);
+        guac_client_data->password[0] = '\0';
+
+    }
+
+    /* Set hostname and port */
+    rfb_client->serverHost = strdup(argv[1]);
+    rfb_client->serverPort = atoi(argv[2]);
+
+    /* Connect */
+    if (!rfbInitClient(rfb_client, NULL, NULL)) {
+        guac_send_error(client->io, "Error initializing VNC client");
+        return 1;
+    }
 
     /* Allocate buffers */
     png_buffer = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 3); /* No-alpha */
     png_buffer_alpha = guac_alloc_png_buffer(rfb_client->width, rfb_client->height, 4); /* With alpha */
 
-    /* Store Guac data in client */
-    rfbClientSetClientData(rfb_client, __GUAC_CLIENT, client);
-
-    /* Set client data */
-    guac_client_data = malloc(sizeof(vnc_guac_client_data));
+    /* Set remaining client data */
     guac_client_data->rfb_client = rfb_client;
     guac_client_data->png_buffer = png_buffer;
     guac_client_data->png_buffer_alpha = png_buffer_alpha;
     guac_client_data->copy_rect_used = 0;
-    client->data = guac_client_data;
 
     /* Set handlers */
     client->handle_messages = vnc_guac_client_handle_messages;
