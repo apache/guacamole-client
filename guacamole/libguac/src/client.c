@@ -102,49 +102,59 @@ guac_client* guac_get_client(int client_fd) {
         }
 
         /* Connect instruction read */
-        if (result > 0 && strcmp(instruction.opcode, "connect") == 0) {
+        if (result > 0) {
 
-            /* Get protocol from message */
-            char* protocol = instruction.argv[0];
+            if (strcmp(instruction.opcode, "connect") == 0) {
 
-            strcat(protocol_lib, protocol);
-            strcat(protocol_lib, ".so");
+                /* Get protocol from message */
+                char* protocol = instruction.argv[0];
 
-            /* Create new client */
-            client = __guac_alloc_client(io);
+                strcat(protocol_lib, protocol);
+                strcat(protocol_lib, ".so");
 
-            /* Load client plugin */
-            client->client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
-            if (!(client->client_plugin_handle)) {
-                fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
-                exit(EXIT_FAILURE);
-            }
+                /* Create new client */
+                client = __guac_alloc_client(io);
 
-            dlerror(); /* Clear errors */
+                /* Load client plugin */
+                client->client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
+                if (!(client->client_plugin_handle)) {
+                    syslog(LOG_ERR, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
+                    guac_send_error(io, "Could not load server-side client plugin.");
+                    guac_free_instruction_data(&instruction);
+                    return NULL;
+                }
 
-            /* Get init function */
-            alias.obj = dlsym(client->client_plugin_handle, "guac_client_init");
+                dlerror(); /* Clear errors */
 
-            if ((error = dlerror()) != NULL) {
-                fprintf(stderr, "Could not get guac_client_init in plugin: %s\n", error);
-                exit(EXIT_FAILURE);
-            }
+                /* Get init function */
+                alias.obj = dlsym(client->client_plugin_handle, "guac_client_init");
 
-            /* Initialize client arguments */
-            argc = instruction.argc;
-            argv = instruction.argv;
+                if ((error = dlerror()) != NULL) {
+                    syslog(LOG_ERR, "Could not get guac_client_init in plugin: %s\n", error);
+                    guac_send_error(io, "Invalid server-side client plugin.");
+                    guac_free_instruction_data(&instruction);
+                    return NULL;
+                }
 
-            break;
+                /* Initialize client arguments */
+                argc = instruction.argc;
+                argv = instruction.argv;
+
+                if (alias.client_init(client, argc, argv) != 0) {
+                    guac_free_instruction_data(&instruction);
+                    guac_send_error(io, "Error initializing server-side client.");
+                    return NULL;
+                }
+
+                guac_free_instruction_data(&instruction);
+                return client;
+
+            } /* end if connect */
+
+            guac_free_instruction_data(&instruction);
         }
 
     }
-
-    if (alias.client_init(client, argc, argv) != 0)
-        return NULL;
-
-    guac_free_instruction_data(&instruction);
-
-    return client;
 
 }
 

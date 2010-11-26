@@ -82,7 +82,7 @@ int main(int argc, char* argv[]) {
     int connected_socket_fd;
 
     /* Arguments */
-    int listen_port = -1;
+    int listen_port = 4822; /* Default port */
     int opt;
 
     /* Parse arguments */
@@ -95,15 +95,9 @@ int main(int argc, char* argv[]) {
             }
         }
         else {
-            fprintf(stderr, "USAGE: %s -l LISTENPORT\n", argv[0]);
+            fprintf(stderr, "USAGE: %s [-l LISTENPORT]\n", argv[0]);
             exit(EXIT_FAILURE);
         }
-    }
-
-    /* Validate arguments */
-    if (listen_port < 0) {
-        fprintf(stderr, "The port to listen on must be specified.\n");
-        exit(EXIT_FAILURE);
     }
 
     /* Get binding address */
