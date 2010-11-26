@@ -76,6 +76,11 @@ struct guac_client {
     GUACIO* io;
 
     /**
+     * Reference to dlopen'd client plugin.
+     */
+    void* client_plugin_handle;
+
+    /**
      * Arbitrary reference to proxy client-specific data. Implementors of a
      * Guacamole proxy client can store any data they want here, which can then
      * be retrieved as necessary in the message handlers.
@@ -192,18 +197,14 @@ struct guac_client {
 typedef int guac_client_init_handler(guac_client* client, int argc, char** argv);
 
 /**
- * Initialize and return a new guac_client using the specified client init handler (guac_client_init_handler).
- * This will normally be the guac_client_init function as provided by any of the pluggable proxy clients.
+ * Initialize and return a new guac_client. The pluggable client will be chosen based on
+ * the first connect message received on the given file descriptor.
  *
  * @param client_fd The file descriptor associated with the socket associated with the connection to the
  *                  web-client tunnel.
- * @param client_init Function pointer to the client init handler which will initialize the new guac_client
- *                    when called. The given hostname and port will be passed to this handler.
- * @param argc The number of arguments being passed to this client. 
- * @param argv The arguments being passed to this client.
- * @return A pointer to the newly initialized (or found) client.
+ * @return A pointer to the newly initialized client.
  */
-guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, int argc, char** argv);
+guac_client* guac_get_client(int client_fd);
 
 /**
  * Enter the main network message handling loop for the given client.

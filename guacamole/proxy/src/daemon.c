@@ -24,7 +24,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <dlfcn.h>
 #include <pthread.h>
 
 #include <errno.h>
@@ -35,10 +34,6 @@
 typedef struct client_thread_data {
 
     int fd;
-    guac_client_init_handler* client_init;
-
-    int argc;
-    char** argv;
 
 } client_thread_data;
 
@@ -51,7 +46,7 @@ void* start_client_thread(void* data) {
     syslog(LOG_INFO, "Spawning client");
 
     /* Load and start client */
-    client = guac_get_client(thread_data->fd, thread_data->client_init, thread_data->argc, thread_data->argv); 
+    client = guac_get_client(thread_data->fd); 
 
     if (client == NULL) {
         syslog(LOG_ERR, "Client retrieval failed");
@@ -77,16 +72,6 @@ void* start_client_thread(void* data) {
 
 int main(int argc, char* argv[]) {
 
-    /* Pluggable client */
-    void* client_plugin_handle;
-
-    union {
-        guac_client_init_handler* client_init;
-        void* obj;
-    } alias;
-
-    char* error;
-
     /* Server */
     int socket_fd;
     struct sockaddr_in server_addr;
@@ -96,18 +81,12 @@ int main(int argc, char* argv[]) {
     unsigned int client_addr_len;
     int connected_socket_fd;
 
+    /* Arguments */
     int listen_port = -1;
-    char* protocol = NULL;
-
-    int client_argc;
-    char** client_argv;
-
-    char protocol_lib[256] = "libguac_client_";
-
     int opt;
 
     /* Parse arguments */
-    while ((opt = getopt(argc, argv, "l:p:")) != -1) {
+    while ((opt = getopt(argc, argv, "l:")) != -1) {
         if (opt == 'l') {
             listen_port = atoi(optarg);
             if (listen_port <= 0) {
@@ -115,33 +94,17 @@ int main(int argc, char* argv[]) {
                 exit(EXIT_FAILURE);
             }
         }
-        else if (opt == 'p') {
-            protocol = optarg;
-            break;
-        }
         else {
-            fprintf(stderr, "USAGE: %s [-l LISTENPORT] [-p PROTOCOL [PROTOCOL OPTIONS ...]]\n", argv[0]);
+            fprintf(stderr, "USAGE: %s -l LISTENPORT\n", argv[0]);
             exit(EXIT_FAILURE);
         }
     }
 
     /* Validate arguments */
-
     if (listen_port < 0) {
         fprintf(stderr, "The port to listen on must be specified.\n");
         exit(EXIT_FAILURE);
     }
-
-    if (protocol == NULL) {
-        fprintf(stderr, "The protocol must be specified.\n");
-        exit(EXIT_FAILURE);
-    }
-
-    strcat(protocol_lib, protocol);
-    strcat(protocol_lib, ".so");
-
-    client_argc = argc - optind;
-    client_argv = &(argv[optind]);
 
     /* Get binding address */
     memset(&server_addr, 0, sizeof(server_addr)); /* Zero struct */
@@ -162,24 +125,6 @@ int main(int argc, char* argv[]) {
         fprintf(stderr, "Error binding socket: %s\n", strerror(errno));
         exit(EXIT_FAILURE);
     } 
-
-    /* Load client plugin */
-    client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
-    if (!client_plugin_handle) {
-        fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
-        exit(EXIT_FAILURE);
-    }
-
-    dlerror(); /* Clear errors */
-
-    /* Get init function */
-    alias.obj = dlsym(client_plugin_handle, "guac_client_init");
-
-    if ((error = dlerror()) != NULL) {
-        fprintf(stderr, "Could not get guac_client_init in  plugin: %s\n", error);
-        exit(EXIT_FAILURE);
-    }
-
 
     syslog(LOG_INFO, "Started, listening on port %i", listen_port);
 
@@ -205,11 +150,7 @@ int main(int argc, char* argv[]) {
         }
 
         data = malloc(sizeof(client_thread_data));
-
         data->fd = connected_socket_fd;
-        data->client_init = alias.client_init;
-        data->argc = client_argc;
-        data->argv = client_argv;
 
         if (pthread_create(&thread, NULL, start_client_thread, (void*) data)) {
             syslog(LOG_ERR, "Could not create client thread: %s", strerror(errno));
@@ -223,13 +164,6 @@ int main(int argc, char* argv[]) {
         syslog(LOG_ERR, "Could not close socket: %s", strerror(errno));
         return 3;
     }
-
-    /* Load client plugin */
-    if (dlclose(client_plugin_handle)) {
-        syslog(LOG_ERR, "Could not close client plugin: %s", dlerror());
-        return 2;
-    }
-
 
     return 0;
 

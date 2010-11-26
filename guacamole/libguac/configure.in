@@ -10,6 +10,7 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 
 # Checks for libraries.
+AC_CHECK_LIB([dl], [dlopen],, AC_MSG_ERROR("libdl is required for loading client plugins"))
 AC_CHECK_LIB([png], [png_write_png])
 
 # Checks for header files.

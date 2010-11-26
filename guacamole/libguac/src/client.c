@@ -23,6 +23,8 @@
 
 #include <syslog.h>
 
+#include <dlfcn.h>
+
 #include "guacio.h"
 #include "protocol.h"
 #include "client.h"
@@ -68,31 +70,48 @@ guac_client* __guac_alloc_client(GUACIO* io) {
 }
 
 
-guac_client* guac_get_client(int client_fd, guac_client_init_handler* client_init, int argc, char** argv) {
+guac_client* guac_get_client(int client_fd) {
 
     guac_client* client;
     GUACIO* io = guac_open(client_fd);
 
-    /* Make copies of arguments */
-    char** safe_argv = malloc(argc * sizeof(char*));
-    char** scratch_argv = malloc(argc * sizeof(char*));
+    /* Pluggable client */
+    char* protocol;
+    char protocol_lib[256] = "libguac_client_";
+    
+    union {
+        guac_client_init_handler* client_init;
+        void* obj;
+    } alias;
 
-    int i;
-    for (i=0; i<argc; i++)
-        scratch_argv[i] = safe_argv[i] = strdup(argv[i]);
+    char* error;
+
+    strcat(protocol_lib, protocol);
+    strcat(protocol_lib, ".so");
+
+    /* Load client plugin */
+    client->client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
+    if (!(client->client_plugin_handle)) {
+        fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
+        exit(EXIT_FAILURE);
+    }
+
+    dlerror(); /* Clear errors */
+
+    /* Get init function */
+    alias.obj = dlsym(client->client_plugin_handle, "guac_client_init");
+
+    if ((error = dlerror()) != NULL) {
+        fprintf(stderr, "Could not get guac_client_init in  plugin: %s\n", error);
+        exit(EXIT_FAILURE);
+    }
+
 
     /* Create new client */
     client = __guac_alloc_client(io);
 
-    if (client_init(client, argc, scratch_argv) != 0)
+    if (alias.client_init(client, argc, argv) != 0)
         return NULL;
-
-    /* Free memory used for arg copy */
-    for (i=0; i<argc; i++)
-        free(safe_argv[i]);
-    
-    free(safe_argv);
-    free(scratch_argv);
 
     return client;
 
@@ -107,6 +126,11 @@ void guac_free_client(guac_client* client) {
     }
 
     guac_close(client->io);
+
+    /* Unload client plugin */
+    if (dlclose(client->client_plugin_handle)) {
+        syslog(LOG_ERR, "Could not close client plugin while unloading client: %s", dlerror());
+    }
 
     free(client);
 }
