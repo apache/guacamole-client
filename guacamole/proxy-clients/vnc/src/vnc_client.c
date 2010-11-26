@@ -297,6 +297,7 @@ int guac_client_init(guac_client* client, int argc, char** argv) {
 
     if (argc < 3) {
         guac_send_error(client->io, "VNC client requires hostname and port arguments");
+        guac_flush(client->io);
         return 1;
     }
 
@@ -330,6 +331,7 @@ int guac_client_init(guac_client* client, int argc, char** argv) {
     /* Connect */
     if (!rfbInitClient(rfb_client, NULL, NULL)) {
         guac_send_error(client->io, "Error initializing VNC client");
+        guac_flush(client->io);
         return 1;
     }
 
