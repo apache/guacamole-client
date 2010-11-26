@@ -29,7 +29,7 @@
 
 #include "guacio.h"
 
-char __GUACIO_BAS64_CHARACTERS[64] = {
+char __GUACIO_BASE64_CHARACTERS[64] = {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
     'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
     'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
@@ -164,22 +164,22 @@ ssize_t __guac_write_base64_triplet(GUACIO* io, int a, int b, int c) {
     int retval;
 
     /* Byte 1 */
-    out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[(a & 0xFC) >> 2]; /* [AAAAAA]AABBBB BBBBCC CCCCCC */
+    out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[(a & 0xFC) >> 2]; /* [AAAAAA]AABBBB BBBBCC CCCCCC */
 
     if (b >= 0) {
-        out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[((a & 0x03) << 4) | ((b & 0xF0) >> 4)]; /* AAAAAA[AABBBB]BBBBCC CCCCCC */
+        out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[((a & 0x03) << 4) | ((b & 0xF0) >> 4)]; /* AAAAAA[AABBBB]BBBBCC CCCCCC */
 
         if (c >= 0) {
-            out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[((b & 0x0F) << 2) | ((c & 0xC0) >> 6)]; /* AAAAAA AABBBB[BBBBCC]CCCCCC */
-            out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[c & 0x3F]; /* AAAAAA AABBBB BBBBCC[CCCCCC] */
+            out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[((b & 0x0F) << 2) | ((c & 0xC0) >> 6)]; /* AAAAAA AABBBB[BBBBCC]CCCCCC */
+            out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[c & 0x3F]; /* AAAAAA AABBBB BBBBCC[CCCCCC] */
         }
         else { 
-            out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[((b & 0x0F) << 2)]; /* AAAAAA AABBBB[BBBB--]------ */
+            out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[((b & 0x0F) << 2)]; /* AAAAAA AABBBB[BBBB--]------ */
             out_buf[io->written++] = '='; /* AAAAAA AABBBB BBBB--[------] */
         }
     }
     else {
-        out_buf[io->written++] = __GUACIO_BAS64_CHARACTERS[((a & 0x03) << 4)]; /* AAAAAA[AA----]------ ------ */
+        out_buf[io->written++] = __GUACIO_BASE64_CHARACTERS[((a & 0x03) << 4)]; /* AAAAAA[AA----]------ ------ */
         out_buf[io->written++] = '='; /* AAAAAA AA----[------]------ */
         out_buf[io->written++] = '='; /* AAAAAA AA---- ------[------] */
     }
