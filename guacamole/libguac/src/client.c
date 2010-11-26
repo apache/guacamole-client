@@ -76,7 +76,6 @@ guac_client* guac_get_client(int client_fd) {
     GUACIO* io = guac_open(client_fd);
 
     /* Pluggable client */
-    char* protocol;
     char protocol_lib[256] = "libguac_client_";
     
     union {
@@ -86,32 +85,64 @@ guac_client* guac_get_client(int client_fd) {
 
     char* error;
 
-    strcat(protocol_lib, protocol);
-    strcat(protocol_lib, ".so");
+    /* Client arguments */
+    int argc;
+    char** argv;
 
-    /* Load client plugin */
-    client->client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
-    if (!(client->client_plugin_handle)) {
-        fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
-        exit(EXIT_FAILURE);
+    /* Connect instruction */
+    guac_instruction instruction;
+
+    /* Wait for connect instruction */
+    for (;;) {
+
+        int result = guac_read_instruction(io, &instruction);
+        if (result < 0) {
+            syslog(LOG_ERR, "Error reading instruction while waiting for connect");
+            return NULL;            
+        }
+
+        /* Connect instruction read */
+        if (result > 0 && strcmp(instruction.opcode, "connect") == 0) {
+
+            /* Get protocol from message */
+            char* protocol = instruction.argv[0];
+
+            strcat(protocol_lib, protocol);
+            strcat(protocol_lib, ".so");
+
+            /* Create new client */
+            client = __guac_alloc_client(io);
+
+            /* Load client plugin */
+            client->client_plugin_handle = dlopen(protocol_lib, RTLD_LAZY);
+            if (!(client->client_plugin_handle)) {
+                fprintf(stderr, "Could not open client plugin for protocol \"%s\": %s\n", protocol, dlerror());
+                exit(EXIT_FAILURE);
+            }
+
+            dlerror(); /* Clear errors */
+
+            /* Get init function */
+            alias.obj = dlsym(client->client_plugin_handle, "guac_client_init");
+
+            if ((error = dlerror()) != NULL) {
+                fprintf(stderr, "Could not get guac_client_init in plugin: %s\n", error);
+                exit(EXIT_FAILURE);
+            }
+
+            /* Initialize client arguments */
+            argc = instruction.argc;
+            argv = instruction.argv;
+
+            break;
+        }
+
     }
-
-    dlerror(); /* Clear errors */
-
-    /* Get init function */
-    alias.obj = dlsym(client->client_plugin_handle, "guac_client_init");
-
-    if ((error = dlerror()) != NULL) {
-        fprintf(stderr, "Could not get guac_client_init in  plugin: %s\n", error);
-        exit(EXIT_FAILURE);
-    }
-
-
-    /* Create new client */
-    client = __guac_alloc_client(io);
 
     if (alias.client_init(client, argc, argv) != 0)
         return NULL;
+
+    guac_free_instruction_data(&instruction);
 
     return client;
 
@@ -179,6 +210,7 @@ void guac_start_client(guac_client* client) {
                                ) {
 
                                 syslog(LOG_ERR, "Error handling mouse instruction");
+                                guac_free_instruction_data(&instruction);
                                 return;
 
                             }
@@ -195,6 +227,7 @@ void guac_start_client(guac_client* client) {
                                ) {
 
                                 syslog(LOG_ERR, "Error handling key instruction");
+                                guac_free_instruction_data(&instruction);
                                 return;
 
                             }
@@ -210,6 +243,7 @@ void guac_start_client(guac_client* client) {
                                ) {
 
                                 syslog(LOG_ERR, "Error handling clipboard instruction");
+                                guac_free_instruction_data(&instruction);
                                 return;
 
                             }
@@ -217,8 +251,11 @@ void guac_start_client(guac_client* client) {
 
                     else if (strcmp(instruction.opcode, "disconnect") == 0) {
                         syslog(LOG_INFO, "Client requested disconnect");
+                        guac_free_instruction_data(&instruction);
                         return;
                     }
+
+                    guac_free_instruction_data(&instruction);
 
                 } while ((retval = guac_read_instruction(io, &instruction)) > 0);
 

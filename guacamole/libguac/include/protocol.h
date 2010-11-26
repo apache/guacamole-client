@@ -58,7 +58,19 @@ typedef struct guac_instruction {
 
 
 /**
- * Frees all memory allocated to the given instruction.
+ * Frees all memory allocated to the given instruction opcode
+ * and arguments. The instruction structure itself will not
+ * be freed.
+ *
+ * @param instruction The instruction to free.
+ */
+void guac_free_instruction_data(guac_instruction* instruction);
+
+
+/**
+ * Frees all memory allocated to the given instruction. This
+ * includes freeing memory allocated for the structure
+ * itself.
  *
  * @param instruction The instruction to free.
  */

@@ -441,12 +441,15 @@ int guac_read_instruction(GUACIO* io, guac_instruction* parsed_instruction) {
 
 }
 
-void guac_free_instruction(guac_instruction* instruction) {
+void guac_free_instruction_data(guac_instruction* instruction) {
     free(instruction->opcode);
 
     if (instruction->argv)
         free(instruction->argv);
+}
 
+void guac_free_instruction(guac_instruction* instruction) {
+    guac_free_instruction_data(instruction);
     free(instruction);
 }
 
