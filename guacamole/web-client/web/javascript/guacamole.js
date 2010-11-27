@@ -380,7 +380,7 @@ function GuacamoleClient(display) {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", "instructions");
+        xmlhttprequest.open("POST", "outbound");
         xmlhttprequest.send(null); 
 
         return xmlhttprequest;

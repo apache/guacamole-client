@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.output;
+package net.sourceforge.guacamole.net.tunnel;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -30,7 +30,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
 
-public class InstructionStream extends GuacamoleServlet {
+public class Outbound extends GuacamoleServlet {
 
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {

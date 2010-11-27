@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.input;
+package net.sourceforge.guacamole.net.tunnel;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -18,24 +18,24 @@ package net.sourceforge.guacamole.net.input;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import javax.servlet.ServletRequest;
 import net.sourceforge.guacamole.GuacamoleException;
-import org.w3c.dom.Element;
 
 import java.io.Reader;
 import java.io.IOException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.guacamole.net.GuacamoleServlet;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
-import net.sourceforge.guacamole.net.XMLGuacamoleServlet;
 
-public class Inbound extends XMLGuacamoleServlet {
+public class Inbound extends GuacamoleServlet {
 
     protected boolean shouldCreateSession() {
         return true;
     }
 
     @Override
-    protected void handleRequest(GuacamoleSession session, ServletRequest request, Element root) throws GuacamoleException {
+    protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
 
         if (!session.isConnected())
             session.connect();
