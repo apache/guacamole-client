@@ -28,24 +28,26 @@ import net.sourceforge.guacamole.net.GuacamoleServlet;
 
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
-public class Inbound extends GuacamoleServlet {
+public class Connect extends GuacamoleServlet {
+
+    protected boolean shouldCreateSession() {
+        return true;
+    }
 
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
 
+        // Disconnect if already connected
+        if (session.isConnected())
+            session.disconnect();
+
+        // Obtain new connection
+        session.connect();
+
         // Send data
         try {
-
-            Reader input = request.getReader();
-            char[] buffer = new char[8192];
-
-            int length;
-            while ((length = input.read(buffer, 0, buffer.length)) != -1)
-                session.getClient().write(buffer, 0, length);
-
-        }
-        catch (IOException e) {
-            throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+            char[] connect = "connect:vnc,localhost,5901,potato;".toCharArray();
+            session.getClient().write(connect, 0, connect.length);
         }
         catch (GuacamoleException e) {
             throw new GuacamoleException("Error sending data to server: " + e.getMessage(), e);
