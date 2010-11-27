@@ -24,23 +24,23 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleConfiguration extends Configuration {
 
-    private String hostname;
-    private int port;
+    private String guacd_hostname;
+    private int guacd_port;
 
     public GuacamoleConfiguration(ServletContext context) throws GuacamoleException {
 
         super(context);
 
-        hostname       = context.getInitParameter("hostname");
-        port           = readIntParameter("port", null);
+        guacd_hostname       = context.getInitParameter("guacd-hostname");
+        guacd_port           = readIntParameter("guacd-port", null);
 
     }
 
-    public int getPort() {
-        return port;
+    public int getProxyPort() {
+        return guacd_port;
     }
 
-    public String getHostname() {
-        return hostname;
+    public String getProxyHostname() {
+        return guacd_hostname;
     }
 }

@@ -96,8 +96,8 @@ public class GuacamoleSession {
 
             client = new SessionClient(
                     new GuacamoleClient (
-                        config.getHostname(),
-                        config.getPort()
+                        config.getProxyHostname(),
+                        config.getProxyPort()
                     )
             );
 

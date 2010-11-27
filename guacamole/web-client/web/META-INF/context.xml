@@ -1,2 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path=""/>
+<Context antiJARLocking="true" path="">
+
+    <!-- Hostname and port of guacamole proxy -->
+    <Parameter name="guacd-hostname" value="localhost"/>
+    <Parameter name="guacd-port"     value="4822"/>
+
+</Context>
