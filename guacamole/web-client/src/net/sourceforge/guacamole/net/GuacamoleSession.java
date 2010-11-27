@@ -32,15 +32,35 @@ public class GuacamoleSession {
 
     private GuacamoleConfiguration config;
     private final HttpSession session;
-    private Client client;
+    private SessionClient client;
     private ReentrantLock instructionStreamLock;
 
-    private class SessionClient extends Client implements HttpSessionBindingListener {
+    public class SessionClient extends Client implements HttpSessionBindingListener {
 
         private Client client;
+        private ReentrantLock authorizedLock;
 
         public SessionClient(Client client) {
             this.client = client;
+
+            authorizedLock = new ReentrantLock();
+            authorizedLock.lock();
+        }
+
+        public void authorize() {
+            authorizedLock.unlock();
+        }
+
+        public void waitForAuthorization() {
+            if (authorizedLock.isLocked()) {
+                try {
+                    authorizedLock.lock();
+                    authorizedLock.unlock();
+                }
+                catch (Throwable t) {
+                    throw new Error("Internal error waiting for authorization", t);
+                }
+            }
         }
 
         public void valueBound(HttpSessionBindingEvent event) {
@@ -82,7 +102,7 @@ public class GuacamoleSession {
             ServletContext context = session.getServletContext();
             config = new GuacamoleConfiguration(context);
 
-            client = (Client) session.getAttribute("CLIENT");
+            client = (SessionClient) session.getAttribute("CLIENT");
             instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");
         }
     }
@@ -119,7 +139,7 @@ public class GuacamoleSession {
         return config;
     }
 
-    public Client getClient() {
+    public SessionClient getClient() {
         synchronized (session) {
             return client;
         }

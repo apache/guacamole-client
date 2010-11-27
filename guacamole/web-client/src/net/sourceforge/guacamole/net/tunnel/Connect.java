@@ -44,10 +44,13 @@ public class Connect extends GuacamoleServlet {
         // Obtain new connection
         session.connect();
 
+        String connectString = "connect:vnc,localhost,5901,potato;";
+
         // Send data
         try {
-            char[] connect = "connect:vnc,localhost,5901,potato;".toCharArray();
+            char[] connect = connectString.toCharArray();
             session.getClient().write(connect, 0, connect.length);
+            session.getClient().authorize();
         }
         catch (GuacamoleException e) {
             throw new GuacamoleException("Error sending data to server: " + e.getMessage(), e);

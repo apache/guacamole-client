@@ -35,6 +35,8 @@ public class Outbound extends GuacamoleServlet {
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
 
+        session.getClient().waitForAuthorization();
+
         ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
         instructionStreamLock.lock();
 
