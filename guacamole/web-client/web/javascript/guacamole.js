@@ -559,16 +559,14 @@ function GuacamoleClient(display) {
 
     this.connect = function() {
 
-        var message = "connect;";
-
         setState(STATE_CONNECTING);
 
-        // Send connect message (synchronously... as necessary until handoff is implemented)
+        // Start tunnel and connect synchronously
         var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("POST", "inbound", false);
+        connect_xmlhttprequest.open("POST", "connect", false);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        connect_xmlhttprequest.setRequestHeader("Content-length", message.length);
-        connect_xmlhttprequest.send(message);
+        connect_xmlhttprequest.setRequestHeader("Content-length", 0);
+        connect_xmlhttprequest.send(null);
 
         // Start reading data
         setState(STATE_WAITING);
