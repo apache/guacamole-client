@@ -20,8 +20,6 @@ package net.sourceforge.guacamole.net.tunnel;
 
 import net.sourceforge.guacamole.GuacamoleException;
 
-import java.io.Reader;
-import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.net.GuacamoleServlet;
@@ -30,6 +28,7 @@ import net.sourceforge.guacamole.net.GuacamoleSession;
 
 public class Connect extends GuacamoleServlet {
 
+    @Override
     protected boolean shouldCreateSession() {
         return true;
     }
