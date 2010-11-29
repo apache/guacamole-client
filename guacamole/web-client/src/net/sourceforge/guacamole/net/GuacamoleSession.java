@@ -35,6 +35,11 @@ public class GuacamoleSession {
     private SessionClient client;
     private ReentrantLock instructionStreamLock;
 
+    private String protocol;
+    private String hostname;
+    private int port;
+    private String password;
+
     public class SessionClient extends Client implements HttpSessionBindingListener {
 
         private Client client;
@@ -160,6 +165,46 @@ public class GuacamoleSession {
 
     public ReentrantLock getInstructionStreamLock() {
         return instructionStreamLock;
+    }
+
+    public void setConnection(String protocol, String hostname, int port) {
+        this.protocol = protocol;
+        this.hostname = hostname;
+        this.port = port;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public String getHostname() {
+        return hostname;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getConnectMessage() throws GuacamoleException {
+
+        if (getProtocol() == null)
+            throw new GuacamoleException("Protocol not specified");
+
+        if (getHostname() == null)
+            throw new GuacamoleException("Hostname not specified");
+
+        if (getPassword() == null)
+            return "connect:" + getProtocol() + "," + getHostname() + "," + getPort() + ";";
+        else
+            return "connect:" + getProtocol() + "," + getHostname() + "," + getPort() + "," + getPassword() + ";";
     }
 
 }

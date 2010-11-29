@@ -20,13 +20,27 @@ package net.sourceforge.guacamole.net;
  */
 
 import java.io.IOException;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 
 public abstract class GuacamoleServlet extends HttpServlet  {
+
+    private GuacamoleConfiguration config;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        try {
+            this.config = new GuacamoleConfiguration(config.getServletContext());
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException(e);
+        }
+    }
 
     @Override
     protected final void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -49,8 +63,15 @@ public abstract class GuacamoleServlet extends HttpServlet  {
     }
 
     private final void handleRequest(HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
-        GuacamoleSession session = new GuacamoleSession(request.getSession(shouldCreateSession()));
-        handleRequest(session, request, response);
+
+        HttpSession httpSession = request.getSession(shouldCreateSession());
+
+        if (httpSession != null) {
+            GuacamoleSession session = config.createSession(httpSession);
+            handleRequest(session, request, response);
+        }
+        else
+            throw new GuacamoleException("No session");
     }
 
     protected abstract void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException;
