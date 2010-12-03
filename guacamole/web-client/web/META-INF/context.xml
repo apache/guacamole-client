@@ -4,6 +4,8 @@
     <!-- Hostname and port of guacamole proxy -->
     <Parameter name="guacd-hostname"   value="localhost"/>
     <Parameter name="guacd-port"       value="4822"/>
+
+    <!-- Session provider class (provides and configured guacamole session based on authentication information) -->
     <Parameter name="session-provider" value="net.sourceforge.guacamole.net.BasicGuacamoleSessionProvider"/>
 
 </Context>
