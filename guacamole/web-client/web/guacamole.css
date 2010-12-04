@@ -128,20 +128,6 @@ div#display {
     margin-right: auto;
 }
 
-div#display.loading {
-    border: 1px dotted gray;
-    background-image: url('images/spinner92.gif');
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
-div#display.error {
-    border: 1px dotted red;
-    background-image: url('images/noimage92.png');
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 #menu img {
     vertical-align: middle;
 }
@@ -176,9 +162,5 @@ div#clipboardDiv h2 {
 
 div#clipboardDiv textarea {
     width: 100%;
-}
-
-.hideCursor {
-    cursor: url('images/mouse/dot.gif'),url('images/mouse/blank.cur'),default;
 }
 

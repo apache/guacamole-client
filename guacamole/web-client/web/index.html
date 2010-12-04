@@ -23,6 +23,7 @@
     <head>
         <link rel="icon" type="image/png" href="images/guacamole-icon-64.png"/>
         <link rel="stylesheet" type="text/css" href="guacamole.css"/>
+        <link rel="stylesheet" type="text/css" href="guac-web-lib/css/guacamole.css"/>
         <link rel="stylesheet" type="text/css" href="keyboard.css"/>
         <title>Guacamole</title>
     </head>
@@ -54,7 +55,7 @@
 
 
         <!-- Display -->
-        <div id="display" class="loading">
+        <div id="display" class="guac-loading">
             <!-- On-screen keyboard -->
             <div id="keyboardContainer"></div>
         </div>
@@ -73,12 +74,12 @@
 
 
         <!-- Scripts -->
-        <script type="text/javascript" src="javascript/keymap.js"></script>
-        <script type="text/javascript" src="javascript/keyboard.js"></script>
-        <script type="text/javascript" src="javascript/mouse.js"></script>
-        <script type="text/javascript" src="javascript/layer.js"></script>
-        <script type="text/javascript" src="javascript/guacamole.js"></script>
-        <script type="text/javascript" src="javascript/oskeyboard.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/keymap.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/keyboard.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/mouse.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/layer.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/guacamole.js"></script>
+        <script type="text/javascript" src="guac-web-lib/javascript/oskeyboard.js"></script>
 
         <!-- Init -->
         <script type="text/javascript">
@@ -98,10 +99,10 @@
             window.onresize();
 
             // Instantiate client
-            var vncClient = new GuacamoleClient(display);
+            var guac = new GuacamoleClient(display);
 
             var state = document.getElementById("state");
-            vncClient.setOnStateChangeHandler(function(clientState) {
+            guac.setOnStateChangeHandler(function(clientState) {
 
                     switch (clientState) {
                         case 0:
@@ -114,7 +115,7 @@
                             state.textContent = "Connected, waiting for first update...";
                             break;
                         case 3:
-                            display.className = display.className.replace(/loading/, '');
+                            display.className = display.className.replace(/guac-loading/, '');
                             menu.className = "connected";
                             state.textContent = "Connected.";
                             break;
@@ -133,7 +134,7 @@
             var guacErrorImage = new Image();
             guacErrorImage.src = "images/noguacamole-logo.png";
 
-            vncClient.setErrorHandler(function(error) {
+            guac.setErrorHandler(function(error) {
                 menu.className = "error";
                 logo.src = guacErrorImage.src;
                 errorDialogText.textContent = error;
@@ -147,11 +148,11 @@
             };
 
             // Connect
-            vncClient.connect();
+            guac.connect();
 
             // Disconnect on close
             window.onunload = function() {
-                vncClient.disconnect();
+                guac.disconnect();
             }
 
             // Handle clipboard events
@@ -159,22 +160,22 @@
             clipboardElement.onchange = function() {
 
                 var text = clipboardElement.value;
-                vncClient.setClipboard(text);
+                guac.setClipboard(text);
 
             };
 
             // Ignore keypresses when clipboard is focused
             clipboardElement.onfocus = function() {
-                vncClient.disableKeyboard();
+                guac.disableKeyboard();
             };
 
             // Capture keypresses when clipboard is not focused
             clipboardElement.onblur = function() {
-                vncClient.enableKeyboard();
+                guac.enableKeyboard();
             };
 
             // Server copy handler
-            vncClient.setClipboardHandler(
+            guac.setClipboardHandler(
                 function(data) {
                     clipboardElement.value = data;
                 }
@@ -223,13 +224,13 @@
 
             osKeyboard.setKeyPressedHandler(
                     function(keysym) {
-                        vncClient.pressKey(keysym);
+                        guac.pressKey(keysym);
                     }
             );
 
             osKeyboard.setKeyReleasedHandler(
                     function(keysym) {
-                        vncClient.releaseKey(keysym);
+                        guac.releaseKey(keysym);
                     }
             );
 
@@ -237,12 +238,12 @@
             var CtrlAltDelete = document.getElementById("CtrlAltDelete");
 
             CtrlAltDelete.onclick = function() {
-                vncClient.pressKey(KEYSYM_CTRL);
-                vncClient.pressKey(KEYSYM_ALT);
-                vncClient.pressKey(KEYSYM_DELETE);
-                vncClient.releaseKey(KEYSYM_DELETE);
-                vncClient.releaseKey(KEYSYM_ALT);
-                vncClient.releaseKey(KEYSYM_CTRL);
+                guac.pressKey(KEYSYM_CTRL);
+                guac.pressKey(KEYSYM_ALT);
+                guac.pressKey(KEYSYM_DELETE);
+                guac.releaseKey(KEYSYM_DELETE);
+                guac.releaseKey(KEYSYM_ALT);
+                guac.releaseKey(KEYSYM_CTRL);
             }
 
         </script>

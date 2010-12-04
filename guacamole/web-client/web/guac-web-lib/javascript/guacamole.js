@@ -66,7 +66,7 @@ function GuacamoleClient(display) {
 
         // Hide hardware cursor
         if (cursorHidden == 0) {
-            display.className += " hideCursor";
+            display.className += " guac-hide-cursor";
             cursorHidden = 1;
         }
 
@@ -266,7 +266,7 @@ function GuacamoleClient(display) {
             disconnect();
 
             // In case nothing has been rendered yet, use error style
-            display.className += " error";
+            display.className += " guac-error";
 
             // Show error by desaturating display
             if (background)
