@@ -1,6 +1,7 @@
 
 package net.sourceforge.guacamole.basic;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import javax.servlet.ServletContext;
@@ -16,6 +17,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class BasicLogin extends HttpServlet {
 
+    private long mappingTime;
     private Map<String, AuthInfo> mapping;
 
     // Added to session when session validated
@@ -51,13 +53,24 @@ public class BasicLogin extends HttpServlet {
 
     }
 
-    @Override
-    public void init() throws ServletException {
-
+    private File getUserMappingFile() {
+        
         // Get user mapping filename
         ServletContext context = getServletContext();
         String filename = context.getInitParameter("basic-user-mapping");
         if (filename == null)
+            return null;
+
+        return new File(filename);
+
+    }
+
+    @Override
+    public synchronized void init() throws ServletException {
+
+        // Get user mapping file
+        File mapFile = getUserMappingFile();
+        if (mapFile == null)
             throw new ServletException("Missing \"basic-user-mapping\" parameter required for basic login.");
 
         // Parse document
@@ -67,8 +80,9 @@ public class BasicLogin extends HttpServlet {
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setContentHandler(contentHandler);
-            parser.parse(filename);
+            parser.parse(mapFile.getAbsolutePath());
 
+            mappingTime = mapFile.lastModified();
             mapping = contentHandler.getUserMapping();
 
         }
@@ -79,11 +93,22 @@ public class BasicLogin extends HttpServlet {
             throw new ServletException("Error parsing basic user mapping XML.", e);
         }
 
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        // Check mapping file mod time
+        File userMappingFile = getUserMappingFile();
+        if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified()) {
+
+            // If modified recently, gain exclusive access and recheck
+            synchronized (this) {
+                if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified())
+                    init(); // If still not up to date, re-init
+            }
+
+        }
 
         // Retrieve username and password from parms
         String username = req.getParameter("username");
