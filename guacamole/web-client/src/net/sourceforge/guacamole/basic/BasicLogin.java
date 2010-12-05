@@ -94,8 +94,7 @@ public class BasicLogin extends HttpServlet {
         if (info != null) {
 
             // Validate username and password
-            if (info.getAuthorizedUsername().equals(username)
-                && info.getAuthorizedPassword().equals(password)) {
+            if (info.validate(username, password)) {
 
                 // Store authorized configuration
                 HttpSession session = req.getSession(true);

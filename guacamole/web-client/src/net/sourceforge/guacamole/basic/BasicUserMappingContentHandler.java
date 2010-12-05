@@ -40,14 +40,6 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
             this.auth_encoding = auth_encoding;
         }
 
-        public String getAuthorizedUsername() {
-            return auth_username;
-        }
-
-        public String getAuthorizedPassword() {
-            return auth_password;
-        }
-
         private static final char HEX_CHARS[] = {
             '0', '1', '2', '3', '4', '5', '6', '7',
             '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
@@ -87,7 +79,7 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
                         try {
                             MessageDigest digest = MessageDigest.getInstance("MD5");
                             String hashedPassword = getHexString(digest.digest(password.getBytes()));
-                            return hashedPassword.equals(auth_password);
+                            return hashedPassword.equals(auth_password.toUpperCase());
                         }
                         catch (NoSuchAlgorithmException e) {
                             throw new UnsupportedOperationException("Unexpected lack of MD5 support.", e);
@@ -137,7 +129,7 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
 
             // Finalize mapping for this user
             authMapping.put(
-                current.getAuthorizedUsername(),
+                current.auth_username,
                 current
             );
 
