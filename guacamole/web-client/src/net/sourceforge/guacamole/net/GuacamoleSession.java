@@ -104,8 +104,7 @@ public class GuacamoleSession {
         synchronized (session) {
 
             // Read configuration parameters
-            ServletContext context = session.getServletContext();
-            config = new GuacamoleConfiguration(context);
+            config = new GuacamoleConfiguration();
 
             client = (SessionClient) session.getAttribute("CLIENT");
             instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");

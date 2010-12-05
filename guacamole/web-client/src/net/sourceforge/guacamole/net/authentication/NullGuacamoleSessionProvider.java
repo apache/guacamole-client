@@ -1,8 +1,9 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.net.authentication;
 
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleSession;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -22,8 +23,10 @@ import net.sourceforge.guacamole.GuacamoleException;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public interface GuacamoleSessionProvider {
+public class NullGuacamoleSessionProvider implements GuacamoleSessionProvider {
 
-    public GuacamoleSession createSession(HttpSession session) throws GuacamoleException;
+    public GuacamoleSession createSession(HttpSession session) throws GuacamoleException {
+        throw new GuacamoleException("Null provider will not create sessions");
+    }
 
 }

@@ -33,9 +33,9 @@ public abstract class GuacamoleServlet extends HttpServlet  {
     private GuacamoleConfiguration config;
 
     @Override
-    public void init(ServletConfig config) throws ServletException {
+    public void init() throws ServletException {
         try {
-            this.config = new GuacamoleConfiguration(config.getServletContext());
+            this.config = new GuacamoleConfiguration();
         }
         catch (GuacamoleException e) {
             throw new ServletException(e);

@@ -1,10 +1,10 @@
 
-package net.sourceforge.guacamole.basic;
+package net.sourceforge.guacamole.net.authentication.basic;
 
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
-import net.sourceforge.guacamole.net.GuacamoleSessionProvider;
+import net.sourceforge.guacamole.net.authentication.GuacamoleSessionProvider;
 
 /*
  *  Guacamole - Clientless Remote Desktop

@@ -24,8 +24,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public abstract class Configuration {
 
-    private ServletContext context;
-
     protected String humanReadableList(Object... values) {
 
         String list = "";
@@ -44,9 +42,14 @@ public abstract class Configuration {
 
     }
 
+    protected String readParameter(String name) throws GuacamoleException {
+        String value = GuacamoleProperties.getProperty(name);
+        return value;
+    }
+
     protected String readParameter(String name, String defaultValue, String... allowedValues) throws GuacamoleException {
 
-        String value = context.getInitParameter(name);
+        String value = GuacamoleProperties.getProperty(name);
 
         // Use default if not specified
         if (value == null) {
@@ -70,7 +73,7 @@ public abstract class Configuration {
 
     protected boolean readBooleanParameter(String name, Boolean defaultValue) throws GuacamoleException {
 
-        String value = context.getInitParameter(name);
+        String value = GuacamoleProperties.getProperty(name);
 
         // Use default if not specified
         if (value == null) {
@@ -93,7 +96,7 @@ public abstract class Configuration {
 
     protected int readIntParameter(String name, Integer defaultValue, Integer... allowedValues) throws GuacamoleException {
 
-        String parmString = context.getInitParameter(name);
+        String parmString = GuacamoleProperties.getProperty(name);
 
         // Use default if not specified
         if (parmString== null) {
@@ -121,10 +124,6 @@ public abstract class Configuration {
             throw new GuacamoleException("Parameter \"" + name + "\" must be an integer.", e);
         }
 
-    }
-
-    public Configuration(ServletContext context) {
-        this.context = context;
     }
 
 }

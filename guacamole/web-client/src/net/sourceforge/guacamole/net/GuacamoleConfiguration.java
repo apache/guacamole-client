@@ -19,8 +19,8 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.net.authentication.GuacamoleSessionProvider;
 import java.lang.reflect.InvocationTargetException;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 
@@ -30,16 +30,14 @@ public class GuacamoleConfiguration extends Configuration {
     private int guacd_port;
     private GuacamoleSessionProvider sessionProvider;
 
-    public GuacamoleConfiguration(ServletContext context) throws GuacamoleException {
+    public GuacamoleConfiguration() throws GuacamoleException {
 
-        super(context);
-
-        guacd_hostname       = context.getInitParameter("guacd-hostname");
+        guacd_hostname       = readParameter("guacd-hostname");
         guacd_port           = readIntParameter("guacd-port", null);
 
         // Get session provider instance
         try {
-            String sessionProviderClassName = context.getInitParameter("session-provider");
+            String sessionProviderClassName = readParameter("session-provider");
             Object obj = Class.forName(sessionProviderClassName).getConstructor().newInstance();
             if (!(obj instanceof GuacamoleSessionProvider))
                 throw new GuacamoleException("Specified session provider class is not a GuacamoleSessionProvider");
