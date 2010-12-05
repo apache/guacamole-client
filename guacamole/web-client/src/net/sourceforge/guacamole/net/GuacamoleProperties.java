@@ -2,20 +2,26 @@
 package net.sourceforge.guacamole.net;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
-import javax.servlet.ServletException;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.authentication.basic.BasicLogin;
 
 public class GuacamoleProperties {
 
-    private static final Properties properties = new Properties();
+    private static final Properties properties;
     private static GuacamoleException exception;
 
     static {
 
+        properties = new Properties();
+
         try {
-            properties.load(BasicLogin.class.getResourceAsStream("/guacamole.properties"));
+
+            InputStream stream = GuacamoleProperties.class.getResourceAsStream("/guacamole.properties");
+            if (stream == null)
+                throw new IOException("Resource /guacamole.properties not found.");
+
+            properties.load(stream);
         }
         catch (IOException e) {
             exception = new GuacamoleException("Error reading guacamole.properties", e);

@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -20,11 +21,10 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
     private long mappingTime;
     private Map<String, AuthInfo> mapping;
 
-    private File getUserMappingFile() {
+    private File getUserMappingFile() throws GuacamoleException {
 
         // Get user mapping filename
-        //String filename = context.getInitParameter("basic-user-mapping");
-        String filename = ""; // FIXME
+        String filename = GuacamoleProperties.getProperty("basic-user-mapping");
         if (filename == null)
             return null;
 

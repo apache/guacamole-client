@@ -2,17 +2,71 @@
 package net.sourceforge.guacamole.net.authentication.basic;
 
 import java.io.IOException;
-import java.util.Properties;
+import java.lang.reflect.InvocationTargetException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.Configuration;
 
 public class BasicLogin extends HttpServlet {
 
-    private AuthenticationProvider authProvider;
+    private Config config;
+
+    @Override
+    public void init() throws ServletException {
+        try {
+            config = new Config();
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException(e);
+        }
+    }
+
+
+    private class Config extends Configuration {
+
+        private AuthenticationProvider authProvider;
+
+        public Config() throws GuacamoleException {
+
+            // Get auth provider instance
+            try {
+                String authProviderClassName = readParameter("auth-provider");
+                Object obj = Class.forName(authProviderClassName).getConstructor().newInstance();
+                if (!(obj instanceof AuthenticationProvider))
+                    throw new GuacamoleException("Specified session provider class is not a GuacamoleSessionProvider");
+
+                authProvider = (AuthenticationProvider) obj;
+            }
+            catch (ClassNotFoundException e) {
+                throw new GuacamoleException("Session provider class not found", e);
+            }
+            catch (NoSuchMethodException e) {
+                throw new GuacamoleException("Default constructor for session provider not present", e);
+            }
+            catch (SecurityException e) {
+                throw new GuacamoleException("Creation of session provider disallowed; check your security settings", e);
+            }
+            catch (InstantiationException e) {
+                throw new GuacamoleException("Unable to instantiate session provider", e);
+            }
+            catch (IllegalAccessException e) {
+                throw new GuacamoleException("Unable to access default constructor of session provider", e);
+            }
+            catch (InvocationTargetException e) {
+                throw new GuacamoleException("Internal error in constructor of session provider", e.getTargetException());
+            }
+
+        }
+
+        public AuthenticationProvider getAuthenticationProvider() {
+            return authProvider;
+        }
+
+    }
 
     public static interface AuthenticationProvider {
         public AuthorizedConfiguration getAuthorizedConfiguration(String username, String password) throws GuacamoleException;
@@ -61,7 +115,7 @@ public class BasicLogin extends HttpServlet {
         // Validate username and password
         try {
 
-            AuthorizedConfiguration info = authProvider.getAuthorizedConfiguration(username, password);
+            AuthorizedConfiguration info = config.getAuthenticationProvider().getAuthorizedConfiguration(username, password);
             if (info != null) {
 
                 // Store authorized configuration
