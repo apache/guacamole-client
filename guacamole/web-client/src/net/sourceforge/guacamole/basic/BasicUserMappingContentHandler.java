@@ -1,6 +1,8 @@
 
 package net.sourceforge.guacamole.basic;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,19 +18,26 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
         return Collections.unmodifiableMap(authMapping);
     }
 
-    public class AuthInfo {
+    public static class AuthInfo {
+
+        public static enum Encoding {
+            PLAIN_TEXT,
+            MD5
+        }
 
         private String auth_username;
         private String auth_password;
+        private Encoding auth_encoding;
 
         private String protocol;
         private String hostname;
         private int port;
         private String password;
 
-        public AuthInfo(String auth_username, String auth_password) {
+        public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
             this.auth_username = auth_username;
             this.auth_password = auth_password;
+            this.auth_encoding = auth_encoding;
         }
 
         public String getAuthorizedUsername() {
@@ -37,6 +46,59 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
 
         public String getAuthorizedPassword() {
             return auth_password;
+        }
+
+        private static final char HEX_CHARS[] = {
+            '0', '1', '2', '3', '4', '5', '6', '7',
+            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+        };
+
+        public static String getHexString(byte[] bytes) {
+
+            if (bytes == null)
+                return null;
+
+            StringBuilder hex = new StringBuilder(2 * bytes.length);
+            for (byte b : bytes) {
+                hex.append(HEX_CHARS[(b & 0xF0) >> 4])
+                   .append(HEX_CHARS[(b & 0x0F)     ]);
+            }
+
+            return hex.toString();
+
+        }
+
+
+        public boolean validate(String username, String password) {
+
+            // If username matches
+            if (username != null && password != null && username.equals(auth_username)) {
+
+                switch (auth_encoding) {
+
+                    case PLAIN_TEXT:
+
+                        // Compare plaintext
+                        return password.equals(auth_password);
+                    
+                    case MD5:
+
+                        // Compare hashed password
+                        try {
+                            MessageDigest digest = MessageDigest.getInstance("MD5");
+                            String hashedPassword = getHexString(digest.digest(password.getBytes()));
+                            return hashedPassword.equals(auth_password);
+                        }
+                        catch (NoSuchAlgorithmException e) {
+                            throw new UnsupportedOperationException("Unexpected lack of MD5 support.", e);
+                        }
+                    
+                }
+                
+            }
+
+            return false;
+            
         }
         
         public String getHostname() {
@@ -90,9 +152,22 @@ public class BasicUserMappingContentHandler extends DefaultHandler {
 
         if (localName.equals("authorize")) {
 
+            AuthInfo.Encoding encoding;
+            String encodingString = attributes.getValue("encoding");
+            if (encodingString == null)
+                encoding = AuthInfo.Encoding.PLAIN_TEXT;
+            else if (encodingString.equals("plain"))
+                encoding = AuthInfo.Encoding.PLAIN_TEXT;
+            else if (encodingString.equals("md5"))
+                encoding = AuthInfo.Encoding.MD5;
+            else
+                throw new SAXException("Invalid encoding type");
+
+
             current = new AuthInfo(
                 attributes.getValue("username"),
-                attributes.getValue("password")
+                attributes.getValue("password"),
+                encoding
             );
 
             infoState = null;
