@@ -30,44 +30,79 @@
 
     <body>
 
-        <!-- Menu -->
-        <div id="menu">
+        <div id="login-ui">
+            <div id="login-dialog-middle">
 
-            <!-- Clipboard -->
-            <button id="showClipboard">Show Clipboard</button>
-            <div id="clipboardDiv">
-                <h2>Clipboard</h2>
-                <p>
-                Text copied/cut within VNC will appear here. Changes to the text will affect the VNC clipboard, and will be pastable within VNC. Use the textbox below as an interface between the client and server clipboards.
-                </p>
-                <textarea rows="10" cols="40" id="clipboard"></textarea>
+                <div id="login-logo">
+                    <img src="images/login-logo.png" alt="\_GUAC_/"/>
+                </div>
+
+                <div id="login-dialog">
+
+                    <h1>Guacamole Login</h1>
+                    <form id="login-form" action="#">
+                        <table id="login-fields">
+                            <tr>
+                                <th>Username</th>
+                                <td><input type="text" name="username" id="username"/></td>
+                            </tr>
+                            <tr>
+                                <th>Password</th>
+                                <td><input type="password" name="password" id="password"/></td>
+                            </tr>
+                        </table>
+
+                        <div id="buttons">
+                            <input type="submit" name="login" id="login" value="Login"/>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Main UI - hidden until login succeeds -->
+        <div id="main-guacamole-ui" style="display: none">
+
+            <!-- Menu -->
+            <div id="menu">
+
+                <!-- Clipboard -->
+                <button id="showClipboard">Show Clipboard</button>
+                <div id="clipboardDiv">
+                    <h2>Clipboard</h2>
+                    <p>
+                    Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.
+                    </p>
+                    <textarea rows="10" cols="40" id="clipboard"></textarea>
+                </div>
+
+                <button id="showKeyboard">Show Keyboard</button>
+                <button id="CtrlAltDelete">Ctrl-Alt-Delete</button>
+
+                <!-- Logo and status -->
+                <img id="logo" src="images/guacamole-logo.png" alt="Guacamole" title="__GUAC_VERSION"/>
+                <span id="state"></span>
+
+                <a href="agpl-3.0-standalone.html"><img id="license" src="images/agpl-logo.png" alt="AGPLv3"/></a>
             </div>
 
-            <button id="showKeyboard">Show Keyboard</button>
-            <button id="CtrlAltDelete">Ctrl-Alt-Delete</button>
 
-            <!-- Logo and status -->
-            <img id="logo" src="images/guacamole-logo.png" alt="Guacamole" title="__GUAC_VERSION"/>
-            <span id="state"></span>
-
-            <a href="agpl-3.0-standalone.html"><img id="license" src="images/agpl-logo.png" alt="AGPLv3"/></a>
-        </div>
+            <!-- Display -->
+            <div id="display" class="guac-display guac-loading">
+                <!-- On-screen keyboard -->
+                <div id="keyboardContainer"></div>
+            </div>
 
 
-        <!-- Display -->
-        <div id="display" class="guac-display guac-loading">
-            <!-- On-screen keyboard -->
-            <div id="keyboardContainer"></div>
-        </div>
-
-
-        <!-- Error Dialog-->
-        <div id="errorDialog" class="errorDialogOuter">
-            <div class="errorDialogMiddle">
-                <div class="errorDialog">
-                    <h1>Error</h1>
-                    <p id="errorText"></p>
-                    <div class="buttons"><button id="reconnect">Reconnect</button></div>
+            <!-- Error Dialog-->
+            <div id="errorDialog" class="errorDialogOuter">
+                <div class="errorDialogMiddle">
+                    <div class="errorDialog">
+                        <h1>Error</h1>
+                        <p id="errorText"></p>
+                        <div class="buttons"><button id="reconnect">Reconnect</button></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,166 +119,187 @@
         <!-- Init -->
         <script type="text/javascript">
 
-            var menu = document.getElementById("menu");
-            var display = document.getElementById("display");
-            var logo = document.getElementById("logo");
+            var loginForm = document.getElementById("login-form");
+            var loginUI = document.getElementById("login-ui");
 
-            var errorDialog = document.getElementById("errorDialog");
-            var errorDialogText = document.getElementById("errorText");
+            loginForm.onsubmit = function() {
 
-            // Position display correctly
-            window.onresize = function() {
-                display.style.top = menu.offsetHeight + "px"; 
-            };
+                // FIXME: Do ACTUAL login here
 
-            window.onresize();
+                loginUI.style.display = "none";
+                startGuacamole();
 
-            // Instantiate client
-            var guac = new GuacamoleClient(display);
+                return false;
 
-            var state = document.getElementById("state");
-            guac.setOnStateChangeHandler(function(clientState) {
-
-                    switch (clientState) {
-                        case 0:
-                            state.textContent = "Idle."
-                            break;
-                        case 1:
-                            state.textContent = "Connecting...";
-                            break;
-                        case 2:
-                            state.textContent = "Connected, waiting for first update...";
-                            break;
-                        case 3:
-                            display.className = display.className.replace(/guac-loading/, '');
-                            menu.className = "connected";
-                            state.textContent = "Connected.";
-                            break;
-                        case 4:
-                            state.textContent = "Disconnecting...";
-                            break;
-                        case 5:
-                            state.textContent = "Disconnected.";
-                            break;
-                        default:
-                            state.textContent = "Unknown";
-                    }
-            });
-
-            // Cache error image (might not be available when error occurs)
-            var guacErrorImage = new Image();
-            guacErrorImage.src = "images/noguacamole-logo.png";
-
-            guac.setErrorHandler(function(error) {
-                menu.className = "error";
-                logo.src = guacErrorImage.src;
-                errorDialogText.textContent = error;
-                errorDialog.style.visibility = "visible";
-            });
-
-            // Reconnect button
-            var reconnect = document.getElementById("reconnect");
-            reconnect.onclick = function() {
-                window.location.reload();
-            };
-
-            // Connect
-            guac.connect();
-
-            // Disconnect on close
-            window.onunload = function() {
-                guac.disconnect();
             }
 
-            // Handle clipboard events
-            var clipboardElement = document.getElementById("clipboard");
-            clipboardElement.onchange = function() {
+            // Shows guacamole interface and initiates connection to guacamole
+            function startGuacamole() {
 
-                var text = clipboardElement.value;
-                guac.setClipboard(text);
+                document.getElementById("main-guacamole-ui").style.display = "block";
 
-            };
+                var menu = document.getElementById("menu");
+                var display = document.getElementById("display");
+                var logo = document.getElementById("logo");
 
-            // Ignore keypresses when clipboard is focused
-            clipboardElement.onfocus = function() {
-                guac.disableKeyboard();
-            };
+                var errorDialog = document.getElementById("errorDialog");
+                var errorDialogText = document.getElementById("errorText");
 
-            // Capture keypresses when clipboard is not focused
-            clipboardElement.onblur = function() {
-                guac.enableKeyboard();
-            };
+                // Position display correctly
+                window.onresize = function() {
+                    display.style.top = menu.offsetHeight + "px";
+                };
 
-            // Server copy handler
-            guac.setClipboardHandler(
-                function(data) {
-                    clipboardElement.value = data;
+                window.onresize();
+
+                // Instantiate client
+                var guac = new GuacamoleClient(display);
+
+                var state = document.getElementById("state");
+                guac.setOnStateChangeHandler(function(clientState) {
+
+                        switch (clientState) {
+                            case 0:
+                                state.textContent = "Idle."
+                                break;
+                            case 1:
+                                state.textContent = "Connecting...";
+                                break;
+                            case 2:
+                                state.textContent = "Connected, waiting for first update...";
+                                break;
+                            case 3:
+                                display.className = display.className.replace(/guac-loading/, '');
+                                menu.className = "connected";
+                                state.textContent = "Connected.";
+                                break;
+                            case 4:
+                                state.textContent = "Disconnecting...";
+                                break;
+                            case 5:
+                                state.textContent = "Disconnected.";
+                                break;
+                            default:
+                                state.textContent = "Unknown";
+                        }
+                });
+
+                // Cache error image (might not be available when error occurs)
+                var guacErrorImage = new Image();
+                guacErrorImage.src = "images/noguacamole-logo.png";
+
+                guac.setErrorHandler(function(error) {
+                    menu.className = "error";
+                    logo.src = guacErrorImage.src;
+                    errorDialogText.textContent = error;
+                    errorDialog.style.visibility = "visible";
+                });
+
+                // Reconnect button
+                var reconnect = document.getElementById("reconnect");
+                reconnect.onclick = function() {
+                    window.location.reload();
+                };
+
+                // Connect
+                guac.connect();
+
+                // Disconnect on close
+                window.onunload = function() {
+                    guac.disconnect();
                 }
-            );
 
+                // Handle clipboard events
+                var clipboardElement = document.getElementById("clipboard");
+                clipboardElement.onchange = function() {
 
-            // Show/Hide clipboard
-            var clipboardDiv = document.getElementById("clipboardDiv");
-            var showClipboard = document.getElementById("showClipboard");
-            showClipboard.onclick = function() {
+                    var text = clipboardElement.value;
+                    guac.setClipboard(text);
 
-                var displayed = clipboardDiv.style.display;
-                if (displayed != "block") {
-                    clipboardDiv.style.display = "block";
-                    showClipboard.innerHTML = "Hide Clipboard";
-                }
-                else {
-                    clipboardDiv.style.display = "none";
-                    showClipboard.innerHTML = "Show Clipboard";
-                    clipboardElement.onchange();
-                }
+                };
 
-            };
+                // Ignore keypresses when clipboard is focused
+                clipboardElement.onfocus = function() {
+                    guac.disableKeyboard();
+                };
 
+                // Capture keypresses when clipboard is not focused
+                clipboardElement.onblur = function() {
+                    guac.enableKeyboard();
+                };
 
-            // Show/Hide keyboard
-            var keyboardContainer = document.getElementById("keyboardContainer");
-            var showKeyboard = document.getElementById("showKeyboard");
-            showKeyboard.onclick = function() {
-
-                var displayed = keyboardContainer.style.display;
-                if (displayed != "block") {
-                    keyboardContainer.style.display = "block";
-                    showKeyboard.textContent = "Hide Keyboard";
-                }
-                else {
-                    keyboardContainer.style.display = "none";
-                    showKeyboard.textContent = "Show Keyboard";
-                }
-
-            };
-
-            // On-screen keyboard
-            var osKeyboard = new GuacamoleOnScreenKeyboard("layouts/en-us-qwerty.xml");
-            keyboardContainer.appendChild(osKeyboard);
-
-            osKeyboard.setKeyPressedHandler(
-                    function(keysym) {
-                        guac.pressKey(keysym);
+                // Server copy handler
+                guac.setClipboardHandler(
+                    function(data) {
+                        clipboardElement.value = data;
                     }
-            );
+                );
 
-            osKeyboard.setKeyReleasedHandler(
-                    function(keysym) {
-                        guac.releaseKey(keysym);
+
+                // Show/Hide clipboard
+                var clipboardDiv = document.getElementById("clipboardDiv");
+                var showClipboard = document.getElementById("showClipboard");
+                showClipboard.onclick = function() {
+
+                    var displayed = clipboardDiv.style.display;
+                    if (displayed != "block") {
+                        clipboardDiv.style.display = "block";
+                        showClipboard.innerHTML = "Hide Clipboard";
                     }
-            );
+                    else {
+                        clipboardDiv.style.display = "none";
+                        showClipboard.innerHTML = "Show Clipboard";
+                        clipboardElement.onchange();
+                    }
 
-            // Send Ctrl-Alt-Delete
-            var CtrlAltDelete = document.getElementById("CtrlAltDelete");
+                };
 
-            CtrlAltDelete.onclick = function() {
-                guac.pressKey(KEYSYM_CTRL);
-                guac.pressKey(KEYSYM_ALT);
-                guac.pressKey(KEYSYM_DELETE);
-                guac.releaseKey(KEYSYM_DELETE);
-                guac.releaseKey(KEYSYM_ALT);
-                guac.releaseKey(KEYSYM_CTRL);
+
+                // Show/Hide keyboard
+                var keyboardContainer = document.getElementById("keyboardContainer");
+                var showKeyboard = document.getElementById("showKeyboard");
+                showKeyboard.onclick = function() {
+
+                    var displayed = keyboardContainer.style.display;
+                    if (displayed != "block") {
+                        keyboardContainer.style.display = "block";
+                        showKeyboard.textContent = "Hide Keyboard";
+                    }
+                    else {
+                        keyboardContainer.style.display = "none";
+                        showKeyboard.textContent = "Show Keyboard";
+                    }
+
+                };
+
+                // On-screen keyboard
+                var osKeyboard = new GuacamoleOnScreenKeyboard("layouts/en-us-qwerty.xml");
+                keyboardContainer.appendChild(osKeyboard);
+
+                osKeyboard.setKeyPressedHandler(
+                        function(keysym) {
+                            guac.pressKey(keysym);
+                        }
+                );
+
+                osKeyboard.setKeyReleasedHandler(
+                        function(keysym) {
+                            guac.releaseKey(keysym);
+                        }
+                );
+
+                // Send Ctrl-Alt-Delete
+                var CtrlAltDelete = document.getElementById("CtrlAltDelete");
+
+                CtrlAltDelete.onclick = function() {
+                    guac.pressKey(KEYSYM_CTRL);
+                    guac.pressKey(KEYSYM_ALT);
+                    guac.pressKey(KEYSYM_DELETE);
+                    guac.releaseKey(KEYSYM_DELETE);
+                    guac.releaseKey(KEYSYM_ALT);
+                    guac.releaseKey(KEYSYM_CTRL);
+                }
+
             }
 
         </script>
