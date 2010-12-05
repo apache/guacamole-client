@@ -18,12 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
+<?xml version="1.0" encoding="UTF-8"?>
 <Context antiJARLocking="true" path="/guacamole" docBase="/var/lib/guacamole/guacamole.war">
 
     <!-- Change the lines below to match your Guacamole proxy -->
-    <Parameter name="hostname" value="localhost"/>
-    <Parameter name="port" value="1234"/>
+    <Parameter name="guacd-hostname"   value="localhost"/>
+    <Parameter name="guacd-port"       value="4822"/>
 
-    <Realm className="org.apache.catalina.realm.MemoryRealm" pathname="conf/guacamole-users.xml"/>
+    <!-- Session provider class (provides and configured guacamole session based on authentication information) -->
+    <Parameter name="session-provider" value="net.sourceforge.guacamole.basic.BasicGuacamoleSessionProvider"/>
+    <Parameter name="basic-user-mapping" value="/path/to/user-mapping.xml"/>
+
 </Context>
 

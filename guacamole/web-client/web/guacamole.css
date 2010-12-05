@@ -34,6 +34,13 @@ div#login-ui {
     display: table;
 }
 
+p#login-error {
+    text-align: center;
+    background: #FDD;
+    color: red;
+    margin: 0.2em;
+}
+
 div#login-logo {
     position: relative;
     bottom: 0;
@@ -71,19 +78,18 @@ div#login-dialog h1 {
     margin-top: 0;
     margin-bottom: 0em;
     text-align: center;
-    border-bottom: 1px solid silver;
-    padding-bottom: 0.5em;
 }
 
 div#login-dialog #buttons {
-    border-top: 1px solid silver;
     padding-top: 0.5em;
     text-align: center;
 }
 
 div#login-dialog #login-fields {
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    border-top: 1px solid silver;
+    border-bottom: 1px solid silver;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
 }
 
 div.errorDialogOuter {

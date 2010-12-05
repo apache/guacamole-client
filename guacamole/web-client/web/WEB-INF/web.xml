@@ -17,9 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-    
+
     <!-- Basic config -->
-    
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
@@ -29,9 +28,8 @@
 			30
         </session-timeout>
     </session-config>
-    
-    <!-- Servlets -->
 
+    <!-- Guacamole Tunnel Servlets -->
     <servlet>
         <description>Connect servlet.</description>
         <servlet-name>Connect</servlet-name>
@@ -41,7 +39,6 @@
         <servlet-name>Connect</servlet-name>
         <url-pattern>/connect</url-pattern>
     </servlet-mapping>
-   
     <servlet>
         <description>Outbound servlet.</description>
         <servlet-name>Outbound</servlet-name>
@@ -51,7 +48,6 @@
         <servlet-name>Outbound</servlet-name>
         <url-pattern>/outbound</url-pattern>
     </servlet-mapping>
-    
     <servlet>
         <description>Input servlet.</description>
         <servlet-name>Inbound</servlet-name>
@@ -61,5 +57,15 @@
         <servlet-name>Inbound</servlet-name>
         <url-pattern>/inbound</url-pattern>
     </servlet-mapping>
-    
+
+    <!-- Basic Login Servlets -->
+    <servlet>
+        <servlet-name>BasicLogin</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.basic.BasicLogin</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>BasicLogin</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
 </web-app>

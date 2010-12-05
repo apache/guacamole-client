@@ -1,0 +1,11 @@
+<user-mapping>
+	
+	<!-- Per-user authentication and config information -->
+	<authorize username="USERNAME" password="PASSWORD">
+		<protocol>vnc</protocol>
+		<hostname>localhost</hostname>
+		<port>5900</port>
+		<password>VNCPASS</password>
+	</authorize>
+
+</user-mapping>

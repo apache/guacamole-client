@@ -1,8 +1,10 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.basic;
 
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleSession;
+import net.sourceforge.guacamole.net.GuacamoleSessionProvider;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -26,11 +28,21 @@ public class BasicGuacamoleSessionProvider implements GuacamoleSessionProvider {
 
     public GuacamoleSession createSession(HttpSession session) throws GuacamoleException {
 
+        // Retrieve authorized config data from session
+        BasicLogin.AuthorizedConfiguration config = (BasicLogin.AuthorizedConfiguration)
+                session.getAttribute("BASIC-LOGIN-AUTH");
+
+        // If no data, not authorized
+        if (config == null)
+            throw new GuacamoleException("Unauthorized");
+
+        // Configure session from authorized config info
         GuacamoleSession guacSession = new GuacamoleSession(session);
+        guacSession.setConnection(config.getProtocol(), config.getHostname(), config.getPort());
+        if (config.getPassword() != null)
+            guacSession.setPassword(config.getPassword());
 
-        guacSession.setConnection("vnc", "localhost", 5901);
-        guacSession.setPassword("potato");
-
+        // Return authorized session
         return guacSession;
 
     }

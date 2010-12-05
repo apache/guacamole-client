@@ -40,6 +40,9 @@
                 <div id="login-dialog">
 
                     <h1>Guacamole Login</h1>
+
+                    <p id="login-error"></p>
+
                     <form id="login-form" action="#">
                         <table id="login-fields">
                             <tr>
@@ -124,10 +127,33 @@
 
             loginForm.onsubmit = function() {
 
-                // FIXME: Do ACTUAL login here
+                var username = document.getElementById("username");
+                var password = document.getElementById("password");
 
-                loginUI.style.display = "none";
-                startGuacamole();
+                var data =
+                       "username=" + encodeURIComponent(username.value)
+                    + "&password=" + encodeURIComponent(password.value)
+
+                var xmlhttprequest = new XMLHttpRequest();
+                xmlhttprequest.open("POST", "login", false);
+                xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                xmlhttprequest.setRequestHeader("Content-length", data.length);
+                xmlhttprequest.send(data);
+
+                if (xmlhttprequest.status == 200) {
+                    loginUI.style.display = "none";
+                    startGuacamole();
+                }
+                else {
+
+                    var loginError = document.getElementById("login-error");
+
+                    // Display error, reset and refocus password field
+                    loginError.textContent = "Invalid login. Please try again.";
+                    password.value = "";
+                    password.focus();
+
+                }
 
                 return false;
 
