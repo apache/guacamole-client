@@ -63,7 +63,7 @@
         <delete dir="${tar.src.dir}"/>
 
         <copy todir="${tar.dir}">
-            <fileset file="${doc.dir}/example/guacamole.xml"/>
+            <fileset file="${doc.dir}/example/guacamole.properties"/>
             <fileset file="${doc.dir}/example/user-mapping.xml"/>
             <fileset file="${dist.dir}/guacamole.war"/>
             <fileset file="LICENSE.txt"/>
