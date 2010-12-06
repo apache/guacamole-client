@@ -40,9 +40,7 @@
 		depends="compile">
 		<war destfile="${dist.dir}/guacamole.war"
 			webxml="${build.dir}/WEB-INF/web.xml">
-            <fileset dir="${build.dir}">
-                <exclude name="META-INF/**"/>
-            </fileset>
+            <fileset dir="${build.dir}"/>
 		</war>
 	</target>
 
