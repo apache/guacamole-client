@@ -20,6 +20,15 @@
                 </configuration>
             </plugin>
         </plugins>
+
+        <extensions>
+            <!-- Required for SSH deploy -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh-external</artifactId>
+            </extension>
+        </extensions>
+
     </build>
 
     <dependencies>
@@ -41,7 +50,7 @@
     <distributionManagement>
         <repository>
             <id>guac-dev</id>
-            <url>file:///var/www/repo</url>
+            <url>scpexe://guac-dev.org/var/www/repo</url>
         </repository>
     </distributionManagement>
 
