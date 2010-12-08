@@ -3,10 +3,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.sourceforge.guacamole</groupId>
-    <artifactId>guacamole-common</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>guacamole-default-webapp</artifactId>
+    <packaging>war</packaging>
     <version>0.3.0rc1</version>
-    <name>guacamole-common</name>
+    <name>guacamole-default-webapp</name>
     <url>http://guacamole.sourceforge.net/</url>
 
     <build>
@@ -23,12 +23,21 @@
     </build>
 
     <dependencies>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.guacamole</groupId>
+            <artifactId>guacamole-common</artifactId>
+            <version>0.3.0rc1</version>
+            <scope>compile</scope>
+        </dependency>
+
     </dependencies>
 
     <repositories>
