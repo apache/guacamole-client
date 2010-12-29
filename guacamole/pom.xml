@@ -5,7 +5,7 @@
     <groupId>net.sourceforge.guacamole</groupId>
     <artifactId>guacamole-default-webapp</artifactId>
     <packaging>war</packaging>
-    <version>0.3.0rc1</version>
+    <version>0.3.0-SNAPSHOT</version>
     <name>guacamole-default-webapp</name>
     <url>http://guacamole.sourceforge.net/</url>
 
@@ -43,7 +43,7 @@
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.3.0rc1</version>
+            <version>0.3.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
