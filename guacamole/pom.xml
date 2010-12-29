@@ -53,6 +53,11 @@
         <repository>
             <id>guac-dev</id>
             <url>http://guac-dev.org/repo</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
         </repository>
     </repositories>
 
