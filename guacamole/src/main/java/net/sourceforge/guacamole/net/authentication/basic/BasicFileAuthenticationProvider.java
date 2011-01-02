@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.Configuration;
 import net.sourceforge.guacamole.net.GuacamoleProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -80,7 +81,7 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
     }
 
     @Override
-    public BasicLogin.AuthorizedConfiguration getAuthorizedConfiguration(String username, String password) throws GuacamoleException {
+    public Configuration getAuthorizedConfiguration(String username, String password) throws GuacamoleException {
 
         // Check mapping file mod time
         File userMappingFile = getUserMappingFile();
@@ -95,13 +96,19 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
         }
 
         AuthInfo info = mapping.get(username);
-        if (info != null && info.validate(username, password))
-            return new BasicLogin.AuthorizedConfiguration(
-                info.getProtocol(),
-                info.getHostname(),
-                info.getPort(),
-                info.getPassword()
-            );
+        if (info != null && info.validate(username, password)) {
+
+            Configuration config = new Configuration();
+
+            // TODO: Migrate user-mapping to general form
+            config.setProtocol(info.getProtocol());
+            config.setParameter("hostname", info.getHostname());
+            config.setParameter("port", Integer.toString(info.getPort()));
+            config.setParameter("password", info.getPassword());
+
+            return config;
+
+        }
 
         return null;
 

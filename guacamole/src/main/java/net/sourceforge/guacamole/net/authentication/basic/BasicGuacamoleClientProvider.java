@@ -2,9 +2,11 @@
 package net.sourceforge.guacamole.net.authentication.basic;
 
 import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.Configuration;
 import net.sourceforge.guacamole.net.GuacamoleSession;
-import net.sourceforge.guacamole.net.authentication.GuacamoleSessionProvider;
+import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -24,26 +26,25 @@ import net.sourceforge.guacamole.net.authentication.GuacamoleSessionProvider;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class BasicGuacamoleSessionProvider implements GuacamoleSessionProvider {
+public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
 
-    public GuacamoleSession createSession(HttpSession session) throws GuacamoleException {
+    public GuacamoleClient createClient(HttpSession session) throws GuacamoleException {
 
         // Retrieve authorized config data from session
-        BasicLogin.AuthorizedConfiguration config = (BasicLogin.AuthorizedConfiguration)
-                session.getAttribute("BASIC-LOGIN-AUTH");
+        Configuration config = (Configuration) session.getAttribute("BASIC-LOGIN-AUTH");
 
         // If no data, not authorized
         if (config == null)
             throw new GuacamoleException("Unauthorized");
 
-        // Configure session from authorized config info
-        GuacamoleSession guacSession = new GuacamoleSession(session);
-        guacSession.setConnection(config.getProtocol(), config.getHostname(), config.getPort());
-        if (config.getPassword() != null)
-            guacSession.setPassword(config.getPassword());
+        GuacamoleClient client = new GuacamoleClient("localhost", 4822);
+
+        // TODO: Send "select" and "connect" messages in client connect function (based on config) ... to be implemented.
+        char[] initMessages = "select:vnc;connect:localhost,5901,potato;".toCharArray();
+        client.write(initMessages, 0, initMessages.length);
 
         // Return authorized session
-        return guacSession;
+        return client;
 
     }
 
