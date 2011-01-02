@@ -22,33 +22,43 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 import java.io.Reader;
 import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.guacamole.net.GuacamoleServlet;
-
+import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
-public class Inbound extends GuacamoleServlet {
+
+public class Inbound extends HttpServlet {
 
     @Override
-    protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
-        
-        // Send data
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        HttpSession httpSession = request.getSession(false);
+
         try {
 
-            Reader input = request.getReader();
-            char[] buffer = new char[8192];
+            GuacamoleSession session = new GuacamoleSession(httpSession);
 
-            int length;
-            while ((length = input.read(buffer, 0, buffer.length)) != -1)
-                session.getClient().write(buffer, 0, length);
+            // Send data
+            try {
 
-        }
-        catch (IOException e) {
-            throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+                Reader input = request.getReader();
+                char[] buffer = new char[8192];
+
+                int length;
+                while ((length = input.read(buffer, 0, buffer.length)) != -1)
+                    session.getClient().write(buffer, 0, length);
+
+            }
+            catch (IOException e) {
+                throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+            }
+
         }
         catch (GuacamoleException e) {
-            throw new GuacamoleException("Error sending data to server: " + e.getMessage(), e);
+            throw new ServletException(e);
         }
 
     }

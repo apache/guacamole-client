@@ -1,6 +1,8 @@
 
 package net.sourceforge.guacamole.net;
 
+import java.util.HashMap;
+
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -19,111 +21,25 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import javax.servlet.ServletContext;
-import net.sourceforge.guacamole.GuacamoleException;
+public class Configuration {
 
-public abstract class Configuration {
+    private String protocol;
+    private HashMap<String, String> parameters = new HashMap<String, String>();
 
-    protected String humanReadableList(Object... values) {
-
-        String list = "";
-        for (int i=0; i<values.length; i++) {
-
-            if (i >= 1)
-                list += ", ";
-
-            if (i == values.length -1)
-                list += " or ";
-
-            list += "\"" + values[i] + "\"";
-        }
-
-        return list;
-
+    public String getProtocol() {
+        return protocol;
     }
 
-    protected String readParameter(String name) throws GuacamoleException {
-        String value = GuacamoleProperties.getProperty(name);
-        return value;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
-    protected String readParameter(String name, String defaultValue, String... allowedValues) throws GuacamoleException {
-
-        String value = GuacamoleProperties.getProperty(name);
-
-        // Use default if not specified
-        if (value == null) {
-            if (defaultValue == null)
-                throw new GuacamoleException("Parameter \"" + name + "\" is required.");
-
-            return defaultValue;
-        }
-
-        // If not restricted to certain values, just return whatever is given.
-        if (allowedValues.length == 0)
-            return value;
-
-        // If restricted, only return value within given list
-        for (String allowedValue : allowedValues)
-            if (value.equals(allowedValue))
-                return value;
-
-        throw new GuacamoleException("Parameter \"" + name + "\" must be " + humanReadableList((Object) allowedValues));
+    public String getParameter(String name) {
+        return parameters.get(name);
     }
 
-    protected boolean readBooleanParameter(String name, Boolean defaultValue) throws GuacamoleException {
-
-        String value = GuacamoleProperties.getProperty(name);
-
-        // Use default if not specified
-        if (value == null) {
-            if (defaultValue == null)
-                throw new GuacamoleException("Parameter \"" + name + "\" is required.");
-
-            return defaultValue;
-        }
-
-        value = value.trim();
-        if (value.equals("true"))
-            return true;
-
-        if (value.equals("false"))
-            return false;
-
-        throw new GuacamoleException("Parameter \"" + name + "\" must be \"true\" or \"false\".");
-
-    }
-
-    protected int readIntParameter(String name, Integer defaultValue, Integer... allowedValues) throws GuacamoleException {
-
-        String parmString = GuacamoleProperties.getProperty(name);
-
-        // Use default if not specified
-        if (parmString== null) {
-            if (defaultValue == null)
-                throw new GuacamoleException("Parameter \"" + name + "\" is required.");
-
-            return defaultValue;
-        }
-
-        try {
-            int value = Integer.parseInt(parmString);
-
-            // If not restricted to certain values, just return whatever is given.
-            if (allowedValues.length == 0)
-                return value;
-
-            // If restricted, only return value within given list
-            for (int allowedValue : allowedValues)
-                if (value == allowedValue)
-                    return value;
-
-            throw new GuacamoleException("Parameter \"" + name + "\" must be " + humanReadableList((Object) allowedValues));
-        }
-        catch (NumberFormatException e) {
-            throw new GuacamoleException("Parameter \"" + name + "\" must be an integer.", e);
-        }
-
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
     }
 
 }

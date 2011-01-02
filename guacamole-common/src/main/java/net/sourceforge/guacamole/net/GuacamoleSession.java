@@ -19,7 +19,6 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
@@ -30,30 +29,9 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleSession {
 
-    private GuacamoleConfiguration config;
-
     private final HttpSession session;
     private SessionClient client;
     private ReentrantLock instructionStreamLock;
-
-    private String protocol;
-    private HashMap<String, String> parameters = new HashMap<String, String>();
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public String getParameter(String name) {
-        return parameters.get(name);
-    }
-
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
-    }
 
     public class SessionClient extends Client implements HttpSessionBindingListener {
 
@@ -96,34 +74,22 @@ public class GuacamoleSession {
             throw new GuacamoleException("User has no session.");
 
         this.session = session;
-        synchronized (session) {
 
-            // Read configuration parameters
-            config = new GuacamoleConfiguration();
+        synchronized (session) {
 
             client = (SessionClient) session.getAttribute("CLIENT");
             instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");
+
         }
 
     }
 
-    public void connect() throws GuacamoleException {
+    public void attachClient(GuacamoleClient client) throws GuacamoleException {
 
         synchronized (session) {
 
-            if (client != null)
-                client.disconnect();
-
-            client = new SessionClient(
-                    new GuacamoleClient (
-                        config.getProxyHostname(),
-                        config.getProxyPort()
-                    )
-            );
-
-            // TODO: Send "select" and "connect" messages here.
-
-            session.setAttribute("CLIENT", client);
+            this.client = new SessionClient(client);
+            session.setAttribute("CLIENT", this.client);
 
             instructionStreamLock = new ReentrantLock();
             session.setAttribute("INSTRUCTION_STREAM_LOCK", instructionStreamLock);
@@ -132,21 +98,11 @@ public class GuacamoleSession {
 
     }
 
-    public boolean isConnected() {
-        synchronized (session) {
-            return client != null;
-        }
-    }
-
-    public GuacamoleConfiguration getConfiguration() {
-        return config;
-    }
-
     public SessionClient getClient() throws GuacamoleException {
         synchronized (session) {
 
             if (client == null)
-                throw new GuacamoleException("Client not yet connected.");
+                throw new GuacamoleException("Client not yet attached.");
 
             return client;
         }
@@ -156,7 +112,7 @@ public class GuacamoleSession {
         session.invalidate();
     }
 
-    public void disconnect() throws GuacamoleException {
+    public void detachClient() throws GuacamoleException {
 
         synchronized (session) {
 

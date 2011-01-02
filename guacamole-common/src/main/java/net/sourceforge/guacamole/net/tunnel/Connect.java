@@ -18,30 +18,35 @@ package net.sourceforge.guacamole.net.tunnel;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.GuacamoleException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.guacamole.net.GuacamoleServlet;
-
+import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
-public class Connect extends GuacamoleServlet {
+
+public class Connect extends HttpServlet {
 
     @Override
-    protected boolean shouldCreateSession() {
-        return true;
-    }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-    @Override
-    protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+        HttpSession httpSession = request.getSession(false);
 
-        // Disconnect if already connected
-        if (session.isConnected())
-            session.disconnect();
+        try {
 
-        // Obtain new connection
-        session.connect();
+            GuacamoleSession session = new GuacamoleSession(httpSession);
+            session.attachClient(
+                GuacamoleProperties.getClientProvider().createClient(httpSession)
+            );
+
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException(e);
+        }
 
     }
 

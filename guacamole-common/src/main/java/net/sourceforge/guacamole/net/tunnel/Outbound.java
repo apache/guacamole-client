@@ -22,73 +22,86 @@ import java.io.Writer;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.Client;
-import net.sourceforge.guacamole.net.GuacamoleServlet;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
 
-public class Outbound extends GuacamoleServlet {
+public class Outbound extends HttpServlet {
 
     @Override
-    protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
-        instructionStreamLock.lock();
+        HttpSession httpSession = request.getSession(false);
 
         try {
 
-            response.setContentType("text/plain");
-            Writer out = response.getWriter();
+            GuacamoleSession session = new GuacamoleSession(httpSession);
+
+            ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
+            instructionStreamLock.lock();
 
             try {
 
-                // Query new update from server
-                Client client = session.getClient();
+                response.setContentType("text/plain");
+                Writer out = response.getWriter();
 
-                // For all messages, until another stream is ready (we send at least one message)
-                char[] message;
-                while ((message = client.read()) != null) {
+                try {
 
-                    // Get message output bytes
-                    out.write(message, 0, message.length);
+                    // Query new update from server
+                    Client client = session.getClient();
+
+                    // For all messages, until another stream is ready (we send at least one message)
+                    char[] message;
+                    while ((message = client.read()) != null) {
+
+                        // Get message output bytes
+                        out.write(message, 0, message.length);
+                        out.flush();
+                        response.flushBuffer();
+
+                        // No more messages another stream can take over
+                        if (instructionStreamLock.hasQueuedThreads())
+                            break;
+
+                    }
+
+                    if (message == null) {
+                        session.detachClient();
+                        throw new GuacamoleException("Disconnected.");
+                    }
+
+                }
+                catch (GuacamoleException e) {
+                    out.write("error:" + e.getMessage() + ";");
                     out.flush();
                     response.flushBuffer();
-
-                    // No more messages another stream can take over
-                    if (instructionStreamLock.hasQueuedThreads())
-                        break;
-
                 }
 
-                if (message == null) {
-                    session.disconnect();
-                    throw new GuacamoleException("Disconnected.");
-                }
-
-            }
-            catch (GuacamoleException e) {
-                out.write("error:" + e.getMessage() + ";");
+                // End-of-instructions marker
+                out.write(';');
                 out.flush();
                 response.flushBuffer();
+
+            }
+            catch (UnsupportedEncodingException e) {
+                throw new ServletException("UTF-8 not supported by Java.", e);
+            }
+            catch (IOException e) {
+                throw new ServletException("I/O error writing to servlet output stream.", e);
+            }
+            finally {
+                instructionStreamLock.unlock();
             }
 
-            // End-of-instructions marker
-            out.write(';');
-            out.flush();
-            response.flushBuffer();
-
         }
-        catch (UnsupportedEncodingException e) {
-            throw new GuacamoleException("UTF-8 not supported by Java.", e);
-        }
-        catch (IOException e) {
-            throw new GuacamoleException("I/O error writing to servlet output stream.", e);
-        }
-        finally {
-            instructionStreamLock.unlock();
+        catch (GuacamoleException e) {
+            throw new ServletException(e);
         }
 
     }
