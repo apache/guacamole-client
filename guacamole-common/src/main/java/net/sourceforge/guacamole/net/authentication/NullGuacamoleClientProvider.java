@@ -2,7 +2,7 @@
 package net.sourceforge.guacamole.net.authentication;
 
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleClient;
+import net.sourceforge.guacamole.GuacamoleTCPClient;
 import net.sourceforge.guacamole.GuacamoleException;
 
 /*
@@ -25,7 +25,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public class NullGuacamoleClientProvider implements GuacamoleClientProvider {
 
-    public GuacamoleClient createClient(HttpSession session) throws GuacamoleException {
+    public GuacamoleTCPClient createClient(HttpSession session) throws GuacamoleException {
         throw new GuacamoleException("Null provider will not create clients.");
     }
 

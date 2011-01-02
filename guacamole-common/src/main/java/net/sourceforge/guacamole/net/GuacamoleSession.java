@@ -23,8 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
-import net.sourceforge.guacamole.Client;
 import net.sourceforge.guacamole.GuacamoleClient;
+import net.sourceforge.guacamole.GuacamoleTCPClient;
 import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleSession {
@@ -33,11 +33,11 @@ public class GuacamoleSession {
     private SessionClient client;
     private ReentrantLock instructionStreamLock;
 
-    public class SessionClient extends Client implements HttpSessionBindingListener {
+    public class SessionClient extends GuacamoleClient implements HttpSessionBindingListener {
 
-        private Client client;
+        private GuacamoleClient client;
 
-        public SessionClient(Client client) {
+        public SessionClient(GuacamoleClient client) {
             this.client = client;
         }
 
@@ -84,7 +84,7 @@ public class GuacamoleSession {
 
     }
 
-    public void attachClient(GuacamoleClient client) throws GuacamoleException {
+    public void attachClient(GuacamoleTCPClient client) throws GuacamoleException {
 
         synchronized (session) {
 

@@ -49,14 +49,6 @@ public class GuacamoleProperties {
 
     }
 
-    public static String getProxyHostname() throws GuacamoleException {
-        return GuacamoleProperties.getProperty("guacd-hostname");
-    }
-
-    public static int getProxyPort() throws GuacamoleException {
-        return GuacamoleProperties.getIntProperty("guacd-port", null);
-    }
-
     public static GuacamoleClientProvider getClientProvider() throws GuacamoleException {
 
         // Get client provider instance

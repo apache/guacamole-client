@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.Client;
+import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSession;
 
@@ -54,7 +54,7 @@ public class Outbound extends HttpServlet {
                 try {
 
                     // Query new update from server
-                    Client client = session.getClient();
+                    GuacamoleClient client = session.getClient();
 
                     // For all messages, until another stream is ready (we send at least one message)
                     char[] message;
