@@ -33,8 +33,6 @@ public class Inbound extends GuacamoleServlet {
     @Override
     protected void handleRequest(GuacamoleSession session, HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
         
-        session.getClient().waitForAuthorization();
-
         // Send data
         try {
 

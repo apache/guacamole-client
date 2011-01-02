@@ -19,8 +19,8 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.HashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionBindingListener;
@@ -31,41 +31,36 @@ import net.sourceforge.guacamole.GuacamoleException;
 public class GuacamoleSession {
 
     private GuacamoleConfiguration config;
+
     private final HttpSession session;
     private SessionClient client;
     private ReentrantLock instructionStreamLock;
 
     private String protocol;
-    private String hostname;
-    private int port;
-    private String password;
+    private HashMap<String, String> parameters = new HashMap<String, String>();
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getParameter(String name) {
+        return parameters.get(name);
+    }
+
+    public void setParameter(String name, String value) {
+        parameters.put(name, value);
+    }
 
     public class SessionClient extends Client implements HttpSessionBindingListener {
 
         private Client client;
-        private ReentrantLock authorizedLock;
 
         public SessionClient(Client client) {
             this.client = client;
-
-            authorizedLock = new ReentrantLock();
-            authorizedLock.lock();
-        }
-
-        public void authorize() {
-            authorizedLock.unlock();
-        }
-
-        public void waitForAuthorization() {
-            if (authorizedLock.isLocked()) {
-                try {
-                    authorizedLock.lock();
-                    authorizedLock.unlock();
-                }
-                catch (Throwable t) {
-                    throw new Error("Internal error waiting for authorization", t);
-                }
-            }
         }
 
         public void valueBound(HttpSessionBindingEvent event) {
@@ -109,14 +104,15 @@ public class GuacamoleSession {
             client = (SessionClient) session.getAttribute("CLIENT");
             instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");
         }
+
     }
 
     public void connect() throws GuacamoleException {
+
         synchronized (session) {
 
             if (client != null)
                 client.disconnect();
-
 
             client = new SessionClient(
                     new GuacamoleClient (
@@ -125,12 +121,15 @@ public class GuacamoleSession {
                     )
             );
 
+            // TODO: Send "select" and "connect" messages here.
+
             session.setAttribute("CLIENT", client);
 
             instructionStreamLock = new ReentrantLock();
             session.setAttribute("INSTRUCTION_STREAM_LOCK", instructionStreamLock);
 
         }
+
     }
 
     public boolean isConnected() {
@@ -143,8 +142,12 @@ public class GuacamoleSession {
         return config;
     }
 
-    public SessionClient getClient() {
+    public SessionClient getClient() throws GuacamoleException {
         synchronized (session) {
+
+            if (client == null)
+                throw new GuacamoleException("Client not yet connected.");
+
             return client;
         }
     }
@@ -154,56 +157,21 @@ public class GuacamoleSession {
     }
 
     public void disconnect() throws GuacamoleException {
-        if (client != null) {
-            client.disconnect();
 
-            session.removeAttribute("CLIENT");
-            client = null;
+        synchronized (session) {
+
+            if (client != null) {
+                client.disconnect();
+                session.removeAttribute("CLIENT");
+                client = null;
+            }
+
         }
+
     }
 
     public ReentrantLock getInstructionStreamLock() {
         return instructionStreamLock;
-    }
-
-    public void setConnection(String protocol, String hostname, int port) {
-        this.protocol = protocol;
-        this.hostname = hostname;
-        this.port = port;
-    }
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public String getHostname() {
-        return hostname;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getConnectMessage() throws GuacamoleException {
-
-        if (getProtocol() == null)
-            throw new GuacamoleException("Protocol not specified");
-
-        if (getHostname() == null)
-            throw new GuacamoleException("Hostname not specified");
-
-        if (getPassword() == null)
-            return "connect:" + getProtocol() + "," + getHostname() + "," + getPort() + ";";
-        else
-            return "connect:" + getProtocol() + "," + getHostname() + "," + getPort() + "," + getPassword() + ";";
     }
 
 }

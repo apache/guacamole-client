@@ -19,8 +19,6 @@ package net.sourceforge.guacamole;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.GuacamoleException;
-
 public abstract class Client {
 
     public abstract void write(char[] chunk, int off, int len) throws GuacamoleException;

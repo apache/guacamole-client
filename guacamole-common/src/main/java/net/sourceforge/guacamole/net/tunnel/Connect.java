@@ -43,16 +43,6 @@ public class Connect extends GuacamoleServlet {
         // Obtain new connection
         session.connect();
 
-        // Send data
-        try {
-            char[] connect = session.getConnectMessage().toCharArray();
-            session.getClient().write(connect, 0, connect.length);
-            session.getClient().authorize();
-        }
-        catch (GuacamoleException e) {
-            throw new GuacamoleException("Error sending data to server: " + e.getMessage(), e);
-        }
-
     }
 
 }
