@@ -2,10 +2,10 @@
 package net.sourceforge.guacamole.net.authentication.basic;
 
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleClient;
+import net.sourceforge.guacamole.GuacamoleTCPClient;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.Configuration;
-import net.sourceforge.guacamole.net.GuacamoleSession;
+import net.sourceforge.guacamole.net.GuacamoleProperties;
 import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
 
 /*
@@ -28,7 +28,7 @@ import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
 
 public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
 
-    public GuacamoleClient createClient(HttpSession session) throws GuacamoleException {
+    public GuacamoleTCPClient createClient(HttpSession session) throws GuacamoleException {
 
         // Retrieve authorized config data from session
         Configuration config = (Configuration) session.getAttribute("BASIC-LOGIN-AUTH");
@@ -37,11 +37,10 @@ public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
         if (config == null)
             throw new GuacamoleException("Unauthorized");
 
-        GuacamoleClient client = new GuacamoleClient("localhost", 4822);
+        String hostname = GuacamoleProperties.getProperty("guacd-hostname");
+        int port = GuacamoleProperties.getIntProperty("guacd-port", null);
 
-        // TODO: Send "select" and "connect" messages in client connect function (based on config) ... to be implemented.
-        char[] initMessages = "select:vnc;connect:localhost,5901,potato;".toCharArray();
-        client.write(initMessages, 0, initMessages.length);
+        GuacamoleTCPClient client = new GuacamoleTCPClient(hostname, port);
 
         // Return authorized session
         return client;
