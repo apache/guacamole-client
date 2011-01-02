@@ -1,6 +1,7 @@
 
 package net.sourceforge.guacamole;
 
+import net.sourceforge.guacamole.GuacamoleInstruction.Operation;
 import net.sourceforge.guacamole.net.Configuration;
 
 /*
@@ -24,14 +25,28 @@ import net.sourceforge.guacamole.net.Configuration;
 public abstract class GuacamoleClient {
 
     public abstract void write(char[] chunk, int off, int len) throws GuacamoleException;
+
+    public void write(char[] chunk) throws GuacamoleException {
+        write(chunk, 0, chunk.length);
+    }
+
+    public void write(GuacamoleInstruction instruction) throws GuacamoleException {
+        write(instruction.toString().toCharArray());
+    }
+
     public abstract char[] read() throws GuacamoleException;
+
     public abstract void disconnect() throws GuacamoleException;
 
     public void connect(Configuration config) throws GuacamoleException {
 
-        // TODO: Send "select" and "connect" messages in client connect function (based on config) ... to be implemented.
-        char[] initMessages = "select:vnc;connect:localhost,5901,potato;".toCharArray();
-        write(initMessages, 0, initMessages.length);
+        // Send protocol
+        write(new GuacamoleInstruction(Operation.CLIENT_SELECT, config.getProtocol()));
+
+        // TODO: Wait for and read args message
+
+        // Send args
+        write(new GuacamoleInstruction(Operation.CLIENT_CONNECT, "localhost", "5901", "potato"));
 
     }
 
