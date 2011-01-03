@@ -64,7 +64,7 @@
     <distributionManagement>
         <repository>
             <id>guac-dev</id>
-            <url>scpexe://guac-dev.org/var/www/repo</url>
+            <url>${guac-dev.dist.repo}</url>
         </repository>
     </distributionManagement>
 
