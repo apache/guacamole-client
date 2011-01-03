@@ -96,19 +96,8 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
         }
 
         AuthInfo info = mapping.get(username);
-        if (info != null && info.validate(username, password)) {
-
-            Configuration config = new Configuration();
-
-            // TODO: Migrate user-mapping to general form
-            config.setProtocol(info.getProtocol());
-            config.setParameter("hostname", info.getHostname());
-            config.setParameter("port", Integer.toString(info.getPort()));
-            config.setParameter("password", info.getPassword());
-
-            return config;
-
-        }
+        if (info != null && info.validate(username, password))
+            return info.getConfiguration();
 
         return null;
 
@@ -125,15 +114,14 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
         private String auth_password;
         private Encoding auth_encoding;
 
-        private String protocol;
-        private String hostname;
-        private int port;
-        private String password;
+        private Configuration config;
 
         public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
             this.auth_username = auth_username;
             this.auth_password = auth_password;
             this.auth_encoding = auth_encoding;
+
+            config = new Configuration();
         }
 
         private static final char HEX_CHARS[] = {
@@ -189,20 +177,8 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
 
         }
 
-        public String getHostname() {
-            return hostname;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public String getProtocol() {
-            return protocol;
+        public Configuration getConfiguration() {
+            return config;
         }
 
     }
@@ -216,75 +192,142 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
             return Collections.unmodifiableMap(authMapping);
         }
 
-        private AuthInfo current;
-
-        private enum AUTH_INFO_STATE {
+        private enum State {
+            ROOT,
+            USER_MAPPING,
+            AUTH_INFO,
             PROTOCOL,
-            HOSTNAME,
-            PORT,
-            PASSWORD
-        };
+            PARAMETER,
+            END;
+        }
 
-        private AUTH_INFO_STATE infoState;
+        private State state = State.ROOT;
+        private AuthInfo current = null;
+        private String currentParameter = null;
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
 
-            if (localName.equals("authorize")) {
+            switch (state)  {
 
-                // Finalize mapping for this user
-                authMapping.put(
-                    current.auth_username,
-                    current
-                );
+                case USER_MAPPING:
+
+                    if (localName.equals("user-mapping")) {
+                        state = State.END;
+                        return;
+                    }
+
+                    break;
+
+                case AUTH_INFO:
+
+                    if (localName.equals("authorize")) {
+
+                        // Finalize mapping for this user
+                        authMapping.put(
+                            current.auth_username,
+                            current
+                        );
+
+                        state = State.USER_MAPPING;
+                        return;
+                    }
+
+                    break;
+
+                case PROTOCOL:
+
+                    if (localName.equals("protocol")) {
+                        state = State.AUTH_INFO;
+                        return;
+                    }
+
+                    break;
+
+                case PARAMETER:
+
+                    if (localName.equals("param")) {
+                        state = State.AUTH_INFO;
+                        return;
+                    }
+
+                    break;
 
             }
 
-            infoState = null;
+            throw new SAXException("Tag not yet complete: " + localName);
 
         }
 
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 
-            if (localName.equals("authorize")) {
+            switch (state)  {
 
-                AuthInfo.Encoding encoding;
-                String encodingString = attributes.getValue("encoding");
-                if (encodingString == null)
-                    encoding = AuthInfo.Encoding.PLAIN_TEXT;
-                else if (encodingString.equals("plain"))
-                    encoding = AuthInfo.Encoding.PLAIN_TEXT;
-                else if (encodingString.equals("md5"))
-                    encoding = AuthInfo.Encoding.MD5;
-                else
-                    throw new SAXException("Invalid encoding type");
+                // Document must be <user-mapping>
+                case ROOT:
+
+                    if (localName.equals("user-mapping")) {
+                        state = State.USER_MAPPING;
+                        return;
+                    }
+
+                    break;
+
+                // Only <authorize> tags allowed in main document
+                case USER_MAPPING:
+
+                    if (localName.equals("authorize")) {
+
+                        AuthInfo.Encoding encoding;
+                        String encodingString = attributes.getValue("encoding");
+                        if (encodingString == null)
+                            encoding = AuthInfo.Encoding.PLAIN_TEXT;
+                        else if (encodingString.equals("plain"))
+                            encoding = AuthInfo.Encoding.PLAIN_TEXT;
+                        else if (encodingString.equals("md5"))
+                            encoding = AuthInfo.Encoding.MD5;
+                        else
+                            throw new SAXException("Invalid encoding type");
 
 
-                current = new AuthInfo(
-                    attributes.getValue("username"),
-                    attributes.getValue("password"),
-                    encoding
-                );
+                        current = new AuthInfo(
+                            attributes.getValue("username"),
+                            attributes.getValue("password"),
+                            encoding
+                        );
 
-                infoState = null;
+                        // Next state
+                        state = State.AUTH_INFO;
+                        return;
+                    }
+
+                    break;
+
+                case AUTH_INFO:
+
+                    if (localName.equals("protocol")) {
+                        // Next state
+                        state = State.PROTOCOL;
+                        return;
+                    }
+
+                    if (localName.equals("param")) {
+
+                        currentParameter = attributes.getValue("name");
+                        if (currentParameter == null)
+                            throw new SAXException("Attribute \"name\" required for param tag.");
+
+                        // Next state
+                        state = State.PARAMETER;
+                        return;
+                    }
+
+                    break;
 
             }
 
-            else if (localName.equals("protocol"))
-                infoState = AUTH_INFO_STATE.PROTOCOL;
-
-            else if (localName.equals("hostname"))
-                infoState = AUTH_INFO_STATE.HOSTNAME;
-
-            else if (localName.equals("port"))
-                infoState = AUTH_INFO_STATE.PORT;
-
-            else if (localName.equals("password"))
-                infoState = AUTH_INFO_STATE.PASSWORD;
-
-            else
-                infoState = null;
+            throw new SAXException("Unexpected tag: " + localName);
 
         }
 
@@ -292,29 +335,20 @@ public class BasicFileAuthenticationProvider implements BasicLogin.Authenticatio
         public void characters(char[] ch, int start, int length) throws SAXException {
 
             String str = new String(ch, start, length);
-
-            if (infoState == null)
-                return;
-
-            switch (infoState) {
+            switch (state) {
 
                 case PROTOCOL:
-                    current.protocol = str;
-                    break;
+                    current.getConfiguration().setProtocol(str);
+                    return;
 
-                case HOSTNAME:
-                    current.hostname = str;
-                    break;
-
-                case PORT:
-                    current.port = Integer.parseInt(str);
-                    break;
-
-                case PASSWORD:
-                    current.password = str;
-                    break;
-
+                case PARAMETER:
+                    current.getConfiguration().setParameter(currentParameter, str);
+                    return;
+                
             }
+
+            if (str.trim().length() != 0)
+                throw new SAXException("Unexpected character data.");
 
         }
 
