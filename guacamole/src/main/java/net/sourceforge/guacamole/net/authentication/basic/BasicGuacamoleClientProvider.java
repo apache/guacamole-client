@@ -41,6 +41,7 @@ public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
         int port = GuacamoleProperties.getIntProperty("guacd-port", null);
 
         GuacamoleTCPClient client = new GuacamoleTCPClient(hostname, port);
+        client.connect(config);
 
         // Return authorized session
         return client;
