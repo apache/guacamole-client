@@ -48,7 +48,7 @@ public class GuacamoleInstruction {
 
         }
 
-        public Operation fromOpcode(String opcode) {
+        public static Operation fromOpcode(String opcode) {
             return opcodeToOperation.get(opcode);
         }
 
@@ -75,7 +75,7 @@ public class GuacamoleInstruction {
 
         StringBuilder buff = new StringBuilder();
 
-        buff.append(operation);
+        buff.append(operation.getOpcode());
 
         if (args.length >= 1)
             buff.append(':');
