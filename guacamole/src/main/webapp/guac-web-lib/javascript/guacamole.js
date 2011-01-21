@@ -440,6 +440,21 @@ function GuacamoleClient(display) {
 
     var instructionHandlers = {
 
+        "ready": function(parameters) {
+
+            // If done drawing, send ready response
+            if (background.isReady())
+                sendMessage("ready;");
+
+            // If not done drawing, set callback which will send response
+            else
+                background.setReadyHandler(function() {
+                    sendMessage("ready;");
+                    background.setReadyHandler(null);
+                });
+
+        },
+
         "error": function(parameters) {
             showError(unescapeGuacamoleString(parameters[0]));
         },
@@ -571,6 +586,9 @@ function GuacamoleClient(display) {
         // Start reading data
         setState(STATE_WAITING);
         handleResponse(makeRequest());
+
+        // Send "ready" message to server
+        sendMessage("ready;");
 
     };
 

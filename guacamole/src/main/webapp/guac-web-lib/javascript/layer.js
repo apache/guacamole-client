@@ -31,6 +31,7 @@ function Layer(width, height) {
 
     var displayContext = display.getContext("2d");
 
+    var readyHandler = null;
     var nextUpdateToDraw = 0;
     var currentUpdate = 0;
     var updates = new Array();
@@ -47,10 +48,14 @@ function Layer(width, height) {
 
             // Draw all pending updates.
             var updateCallback;
-            while (updateCallback = updates[++nextUpdateToDraw]) {
+            while ((updateCallback = updates[++nextUpdateToDraw])) {
                 updateCallback();
                 delete updates[nextUpdateToDraw];
             }
+
+            // If done with updates, call ready handler
+            if (display.isReady() && readyHandler != null)
+                readyHandler();
 
         }
 
@@ -59,6 +64,15 @@ function Layer(width, height) {
             updates[updateId] = update;
 
     }
+
+    display.isReady = function() {
+        return currentUpdate == nextUpdateToDraw;
+    }
+
+    display.setReadyHandler = function(handler) {
+        readyHandler = handler;
+    }
+
 
     display.drawImage = function(x, y, image) {
         var updateId = currentUpdate++;
