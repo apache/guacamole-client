@@ -11,6 +11,7 @@
 
     <build>
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -19,6 +20,21 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <overlays>
+                        <overlay>
+                            <groupId>net.sourceforge.guacamole</groupId>
+                            <artifactId>guacamole-common-js</artifactId>
+                            <type>zip</type>
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <extensions>
@@ -45,6 +61,14 @@
             <artifactId>guacamole-common</artifactId>
             <version>0.3.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.guacamole</groupId>
+            <artifactId>guacamole-common-js</artifactId>
+            <version>0.3.0-SNAPSHOT</version>
+            <type>zip</type>
+            <scope>runtime</scope>
         </dependency>
 
     </dependencies>
