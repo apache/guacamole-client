@@ -26,41 +26,26 @@
 			30
         </session-timeout>
     </session-config>
-    <!-- Guacamole Tunnel Servlets -->
+
+    <!-- Guacamole Tunnel Servlet -->
     <servlet>
-        <description>Connect servlet.</description>
-        <servlet-name>Connect</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.tunnel.Connect</servlet-class>
+        <description>Tunnel servlet.</description>
+        <servlet-name>Tunnel</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.BasicGuacamoleTunnelServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Connect</servlet-name>
-        <url-pattern>/connect</url-pattern>
+        <servlet-name>Tunnel</servlet-name>
+        <url-pattern>/tunnel</url-pattern>
     </servlet-mapping>
-    <servlet>
-        <description>Outbound servlet.</description>
-        <servlet-name>Outbound</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.tunnel.Outbound</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Outbound</servlet-name>
-        <url-pattern>/outbound</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <description>Input servlet.</description>
-        <servlet-name>Inbound</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.tunnel.Inbound</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Inbound</servlet-name>
-        <url-pattern>/inbound</url-pattern>
-    </servlet-mapping>
-    <!-- Basic Login Servlets -->
+
+    <!-- Basic Login Servlet -->
     <servlet>
         <servlet-name>BasicLogin</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.authentication.basic.BasicLogin</servlet-class>
+        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogin</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>BasicLogin</servlet-name>
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
+
 </web-app>

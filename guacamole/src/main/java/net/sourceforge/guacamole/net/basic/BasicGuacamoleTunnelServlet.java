@@ -1,12 +1,4 @@
-
-package net.sourceforge.guacamole.net.authentication.basic;
-
-import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleTCPClient;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.Configuration;
-import net.sourceforge.guacamole.net.GuacamoleProperties;
-import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
+package net.sourceforge.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -26,12 +18,26 @@ import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleTCPClient;
+import net.sourceforge.guacamole.net.Configuration;
+import net.sourceforge.guacamole.net.GuacamoleProperties;
+import net.sourceforge.guacamole.net.GuacamoleSession;
+import net.sourceforge.guacamole.net.tunnel.GuacamoleTunnelServlet;
 
-    public GuacamoleTCPClient createClient(HttpSession session) throws GuacamoleException {
+public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
+
+    @Override
+    protected void doConnect(HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+
+        // Session must already exist from login
+        HttpSession httpSession = request.getSession(false);
 
         // Retrieve authorized config data from session
-        Configuration config = (Configuration) session.getAttribute("BASIC-LOGIN-AUTH");
+        Configuration config = (Configuration) httpSession.getAttribute("BASIC-LOGIN-AUTH");
 
         // If no data, not authorized
         if (config == null)
@@ -43,9 +49,11 @@ public class BasicGuacamoleClientProvider implements GuacamoleClientProvider {
         GuacamoleTCPClient client = new GuacamoleTCPClient(hostname, port);
         client.connect(config);
 
-        // Return authorized session
-        return client;
+        // Set client for session
+        GuacamoleSession session = new GuacamoleSession(httpSession);
+        session.attachClient(client);
 
     }
 
 }
+

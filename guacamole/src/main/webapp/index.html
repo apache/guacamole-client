@@ -178,7 +178,7 @@
                 window.onresize();
 
                 // Instantiate client
-                var guac = new GuacamoleClient(display);
+                var guac = new GuacamoleClient(display, "tunnel");
 
                 var state = document.getElementById("state");
                 guac.setOnStateChangeHandler(function(clientState) {

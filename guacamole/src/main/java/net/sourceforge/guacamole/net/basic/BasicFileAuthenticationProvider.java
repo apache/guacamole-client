@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.authentication.basic;
+package net.sourceforge.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop
