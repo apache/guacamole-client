@@ -265,9 +265,6 @@ function GuacamoleClient(display) {
 
             disconnect();
 
-            // In case nothing has been rendered yet, use error style
-            display.className += " guac-error";
-
             // Show error by desaturating display
             if (background)
                 background.filter(desaturateFilter);
