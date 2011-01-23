@@ -214,10 +214,14 @@
                 guacErrorImage.src = "images/noguacamole-logo.png";
 
                 guac.setErrorHandler(function(error) {
+
                     menu.className = "error";
+                    display.className += " guac-error";
+
                     logo.src = guacErrorImage.src;
                     errorDialogText.textContent = error;
                     errorDialog.style.visibility = "visible";
+
                 });
 
                 // Reconnect button
