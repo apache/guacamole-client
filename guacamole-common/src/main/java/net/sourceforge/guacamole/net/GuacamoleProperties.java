@@ -21,10 +21,8 @@ package net.sourceforge.guacamole.net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.authentication.GuacamoleClientProvider;
 
 public class GuacamoleProperties {
 
@@ -45,38 +43,6 @@ public class GuacamoleProperties {
         }
         catch (IOException e) {
             exception = new GuacamoleException("Error reading guacamole.properties", e);
-        }
-
-    }
-
-    public static GuacamoleClientProvider getClientProvider() throws GuacamoleException {
-
-        // Get client provider instance
-        try {
-            String sessionProviderClassName = GuacamoleProperties.getProperty("client-provider");
-            Object obj = Class.forName(sessionProviderClassName).getConstructor().newInstance();
-            if (!(obj instanceof GuacamoleClientProvider))
-                throw new GuacamoleException("Specified client provider class is not a GuacamoleClientProvider");
-
-            return (GuacamoleClientProvider) obj;
-        }
-        catch (ClassNotFoundException e) {
-            throw new GuacamoleException("Session provider class not found", e);
-        }
-        catch (NoSuchMethodException e) {
-            throw new GuacamoleException("Default constructor for client provider not present", e);
-        }
-        catch (SecurityException e) {
-            throw new GuacamoleException("Creation of client provider disallowed; check your security settings", e);
-        }
-        catch (InstantiationException e) {
-            throw new GuacamoleException("Unable to instantiate client provider", e);
-        }
-        catch (IllegalAccessException e) {
-            throw new GuacamoleException("Unable to access default constructor of client provider", e);
-        }
-        catch (InvocationTargetException e) {
-            throw new GuacamoleException("Internal error in constructor of client provider", e.getTargetException());
         }
 
     }
