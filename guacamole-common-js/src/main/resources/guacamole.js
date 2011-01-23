@@ -17,7 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function GuacamoleClient(display) {
+function GuacamoleClient(display, tunnelURL) {
+
+    var TUNNEL_CONNECT = tunnelURL + "?connect";
+    var TUNNEL_READ    = tunnelURL + "?read";
+    var TUNNEL_WRITE   = tunnelURL + "?write";
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTING    = 1;
@@ -198,7 +202,7 @@ function GuacamoleClient(display) {
             sendingMessages = 1;
 
             var message_xmlhttprequest = new XMLHttpRequest();
-            message_xmlhttprequest.open("POST", "inbound");
+            message_xmlhttprequest.open("POST", TUNNEL_WRITE);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             message_xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
 
@@ -377,7 +381,7 @@ function GuacamoleClient(display) {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", "outbound");
+        xmlhttprequest.open("POST", TUNNEL_READ);
         xmlhttprequest.send(null); 
 
         return xmlhttprequest;
@@ -560,7 +564,7 @@ function GuacamoleClient(display) {
 
         // Start tunnel and connect synchronously
         var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("POST", "connect", false);
+        connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         connect_xmlhttprequest.setRequestHeader("Content-length", 0);
         connect_xmlhttprequest.send(null);
@@ -583,7 +587,7 @@ function GuacamoleClient(display) {
 
             // Send disconnect message (synchronously... as necessary until handoff is implemented)
             var disconnect_xmlhttprequest = new XMLHttpRequest();
-            disconnect_xmlhttprequest.open("POST", "inbound", false);
+            disconnect_xmlhttprequest.open("POST", TUNNEL_WRITE, false);
             disconnect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             disconnect_xmlhttprequest.setRequestHeader("Content-length", message.length);
             disconnect_xmlhttprequest.send(message);
