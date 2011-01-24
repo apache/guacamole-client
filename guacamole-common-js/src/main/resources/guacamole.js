@@ -255,6 +255,10 @@ function GuacamoleClient(display, tunnelURL) {
 
     }
 
+    var nameHandler = null;
+    this.setNameHandler = function(handler) {
+        nameHandler = handler;
+    }
 
     var errorHandler = null;
     this.setErrorHandler = function(handler) {
@@ -446,7 +450,7 @@ function GuacamoleClient(display, tunnelURL) {
         },
 
         "name": function(parameters) {
-            document.title = unescapeGuacamoleString(parameters[0]);
+            nameHandler(unescapeGuacamoleString(parameters[0]));
         },
 
         "clipboard": function(parameters) {
