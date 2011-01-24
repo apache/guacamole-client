@@ -214,6 +214,10 @@
                 var guacErrorImage = new Image();
                 guacErrorImage.src = "images/noguacamole-logo.png";
 
+                guac.setNameHandler(function(name) {
+                    document.title = name;
+                });
+
                 guac.setErrorHandler(function(error) {
                     menu.className = "error";
                     logo.src = guacErrorImage.src;
