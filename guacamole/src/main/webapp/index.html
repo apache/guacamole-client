@@ -22,9 +22,8 @@
 
     <head>
         <link rel="icon" type="image/png" href="images/guacamole-icon-64.png"/>
-        <link rel="stylesheet" type="text/css" href="guacamole.css"/>
-        <link rel="stylesheet" type="text/css" href="guac-web-lib/css/guacamole.css"/>
-        <link rel="stylesheet" type="text/css" href="keyboard.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/guacamole.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/keyboard.css"/>
         <title>Guacamole</title>
     </head>
 
@@ -112,12 +111,12 @@
 
 
         <!-- Scripts -->
-        <script type="text/javascript" src="guac-web-lib/javascript/keymap.js"></script>
-        <script type="text/javascript" src="guac-web-lib/javascript/keyboard.js"></script>
-        <script type="text/javascript" src="guac-web-lib/javascript/mouse.js"></script>
-        <script type="text/javascript" src="guac-web-lib/javascript/layer.js"></script>
-        <script type="text/javascript" src="guac-web-lib/javascript/guacamole.js"></script>
-        <script type="text/javascript" src="guac-web-lib/javascript/oskeyboard.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/keymap.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/mouse.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/layer.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/guacamole.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/oskeyboard.js"></script>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
@@ -179,7 +178,7 @@
                 window.onresize();
 
                 // Instantiate client
-                var guac = new GuacamoleClient(display);
+                var guac = new GuacamoleClient(display, "tunnel");
 
                 var state = document.getElementById("state");
                 guac.setOnStateChangeHandler(function(clientState) {
@@ -219,10 +218,14 @@
                 });
 
                 guac.setErrorHandler(function(error) {
+
                     menu.className = "error";
+                    display.className += " guac-error";
+
                     logo.src = guacErrorImage.src;
                     errorDialogText.textContent = error;
                     errorDialog.style.visibility = "visible";
+
                 });
 
                 // Reconnect button

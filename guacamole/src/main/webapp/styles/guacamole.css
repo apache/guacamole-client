@@ -234,3 +234,21 @@ div#clipboardDiv textarea {
     width: 100%;
 }
 
+.guac-display.guac-loading {
+    border: 1px dotted gray;
+    background-image: url('../images/spinner92.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.guac-display.guac-error {
+    border: 1px dotted red;
+    background-image: url('../images/noimage92.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.guac-hide-cursor {
+    cursor: url('../images/mouse/dot.gif'),url('../images/mouse/blank.cur'),default;
+}
+
