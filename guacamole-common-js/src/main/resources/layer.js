@@ -21,15 +21,26 @@ function Layer(width, height) {
 
     // Off-screen buffer
     var display = document.createElement("canvas");
-
-    display.style.position = "absolute";
-    display.style.left = "0px";
-    display.style.right = "0px";
-
-    display.width = width;
-    display.height = height;
-
     var displayContext = display.getContext("2d");
+
+    function resize(newWidth, newHeight) {
+        display.style.position = "absolute";
+        display.style.left = "0px";
+        display.style.right = "0px";
+
+        display.width = newWidth;
+        display.height = newHeight;
+
+        width = newWidth;
+        height = newHeight;
+    }
+
+    display.resize = function(newWidth, newHeight) {
+        if (newWidth != width || newHeight != height)
+            resize(newWidth, newHeight);
+    }
+
+    resize(width, height);
 
     var readyHandler = null;
     var nextUpdateToDraw = 0;

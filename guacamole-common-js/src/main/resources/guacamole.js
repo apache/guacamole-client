@@ -270,8 +270,9 @@ function GuacamoleClient(display, tunnelURL) {
             disconnect();
 
             // Show error by desaturating display
-            if (background)
-                background.filter(desaturateFilter);
+            for (var i=0; i<layers.length; i++) {
+                layers[i].filter(desaturateFilter);
+            }
 
             if (errorHandler)
                 errorHandler(error);
@@ -440,25 +441,59 @@ function GuacamoleClient(display, tunnelURL) {
     }
 
     // Layers
-    var displayWidth = null;
-    var displayHeight = null;
-    var background = null;
+    var displayWidth = 0;
+    var displayHeight = 0;
+
+    var layers = new Array();
+    var buffers = new Array();
     var cursor = null;
 
     function getLayer(index) {
 
-        // FIXME: Stub - does not actually handle layers or the layer index
+        // If negative index, use buffer
+        if (index < 0) {
 
-        if (background == null) {
-            background = new Layer(displayWidth, displayHeight);
+            index = -1 - index;
+            var buffer = buffers[index];
 
-            if (cursor != null)
-                display.insertBefore(background, cursor);
-            else
-                display.appendChild(background);
+            // Create buffer if necessary
+            if (buffer == null) {
+                buffer = new Layer(0, 0);
+                buffers[index] = buffer;
+            }
+
+            return buffer;
         }
 
-        return background;
+        // If non-negative, use visible layer
+        else {
+
+            var layer = layers[index];
+            if (layer == null) {
+
+                // Add new layer
+                layer = new Layer(displayWidth, displayHeight);
+                layers[index] = layer;
+
+                // Remove all children
+                display.innerHTML = "";
+
+                // Add existing layers in order
+                for (var i=0; i<layers.length; i++)
+                    display.appendChild(layers[i]);
+
+                // Add cursor layer last
+                if (cursor != null)
+                    display.appendChild(cursor);
+
+            }
+            else {
+                // Reset size
+                layer.resize(displayWidth, displayHeight);
+            }
+
+            return layer;
+        }
 
     }
 
@@ -487,7 +522,9 @@ function GuacamoleClient(display, tunnelURL) {
                 display.style.height = displayHeight + "px";
             }
 
-            // Set cursor layer width/height here
+            // Set cursor layer width/height
+            if (cursor != null)
+                cursor.resize(displayWidth, displayHeight);
 
         },
 
