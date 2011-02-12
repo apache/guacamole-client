@@ -50,10 +50,6 @@ function GuacamoleClient(display, tunnelURL) {
             || currentState == STATE_WAITING;
     }
 
-    // Layers
-    var background = null;
-    var cursor = null;
-
     var cursorImage = null;
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
@@ -443,6 +439,29 @@ function GuacamoleClient(display, tunnelURL) {
 
     }
 
+    // Layers
+    var displayWidth = null;
+    var displayHeight = null;
+    var background = null;
+    var cursor = null;
+
+    function getLayer(index) {
+
+        // FIXME: Stub - does not actually handle layers or the layer index
+
+        if (background == null) {
+            background = new Layer(displayWidth, displayHeight);
+
+            if (cursor != null)
+                display.insertBefore(background, cursor);
+            else
+                display.appendChild(background);
+        }
+
+        return background;
+
+    }
+
     var instructionHandlers = {
 
         "error": function(parameters) {
@@ -459,48 +478,27 @@ function GuacamoleClient(display, tunnelURL) {
 
         "size": function(parameters) {
 
-            var width = parseInt(parameters[0]);
-            var height = parseInt(parameters[1]);
+            displayWidth = parseInt(parameters[0]);
+            displayHeight = parseInt(parameters[1]);
 
             // Update (set) display size
-            if (display && (background == null || cursor == null)) {
-                display.style.width = width + "px";
-                display.style.height = height + "px";
-
-                background = new Layer(width, height);
-                cursor = new Layer(width, height);
-
-                display.appendChild(background);
-                display.appendChild(cursor);
+            if (display) {
+                display.style.width = displayWidth + "px";
+                display.style.height = displayHeight + "px";
             }
 
-        },
-
-        "rect": function(parameters) {
-
-            var x = parseInt(parameters[0]);
-            var y = parseInt(parameters[1]);
-            var w = parseInt(parameters[2]);
-            var h = parseInt(parameters[3]);
-            var color = parameters[4];
-
-            background.drawRect(
-                x,
-                y,
-                w,
-                h,
-                color
-            );
+            // Set cursor layer width/height here
 
         },
 
         "png": function(parameters) {
 
-            var x = parseInt(parameters[0]);
-            var y = parseInt(parameters[1]);
-            var data = parameters[2];
+            var layer = parseInt(parameters[0]);
+            var x = parseInt(parameters[1]);
+            var y = parseInt(parameters[2]);
+            var data = parameters[3];
 
-            background.draw(
+            getLayer(layer).draw(
                 x,
                 y,
                 "data:image/png;base64," + data
@@ -514,14 +512,17 @@ function GuacamoleClient(display, tunnelURL) {
 
         "copy": function(parameters) {
 
-            var srcX = parseInt(parameters[0]);
-            var srcY = parseInt(parameters[1]);
-            var srcWidth = parseInt(parameters[2]);
-            var srcHeight = parseInt(parameters[3]);
-            var dstX = parseInt(parameters[4]);
-            var dstY = parseInt(parameters[5]);
+            var srcL = parseInt(parameters[0]);
+            var srcX = parseInt(parameters[1]);
+            var srcY = parseInt(parameters[2]);
+            var srcWidth = parseInt(parameters[3]);
+            var srcHeight = parseInt(parameters[4]);
+            var dstL = parseInt(parameters[5]);
+            var dstX = parseInt(parameters[6]);
+            var dstY = parseInt(parameters[7]);
 
-            background.copyRect(
+            getLayer(dstL).copyRect(
+                getLayer(srcL),
                 srcX,
                 srcY,
                 srcWidth, 
@@ -537,6 +538,11 @@ function GuacamoleClient(display, tunnelURL) {
             var x = parseInt(parameters[0]);
             var y = parseInt(parameters[1]);
             var data = parameters[2];
+
+            if (cursor == null) {
+                cursor = new Layer(displayWidth, displayHeight);
+                display.appendChild(cursor);
+            }
 
             // Start cursor image load
             var image = new Image();

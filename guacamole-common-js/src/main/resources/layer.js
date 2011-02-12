@@ -97,21 +97,11 @@ function Layer(width, height) {
     };
 
 
-    display.copyRect = function(srcx, srcy, w, h, x, y) {
+    display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
         var updateId = currentUpdate++;
     
         setUpdate(updateId, function() {
-            displayContext.drawImage(display, srcx, srcy, w, h, x, y, w, h);
-        });
-
-    };
-
-    display.drawRect = function(x, y, w, h, color) {
-        var updateId = currentUpdate++;
-
-        setUpdate(updateId, function() {
-            displayContext.fillStyle = color;
-            displayContext.fillRect(x, y, w, h);
+            displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
         });
 
     };
