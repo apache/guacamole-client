@@ -480,8 +480,10 @@ function GuacamoleClient(display, tunnelURL) {
                 display.innerHTML = "";
 
                 // Add existing layers in order
-                for (var i=0; i<layers.length; i++)
-                    display.appendChild(layers[i]);
+                for (var i=0; i<layers.length; i++) {
+                    if (layers[i])
+                        display.appendChild(layers[i]);
+                }
 
                 // Add cursor layer last
                 if (cursor != null)
