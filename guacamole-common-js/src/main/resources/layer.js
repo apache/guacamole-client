@@ -140,13 +140,23 @@ function Layer(width, height) {
         image.src = url;
     };
 
+    // Run arbitrary function as soon as currently pending operations complete.
+    // Future operations will not block this function from being called (unlike
+    // the ready handler, which requires no pending updates)
+    display.sync = function(handler) {
+        var updateId = currentUpdate++;
+        setUpdate(updateId, handler);
+    }
 
     display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
         var updateId = currentUpdate++;
-    
-        setUpdate(updateId, function() {
-            if (autosize != 0) fitRect(x, y, w, h);
-            displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
+   
+        // Synchronize copy operation with source layer
+        srcLayer.sync(function() { 
+            setUpdate(updateId, function() {
+                if (autosize != 0) fitRect(x, y, w, h);
+                displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
+            });
         });
 
     };
