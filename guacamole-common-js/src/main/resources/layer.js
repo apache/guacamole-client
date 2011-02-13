@@ -38,6 +38,32 @@ function Layer(width, height) {
     display.resize = function(newWidth, newHeight) {
         if (newWidth != width || newHeight != height)
             resize(newWidth, newHeight);
+    };
+
+    function fitRect(x, y, w, h) {
+        
+        // Calculate bounds
+        var opBoundX = w + x;
+        var opBoundY = h + y;
+        
+        // Determine max width
+        var resizeWidth;
+        if (opBoundX > width)
+            resizeWidth = opBoundX;
+        else
+            resizeWidth = width;
+
+        // Determine max height
+        var resizeHeight;
+        if (opBoundY > height)
+            resizeHeight = opBoundY;
+        else
+            resizeHeight = height;
+
+        // Resize if necessary
+        if (resizeWidth != width || resizeHeight != height)
+            resize(resizeWidth, resizeHeight);
+
     }
 
     resize(width, height);
@@ -46,6 +72,11 @@ function Layer(width, height) {
     var nextUpdateToDraw = 0;
     var currentUpdate = 0;
     var updates = new Array();
+    var autosize = 0;
+
+    display.setAutosize = function(flag) {
+        autosize = flag;
+    };
 
     // Given an update ID, either call the provided update callback, or
     // schedule the update for later.
@@ -78,21 +109,22 @@ function Layer(width, height) {
 
     display.isReady = function() {
         return currentUpdate == nextUpdateToDraw;
-    }
+    };
 
     display.setReadyHandler = function(handler) {
         readyHandler = handler;
-    }
+    };
 
 
     display.drawImage = function(x, y, image) {
         var updateId = currentUpdate++;
 
         setUpdate(updateId, function() {
+            if (autosize != 0) fitRect(x, y, image.width, image.height);
             displayContext.drawImage(image, x, y);
         });
 
-    }
+    };
 
 
     display.draw = function(x, y, url) {
@@ -101,6 +133,7 @@ function Layer(width, height) {
         var image = new Image();
         image.onload = function() {
             setUpdate(updateId, function() {
+                if (autosize != 0) fitRect(x, y, image.width, image.height);
                 displayContext.drawImage(image, x, y);
             });
         };
@@ -112,6 +145,7 @@ function Layer(width, height) {
         var updateId = currentUpdate++;
     
         setUpdate(updateId, function() {
+            if (autosize != 0) fitRect(x, y, w, h);
             displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
         });
 
@@ -121,6 +155,7 @@ function Layer(width, height) {
         var updateId = currentUpdate++;
 
         setUpdate(updateId, function() {
+            if (autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
         });
 
