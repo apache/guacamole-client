@@ -482,7 +482,7 @@ function GuacamoleClient(display, tunnelURL) {
 
                         // If already present, remove
                         if (layers[i].parentNode === display)
-                            display.removeNode(layers[i]);
+                            display.removeChild(layers[i]);
 
                         // Add to end
                         display.appendChild(layers[i]);
@@ -492,7 +492,7 @@ function GuacamoleClient(display, tunnelURL) {
                 // Add cursor layer last
                 if (cursor != null) {
                     if (cursor.parentNode === display)
-                        display.removeNode(cursor);
+                        display.removeChild(cursor);
                     display.appendChild(cursor);
                 }
 
