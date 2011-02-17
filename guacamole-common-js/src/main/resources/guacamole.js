@@ -476,18 +476,25 @@ function GuacamoleClient(display, tunnelURL) {
                 layer = new Layer(displayWidth, displayHeight);
                 layers[index] = layer;
 
-                // Remove all children
-                display.innerHTML = "";
-
-                // Add existing layers in order
+                // (Re)-add existing layers in order
                 for (var i=0; i<layers.length; i++) {
-                    if (layers[i])
+                    if (layers[i]) {
+
+                        // If already present, remove
+                        if (layers[i].parentNode === display)
+                            display.removeNode(layers[i]);
+
+                        // Add to end
                         display.appendChild(layers[i]);
+                    }
                 }
 
                 // Add cursor layer last
-                if (cursor != null)
+                if (cursor != null) {
+                    if (cursor.parentNode === display)
+                        display.removeNode(cursor);
                     display.appendChild(cursor);
+                }
 
             }
             else {
