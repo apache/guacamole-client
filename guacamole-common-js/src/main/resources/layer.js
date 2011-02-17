@@ -150,14 +150,22 @@ function Layer(width, height) {
 
     display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
         var updateId = currentUpdate++;
-   
-        // Synchronize copy operation with source layer
-        srcLayer.sync(function() { 
+  
+        function scheduleCopyRect() { 
             setUpdate(updateId, function() {
                 if (autosize != 0) fitRect(x, y, w, h);
                 displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
             });
-        });
+        }
+
+        // If we ARE the source layer, no need to sync.
+        // Syncing would result in deadlock.
+        if (display === srcLayer)
+            scheduleCopyRect();
+
+        // Otherwise synchronize copy operation with source layer
+        else
+            srcLayer.sync(scheduleCopyRect);
 
     };
 
