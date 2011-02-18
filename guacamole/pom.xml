@@ -5,7 +5,7 @@
     <groupId>net.sourceforge.guacamole</groupId>
     <artifactId>guacamole-default-webapp</artifactId>
     <packaging>war</packaging>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <name>guacamole-default-webapp</name>
     <url>http://guacamole.sourceforge.net/</url>
 
@@ -63,14 +63,14 @@
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.0</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.3.0-SNAPSHOT</version>
+            <version>0.3.0</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
@@ -81,11 +81,6 @@
         <repository>
             <id>guac-dev</id>
             <url>http://guac-dev.org/repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
         </repository>
     </repositories>
 
