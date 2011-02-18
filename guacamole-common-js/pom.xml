@@ -5,7 +5,7 @@
     <groupId>net.sourceforge.guacamole</groupId>
     <artifactId>guacamole-common-js</artifactId>
     <packaging>pom</packaging>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.3.0</version>
     <name>guacamole-common-js</name>
     <url>http://guacamole.sourceforge.net/</url>
 
@@ -49,11 +49,6 @@
         <repository>
             <id>guac-dev</id>
             <url>http://guac-dev.org/repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </snapshots>
         </repository>
     </repositories>
 
