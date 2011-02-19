@@ -32,6 +32,7 @@ function GuacamoleClient(display, tunnelURL) {
 
     var currentState = STATE_IDLE;
     var stateChangeHandler = null;
+    var pollResponse = 1; // Default to polling - will be turned off automatically if not needed
 
     function setState(state) {
         if (state != currentState) {
@@ -298,6 +299,7 @@ function GuacamoleClient(display, tunnelURL) {
         var interval = null;
         var nextRequest = null;
 
+        var dataUpdateEvents = 0;
         var instructionStart = 0;
         var startIndex = 0;
 
@@ -312,10 +314,12 @@ function GuacamoleClient(display, tunnelURL) {
                 xmlhttprequest.readyState == 4) {
 
                 // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
-                if (xmlhttprequest.readyState == 3 && interval == null)
-                    interval = setInterval(parseResponse, 30);
-                else if (xmlhttprequest.readyState == 4 && interval != null)
-                    clearInterval(interval);
+                if (pollResponse == 1) {
+                    if (xmlhttprequest.readyState == 3 && interval == null)
+                        interval = setInterval(parseResponse, 30);
+                    else if (xmlhttprequest.readyState == 4 && interval != null)
+                        clearInterval(interval);
+                }
 
                 // Halt on error during request
                 if (xmlhttprequest.status == 0) {
@@ -379,7 +383,29 @@ function GuacamoleClient(display, tunnelURL) {
 
         }
 
-        xmlhttprequest.onreadystatechange = parseResponse;
+        // If response polling enabled, attempt to detect if still
+        // necessary (via wrapping parseResponse())
+        if (pollResponse == 1) {
+            xmlhttprequest.onreadystatechange = function() {
+
+                // If we receive two or more readyState==3 events,
+                // there is no need to poll.
+                if (xmlhttprequest.readyState == 3) {
+                    dataUpdateEvents++;
+                    if (dataUpdateEvents >= 2) {
+                        pollResponse = 0;
+                        xmlhttprequest.onreadystatechange = parseResponse;
+                    }
+                }
+
+                parseResponse();
+            }
+        }
+
+        // Otherwise, just parse
+        else
+            xmlhttprequest.onreadystatechange = parseResponse;
+
         parseResponse();
 
     }
