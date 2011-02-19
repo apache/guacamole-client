@@ -295,6 +295,7 @@ function GuacamoleClient(display, tunnelURL) {
 
     function handleResponse(xmlhttprequest) {
 
+        var interval = null;
         var nextRequest = null;
 
         var instructionStart = 0;
@@ -309,6 +310,12 @@ function GuacamoleClient(display, tunnelURL) {
             // Parse stream when data is received and when complete.
             if (xmlhttprequest.readyState == 3 ||
                 xmlhttprequest.readyState == 4) {
+
+                // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
+                if (xmlhttprequest.readyState == 3 && interval == null)
+                    interval = setInterval(parseResponse, 30);
+                else if (xmlhttprequest.readyState == 4 && interval != null)
+                    clearInterval(interval);
 
                 // Halt on error during request
                 if (xmlhttprequest.status == 0) {
