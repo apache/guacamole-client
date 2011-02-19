@@ -84,7 +84,11 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
         try {
 
-            response.setContentType("text/plain");
+            // Note that although we are sending text, Webkit browsers will
+            // buffer 1024 bytes before starting a normal stream if we use
+            // anything but application/octet-stream.
+            response.setContentType("application/octet-stream");
+
             Writer out = response.getWriter();
 
             try {
