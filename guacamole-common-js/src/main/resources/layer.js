@@ -26,7 +26,7 @@ function Layer(width, height) {
     function resize(newWidth, newHeight) {
         display.style.position = "absolute";
         display.style.left = "0px";
-        display.style.right = "0px";
+        display.style.top = "0px";
 
         display.width = newWidth;
         display.height = newHeight;

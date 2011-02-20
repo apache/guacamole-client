@@ -34,6 +34,9 @@ function GuacamoleClient(display, tunnelURL) {
     var stateChangeHandler = null;
     var pollResponse = 1; // Default to polling - will be turned off automatically if not needed
 
+    // Display must be relatively positioned for mouse to be handled properly
+    display.style.position = "relative";
+
     function setState(state) {
         if (state != currentState) {
             currentState = state;
@@ -560,10 +563,8 @@ function GuacamoleClient(display, tunnelURL) {
             displayHeight = parseInt(parameters[1]);
 
             // Update (set) display size
-            if (display) {
-                display.style.width = displayWidth + "px";
-                display.style.height = displayHeight + "px";
-            }
+            display.style.width = displayWidth + "px";
+            display.style.height = displayHeight + "px";
 
             // Set cursor layer width/height
             if (cursor != null)
