@@ -69,46 +69,62 @@ function Layer(width, height) {
     resize(width, height);
 
     var readyHandler = null;
-    var nextUpdateToDraw = 0;
-    var currentUpdate = 0;
     var updates = new Array();
     var autosize = 0;
+
+    function Update(updateHandler) {
+
+        this.setHandler = function(handler) {
+            updateHandler = handler;
+        };
+
+        this.hasHandler = function() {
+            return updateHandler != null;
+        };
+
+        this.handle = function() {
+            updateHandler();
+        }
+
+    }
 
     display.setAutosize = function(flag) {
         autosize = flag;
     };
 
-    // Given an update ID, either call the provided update callback, or
-    // schedule the update for later.
-    function setUpdate(updateId, update) {
-
-        // If this update is the next to draw...
-        if (updateId == nextUpdateToDraw) {
-
-            // Call provided update handler.
-            update();
-
-            // Draw all pending updates.
-            var updateCallback;
-            while ((updateCallback = updates[++nextUpdateToDraw])) {
-                updateCallback();
-                delete updates[nextUpdateToDraw];
-            }
-
-            // If done with updates, call ready handler
-            if (display.isReady() && readyHandler != null)
-                readyHandler();
-
+    function reserveJob(handler) {
+        
+        // If no pending updates, just call (if available) and exit
+        if (display.isReady() && handler != null) {
+            handler();
+            return null;
         }
 
-        // If not next to draw, set callback and wait.
-        else
-            updates[updateId] = update;
+        // If updates are pending/executing, schedule a pending update
+        // and return a reference to it.
+        var update = new Update(handler);
+        updates.push(update);
+        return update;
+        
+    }
+
+    function handlePendingUpdates() {
+
+        // Draw all pending updates.
+        var update;
+        while ((update = updates[0]).hasHandler()) {
+            update.handle();
+            updates.shift();
+        }
+
+        // If done with updates, call ready handler
+        if (display.isReady() && readyHandler != null)
+            readyHandler();
 
     }
 
     display.isReady = function() {
-        return currentUpdate == nextUpdateToDraw;
+        return updates.length == 0;
     };
 
     display.setReadyHandler = function(handler) {
@@ -117,42 +133,44 @@ function Layer(width, height) {
 
 
     display.drawImage = function(x, y, image) {
-        var updateId = currentUpdate++;
-
-        setUpdate(updateId, function() {
+        reserveJob(function() {
             if (autosize != 0) fitRect(x, y, image.width, image.height);
             displayContext.drawImage(image, x, y);
         });
-
     };
 
 
     display.draw = function(x, y, url) {
-        var updateId = currentUpdate++;
+        var update = reserveJob(null);
 
         var image = new Image();
         image.onload = function() {
-            setUpdate(updateId, function() {
+
+            update.setHandler(function() {
                 if (autosize != 0) fitRect(x, y, image.width, image.height);
                 displayContext.drawImage(image, x, y);
             });
+
+            // As this update originally had no handler and may have blocked
+            // other updates, handle any blocked updates.
+            handlePendingUpdates();
+
         };
         image.src = url;
+
     };
 
     // Run arbitrary function as soon as currently pending operations complete.
     // Future operations will not block this function from being called (unlike
     // the ready handler, which requires no pending updates)
     display.sync = function(handler) {
-        var updateId = currentUpdate++;
-        setUpdate(updateId, handler);
+        reserveJob(handler);
     }
 
     display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
-        var updateId = currentUpdate++;
   
         function scheduleCopyRect() { 
-            setUpdate(updateId, function() {
+            reserveJob(function() {
                 if (autosize != 0) fitRect(x, y, w, h);
                 displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
             });
@@ -170,24 +188,18 @@ function Layer(width, height) {
     };
 
     display.clearRect = function(x, y, w, h) {
-        var updateId = currentUpdate++;
-
-        setUpdate(updateId, function() {
+        reserveJob(function() {
             if (autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
         });
-
     };
 
     display.filter = function(filter) {
-        var updateId = currentUpdate++;
-
-        setUpdate(updateId, function() {
+        reserveJob(function() {
             var imageData = displayContext.getImageData(0, 0, width, height);
             filter(imageData.data, width, height);
             displayContext.putImageData(imageData, 0, 0);
         });
-
     };
 
     return display;
