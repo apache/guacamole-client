@@ -112,7 +112,7 @@ function Layer(width, height) {
 
         // Draw all pending updates.
         var update;
-        while ((update = updates[0]).hasHandler()) {
+        while ((update = updates[0]) != null && update.hasHandler()) {
             update.handle();
             updates.shift();
         }
