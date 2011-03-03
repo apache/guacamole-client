@@ -150,43 +150,6 @@ function GuacamoleMouse(element) {
         handleScroll(e);
     }
 
-    function MouseEvent(x, y, left, middle, right, up, down) {
-
-        this.getX = function() {
-            return x;
-        };
-
-        this.getY = function() {
-            return y;
-        };
-
-        this.getLeft = function() {
-            return left;
-        };
-
-        this.getMiddle = function() {
-            return middle;
-        };
-
-        this.getRight = function() {
-            return right;
-        };
-
-        this.getUp = function() {
-            return up;
-        };
-
-        this.getDown = function() {
-            return down;
-        };
-
-        this.toString = function() {
-            return (mouseIndex++) + "," + x + "," + y + "," + left + "," + middle + "," + right + "," + up + "," + down;
-        };
-
-    }
-
-
 	var buttonPressedHandler = null;
 	var buttonReleasedHandler = null;
 	var movementHandler = null;
@@ -201,5 +164,37 @@ function GuacamoleMouse(element) {
     this.getLeftButton = function() {return mouseLeftButton;};
     this.getMiddleButton = function() {return mouseMiddleButton;};
     this.getRightButton = function() {return mouseRightButton;};
+
+}
+
+function MouseEvent(x, y, left, middle, right, up, down) {
+
+    this.getX = function() {
+        return x;
+    };
+
+    this.getY = function() {
+        return y;
+    };
+
+    this.getLeft = function() {
+        return left;
+    };
+
+    this.getMiddle = function() {
+        return middle;
+    };
+
+    this.getRight = function() {
+        return right;
+    };
+
+    this.getUp = function() {
+        return up;
+    };
+
+    this.getDown = function() {
+        return down;
+    };
 
 }

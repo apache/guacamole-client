@@ -14,14 +14,9 @@
  *  GNU Affero General Public License for more details.
  *
  *  You should have received a copy of the GNU Affero General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function GuacamoleClient(display, tunnelURL) {
-
-    var TUNNEL_CONNECT = tunnelURL + "?connect";
-    var TUNNEL_READ    = tunnelURL + "?read";
-    var TUNNEL_WRITE   = tunnelURL + "?write";
+function GuacamoleClient(display, tunnel) {
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTING    = 1;
@@ -32,7 +27,8 @@ function GuacamoleClient(display, tunnelURL) {
 
     var currentState = STATE_IDLE;
     var stateChangeHandler = null;
-    var pollResponse = 1; // Default to polling - will be turned off automatically if not needed
+
+    tunnel.setInstructionHandler(doInstruction);
 
     // Display must be relatively positioned for mouse to be handled properly
     display.style.position = "relative";
@@ -66,7 +62,7 @@ function GuacamoleClient(display, tunnelURL) {
 
     var cursorHidden = 0;
 
-    function redrawCursor() {
+    function redrawCursor(x, y) {
 
         // Hide hardware cursor
         if (cursorHidden == 0) {
@@ -78,8 +74,8 @@ function GuacamoleClient(display, tunnelURL) {
         cursor.clearRect(cursorRectX, cursorRectY, cursorRectW, cursorRectH);
 
         // Update rect
-        cursorRectX = mouse.getX() - cursorHotspotX;
-        cursorRectY = mouse.getY() - cursorHotspotY;
+        cursorRectX = x - cursorHotspotX;
+        cursorRectY = y - cursorHotspotY;
         cursorRectW = cursorImage.width;
         cursorRectH = cursorImage.height;
 
@@ -87,89 +83,27 @@ function GuacamoleClient(display, tunnelURL) {
         cursor.drawImage(cursorRectX, cursorRectY, cursorImage);
     }
 
-
-
-
-	/*****************************************/
-	/*** Keyboard                          ***/
-	/*****************************************/
-
-    var keyboard = new GuacamoleKeyboard(document);
-
-    this.disableKeyboard = function() {
-        keyboard.setKeyPressedHandler(null);
-        keyboard.setKeyReleasedHandler(null);
-    };
-
-    this.enableKeyboard = function() {
-        keyboard.setKeyPressedHandler(
-            function (keysym) {
-                sendKeyEvent(1, keysym);
-            }
-        );
-
-        keyboard.setKeyReleasedHandler(
-            function (keysym) {
-                sendKeyEvent(0, keysym);
-            }
-        );
-    };
-
-    // Enable keyboard by default
-    this.enableKeyboard();
-
-    function sendKeyEvent(pressed, keysym) {
+    this.sendKeyEvent = function(pressed, keysym) {
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        sendMessage("key:" +  keysym + "," + pressed + ";");
+        tunnel.sendMessage("key:" +  keysym + "," + pressed + ";");
     }
 
-    this.pressKey = function(keysym) {
-        sendKeyEvent(1, keysym);
-    };
-
-    this.releaseKey = function(keysym) {
-        sendKeyEvent(0, keysym);
-    };
-
-
-	/*****************************************/
-	/*** Mouse                             ***/
-	/*****************************************/
-
-    var mouse = new GuacamoleMouse(display);
-    mouse.setButtonPressedHandler(
-        function(mouseState) {
-            sendMouseState(mouseState);
-        }
-    );
-
-    mouse.setButtonReleasedHandler(
-        function(mouseState) {
-            sendMouseState(mouseState);
-        }
-    );
-
-    mouse.setMovementHandler(
-        function(mouseState) {
-
-            // Draw client-side cursor
-            if (cursorImage != null) {
-                redrawCursor();
-            }
-
-            sendMouseState(mouseState);
-        }
-    );
-
-
-    function sendMouseState(mouseState) {
+    this.sendMouseState = function(mouseState) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
+
+        // Draw client-side cursor
+        if (cursorImage != null) {
+            redrawCursor(
+                mouseState.getX(),
+                mouseState.getY()
+            );
+        }
 
         // Build mask
         var buttonMask = 0;
@@ -180,51 +114,8 @@ function GuacamoleClient(display, tunnelURL) {
         if (mouseState.getDown())   buttonMask |= 16;
 
         // Send message
-        sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
+        tunnel.sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
     }
-
-    var sendingMessages = 0;
-    var outputMessageBuffer = "";
-
-    function sendMessage(message) {
-
-        // Add event to queue, restart send loop if finished.
-        outputMessageBuffer += message;
-        if (sendingMessages == 0)
-            sendPendingMessages();
-
-    }
-
-    function sendPendingMessages() {
-
-        if (outputMessageBuffer.length > 0) {
-
-            sendingMessages = 1;
-
-            var message_xmlhttprequest = new XMLHttpRequest();
-            message_xmlhttprequest.open("POST", TUNNEL_WRITE);
-            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            message_xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
-
-            // Once response received, send next queued event.
-            message_xmlhttprequest.onreadystatechange = function() {
-                if (message_xmlhttprequest.readyState == 4)
-                    sendPendingMessages();
-            }
-
-            message_xmlhttprequest.send(outputMessageBuffer);
-            outputMessageBuffer = ""; // Clear buffer
-
-        }
-        else
-            sendingMessages = 0;
-
-    }
-
-
-	/*****************************************/
-	/*** Clipboard                         ***/
-	/*****************************************/
 
     this.setClipboard = function(data) {
 
@@ -232,28 +123,10 @@ function GuacamoleClient(display, tunnelURL) {
         if (!isConnected())
             return;
 
-        sendMessage("clipboard:" + escapeGuacamoleString(data) + ";");
+        tunnel.sendMessage("clipboard:" + tunnel.escapeGuacamoleString(data) + ";");
     }
 
-
-    function desaturateFilter(data, width, height) {
-
-        for (var i=0; i<data.length; i+=4) {
-
-            // Get RGB values
-            var r = data[i];
-            var g = data[i+1];
-            var b = data[i+2];
-
-            // Desaturate
-            var v = Math.max(r, g, b) / 2;
-            data[i]   = v;
-            data[i+1] = v;
-            data[i+2] = v;
-
-        }
-
-    }
+    // Handlers
 
     var nameHandler = null;
     this.setNameHandler = function(handler) {
@@ -265,216 +138,10 @@ function GuacamoleClient(display, tunnelURL) {
         errorHandler = handler;
     };
 
-    var errorEncountered = 0;
-    function showError(error) {
-        // Only display first error (avoid infinite error loops)
-        if (errorEncountered == 0) {
-            errorEncountered = 1;
-
-            disconnect();
-
-            // Show error by desaturating display
-            for (var i=0; i<layers.length; i++) {
-                layers[i].filter(desaturateFilter);
-            }
-
-            if (errorHandler)
-                errorHandler(error);
-        }
-    }
-
-    function handleErrors(message) {
-        var errors = message.getErrors();
-        for (var errorIndex=0; errorIndex<errors.length; errorIndex++)
-            showError(errors[errorIndex].getMessage());
-    }
-
     var clipboardHandler = null;
-    var requests = 0;
-
     this.setClipboardHandler = function(handler) {
         clipboardHandler = handler;
     };
-
-
-    function handleResponse(xmlhttprequest) {
-
-        var interval = null;
-        var nextRequest = null;
-
-        var dataUpdateEvents = 0;
-        var instructionStart = 0;
-        var startIndex = 0;
-
-        function parseResponse() {
-
-            // Start next request as soon as possible
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null)
-                nextRequest = makeRequest();
-
-            // Parse stream when data is received and when complete.
-            if (xmlhttprequest.readyState == 3 ||
-                xmlhttprequest.readyState == 4) {
-
-                // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
-                if (pollResponse == 1) {
-                    if (xmlhttprequest.readyState == 3 && interval == null)
-                        interval = setInterval(parseResponse, 30);
-                    else if (xmlhttprequest.readyState == 4 && interval != null)
-                        clearInterval(interval);
-                }
-
-                // Halt on error during request
-                if (xmlhttprequest.status == 0) {
-                    showError("Request canceled by browser.");
-                    return;
-                }
-                else if (xmlhttprequest.status != 200) {
-                    showError("Error during request (HTTP " + xmlhttprequest.status + "): " + xmlhttprequest.statusText);
-                    return;
-                }
-
-                var current = xmlhttprequest.responseText;
-                var instructionEnd;
-                
-                while ((instructionEnd = current.indexOf(";", startIndex)) != -1) {
-
-                    // Start next search at next instruction
-                    startIndex = instructionEnd+1;
-
-                    var instruction = current.substr(instructionStart,
-                            instructionEnd - instructionStart);
-
-                    instructionStart = startIndex;
-
-                    var opcodeEnd = instruction.indexOf(":");
-
-                    var opcode;
-                    var parameters;
-                    if (opcodeEnd == -1) {
-                        opcode = instruction;
-                        parameters = new Array();
-                    }
-                    else {
-                        opcode = instruction.substr(0, opcodeEnd);
-                        parameters = instruction.substr(opcodeEnd+1).split(",");
-                    }
-
-                    // If we're done parsing, handle the next response.
-                    if (opcode.length == 0) {
-
-                        if (isConnected()) {
-                            delete xmlhttprequest;
-                            if (nextRequest)
-                                handleResponse(nextRequest);
-                        }
-
-                        break;
-                    }
-
-                    // Call instruction handler.
-                    doInstruction(opcode, parameters);
-                }
-
-                // Start search at end of string.
-                startIndex = current.length;
-
-                delete instruction;
-                delete parameters;
-
-            }
-
-        }
-
-        // If response polling enabled, attempt to detect if still
-        // necessary (via wrapping parseResponse())
-        if (pollResponse == 1) {
-            xmlhttprequest.onreadystatechange = function() {
-
-                // If we receive two or more readyState==3 events,
-                // there is no need to poll.
-                if (xmlhttprequest.readyState == 3) {
-                    dataUpdateEvents++;
-                    if (dataUpdateEvents >= 2) {
-                        pollResponse = 0;
-                        xmlhttprequest.onreadystatechange = parseResponse;
-                    }
-                }
-
-                parseResponse();
-            }
-        }
-
-        // Otherwise, just parse
-        else
-            xmlhttprequest.onreadystatechange = parseResponse;
-
-        parseResponse();
-
-    }
-
-
-    function makeRequest() {
-
-        // Download self
-        var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", TUNNEL_READ);
-        xmlhttprequest.send(null); 
-
-        return xmlhttprequest;
-
-    }
-
-    function escapeGuacamoleString(str) {
-
-        var escapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == ",")
-                escapedString += "\\c";
-            else if (c == ";")
-                escapedString += "\\s";
-            else if (c == "\\")
-                escapedString += "\\\\";
-            else
-                escapedString += c;
-
-        }
-
-        return escapedString;
-
-    }
-
-    function unescapeGuacamoleString(str) {
-
-        var unescapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == "\\" && i<str.length-1) {
-
-                var escapeChar = str.charAt(++i);
-                if (escapeChar == "c")
-                    unescapedString += ",";
-                else if (escapeChar == "s")
-                    unescapedString += ";";
-                else if (escapeChar == "\\")
-                    unescapedString += "\\";
-                else
-                    unescapedString += "\\" + escapeChar;
-
-            }
-            else
-                unescapedString += c;
-
-        }
-
-        return unescapedString;
-
-    }
 
     // Layers
     var displayWidth = 0;
@@ -483,6 +150,10 @@ function GuacamoleClient(display, tunnelURL) {
     var layers = new Array();
     var buffers = new Array();
     var cursor = null;
+
+    this.getLayers = function() {
+        return layers;
+    }
 
     function getLayer(index) {
 
@@ -546,15 +217,15 @@ function GuacamoleClient(display, tunnelURL) {
     var instructionHandlers = {
 
         "error": function(parameters) {
-            showError(unescapeGuacamoleString(parameters[0]));
+            if (errorHandler) errorHandler(tunnel.unescapeGuacamoleString(parameters[0]));
         },
 
         "name": function(parameters) {
-            nameHandler(unescapeGuacamoleString(parameters[0]));
+            if (nameHandler) nameHandler(tunnel.unescapeGuacamoleString(parameters[0]));
         },
 
         "clipboard": function(parameters) {
-            clipboardHandler(unescapeGuacamoleString(parameters[0]));
+            if (clipboardHandler) clipboardHandler(tunnel.unescapeGuacamoleString(parameters[0]));
         },
 
         "size": function(parameters) {
@@ -652,17 +323,8 @@ function GuacamoleClient(display, tunnelURL) {
     this.connect = function() {
 
         setState(STATE_CONNECTING);
-
-        // Start tunnel and connect synchronously
-        var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
-        connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        connect_xmlhttprequest.setRequestHeader("Content-length", 0);
-        connect_xmlhttprequest.send(null);
-
-        // Start reading data
+        tunnel.connect();
         setState(STATE_WAITING);
-        handleResponse(makeRequest());
 
     };
 
@@ -673,16 +335,8 @@ function GuacamoleClient(display, tunnelURL) {
         if (currentState != STATE_DISCONNECTED
                 && currentState != STATE_DISCONNECTING) {
 
-            var message = "disconnect;";
             setState(STATE_DISCONNECTING);
-
-            // Send disconnect message (synchronously... as necessary until handoff is implemented)
-            var disconnect_xmlhttprequest = new XMLHttpRequest();
-            disconnect_xmlhttprequest.open("POST", TUNNEL_WRITE, false);
-            disconnect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            disconnect_xmlhttprequest.setRequestHeader("Content-length", message.length);
-            disconnect_xmlhttprequest.send(message);
-
+            tunnel.sendMessage("disconnect;");
             setState(STATE_DISCONNECTED);
         }
 
