@@ -115,6 +115,7 @@
         <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>
         <script type="text/javascript" src="guacamole-common-js/mouse.js"></script>
         <script type="text/javascript" src="guacamole-common-js/layer.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/tunnel.js"></script>
         <script type="text/javascript" src="guacamole-common-js/guacamole.js"></script>
         <script type="text/javascript" src="guacamole-common-js/oskeyboard.js"></script>
 
@@ -178,7 +179,10 @@
                 window.onresize();
 
                 // Instantiate client
-                var guac = new GuacamoleClient(display, "tunnel");
+                var guac = new GuacamoleClient(
+                    display,
+                    new GuacamoleHTTPTunnel("tunnel")
+                );
 
                 var state = document.getElementById("state");
                 guac.setOnStateChangeHandler(function(clientState) {
@@ -219,6 +223,8 @@
 
                 guac.setErrorHandler(function(error) {
 
+                    guac.disconnect();
+
                     menu.className = "error";
                     display.className += " guac-error";
 
@@ -226,7 +232,78 @@
                     errorDialogText.textContent = error;
                     errorDialog.style.visibility = "visible";
 
+                    // Show error by desaturating display
+                    var layers = guac.getLayers();
+                    for (var i=0; i<layers.length; i++) {
+                        layers[i].filter(desaturateFilter);
+                    }
+
+                    // Filter for desaturation
+                    function desaturateFilter(data, width, height) {
+
+                        for (var i=0; i<data.length; i+=4) {
+
+                            // Get RGB values
+                            var r = data[i];
+                            var g = data[i+1];
+                            var b = data[i+2];
+
+                            // Desaturate
+                            var v = Math.max(r, g, b) / 2;
+                            data[i]   = v;
+                            data[i+1] = v;
+                            data[i+2] = v;
+
+                        }
+
+                    }
+
                 });
+
+                // Mouse
+                var mouse = new GuacamoleMouse(display);
+                mouse.setButtonPressedHandler(
+                    function(mouseState) {
+                        guac.sendMouseState(mouseState);
+                    }
+                );
+
+                mouse.setButtonReleasedHandler(
+                    function(mouseState) {
+                        guac.sendMouseState(mouseState);
+                    }
+                );
+
+                mouse.setMovementHandler(
+                    function(mouseState) {
+                        guac.sendMouseState(mouseState);
+                    }
+                );
+
+                // Keyboard
+                var keyboard = new GuacamoleKeyboard(document);
+
+                function disableKeyboard() {
+                    keyboard.setKeyPressedHandler(null);
+                    keyboard.setKeyReleasedHandler(null);
+                }
+
+                function enableKeyboard() {
+                    keyboard.setKeyPressedHandler(
+                        function (keysym) {
+                            guac.sendKeyEvent(1, keysym);
+                        }
+                    );
+
+                    keyboard.setKeyReleasedHandler(
+                        function (keysym) {
+                            guac.sendKeyEvent(0, keysym);
+                        }
+                    );
+                }
+
+                // Enable keyboard by default
+                enableKeyboard();
 
                 // Reconnect button
                 var reconnect = document.getElementById("reconnect");
@@ -253,12 +330,12 @@
 
                 // Ignore keypresses when clipboard is focused
                 clipboardElement.onfocus = function() {
-                    guac.disableKeyboard();
+                    disableKeyboard();
                 };
 
                 // Capture keypresses when clipboard is not focused
                 clipboardElement.onblur = function() {
-                    guac.enableKeyboard();
+                    enableKeyboard();
                 };
 
                 // Server copy handler
@@ -311,13 +388,13 @@
 
                 osKeyboard.setKeyPressedHandler(
                         function(keysym) {
-                            guac.pressKey(keysym);
+                            guac.sendKeyEvent(1, keysym);
                         }
                 );
 
                 osKeyboard.setKeyReleasedHandler(
                         function(keysym) {
-                            guac.releaseKey(keysym);
+                            guac.sendKeyEvent(0, keysym);
                         }
                 );
 
@@ -325,12 +402,12 @@
                 var CtrlAltDelete = document.getElementById("CtrlAltDelete");
 
                 CtrlAltDelete.onclick = function() {
-                    guac.pressKey(KEYSYM_CTRL);
-                    guac.pressKey(KEYSYM_ALT);
-                    guac.pressKey(KEYSYM_DELETE);
-                    guac.releaseKey(KEYSYM_DELETE);
-                    guac.releaseKey(KEYSYM_ALT);
-                    guac.releaseKey(KEYSYM_CTRL);
+                    guac.sendKeyEvent(1, KEYSYM_CTRL);
+                    guac.sendKeyEvent(1, KEYSYM_ALT);
+                    guac.sendKeyEvent(1, KEYSYM_DELETE);
+                    guac.sendKeyEvent(0, KEYSYM_DELETE);
+                    guac.sendKeyEvent(0, KEYSYM_ALT);
+                    guac.sendKeyEvent(0, KEYSYM_CTRL);
                 }
 
             }
