@@ -143,6 +143,42 @@ function GuacamoleClient(display, tunnel) {
         clipboardHandler = handler;
     };
 
+    var readyCallback = null;
+    var busyLayers = 0;
+
+    function layerBusy()  { busyLayers++; }
+    function layerReady() {
+        busyLayers--;
+        if (readyCallback != null)
+            readyCallback();
+    }
+
+    function sendReady() {
+
+       // If ready, send ready message
+       if (busyLayers == 0) {
+           tunnel.sendMessage("ready;");
+       }
+
+       // If not ready, queue message for when ready
+       else if (readyCallback == null) {
+           readyCallback = function() {
+               tunnel.sendMessage("ready;");
+               readyCallback = null;
+           }
+       }
+
+    }
+
+    function getTrackedLayer(w, h) {
+        var layer = new Layer(w, h);
+
+        layer.setBusyHandler(layerBusy);
+        layer.setReadyHandler(layerReady);
+
+        return layer;
+    }
+
     // Layers
     var displayWidth = 0;
     var displayHeight = 0;
@@ -165,7 +201,7 @@ function GuacamoleClient(display, tunnel) {
 
             // Create buffer if necessary
             if (buffer == null) {
-                buffer = new Layer(0, 0);
+                buffer = new Layer(0, 0); // Untracked
                 buffer.setAutosize(1);
                 buffers[index] = buffer;
             }
@@ -180,7 +216,7 @@ function GuacamoleClient(display, tunnel) {
             if (layer == null) {
 
                 // Add new layer
-                layer = new Layer(displayWidth, displayHeight);
+                layer = getTrackedLayer(displayWidth, displayHeight);
                 layers[index] = layer;
 
                 // (Re)-add existing layers in order
@@ -218,6 +254,10 @@ function GuacamoleClient(display, tunnel) {
 
         "error": function(parameters) {
             if (errorHandler) errorHandler(tunnel.unescapeGuacamoleString(parameters[0]));
+        },
+
+        "ready": function(parameters) {
+            sendReady();
         },
 
         "name": function(parameters) {
@@ -292,7 +332,7 @@ function GuacamoleClient(display, tunnel) {
             var data = parameters[2];
 
             if (cursor == null) {
-                cursor = new Layer(displayWidth, displayHeight);
+                cursor = getTrackedLayer(displayWidth, displayHeight);
                 display.appendChild(cursor);
             }
 
