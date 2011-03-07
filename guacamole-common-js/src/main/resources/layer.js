@@ -68,9 +68,7 @@ function Layer(width, height) {
 
     resize(width, height);
 
-    var busyHandler = null;
     var readyHandler = null;
-
     var updates = new Array();
     var autosize = 0;
 
@@ -133,10 +131,6 @@ function Layer(width, height) {
         readyHandler = handler;
     };
 
-    display.setBusyHandler = function(handler) {
-        busyHandler = handler;
-    };
-
 
     display.drawImage = function(x, y, image) {
         reserveJob(function() {
@@ -147,11 +141,6 @@ function Layer(width, height) {
 
 
     display.draw = function(x, y, url) {
-
-        // If about to become busy, call busy handler
-        if (display.isReady() && busyHandler != null)
-            busyHandler();
-
         var update = reserveJob(null);
 
         var image = new Image();
