@@ -22,6 +22,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     var TUNNEL_READ    = tunnelURL + "?read";
     var TUNNEL_WRITE   = tunnelURL + "?write";
 
+    var connected = 0;
     var pollResponse = 1; // Default to polling - will be turned off automatically if not needed
     var instructionHandler = null;
 
@@ -29,6 +30,10 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     var outputMessageBuffer = "";
 
     function sendMessage(message) {
+
+        // Do not attempt to send messages if not connected
+        if (!connected)
+            return;
 
         // Add event to queue, restart send loop if finished.
         outputMessageBuffer += message;
@@ -75,6 +80,16 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
         function parseResponse() {
 
+            // Do not handle responses if not connected
+            if (!connected) {
+                
+                // Clean up interval if polling
+                if (interval != null)
+                    clearInterval(interval);
+                
+                return;
+            }
+
             // Start next request as soon as possible
             if (xmlhttprequest.readyState >= 2 && nextRequest == null)
                 nextRequest = makeRequest();
@@ -92,12 +107,8 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                 }
 
                 // Halt on error during request
-                if (xmlhttprequest.status == 0) {
-                    showError("Request canceled by browser.");
-                    return;
-                }
-                else if (xmlhttprequest.status != 200) {
-                    showError("Error during request (HTTP " + xmlhttprequest.status + "): " + xmlhttprequest.statusText);
+                if (xmlhttprequest.status == 0 || xmlhttprequest.status != 200) {
+                    disconnect();
                     return;
                 }
 
@@ -201,12 +212,18 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         connect_xmlhttprequest.send(null);
 
         // Start reading data
+        connected = 1;
         handleResponse(makeRequest());
 
-    };
+    }
+
+    function disconnect() {
+        connected = 0;
+    }
 
     // External API
     this.connect = connect;
+    this.disconnect = disconnect;
     this.sendMessage = sendMessage;
     this.setInstructionHandler = function(handler) {
         instructionHandler = handler;

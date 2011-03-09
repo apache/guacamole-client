@@ -218,6 +218,7 @@ function GuacamoleClient(display, tunnel) {
 
         "error": function(parameters) {
             if (errorHandler) errorHandler(tunnel.unescapeGuacamoleString(parameters[0]));
+            disconnect();
         },
 
         "name": function(parameters) {
@@ -337,6 +338,7 @@ function GuacamoleClient(display, tunnel) {
 
             setState(STATE_DISCONNECTING);
             tunnel.sendMessage("disconnect;");
+            tunnel.disconnect();
             setState(STATE_DISCONNECTED);
         }
 
