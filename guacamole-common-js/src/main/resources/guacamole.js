@@ -43,7 +43,7 @@ function GuacamoleClient(display, tunnel) {
 
     this.setOnStateChangeHandler = function(handler) {
         stateChangeHandler = handler;
-    }
+    };
 
     function isConnected() {
         return currentState == STATE_CONNECTED
@@ -89,7 +89,7 @@ function GuacamoleClient(display, tunnel) {
             return;
 
         tunnel.sendMessage("key:" +  keysym + "," + pressed + ";");
-    }
+    };
 
     this.sendMouseState = function(mouseState) {
 
@@ -115,7 +115,7 @@ function GuacamoleClient(display, tunnel) {
 
         // Send message
         tunnel.sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
-    }
+    };
 
     this.setClipboard = function(data) {
 
@@ -123,8 +123,8 @@ function GuacamoleClient(display, tunnel) {
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("clipboard:" + tunnel.escapeGuacamoleString(data) + ";");
-    }
+        tunnel.sendMessage("clipboard:" + escapeGuacamoleString(data) + ";");
+    };
 
     // Handlers
 
@@ -153,7 +153,7 @@ function GuacamoleClient(display, tunnel) {
 
     this.getLayers = function() {
         return layers;
-    }
+    };
 
     function getLayer(index) {
 
@@ -217,16 +217,16 @@ function GuacamoleClient(display, tunnel) {
     var instructionHandlers = {
 
         "error": function(parameters) {
-            if (errorHandler) errorHandler(tunnel.unescapeGuacamoleString(parameters[0]));
+            if (errorHandler) errorHandler(unescapeGuacamoleString(parameters[0]));
             disconnect();
         },
 
         "name": function(parameters) {
-            if (nameHandler) nameHandler(tunnel.unescapeGuacamoleString(parameters[0]));
+            if (nameHandler) nameHandler(unescapeGuacamoleString(parameters[0]));
         },
 
         "clipboard": function(parameters) {
-            if (clipboardHandler) clipboardHandler(tunnel.unescapeGuacamoleString(parameters[0]));
+            if (clipboardHandler) clipboardHandler(unescapeGuacamoleString(parameters[0]));
         },
 
         "size": function(parameters) {
@@ -319,17 +319,8 @@ function GuacamoleClient(display, tunnel) {
             handler(parameters);
 
     }
-        
 
-    this.connect = function() {
 
-        setState(STATE_CONNECTING);
-        tunnel.connect();
-        setState(STATE_WAITING);
-
-    };
-
-    
     function disconnect() {
 
         // Only attempt disconnection not disconnected.
@@ -344,6 +335,67 @@ function GuacamoleClient(display, tunnel) {
 
     }
 
+    function escapeGuacamoleString(str) {
+
+        var escapedString = "";
+
+        for (var i=0; i<str.length; i++) {
+
+            var c = str.charAt(i);
+            if (c == ",")
+                escapedString += "\\c";
+            else if (c == ";")
+                escapedString += "\\s";
+            else if (c == "\\")
+                escapedString += "\\\\";
+            else
+                escapedString += c;
+
+        }
+
+        return escapedString;
+
+    }
+
+    function unescapeGuacamoleString(str) {
+
+        var unescapedString = "";
+
+        for (var i=0; i<str.length; i++) {
+
+            var c = str.charAt(i);
+            if (c == "\\" && i<str.length-1) {
+
+                var escapeChar = str.charAt(++i);
+                if (escapeChar == "c")
+                    unescapedString += ",";
+                else if (escapeChar == "s")
+                    unescapedString += ";";
+                else if (escapeChar == "\\")
+                    unescapedString += "\\";
+                else
+                    unescapedString += "\\" + escapeChar;
+
+            }
+            else
+                unescapedString += c;
+
+        }
+
+        return unescapedString;
+
+    }
+
     this.disconnect = disconnect;
+    this.connect = function() {
+
+        setState(STATE_CONNECTING);
+        tunnel.connect();
+        setState(STATE_WAITING);
+
+    };
+
+    this.escapeGuacamoleString   = escapeGuacamoleString;
+    this.unescapeGuacamoleString = unescapeGuacamoleString;
 
 }

@@ -22,8 +22,18 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     var TUNNEL_READ    = tunnelURL + "?read";
     var TUNNEL_WRITE   = tunnelURL + "?write";
 
-    var connected = 0;
-    var pollResponse = 1; // Default to polling - will be turned off automatically if not needed
+    var STATE_IDLE          = 0;
+    var STATE_CONNECTED     = 1;
+    var STATE_DISCONNECTED  = 2;
+
+    var currentState = STATE_IDLE;
+
+    var POLLING_ENABLED     = 1;
+    var POLLING_DISABLED    = 0;
+
+    // Default to polling - will be turned off automatically if not needed
+    var pollingMode = POLLING_ENABLED;
+
     var instructionHandler = null;
 
     var sendingMessages = 0;
@@ -32,7 +42,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     function sendMessage(message) {
 
         // Do not attempt to send messages if not connected
-        if (!connected)
+        if (currentState != STATE_CONNECTED)
             return;
 
         // Add event to queue, restart send loop if finished.
@@ -40,7 +50,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         if (sendingMessages == 0)
             sendPendingMessages();
 
-    };
+    }
 
     function sendPendingMessages() {
 
@@ -81,7 +91,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         function parseResponse() {
 
             // Do not handle responses if not connected
-            if (!connected) {
+            if (currentState != STATE_CONNECTED) {
                 
                 // Clean up interval if polling
                 if (interval != null)
@@ -99,7 +109,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                 xmlhttprequest.readyState == 4) {
 
                 // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
-                if (pollResponse == 1) {
+                if (pollingMode == POLLING_ENABLED) {
                     if (xmlhttprequest.readyState == 3 && interval == null)
                         interval = setInterval(parseResponse, 30);
                     else if (xmlhttprequest.readyState == 4 && interval != null)
@@ -165,7 +175,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
         // If response polling enabled, attempt to detect if still
         // necessary (via wrapping parseResponse())
-        if (pollResponse == 1) {
+        if (pollingMode == POLLING_ENABLED) {
             xmlhttprequest.onreadystatechange = function() {
 
                 // If we receive two or more readyState==3 events,
@@ -173,7 +183,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                 if (xmlhttprequest.readyState == 3) {
                     dataUpdateEvents++;
                     if (dataUpdateEvents >= 2) {
-                        pollResponse = 0;
+                        pollingMode = POLLING_DISABLED;
                         xmlhttprequest.onreadystatechange = parseResponse;
                     }
                 }
@@ -212,13 +222,13 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         connect_xmlhttprequest.send(null);
 
         // Start reading data
-        connected = 1;
+        currentState = STATE_CONNECTED;
         handleResponse(makeRequest());
 
     }
 
     function disconnect() {
-        connected = 0;
+        currentState = STATE_DISCONNECTED;
     }
 
     // External API
@@ -227,57 +237,6 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     this.sendMessage = sendMessage;
     this.setInstructionHandler = function(handler) {
         instructionHandler = handler;
-    }
-
-    this.escapeGuacamoleString = function(str) {
-
-        var escapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == ",")
-                escapedString += "\\c";
-            else if (c == ";")
-                escapedString += "\\s";
-            else if (c == "\\")
-                escapedString += "\\\\";
-            else
-                escapedString += c;
-
-        }
-
-        return escapedString;
-
-    }
-
-    this.unescapeGuacamoleString = function(str) {
-
-        var unescapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == "\\" && i<str.length-1) {
-
-                var escapeChar = str.charAt(++i);
-                if (escapeChar == "c")
-                    unescapedString += ",";
-                else if (escapeChar == "s")
-                    unescapedString += ";";
-                else if (escapeChar == "\\")
-                    unescapedString += "\\";
-                else
-                    unescapedString += "\\" + escapeChar;
-
-            }
-            else
-                unescapedString += c;
-
-        }
-
-        return unescapedString;
-
-    }
+    };
 
 }
