@@ -146,6 +146,13 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
         HttpSession httpSession = request.getSession(false);
         GuacamoleSession session = new GuacamoleSession(httpSession);
 
+        // We still need to set the content type to avoid the default of
+        // text/html, as such a content type would cause some browsers to
+        // attempt to parse the result, even though the JavaScript client
+        // does not explicitly request such parsing.
+        response.setContentType("application/octet-stream");
+        response.setContentLength(0);
+
         // Send data
         try {
 
