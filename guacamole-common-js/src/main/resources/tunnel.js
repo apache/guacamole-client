@@ -61,7 +61,6 @@ function GuacamoleHTTPTunnel(tunnelURL) {
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            message_xmlhttprequest.setRequestHeader("Content-length", outputMessageBuffer.length);
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
@@ -218,7 +217,6 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        connect_xmlhttprequest.setRequestHeader("Content-length", 0);
         connect_xmlhttprequest.send(null);
 
         // Start reading data
