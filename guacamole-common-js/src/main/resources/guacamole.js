@@ -307,7 +307,38 @@ function GuacamoleClient(display, tunnel) {
             };
             image.src = "data:image/png;base64," + data
 
-        }
+        },
+
+        "sync": function(parameters) {
+
+            var timestamp = parameters[0];
+
+            // When all layers have finished rendering all instructions
+            // UP TO THIS POINT IN TIME, send sync response.
+
+            var layersToSync = 0;
+            function syncLayer() {
+
+                layersToSync--;
+
+                // Send sync response when layers are finished
+                if (layersToSync == 0)
+                    tunnel.sendMessage("sync:" + timestamp + ";");
+
+            }
+
+            // Count active layers and install sync tracking hook
+            for (var i=0; i<layers.length; i++) {
+
+                var layer = layers[i];
+                if (layer) {
+                    layersToSync++;
+                    layer.sync(syncLayer);
+                }
+
+            }
+
+        },
       
     };
 
