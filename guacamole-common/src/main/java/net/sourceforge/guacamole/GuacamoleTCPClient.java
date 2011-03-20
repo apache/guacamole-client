@@ -28,9 +28,13 @@ import java.io.InputStreamReader;
 
 import java.io.Writer;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 
 
 public class GuacamoleTCPClient extends GuacamoleClient {
+
+    private static final int SOCKET_TIMEOUT = 5000;
 
     private Socket sock;
     private Reader input;
@@ -39,9 +43,21 @@ public class GuacamoleTCPClient extends GuacamoleClient {
     public GuacamoleTCPClient(String hostname, int port) throws GuacamoleException {
 
         try {
-            sock = new Socket(InetAddress.getByName(hostname), port);
+
+            // Get address
+            SocketAddress address = new InetSocketAddress(
+                    InetAddress.getByName(hostname),
+                    port
+            );
+
+            // Connect with timeout
+            sock = new Socket();
+            sock.connect(address, SOCKET_TIMEOUT);
+
+            // On successful connect, retrieve I/O streams
             input = new InputStreamReader(sock.getInputStream());
             output = new OutputStreamWriter(sock.getOutputStream());
+
         }
         catch (IOException e) {
             throw new GuacamoleException(e);
