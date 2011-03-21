@@ -34,7 +34,7 @@ import java.net.SocketAddress;
 
 public class GuacamoleTCPClient extends GuacamoleClient {
 
-    private static final int SOCKET_TIMEOUT = 5000;
+    private static final int SOCKET_TIMEOUT = 15000;
 
     private Socket sock;
     private Reader input;
@@ -53,6 +53,9 @@ public class GuacamoleTCPClient extends GuacamoleClient {
             // Connect with timeout
             sock = new Socket();
             sock.connect(address, SOCKET_TIMEOUT);
+
+            // Set read timeout
+            sock.setSoTimeout(SOCKET_TIMEOUT);
 
             // On successful connect, retrieve I/O streams
             input = new InputStreamReader(sock.getInputStream());
