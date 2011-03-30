@@ -246,12 +246,15 @@ function GuacamoleClient(display, tunnel) {
 
         "png": function(parameters) {
 
-            var layer = parseInt(parameters[0]);
-            var x = parseInt(parameters[1]);
-            var y = parseInt(parameters[2]);
-            var data = parameters[3];
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var x = parseInt(parameters[2]);
+            var y = parseInt(parameters[3]);
+            var data = parameters[4];
 
-            getLayer(layer).draw(
+            layer.setChannelMask(channelMask);
+
+            layer.draw(
                 x,
                 y,
                 "data:image/png;base64," + data
@@ -265,17 +268,20 @@ function GuacamoleClient(display, tunnel) {
 
         "copy": function(parameters) {
 
-            var srcL = parseInt(parameters[0]);
+            var srcL = getLayer(parseInt(parameters[0]));
             var srcX = parseInt(parameters[1]);
             var srcY = parseInt(parameters[2]);
             var srcWidth = parseInt(parameters[3]);
             var srcHeight = parseInt(parameters[4]);
-            var dstL = parseInt(parameters[5]);
-            var dstX = parseInt(parameters[6]);
-            var dstY = parseInt(parameters[7]);
+            var channelMask = parseInt(parameters[5]);
+            var dstL = getLayer(parseInt(parameters[6]));
+            var dstX = parseInt(parameters[7]);
+            var dstY = parseInt(parameters[8]);
 
-            getLayer(dstL).copyRect(
-                getLayer(srcL),
+            dstL.setChannelMask(channelMask);
+
+            dstL.copyRect(
+                srcL,
                 srcX,
                 srcY,
                 srcWidth, 

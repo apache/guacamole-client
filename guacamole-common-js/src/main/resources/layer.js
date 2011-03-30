@@ -202,6 +202,31 @@ function Layer(width, height) {
         });
     };
 
+    var compositeOperation = {
+     /* 0x0 NOT IMPLEMENTED */
+        0x1: "destination-in",
+        0x2: "destination-out",
+     /* 0x3 NOT IMPLEMENTED */
+        0x4: "source-in",
+     /* 0x5 NOT IMPLEMENTED */
+        0x6: "source-atop",
+     /* 0x7 NOT IMPLEMENTED */
+        0x8: "source-out",
+        0x9: "destination-atop",
+        0xA: "xor",
+        0xB: "destination-over",
+        0xC: "source-copy",
+     /* 0xD NOT IMPLEMENTED */
+        0xE: "source-over",
+        0xF: "lighter",
+    };
+
+    display.setChannelMask = function(mask) {
+        reserveJob(function() {
+            displayContext.globalCompositeOperation = compositeOperation[mask];
+        });
+    };
+
     return display;
 
 }
