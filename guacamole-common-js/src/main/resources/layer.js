@@ -215,7 +215,7 @@ function Layer(width, height) {
         0x9: "destination-atop",
         0xA: "xor",
         0xB: "destination-over",
-        0xC: "source-copy",
+        0xC: "copy",
      /* 0xD NOT IMPLEMENTED */
         0xE: "source-over",
         0xF: "lighter",
