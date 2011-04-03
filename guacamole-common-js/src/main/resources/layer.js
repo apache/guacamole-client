@@ -168,22 +168,30 @@ function Layer(width, height) {
     }
 
     display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
-  
-        function scheduleCopyRect() { 
-            reserveJob(function() {
-                if (autosize != 0) fitRect(x, y, w, h);
-                displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
-            });
+
+        function doCopyRect() {
+            if (autosize != 0) fitRect(x, y, w, h);
+            displayContext.drawImage(srcLayer, srcx, srcy, w, h, x, y, w, h);
         }
 
         // If we ARE the source layer, no need to sync.
         // Syncing would result in deadlock.
         if (display === srcLayer)
-            scheduleCopyRect();
+            reserveJob(doCopyRect);
 
         // Otherwise synchronize copy operation with source layer
-        else
-            srcLayer.sync(scheduleCopyRect);
+        else {
+            var update = reserveJob(null);
+            srcLayer.sync(function() {
+                
+                update.setHandler(doCopyRect);
+
+                // As this update originally had no handler and may have blocked
+                // other updates, handle any blocked updates.
+                handlePendingUpdates();
+
+            });
+        }
 
     };
 
