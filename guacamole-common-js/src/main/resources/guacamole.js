@@ -333,16 +333,21 @@ function GuacamoleClient(display, tunnel) {
 
             }
 
-            // Count active layers and install sync tracking hook
+            // Count active, not-ready layers and install sync tracking hooks
             for (var i=0; i<layers.length; i++) {
 
                 var layer = layers[i];
-                if (layer) {
+                if (layer && !layer.isReady()) {
                     layersToSync++;
                     layer.sync(syncLayer);
                 }
 
             }
+
+            // If all layers are ready, then we didn't install any hooks.
+            // Send sync message now,
+            if (layersToSync == 0)
+                tunnel.sendMessage("sync:" + timestamp + ";");
 
         },
       
