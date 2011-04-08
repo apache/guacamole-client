@@ -18,9 +18,11 @@
 
 function GuacamoleHTTPTunnel(tunnelURL) {
 
+    var tunnel_uuid;
+
     var TUNNEL_CONNECT = tunnelURL + "?connect";
-    var TUNNEL_READ    = tunnelURL + "?read";
-    var TUNNEL_WRITE   = tunnelURL + "?write";
+    var TUNNEL_READ    = tunnelURL + "?read:";
+    var TUNNEL_WRITE   = tunnelURL + "?write:";
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTED     = 1;
@@ -59,7 +61,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
             sendingMessages = 1;
 
             var message_xmlhttprequest = new XMLHttpRequest();
-            message_xmlhttprequest.open("POST", TUNNEL_WRITE);
+            message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
             message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
             // Once response received, send next queued event.
@@ -204,7 +206,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
         // Download self
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", TUNNEL_READ);
+        xmlhttprequest.open("POST", TUNNEL_READ + tunnel_uuid);
         xmlhttprequest.send(null);
 
         return xmlhttprequest;
@@ -218,6 +220,9 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         connect_xmlhttprequest.send(null);
+
+        // Get UUID from response
+        tunnel_uuid = connect_xmlhttprequest.responseText;
 
         // Start reading data
         currentState = STATE_CONNECTED;
