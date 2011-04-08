@@ -19,54 +19,16 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.concurrent.locks.ReentrantLock;
+import net.sourceforge.guacamole.net.tunnel.GuacamoleTunnel;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionBindingEvent;
-import javax.servlet.http.HttpSessionBindingListener;
-import net.sourceforge.guacamole.GuacamoleClient;
-import net.sourceforge.guacamole.GuacamoleTCPClient;
 import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleSession {
 
     private final HttpSession session;
-    private SessionClient client;
-    private ReentrantLock instructionStreamLock;
-
-    public class SessionClient extends GuacamoleClient implements HttpSessionBindingListener {
-
-        private GuacamoleClient client;
-
-        public SessionClient(GuacamoleClient client) {
-            this.client = client;
-        }
-
-        public void valueBound(HttpSessionBindingEvent event) {
-            // Do nothing
-        }
-
-        public void valueUnbound(HttpSessionBindingEvent event) {
-            try {
-                disconnect();
-            }
-            catch (GuacamoleException e) {
-                // Ignore
-            }
-        }
-
-        public void write(char[] data, int off, int len) throws GuacamoleException {
-            client.write(data, off, len);
-        }
-
-        public char[] read() throws GuacamoleException {
-            return client.read();
-        }
-
-        public void disconnect() throws GuacamoleException {
-            client.disconnect();
-        }
-
-    }
+    private ConcurrentMap<String, GuacamoleTunnel> tunnels;
 
     public GuacamoleSession(HttpSession session) throws GuacamoleException {
 
@@ -77,57 +39,30 @@ public class GuacamoleSession {
 
         synchronized (session) {
 
-            client = (SessionClient) session.getAttribute("CLIENT");
-            instructionStreamLock = (ReentrantLock) session.getAttribute("INSTRUCTION_STREAM_LOCK");
-
-        }
-
-    }
-
-    public void attachClient(GuacamoleTCPClient client) throws GuacamoleException {
-
-        synchronized (session) {
-
-            this.client = new SessionClient(client);
-            session.setAttribute("CLIENT", this.client);
-
-            instructionStreamLock = new ReentrantLock();
-            session.setAttribute("INSTRUCTION_STREAM_LOCK", instructionStreamLock);
-
-        }
-
-    }
-
-    public SessionClient getClient() throws GuacamoleException {
-        synchronized (session) {
-
-            if (client == null)
-                throw new GuacamoleException("Client not yet attached.");
-
-            return client;
-        }
-    }
-
-    public void invalidate() {
-        session.invalidate();
-    }
-
-    public void detachClient() throws GuacamoleException {
-
-        synchronized (session) {
-
-            if (client != null) {
-                client.disconnect();
-                session.removeAttribute("CLIENT");
-                client = null;
+            tunnels = (ConcurrentMap<String, GuacamoleTunnel>) session.getAttribute("GUAC_TUNNELS");
+            if (tunnels == null) {
+                tunnels = new ConcurrentHashMap<String, GuacamoleTunnel>();
+                session.setAttribute("GUAC_TUNNELS", tunnels);
             }
 
         }
 
     }
 
-    public ReentrantLock getInstructionStreamLock() {
-        return instructionStreamLock;
+    public void invalidate() {
+        session.invalidate();
+    }
+
+    public void attachTunnel(GuacamoleTunnel tunnel) throws GuacamoleException {
+        tunnels.put(tunnel.getUUID().toString(), tunnel);
+    }
+
+    public void detachTunnel(GuacamoleTunnel tunnel) throws GuacamoleException {
+        tunnels.remove(tunnel.getUUID().toString());
+    }
+
+    public GuacamoleTunnel getTunnel(String tunnelUUID) {
+        return tunnels.get(tunnelUUID);
     }
 
 }

@@ -54,14 +54,25 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             if (query == null)
                 throw new GuacamoleException("No query string provided.");
 
-            if (query.equals("connect"))
-                doConnect(request, response);
+            if (query.equals("connect")) {
 
-            else if(query.equals("read"))
-                doRead(request, response);
+                GuacamoleTunnel tunnel = doConnect(request);
+                if (tunnel != null) {
+                    try {
+                        response.getWriter().println(tunnel.getUUID().toString());
+                    }
+                    catch (IOException e) {
+                        throw new GuacamoleException(e);
+                    }
+                }
 
-            else if(query.equals("write"))
-                doWrite(request, response);
+            }
+
+            else if(query.startsWith("read:"))
+                doRead(request, response, query.substring(5));
+
+            else if(query.startsWith("write:"))
+                doWrite(request, response, query.substring(6));
 
             else
                 throw new GuacamoleException("Invalid tunnel operation: " + query);
@@ -72,14 +83,18 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     }
 
-    protected abstract void doConnect(HttpServletRequest request, HttpServletResponse response) throws GuacamoleException;
+    protected abstract GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException;
 
-    protected void doRead(HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+    protected void doRead(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
 
         HttpSession httpSession = request.getSession(false);
         GuacamoleSession session = new GuacamoleSession(httpSession);
 
-        ReentrantLock instructionStreamLock = session.getInstructionStreamLock();
+        GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
+        if (tunnel == null)
+            throw new GuacamoleException("No such tunnel.");
+
+        ReentrantLock instructionStreamLock = tunnel.getInstructionStreamLock();
         instructionStreamLock.lock();
 
         try {
@@ -94,7 +109,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             try {
 
                 // Query new update from server
-                GuacamoleClient client = session.getClient();
+                GuacamoleClient client = tunnel.getClient();
 
                 // For all messages, until another stream is ready (we send at least one message)
                 char[] message;
@@ -112,7 +127,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
                 }
 
                 if (message == null) {
-                    session.detachClient();
+                    session.detachTunnel(tunnel);
                     throw new GuacamoleException("Disconnected.");
                 }
 
@@ -141,10 +156,14 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     }
 
-    protected void doWrite(HttpServletRequest request, HttpServletResponse response) throws GuacamoleException {
+    protected void doWrite(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
 
         HttpSession httpSession = request.getSession(false);
         GuacamoleSession session = new GuacamoleSession(httpSession);
+
+        GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
+        if (tunnel == null)
+            throw new GuacamoleException("No such tunnel.");
 
         // We still need to set the content type to avoid the default of
         // text/html, as such a content type would cause some browsers to
@@ -156,12 +175,14 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
         // Send data
         try {
 
+            GuacamoleClient client = tunnel.getClient();
+
             Reader input = request.getReader();
             char[] buffer = new char[8192];
 
             int length;
             while ((length = input.read(buffer, 0, buffer.length)) != -1)
-                session.getClient().write(buffer, 0, length);
+                client.write(buffer, 0, length);
 
         }
         catch (IOException e) {
