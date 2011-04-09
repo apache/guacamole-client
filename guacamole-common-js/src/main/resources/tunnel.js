@@ -213,13 +213,24 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
     }
 
-    function connect() {
+    function connect(data) {
 
         // Start tunnel and connect synchronously
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        connect_xmlhttprequest.send(null);
+        connect_xmlhttprequest.send(data);
+
+        // If failure, throw error
+        if (connect_xmlhttprequest.status != 200) {
+
+            var message = connect_xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
+            if (!message)
+                message = "Internal error";
+
+            throw new Error(message);
+
+        }
 
         // Get UUID from response
         tunnel_uuid = connect_xmlhttprequest.responseText;

@@ -429,12 +429,19 @@ function GuacamoleClient(display, tunnel) {
     }
 
     this.disconnect = disconnect;
-    this.connect = function() {
+    this.connect = function(data) {
 
         setState(STATE_CONNECTING);
-        tunnel.connect();
-        setState(STATE_WAITING);
 
+        try {
+            tunnel.connect(data);
+        }
+        catch (e) {
+            setState(STATE_IDLE);
+            throw e;
+        }
+
+        setState(STATE_WAITING);
     };
 
     this.escapeGuacamoleString   = escapeGuacamoleString;
