@@ -35,7 +35,7 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-public class BasicFileAuthenticationProvider implements BasicLogin.AuthenticationProvider {
+public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     private long mappingTime;
     private Map<String, AuthInfo> mapping;

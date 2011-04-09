@@ -42,7 +42,7 @@
 
                     <p id="login-error"></p>
 
-                    <form id="login-form" action="login" method="post">
+                    <form id="login-form" action="#" method="post">
                         <table id="login-fields">
                             <tr>
                                 <th>Username</th>
@@ -124,6 +124,7 @@
 
             var loginForm = document.getElementById("login-form");
             var loginUI = document.getElementById("login-ui");
+            var display = document.getElementById("display");
 
             loginForm.onsubmit = function() {
 
@@ -134,38 +135,44 @@
                        "username=" + encodeURIComponent(username.value)
                     + "&password=" + encodeURIComponent(password.value)
 
-                var xmlhttprequest = new XMLHttpRequest();
-                xmlhttprequest.open("POST", "login", false);
-                xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                xmlhttprequest.setRequestHeader("Content-length", data.length);
-                xmlhttprequest.send(data);
+                // Instantiate client
+                var guac = new GuacamoleClient(
+                    display,
+                    new GuacamoleHTTPTunnel("tunnel")
+                );
 
-                if (xmlhttprequest.status == 200) {
-                    loginUI.style.display = "none";
-                    startGuacamole();
+                try {
+
+                    // Connect client
+                    guac.connect(data);
+
                 }
-                else {
+                catch (e) {
 
                     var loginError = document.getElementById("login-error");
 
                     // Display error, reset and refocus password field
-                    loginError.textContent = "Invalid login. Please try again.";
+                    loginError.textContent = e.message;
                     password.value = "";
                     password.focus();
 
+                    return false;
+
                 }
 
+                // On success, display UI
+                startGuacamole(guac);
                 return false;
 
             }
 
             // Shows guacamole interface and initiates connection to guacamole
-            function startGuacamole() {
+            function startGuacamole(guac) {
 
+                loginUI.style.display = "none";
                 document.getElementById("main-guacamole-ui").style.display = "block";
 
                 var menu = document.getElementById("menu");
-                var display = document.getElementById("display");
                 var logo = document.getElementById("logo");
 
                 var errorDialog = document.getElementById("errorDialog");
@@ -177,12 +184,6 @@
                 };
 
                 window.onresize();
-
-                // Instantiate client
-                var guac = new GuacamoleClient(
-                    display,
-                    new GuacamoleHTTPTunnel("tunnel")
-                );
 
                 var state = document.getElementById("state");
                 guac.setOnStateChangeHandler(function(clientState) {
@@ -310,9 +311,6 @@
                 reconnect.onclick = function() {
                     window.location.reload();
                 };
-
-                // Connect
-                guac.connect();
 
                 // Disconnect on close
                 window.onunload = function() {
