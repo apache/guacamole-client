@@ -54,6 +54,8 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             if (query == null)
                 throw new GuacamoleException("No query string provided.");
 
+            // If connect operation, call doConnect() and return tunnel UUID
+            // in response.
             if (query.equals("connect")) {
 
                 GuacamoleTunnel tunnel = doConnect(request);
@@ -68,17 +70,48 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
             }
 
+            // If read operation, call doRead() with tunnel UUID
             else if(query.startsWith("read:"))
                 doRead(request, response, query.substring(5));
 
+            // If write operation, call doWrite() with tunnel UUID
             else if(query.startsWith("write:"))
                 doWrite(request, response, query.substring(6));
 
+            // Otherwise, invalid operation
             else
                 throw new GuacamoleException("Invalid tunnel operation: " + query);
         }
+
+        // Catch any thrown guacamole exception and attempt to pass within the
+        // HTTP response.
         catch (GuacamoleException e) {
-            throw new ServletException(e);
+
+            try {
+
+                // If response not committed, send error code along with
+                // message.
+                if (!response.isCommitted()) {
+                    response.setHeader("X-Guacamole-Error-Message", e.getMessage());
+                    response.sendError(
+                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                            e.getMessage()
+                    );
+                }
+
+                // If unable to send error code, rethrow as servlet exception
+                else
+                    throw new ServletException(e);
+
+            }
+            catch (IOException ioe) {
+
+                // If unable to send error at all due to I/O problems,
+                // rethrow as servlet exception
+                throw new ServletException(ioe);
+
+            }
+
         }
 
     }
@@ -106,36 +139,27 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
             Writer out = response.getWriter();
 
-            try {
+            // Query new update from server
+            GuacamoleClient client = tunnel.getClient();
 
-                // Query new update from server
-                GuacamoleClient client = tunnel.getClient();
+            // For all messages, until another stream is ready (we send at least one message)
+            char[] message;
+            while ((message = client.read()) != null) {
 
-                // For all messages, until another stream is ready (we send at least one message)
-                char[] message;
-                while ((message = client.read()) != null) {
-
-                    // Get message output bytes
-                    out.write(message, 0, message.length);
-                    out.flush();
-                    response.flushBuffer();
-
-                    // No more messages another stream can take over
-                    if (instructionStreamLock.hasQueuedThreads())
-                        break;
-
-                }
-
-                if (message == null) {
-                    session.detachTunnel(tunnel);
-                    throw new GuacamoleException("Disconnected.");
-                }
-
-            }
-            catch (GuacamoleException e) {
-                out.write("error:" + e.getMessage() + ";");
+                // Get message output bytes
+                out.write(message, 0, message.length);
                 out.flush();
                 response.flushBuffer();
+
+                // No more messages another stream can take over
+                if (instructionStreamLock.hasQueuedThreads())
+                    break;
+
+            }
+
+            if (message == null) {
+                session.detachTunnel(tunnel);
+                throw new GuacamoleException("Disconnected.");
             }
 
             // End-of-instructions marker
