@@ -112,6 +112,21 @@ function GuacamoleMouse(element) {
         buttonReleasedHandler(getMouseState(0, 0));
     };
 
+    element.onmouseout = function(e) {
+
+        e.stopPropagation();
+
+        // Release all buttons
+        if (mouseLeftButton || mouseMiddleButton || mouseRightButton) {
+            mouseLeftButton = 0;
+            mouseMiddleButton = 0;
+            mouseRightButton = 0;
+
+            buttonReleasedHandler(getMouseState(0, 0));
+        }
+
+    };
+
     // Override selection on mouse event element.
     element.onselectstart = function() {
         return false;
