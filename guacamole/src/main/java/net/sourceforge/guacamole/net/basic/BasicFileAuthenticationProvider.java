@@ -27,8 +27,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.Configuration;
-import net.sourceforge.guacamole.net.GuacamoleProperties;
+import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -42,12 +43,8 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     private File getUserMappingFile() throws GuacamoleException {
 
-        // Get user mapping filename
-        String filename = GuacamoleProperties.getProperty("basic-user-mapping");
-        if (filename == null)
-            return null;
-
-        return new File(filename);
+        // Get user mapping file
+        return GuacamoleProperties.getProperty(BasicGuacamoleProperties.BASIC_USER_MAPPING);
 
     }
 
@@ -81,7 +78,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Configuration getAuthorizedConfiguration(String username, String password) throws GuacamoleException {
+    public GuacamoleConfiguration getAuthorizedConfiguration(String username, String password) throws GuacamoleException {
 
         // Check mapping file mod time
         File userMappingFile = getUserMappingFile();
@@ -114,14 +111,14 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private String auth_password;
         private Encoding auth_encoding;
 
-        private Configuration config;
+        private GuacamoleConfiguration config;
 
         public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
             this.auth_username = auth_username;
             this.auth_password = auth_password;
             this.auth_encoding = auth_encoding;
 
-            config = new Configuration();
+            config = new GuacamoleConfiguration();
         }
 
         private static final char HEX_CHARS[] = {
@@ -177,7 +174,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
         }
 
-        public Configuration getConfiguration() {
+        public GuacamoleConfiguration getConfiguration() {
             return config;
         }
 

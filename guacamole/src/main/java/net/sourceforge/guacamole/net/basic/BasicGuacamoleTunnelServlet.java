@@ -18,17 +18,19 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.lang.reflect.InvocationTargetException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.GuacamoleTCPClient;
-import net.sourceforge.guacamole.net.Configuration;
-import net.sourceforge.guacamole.net.GuacamoleProperties;
-import net.sourceforge.guacamole.net.GuacamoleSession;
-import net.sourceforge.guacamole.net.tunnel.GuacamoleTunnel;
-import net.sourceforge.guacamole.net.tunnel.GuacamoleTunnelServlet;
+import net.sourceforge.guacamole.net.InetGuacamoleSocket;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.servlet.GuacamoleSession;
+import net.sourceforge.guacamole.net.GuacamoleTunnel;
+import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
+import net.sourceforge.guacamole.servlet.GuacamoleTunnelServlet;
 
 public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
 
@@ -39,33 +41,10 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
 
         // Get auth provider instance
         try {
-            String authProviderClassName = GuacamoleProperties.getProperty("auth-provider");
-            Object obj = Class.forName(authProviderClassName).getConstructor().newInstance();
-            if (!(obj instanceof AuthenticationProvider))
-                throw new ServletException("Specified authentication provider class is not a AuthenticationProvider.");
-
-            authProvider = (AuthenticationProvider) obj;
+            authProvider = GuacamoleProperties.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
         }
         catch (GuacamoleException e) {
             throw new ServletException(e);
-        }
-        catch (ClassNotFoundException e) {
-            throw new ServletException("Authentication provider class not found", e);
-        }
-        catch (NoSuchMethodException e) {
-            throw new ServletException("Default constructor for authentication provider not present", e);
-        }
-        catch (SecurityException e) {
-            throw new ServletException("Creation of authentication provider disallowed; check your security settings", e);
-        }
-        catch (InstantiationException e) {
-            throw new ServletException("Unable to instantiate authentication provider", e);
-        }
-        catch (IllegalAccessException e) {
-            throw new ServletException("Unable to access default constructor of authentication provider", e);
-        }
-        catch (InvocationTargetException e) {
-            throw new ServletException("Internal error in constructor of authentication provider", e.getTargetException());
         }
 
     }
@@ -80,19 +59,21 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
         String password = request.getParameter("password");
 
         // Get authorized config
-        Configuration config = authProvider.getAuthorizedConfiguration(username, password);
+        GuacamoleConfiguration config = authProvider.getAuthorizedConfiguration(username, password);
         if (config == null)
             throw new GuacamoleException("Invalid login");
 
-        // Configure and connect client
-        String hostname = GuacamoleProperties.getProperty("guacd-hostname");
-        int port = GuacamoleProperties.getIntProperty("guacd-port", null);
+        // Configure and connect socket
+        String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
+        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
 
-        GuacamoleTCPClient client = new GuacamoleTCPClient(hostname, port);
-        client.connect(config);
+        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket(hostname, port),
+                config
+        );
 
-        // Associate client with tunnel
-        GuacamoleTunnel tunnel = new GuacamoleTunnel(client);
+        // Associate socket with tunnel
+        GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
 
         // Attach tunnel to session
         GuacamoleSession session = new GuacamoleSession(httpSession);
