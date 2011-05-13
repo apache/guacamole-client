@@ -26,6 +26,8 @@ import net.sourceforge.guacamole.GuacamoleException;
 
 public class GuacamoleProperties {
 
+    private GuacamoleProperties() {}
+
     public static final StringGuacamoleProperty GUACD_HOSTNAME = new StringGuacamoleProperty() {
 
         @Override
