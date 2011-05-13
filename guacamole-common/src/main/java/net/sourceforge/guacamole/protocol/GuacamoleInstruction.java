@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole;
+package net.sourceforge.guacamole.protocol;
 
 import java.util.HashMap;
 

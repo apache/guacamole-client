@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.tunnel;
+package net.sourceforge.guacamole.net;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -21,29 +21,53 @@ package net.sourceforge.guacamole.net.tunnel;
 
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.io.GuacamoleReader;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.io.GuacamoleWriter;
 
 public class GuacamoleTunnel {
 
     private UUID uuid;
-    private GuacamoleClient client;
-    private ReentrantLock instructionStreamLock;
+    private GuacamoleSocket socket;
 
-    public GuacamoleTunnel(GuacamoleClient client) throws GuacamoleException {
+    private ReentrantLock readerLock;
+    private ReentrantLock writerLock;
 
-        this.client = client;
-        instructionStreamLock = new ReentrantLock();
+    public GuacamoleTunnel(GuacamoleSocket socket) throws GuacamoleException {
+
+        this.socket = socket;
         uuid = UUID.randomUUID();
 
+        readerLock = new ReentrantLock();
+        writerLock = new ReentrantLock();
+
     }
 
-    public GuacamoleClient getClient() throws GuacamoleException {
-        return client;
+    public GuacamoleReader acquireReader() {
+        readerLock.lock();
+        return socket.getReader();
     }
 
-    public ReentrantLock getInstructionStreamLock() {
-        return instructionStreamLock;
+    public void releaseReader() {
+        readerLock.unlock();
+    }
+
+    public boolean hasQueuedReaderThreads() {
+        return readerLock.hasQueuedThreads();
+    }
+
+    public GuacamoleWriter acquireWriter() {
+        writerLock.lock();
+        return socket.getWriter();
+    }
+
+    public void releaseWriter() {
+        writerLock.unlock();
+    }
+
+    public boolean hasQueuedWriterThreads() {
+        return writerLock.hasQueuedThreads();
     }
 
     public UUID getUUID() {

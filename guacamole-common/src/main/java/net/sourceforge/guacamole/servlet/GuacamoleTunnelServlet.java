@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.tunnel;
+package net.sourceforge.guacamole.servlet;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -18,20 +18,21 @@ package net.sourceforge.guacamole.net.tunnel;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.concurrent.locks.ReentrantLock;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleClient;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.GuacamoleSession;
+import net.sourceforge.guacamole.io.GuacamoleReader;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.io.GuacamoleWriter;
 
 
 public abstract class GuacamoleTunnelServlet extends HttpServlet {
@@ -127,8 +128,8 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
         if (tunnel == null)
             throw new GuacamoleException("No such tunnel.");
 
-        ReentrantLock instructionStreamLock = tunnel.getInstructionStreamLock();
-        instructionStreamLock.lock();
+        // Obtain exclusive read access
+        GuacamoleReader reader = tunnel.acquireReader();
 
         try {
 
@@ -139,12 +140,9 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
             Writer out = response.getWriter();
 
-            // Query new update from server
-            GuacamoleClient client = tunnel.getClient();
-
             // For all messages, until another stream is ready (we send at least one message)
             char[] message;
-            while ((message = client.read()) != null) {
+            while ((message = reader.read()) != null) {
 
                 // Get message output bytes
                 out.write(message, 0, message.length);
@@ -152,7 +150,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
                 response.flushBuffer();
 
                 // No more messages another stream can take over
-                if (instructionStreamLock.hasQueuedThreads())
+                if (tunnel.hasQueuedReaderThreads())
                     break;
 
             }
@@ -175,7 +173,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             throw new GuacamoleException("I/O error writing to servlet output stream.", e);
         }
         finally {
-            instructionStreamLock.unlock();
+            tunnel.releaseReader();
         }
 
     }
@@ -199,18 +197,21 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
         // Send data
         try {
 
-            GuacamoleClient client = tunnel.getClient();
+            GuacamoleWriter writer = tunnel.acquireWriter();
 
             Reader input = request.getReader();
             char[] buffer = new char[8192];
 
             int length;
             while ((length = input.read(buffer, 0, buffer.length)) != -1)
-                client.write(buffer, 0, length);
+                writer.write(buffer, 0, length);
 
         }
         catch (IOException e) {
             throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+        }
+        finally {
+            tunnel.releaseWriter();
         }
 
     }

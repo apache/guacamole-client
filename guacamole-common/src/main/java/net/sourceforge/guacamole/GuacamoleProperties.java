@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole;
 
 /*
  *  Guacamole - Clientless Remote Desktop

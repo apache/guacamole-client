@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.servlet;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -19,11 +19,11 @@ package net.sourceforge.guacamole.net;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.net.tunnel.GuacamoleTunnel;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleTunnel;
 
 public class GuacamoleSession {
 

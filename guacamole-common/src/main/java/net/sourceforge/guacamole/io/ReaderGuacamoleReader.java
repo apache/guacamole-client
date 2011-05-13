@@ -1,5 +1,13 @@
 
-package net.sourceforge.guacamole;
+package net.sourceforge.guacamole.io;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
+import net.sourceforge.guacamole.protocol.Configuration;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -19,77 +27,21 @@ package net.sourceforge.guacamole;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
+public class ReaderGuacamoleReader implements GuacamoleReader {
 
-import java.io.Reader;
-import java.io.InputStreamReader;
-
-import java.io.Writer;
-import java.io.OutputStreamWriter;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-
-
-public class GuacamoleTCPClient extends GuacamoleClient {
-
-    private static final int SOCKET_TIMEOUT = 15000;
-
-    private Socket sock;
     private Reader input;
-    private Writer output;
 
-    public GuacamoleTCPClient(String hostname, int port) throws GuacamoleException {
-
-        try {
-
-            // Get address
-            SocketAddress address = new InetSocketAddress(
-                    InetAddress.getByName(hostname),
-                    port
-            );
-
-            // Connect with timeout
-            sock = new Socket();
-            sock.connect(address, SOCKET_TIMEOUT);
-
-            // Set read timeout
-            sock.setSoTimeout(SOCKET_TIMEOUT);
-
-            // On successful connect, retrieve I/O streams
-            input = new InputStreamReader(sock.getInputStream());
-            output = new OutputStreamWriter(sock.getOutputStream());
-
-        }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
-
-    }
-
-    public void write(char[] chunk, int off, int len) throws GuacamoleException {
-        try {
-            output.write(chunk, off, len);
-            output.flush();
-        }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
-    }
-
-    public void disconnect() throws GuacamoleException {
-        try {
-            sock.close();
-        }
-        catch (IOException e) {
-            throw new GuacamoleException(e);
-        }
+    public ReaderGuacamoleReader(Reader input) {
+        this.input = input;
     }
 
     private int usedLength = 0;
     private char[] buffer = new char[20000];
 
+    private int instructionStart;
+    private char[] instructionBuffer;
+
+    @Override
     public char[] read() throws GuacamoleException {
 
         try {
@@ -139,6 +91,66 @@ public class GuacamoleTCPClient extends GuacamoleClient {
         catch (IOException e) {
             throw new GuacamoleException(e);
         }
+
+    }
+
+    @Override
+    public GuacamoleInstruction readInstruction() throws GuacamoleException {
+
+        // Fill instructionBuffer if not already filled
+        if (instructionBuffer == null) {
+            instructionBuffer = read();
+            instructionStart = 0;
+        }
+
+        // Locate end-of-opcode and end-of-instruction
+        int opcodeEnd = -1;
+        int instructionEnd = -1;
+
+        for (int i=instructionStart; i<instructionBuffer.length; i++) {
+
+            char c = instructionBuffer[i];
+
+            if (c == ':')
+                opcodeEnd = i;
+
+            else if (c == ';') {
+                instructionEnd = i;
+                break;
+            }
+
+        }
+
+        // If no end-of-instruction marker, malformed.
+        if (instructionEnd == -1)
+            throw new GuacamoleException("Malformed instruction.");
+
+        // If no end-of-opcode marker, end is end-of-instruction
+        if (opcodeEnd == -1)
+            opcodeEnd = instructionEnd;
+
+        // Parse opcode
+        String opcode = new String(instructionBuffer, instructionStart, opcodeEnd - instructionStart);
+
+        // Parse args
+        String[] args;
+        if (instructionEnd > opcodeEnd)
+            args = new String(instructionBuffer, opcodeEnd+1, instructionEnd - opcodeEnd - 1).split(",");
+        else
+            args = new String[0];
+
+        // Create instruction
+        GuacamoleInstruction instruction = new GuacamoleInstruction(
+                Operation.fromOpcode(opcode),
+                args
+        );
+
+        // Advance instructionBuffer
+        instructionStart = instructionEnd + 1;
+        if (instructionStart >= instructionBuffer.length)
+            instructionBuffer = null;
+
+        return instruction;
 
     }
 

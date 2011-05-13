@@ -1,7 +1,8 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.io;
 
-import java.util.HashMap;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -21,25 +22,10 @@ import java.util.HashMap;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Configuration {
+public interface GuacamoleWriter {
 
-    private String protocol;
-    private HashMap<String, String> parameters = new HashMap<String, String>();
-
-    public String getProtocol() {
-        return protocol;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-    public String getParameter(String name) {
-        return parameters.get(name);
-    }
-
-    public void setParameter(String name, String value) {
-        parameters.put(name, value);
-    }
+    public void write(char[] chunk, int off, int len) throws GuacamoleException;
+    public void write(char[] chunk) throws GuacamoleException;
+    public void writeInstruction(GuacamoleInstruction instruction) throws GuacamoleException;
 
 }
