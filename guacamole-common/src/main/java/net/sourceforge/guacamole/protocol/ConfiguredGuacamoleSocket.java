@@ -25,11 +25,11 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class ConfiguredSocket implements GuacamoleSocket {
+public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleSocket socket;
 
-    public ConfiguredSocket(GuacamoleSocket socket, Configuration config) throws GuacamoleException {
+    public ConfiguredGuacamoleSocket(GuacamoleSocket socket, GuacamoleConfiguration config) throws GuacamoleException {
 
         this.socket = socket;
 

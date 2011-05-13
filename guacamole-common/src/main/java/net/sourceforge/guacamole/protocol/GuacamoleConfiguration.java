@@ -21,7 +21,7 @@ import java.util.HashMap;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public class Configuration {
+public class GuacamoleConfiguration {
 
     private String protocol;
     private HashMap<String, String> parameters = new HashMap<String, String>();
