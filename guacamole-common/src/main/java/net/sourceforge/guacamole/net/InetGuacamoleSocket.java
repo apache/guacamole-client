@@ -35,7 +35,7 @@ import java.net.SocketAddress;
 import net.sourceforge.guacamole.GuacamoleException;
 
 
-public class TCPGuacamoleSocket implements GuacamoleSocket {
+public class InetGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleReader reader;
     private GuacamoleWriter writer;
@@ -43,7 +43,7 @@ public class TCPGuacamoleSocket implements GuacamoleSocket {
     private static final int SOCKET_TIMEOUT = 15000;
     private Socket sock;
 
-    public TCPGuacamoleSocket(String hostname, int port) throws GuacamoleException {
+    public InetGuacamoleSocket(String hostname, int port) throws GuacamoleException {
 
         try {
 
