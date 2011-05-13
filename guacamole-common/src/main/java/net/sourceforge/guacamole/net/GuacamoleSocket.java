@@ -1,7 +1,6 @@
 
 package net.sourceforge.guacamole.net;
 
-import net.sourceforge.guacamole.protocol.Configuration;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
@@ -29,7 +28,6 @@ public interface GuacamoleSocket {
     public GuacamoleReader getReader();
     public GuacamoleWriter getWriter();
 
-    public void connect(Configuration config) throws GuacamoleException;
-    public void disconnect() throws GuacamoleException;
+    public void close() throws GuacamoleException;
 
 }

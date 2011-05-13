@@ -1,15 +1,11 @@
 
-package net.sourceforge.guacamole.net;
+package net.sourceforge.guacamole.protocol;
 
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
-import net.sourceforge.guacamole.protocol.Configuration;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -29,14 +25,17 @@ import net.sourceforge.guacamole.protocol.Configuration;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-public abstract class AbstractGuacamoleSocket implements GuacamoleSocket {
+public class ConfiguredSocket implements GuacamoleSocket {
 
-    @Override
-    public void connect(Configuration config) throws GuacamoleException {
+    private GuacamoleSocket socket;
+
+    public ConfiguredSocket(GuacamoleSocket socket, Configuration config) throws GuacamoleException {
+
+        this.socket = socket;
 
         // Get reader and writer
-        GuacamoleReader reader = getReader();
-        GuacamoleWriter writer = getWriter();
+        GuacamoleReader reader = socket.getReader();
+        GuacamoleWriter writer = socket.getWriter();
 
         // Send protocol
         writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_SELECT, config.getProtocol()));
@@ -64,6 +63,21 @@ public abstract class AbstractGuacamoleSocket implements GuacamoleSocket {
         // Send args
         writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_CONNECT, args));
 
+    }
+
+    @Override
+    public GuacamoleWriter getWriter() {
+        return socket.getWriter();
+    }
+
+    @Override
+    public GuacamoleReader getReader() {
+        return socket.getReader();
+    }
+
+    @Override
+    public void close() throws GuacamoleException {
+        socket.close();
     }
 
 }

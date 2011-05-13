@@ -3,11 +3,9 @@ package net.sourceforge.guacamole.io;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.Writer;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
-import net.sourceforge.guacamole.protocol.Configuration;
 
 /*
  *  Guacamole - Clientless Remote Desktop

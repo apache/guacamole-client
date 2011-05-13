@@ -23,7 +23,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 
 public class GuacamoleTunnel {

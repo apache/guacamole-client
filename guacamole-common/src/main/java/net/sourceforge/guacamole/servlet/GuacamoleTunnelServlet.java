@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 
 
@@ -47,6 +46,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
         service(request, response);
     }
 
+    @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         try {

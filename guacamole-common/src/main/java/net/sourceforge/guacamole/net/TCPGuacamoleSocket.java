@@ -35,7 +35,7 @@ import java.net.SocketAddress;
 import net.sourceforge.guacamole.GuacamoleException;
 
 
-public class TCPGuacamoleSocket extends AbstractGuacamoleSocket {
+public class TCPGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleReader reader;
     private GuacamoleWriter writer;
@@ -72,7 +72,7 @@ public class TCPGuacamoleSocket extends AbstractGuacamoleSocket {
     }
 
     @Override
-    public void disconnect() throws GuacamoleException {
+    public void close() throws GuacamoleException {
         try {
             sock.close();
         }
