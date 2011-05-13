@@ -19,16 +19,41 @@ package net.sourceforge.guacamole;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+/**
+ * A generic exception thrown when parts of the Guacamole API encounter
+ * errors.
+ *
+ * @author Michael Jumper
+ */
 public class GuacamoleException extends Exception {
 
+    /**
+     * Creates a new GuacamoleException with the given message and cause.
+     *
+     * @param message A human readable description of the exception that
+     *                occurred.
+     * @param cause The cause of this exception.
+     */
     public GuacamoleException(String message, Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Creates a new GuacamoleException with the given message.
+     *
+     * @param message A human readable description of the exception that
+     *                occurred.
+     */
     public GuacamoleException(String message) {
         super(message);
     }
 
+    /**
+     * Creates a new GuacamoleException with the given cause.
+     *
+     * @param cause The cause of this exception.
+     */
     public GuacamoleException(Throwable cause) {
         super(cause);
     }
