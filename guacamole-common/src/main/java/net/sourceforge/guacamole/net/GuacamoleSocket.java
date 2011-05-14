@@ -23,11 +23,39 @@ import net.sourceforge.guacamole.io.GuacamoleWriter;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Provides abstract socket-like access to a Guacamole connection.
+ *
+ * @author Michael Jumper
+ */
 public interface GuacamoleSocket {
 
+    /**
+     * Returns a GuacamoleReader which can be used to read from the
+     * Guacamole instruction stream associated with the connection
+     * represented by this GuacamoleSocket.
+     *
+     * @return A GuacamoleReader which can be used to read from the
+     *         Guacamole instruction stream.
+     */
     public GuacamoleReader getReader();
+
+    /**
+     * Returns a GuacamoleWriter which can be used to write to the
+     * Guacamole instruction stream associated with the connection
+     * represented by this GuacamoleSocket.
+     *
+     * @return A GuacamoleWriter which can be used to write to the
+     *         Guacamole instruction stream.
+     */
     public GuacamoleWriter getWriter();
 
+    /**
+     * Releases all resources in use by the connection represented by this
+     * GuacamoleSocket.
+     *
+     * @throws GuacamoleException If an error occurs while releasing resources.
+     */
     public void close() throws GuacamoleException;
 
 }

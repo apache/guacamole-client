@@ -35,6 +35,12 @@ import java.net.SocketAddress;
 import net.sourceforge.guacamole.GuacamoleException;
 
 
+/**
+ * Provides abstract socket-like access to a Guacamole connection over a given
+ * hostname and port.
+ *
+ * @author Michael Jumper
+ */
 public class InetGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleReader reader;
@@ -43,6 +49,16 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
     private static final int SOCKET_TIMEOUT = 15000;
     private Socket sock;
 
+    /**
+     * Creates a new InetGuacamoleSocket which reads and writes instructions
+     * to the Guacamole instruction stream of the Guacamole proxy server
+     * running at the given hostname and port.
+     *
+     * @param hostname The hostname of the Guacamole proxy server to connect to.
+     * @param port The port of the Guacamole proxy server to connect to.
+     * @throws GuacamoleException If an error occurs while connecting to the
+     *                            Guacamole proxy server.
+     */
     public InetGuacamoleSocket(String hostname, int port) throws GuacamoleException {
 
         try {

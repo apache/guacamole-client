@@ -21,10 +21,15 @@ package net.sourceforge.guacamole.net;
 
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
-import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 
+/**
+ * Provides a unique identifier and synchronized access to the GuacamoleReader
+ * and GuacamoleWriter associated with a GuacamoleSocket.
+ *
+ * @author Michael Jumper
+ */
 public class GuacamoleTunnel {
 
     private UUID uuid;
@@ -33,7 +38,13 @@ public class GuacamoleTunnel {
     private ReentrantLock readerLock;
     private ReentrantLock writerLock;
 
-    public GuacamoleTunnel(GuacamoleSocket socket) throws GuacamoleException {
+    /**
+     * Creates a new GuacamoleTunnel which synchronizes access to the
+     * Guacamole instruction stream associated with the given GuacamoleSocket.
+     *
+     * @param socket The GuacamoleSocket to provide synchronized access for.
+     */
+    public GuacamoleTunnel(GuacamoleSocket socket) {
 
         this.socket = socket;
         uuid = UUID.randomUUID();
@@ -43,32 +54,75 @@ public class GuacamoleTunnel {
 
     }
 
+    /**
+     * Acquires exclusive read access to the Guacamole instruction stream
+     * and returns a GuacamoleReader for reading from that stream.
+     *
+     * @return A GuacamoleReader for reading from the Guacamole instruction
+     *         stream.
+     */
     public GuacamoleReader acquireReader() {
         readerLock.lock();
         return socket.getReader();
     }
 
+    /**
+     * Relinquishes exclusive read access to the Guacamole instruction
+     * stream. This function should be called whenever a thread finishes using
+     * a GuacamoleTunnel's GuacamoleReader.
+     */
     public void releaseReader() {
         readerLock.unlock();
     }
 
+    /**
+     * Returns whether there are threads waiting for read access to the
+     * Guacamole instruction stream.
+     *
+     * @return true if threads are waiting for read access the Guacamole
+     *         instruction stream, false otherwise.
+     */
     public boolean hasQueuedReaderThreads() {
         return readerLock.hasQueuedThreads();
     }
 
+    /**
+     * Acquires exclusive write access to the Guacamole instruction stream
+     * and returns a GuacamoleWriter for writing to that stream.
+     *
+     * @return A GuacamoleWriter for writing to the Guacamole instruction
+     *         stream.
+     */
     public GuacamoleWriter acquireWriter() {
         writerLock.lock();
         return socket.getWriter();
     }
 
+    /**
+     * Relinquishes exclusive write access to the Guacamole instruction
+     * stream. This function should be called whenever a thread finishes using
+     * a GuacamoleTunnel's GuacamoleWriter.
+     */
     public void releaseWriter() {
         writerLock.unlock();
     }
 
+    /**
+     * Returns whether there are threads waiting for write access to the
+     * Guacamole instruction stream.
+     *
+     * @return true if threads are waiting for write access the Guacamole
+     *         instruction stream, false otherwise.
+     */
     public boolean hasQueuedWriterThreads() {
         return writerLock.hasQueuedThreads();
     }
 
+    /**
+     * Returns the unique identifier associated with this GuacamoleTunnel.
+     *
+     * @return The unique identifier associated with this GuacamoleTunnel.
+     */
     public UUID getUUID() {
         return uuid;
     }
