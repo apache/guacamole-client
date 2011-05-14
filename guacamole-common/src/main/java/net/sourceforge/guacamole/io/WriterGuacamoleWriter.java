@@ -24,10 +24,22 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A GuacamoleWriter which wraps a standard Java Writer, using that Writer as
+ * the Guacamole instruction stream.
+ *
+ * @author Michael Jumper
+ */
 public class WriterGuacamoleWriter implements GuacamoleWriter {
 
     private Writer output;
 
+    /**
+     * Creates a new WriterGuacamoleWriter which will use the given Writer as
+     * the Guacamole instruction stream.
+     *
+     * @param output The Writer to use as the Guacamole instruction stream.
+     */
     public WriterGuacamoleWriter(Writer output) {
         this.output = output;
     }

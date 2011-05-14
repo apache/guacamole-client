@@ -25,10 +25,22 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
+ * the Guacamole instruction stream.
+ *
+ * @author Michael Jumper
+ */
 public class ReaderGuacamoleReader implements GuacamoleReader {
 
     private Reader input;
 
+    /**
+     * Creates a new ReaderGuacamoleReader which will use the given Reader as
+     * the Guacamole instruction stream.
+     *
+     * @param input The Reader to use as the Guacamole instruction stream.
+     */
     public ReaderGuacamoleReader(Reader input) {
         this.input = input;
     }
