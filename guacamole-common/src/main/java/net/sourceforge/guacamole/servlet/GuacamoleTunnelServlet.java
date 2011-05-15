@@ -33,7 +33,12 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 
-
+/**
+ * A HttpServlet implementing and abstracting the operations required by the
+ * JavaScript Guacamole client's tunnel.
+ *
+ * @author Michael Jumper
+ */
 public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     @Override
@@ -117,8 +122,41 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     }
 
+    /**
+     * Called whenever the JavaScript Guacamole client makes a connection
+     * request. It it up to the implementor of this function to define what
+     * conditions must be met for a tunnel to be configured and returned as a
+     * result of this connection request (whether some sort of credentials must
+     * be specified, for example).
+     *
+     * @param request The HttpServletRequest associated with the connection
+     *                request received. Any parameters specified along with
+     *                the connection request can be read from this object.
+     * @return A newly constructed GuacamoleTunnel if successful,
+     *         null otherwise.
+     * @throws GuacamoleException If an error occurs while constructing the
+     *                            GuacamoleTunnel, or if the conditions
+     *                            required for connection are not met.
+     */
     protected abstract GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException;
 
+    /**
+     * Called whenever the JavaScript Guacamole client makes a read request.
+     * This function should in general not be overridden, as it already
+     * contains a proper implementation of the read operation.
+     *
+     * @param request The HttpServletRequest associated with the read request
+     *                received.
+     * @param response The HttpServletResponse associated with the write request
+     *                 received. Any data to be sent to the client in response
+     *                 to the write request should be written to the response
+     *                 body of this HttpServletResponse.
+     * @param tunnelUUID The UUID of the tunnel to read from, as specified in
+     *                   the write request. This tunnel must be attached to
+     *                   the Guacamole session.
+     * @throws GuacamoleException If an error occurs while handling the read
+     *                            request.
+     */
     protected void doRead(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
 
         HttpSession httpSession = request.getSession(false);
@@ -178,6 +216,22 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     }
 
+    /**
+     * Called whenever the JavaScript Guacamole client makes a write request.
+     * This function should in general not be overridden, as it already
+     * contains a proper implementation of the write operation.
+     *
+     * @param request The HttpServletRequest associated with the write request
+     *                received. Any data to be written will be specified within
+     *                the body of this request.
+     * @param response The HttpServletResponse associated with the write request
+     *                 received.
+     * @param tunnelUUID The UUID of the tunnel to write to, as specified in
+     *                   the write request. This tunnel must be attached to
+     *                   the Guacamole session.
+     * @throws GuacamoleException If an error occurs while handling the write
+     *                            request.
+     */
     protected void doWrite(HttpServletRequest request, HttpServletResponse response, String tunnelUUID) throws GuacamoleException {
 
         HttpSession httpSession = request.getSession(false);
