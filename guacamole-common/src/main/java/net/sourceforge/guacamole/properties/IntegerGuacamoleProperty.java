@@ -21,6 +21,11 @@ package net.sourceforge.guacamole.properties;
 
 import net.sourceforge.guacamole.GuacamoleException;
 
+/**
+ * A GuacamoleProperty whose value is an integer.
+ *
+ * @author Michael Jumper
+ */
 public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Integer> {
 
     @Override

@@ -24,10 +24,20 @@ import java.io.InputStream;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
 
+/**
+ * Simple utility class for reading properties from the guacamole.properties
+ * file in the root of the classpath.
+ *
+ * @author Michael Jumper
+ */
 public class GuacamoleProperties {
 
     private GuacamoleProperties() {}
 
+    /**
+     * The hostname of the server where guacd (the Guacamole proxy server) is
+     * running.
+     */
     public static final StringGuacamoleProperty GUACD_HOSTNAME = new StringGuacamoleProperty() {
 
         @Override
@@ -35,6 +45,9 @@ public class GuacamoleProperties {
 
     };
 
+    /**
+     * The port that guacd (the Guacamole proxy server) is listening on.
+     */
     public static final IntegerGuacamoleProperty GUACD_PORT = new IntegerGuacamoleProperty() {
 
         @Override
@@ -64,6 +77,18 @@ public class GuacamoleProperties {
 
     }
 
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any.
+     *
+     * @param <Type> The type that the given property is parsed into.
+     * @param property The property to read from guacamole.properties.
+     * @return The parsed value of the property as read from
+     *         guacamole.properties.
+     * @throws GuacamoleException If an error occurs while parsing the value
+     *                            for the given property in
+     *                            guacamole.properties.
+     */
     public static <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
 
         if (exception != null)

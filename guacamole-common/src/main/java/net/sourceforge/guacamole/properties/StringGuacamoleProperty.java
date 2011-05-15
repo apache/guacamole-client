@@ -21,6 +21,11 @@ package net.sourceforge.guacamole.properties;
 
 import net.sourceforge.guacamole.GuacamoleException;
 
+/**
+ * A GuacamoleProperty whose value is a simple string.
+ *
+ * @author Michael Jumper
+ */
 public abstract class StringGuacamoleProperty implements GuacamoleProperty<String> {
 
     @Override

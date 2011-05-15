@@ -22,6 +22,11 @@ package net.sourceforge.guacamole.properties;
 import java.io.File;
 import net.sourceforge.guacamole.GuacamoleException;
 
+/**
+ * A GuacamoleProperty whose value is a filename.
+ *
+ * @author Michael Jumper
+ */
 public abstract class FileGuacamoleProperty implements GuacamoleProperty<File> {
 
     @Override
