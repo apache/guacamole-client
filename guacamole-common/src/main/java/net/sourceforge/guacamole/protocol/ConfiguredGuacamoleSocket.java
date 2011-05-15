@@ -25,10 +25,33 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * A GuacamoleSocket which pre-configures the connection based on a given
+ * GuacamoleConfiguration, completing the initial protocol handshake before
+ * accepting data for read or write.
+ *
+ * This is useful for forcing a connection to the Guacamole proxy server with
+ * a specific configuration while disallowing the client that will be using
+ * this GuacamoleSocket from manually controlling the initial protocol
+ * handshake.
+ *
+ * @author Michael Jumper
+ */
 public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleSocket socket;
 
+    /**
+     * Creates a new ConfiguredGuacamoleSocket which uses the given
+     * GuacamoleConfiguration to complete the initial protocol handshake over
+     * the given GuacamoleSocket.
+     *
+     * @param socket The GuacamoleSocket to wrap.
+     * @param config The GuacamoleConfiguration to use to complete the initial
+     *               protocol handshake.
+     * @throws GuacamoleException If an error occurs while completing the
+     *                            initial protocol handshake.
+     */
     public ConfiguredGuacamoleSocket(GuacamoleSocket socket, GuacamoleConfiguration config) throws GuacamoleException {
 
         this.socket = socket;

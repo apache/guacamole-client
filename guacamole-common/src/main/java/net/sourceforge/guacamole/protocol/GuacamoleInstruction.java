@@ -21,23 +21,55 @@ import java.util.HashMap;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * An abstract representation of a Guacamole instruction, as defined by the
+ * Guacamole protocol.
+ *
+ * @author Michael Jumper
+ */
 public class GuacamoleInstruction {
 
+    /**
+     * The operation performed by a particular Guacamole instruction. Each
+     * Operation is associated with a unique opcode.
+     */
     public enum Operation {
 
+        /**
+         * Message sent from client to server specifying which protocol is
+         * to be used.
+         */
         CLIENT_SELECT("select"),
+
+        /**
+         * Message sent from client to server specifying which argument
+         * values correspond to the arguments required by the selected
+         * protocol.
+         */
         CLIENT_CONNECT("connect"),
 
+        /**
+         * Message sent from server to client specifying which arguments
+         * are required by the selected protocol.
+         */
         SERVER_ARGS("args");
 
         private String opcode;
-        private Operation(String opcode) { this.opcode = opcode; }
+        private Operation(String opcode) {
+            this.opcode = opcode;
+        }
 
+        /**
+         * Returns the unique opcode associated with this Operation.
+         * @return The unique opcode associated with this Operation.
+         */
         public String getOpcode() {
             return opcode;
         }
 
-        // Maintain static hash of all opcodes
+        /**
+         * Static hash of all opcodes and their corresponding Operations.
+         */
         private static final HashMap<String, Operation> opcodeToOperation;
         static {
 
@@ -48,6 +80,13 @@ public class GuacamoleInstruction {
 
         }
 
+        /**
+         * Returns the corresponding Operation having the given opcode, if any.
+         *
+         * @param opcode The unique opcode associated with an Operation.
+         * @return The Operation associated with the given opcode, or null if
+         *         no such Operation is defined.
+         */
         public static Operation fromOpcode(String opcode) {
             return opcodeToOperation.get(opcode);
         }
@@ -57,19 +96,45 @@ public class GuacamoleInstruction {
     private Operation operation;
     private String[] args;
 
+    /**
+     * Creates a new GuacamoleInstruction having the given Operation and
+     * list of arguments values.
+     *
+     * @param operation The Operation of the instruction to create.
+     * @param args The list of argument values to provide in the new
+     *             instruction if any.
+     */
     public GuacamoleInstruction(Operation operation, String... args) {
         this.operation = operation;
         this.args = args;
     }
 
+    /**
+     * Returns the Operation associated with this GuacamoleInstruction.
+     * @return The Operation associated with this GuacamoleInstruction.
+     */
     public Operation getOperation() {
         return operation;
     }
 
+    /**
+     * Returns an array of all argument values specified for this
+     * GuacamoleInstruction.
+     *
+     * @return An array of all argument values specified for this
+     *         GuacamoleInstruction.
+     */
     public String[] getArgs() {
         return args;
     }
 
+    /**
+     * Returns this GuacamoleInstruction in the form it would be sent over the
+     * Guacamole protocol.
+     *
+     * @return This GuacamoleInstruction in the form it would be sent over the
+     *         Guacamole protocol.
+     */
     @Override
     public String toString() {
 
