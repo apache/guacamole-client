@@ -307,12 +307,14 @@ function GuacamoleClient(display, tunnel) {
             var image = new Image();
             image.onload = function() {
                 cursorImage = image;
+
+                var cursorX = cursorRectX + cursorHotspotX;
+                var cursorY = cursorRectY + cursorHotspotY;
+
                 cursorHotspotX = x;
                 cursorHotspotY = y;
-                redrawCursor(
-                    cursorRectX + cursorHotspotX,
-                    cursorRectY + cursorHotspotY
-                );
+
+                redrawCursor(cursorX, cursorY);
             };
             image.src = "data:image/png;base64," + data
 
