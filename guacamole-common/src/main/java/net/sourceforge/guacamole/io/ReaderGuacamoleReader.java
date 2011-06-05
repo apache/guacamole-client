@@ -1,12 +1,6 @@
 
 package net.sourceforge.guacamole.io;
 
-import java.io.IOException;
-import java.io.Reader;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -24,6 +18,12 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import java.io.IOException;
+import java.io.Reader;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
 /**
  * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
@@ -54,6 +54,17 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
     @Override
     public char[] read() throws GuacamoleException {
 
+        // If data was previously read via readInstruction(), return remaining
+        // data instead of reading more.
+        if (instructionBuffer != null) {
+            
+            char[] chunk = new char[instructionBuffer.length - instructionStart];
+            System.arraycopy(instructionBuffer, instructionStart, chunk, 0, chunk.length); 
+            instructionBuffer = null;
+            
+            return chunk;
+        }
+        
         try {
 
             // While we're blocking, or input is available

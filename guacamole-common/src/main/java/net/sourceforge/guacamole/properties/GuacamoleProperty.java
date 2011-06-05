@@ -1,8 +1,6 @@
 
 package net.sourceforge.guacamole.properties;
 
-import net.sourceforge.guacamole.GuacamoleException;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -20,6 +18,8 @@ import net.sourceforge.guacamole.GuacamoleException;
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import net.sourceforge.guacamole.GuacamoleException;
 
 /**
  * An abstract representation of a property in the guacamole.properties file,

@@ -1,11 +1,6 @@
 
 package net.sourceforge.guacamole.io;
 
-import java.io.IOException;
-import java.io.Writer;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -23,6 +18,11 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import java.io.IOException;
+import java.io.Writer;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 
 /**
  * A GuacamoleWriter which wraps a standard Java Writer, using that Writer as

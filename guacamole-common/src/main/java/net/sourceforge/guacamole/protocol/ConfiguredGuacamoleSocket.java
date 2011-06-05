@@ -1,12 +1,6 @@
 
 package net.sourceforge.guacamole.protocol;
 
-import net.sourceforge.guacamole.io.GuacamoleReader;
-import net.sourceforge.guacamole.io.GuacamoleWriter;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -24,6 +18,12 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import net.sourceforge.guacamole.io.GuacamoleReader;
+import net.sourceforge.guacamole.io.GuacamoleWriter;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
 /**
  * A GuacamoleSocket which pre-configures the connection based on a given
