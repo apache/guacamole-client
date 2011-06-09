@@ -46,15 +46,10 @@ function GuacamoleMouse(element) {
     }
 
 
-    // Block context menu so right-click gets sent properly
-    element.oncontextmenu = function(e) {return false;};
+    function moveMouse(pageX, pageY) {
 
-    element.onmousemove = function(e) {
-
-        e.stopPropagation();
-
-        absoluteMouseX = e.pageX;
-        absoluteMouseY = e.pageY;
+        absoluteMouseX = pageX;
+        absoluteMouseY = pageY;
 
         mouseX = absoluteMouseX - element.offsetLeft;
         mouseY = absoluteMouseY - element.offsetTop;
@@ -70,6 +65,68 @@ function GuacamoleMouse(element) {
         }
 
         movementHandler(getMouseState(0, 0));
+
+    }
+
+
+    // Block context menu so right-click gets sent properly
+    element.oncontextmenu = function(e) {return false;};
+
+    element.onmousemove = function(e) {
+
+        e.stopPropagation();
+
+        moveMouse(e.pageX, e.pageY);
+
+    };
+
+    element.ontouchend = function(e) {
+        
+        e.stopPropagation();
+        e.preventDefault();
+
+        // Release all buttons (FIXME: for now...)
+        if (mouseLeftButton || mouseMiddleButton || mouseRightButton) {
+            mouseLeftButton = 0;
+            mouseMiddleButton = 0;
+            mouseRightButton = 0;
+
+            buttonReleasedHandler(getMouseState(0, 0));
+        }
+
+    }
+
+    element.ontouchstart = function(e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (e.touches.length == 1)
+            element.ontouchmove(e);
+
+        else {
+            
+            var button = e.touches[0];
+            var pointer = e.touches[1];
+
+            if (pointer.pageX < button.pageX)
+                mouseLeftButton = 1;
+            else
+                mouseRightButton = 1;
+
+            buttonPressedHandler(getMouseState(0, 0));
+        }
+
+    };
+
+    element.ontouchmove = function(e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        var touch = e.touches[0];
+        moveMouse(touch.pageX, touch.pageY);
+
     };
 
 
