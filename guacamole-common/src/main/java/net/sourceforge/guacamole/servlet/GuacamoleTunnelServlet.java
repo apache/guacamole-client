@@ -43,16 +43,25 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        service(request, response);
+        handleTunnelRequest(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        service(request, response);
+        handleTunnelRequest(request, response);
     }
 
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    /**
+     * Dispatches every HTTP GET and POST request to the appropriate handler
+     * function based on the query string.
+     *
+     * @param request The HttpServletRequest associated with the GET or POST
+     *                request received.
+     * @param response The HttpServletResponse associated with the GET or POST
+     *                 request received.
+     * @throws ServletException If an error occurs while servicing the request.
+     */
+    protected void handleTunnelRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         try {
 
