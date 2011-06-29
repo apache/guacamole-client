@@ -92,6 +92,17 @@ div#login-dialog #login-fields {
     padding-bottom: 0.5em;
 }
 
+div#login-ui #version-dialog {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    text-align: right;
+    font-style: italic;
+    font-size: 0.75em;
+    color: black;
+    padding: 0.25em;
+}
+
 div.errorDialogOuter {
     display: table;
     height: 100%;
@@ -185,7 +196,6 @@ img {
 }
 
 img#license {
-    border: none;
     float: right;
     margin: 2px;
 }
