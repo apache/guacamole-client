@@ -123,6 +123,8 @@ div#login-ui #version-dialog {
     font-style: italic;
     font-size: 0.75em;
     color: black;
+    opacity: 0.5;
+
     padding: 0.25em;
 }
 
