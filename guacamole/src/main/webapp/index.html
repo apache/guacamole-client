@@ -80,7 +80,7 @@
                 </div>
 
                 <button id="showKeyboard">Show Keyboard</button>
-                <button id="CtrlAltDelete">Ctrl-Alt-Delete</button>
+                <button id="ctrlAltDelete">Ctrl-Alt-Delete</button>
 
                 <!-- Logo and status -->
                 <img id="logo" src="images/guacamole-logo.png" alt="Guacamole" title="Guacamole 0.4.0"/>
@@ -111,7 +111,6 @@
 
 
         <!-- Scripts -->
-        <script type="text/javascript" src="guacamole-common-js/keymap.js"></script>
         <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>
         <script type="text/javascript" src="guacamole-common-js/mouse.js"></script>
         <script type="text/javascript" src="guacamole-common-js/layer.js"></script>
@@ -397,9 +396,14 @@
                 );
 
                 // Send Ctrl-Alt-Delete
-                var CtrlAltDelete = document.getElementById("CtrlAltDelete");
+                var ctrlAltDelete = document.getElementById("ctrlAltDelete");
 
-                CtrlAltDelete.onclick = function() {
+                ctrlAltDelete.onclick = function() {
+
+                    var KEYSYM_CTRL   = 0xFF03;
+                    var KEYSYM_ALT    = 0xFFE9;
+                    var KEYSYM_DELETE = 0xFFFF;
+
                     guac.sendKeyEvent(1, KEYSYM_CTRL);
                     guac.sendKeyEvent(1, KEYSYM_ALT);
                     guac.sendKeyEvent(1, KEYSYM_DELETE);
