@@ -54,7 +54,6 @@ function GuacamoleClient(display, tunnel) {
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
-    // FIXME: Make object. Clean up.
     var cursorRectX = 0;
     var cursorRectY = 0;
     var cursorRectW = 0;
@@ -131,7 +130,7 @@ function GuacamoleClient(display, tunnel) {
     var nameHandler = null;
     this.setNameHandler = function(handler) {
         nameHandler = handler;
-    }
+    };
 
     var errorHandler = null;
     this.setErrorHandler = function(handler) {
@@ -354,7 +353,7 @@ function GuacamoleClient(display, tunnel) {
             if (layersToSync == 0)
                 tunnel.sendMessage("sync:" + timestamp + ";");
 
-        },
+        }
       
     };
 

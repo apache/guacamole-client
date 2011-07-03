@@ -68,7 +68,6 @@ function Layer(width, height) {
 
     resize(width, height);
 
-    var readyHandler = null;
     var updates = new Array();
     var autosize = 0;
 
@@ -84,7 +83,7 @@ function Layer(width, height) {
 
         this.handle = function() {
             updateHandler();
-        }
+        };
 
     }
 
@@ -117,18 +116,10 @@ function Layer(width, height) {
             updates.shift();
         }
 
-        // If done with updates, call ready handler
-        if (display.isReady() && readyHandler != null)
-            readyHandler();
-
     }
 
     display.isReady = function() {
         return updates.length == 0;
-    };
-
-    display.setReadyHandler = function(handler) {
-        readyHandler = handler;
     };
 
 
@@ -165,7 +156,7 @@ function Layer(width, height) {
     // the ready handler, which requires no pending updates)
     display.sync = function(handler) {
         reserveJob(handler);
-    }
+    };
 
     display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
 
@@ -226,7 +217,7 @@ function Layer(width, height) {
         0xC: "copy",
      /* 0xD NOT IMPLEMENTED */
         0xE: "source-over",
-        0xF: "lighter",
+        0xF: "lighter"
     };
 
     display.setChannelMask = function(mask) {
