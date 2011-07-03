@@ -29,6 +29,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
+                    
+                    <!-- Filter webapp dir --> 
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
+                    
+                    <!-- Add guacamole-common-js -->
                     <overlays>
                         <overlay>
                             <groupId>net.sourceforge.guacamole</groupId>
@@ -36,6 +46,7 @@
                             <type>zip</type>
                         </overlay>
                     </overlays>
+                    
                 </configuration>
             </plugin>
 

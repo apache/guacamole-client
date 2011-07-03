@@ -25,7 +25,7 @@ body {
 }
 
 div#login-ui {
-    background: silver;
+    background: #BCA;
     height: 100%;
     width: 100%;
     position: fixed;
@@ -57,17 +57,6 @@ div#login-dialog-middle {
 
 div#login-dialog {
 
-    background: white;
-    vertical-align: middle;
-
-    padding: 1em;
-    border: 0.2em solid black;
-
-    -khtml-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
-
     max-width: 75%;
     text-align: left;
 
@@ -82,14 +71,59 @@ div#login-dialog h1 {
 
 div#login-dialog #buttons {
     padding-top: 0.5em;
-    text-align: center;
+    text-align: right;
+}
+
+div#login-dialog #buttons input {
+    background: #9A8;
+    border: 1px solid #676;
+    color: black; 
+    padding: 0.25em;
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+div#login-dialog #buttons input:hover {
+    background: #CDB;
+    border: 1px solid #9A8;
+}
+
+div#login-dialog #buttons input:active {
+    padding-top: 0.35em;
+    padding-left: 1.1em;
+
+    padding-bottom: 0.15em;
+    padding-right: 0.9em;
 }
 
 div#login-dialog #login-fields {
-    border-top: 1px solid silver;
-    border-bottom: 1px solid silver;
-    padding-top: 0.5em;
-    padding-bottom: 0.5em;
+    
+    background: #CDB;
+    vertical-align: middle;
+
+    padding: 1em;
+    border: 1px solid #676;
+
+}
+
+div#login-dialog #login-fields input {
+    border: 1px solid #676;
+}
+
+div#login-dialog #login-fields img.logo {
+    float: left;
+}
+
+div#login-ui #version-dialog {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    text-align: right;
+
+    font-style: italic;
+    font-size: 0.75em;
+    color: black;
+    padding: 0.25em;
 }
 
 div.errorDialogOuter {
@@ -185,7 +219,6 @@ img {
 }
 
 img#license {
-    border: none;
     float: right;
     margin: 2px;
 }
@@ -236,14 +269,14 @@ div#clipboardDiv textarea {
 
 .guac-display.guac-loading {
     border: 1px dotted gray;
-    background-image: url('../images/spinner92.gif');
+    background-image: url('../images/spinner.gif');
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .guac-display.guac-error {
     border: 1px dotted red;
-    background-image: url('../images/noimage92.png');
+    background-image: url('../images/noimage.png');
     background-position: center;
     background-repeat: no-repeat;
 }
