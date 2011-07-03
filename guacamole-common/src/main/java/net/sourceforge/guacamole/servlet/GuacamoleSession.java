@@ -45,6 +45,7 @@ public class GuacamoleSession {
      * @param session The HttpSession to use as tunnel storage.
      * @throws GuacamoleException If session is null.
      */
+    @SuppressWarnings("unchecked")
     public GuacamoleSession(HttpSession session) throws GuacamoleException {
 
         if (session == null)
