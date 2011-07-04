@@ -105,7 +105,6 @@
             <div id="errorDialog" class="errorDialogOuter">
                 <div class="errorDialogMiddle">
                     <div class="errorDialog">
-                        <h1>Error</h1>
                         <p id="errorText"></p>
                         <div class="buttons"><button id="reconnect">Reconnect</button></div>
                     </div>
@@ -189,7 +188,7 @@
                 window.onresize();
 
                 var state = document.getElementById("state");
-                guac.setOnStateChangeHandler(function(clientState) {
+                guac.onstatechange = function(clientState) {
 
                         switch (clientState) {
                             case 0:
@@ -215,17 +214,17 @@
                             default:
                                 state.textContent = "Unknown";
                         }
-                });
+                };
 
                 // Cache error image (might not be available when error occurs)
                 var guacErrorImage = new Image();
                 guacErrorImage.src = "images/noguacamole-logo-24.png";
 
-                guac.setNameHandler(function(name) {
+                guac.onname = function(name) {
                     document.title = name;
-                });
+                };
 
-                guac.setErrorHandler(function(error) {
+                guac.onerror = function(error) {
 
                     guac.disconnect();
 
@@ -262,7 +261,7 @@
 
                     }
 
-                });
+                };
 
                 // Mouse
                 var mouse = new GuacamoleMouse(display);
@@ -340,11 +339,9 @@
                 };
 
                 // Server copy handler
-                guac.setClipboardHandler(
-                    function(data) {
-                        clipboardElement.value = data;
-                    }
-                );
+                guac.onclipboard = function(data) {
+                    clipboardElement.value = data;
+                };
 
 
                 // Show/Hide clipboard
