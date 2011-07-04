@@ -18,6 +18,8 @@
 
 function GuacamoleHTTPTunnel(tunnelURL) {
 
+    var tunnel = this;
+
     var tunnel_uuid;
 
     var TUNNEL_CONNECT = tunnelURL + "?connect";
@@ -36,10 +38,12 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     // Default to polling - will be turned off automatically if not needed
     var pollingMode = POLLING_ENABLED;
 
-    var instructionHandler = null;
-
     var sendingMessages = 0;
     var outputMessageBuffer = "";
+
+    // Handlers
+    tunnel.onerror = null;
+    tunnel.oninstruction = null;
 
     function sendMessage(message) {
 
@@ -119,6 +123,16 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
                 // Halt on error during request
                 if (xmlhttprequest.status == 0 || xmlhttprequest.status != 200) {
+
+                    // Get error message (if any)
+                    var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
+                    if (message)
+                        message = "Internal server error";
+
+                    // Call error handler
+                    if (tunnel.onerror) tunnel.onerror(message);
+
+                    // Finish
                     disconnect();
                     return;
                 }
@@ -160,8 +174,8 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                     }
 
                     // Call instruction handler.
-                    if (instructionHandler != null)
-                        instructionHandler(opcode, parameters);
+                    if (tunnel.oninstruction != null)
+                        tunnel.oninstruction(opcode, parameters);
                 }
 
                 // Start search at end of string.
@@ -246,11 +260,8 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     }
 
     // External API
-    this.connect = connect;
-    this.disconnect = disconnect;
-    this.sendMessage = sendMessage;
-    this.setInstructionHandler = function(handler) {
-        instructionHandler = handler;
-    };
+    tunnel.connect = connect;
+    tunnel.disconnect = disconnect;
+    tunnel.sendMessage = sendMessage;
 
 }

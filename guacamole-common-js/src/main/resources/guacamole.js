@@ -18,6 +18,8 @@
 
 function GuacamoleClient(display, tunnel) {
 
+    var guac_client = this;
+
     var STATE_IDLE          = 0;
     var STATE_CONNECTING    = 1;
     var STATE_WAITING       = 2;
@@ -26,9 +28,8 @@ function GuacamoleClient(display, tunnel) {
     var STATE_DISCONNECTED  = 5;
 
     var currentState = STATE_IDLE;
-    var stateChangeHandler = null;
 
-    tunnel.setInstructionHandler(doInstruction);
+    tunnel.oninstruction = doInstruction;
 
     // Display must be relatively positioned for mouse to be handled properly
     display.style.position = "relative";
@@ -36,14 +37,10 @@ function GuacamoleClient(display, tunnel) {
     function setState(state) {
         if (state != currentState) {
             currentState = state;
-            if (stateChangeHandler)
-                stateChangeHandler(currentState);
+            if (guac_client.onstatechange)
+                guac_client.onstatechange(currentState);
         }
     }
-
-    this.setOnStateChangeHandler = function(handler) {
-        stateChangeHandler = handler;
-    };
 
     function isConnected() {
         return currentState == STATE_CONNECTED
@@ -82,7 +79,7 @@ function GuacamoleClient(display, tunnel) {
         cursor.drawImage(cursorRectX, cursorRectY, cursorImage);
     }
 
-    this.sendKeyEvent = function(pressed, keysym) {
+    guac_client.sendKeyEvent = function(pressed, keysym) {
         // Do not send requests if not connected
         if (!isConnected())
             return;
@@ -90,7 +87,7 @@ function GuacamoleClient(display, tunnel) {
         tunnel.sendMessage("key:" +  keysym + "," + pressed + ";");
     };
 
-    this.sendMouseState = function(mouseState) {
+    guac_client.sendMouseState = function(mouseState) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -116,7 +113,7 @@ function GuacamoleClient(display, tunnel) {
         tunnel.sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
     };
 
-    this.setClipboard = function(data) {
+    guac_client.setClipboard = function(data) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -126,21 +123,10 @@ function GuacamoleClient(display, tunnel) {
     };
 
     // Handlers
-
-    var nameHandler = null;
-    this.setNameHandler = function(handler) {
-        nameHandler = handler;
-    };
-
-    var errorHandler = null;
-    this.setErrorHandler = function(handler) {
-        errorHandler = handler;
-    };
-
-    var clipboardHandler = null;
-    this.setClipboardHandler = function(handler) {
-        clipboardHandler = handler;
-    };
+    guac_client.onstatechange = null;
+    guac_client.onname = null;
+    guac_client.onerror = null;
+    guac_client.onclipboard = null;
 
     // Layers
     var displayWidth = 0;
@@ -150,7 +136,7 @@ function GuacamoleClient(display, tunnel) {
     var buffers = new Array();
     var cursor = null;
 
-    this.getLayers = function() {
+    guac_client.getLayers = function() {
         return layers;
     };
 
@@ -216,16 +202,16 @@ function GuacamoleClient(display, tunnel) {
     var instructionHandlers = {
 
         "error": function(parameters) {
-            if (errorHandler) errorHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onerror) guac_client.onerror(unescapeGuacamoleString(parameters[0]));
             disconnect();
         },
 
         "name": function(parameters) {
-            if (nameHandler) nameHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onname) guac_client.onname(unescapeGuacamoleString(parameters[0]));
         },
 
         "clipboard": function(parameters) {
-            if (clipboardHandler) clipboardHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onclipboard) guac_client.onclipboard(unescapeGuacamoleString(parameters[0]));
         },
 
         "size": function(parameters) {
@@ -432,8 +418,8 @@ function GuacamoleClient(display, tunnel) {
 
     }
 
-    this.disconnect = disconnect;
-    this.connect = function(data) {
+    guac_client.disconnect = disconnect;
+    guac_client.connect = function(data) {
 
         setState(STATE_CONNECTING);
 
@@ -448,7 +434,7 @@ function GuacamoleClient(display, tunnel) {
         setState(STATE_WAITING);
     };
 
-    this.escapeGuacamoleString   = escapeGuacamoleString;
-    this.unescapeGuacamoleString = unescapeGuacamoleString;
+    guac_client.escapeGuacamoleString   = escapeGuacamoleString;
+    guac_client.unescapeGuacamoleString = unescapeGuacamoleString;
 
 }
