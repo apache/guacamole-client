@@ -187,9 +187,16 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
             Writer out = response.getWriter();
 
+            // Detach tunnel and throw error if EOF (and we haven't sent any
+            // data yet.
+            char[] message = reader.read();
+            if (message == null) {
+                session.detachTunnel(tunnel);
+                throw new GuacamoleException("Disconnected.");
+            }
+
             // For all messages, until another stream is ready (we send at least one message)
-            char[] message;
-            while ((message = reader.read()) != null) {
+            do {
 
                 // Get message output bytes
                 out.write(message, 0, message.length);
@@ -200,12 +207,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
                 if (tunnel.hasQueuedReaderThreads())
                     break;
 
-            }
-
-            if (message == null) {
-                session.detachTunnel(tunnel);
-                throw new GuacamoleException("Disconnected.");
-            }
+            } while ((message = reader.read()) != null);
 
             // End-of-instructions marker
             out.write(';');
