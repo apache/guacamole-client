@@ -148,19 +148,10 @@ div.errorDialogMiddle {
 
 div.errorDialog {
 
-    background: #D44;
-    border: 1px solid black;
+    opacity: 0.75;
+    background: #D22;
+    border: 1px solid #F44;
     padding: 1em;
-
-    -khtml-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
-
-    -moz-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
-    -webkit-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
-    -khtml-box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
-    box-shadow: 0 0.25em 0.75em black, inset 0.1em 0.1em 0.5em #F99, inset -0.1em -0.1em 0.75em #800;
 
     max-width: 75%;
     text-align: left;
@@ -172,7 +163,6 @@ div.errorDialog h1 {
     margin: 0;
     margin-bottom: 0.25em;
     text-align: center;
-    text-shadow: 0 0 0.25em white;
 }
 
 div.errorDialog div.buttons {

@@ -85,7 +85,7 @@
                 </div>
 
                 <button id="showKeyboard">Show Keyboard</button>
-                <button id="CtrlAltDelete">Ctrl-Alt-Delete</button>
+                <button id="ctrlAltDelete">Ctrl-Alt-Delete</button>
 
                 <!-- Logo and status -->
                 <img id="status-logo" class="logo" src="images/guacamole-logo-24.png" alt="Guacamole" title="Guacamole ${project.version}"/>
@@ -106,7 +106,6 @@
             <div id="errorDialog" class="errorDialogOuter">
                 <div class="errorDialogMiddle">
                     <div class="errorDialog">
-                        <h1>Error</h1>
                         <p id="errorText"></p>
                         <div class="buttons"><button id="reconnect">Reconnect</button></div>
                     </div>
@@ -116,7 +115,6 @@
 
 
         <!-- Scripts -->
-        <script type="text/javascript" src="guacamole-common-js/keymap.js"></script>
         <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>
         <script type="text/javascript" src="guacamole-common-js/mouse.js"></script>
         <script type="text/javascript" src="guacamole-common-js/layer.js"></script>
@@ -191,7 +189,7 @@
                 window.onresize();
 
                 var state = document.getElementById("state");
-                guac.setOnStateChangeHandler(function(clientState) {
+                guac.onstatechange = function(clientState) {
 
                         switch (clientState) {
                             case 0:
@@ -217,17 +215,17 @@
                             default:
                                 state.textContent = "Unknown";
                         }
-                });
+                };
 
                 // Cache error image (might not be available when error occurs)
                 var guacErrorImage = new Image();
                 guacErrorImage.src = "images/noguacamole-logo-24.png";
 
-                guac.setNameHandler(function(name) {
+                guac.onname = function(name) {
                     document.title = name;
-                });
+                };
 
-                guac.setErrorHandler(function(error) {
+                guac.onerror = function(error) {
 
                     guac.disconnect();
 
@@ -264,7 +262,7 @@
 
                     }
 
-                });
+                };
 
                 // Mouse
                 var mouse = new GuacamoleMouse(display);
@@ -342,11 +340,9 @@
                 };
 
                 // Server copy handler
-                guac.setClipboardHandler(
-                    function(data) {
-                        clipboardElement.value = data;
-                    }
-                );
+                guac.onclipboard = function(data) {
+                    clipboardElement.value = data;
+                };
 
 
                 // Show/Hide clipboard
@@ -402,9 +398,14 @@
                 );
 
                 // Send Ctrl-Alt-Delete
-                var CtrlAltDelete = document.getElementById("CtrlAltDelete");
+                var ctrlAltDelete = document.getElementById("ctrlAltDelete");
 
-                CtrlAltDelete.onclick = function() {
+                ctrlAltDelete.onclick = function() {
+
+                    var KEYSYM_CTRL   = 0xFF03;
+                    var KEYSYM_ALT    = 0xFFE9;
+                    var KEYSYM_DELETE = 0xFFFF;
+
                     guac.sendKeyEvent(1, KEYSYM_CTRL);
                     guac.sendKeyEvent(1, KEYSYM_ALT);
                     guac.sendKeyEvent(1, KEYSYM_DELETE);
