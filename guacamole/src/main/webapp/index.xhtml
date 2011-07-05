@@ -266,44 +266,29 @@
 
                 // Mouse
                 var mouse = new GuacamoleMouse(display);
-                mouse.setButtonPressedHandler(
+                mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
                     function(mouseState) {
                         guac.sendMouseState(mouseState);
-                    }
-                );
-
-                mouse.setButtonReleasedHandler(
-                    function(mouseState) {
-                        guac.sendMouseState(mouseState);
-                    }
-                );
-
-                mouse.setMovementHandler(
-                    function(mouseState) {
-                        guac.sendMouseState(mouseState);
-                    }
-                );
+                    };
 
                 // Keyboard
                 var keyboard = new GuacamoleKeyboard(document);
 
                 function disableKeyboard() {
-                    keyboard.setKeyPressedHandler(null);
-                    keyboard.setKeyReleasedHandler(null);
+                    keyboard.onkeydown = null;
+                    keyboard.onkeyup = null;
                 }
 
                 function enableKeyboard() {
-                    keyboard.setKeyPressedHandler(
+                    keyboard.onkeydown = 
                         function (keysym) {
                             guac.sendKeyEvent(1, keysym);
-                        }
-                    );
+                        };
 
-                    keyboard.setKeyReleasedHandler(
+                    keyboard.onkeyup = 
                         function (keysym) {
                             guac.sendKeyEvent(0, keysym);
-                        }
-                    );
+                        };
                 }
 
                 // Enable keyboard by default
