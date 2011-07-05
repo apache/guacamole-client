@@ -20,12 +20,7 @@
 
 function GuacamoleMouse(element) {
 
-	/*****************************************/
-	/*** Mouse Handler                     ***/
-	/*****************************************/
-
-
-    var mouseIndex = 0;
+    var guac_mouse = this;
 
     var mouseLeftButton   = 0;
     var mouseMiddleButton = 0;
@@ -69,7 +64,8 @@ function GuacamoleMouse(element) {
             parent = parent.offsetParent;
         }
 
-        movementHandler(getMouseState(0, 0));
+        if (guac_mouse.onmousemove)
+            guac_mouse.onmousemove(getMouseState(0, 0));
     };
 
 
@@ -89,7 +85,8 @@ function GuacamoleMouse(element) {
                 break;
         }
 
-        buttonPressedHandler(getMouseState(0, 0));
+        if (guac_mouse.onmousedown)
+            guac_mouse.onmousedown(getMouseState(0, 0));
     };
 
 
@@ -109,7 +106,8 @@ function GuacamoleMouse(element) {
                 break;
         }
 
-        buttonReleasedHandler(getMouseState(0, 0));
+        if (guac_mouse.onmouseup)
+            guac_mouse.onmouseup(getMouseState(0, 0));
     };
 
     element.onmouseout = function(e) {
@@ -122,7 +120,8 @@ function GuacamoleMouse(element) {
             mouseMiddleButton = 0;
             mouseRightButton = 0;
 
-            buttonReleasedHandler(getMouseState(0, 0));
+            if (guac_mouse.onmouseup)
+                guac_mouse.onmouseup(getMouseState(0, 0));
         }
 
     };
@@ -143,14 +142,20 @@ function GuacamoleMouse(element) {
 
         // Up
         if (delta < 0) {
-            buttonPressedHandler(getMouseState(1, 0));
-            buttonReleasedHandler(getMouseState(0, 0));
+            if (guac_mouse.onmousedown)
+                guac_mouse.onmousedown(getMouseState(1, 0));
+
+            if (guac_mouse.onmouseup)
+                guac_mouse.onmouseup(getMouseState(0, 0));
         }
 
         // Down
         if (delta > 0) {
-            buttonPressedHandler(getMouseState(0, 1));
-            buttonReleasedHandler(getMouseState(0, 0));
+            if (guac_mouse.onmousedown)
+                guac_mouse.onmousedown(getMouseState(0, 1));
+            
+            if (guac_mouse.onmouseup)
+                guac_mouse.onmouseup(getMouseState(0, 0));
         }
 
         if (e.preventDefault)
@@ -165,20 +170,15 @@ function GuacamoleMouse(element) {
         handleScroll(e);
     }
 
-	var buttonPressedHandler = null;
-	var buttonReleasedHandler = null;
-	var movementHandler = null;
+	guac_mouse.onmousedown = null;
+	guac_mouse.onmouseup = null;
+	guac_mouse.onmousemove = null;
 
-	this.setButtonPressedHandler  = function(mh) {buttonPressedHandler = mh;};
-	this.setButtonReleasedHandler = function(mh) {buttonReleasedHandler = mh;};
-	this.setMovementHandler = function(mh) {movementHandler = mh;};
-
-
-    this.getX = function() {return mouseX;};
-    this.getY = function() {return mouseY;};
-    this.getLeftButton = function() {return mouseLeftButton;};
-    this.getMiddleButton = function() {return mouseMiddleButton;};
-    this.getRightButton = function() {return mouseRightButton;};
+    guac_mouse.getX = function() {return mouseX;};
+    guac_mouse.getY = function() {return mouseY;};
+    guac_mouse.getLeftButton = function() {return mouseLeftButton;};
+    guac_mouse.getMiddleButton = function() {return mouseMiddleButton;};
+    guac_mouse.getRightButton = function() {return mouseRightButton;};
 
 }
 

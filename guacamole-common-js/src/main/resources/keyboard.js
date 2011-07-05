@@ -19,6 +19,8 @@
 
 function GuacamoleKeyboard(element) {
 
+    var guac_keyboard = this;
+
     // Keymap
 
     var unshiftedKeySym = new Array();
@@ -63,11 +65,6 @@ function GuacamoleKeyboard(element) {
     // If any of these are null, the unshifted one will be used.
     var shiftedKeySym  = new Array();
     shiftedKeySym[18]  = 0xFFE7; // alt
-
-
-	/*****************************************/
-	/*** Keyboard Handler                  ***/
-	/*****************************************/
 
 	// Single key state/modifier buffer
 	var modShift = 0;
@@ -150,14 +147,14 @@ function GuacamoleKeyboard(element) {
 
 	// Sends a single keystroke over the network
 	function sendKeyPressed(keysym) {
-		if (keysym != null && keyPressedHandler)
-			keyPressedHandler(keysym);
+		if (keysym != null && guac_keyboard.onkeydown)
+			guac_keyboard.onkeydown(keysym);
 	}
 
 	// Sends a single keystroke over the network
 	function sendKeyReleased(keysym) {
-		if (keysym != null)
-			keyReleasedHandler(keysym);
+		if (keysym != null && guac_keyboard.onkeyup)
+			guac_keyboard.onkeyup(keysym);
 	}
 
 
@@ -171,7 +168,7 @@ function GuacamoleKeyboard(element) {
 	element.onkeydown = function(e) {
 
         // Only intercept if handler set
-        if (!keyPressedHandler) return true;
+        if (!guac_keyboard.onkeydown) return true;
 
 		var keynum;
 		if (window.event) keynum = window.event.keyCode;
@@ -237,7 +234,7 @@ function GuacamoleKeyboard(element) {
     element.onkeypress = function(e) {
 
         // Only intercept if handler set
-        if (!keyPressedHandler) return true;
+        if (!guac_keyboard.onkeydown) return true;
 
         if (keySymSource != KEYPRESS) return false;
 
@@ -272,7 +269,7 @@ function GuacamoleKeyboard(element) {
 	element.onkeyup = function(e) {
 
         // Only intercept if handler set
-        if (!keyReleasedHandler) return true;
+        if (!guac_keyboard.onkeyup) return true;
 
 		var keynum;
 		if (window.event) keynum = window.event.keyCode;
@@ -309,10 +306,7 @@ function GuacamoleKeyboard(element) {
 		if (docOnblur != null) docOnblur();
 	};
 
-	var keyPressedHandler = null;
-	var keyReleasedHandler = null;
-
-	this.setKeyPressedHandler = function(kh) { keyPressedHandler = kh; };
-	this.setKeyReleasedHandler = function(kh) { keyReleasedHandler = kh; };
+	guac_keyboard.onkeydown = null;
+	guac_keyboard.onkeyup = null;
 
 }
