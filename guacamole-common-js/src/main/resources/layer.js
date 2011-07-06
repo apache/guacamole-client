@@ -48,6 +48,9 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var display = document.createElement("canvas");
+    display.style.position = "absolute";
+    display.style.left = "0px";
+    display.style.top = "0px";
 
     /**
      * The 2D display context of the canvas element backing this Layer.
@@ -55,8 +58,19 @@ Guacamole.Layer = function(width, height) {
      */
     var displayContext = display.getContext("2d");
 
+    /**
+     * The queue of all pending Tasks. Tasks will be run in order, with new
+     * tasks added at the end of the queue and old tasks removed from the
+     * front of the queue (FIFO).
+     * @private
+     */
     var tasks = new Array();
 
+    /**
+     * Map of all Guacamole channel masks to HTML5 canvas composite operation
+     * names. Not all channel mask combinations are currently implemented.
+     * @private
+     */
     var compositeOperation = {
      /* 0x0 NOT IMPLEMENTED */
         0x1: "destination-in",
@@ -77,14 +91,6 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Returns the canvas element backing this Layer.
-     * @returns {Element} The canvas element backing this Layer.
-     */
-    this.getCanvas = function() {
-        return display;
-    };
-
-    /**
      * Resizes the canvas element backing this Layer without testing the
      * new size. This function should only be used internally.
      * 
@@ -93,29 +99,12 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} newHeight The new height to assign to this Layer.
      */
     function resize(newWidth, newHeight) {
-        display.style.position = "absolute";
-        display.style.left = "0px";
-        display.style.top = "0px";
-
         display.width = newWidth;
         display.height = newHeight;
 
         width = newWidth;
         height = newHeight;
     }
-
-    /**
-     * Changes the size of this Layer to the given width and height. Resizing
-     * is only attempted if the new size provided is actually different from
-     * the current size.
-     * 
-     * @param {Number} newWidth The new width to assign to this Layer.
-     * @param {Number} newHeight The new height to assign to this Layer.
-     */
-    this.resize = function(newWidth, newHeight) {
-        if (newWidth != width || newHeight != height)
-            resize(newWidth, newHeight);
-    };
 
     /**
      * Given the X and Y coordinates of the upper-left corner of a rectangle
@@ -160,27 +149,6 @@ Guacamole.Layer = function(width, height) {
     }
 
     /**
-     * Set to true if this Layer should resize itself to accomodate the
-     * dimensions of any drawing operation, and false (the default) otherwise.
-     * 
-     * Note that setting this property takes effect immediately, and thus may
-     * take effect on operations that were started in the past but have not
-     * yet completed. If you wish the setting of this flag to only modify
-     * future operations, you will need to make the setting of this flag an
-     * operation with sync().
-     * 
-     * @example
-     * // Set autosize to true for all future operations
-     * layer.sync(function() {
-     *     layer.autosize = true;
-     * });
-     * 
-     * @type Boolean
-     * @default false
-     */
-    this.autosize = false;
-
-    /**
      * A container for an task handler. Each operation which must be ordered
      * is associated with a Task that goes into a task queue. Tasks in this
      * queue are executed in order once their handlers are set, while Tasks 
@@ -202,6 +170,17 @@ Guacamole.Layer = function(width, height) {
         
     }
 
+    /**
+     * If no tasks are pending or running, run the provided handler immediately,
+     * if any. Otherwise, schedule a task to run immediately after all currently
+     * running or pending tasks are complete.
+     * 
+     * @private
+     * @param {function} handler The function to call when possible, if any.
+     * @returns {Task} The Task created and added to the queue for future
+     *                 running, if any, or null if the handler was run
+     *                 immediately and no Task needed to be created.
+     */
     function scheduleTask(handler) {
         
         // If no pending tasks, just call (if available) and exit
@@ -218,6 +197,11 @@ Guacamole.Layer = function(width, height) {
         
     }
 
+    /**
+     * Run any Tasks which were pending but are now ready to run and are not
+     * blocked by other Tasks.
+     * @private
+     */
     function handlePendingTasks() {
 
         // Draw all pending tasks.
@@ -230,6 +214,35 @@ Guacamole.Layer = function(width, height) {
     }
 
     /**
+     * Set to true if this Layer should resize itself to accomodate the
+     * dimensions of any drawing operation, and false (the default) otherwise.
+     * 
+     * Note that setting this property takes effect immediately, and thus may
+     * take effect on operations that were started in the past but have not
+     * yet completed. If you wish the setting of this flag to only modify
+     * future operations, you will need to make the setting of this flag an
+     * operation with sync().
+     * 
+     * @example
+     * // Set autosize to true for all future operations
+     * layer.sync(function() {
+     *     layer.autosize = true;
+     * });
+     * 
+     * @type Boolean
+     * @default false
+     */
+    this.autosize = false;
+
+    /**
+     * Returns the canvas element backing this Layer.
+     * @returns {Element} The canvas element backing this Layer.
+     */
+    this.getCanvas = function() {
+        return display;
+    };
+
+    /**
      * Returns whether this Layer is ready. A Layer is ready if it has no
      * pending operations and no operations in-progress.
      * 
@@ -237,6 +250,21 @@ Guacamole.Layer = function(width, height) {
      */
     this.isReady = function() {
         return tasks.length == 0;
+    };
+
+    /**
+     * Changes the size of this Layer to the given width and height. Resizing
+     * is only attempted if the new size provided is actually different from
+     * the current size.
+     * 
+     * @param {Number} newWidth The new width to assign to this Layer.
+     * @param {Number} newHeight The new height to assign to this Layer.
+     */
+    this.resize = function(newWidth, newHeight) {
+        scheduleTask(function() {
+            if (newWidth != width || newHeight != height)
+                resize(newWidth, newHeight);
+        });
     };
 
     /**
@@ -344,6 +372,16 @@ Guacamole.Layer = function(width, height) {
 
     };
 
+    /**
+     * Clear the specified rectangle of image data.
+     * 
+     * @param {Number} x The X coordinate of the upper-left corner of the
+     *                   rectangle to clear.
+     * @param {Number} y The Y coordinate of the upper-left corner of the
+     *                   rectangle to clear.
+     * @param {Number} w The width of the rectangle to clear.
+     * @param {Number} h The height of the rectangle to clear.
+     */
     this.clearRect = function(x, y, w, h) {
         scheduleTask(function() {
             if (autosize != 0) fitRect(x, y, w, h);
@@ -351,6 +389,18 @@ Guacamole.Layer = function(width, height) {
         });
     };
 
+    /**
+     * Provides the given filtering function with a writable snapshot of
+     * image data and the current width and height of the Layer.
+     * 
+     * @param {function} filter A function which accepts an array of image
+     *                          data (as returned by the canvas element's
+     *                          display context's getImageData() function),
+     *                          the width of the Layer, and the height of the
+     *                          Layer as parameters, in that order. This
+     *                          function must accomplish its filtering by
+     *                          modifying the given image data array directly.
+     */
     this.filter = function(filter) {
         scheduleTask(function() {
             var imageData = displayContext.getImageData(0, 0, width, height);
@@ -359,6 +409,17 @@ Guacamole.Layer = function(width, height) {
         });
     };
 
+    /**
+     * Sets the channel mask for future operations on this Layer. The channel
+     * mask is a Guacamole-specific compositing operation identifier with a
+     * single bit representing each of four channels (in order): source image
+     * where destination transparent, source where destination opaque,
+     * destination where source transparent, and destination where source
+     * opaque.
+     * 
+     * @param {Number} mask The channel mask for future operations on this
+     *                      Layer.
+     */
     this.setChannelMask = function(mask) {
         scheduleTask(function() {
             displayContext.globalCompositeOperation = compositeOperation[mask];
