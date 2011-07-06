@@ -139,9 +139,9 @@
                     + "&password=" + encodeURIComponent(password.value)
 
                 // Instantiate client
-                var guac = new GuacamoleClient(
+                var guac = new Guacamole.Client(
                     display,
-                    new GuacamoleHTTPTunnel("tunnel")
+                    new Guacamole.HTTPTunnel("tunnel")
                 );
 
                 try {
@@ -265,14 +265,14 @@
                 };
 
                 // Mouse
-                var mouse = new GuacamoleMouse(display);
+                var mouse = new Guacamole.Mouse(display);
                 mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
                     function(mouseState) {
                         guac.sendMouseState(mouseState);
                     };
 
                 // Keyboard
-                var keyboard = new GuacamoleKeyboard(document);
+                var keyboard = new Guacamole.Keyboard(document);
 
                 function disableKeyboard() {
                     keyboard.onkeydown = null;
@@ -367,7 +367,7 @@
                 };
 
                 // On-screen keyboard
-                var osKeyboard = new GuacamoleOnScreenKeyboard("layouts/en-us-qwerty.xml");
+                var osKeyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
                 keyboardContainer.appendChild(osKeyboard);
 
                 osKeyboard.setKeyPressedHandler(
