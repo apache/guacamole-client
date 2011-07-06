@@ -37,13 +37,44 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.Layer = function(width, height) {
 
-    // Reference to this Layer
+    /**
+     * Reference to this Layer.
+     * @private
+     */
     var layer = this;
 
-    // Off-screen buffer (canvas element) and corresponding
-    // context.
+    /**
+     * The canvas element backing this Layer.
+     * @private
+     */
     var display = document.createElement("canvas");
+
+    /**
+     * The 2D display context of the canvas element backing this Layer.
+     * @private
+     */
     var displayContext = display.getContext("2d");
+
+    var tasks = new Array();
+
+    var compositeOperation = {
+     /* 0x0 NOT IMPLEMENTED */
+        0x1: "destination-in",
+        0x2: "destination-out",
+     /* 0x3 NOT IMPLEMENTED */
+        0x4: "source-in",
+     /* 0x5 NOT IMPLEMENTED */
+        0x6: "source-atop",
+     /* 0x7 NOT IMPLEMENTED */
+        0x8: "source-out",
+        0x9: "destination-atop",
+        0xA: "xor",
+        0xB: "destination-over",
+        0xC: "copy",
+     /* 0xD NOT IMPLEMENTED */
+        0xE: "source-over",
+        0xF: "lighter"
+    };
 
     /**
      * Returns the canvas element backing this Layer.
@@ -128,9 +159,6 @@ Guacamole.Layer = function(width, height) {
 
     }
 
-    // Initialize canvas dimensions
-    resize(width, height);
-
     /**
      * Set to true if this Layer should resize itself to accomodate the
      * dimensions of any drawing operation, and false (the default) otherwise.
@@ -152,47 +180,51 @@ Guacamole.Layer = function(width, height) {
      */
     this.autosize = false;
 
-    var updates = new Array();
-
-    function Update(updateHandler) {
-
-        this.setHandler = function(handler) {
-            updateHandler = handler;
-        };
-
-        this.hasHandler = function() {
-            return updateHandler != null;
-        };
-
-        this.handle = function() {
-            updateHandler();
-        };
-
+    /**
+     * A container for an task handler. Each operation which must be ordered
+     * is associated with a Task that goes into a task queue. Tasks in this
+     * queue are executed in order once their handlers are set, while Tasks 
+     * without handlers block themselves and any following Tasks from running.
+     *
+     * @constructor
+     * @private
+     * @param {function} taskHandler The function to call when this task 
+     *                               runs, if any.
+     */
+    function Task(taskHandler) {
+        
+        /**
+         * The handler this Task is associated with, if any.
+         * 
+         * @type function
+         */
+        this.handler = taskHandler;
+        
     }
 
-    function reserveJob(handler) {
+    function scheduleTask(handler) {
         
-        // If no pending updates, just call (if available) and exit
+        // If no pending tasks, just call (if available) and exit
         if (layer.isReady() && handler != null) {
             handler();
             return null;
         }
 
-        // If updates are pending/executing, schedule a pending update
+        // If tasks are pending/executing, schedule a pending task
         // and return a reference to it.
-        var update = new Update(handler);
-        updates.push(update);
-        return update;
+        var task = new Task(handler);
+        tasks.push(task);
+        return task;
         
     }
 
-    function handlePendingUpdates() {
+    function handlePendingTasks() {
 
-        // Draw all pending updates.
-        var update;
-        while ((update = updates[0]) != null && update.hasHandler()) {
-            update.handle();
-            updates.shift();
+        // Draw all pending tasks.
+        var task;
+        while ((task = tasks[0]) != null && task.handler) {
+            task.handler();
+            tasks.shift();
         }
 
     }
@@ -204,7 +236,7 @@ Guacamole.Layer = function(width, height) {
      * @returns {Boolean} true if this Layer is ready, false otherwise.
      */
     this.isReady = function() {
-        return updates.length == 0;
+        return tasks.length == 0;
     };
 
     /**
@@ -217,7 +249,7 @@ Guacamole.Layer = function(width, height) {
      *                      object - not a URL.
      */
     this.drawImage = function(x, y, image) {
-        reserveJob(function() {
+        scheduleTask(function() {
             if (autosize != 0) fitRect(x, y, image.width, image.height);
             displayContext.drawImage(image, x, y);
         });
@@ -233,19 +265,19 @@ Guacamole.Layer = function(width, height) {
      * @param {String} url The URL of the image to draw.
      */
     this.draw = function(x, y, url) {
-        var update = reserveJob(null);
+        var task = scheduleTask(null);
 
         var image = new Image();
         image.onload = function() {
 
-            update.setHandler(function() {
+            task.handler = function() {
                 if (autosize != 0) fitRect(x, y, image.width, image.height);
                 displayContext.drawImage(image, x, y);
-            });
+            };
 
-            // As this update originally had no handler and may have blocked
-            // other updates, handle any blocked updates.
-            handlePendingUpdates();
+            // As this task originally had no handler and may have blocked
+            // other tasks, handle any blocked tasks.
+            handlePendingTasks();
 
         };
         image.src = url;
@@ -260,7 +292,7 @@ Guacamole.Layer = function(width, height) {
      *                           pending operations are complete.
      */
     this.sync = function(handler) {
-        reserveJob(handler);
+        scheduleTask(handler);
     };
 
     /**
@@ -294,18 +326,18 @@ Guacamole.Layer = function(width, height) {
         // If we ARE the source layer, no need to sync.
         // Syncing would result in deadlock.
         if (layer === srcLayer)
-            reserveJob(doCopyRect);
+            scheduleTask(doCopyRect);
 
         // Otherwise synchronize copy operation with source layer
         else {
-            var update = reserveJob(null);
+            var task = scheduleTask(null);
             srcLayer.sync(function() {
                 
-                update.setHandler(doCopyRect);
+                task.handler = doCopyRect;
 
-                // As this update originally had no handler and may have blocked
-                // other updates, handle any blocked updates.
-                handlePendingUpdates();
+                // As this task originally had no handler and may have blocked
+                // other tasks, handle any blocked tasks.
+                handlePendingTasks();
 
             });
         }
@@ -313,44 +345,28 @@ Guacamole.Layer = function(width, height) {
     };
 
     this.clearRect = function(x, y, w, h) {
-        reserveJob(function() {
+        scheduleTask(function() {
             if (autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
         });
     };
 
     this.filter = function(filter) {
-        reserveJob(function() {
+        scheduleTask(function() {
             var imageData = displayContext.getImageData(0, 0, width, height);
             filter(imageData.data, width, height);
             displayContext.putImageData(imageData, 0, 0);
         });
     };
 
-    var compositeOperation = {
-     /* 0x0 NOT IMPLEMENTED */
-        0x1: "destination-in",
-        0x2: "destination-out",
-     /* 0x3 NOT IMPLEMENTED */
-        0x4: "source-in",
-     /* 0x5 NOT IMPLEMENTED */
-        0x6: "source-atop",
-     /* 0x7 NOT IMPLEMENTED */
-        0x8: "source-out",
-        0x9: "destination-atop",
-        0xA: "xor",
-        0xB: "destination-over",
-        0xC: "copy",
-     /* 0xD NOT IMPLEMENTED */
-        0xE: "source-over",
-        0xF: "lighter"
-    };
-
     this.setChannelMask = function(mask) {
-        reserveJob(function() {
+        scheduleTask(function() {
             displayContext.globalCompositeOperation = compositeOperation[mask];
         });
     };
+
+    // Initialize canvas dimensions
+    resize(width, height);
 
 }
 
