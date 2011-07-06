@@ -16,7 +16,10 @@
  *  You should have received a copy of the GNU Affero General Public License
  */
 
-function GuacamoleClient(display, tunnel) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+Guacamole.Client = function(display, tunnel) {
 
     var guac_client = this;
 
@@ -150,7 +153,7 @@ function GuacamoleClient(display, tunnel) {
 
             // Create buffer if necessary
             if (buffer == null) {
-                buffer = new Layer(0, 0);
+                buffer = new Guacamole.Layer(0, 0);
                 buffer.setAutosize(1);
                 buffers[index] = buffer;
             }
@@ -165,7 +168,7 @@ function GuacamoleClient(display, tunnel) {
             if (layer == null) {
 
                 // Add new layer
-                layer = new Layer(displayWidth, displayHeight);
+                layer = new Guacamole.Layer(displayWidth, displayHeight);
                 layers[index] = layer;
 
                 // (Re)-add existing layers in order
@@ -174,18 +177,18 @@ function GuacamoleClient(display, tunnel) {
 
                         // If already present, remove
                         if (layers[i].parentNode === display)
-                            display.removeChild(layers[i]);
+                            display.removeChild(layers[i].getCanvas());
 
                         // Add to end
-                        display.appendChild(layers[i]);
+                        display.appendChild(layers[i].getCanvas());
                     }
                 }
 
                 // Add cursor layer last
                 if (cursor != null) {
                     if (cursor.parentNode === display)
-                        display.removeChild(cursor);
-                    display.appendChild(cursor);
+                        display.removeChild(cursor.getCanvas());
+                    display.appendChild(cursor.getCanvas());
                 }
 
             }
@@ -284,8 +287,8 @@ function GuacamoleClient(display, tunnel) {
             var data = parameters[2];
 
             if (cursor == null) {
-                cursor = new Layer(displayWidth, displayHeight);
-                display.appendChild(cursor);
+                cursor = new Guacamole.Layer(displayWidth, displayHeight);
+                display.appendChild(cursor.getCanvas());
             }
 
             // Start cursor image load

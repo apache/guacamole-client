@@ -17,11 +17,39 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function Layer(width, height) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+/**
+ * Abstract ordered drawing surface. Each Layer contains a canvas element and
+ * provides simple drawing instructions for drawing to that canvas element,
+ * however unlike the canvas element itself, drawing operations on a Layer are
+ * guaranteed to run in order, even if such an operation must wait for an image
+ * to load before completing.
+ * 
+ * @constructor
+ * 
+ * @param {Number} width The width of the Layer, in pixels. The canvas element
+ *                       backing this Layer will be given this width.
+ *                       
+ * @param {Number} height The height of the Layer, in pixels. The canvas element
+ *                        backing this Layer will be given this height.
+ */
+Guacamole.Layer = function(width, height) {
+
+    var layer = this;
 
     // Off-screen buffer
     var display = document.createElement("canvas");
     var displayContext = display.getContext("2d");
+
+    /**
+     * Returns the canvas element backing this Layer.
+     * @returns {Element} The canvas element backing this Layer.
+     */
+    this.getCanvas = function() {
+        return display;
+    };
 
     function resize(newWidth, newHeight) {
         display.style.position = "absolute";
@@ -35,7 +63,15 @@ function Layer(width, height) {
         height = newHeight;
     }
 
-    display.resize = function(newWidth, newHeight) {
+    /**
+     * Changes the size of this Layer to the given width and height. Resizing
+     * is only attempted if the new size provided is actually different from
+     * the current size.
+     * 
+     * @param {Number} newWidth The new width to assign to this Layer.
+     * @param {Number} newHeight The new height to assign to this Layer.
+     */
+    this.resize = function(newWidth, newHeight) {
         if (newWidth != width || newHeight != height)
             resize(newWidth, newHeight);
     };
@@ -87,14 +123,14 @@ function Layer(width, height) {
 
     }
 
-    display.setAutosize = function(flag) {
+    this.setAutosize = function(flag) {
         autosize = flag;
     };
 
     function reserveJob(handler) {
         
         // If no pending updates, just call (if available) and exit
-        if (display.isReady() && handler != null) {
+        if (layer.isReady() && handler != null) {
             handler();
             return null;
         }
@@ -118,12 +154,12 @@ function Layer(width, height) {
 
     }
 
-    display.isReady = function() {
+    this.isReady = function() {
         return updates.length == 0;
     };
 
 
-    display.drawImage = function(x, y, image) {
+    this.drawImage = function(x, y, image) {
         reserveJob(function() {
             if (autosize != 0) fitRect(x, y, image.width, image.height);
             displayContext.drawImage(image, x, y);
@@ -131,7 +167,7 @@ function Layer(width, height) {
     };
 
 
-    display.draw = function(x, y, url) {
+    this.draw = function(x, y, url) {
         var update = reserveJob(null);
 
         var image = new Image();
@@ -151,14 +187,18 @@ function Layer(width, height) {
 
     };
 
-    // Run arbitrary function as soon as currently pending operations complete.
-    // Future operations will not block this function from being called (unlike
-    // the ready handler, which requires no pending updates)
-    display.sync = function(handler) {
+    /**
+     * Run an arbitrary function as soon as currently pending operations
+     * are complete.
+     * 
+     * @param {function} handler The function to call once all currently
+     *                           pending operations are complete.
+     */
+    this.sync = function(handler) {
         reserveJob(handler);
     };
 
-    display.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
+    this.copyRect = function(srcLayer, srcx, srcy, w, h, x, y) {
 
         function doCopyRect() {
             if (autosize != 0) fitRect(x, y, w, h);
@@ -167,7 +207,7 @@ function Layer(width, height) {
 
         // If we ARE the source layer, no need to sync.
         // Syncing would result in deadlock.
-        if (display === srcLayer)
+        if (layer === srcLayer)
             reserveJob(doCopyRect);
 
         // Otherwise synchronize copy operation with source layer
@@ -186,14 +226,14 @@ function Layer(width, height) {
 
     };
 
-    display.clearRect = function(x, y, w, h) {
+    this.clearRect = function(x, y, w, h) {
         reserveJob(function() {
             if (autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
         });
     };
 
-    display.filter = function(filter) {
+    this.filter = function(filter) {
         reserveJob(function() {
             var imageData = displayContext.getImageData(0, 0, width, height);
             filter(imageData.data, width, height);
@@ -220,13 +260,11 @@ function Layer(width, height) {
         0xF: "lighter"
     };
 
-    display.setChannelMask = function(mask) {
+    this.setChannelMask = function(mask) {
         reserveJob(function() {
             displayContext.globalCompositeOperation = compositeOperation[mask];
         });
     };
-
-    return display;
 
 }
 

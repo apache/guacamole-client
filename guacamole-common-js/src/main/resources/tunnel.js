@@ -16,7 +16,10 @@
  *  You should have received a copy of the GNU Affero General Public License
  */
 
-function GuacamoleHTTPTunnel(tunnelURL) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var tunnel = this;
 

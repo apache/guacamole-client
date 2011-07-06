@@ -17,7 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function GuacamoleKeyboard(element) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+Guacamole.Keyboard = function(element) {
 
     var guac_keyboard = this;
 

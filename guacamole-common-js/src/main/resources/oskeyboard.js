@@ -17,10 +17,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Guacamole namespace
+var Guacamole = Guacamole || {};
 
-function GuacamoleOnScreenKeyboard(url) {
+Guacamole.OnScreenKeyboard = function(url) {
 
-    var tabIndex = 1;
     var allKeys = new Array();
     var modifierState = new function() {};
 

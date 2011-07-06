@@ -17,8 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Guacamole namespace
+var Guacamole = Guacamole || {};
 
-function GuacamoleMouse(element) {
+Guacamole.Mouse = function(element) {
 
     var guac_mouse = this;
 
