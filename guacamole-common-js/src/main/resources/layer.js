@@ -278,7 +278,7 @@ Guacamole.Layer = function(width, height) {
      */
     this.drawImage = function(x, y, image) {
         scheduleTask(function() {
-            if (autosize != 0) fitRect(x, y, image.width, image.height);
+            if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
             displayContext.drawImage(image, x, y);
         });
     };
@@ -299,7 +299,7 @@ Guacamole.Layer = function(width, height) {
         image.onload = function() {
 
             task.handler = function() {
-                if (autosize != 0) fitRect(x, y, image.width, image.height);
+                if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
                 displayContext.drawImage(image, x, y);
             };
 
@@ -347,7 +347,7 @@ Guacamole.Layer = function(width, height) {
     this.copyRect = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
         function doCopyRect() {
-            if (autosize != 0) fitRect(x, y, srcw, srch);
+            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
             displayContext.drawImage(srcLayer, srcx, srcy, srcw, srch, x, y, srcw, srch);
         }
 
@@ -384,7 +384,7 @@ Guacamole.Layer = function(width, height) {
      */
     this.clearRect = function(x, y, w, h) {
         scheduleTask(function() {
-            if (autosize != 0) fitRect(x, y, w, h);
+            if (layer.autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
         });
     };
