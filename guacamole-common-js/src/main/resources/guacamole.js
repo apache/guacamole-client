@@ -154,7 +154,7 @@ Guacamole.Client = function(display, tunnel) {
             // Create buffer if necessary
             if (buffer == null) {
                 buffer = new Guacamole.Layer(0, 0);
-                buffer.setAutosize(1);
+                buffer.autosize = 1;
                 buffers[index] = buffer;
             }
 
