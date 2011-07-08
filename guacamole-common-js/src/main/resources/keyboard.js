@@ -20,54 +20,76 @@
 // Guacamole namespace
 var Guacamole = Guacamole || {};
 
+/**
+ * Provides cross-browser and cross-keyboard keyboard for a specific element.
+ * Browser and keyboard layout variation is abstracted away, providing events
+ * which represent keys as their corresponding X11 keysym.
+ * 
+ * @constructor
+ * @param {Element} element The Element to use to provide keyboard events.
+ */
 Guacamole.Keyboard = function(element) {
 
+    /**
+     * Reference to this Guacamole.Keyboard.
+     * @private
+     */
     var guac_keyboard = this;
 
-    // Keymap
+    /**
+     * Map of known JavaScript keycodes which do not map to typable characters
+     * to their unshifted X11 keysym equivalents.
+     * @private
+     */
+    var unshiftedKeySym = {
+        8:   0xFF08, // backspace
+        9:   0xFF09, // tab
+        13:  0xFF0D, // enter
+        16:  0xFFE1, // shift
+        17:  0xFFE3, // ctrl
+        18:  0xFFE9, // alt
+        19:  0xFF13, // pause/break
+        20:  0xFFE5, // caps lock
+        27:  0xFF1B, // escape
+        33:  0xFF55, // page up
+        34:  0xFF56, // page down
+        35:  0xFF57, // end
+        36:  0xFF50, // home
+        37:  0xFF51, // left arrow
+        38:  0xFF52, // up arrow
+        39:  0xFF53, // right arrow
+        40:  0xFF54, // down arrow
+        45:  0xFF63, // insert
+        46:  0xFFFF, // delete
+        91:  0xFFEB, // left window key (super_l)
+        92:  0xFF67, // right window key (menu key?)
+        93:  null,   // select key
+        112: 0xFFBE, // f1
+        113: 0xFFBF, // f2
+        114: 0xFFC0, // f3
+        115: 0xFFC1, // f4
+        116: 0xFFC2, // f5
+        117: 0xFFC3, // f6
+        118: 0xFFC4, // f7
+        119: 0xFFC5, // f8
+        120: 0xFFC6, // f9
+        121: 0xFFC7, // f10
+        122: 0xFFC8, // f11
+        123: 0xFFC9, // f12
+        144: 0xFF7F, // num lock
+        145: 0xFF14  // scroll lock
+    };
 
-    var unshiftedKeySym = new Array();
-    unshiftedKeySym[8]   = 0xFF08; // backspace
-    unshiftedKeySym[9]   = 0xFF09; // tab
-    unshiftedKeySym[13]  = 0xFF0D; // enter
-    unshiftedKeySym[16]  = 0xFFE1; // shift
-    unshiftedKeySym[17]  = 0xFFE3; // ctrl
-    unshiftedKeySym[18]  = 0xFFE9; // alt
-    unshiftedKeySym[19]  = 0xFF13; // pause/break
-    unshiftedKeySym[20]  = 0xFFE5; // caps lock
-    unshiftedKeySym[27]  = 0xFF1B; // escape
-    unshiftedKeySym[33]  = 0xFF55; // page up
-    unshiftedKeySym[34]  = 0xFF56; // page down
-    unshiftedKeySym[35]  = 0xFF57; // end
-    unshiftedKeySym[36]  = 0xFF50; // home
-    unshiftedKeySym[37]  = 0xFF51; // left arrow
-    unshiftedKeySym[38]  = 0xFF52; // up arrow
-    unshiftedKeySym[39]  = 0xFF53; // right arrow
-    unshiftedKeySym[40]  = 0xFF54; // down arrow
-    unshiftedKeySym[45]  = 0xFF63; // insert
-    unshiftedKeySym[46]  = 0xFFFF; // delete
-    unshiftedKeySym[91]  = 0xFFEB; // left window key (super_l)
-    unshiftedKeySym[92]  = 0xFF67; // right window key (menu key?)
-    unshiftedKeySym[93]  = null; // select key
-    unshiftedKeySym[112] = 0xFFBE; // f1
-    unshiftedKeySym[113] = 0xFFBF; // f2
-    unshiftedKeySym[114] = 0xFFC0; // f3
-    unshiftedKeySym[115] = 0xFFC1; // f4
-    unshiftedKeySym[116] = 0xFFC2; // f5
-    unshiftedKeySym[117] = 0xFFC3; // f6
-    unshiftedKeySym[118] = 0xFFC4; // f7
-    unshiftedKeySym[119] = 0xFFC5; // f8
-    unshiftedKeySym[120] = 0xFFC6; // f9
-    unshiftedKeySym[121] = 0xFFC7; // f10
-    unshiftedKeySym[122] = 0xFFC8; // f11
-    unshiftedKeySym[123] = 0xFFC9; // f12
-    unshiftedKeySym[144] = 0xFF7F; // num lock
-    unshiftedKeySym[145] = 0xFF14; // scroll lock
-
-    // Shifted versions, IF DIFFERENT FROM UNSHIFTED!
-    // If any of these are null, the unshifted one will be used.
-    var shiftedKeySym  = new Array();
-    shiftedKeySym[18]  = 0xFFE7; // alt
+    /**
+     * Map of known JavaScript keycodes which do not map to typable characters
+     * to their shifted X11 keysym equivalents. Keycodes must only be listed
+     * here if their shifted X11 keysym equivalents differ from their unshifted
+     * equivalents.
+     * @private
+     */
+    var shiftedKeySym = {
+        18:  0xFFE7  // alt
+    };
 
 	// Single key state/modifier buffer
 	var modShift = 0;
@@ -75,7 +97,6 @@ Guacamole.Keyboard = function(element) {
 	var modAlt = 0;
 
     var keydownChar = new Array();
-
 
     // ID of routine repeating keystrokes. -1 = not repeating.
     var repeatKeyTimeoutId = -1;
