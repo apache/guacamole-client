@@ -345,7 +345,7 @@ Guacamole.Layer = function(width, height) {
 
         function doCopyRect() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
-            displayContext.drawImage(srcLayer, srcx, srcy, srcw, srch, x, y, srcw, srch);
+            displayContext.drawImage(srcLayer.getCanvas(), srcx, srcy, srcw, srch, x, y, srcw, srch);
         }
 
         // If we ARE the source layer, no need to sync.
