@@ -20,54 +20,93 @@
 // Guacamole namespace
 var Guacamole = Guacamole || {};
 
+/**
+ * Provides cross-browser mouse events for a given element. The events of
+ * the given element are automatically populated with handlers that translate
+ * mouse events into a non-browser-specific event provided by the
+ * Guacamole.Mouse instance.
+ * 
+ * Touch event support is planned, but currently only in testing (translate
+ * touch events into mouse events).
+ * 
+ * @constructor
+ * @param {Element} element The Element to use to provide mouse events.
+ */
 Guacamole.Mouse = function(element) {
 
+    /**
+     * Reference to this Guacamole.Mouse.
+     * @private
+     */
     var guac_mouse = this;
 
-    var mouseLeftButton   = 0;
-    var mouseMiddleButton = 0;
-    var mouseRightButton  = 0;
+    /**
+     * The current mouse state. The properties of this state are updated when
+     * mouse events fire. This state object is also passed in as a parameter to
+     * the handler of any mouse events.
+     * 
+     * @type Guacamole.Mouse.State
+     */
+    this.currentState = new Guacamole.Mouse.State(
+        0, 0, 
+        false, false, false, false, false
+    );
 
-    var mouseX = 0;
-    var mouseY = 0;
+    /**
+     * Fired whenever the user presses a mouse button down over the element
+     * associated with this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousedown = null;
 
-    var absoluteMouseX = 0;
-    var absoluteMouseY = 0;
+    /**
+     * Fired whenever the user releases a mouse button down over the element
+     * associated with this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmouseup = null;
 
-
-    function getMouseState(up, down) {
-        var mouseState = new MouseEvent(mouseX, mouseY,
-                mouseLeftButton, mouseMiddleButton, mouseRightButton, up, down);
-
-        return mouseState;
-    }
-
+    /**
+     * Fired whenever the user moves the mouse over the element associated with
+     * this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousemove = null;
 
     // Block context menu so right-click gets sent properly
-    element.oncontextmenu = function(e) {return false;};
+    element.oncontextmenu = function(e) {
+        return false;
+    };
 
     element.onmousemove = function(e) {
 
         e.stopPropagation();
 
-        absoluteMouseX = e.pageX;
-        absoluteMouseY = e.pageY;
+        var absoluteMouseX = e.pageX;
+        var absoluteMouseY = e.pageY;
 
-        mouseX = absoluteMouseX - element.offsetLeft;
-        mouseY = absoluteMouseY - element.offsetTop;
+        guac_mouse.currentState.x = absoluteMouseX - element.offsetLeft;
+        guac_mouse.currentState.y = absoluteMouseY - element.offsetTop;
 
         // This is all JUST so we can get the mouse position within the element
         var parent = element.offsetParent;
         while (parent) {
             if (parent.offsetLeft && parent.offsetTop) {
-                mouseX -= parent.offsetLeft;
-                mouseY -= parent.offsetTop;
+                guac_mouse.currentState.x -= parent.offsetLeft;
+                guac_mouse.currentState.y -= parent.offsetTop;
             }
             parent = parent.offsetParent;
         }
 
         if (guac_mouse.onmousemove)
-            guac_mouse.onmousemove(getMouseState(0, 0));
+            guac_mouse.onmousemove(guac_mouse.currentState);
+
     };
 
 
@@ -77,18 +116,19 @@ Guacamole.Mouse = function(element) {
 
         switch (e.button) {
             case 0:
-                mouseLeftButton = 1;
+                guac_mouse.currentState.left = true;
                 break;
             case 1:
-                mouseMiddleButton = 1;
+                guac_mouse.currentState.middle = true;
                 break;
             case 2:
-                mouseRightButton = 1;
+                guac_mouse.currentState.right = true;
                 break;
         }
 
         if (guac_mouse.onmousedown)
-            guac_mouse.onmousedown(getMouseState(0, 0));
+            guac_mouse.onmousedown(guac_mouse.currentState);
+
     };
 
 
@@ -98,18 +138,19 @@ Guacamole.Mouse = function(element) {
 
         switch (e.button) {
             case 0:
-                mouseLeftButton = 0;
+                guac_mouse.currentState.left = false;
                 break;
             case 1:
-                mouseMiddleButton = 0;
+                guac_mouse.currentState.middle = false;
                 break;
             case 2:
-                mouseRightButton = 0;
+                guac_mouse.currentState.right = false;
                 break;
         }
 
         if (guac_mouse.onmouseup)
-            guac_mouse.onmouseup(getMouseState(0, 0));
+            guac_mouse.onmouseup(guac_mouse.currentState);
+
     };
 
     element.onmouseout = function(e) {
@@ -117,13 +158,16 @@ Guacamole.Mouse = function(element) {
         e.stopPropagation();
 
         // Release all buttons
-        if (mouseLeftButton || mouseMiddleButton || mouseRightButton) {
-            mouseLeftButton = 0;
-            mouseMiddleButton = 0;
-            mouseRightButton = 0;
+        if (guac_mouse.currentState.left
+            || guac_mouse.currentState.middle
+            || guac_mouse.currentState.right) {
+
+            guac_mouse.currentState.left = false;
+            guac_mouse.currentState.middle = false;
+            guac_mouse.currentState.right = false;
 
             if (guac_mouse.onmouseup)
-                guac_mouse.onmouseup(getMouseState(0, 0));
+                guac_mouse.onmouseup(guac_mouse.currentState);
         }
 
     };
@@ -144,20 +188,28 @@ Guacamole.Mouse = function(element) {
 
         // Up
         if (delta < 0) {
-            if (guac_mouse.onmousedown)
-                guac_mouse.onmousedown(getMouseState(1, 0));
+            if (guac_mouse.onmousedown) {
+                guac_mouse.currentState.up = true;
+                guac_mouse.onmousedown(guac_mouse.currentState);
+            }
 
-            if (guac_mouse.onmouseup)
-                guac_mouse.onmouseup(getMouseState(0, 0));
+            if (guac_mouse.onmouseup) {
+                guac_mouse.currentState.up = false;
+                guac_mouse.onmouseup(guac_mouse.currentState);
+            }
         }
 
         // Down
         if (delta > 0) {
-            if (guac_mouse.onmousedown)
-                guac_mouse.onmousedown(getMouseState(0, 1));
-            
-            if (guac_mouse.onmouseup)
-                guac_mouse.onmouseup(getMouseState(0, 0));
+            if (guac_mouse.onmousedown) {
+                guac_mouse.currentState.down = true;
+                guac_mouse.onmousedown(guac_mouse.currentState);
+            }
+
+            if (guac_mouse.onmouseup) {
+                guac_mouse.currentState.down = false;
+                guac_mouse.onmouseup(guac_mouse.currentState);
+            }
         }
 
         if (e.preventDefault)
@@ -170,48 +222,19 @@ Guacamole.Mouse = function(element) {
 
     element.onmousewheel = function(e) {
         handleScroll(e);
-    }
-
-	guac_mouse.onmousedown = null;
-	guac_mouse.onmouseup = null;
-	guac_mouse.onmousemove = null;
-
-    guac_mouse.getX = function() {return mouseX;};
-    guac_mouse.getY = function() {return mouseY;};
-    guac_mouse.getLeftButton = function() {return mouseLeftButton;};
-    guac_mouse.getMiddleButton = function() {return mouseMiddleButton;};
-    guac_mouse.getRightButton = function() {return mouseRightButton;};
-
-}
-
-function MouseEvent(x, y, left, middle, right, up, down) {
-
-    this.getX = function() {
-        return x;
     };
 
-    this.getY = function() {
-        return y;
-    };
+};
 
-    this.getLeft = function() {
-        return left;
-    };
+Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
 
-    this.getMiddle = function() {
-        return middle;
-    };
+    this.x = x;
+    this.y = y;
+    this.left = left;
+    this.middle = middle
+    this.right = right;
+    this.up = up;
+    this.down = down;
+    
+};
 
-    this.getRight = function() {
-        return right;
-    };
-
-    this.getUp = function() {
-        return up;
-    };
-
-    this.getDown = function() {
-        return down;
-    };
-
-}

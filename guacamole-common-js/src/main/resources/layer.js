@@ -48,9 +48,6 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var display = document.createElement("canvas");
-    display.style.position = "absolute";
-    display.style.left = "0px";
-    display.style.top = "0px";
 
     /**
      * The 2D display context of the canvas element backing this Layer.
@@ -429,5 +426,4 @@ Guacamole.Layer = function(width, height) {
     // Initialize canvas dimensions
     resize(width, height);
 
-}
-
+};

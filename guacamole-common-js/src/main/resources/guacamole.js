@@ -99,21 +99,21 @@ Guacamole.Client = function(display, tunnel) {
         // Draw client-side cursor
         if (cursorImage != null) {
             redrawCursor(
-                mouseState.getX(),
-                mouseState.getY()
+                mouseState.x,
+                mouseState.y
             );
         }
 
         // Build mask
         var buttonMask = 0;
-        if (mouseState.getLeft())   buttonMask |= 1;
-        if (mouseState.getMiddle()) buttonMask |= 2;
-        if (mouseState.getRight())  buttonMask |= 4;
-        if (mouseState.getUp())     buttonMask |= 8;
-        if (mouseState.getDown())   buttonMask |= 16;
+        if (mouseState.left)   buttonMask |= 1;
+        if (mouseState.middle) buttonMask |= 2;
+        if (mouseState.right)  buttonMask |= 4;
+        if (mouseState.up)     buttonMask |= 8;
+        if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
+        tunnel.sendMessage("mouse:" + mouseState.x + "," + mouseState.y + "," + buttonMask + ";");
     };
 
     guac_client.setClipboard = function(data) {
@@ -169,6 +169,13 @@ Guacamole.Client = function(display, tunnel) {
 
                 // Add new layer
                 layer = new Guacamole.Layer(displayWidth, displayHeight);
+                
+                // Set layer position
+                var canvas = layer.getCanvas();
+                canvas.style.position = "absolute";
+                canvas.style.left = "0px";
+                canvas.style.top = "0px";
+
                 layers[index] = layer;
 
                 // (Re)-add existing layers in order
@@ -288,7 +295,13 @@ Guacamole.Client = function(display, tunnel) {
 
             if (cursor == null) {
                 cursor = new Guacamole.Layer(displayWidth, displayHeight);
-                display.appendChild(cursor.getCanvas());
+                
+                var canvas = cursor.getCanvas();
+                canvas.style.position = "absolute";
+                canvas.style.left = "0px";
+                canvas.style.top = "0px";
+
+                display.appendChild(canvas);
             }
 
             // Start cursor image load
