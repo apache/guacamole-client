@@ -37,6 +37,24 @@ Guacamole.Keyboard = function(element) {
     var guac_keyboard = this;
 
     /**
+     * Fired whenever the user presses a key with the element associated
+     * with this Guacamole.Keyboard in focus.
+     * 
+     * @event
+     * @param {Number} keysym The keysym of the key being pressed.
+     */
+	this.onkeydown = null;
+
+    /**
+     * Fired whenever the user releases a key with the element associated
+     * with this Guacamole.Keyboard in focus.
+     * 
+     * @event
+     * @param {Number} keysym The keysym of the key being released.
+     */
+	this.onkeyup = null;
+
+    /**
      * Map of known JavaScript keycodes which do not map to typable characters
      * to their unshifted X11 keysym equivalents.
      * @private
@@ -92,9 +110,9 @@ Guacamole.Keyboard = function(element) {
     };
 
 	// Single key state/modifier buffer
-	var modShift = 0;
-	var modCtrl = 0;
-	var modAlt = 0;
+	var modShift = false;
+	var modCtrl = false;
+	var modAlt = false;
 
     var keydownChar = new Array();
 
@@ -158,7 +176,7 @@ Guacamole.Keyboard = function(element) {
     function getKeySymFromKeyCode(keyCode) {
 
         var keysym = null;
-		if (modShift == 0) keysym = unshiftedKeySym[keyCode];
+		if (!modShift) keysym = unshiftedKeySym[keyCode];
 		else {
             keysym = shiftedKeySym[keyCode];
             if (keysym == null) keysym = unshiftedKeySym[keyCode];
@@ -200,11 +218,11 @@ Guacamole.Keyboard = function(element) {
 
 		// Ctrl/Alt/Shift
 		if (keynum == 16)
-			modShift = 1;
+			modShift = true;
 		else if (keynum == 17)
-			modCtrl = 1;
+			modCtrl = true;
 		else if (keynum == 18)
-			modAlt = 1;
+			modAlt = true;
 
         var keysym = getKeySymFromKeyCode(keynum);
         if (keysym) {
@@ -213,7 +231,7 @@ Guacamole.Keyboard = function(element) {
         }
 
         // If modifier keys are held down, and we have keyIdentifier
-        else if ((modCtrl == 1 || modAlt == 1) && e.keyIdentifier) {
+        else if ((modCtrl || modAlt) && e.keyIdentifier) {
 
             // Get keysym from keyIdentifier
             keysym = getKeySymFromKeyIdentifier(modShift, e.keyIdentifier);
@@ -301,11 +319,11 @@ Guacamole.Keyboard = function(element) {
 		
 		// Ctrl/Alt/Shift
 		if (keynum == 16)
-			modShift = 0;
+			modShift = false;
 		else if (keynum == 17)
-			modCtrl = 0;
+			modCtrl = false;
 		else if (keynum == 18)
-			modAlt = 0;
+			modAlt = false;
         else
             stopRepeat();
 
@@ -322,15 +340,10 @@ Guacamole.Keyboard = function(element) {
 	};
 
 	// When focus is lost, clear modifiers.
-	var docOnblur = element.onblur;
 	element.onblur = function() {
-		modAlt = 0;
-		modCtrl = 0;
-		modShift = 0;
-		if (docOnblur != null) docOnblur();
+		modAlt = false;
+		modCtrl = false;
+		modShift = false;
 	};
 
-	guac_keyboard.onkeydown = null;
-	guac_keyboard.onkeyup = null;
-
-}
+};
