@@ -19,6 +19,16 @@
 // Guacamole namespace
 var Guacamole = Guacamole || {};
 
+/**
+ * Guacamole protocol client. Given a display element and {@link Guacamole.Tunnel},
+ * automatically handles incoming and outgoing Guacamole instructions via the
+ * provided tunnel, updating the display using one or more canvas elements.
+ * 
+ * @constructor
+ * @param {Element} display The display element to add canvas elements to.
+ * @param {Guacamole.Tunnel} tunnel The tunnel to use to send and receive
+ *                                  Guacamole instructions.
+ */
 Guacamole.Client = function(display, tunnel) {
 
     var guac_client = this;

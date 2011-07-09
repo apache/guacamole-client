@@ -226,14 +226,66 @@ Guacamole.Mouse = function(element) {
 
 };
 
+/**
+ * Simple container for properties describing the state of a mouse.
+ * 
+ * @constructor
+ * @param {Number} x The X position of the mouse pointer in pixels.
+ * @param {Number} y The Y position of the mouse pointer in pixels.
+ * @param {Boolean} left Whether the left mouse button is pressed. 
+ * @param {Boolean} middle Whether the middle mouse button is pressed. 
+ * @param {Boolean} right Whether the right mouse button is pressed. 
+ * @param {Boolean} up Whether the up mouse button is pressed (the fourth
+ *                     button, usually part of a scroll wheel). 
+ * @param {Boolean} down Whether the down mouse button is pressed (the fifth
+ *                       button, usually part of a scroll wheel). 
+ */
 Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
 
+    /**
+     * The current X position of the mouse pointer.
+     * @type Number
+     */
     this.x = x;
+
+    /**
+     * The current Y position of the mouse pointer.
+     * @type Number
+     */
     this.y = y;
+
+    /**
+     * Whether the left mouse button is currently pressed.
+     * @type Boolean
+     */
     this.left = left;
+
+    /**
+     * Whether the middle mouse button is currently pressed.
+     * @type Boolean
+     */
     this.middle = middle
+
+    /**
+     * Whether the right mouse button is currently pressed.
+     * @type Boolean
+     */
     this.right = right;
+
+    /**
+     * Whether the up mouse button is currently pressed. This is the fourth
+     * mouse button, associated with upward scrolling of the mouse scroll
+     * wheel.
+     * @type Boolean
+     */
     this.up = up;
+
+    /**
+     * Whether the down mouse button is currently pressed. This is the fifth 
+     * mouse button, associated with downward scrolling of the mouse scroll
+     * wheel.
+     * @type Boolean
+     */
     this.down = down;
     
 };

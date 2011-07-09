@@ -19,6 +19,35 @@
 // Guacamole namespace
 var Guacamole = Guacamole || {};
 
+/**
+ * Core object providing abstract communication for Guacamole. This object
+ * is a null implementation whose functions do nothing. Guacamole applications
+ * should use {@link Guacamole.HTTPTunnel} instead, or implement their own tunnel based
+ * on this one.
+ * 
+ * @constructor
+ * @see Guacamole.HTTPTunnel
+ */
+Guacamole.Tunnel = function() {
+    
+    this.connect = function(data) {};
+    
+    this.disconnect = function() {};
+    
+    this.sendMessage = function(message) {};
+    
+    this.onerror = null;
+    this.oninstruction = null;
+
+};
+
+/**
+ * Guacamole Tunnel implemented over HTTP via XMLHttpRequest.
+ * 
+ * @constructor
+ * @augments Guacamole.Tunnel
+ * @param {String} tunnelURL The URL of the HTTP tunneling service.
+ */
 Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var tunnel = this;
@@ -43,10 +72,6 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var sendingMessages = 0;
     var outputMessageBuffer = "";
-
-    // Handlers
-    tunnel.onerror = null;
-    tunnel.oninstruction = null;
 
     function sendMessage(message) {
 
@@ -267,4 +292,6 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
     tunnel.disconnect = disconnect;
     tunnel.sendMessage = sendMessage;
 
-}
+};
+
+Guacamole.HTTPTunnel.prototype = new Guacamole.Tunnel();
