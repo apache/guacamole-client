@@ -190,10 +190,8 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             // Detach tunnel and throw error if EOF (and we haven't sent any
             // data yet.
             char[] message = reader.read();
-            if (message == null) {
-                session.detachTunnel(tunnel);
+            if (message == null)
                 throw new GuacamoleException("Disconnected.");
-            }
 
             // For all messages, until another stream is ready (we send at least one message)
             do {
@@ -215,10 +213,28 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
             response.flushBuffer();
 
         }
+        catch (GuacamoleException e) {
+
+            // Detach and close
+            session.detachTunnel(tunnel);
+            tunnel.close();
+
+            throw e;
+        }
         catch (UnsupportedEncodingException e) {
+
+            // Detach and close
+            session.detachTunnel(tunnel);
+            tunnel.close();
+
             throw new GuacamoleException("UTF-8 not supported by Java.", e);
         }
         catch (IOException e) {
+
+            // Detach and close
+            session.detachTunnel(tunnel);
+            tunnel.close();
+                
             throw new GuacamoleException("I/O error writing to servlet output stream.", e);
         }
         finally {
@@ -273,6 +289,11 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
         }
         catch (IOException e) {
+
+            // Detach and close
+            session.detachTunnel(tunnel);
+            tunnel.close();
+
             throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
         }
         finally {

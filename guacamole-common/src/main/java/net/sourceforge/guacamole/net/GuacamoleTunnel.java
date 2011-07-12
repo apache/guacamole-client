@@ -21,6 +21,7 @@ package net.sourceforge.guacamole.net;
 
 import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 
@@ -125,6 +126,16 @@ public class GuacamoleTunnel {
      */
     public UUID getUUID() {
         return uuid;
+    }
+
+    /**
+     * Release all resources allocated to this GuacamoleTunnel.
+     * 
+     * @throws GuacamoleException if an error occurs while releasing
+     *                            resources.
+     */
+    public void close() throws GuacamoleException {
+        socket.close();
     }
 
 }
