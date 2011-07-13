@@ -169,8 +169,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 return;
             }
 
-            // Start next request as soon as possible
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null)
+            // Start next request as soon as possible IF request was successful
+            if (xmlhttprequest.readyState >= 2 && nextRequest == null && xmlhttprequest.status == 200)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
@@ -185,8 +185,14 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                         clearInterval(interval);
                 }
 
+                // If canceled, stop transfer
+                if (xmlhttprequest.status == 0) {
+                    tunnel.disconnect();
+                    return;
+                }
+
                 // Halt on error during request
-                if (xmlhttprequest.status == 0 || xmlhttprequest.status != 200) {
+                else if (xmlhttprequest.status != 200) {
 
                     // Get error message (if any)
                     var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");

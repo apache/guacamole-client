@@ -44,6 +44,11 @@ Guacamole.Client = function(display, tunnel) {
 
     tunnel.oninstruction = doInstruction;
 
+    tunnel.onerror = function(message) {
+        if (guac_client.onerror)
+            guac_client.onerror(message);
+    };
+
     // Display must be relatively positioned for mouse to be handled properly
     display.style.position = "relative";
 
