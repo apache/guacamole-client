@@ -196,7 +196,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                     // Get error message (if any)
                     var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
-                    if (message)
+                    if (!message)
                         message = "Internal server error";
 
                     // Call error handler
