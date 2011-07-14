@@ -31,9 +31,13 @@ import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleTunnelServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
 
+    private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
+    
     private AuthenticationProvider authProvider;
 
     @Override
@@ -60,8 +64,12 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
 
         // Get authorized config
         GuacamoleConfiguration config = authProvider.getAuthorizedConfiguration(username, password);
-        if (config == null)
+        if (config == null) {
+            logger.warn("Failed login from {} for user \"{}\".", request.getRemoteAddr(), username);
             throw new GuacamoleException("Invalid login");
+        }
+
+        logger.debug("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
 
         // Configure and connect socket
         String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);

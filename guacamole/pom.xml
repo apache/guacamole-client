@@ -16,6 +16,7 @@
     <build>
         <plugins>
 
+            <!-- Written for 1.6 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -38,7 +39,7 @@
                         </resource>
                     </webResources>
                     
-                    <!-- Add guacamole-common-js -->
+                    <!-- Add files from guacamole-common-js -->
                     <overlays>
                         <overlay>
                             <groupId>net.sourceforge.guacamole</groupId>
@@ -51,19 +52,11 @@
             </plugin>
 
         </plugins>
-
-        <extensions>
-            <!-- Required for SSH deploy -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-            </extension>
-        </extensions>
-
     </build>
 
     <dependencies>
 
+        <!-- Java servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
@@ -71,6 +64,20 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- SLF4J - logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>1.6.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Guacamole Java API -->
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
@@ -78,6 +85,7 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- Guacamole JavaScript API -->
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
@@ -89,17 +97,13 @@
     </dependencies>
 
     <repositories>
+        
+        <!-- Central Guacamole repository -->
         <repository>
             <id>guac-dev</id>
             <url>http://guac-dev.org/repo</url>
         </repository>
+        
     </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>guac-dev</id>
-            <url>${guac-dev.dist.repo}</url>
-        </repository>
-    </distributionManagement>
 
 </project>
