@@ -25,13 +25,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A HttpServlet implementing and abstracting the operations required by the
@@ -41,6 +42,8 @@ import net.sourceforge.guacamole.io.GuacamoleWriter;
  */
 public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
+    private Logger logger = LoggerFactory.getLogger(GuacamoleTunnelServlet.class);
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         handleTunnelRequest(request, response);
@@ -75,13 +78,19 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
                 GuacamoleTunnel tunnel = doConnect(request);
                 if (tunnel != null) {
+
+                    logger.info("Connection from {} succeeded.", request.getRemoteAddr());
+                
                     try {
                         response.getWriter().println(tunnel.getUUID().toString());
                     }
                     catch (IOException e) {
                         throw new GuacamoleException(e);
                     }
+                    
                 }
+                else
+                    logger.info("Connection from {} failed.", request.getRemoteAddr());
 
             }
 
@@ -207,6 +216,10 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
             } while ((message = reader.read()) != null);
 
+            // Close tunnel immediately upon EOF
+            if (message == null)
+                tunnel.close();
+            
             // End-of-instructions marker
             out.write(';');
             out.flush();

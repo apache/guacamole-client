@@ -33,6 +33,8 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import net.sourceforge.guacamole.GuacamoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -43,6 +45,8 @@ import net.sourceforge.guacamole.GuacamoleException;
  */
 public class InetGuacamoleSocket implements GuacamoleSocket {
 
+    private Logger logger = LoggerFactory.getLogger(InetGuacamoleSocket.class);
+    
     private GuacamoleReader reader;
     private GuacamoleWriter writer;
 
@@ -63,6 +67,8 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
 
         try {
 
+            logger.debug("Connecting to guacd at {}:{}.", hostname, port);
+            
             // Get address
             SocketAddress address = new InetSocketAddress(
                     InetAddress.getByName(hostname),
@@ -90,6 +96,7 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
     @Override
     public void close() throws GuacamoleException {
         try {
+            logger.debug("Closing socket to guacd.");
             sock.close();
         }
         catch (IOException e) {

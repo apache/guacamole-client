@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides abstract access to the tunnels associated with a Guacamole session.
@@ -32,6 +34,8 @@ import net.sourceforge.guacamole.net.GuacamoleTunnel;
  */
 public class GuacamoleSession {
 
+    private Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
+    
     private ConcurrentMap<String, GuacamoleTunnel> tunnels;
 
     /**
@@ -69,6 +73,7 @@ public class GuacamoleSession {
      */
     public void attachTunnel(GuacamoleTunnel tunnel) {
         tunnels.put(tunnel.getUUID().toString(), tunnel);
+        logger.debug("Attached tunnel {}.", tunnel.getUUID());
     }
 
     /**
@@ -77,6 +82,7 @@ public class GuacamoleSession {
      */
     public void detachTunnel(GuacamoleTunnel tunnel) {
         tunnels.remove(tunnel.getUUID().toString());
+        logger.debug("Detached tunnel {}.", tunnel.getUUID());
     }
 
     /**

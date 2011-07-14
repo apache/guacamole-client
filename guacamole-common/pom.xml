@@ -24,38 +24,25 @@
                 </configuration>
             </plugin>
         </plugins>
-
-        <extensions>
-            <!-- Required for SSH deploy -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-            </extension>
-        </extensions>
-
     </build>
 
     <dependencies>
+
+        <!-- Java servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- SLF4J - logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>guac-dev</id>
-            <url>http://guac-dev.org/repo</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>guac-dev</id>
-            <url>${guac-dev.dist.repo}</url>
-        </repository>
-    </distributionManagement>
 
 </project>
