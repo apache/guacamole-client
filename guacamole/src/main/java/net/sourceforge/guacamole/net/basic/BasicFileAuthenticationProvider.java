@@ -100,6 +100,11 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
         }
 
+        // If no mapping available, report as such
+        if (mapping == null)
+            throw new GuacamoleException("User mapping could not be read.");
+        
+        // Validate and return info for given user and pass
         AuthInfo info = mapping.get(username);
         if (info != null && info.validate(username, password))
             return info.getConfiguration();
