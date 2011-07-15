@@ -30,6 +30,8 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -38,6 +40,8 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
+    private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
+    
     private long mappingTime;
     private Map<String, AuthInfo> mapping;
 
@@ -55,6 +59,8 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         if (mapFile == null)
             throw new GuacamoleException("Missing \"basic-user-mapping\" parameter required for basic login.");
 
+        logger.info("Reading user mapping file: {}", mapFile);
+        
         // Parse document
         try {
 
@@ -86,8 +92,10 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
             // If modified recently, gain exclusive access and recheck
             synchronized (this) {
-                if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified())
+                if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified()) {
+                    logger.info("User mapping file {} has been modified.", userMappingFile);
                     init(); // If still not up to date, re-init
+                }
             }
 
         }

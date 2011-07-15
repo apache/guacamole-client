@@ -48,6 +48,7 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
             authProvider = GuacamoleProperties.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
         }
         catch (GuacamoleException e) {
+            logger.error("Error getting authentication provider from properties.", e);
             throw new ServletException(e);
         }
 
@@ -63,13 +64,21 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
         String password = request.getParameter("password");
 
         // Get authorized config
-        GuacamoleConfiguration config = authProvider.getAuthorizedConfiguration(username, password);
+        GuacamoleConfiguration config;
+        try {
+            config = authProvider.getAuthorizedConfiguration(username, password);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Error retrieving authorized configuration for user {}.", username);
+            throw e;
+        }
+        
         if (config == null) {
             logger.warn("Failed login from {} for user \"{}\".", request.getRemoteAddr(), username);
             throw new GuacamoleException("Invalid login");
         }
 
-        logger.debug("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
+        logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
 
         // Configure and connect socket
         String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
