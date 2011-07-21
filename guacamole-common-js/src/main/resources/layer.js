@@ -54,6 +54,7 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var displayContext = display.getContext("2d");
+    displayContext.save();
 
     /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
@@ -204,8 +205,8 @@ Guacamole.Layer = function(width, height) {
         // Draw all pending tasks.
         var task;
         while ((task = tasks[0]) != null && task.handler) {
-            task.handler();
             tasks.shift();
+            task.handler();
         }
 
     }
@@ -383,6 +384,56 @@ Guacamole.Layer = function(width, height) {
         scheduleTask(function() {
             if (layer.autosize != 0) fitRect(x, y, w, h);
             displayContext.clearRect(x, y, w, h);
+        });
+    };
+
+    /**
+     * Fill the specified rectangle of image data with the specified color.
+     * 
+     * @param {Number} x The X coordinate of the upper-left corner of the
+     *                   rectangle to draw.
+     * @param {Number} y The Y coordinate of the upper-left corner of the
+     *                   rectangle to draw.
+     * @param {Number} w The width of the rectangle to draw.
+     * @param {Number} h The height of the rectangle to draw.
+     * @param {Number} r The red component of the color of the rectangle.
+     * @param {Number} g The green component of the color of the rectangle.
+     * @param {Number} b The blue component of the color of the rectangle.
+     * @param {Number} a The alpha component of the color of the rectangle.
+     */
+    this.drawRect = function(x, y, w, h, r, g, b, a) {
+        scheduleTask(function() {
+            if (layer.autosize != 0) fitRect(x, y, w, h);
+            displayContext.fillStyle = "rgba("
+                        + r + "," + g + "," + b + "," + a + ")";
+            displayContext.fillRect(x, y, w, h);
+        });
+    };
+
+    /**
+     * Clip all future drawing operations by the specified rectangle.
+     * 
+     * @param {Number} x The X coordinate of the upper-left corner of the
+     *                   rectangle to use for the clipping region.
+     * @param {Number} y The Y coordinate of the upper-left corner of the
+     *                   rectangle to use for the clipping region.
+     * @param {Number} w The width of the rectangle to use for the clipping region.
+     * @param {Number} h The height of the rectangle to use for the clipping region.
+     */
+    this.clipRect = function(x, y, w, h) {
+        scheduleTask(function() {
+
+            // Clear any current clipping region
+            displayContext.restore();
+            displayContext.save();
+
+            if (layer.autosize != 0) fitRect(x, y, w, h);
+
+            // Set new clipping region
+            displayContext.beginPath();
+            displayContext.rect(x, y, w, h);
+            displayContext.clip();
+
         });
     };
 
