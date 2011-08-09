@@ -405,7 +405,7 @@ Guacamole.Layer = function(width, height) {
         scheduleTask(function() {
             if (layer.autosize != 0) fitRect(x, y, w, h);
             displayContext.fillStyle = "rgba("
-                        + r + "," + g + "," + b + "," + a + ")";
+                        + r + "," + g + "," + b + "," + a / 255 + ")";
             displayContext.fillRect(x, y, w, h);
         });
     };
