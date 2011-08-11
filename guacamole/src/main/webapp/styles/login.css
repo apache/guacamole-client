@@ -18,7 +18,7 @@
  */
 
 body {
-    background: black;
+    background: gray;
     font-family: sans-serif;
     padding: 0;
     margin: 0;
@@ -114,7 +114,7 @@ div#login-dialog #login-fields img.logo {
     float: left;
 }
 
-div#login-ui #version-dialog {
+div#version-dialog {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -135,4 +135,58 @@ img {
 img#license {
     float: right;
     margin: 2px;
+}
+
+div#connection-list-ui {
+    background: #BCA;
+}
+
+div#connection-list-ui table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+div#connection-list-ui table thead {
+    background: #9A8;
+}
+
+div#connection-list-ui table thead tr {
+    border-top:    1px solid #676;
+    border-bottom: 1px solid gray;
+}
+
+div#connection-list-ui table tbody {
+    background: white;
+}
+
+div#connection-list-ui table tbody tr {
+    border-top:    1px solid gray;
+    border-bottom: 1px solid gray;
+}
+
+div#connection-list-ui table td {
+    padding: 0.25em;
+    text-align: center;
+}
+
+div#connection-list-ui table tbody tr:nth-child(even)       { background: #CCC; }
+div#connection-list-ui table tbody tr:nth-child(odd)       { background: #EEE; }
+
+div#connection-list-ui table td.description {
+    text-align: left;
+}
+
+div#connection-list-ui h1 {
+    
+    margin: 0;
+    padding: 0.5em;
+
+    font-size: 2em;
+    vertical-align: middle;
+    text-align: center;
+
+}
+
+div#connection-list-ui img {
+    vertical-align: middle;
 }

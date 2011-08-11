@@ -28,6 +28,17 @@
         </session-timeout>
     </session-config>
 
+    <!-- Basic Login Servlet -->
+    <servlet>
+        <description>Login servlet.</description>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogin</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login</url-pattern>
+    </servlet-mapping>
+
     <!-- Guacamole Tunnel Servlet -->
     <servlet>
         <description>Tunnel servlet.</description>

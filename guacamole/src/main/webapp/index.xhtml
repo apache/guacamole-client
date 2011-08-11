@@ -29,7 +29,7 @@
 
     <body>
 
-        <div id="login-ui">
+        <div id="login-ui" style="display: none">
             <div id="login-dialog-middle">
 
                 <div id="login-dialog">
@@ -60,25 +60,51 @@
                     </form>
                 </div>
 
-                <div id="version-dialog">
-                    Guacamole ${project.version}
-                </div>
-
             </div>
         </div>
 
-        <!-- Main UI - hidden until login succeeds -->
+        <!-- Connection list UI -->
         <div id="connection-list-ui" style="display: none">
-            <!-- STUB -->
+
+            <h1>
+                <img class="logo" src="images/guacamole-logo-64.png" alt=""/>
+                Available Connections
+            </h1>
+            
+            <table class="connections">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Protocol</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>zhz@localhost</td>
+                        <td>vnc</td>
+                        <td class="description">Connect to test.guac-dev.org via vnc.</td>
+                    </tr>
+                    <tr>
+                        <td>zhz@localhost</td>
+                        <td>ssh</td>
+                        <td class="description">Connect to test.guac-dev.org via ssh.</td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
 
+        <div id="version-dialog">
+            Guacamole ${project.version}
+        </div>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
             var loginForm = document.getElementById("login-form");
             var loginUI = document.getElementById("login-ui");
-            var display = document.getElementById("display");
+            var connectionListUI = document.getElementById("connection-list-ui");
 
             // TODO: Get connection list
             // On no-auth fail, show login UI 
@@ -93,7 +119,21 @@
                     + "&password=" + encodeURIComponent(password.value)
 
                 try {
-                    // STUB
+
+                    // Log in
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", "login", false);
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhr.send(data);
+
+                    // Handle failures
+                    if (xhr.status != 200)
+                        throw new Error("Invalid login");
+
+                    // Hide login UI, display connections
+                    loginUI.style.display = "none";
+                    connectionListUI.style.display = "";
+
                 }
                 catch (e) {
 
@@ -112,6 +152,8 @@
                 return false;
 
             }
+
+            loginUI.style.display = "";
 
             /* ]]> */ </script>
 
