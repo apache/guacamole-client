@@ -91,16 +91,6 @@
                 new Guacamole.HTTPTunnel("tunnel")
             );
 
-            try {
-
-                // Connect client
-                guac.connect(data);
-
-            }
-            catch (e) {
-                // TODO: Handle exception ...
-            }
-
             var menu = document.getElementById("menu");
             var logo = document.getElementById("status-logo");
 
@@ -324,6 +314,23 @@
                 guac.sendKeyEvent(0, KEYSYM_ALT);
                 guac.sendKeyEvent(0, KEYSYM_CTRL);
             }
+
+
+            try {
+
+                // Get ID
+                var url = window.location.href;
+                var query = url.indexOf("?");
+                var id = url.substring(query+1);
+
+                // Connect client
+                guac.connect("id=" + encodeURIComponent(id));
+
+            }
+            catch (e) {
+                // TODO: Handle exception ...
+            }
+
 
             /* ]]> */ </script>
 

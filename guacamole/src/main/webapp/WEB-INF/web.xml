@@ -39,6 +39,17 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
+    <!-- Configuration List Servlet -->
+    <servlet>
+        <description>Configuration list servlet.</description>
+        <servlet-name>Configs</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.ConfigurationList</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Configs</servlet-name>
+        <url-pattern>/configs</url-pattern>
+    </servlet-mapping>
+
     <!-- Guacamole Tunnel Servlet -->
     <servlet>
         <description>Tunnel servlet.</description>

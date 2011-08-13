@@ -19,6 +19,8 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +82,11 @@ public class BasicLogin extends HttpServlet {
 
         logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
 
-        httpSession.setAttribute("GUAC_AUTH_CONFIGS", new Integer(0));
+        // Build map of authorized configs
+        Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
+        configs.put("TEST-UID", config);
+        
+        httpSession.setAttribute("GUAC_AUTH_CONFIGS", configs);
 
     }
 

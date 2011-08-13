@@ -74,22 +74,11 @@
             <table class="connections">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Protocol</th>
-                        <th>Description</th>
+                        <th class="protocol">Protocol</th>
+                        <th class="name">Name</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>zhz@localhost</td>
-                        <td>vnc</td>
-                        <td class="description">Connect to test.guac-dev.org via vnc.</td>
-                    </tr>
-                    <tr>
-                        <td>zhz@localhost</td>
-                        <td>ssh</td>
-                        <td class="description">Connect to test.guac-dev.org via ssh.</td>
-                    </tr>
+                <tbody id="connections-tbody">
                 </tbody>
             </table>
 
@@ -101,6 +90,96 @@
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
+
+            function Config(protocol, id) {
+                this.protocol = protocol;
+                this.id = id;
+            }
+
+            function getConfigList() {
+
+                // Get config list
+                var xhr = new XMLHttpRequest();
+                xhr.open("GET", "configs", false);
+                xhr.send(null);
+
+                // If fail, throw error
+                if (xhr.status != 200)
+                    throw new Error(xhr.statusText);
+
+                // Otherwise, get list
+                var configs = new Array();
+
+                var configElements = xhr.responseXML.getElementsByTagName("config");
+                for (var i=0; i<configElements.length; i++) {
+                    configs.push(new Config(
+                        configElements[i].getAttribute("protocol"),
+                        configElements[i].getAttribute("id")
+                    ));
+                }
+
+                return configs;
+                
+            }
+
+            function resetUI() {
+
+                var configs;
+                try {
+                    configs = getConfigList();
+                }
+                catch (e) {
+
+                    console.log(e);
+
+                    // Show login UI if unable to get configs
+                    loginUI.style.display = "";
+                    connectionListUI.style.display = "none";
+
+                    return;
+
+                }
+
+                // Remove all rows from connections list
+                var tbody = document.getElementById("connections-tbody");
+                tbody.innerHTML = "";
+                
+                // Add one row per connection
+                for (var i=0; i<configs.length; i++) {
+
+                    // Create row and cells
+                    var tr = document.createElement("tr");
+                    var protocol = document.createElement("td");
+                    var id = document.createElement("td");
+
+                    // Set CSS
+                    protocol.className = "protocol";
+                    id.className = "name";
+
+                    // Create link to client
+                    var clientLink = document.createElement("a");
+                    clientLink.setAttribute("href",
+                        "client.xhtml?" + encodeURIComponent(configs[i].id));
+
+                    // Set cell contents
+                    protocol.textContent   = configs[i].protocol;
+                    clientLink.textContent = configs[i].id;
+                    id.appendChild(clientLink);
+
+                    // Add cells
+                    tr.appendChild(protocol);
+                    tr.appendChild(id);
+
+                    // Add row
+                    tbody.appendChild(tr);
+
+                }
+
+                // If configs could be retrieved, display list
+                loginUI.style.display = "none";
+                connectionListUI.style.display = "";
+
+            }
 
             var loginForm = document.getElementById("login-form");
             var loginUI = document.getElementById("login-ui");
@@ -130,9 +209,7 @@
                     if (xhr.status != 200)
                         throw new Error("Invalid login");
 
-                    // Hide login UI, display connections
-                    loginUI.style.display = "none";
-                    connectionListUI.style.display = "";
+                    resetUI();
 
                 }
                 catch (e) {
@@ -153,7 +230,7 @@
 
             }
 
-            loginUI.style.display = "";
+            resetUI();
 
             /* ]]> */ </script>
 

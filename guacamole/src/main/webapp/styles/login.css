@@ -150,6 +150,16 @@ div#connection-list-ui table thead {
     background: #9A8;
 }
 
+div#connection-list-ui table thead th.protocol {
+    width: 1em;
+    padding: 0.5em;
+}
+
+div#connection-list-ui table thead th.name {
+    text-align: left;
+    padding: 0.5em;
+}
+
 div#connection-list-ui table thead tr {
     border-top:    1px solid #676;
     border-bottom: 1px solid gray;
@@ -167,6 +177,10 @@ div#connection-list-ui table tbody tr {
 div#connection-list-ui table td {
     padding: 0.25em;
     text-align: center;
+}
+
+div#connection-list-ui table td.name {
+    text-align: left;
 }
 
 div#connection-list-ui table tbody tr:nth-child(even)       { background: #CCC; }

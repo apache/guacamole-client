@@ -18,8 +18,10 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -59,26 +61,26 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
 
         HttpSession httpSession = request.getSession(true);
 
-        // Retrieve username and password from parms
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+        // Get ID of connection
+        String id = request.getParameter("id");
+        
+        // Get authorized configs
+        Map<String, GuacamoleConfiguration> configs =
+                (Map<String, GuacamoleConfiguration>)
+                httpSession.getAttribute("GUAC_AUTH_CONFIGS");
+
+        // If no configs in session, not authorized
+        if (configs == null)
+            throw new GuacamoleException("No authorized configurations.");
 
         // Get authorized config
-        GuacamoleConfiguration config;
-        try {
-            config = authProvider.getAuthorizedConfiguration(username, password);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error retrieving authorized configuration for user {}.", username);
-            throw e;
+        GuacamoleConfiguration config = configs.get(id);
+        if (config == null) {
+            logger.error("Error retrieving authorized configuration id={}.", id);
+            throw new GuacamoleException("Unknown configuration ID.");
         }
         
-        if (config == null) {
-            logger.warn("Failed login from {} for user \"{}\".", request.getRemoteAddr(), username);
-            throw new GuacamoleException("Invalid login");
-        }
-
-        logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
+        logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
 
         // Configure and connect socket
         String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
