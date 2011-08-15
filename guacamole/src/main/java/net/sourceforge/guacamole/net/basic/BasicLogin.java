@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.UsernamePassword;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.slf4j.Logger;
@@ -62,10 +63,14 @@ public class BasicLogin extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
+        UsernamePassword credentials = new UsernamePassword();
+        credentials.setUsername(username);
+        credentials.setPassword(password);
+        
         // Get authorized configs
         UserConfiguration config;
         try {
-            config = authProvider.getUserConfiguration(username, password);
+            config = authProvider.getUserConfiguration(credentials);
         }
         catch (GuacamoleException e) {
             logger.error("Error retrieving configuration for user {}.", username);

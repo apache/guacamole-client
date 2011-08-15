@@ -140,6 +140,12 @@
 
                 }
 
+                // If only one connection, redirect to that.
+                if (configs.length == 1) {
+                    window.location.href = "client.xhtml?" + encodeURIComponent(configs[0].id);
+                    return;
+                }
+
                 // Remove all rows from connections list
                 var tbody = document.getElementById("connections-tbody");
                 tbody.innerHTML = "";
