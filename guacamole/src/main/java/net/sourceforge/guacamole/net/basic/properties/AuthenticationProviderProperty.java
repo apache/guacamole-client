@@ -20,7 +20,7 @@ package net.sourceforge.guacamole.net.basic.properties;
 
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.basic.AuthenticationProvider;
+import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.properties.GuacamoleProperty;
 
 public abstract class AuthenticationProviderProperty implements GuacamoleProperty<AuthenticationProvider> {

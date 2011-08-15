@@ -18,16 +18,15 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.net.auth.UserConfiguration;
+import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.slf4j.Logger;
@@ -63,13 +62,13 @@ public class BasicLogin extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Get authorized config
-        GuacamoleConfiguration config;
+        // Get authorized configs
+        UserConfiguration config;
         try {
-            config = authProvider.getAuthorizedConfiguration(username, password);
+            config = authProvider.getUserConfiguration(username, password);
         }
         catch (GuacamoleException e) {
-            logger.error("Error retrieving authorized configuration for user {}.", username);
+            logger.error("Error retrieving configuration for user {}.", username);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -82,11 +81,8 @@ public class BasicLogin extends HttpServlet {
 
         logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
 
-        // Build map of authorized configs
-        Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
-        configs.put("TEST-UID", config);
-        
-        httpSession.setAttribute("GUAC_AUTH_CONFIGS", configs);
+        // Associate configs with session
+        httpSession.setAttribute("GUAC_USER_CONFIG", config);
 
     }
 

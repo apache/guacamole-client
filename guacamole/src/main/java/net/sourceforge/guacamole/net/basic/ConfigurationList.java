@@ -20,12 +20,12 @@ package net.sourceforge.guacamole.net.basic;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.net.auth.UserConfiguration;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +40,12 @@ public class ConfigurationList extends HttpServlet {
 
         HttpSession httpSession = request.getSession(true);
 
-        // Get authorized configs
-        Map<String, GuacamoleConfiguration> configs =
-                (Map<String, GuacamoleConfiguration>)
-                httpSession.getAttribute("GUAC_AUTH_CONFIGS");
+        // Get user configuration
+        UserConfiguration userConfig = (UserConfiguration)
+                httpSession.getAttribute("GUAC_USER_CONFIG");
 
-        // If no configs in session, not authorized
-        if (configs == null) {
+        // If no userConfig in session, not authorized
+        if (userConfig == null) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
@@ -56,13 +55,13 @@ public class ConfigurationList extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.println("<configs>");
         
-        for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
+        for (String id : userConfig.listConfigurations()) {
 
-            GuacamoleConfiguration config = entry.getValue();
+            GuacamoleConfiguration config = userConfig.getConfiguration(id);
 
             // Write config
             out.print("<config id=\"");
-            out.print(entry.getKey());
+            out.print(id);
             out.print("\" protocol=\"");
             out.print(config.getProtocol());
             out.println("\"/>");

@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -27,9 +28,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.UserConfiguration;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -84,7 +86,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public GuacamoleConfiguration getAuthorizedConfiguration(String username, String password) throws GuacamoleException {
+    public UserConfiguration getUserConfiguration(String username, String password) throws GuacamoleException {
 
         // Check mapping file mod time
         File userMappingFile = getUserMappingFile();
@@ -107,13 +109,15 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(username);
         if (info != null && info.validate(username, password))
-            return info.getConfiguration();
+            return info.getUserConfiguration();
 
         return null;
 
     }
 
     public static class AuthInfo {
+
+        protected static final String CONFIG_ID = "DEFAULT";
 
         public static enum Encoding {
             PLAIN_TEXT,
@@ -124,14 +128,16 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private String auth_password;
         private Encoding auth_encoding;
 
-        private GuacamoleConfiguration config;
+        private BasicUserConfiguration userConfig;
 
         public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
             this.auth_username = auth_username;
             this.auth_password = auth_password;
             this.auth_encoding = auth_encoding;
 
-            config = new GuacamoleConfiguration();
+            userConfig = new BasicUserConfiguration();
+            userConfig.setConfiguration(CONFIG_ID, new GuacamoleConfiguration());
+
         }
 
         private static final char HEX_CHARS[] = {
@@ -187,8 +193,8 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
         }
 
-        public GuacamoleConfiguration getConfiguration() {
-            return config;
+        public BasicUserConfiguration getUserConfiguration() {
+            return userConfig;
         }
 
     }
@@ -348,11 +354,13 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             switch (state) {
 
                 case PROTOCOL:
-                    current.getConfiguration().setProtocol(str);
+                    current.getUserConfiguration().getConfiguration(AuthInfo.CONFIG_ID)
+                            .setProtocol(str);
                     return;
 
                 case PARAMETER:
-                    current.getConfiguration().setParameter(currentParameter, str);
+                    current.getUserConfiguration().getConfiguration(AuthInfo.CONFIG_ID)
+                            .setParameter(currentParameter, str);
                     return;
                 
             }

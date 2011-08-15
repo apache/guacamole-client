@@ -18,10 +18,9 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Map;
+import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -30,6 +29,7 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleSession;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
+import net.sourceforge.guacamole.net.auth.UserConfiguration;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleTunnelServlet;
@@ -65,16 +65,15 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
         String id = request.getParameter("id");
         
         // Get authorized configs
-        Map<String, GuacamoleConfiguration> configs =
-                (Map<String, GuacamoleConfiguration>)
-                httpSession.getAttribute("GUAC_AUTH_CONFIGS");
+        UserConfiguration userConfig = (UserConfiguration) 
+                httpSession.getAttribute("GUAC_USER_CONFIG");
 
         // If no configs in session, not authorized
-        if (configs == null)
+        if (userConfig == null)
             throw new GuacamoleException("No authorized configurations.");
 
         // Get authorized config
-        GuacamoleConfiguration config = configs.get(id);
+        GuacamoleConfiguration config = userConfig.getConfiguration(id);
         if (config == null) {
             logger.error("Error retrieving authorized configuration id={}.", id);
             throw new GuacamoleException("Unknown configuration ID.");
