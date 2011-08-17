@@ -18,9 +18,9 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.net.auth.UserConfiguration;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +30,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.UsernamePassword;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,17 +69,17 @@ public class BasicLogin extends HttpServlet {
         credentials.setPassword(password);
         
         // Get authorized configs
-        UserConfiguration config;
+        Map<String, GuacamoleConfiguration> configs;
         try {
-            config = authProvider.getUserConfiguration(credentials);
+            configs = authProvider.getAuthorizedConfigurations(credentials);
         }
         catch (GuacamoleException e) {
-            logger.error("Error retrieving configuration for user {}.", username);
+            logger.error("Error retrieving configuration(s) for user {}.", username);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
         }
         
-        if (config == null) {
+        if (configs == null) {
             logger.warn("Failed login from {} for user \"{}\".", request.getRemoteAddr(), username);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
             return;
@@ -87,7 +88,7 @@ public class BasicLogin extends HttpServlet {
         logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
 
         // Associate configs with session
-        httpSession.setAttribute("GUAC_USER_CONFIG", config);
+        httpSession.setAttribute("GUAC_CONFIGS", configs);
 
     }
 

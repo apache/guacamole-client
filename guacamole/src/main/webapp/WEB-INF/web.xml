@@ -39,6 +39,17 @@
         <url-pattern>/login</url-pattern>
     </servlet-mapping>
 
+    <!-- Basic Logout Servlet -->
+    <servlet>
+        <description>Logout servlet.</description>
+        <servlet-name>Logout</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogout</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Logout</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
     <!-- Configuration List Servlet -->
     <servlet>
         <description>Configuration list servlet.</description>
