@@ -111,7 +111,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider<U
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(credentials.getUsername());
         if (info != null && info.validate(credentials.getUsername(), credentials.getPassword()))
-                configs.put("DEFAULT", info.getConfiguration());
+            configs.put("DEFAULT", info.getConfiguration());
 
         return configs;
 
