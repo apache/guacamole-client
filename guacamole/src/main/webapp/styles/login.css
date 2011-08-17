@@ -204,3 +204,9 @@ div#connection-list-ui h1 {
 div#connection-list-ui img {
     vertical-align: middle;
 }
+
+div#logout {
+    padding: 0.5em;
+    text-align: right;
+    float: right;
+}
