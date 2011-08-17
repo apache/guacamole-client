@@ -106,11 +106,6 @@ img {
     border: none;
 }
 
-img#license {
-    float: right;
-    margin: 2px;
-}
-
 div#display {
     position: relative;
     width: 640px;

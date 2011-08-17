@@ -45,12 +45,12 @@
 
             <button id="showKeyboard">Show Keyboard</button>
             <button id="ctrlAltDelete">Ctrl-Alt-Delete</button>
+            <button id="logout">Logout</button>
 
             <!-- Logo and status -->
             <img id="status-logo" class="logo" src="images/guacamole-logo-24.png" alt="Guacamole" title="Guacamole ${project.version}"/>
             <span id="state"></span>
 
-            <a href="logout">Logout</a>
         </div>
 
 
@@ -313,8 +313,14 @@
                 guac.sendKeyEvent(0, KEYSYM_DELETE);
                 guac.sendKeyEvent(0, KEYSYM_ALT);
                 guac.sendKeyEvent(0, KEYSYM_CTRL);
-            }
+            };
 
+            // Logout
+            var logout = document.getElementById("logout");
+
+            logout.onclick = function() {
+                window.location.href = "logout";
+            };
 
             try {
 
