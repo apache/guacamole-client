@@ -97,8 +97,35 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} newHeight The new height to assign to this Layer.
      */
     function resize(newWidth, newHeight) {
+
+
+        // Only preserve old data if width/height are both non-zero
+        var oldData = null;
+        if (width != 0 && height != 0) {
+
+            // Create canvas and context for holding old data
+            oldData = document.createElement("canvas");
+            oldData.width = width;
+            oldData.height = height;
+
+            var oldDataContext = oldData.getContext("2d");
+
+            // Copy image data from current
+            oldDataContext.drawImage(display,
+                    0, 0, width, height,
+                    0, 0, width, height);
+
+        }
+
+        // Resize canvas
         display.width = newWidth;
         display.height = newHeight;
+
+        // Redraw old data, if any
+        if (oldData)
+            displayContext.drawImage(oldData, 
+                    0, 0, width, height,
+                    0, 0, width, height);
 
         width = newWidth;
         height = newHeight;
@@ -195,6 +222,8 @@ Guacamole.Layer = function(width, height) {
         
     }
 
+    var tasksInProgress = false;
+
     /**
      * Run any Tasks which were pending but are now ready to run and are not
      * blocked by other Tasks.
@@ -202,12 +231,19 @@ Guacamole.Layer = function(width, height) {
      */
     function handlePendingTasks() {
 
+        if (tasksInProgress)
+            return;
+
+        tasksInProgress = true;
+
         // Draw all pending tasks.
         var task;
         while ((task = tasks[0]) != null && task.handler) {
             tasks.shift();
             task.handler();
         }
+
+        tasksInProgress = false;
 
     }
 
@@ -475,6 +511,7 @@ Guacamole.Layer = function(width, height) {
     };
 
     // Initialize canvas dimensions
-    resize(width, height);
+    display.width = width;
+    display.height = height;
 
 };
