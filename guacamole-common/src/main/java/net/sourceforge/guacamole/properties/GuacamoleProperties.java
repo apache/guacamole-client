@@ -98,4 +98,28 @@ public class GuacamoleProperties {
 
     }
 
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties. An exception is thrown if the value
+     * is not provided.
+     *
+     * @param <Type> The type that the given property is parsed into.
+     * @param property The property to read from guacamole.properties.
+     * @return The parsed value of the property as read from
+     *         guacamole.properties.
+     * @throws GuacamoleException If an error occurs while parsing the value
+     *                            for the given property in
+     *                            guacamole.properties, or if the property is
+     *                            not specified.
+     */
+    public static <Type> Type getRequiredProperty(GuacamoleProperty<Type> property)
+            throws GuacamoleException {
+
+        Type value = getProperty(property);
+        if (value == null)
+            throw new GuacamoleException("Property " + property.getName() + " is required.");
+
+        return value;
+        
+    }
 }

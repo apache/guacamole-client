@@ -124,6 +124,10 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
             instructionStart = 0;
         }
 
+        // If EOF, return EOF
+        if (instructionBuffer == null)
+            return null;
+
         // Locate end-of-opcode and end-of-instruction
         int opcodeEnd = -1;
         int instructionEnd = -1;
