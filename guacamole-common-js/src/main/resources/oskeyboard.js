@@ -17,10 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Guacamole namespace
+var Guacamole = Guacamole || {};
 
-function GuacamoleOnScreenKeyboard(url) {
+/**
+ * Dynamic on-screen keyboard. Given the URL to an XML keyboard layout file,
+ * this object will download and use the XML to construct a clickable on-screen
+ * keyboard with its own key events.
+ * 
+ * @constructor
+ * @param {String} url The URL of an XML keyboard layout file.
+ */
+Guacamole.OnScreenKeyboard = function(url) {
 
-    var tabIndex = 1;
     var allKeys = new Array();
     var modifierState = new function() {};
 

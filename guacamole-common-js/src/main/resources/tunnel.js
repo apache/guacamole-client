@@ -16,7 +16,77 @@
  *  You should have received a copy of the GNU Affero General Public License
  */
 
-function GuacamoleHTTPTunnel(tunnelURL) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+/**
+ * Core object providing abstract communication for Guacamole. This object
+ * is a null implementation whose functions do nothing. Guacamole applications
+ * should use {@link Guacamole.HTTPTunnel} instead, or implement their own tunnel based
+ * on this one.
+ * 
+ * @constructor
+ * @see Guacamole.HTTPTunnel
+ */
+Guacamole.Tunnel = function() {
+
+    /**
+     * Connect to the tunnel with the given optional data. This data is
+     * typically used for authentication. The format of data accepted is
+     * up to the tunnel implementation.
+     * 
+     * @param {String} data The data to send to the tunnel when connecting.
+     */
+    this.connect = function(data) {};
+    
+    /**
+     * Disconnect from the tunnel.
+     */
+    this.disconnect = function() {};
+    
+    /**
+     * Send the given message through the tunnel to the service on the other
+     * side. All messages are guaranteed to be received in the order sent.
+     * 
+     * @param {String} message The message to send to the service on the other
+     *                         side of the tunnel.
+     */
+    this.sendMessage = function(message) {};
+    
+    /**
+     * Fired whenever an error is encountered by the tunnel.
+     * 
+     * @event
+     * @param {String} message A human-readable description of the error that
+     *                         occurred.
+     */
+    this.onerror = null;
+
+    /**
+     * Fired once for every complete Guacamole instruction received, in order.
+     * 
+     * @event
+     * @param {String} opcode The Guacamole instruction opcode.
+     * @param {Array} parameters The parameters provided for the instruction,
+     *                           if any.
+     */
+    this.oninstruction = null;
+
+};
+
+/**
+ * Guacamole Tunnel implemented over HTTP via XMLHttpRequest.
+ * 
+ * @constructor
+ * @augments Guacamole.Tunnel
+ * @param {String} tunnelURL The URL of the HTTP tunneling service.
+ */
+Guacamole.HTTPTunnel = function(tunnelURL) {
+
+    /**
+     * Reference to this HTTP tunnel.
+     */
+    var tunnel = this;
 
     var tunnel_uuid;
 
@@ -36,12 +106,10 @@ function GuacamoleHTTPTunnel(tunnelURL) {
     // Default to polling - will be turned off automatically if not needed
     var pollingMode = POLLING_ENABLED;
 
-    var instructionHandler = null;
-
-    var sendingMessages = 0;
+    var sendingMessages = false;
     var outputMessageBuffer = "";
 
-    function sendMessage(message) {
+    this.sendMessage = function(message) {
 
         // Do not attempt to send messages if not connected
         if (currentState != STATE_CONNECTED)
@@ -49,16 +117,16 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
         // Add event to queue, restart send loop if finished.
         outputMessageBuffer += message;
-        if (sendingMessages == 0)
+        if (!sendingMessages)
             sendPendingMessages();
 
-    }
+    };
 
     function sendPendingMessages() {
 
         if (outputMessageBuffer.length > 0) {
 
-            sendingMessages = 1;
+            sendingMessages = true;
 
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
@@ -75,7 +143,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
         }
         else
-            sendingMessages = 0;
+            sendingMessages = false;
 
     }
 
@@ -101,8 +169,8 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                 return;
             }
 
-            // Start next request as soon as possible
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null)
+            // Start next request as soon as possible IF request was successful
+            if (xmlhttprequest.readyState >= 2 && nextRequest == null && xmlhttprequest.status == 200)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
@@ -117,9 +185,25 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                         clearInterval(interval);
                 }
 
+                // If canceled, stop transfer
+                if (xmlhttprequest.status == 0) {
+                    tunnel.disconnect();
+                    return;
+                }
+
                 // Halt on error during request
-                if (xmlhttprequest.status == 0 || xmlhttprequest.status != 200) {
-                    disconnect();
+                else if (xmlhttprequest.status != 200) {
+
+                    // Get error message (if any)
+                    var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
+                    if (!message)
+                        message = "Internal server error";
+
+                    // Call error handler
+                    if (tunnel.onerror) tunnel.onerror(message);
+
+                    // Finish
+                    tunnel.disconnect();
                     return;
                 }
 
@@ -160,8 +244,8 @@ function GuacamoleHTTPTunnel(tunnelURL) {
                     }
 
                     // Call instruction handler.
-                    if (instructionHandler != null)
-                        instructionHandler(opcode, parameters);
+                    if (tunnel.oninstruction != null)
+                        tunnel.oninstruction(opcode, parameters);
                 }
 
                 // Start search at end of string.
@@ -213,7 +297,7 @@ function GuacamoleHTTPTunnel(tunnelURL) {
 
     }
 
-    function connect(data) {
+    this.connect = function(data) {
 
         // Start tunnel and connect synchronously
         var connect_xmlhttprequest = new XMLHttpRequest();
@@ -239,18 +323,12 @@ function GuacamoleHTTPTunnel(tunnelURL) {
         currentState = STATE_CONNECTED;
         handleResponse(makeRequest());
 
-    }
-
-    function disconnect() {
-        currentState = STATE_DISCONNECTED;
-    }
-
-    // External API
-    this.connect = connect;
-    this.disconnect = disconnect;
-    this.sendMessage = sendMessage;
-    this.setInstructionHandler = function(handler) {
-        instructionHandler = handler;
     };
 
-}
+    this.disconnect = function() {
+        currentState = STATE_DISCONNECTED;
+    };
+
+};
+
+Guacamole.HTTPTunnel.prototype = new Guacamole.Tunnel();

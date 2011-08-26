@@ -16,7 +16,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  */
 
-function GuacamoleClient(display, tunnel) {
+// Guacamole namespace
+var Guacamole = Guacamole || {};
+
+/**
+ * Guacamole protocol client. Given a display element and {@link Guacamole.Tunnel},
+ * automatically handles incoming and outgoing Guacamole instructions via the
+ * provided tunnel, updating the display using one or more canvas elements.
+ * 
+ * @constructor
+ * @param {Element} display The display element to add canvas elements to.
+ * @param {Guacamole.Tunnel} tunnel The tunnel to use to send and receive
+ *                                  Guacamole instructions.
+ */
+Guacamole.Client = function(display, tunnel) {
+
+    var guac_client = this;
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTING    = 1;
@@ -26,9 +41,13 @@ function GuacamoleClient(display, tunnel) {
     var STATE_DISCONNECTED  = 5;
 
     var currentState = STATE_IDLE;
-    var stateChangeHandler = null;
 
-    tunnel.setInstructionHandler(doInstruction);
+    tunnel.oninstruction = doInstruction;
+
+    tunnel.onerror = function(message) {
+        if (guac_client.onerror)
+            guac_client.onerror(message);
+    };
 
     // Display must be relatively positioned for mouse to be handled properly
     display.style.position = "relative";
@@ -36,14 +55,10 @@ function GuacamoleClient(display, tunnel) {
     function setState(state) {
         if (state != currentState) {
             currentState = state;
-            if (stateChangeHandler)
-                stateChangeHandler(currentState);
+            if (guac_client.onstatechange)
+                guac_client.onstatechange(currentState);
         }
     }
-
-    this.setOnStateChangeHandler = function(handler) {
-        stateChangeHandler = handler;
-    };
 
     function isConnected() {
         return currentState == STATE_CONNECTED
@@ -54,7 +69,6 @@ function GuacamoleClient(display, tunnel) {
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
-    // FIXME: Make object. Clean up.
     var cursorRectX = 0;
     var cursorRectY = 0;
     var cursorRectW = 0;
@@ -83,7 +97,7 @@ function GuacamoleClient(display, tunnel) {
         cursor.drawImage(cursorRectX, cursorRectY, cursorImage);
     }
 
-    this.sendKeyEvent = function(pressed, keysym) {
+    guac_client.sendKeyEvent = function(pressed, keysym) {
         // Do not send requests if not connected
         if (!isConnected())
             return;
@@ -91,7 +105,7 @@ function GuacamoleClient(display, tunnel) {
         tunnel.sendMessage("key:" +  keysym + "," + pressed + ";");
     };
 
-    this.sendMouseState = function(mouseState) {
+    guac_client.sendMouseState = function(mouseState) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -100,24 +114,24 @@ function GuacamoleClient(display, tunnel) {
         // Draw client-side cursor
         if (cursorImage != null) {
             redrawCursor(
-                mouseState.getX(),
-                mouseState.getY()
+                mouseState.x,
+                mouseState.y
             );
         }
 
         // Build mask
         var buttonMask = 0;
-        if (mouseState.getLeft())   buttonMask |= 1;
-        if (mouseState.getMiddle()) buttonMask |= 2;
-        if (mouseState.getRight())  buttonMask |= 4;
-        if (mouseState.getUp())     buttonMask |= 8;
-        if (mouseState.getDown())   buttonMask |= 16;
+        if (mouseState.left)   buttonMask |= 1;
+        if (mouseState.middle) buttonMask |= 2;
+        if (mouseState.right)  buttonMask |= 4;
+        if (mouseState.up)     buttonMask |= 8;
+        if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse:" + mouseState.getX() + "," + mouseState.getY() + "," + buttonMask + ";");
+        tunnel.sendMessage("mouse:" + mouseState.x + "," + mouseState.y + "," + buttonMask + ";");
     };
 
-    this.setClipboard = function(data) {
+    guac_client.setClipboard = function(data) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -127,21 +141,10 @@ function GuacamoleClient(display, tunnel) {
     };
 
     // Handlers
-
-    var nameHandler = null;
-    this.setNameHandler = function(handler) {
-        nameHandler = handler;
-    }
-
-    var errorHandler = null;
-    this.setErrorHandler = function(handler) {
-        errorHandler = handler;
-    };
-
-    var clipboardHandler = null;
-    this.setClipboardHandler = function(handler) {
-        clipboardHandler = handler;
-    };
+    guac_client.onstatechange = null;
+    guac_client.onname = null;
+    guac_client.onerror = null;
+    guac_client.onclipboard = null;
 
     // Layers
     var displayWidth = 0;
@@ -151,7 +154,7 @@ function GuacamoleClient(display, tunnel) {
     var buffers = new Array();
     var cursor = null;
 
-    this.getLayers = function() {
+    guac_client.getLayers = function() {
         return layers;
     };
 
@@ -165,8 +168,8 @@ function GuacamoleClient(display, tunnel) {
 
             // Create buffer if necessary
             if (buffer == null) {
-                buffer = new Layer(0, 0);
-                buffer.setAutosize(1);
+                buffer = new Guacamole.Layer(0, 0);
+                buffer.autosize = 1;
                 buffers[index] = buffer;
             }
 
@@ -180,7 +183,14 @@ function GuacamoleClient(display, tunnel) {
             if (layer == null) {
 
                 // Add new layer
-                layer = new Layer(displayWidth, displayHeight);
+                layer = new Guacamole.Layer(displayWidth, displayHeight);
+                
+                // Set layer position
+                var canvas = layer.getCanvas();
+                canvas.style.position = "absolute";
+                canvas.style.left = "0px";
+                canvas.style.top = "0px";
+
                 layers[index] = layer;
 
                 // (Re)-add existing layers in order
@@ -189,18 +199,18 @@ function GuacamoleClient(display, tunnel) {
 
                         // If already present, remove
                         if (layers[i].parentNode === display)
-                            display.removeChild(layers[i]);
+                            display.removeChild(layers[i].getCanvas());
 
                         // Add to end
-                        display.appendChild(layers[i]);
+                        display.appendChild(layers[i].getCanvas());
                     }
                 }
 
                 // Add cursor layer last
                 if (cursor != null) {
                     if (cursor.parentNode === display)
-                        display.removeChild(cursor);
-                    display.appendChild(cursor);
+                        display.removeChild(cursor.getCanvas());
+                    display.appendChild(cursor.getCanvas());
                 }
 
             }
@@ -217,16 +227,16 @@ function GuacamoleClient(display, tunnel) {
     var instructionHandlers = {
 
         "error": function(parameters) {
-            if (errorHandler) errorHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onerror) guac_client.onerror(unescapeGuacamoleString(parameters[0]));
             disconnect();
         },
 
         "name": function(parameters) {
-            if (nameHandler) nameHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onname) guac_client.onname(unescapeGuacamoleString(parameters[0]));
         },
 
         "clipboard": function(parameters) {
-            if (clipboardHandler) clipboardHandler(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onclipboard) guac_client.onclipboard(unescapeGuacamoleString(parameters[0]));
         },
 
         "size": function(parameters) {
@@ -292,6 +302,40 @@ function GuacamoleClient(display, tunnel) {
 
         },
 
+        "rect": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var x = parseInt(parameters[2]);
+            var y = parseInt(parameters[3]);
+            var w = parseInt(parameters[4]);
+            var h = parseInt(parameters[5]);
+            var r = parseInt(parameters[6]);
+            var g = parseInt(parameters[7]);
+            var b = parseInt(parameters[8]);
+            var a = parseInt(parameters[9]);
+
+            layer.setChannelMask(channelMask);
+
+            layer.drawRect(
+                x, y, w, h,
+                r, g, b, a
+            );
+
+        },
+
+        "clip": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var x = parseInt(parameters[1]);
+            var y = parseInt(parameters[2]);
+            var w = parseInt(parameters[3]);
+            var h = parseInt(parameters[4]);
+
+            layer.clipRect(x, y, w, h);
+
+        },
+
         "cursor": function(parameters) {
 
             var x = parseInt(parameters[0]);
@@ -299,8 +343,14 @@ function GuacamoleClient(display, tunnel) {
             var data = parameters[2];
 
             if (cursor == null) {
-                cursor = new Layer(displayWidth, displayHeight);
-                display.appendChild(cursor);
+                cursor = new Guacamole.Layer(displayWidth, displayHeight);
+                
+                var canvas = cursor.getCanvas();
+                canvas.style.position = "absolute";
+                canvas.style.left = "0px";
+                canvas.style.top = "0px";
+
+                display.appendChild(canvas);
             }
 
             // Start cursor image load
@@ -354,7 +404,7 @@ function GuacamoleClient(display, tunnel) {
             if (layersToSync == 0)
                 tunnel.sendMessage("sync:" + timestamp + ";");
 
-        },
+        }
       
     };
 
@@ -433,8 +483,8 @@ function GuacamoleClient(display, tunnel) {
 
     }
 
-    this.disconnect = disconnect;
-    this.connect = function(data) {
+    guac_client.disconnect = disconnect;
+    guac_client.connect = function(data) {
 
         setState(STATE_CONNECTING);
 
@@ -449,7 +499,7 @@ function GuacamoleClient(display, tunnel) {
         setState(STATE_WAITING);
     };
 
-    this.escapeGuacamoleString   = escapeGuacamoleString;
-    this.unescapeGuacamoleString = unescapeGuacamoleString;
+    guac_client.escapeGuacamoleString   = escapeGuacamoleString;
+    guac_client.unescapeGuacamoleString = unescapeGuacamoleString;
 
 }
