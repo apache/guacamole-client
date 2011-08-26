@@ -113,41 +113,33 @@ Guacamole.Mouse = function(element) {
 
     };
 
+    var last_touch_x = 0;
+    var last_touch_y = 0;
+
     element.ontouchend = function(e) {
         
         e.stopPropagation();
         e.preventDefault();
 
-        // Release all buttons (FIXME: for now...)
-        if (mouseLeftButton || mouseMiddleButton || mouseRightButton) {
-            mouseLeftButton = 0;
-            mouseMiddleButton = 0;
-            mouseRightButton = 0;
+        // TODO: Handle tap-to-click.
 
-            buttonReleasedHandler(getMouseState(0, 0));
-        }
-
-    }
+    };
 
     element.ontouchstart = function(e) {
 
         e.stopPropagation();
         e.preventDefault();
 
-        if (e.touches.length == 1)
-            element.ontouchmove(e);
+        // Record initial touch location and time for single-touch movement
+        // and tap gestures
+        if (e.touches.length == 1) {
 
-        else {
-            
-            var button = e.touches[0];
-            var pointer = e.touches[1];
+            var starting_touch = e.touches[0];
+            last_touch_x = starting_touch.pageX;
+            last_touch_y = starting_touch.pageY;
 
-            if (pointer.pageX < button.pageX)
-                mouseLeftButton = 1;
-            else
-                mouseRightButton = 1;
+            // TODO: Record time (for sake of tap-to-click)
 
-            buttonPressedHandler(getMouseState(0, 0));
         }
 
     };
@@ -157,8 +149,29 @@ Guacamole.Mouse = function(element) {
         e.stopPropagation();
         e.preventDefault();
 
-        var touch = e.touches[0];
-        moveMouse(touch.pageX, touch.pageY);
+        // Handle single-touch movement gesture (touchpad mouse move)
+        if (e.touches.length == 1) {
+
+            // Get change in touch location
+            var touch = e.touches[0];
+            var delta_x = touch.pageX - last_touch_x;
+            var delta_y = touch.pageY - last_touch_y;
+
+            // Update mouse location
+            guac_mouse.currentState.x += delta_x;
+            guac_mouse.currentState.y += delta_y;
+
+            // FIXME: Prevent mouse from leaving screen
+
+            // Fire movement event, if defined
+            if (guac_mouse.onmousemove)
+                guac_mouse.onmousemove(guac_mouse.currentState);
+
+            // Update touch location
+            last_touch_x = touch.pageX;
+            last_touch_y = touch.pageY;
+
+        }
 
     };
 
