@@ -39,4 +39,11 @@ public class BasicGuacamoleProperties {
 
     };
 
+    public static final FileGuacamoleProperty LIB_DIRECTORY = new FileGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "lib-directory"; }
+
+    };
+
 }

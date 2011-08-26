@@ -21,6 +21,7 @@ package net.sourceforge.guacamole.net.basic.properties;
 import java.lang.reflect.InvocationTargetException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
+import net.sourceforge.guacamole.net.basic.GuacamoleClassLoader;
 import net.sourceforge.guacamole.properties.GuacamoleProperty;
 
 public abstract class AuthenticationProviderProperty implements GuacamoleProperty<AuthenticationProvider> {
@@ -31,7 +32,9 @@ public abstract class AuthenticationProviderProperty implements GuacamolePropert
         // Get auth provider instance
         try {
 
-            Object obj = Class.forName(authProviderClassName).getConstructor().newInstance();
+            Object obj = GuacamoleClassLoader.getInstance().loadClass(authProviderClassName)
+                            .getConstructor().newInstance();
+
             if (!(obj instanceof AuthenticationProvider))
                 throw new GuacamoleException("Specified authentication provider class is not a AuthenticationProvider.");
 
