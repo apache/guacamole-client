@@ -107,6 +107,9 @@ Guacamole.Mouse = function(element) {
 
     element.onmousemove = function(e) {
 
+        // Don't handle if we aren't supposed to
+        if (gesture_in_progress) return;
+
         e.stopPropagation();
 
         moveMouse(e.pageX, e.pageY);
@@ -115,30 +118,60 @@ Guacamole.Mouse = function(element) {
 
     var last_touch_x = 0;
     var last_touch_y = 0;
+    var last_touch_time = 0;
+    var pixels_moved = 0;
+
+    var gesture_in_progress = false;
 
     element.ontouchend = function(e) {
         
-        e.stopPropagation();
-        e.preventDefault();
+        // If we're handling a gesture
+        if (gesture_in_progress) {
+            
+            e.stopPropagation();
+            e.preventDefault();
+            
+            var time = new Date().getTime();
 
-        // TODO: Handle tap-to-click.
+            // If single tap detected (based on time and distance)
+            if (time - last_touch_time <= 250 && pixels_moved < 10) {
+
+                // Fire left button down event
+                guac_mouse.currentState.left = true;
+                if (guac_mouse.onmousedown)
+                    guac_mouse.onmousedown(guac_mouse.currentState);
+
+                // Fire left button up event
+                guac_mouse.currentState.left = false;
+                if (guac_mouse.onmouseup)
+                    guac_mouse.onmouseup(guac_mouse.currentState);
+
+            }
+
+            // Allow mouse events now that touching is over
+            gesture_in_progress = false;
+            
+        }
 
     };
 
     element.ontouchstart = function(e) {
 
-        e.stopPropagation();
-        e.preventDefault();
-
         // Record initial touch location and time for single-touch movement
         // and tap gestures
         if (e.touches.length == 1) {
 
+            e.stopPropagation();
+            e.preventDefault();
+
+            // Stop mouse events while touching
+            gesture_in_progress = true;
+
             var starting_touch = e.touches[0];
             last_touch_x = starting_touch.pageX;
             last_touch_y = starting_touch.pageY;
-
-            // TODO: Record time (for sake of tap-to-click)
+            last_touch_time = new Date().getTime();
+            pixels_moved = 0;
 
         }
 
@@ -146,16 +179,19 @@ Guacamole.Mouse = function(element) {
 
     element.ontouchmove = function(e) {
 
-        e.stopPropagation();
-        e.preventDefault();
-
         // Handle single-touch movement gesture (touchpad mouse move)
         if (e.touches.length == 1) {
+
+            e.stopPropagation();
+            e.preventDefault();
 
             // Get change in touch location
             var touch = e.touches[0];
             var delta_x = touch.pageX - last_touch_x;
             var delta_y = touch.pageY - last_touch_y;
+
+            // Track pixels moved
+            pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
 
             // Update mouse location
             guac_mouse.currentState.x += delta_x;
@@ -177,6 +213,9 @@ Guacamole.Mouse = function(element) {
 
 
     element.onmousedown = function(e) {
+
+        // Don't handle if we aren't supposed to
+        if (gesture_in_progress) return;
 
         e.stopPropagation();
 
@@ -200,6 +239,9 @@ Guacamole.Mouse = function(element) {
 
     element.onmouseup = function(e) {
 
+        // Don't handle if we aren't supposed to
+        if (gesture_in_progress) return;
+
         e.stopPropagation();
 
         switch (e.button) {
@@ -220,6 +262,9 @@ Guacamole.Mouse = function(element) {
     };
 
     element.onmouseout = function(e) {
+
+        // Don't handle if we aren't supposed to
+        if (gesture_in_progress) return;
 
         e.stopPropagation();
 
@@ -244,7 +289,10 @@ Guacamole.Mouse = function(element) {
     };
 
     // Scroll wheel support
-    function handleScroll(e) {
+    element.onmousewheel = function(e) {
+
+        // Don't handle if we aren't supposed to
+        if (gesture_in_progress) return;
 
         var delta = 0;
         if (e.detail)
@@ -282,13 +330,10 @@ Guacamole.Mouse = function(element) {
             e.preventDefault();
 
         e.returnValue = false;
-    }
 
-    element.addEventListener('DOMMouseScroll', handleScroll, false);
-
-    element.onmousewheel = function(e) {
-        handleScroll(e);
     };
+
+    element.addEventListener('DOMMouseScroll', element.onmousewheel, false);
 
 };
 
