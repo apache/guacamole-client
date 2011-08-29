@@ -122,6 +122,7 @@ Guacamole.Mouse = function(element) {
     var pixels_moved = 0;
 
     var gesture_in_progress = false;
+    var click_release_timeout = null;
 
     element.ontouchend = function(e) {
         
@@ -133,6 +134,22 @@ Guacamole.Mouse = function(element) {
             
             var time = new Date().getTime();
 
+            // If mouse already down, release anad clear timeout
+            if (guac_mouse.currentState.left) {
+
+                // Fire left button up event
+                guac_mouse.currentState.left = false;
+                if (guac_mouse.onmouseup)
+                    guac_mouse.onmouseup(guac_mouse.currentState);
+
+                // Clear timeout, if set
+                if (click_release_timeout) {
+                    window.clearTimeout(click_release_timeout);
+                    click_release_timeout = null;
+                }
+
+            }
+
             // If single tap detected (based on time and distance)
             if (time - last_touch_time <= 250 && pixels_moved < 10) {
 
@@ -141,16 +158,22 @@ Guacamole.Mouse = function(element) {
                 if (guac_mouse.onmousedown)
                     guac_mouse.onmousedown(guac_mouse.currentState);
 
-                // Fire left button up event
-                guac_mouse.currentState.left = false;
-                if (guac_mouse.onmouseup)
-                    guac_mouse.onmouseup(guac_mouse.currentState);
+                // Delay mouse up - mouse up should be canceled if
+                // touchstart within timeout.
+                click_release_timeout = window.setTimeout(function() {
+                    
+                    // Fire left button up event
+                    guac_mouse.currentState.left = false;
+                    if (guac_mouse.onmouseup)
+                        guac_mouse.onmouseup(guac_mouse.currentState);
+                    
+                    // Allow mouse events now that touching is over
+                    gesture_in_progress = false;
+            
+                }, 250);
 
             }
 
-            // Allow mouse events now that touching is over
-            gesture_in_progress = false;
-            
         }
 
     };
@@ -167,11 +190,20 @@ Guacamole.Mouse = function(element) {
             // Stop mouse events while touching
             gesture_in_progress = true;
 
+            // Clear timeout, if set
+            if (click_release_timeout) {
+                window.clearTimeout(click_release_timeout);
+                click_release_timeout = null;
+            }
+
+            // Record touch location and time
             var starting_touch = e.touches[0];
             last_touch_x = starting_touch.pageX;
             last_touch_y = starting_touch.pageY;
             last_touch_time = new Date().getTime();
             pixels_moved = 0;
+
+            // TODO: Handle different buttons
 
         }
 
