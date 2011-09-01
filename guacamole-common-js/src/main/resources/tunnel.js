@@ -332,3 +332,85 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 };
 
 Guacamole.HTTPTunnel.prototype = new Guacamole.Tunnel();
+
+
+/**
+ * Guacamole Tunnel implemented over WebSocket via XMLHttpRequest.
+ * 
+ * @constructor
+ * @augments Guacamole.Tunnel
+ * @param {String} tunnelURL The URL of the WebSocket tunneling service.
+ */
+Guacamole.WebSocketTunnel = function(tunnelURL) {
+
+    /**
+     * Reference to this WebSocket tunnel.
+     */
+    var tunnel = this;
+
+    /**
+     * The WebSocket used by this tunnel.
+     */
+    var socket = null;
+
+    var TUNNEL_CONNECT = tunnelURL + "?connect";
+
+    var STATE_IDLE          = 0;
+    var STATE_CONNECTED     = 1;
+    var STATE_DISCONNECTED  = 2;
+
+    var currentState = STATE_IDLE;
+
+    this.sendMessage = function(message) {
+
+        // Do not attempt to send messages if not connected
+        if (currentState != STATE_CONNECTED)
+            return;
+
+        socket.send(message);
+
+    };
+
+    this.connect = function(data) {
+
+        // Connect socket
+        socket = new WebSocket(TUNNEL_CONNECT + "&" + data, "guacamole");
+
+        socket.onopen = function(event) {
+            currentState = STATE_CONNECTED;
+        };
+
+        socket.onmessage = function(event) {
+
+            var message = event.data;
+
+            var instructions = message.split(";");
+            for (var i=0; i<instructions.length; i++) {
+
+                var instruction = instructions[i];
+
+                var opcodeEnd = instruction.indexOf(":");
+                if (opcodeEnd == -1)
+                    opcodeEnd = instruction.length;
+
+                var opcode = instruction.substring(0, opcodeEnd);
+                var parameters = instruction.substring(opcodeEnd+1).split(",");
+
+                if (tunnel.oninstruction)
+                    tunnel.oninstruction(opcode, parameters);
+
+            }
+
+        };
+
+    };
+
+    this.disconnect = function() {
+        currentState = STATE_DISCONNECTED;
+        socket.close();
+    };
+
+};
+
+Guacamole.WebSocketTunnel.prototype = new Guacamole.Tunnel();
+
