@@ -353,13 +353,53 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      */
     var socket = null;
 
-    var TUNNEL_CONNECT = tunnelURL + "?connect";
+    /**
+     * The WebSocket protocol corresponding to the protocol used for the current
+     * location.
+     */
+    var ws_protocol = {
+        "http:":  "ws:",
+        "https:": "wss:"
+    };
 
     var STATE_IDLE          = 0;
     var STATE_CONNECTED     = 1;
     var STATE_DISCONNECTED  = 2;
 
     var currentState = STATE_IDLE;
+    
+    // Transform current URL to WebSocket URL
+
+    // If not already a websocket URL
+    if (   tunnelURL.substring(0, 3) != "ws:"
+        && tunnelURL.substring(0, 4) != "wss:") {
+
+        var protocol = ws_protocol[window.location.protocol];
+
+        // If absolute URL, convert to absolute WS URL
+        if (tunnelURL.substring(0, 1) == "/")
+            tunnelURL =
+                protocol
+                + "//" + window.location.host
+                + tunnelURL;
+
+        // Otherwise, construct absolute from relative URL
+        else {
+
+            // Get path from pathname
+            var slash = window.location.pathname.lastIndexOf("/");
+            var path  = window.location.pathname.substring(0, slash + 1);
+
+            // Construct absolute URL
+            tunnelURL =
+                protocol
+                + "//" + window.location.host
+                + path
+                + tunnelURL;
+
+        }
+
+    }
 
     this.sendMessage = function(message) {
 
@@ -374,7 +414,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     this.connect = function(data) {
 
         // Connect socket
-        socket = new WebSocket(TUNNEL_CONNECT + "&" + data, "guacamole");
+        socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
 
         socket.onopen = function(event) {
             currentState = STATE_CONNECTED;
