@@ -219,7 +219,7 @@
             // Disconnect on close
             window.onunload = function() {
                 guac.disconnect();
-            }
+            };
 
             // Handle clipboard events
             var clipboardElement = document.getElementById("clipboard");
@@ -325,9 +325,7 @@
             try {
 
                 // Get ID
-                var url = window.location.href;
-                var query = url.indexOf("?");
-                var id = url.substring(query+1);
+                var id = window.location.search.substring(1);
 
                 // Connect client
                 guac.connect("id=" + id);
