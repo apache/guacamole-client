@@ -391,18 +391,18 @@
         </row>
         <row>
             <key>
-                <cap keysym="0xFF52">↑</cap>
+                <cap keysym="0xFF52">&#x2191;</cap>
             </key>
         </row>
         <row>
             <key>
-                <cap keysym="0xFF51">←</cap>
+                <cap keysym="0xFF51">&#x2190;</cap>
             </key>
             <key>
-                <cap keysym="0xFF54">↓</cap>
+                <cap keysym="0xFF54">&#x2193;</cap>
             </key>
             <key>
-                <cap keysym="0xFF53">→</cap>
+                <cap keysym="0xFF53">&#x2192;</cap>
             </key>
         </row>
     </column>
