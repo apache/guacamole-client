@@ -154,8 +154,15 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         var nextRequest = null;
 
         var dataUpdateEvents = 0;
-        var instructionStart = 0;
+
+        // The location of the last element's terminator
+        var elementEnd = -1;
+
+        // Where to start the next length search or the next element
         var startIndex = 0;
+
+        // Parsed elements
+        var elements = new Array();
 
         function parseResponse() {
 
@@ -208,51 +215,84 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 }
 
                 var current = xmlhttprequest.responseText;
-                var instructionEnd;
 
-                while ((instructionEnd = current.indexOf(";", startIndex)) != -1) {
+                // While search is within currently received data
+                while (elementEnd < current.length) {
 
-                    // Start next search at next instruction
-                    startIndex = instructionEnd+1;
+                    // If we are waiting for element data
+                    if (elementEnd >= startIndex) {
 
-                    var instruction = current.substr(instructionStart,
-                            instructionEnd - instructionStart);
+                        // We now have enough data for the element. Parse.
+                        var element = current.substring(startIndex, elementEnd);
+                        var terminator = current.substring(elementEnd, elementEnd+1);
 
-                    instructionStart = startIndex;
+                        // Add element to array
+                        elements.push(element);
 
-                    var opcodeEnd = instruction.indexOf(":");
+                        // If last element, handle instruction
+                        if (terminator == ";") {
 
-                    var opcode;
-                    var parameters;
-                    if (opcodeEnd == -1) {
-                        opcode = instruction;
-                        parameters = new Array();
+                            // Get opcode
+                            var opcode = elements.shift();
+
+                            // Call instruction handler.
+                            if (tunnel.oninstruction != null)
+                                tunnel.oninstruction(opcode, elements);
+
+                            // Clear elements
+                            elements.length = 0;
+
+                        }
+
+                        // Start searching for length at character after
+                        // element terminator
+                        startIndex = elementEnd + 1;
+
                     }
+
+                    // Search for end of length
+                    var lengthEnd = current.indexOf(".", startIndex);
+                    if (lengthEnd != -1) {
+
+                        // Parse length
+                        var length = parseInt(current.substring(elementEnd+1, lengthEnd));
+
+                        // If we're done parsing, handle the next response.
+                        if (length == 0) {
+
+                            // Clean up interval if polling
+                            if (interval != null)
+                                clearInterval(interval);
+                           
+                            // Clean up object
+                            xmlhttprequest.onreadystatechange = null;
+                            xmlhttprequest.abort();
+
+                            // Start handling next request
+                            if (nextRequest)
+                                handleResponse(nextRequest);
+
+                            // Done parsing
+                            break;
+
+                        }
+
+                        // Calculate start of element
+                        startIndex = lengthEnd + 1;
+
+                        // Calculate location of element terminator
+                        elementEnd = startIndex + length;
+
+                    }
+                    
+                    // If no period yet, continue search when more data
+                    // is received
                     else {
-                        opcode = instruction.substr(0, opcodeEnd);
-                        parameters = instruction.substr(opcodeEnd+1).split(",");
-                    }
-
-                    // If we're done parsing, handle the next response.
-                    if (opcode.length == 0) {
-
-                        delete xmlhttprequest;
-                        if (nextRequest)
-                            handleResponse(nextRequest);
-
+                        startIndex = current.length;
                         break;
                     }
 
-                    // Call instruction handler.
-                    if (tunnel.oninstruction != null)
-                        tunnel.oninstruction(opcode, parameters);
-                }
-
-                // Start search at end of string.
-                startIndex = current.length;
-
-                delete instruction;
-                delete parameters;
+                } // end parse loop
 
             }
 

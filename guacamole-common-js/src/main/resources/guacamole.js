@@ -227,16 +227,16 @@ Guacamole.Client = function(display, tunnel) {
     var instructionHandlers = {
 
         "error": function(parameters) {
-            if (guac_client.onerror) guac_client.onerror(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onerror) guac_client.onerror(parameters[0]);
             disconnect();
         },
 
         "name": function(parameters) {
-            if (guac_client.onname) guac_client.onname(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onname) guac_client.onname(parameters[0]);
         },
 
         "clipboard": function(parameters) {
-            if (guac_client.onclipboard) guac_client.onclipboard(unescapeGuacamoleString(parameters[0]));
+            if (guac_client.onclipboard) guac_client.onclipboard(parameters[0]);
         },
 
         "size": function(parameters) {
@@ -454,35 +454,6 @@ Guacamole.Client = function(display, tunnel) {
 
     }
 
-    function unescapeGuacamoleString(str) {
-
-        var unescapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == "\\" && i<str.length-1) {
-
-                var escapeChar = str.charAt(++i);
-                if (escapeChar == "c")
-                    unescapedString += ",";
-                else if (escapeChar == "s")
-                    unescapedString += ";";
-                else if (escapeChar == "\\")
-                    unescapedString += "\\";
-                else
-                    unescapedString += "\\" + escapeChar;
-
-            }
-            else
-                unescapedString += c;
-
-        }
-
-        return unescapedString;
-
-    }
-
     guac_client.disconnect = disconnect;
     guac_client.connect = function(data) {
 
@@ -498,8 +469,5 @@ Guacamole.Client = function(display, tunnel) {
 
         setState(STATE_WAITING);
     };
-
-    guac_client.escapeGuacamoleString   = escapeGuacamoleString;
-    guac_client.unescapeGuacamoleString = unescapeGuacamoleString;
 
 }
