@@ -221,7 +221,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
                 tunnel.close();
             
             // End-of-instructions marker
-            out.write(';');
+            out.write("0.;");
             out.flush();
             response.flushBuffer();
 

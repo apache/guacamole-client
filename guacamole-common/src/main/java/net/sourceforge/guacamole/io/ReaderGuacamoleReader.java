@@ -21,9 +21,13 @@ package net.sourceforge.guacamole.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
@@ -127,54 +131,59 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         // If EOF, return EOF
         if (instructionBuffer == null)
             return null;
+        
+        // Build list of elements
+        LinkedList<String> elements = new LinkedList<String>();
+        while (instructionStart < instructionBuffer.length) {
 
-        // Locate end-of-opcode and end-of-instruction
-        int opcodeEnd = -1;
-        int instructionEnd = -1;
+            // Find end of length 
+            int lengthEnd = ArrayUtils.indexOf(instructionBuffer, '.', instructionStart);
 
-        for (int i=instructionStart; i<instructionBuffer.length; i++) {
+            // Parse length
+            int length = Integer.parseInt(new String(
+                    instructionBuffer,
+                    instructionStart,
+                    lengthEnd - instructionStart
+            ));
 
-            char c = instructionBuffer[i];
+            // Parse element from just after period
+            instructionStart = lengthEnd + 1;
+            String element = new String(
+                    instructionBuffer,
+                    instructionStart,
+                    length
+            );
 
-            if (c == ':')
-                opcodeEnd = i;
+            // Append element to list of elements
+            elements.addLast(element);
+            
+            // Read terminator after element
+            instructionStart += length;
+            char terminator = instructionBuffer[instructionStart];
 
-            else if (c == ';') {
-                instructionEnd = i;
+            // Continue reading instructions after terminator
+            instructionStart++;
+           
+            // If we've reached the end of the instruction
+            if (terminator == ';')
                 break;
-            }
 
         }
 
-        // If no end-of-instruction marker, malformed.
-        if (instructionEnd == -1)
-            throw new GuacamoleException("Malformed instruction.");
-
-        // If no end-of-opcode marker, end is end-of-instruction
-        if (opcodeEnd == -1)
-            opcodeEnd = instructionEnd;
-
-        // Parse opcode
-        String opcode = new String(instructionBuffer, instructionStart, opcodeEnd - instructionStart);
-
-        // Parse args
-        String[] args;
-        if (instructionEnd > opcodeEnd)
-            args = new String(instructionBuffer, opcodeEnd+1, instructionEnd - opcodeEnd - 1).split(",");
-        else
-            args = new String[0];
-
+        // Pull opcode off elements list
+        String opcode = elements.removeFirst();
+        
         // Create instruction
         GuacamoleInstruction instruction = new GuacamoleInstruction(
                 Operation.fromOpcode(opcode),
-                args
+                elements.toArray(new String[elements.size()])
         );
 
-        // Advance instructionBuffer
-        instructionStart = instructionEnd + 1;
+        // Detect end of buffer
         if (instructionStart >= instructionBuffer.length)
             instructionBuffer = null;
 
+        // Return parsed instruction
         return instruction;
 
     }
