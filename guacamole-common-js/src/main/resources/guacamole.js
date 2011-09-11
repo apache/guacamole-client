@@ -102,7 +102,7 @@ Guacamole.Client = function(display, tunnel) {
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("key:" +  keysym + "," + pressed + ";");
+        tunnel.sendMessage("key", keysym, pressed);
     };
 
     guac_client.sendMouseState = function(mouseState) {
@@ -128,7 +128,7 @@ Guacamole.Client = function(display, tunnel) {
         if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse:" + mouseState.x + "," + mouseState.y + "," + buttonMask + ";");
+        tunnel.sendMessage("mouse", mouseState.x, mouseState.y, buttonMask);
     };
 
     guac_client.setClipboard = function(data) {
@@ -137,7 +137,7 @@ Guacamole.Client = function(display, tunnel) {
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("clipboard:" + escapeGuacamoleString(data) + ";");
+        tunnel.sendMessage("clipboard", data);
     };
 
     // Handlers
@@ -384,7 +384,7 @@ Guacamole.Client = function(display, tunnel) {
 
                 // Send sync response when layers are finished
                 if (layersToSync == 0)
-                    tunnel.sendMessage("sync:" + timestamp + ";");
+                    tunnel.sendMessage("sync", timestamp);
 
             }
 
@@ -402,7 +402,7 @@ Guacamole.Client = function(display, tunnel) {
             // If all layers are ready, then we didn't install any hooks.
             // Send sync message now,
             if (layersToSync == 0)
-                tunnel.sendMessage("sync:" + timestamp + ";");
+                tunnel.sendMessage("sync", timestamp);
 
         }
       
@@ -425,32 +425,10 @@ Guacamole.Client = function(display, tunnel) {
                 && currentState != STATE_DISCONNECTING) {
 
             setState(STATE_DISCONNECTING);
-            tunnel.sendMessage("disconnect;");
+            tunnel.sendMessage("disconnect");
             tunnel.disconnect();
             setState(STATE_DISCONNECTED);
         }
-
-    }
-
-    function escapeGuacamoleString(str) {
-
-        var escapedString = "";
-
-        for (var i=0; i<str.length; i++) {
-
-            var c = str.charAt(i);
-            if (c == ",")
-                escapedString += "\\c";
-            else if (c == ";")
-                escapedString += "\\s";
-            else if (c == "\\")
-                escapedString += "\\\\";
-            else
-                escapedString += c;
-
-        }
-
-        return escapedString;
 
     }
 

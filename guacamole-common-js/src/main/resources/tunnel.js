@@ -48,10 +48,10 @@ Guacamole.Tunnel = function() {
      * Send the given message through the tunnel to the service on the other
      * side. All messages are guaranteed to be received in the order sent.
      * 
-     * @param {String} message The message to send to the service on the other
-     *                         side of the tunnel.
+     * @param {...} elements The elements of the message to send to the
+     *                       service on the other side of the tunnel.
      */
-    this.sendMessage = function(message) {};
+    this.sendMessage = function(elements) {};
     
     /**
      * Fired whenever an error is encountered by the tunnel.
@@ -109,13 +109,32 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
     var sendingMessages = false;
     var outputMessageBuffer = "";
 
-    this.sendMessage = function(message) {
+    this.sendMessage = function() {
 
         // Do not attempt to send messages if not connected
         if (currentState != STATE_CONNECTED)
             return;
 
-        // Add event to queue, restart send loop if finished.
+        // Do not attempt to send empty messages
+        if (arguments.length == 0)
+            return;
+
+        function getElement(value) {
+            var string = new String(value);
+            return string.length + "." + string; 
+        }
+
+        // Initialized message with first element
+        var message = getElement(arguments[0]);
+
+        // Append remaining elements
+        for (var i=1; i<arguments.length; i++)
+            message += "," + getElement(arguments[i]);
+
+        // Final terminator
+        message += ";";
+
+        // Add message to buffer, restart send loop if finished.
         outputMessageBuffer += message;
         if (!sendingMessages)
             sendPendingMessages();
