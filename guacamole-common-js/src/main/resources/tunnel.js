@@ -119,6 +119,13 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         if (arguments.length == 0)
             return;
 
+        /**
+         * Converts the given value to a length/string pair for use as an
+         * element in a Guacamole instruction.
+         * 
+         * @param value The value to convert.
+         * @return {String} The converted value. 
+         */
         function getElement(value) {
             var string = new String(value);
             return string.length + "." + string; 
@@ -134,8 +141,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         // Final terminator
         message += ";";
 
-        // Add message to buffer, restart send loop if finished.
+        // Add message to buffer
         outputMessageBuffer += message;
+
+        // Send if not currently sending
         if (!sendingMessages)
             sendPendingMessages();
 
