@@ -140,14 +140,14 @@ public class GuacamoleInstruction {
 
         StringBuilder buff = new StringBuilder();
 
+        buff.append(operation.getOpcode().length());
+        buff.append('.');
         buff.append(operation.getOpcode());
 
-        if (args.length >= 1)
-            buff.append(':');
-
         for (int i=0; i<args.length; i++) {
-            if (i > 0)
-                buff.append(',');
+            buff.append(',');
+            buff.append(args[i].length());
+            buff.append('.');
             buff.append(args[i]);
         }
 
