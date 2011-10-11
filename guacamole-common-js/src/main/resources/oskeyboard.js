@@ -492,5 +492,6 @@ Guacamole.OnScreenKeyboard = function(url) {
     };
 
     return keyboard;
-}
+
+};
 

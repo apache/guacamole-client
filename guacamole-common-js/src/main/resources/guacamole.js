@@ -42,8 +42,6 @@ Guacamole.Client = function(display, tunnel) {
 
     var currentState = STATE_IDLE;
 
-    tunnel.oninstruction = doInstruction;
-
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
             guac_client.onerror(message);
@@ -228,7 +226,7 @@ Guacamole.Client = function(display, tunnel) {
 
         "error": function(parameters) {
             if (guac_client.onerror) guac_client.onerror(parameters[0]);
-            disconnect();
+            guac_client.disconnect();
         },
 
         "name": function(parameters) {
@@ -409,16 +407,16 @@ Guacamole.Client = function(display, tunnel) {
     };
 
 
-    function doInstruction(opcode, parameters) {
+    tunnel.oninstruction = function(opcode, parameters) {
 
         var handler = instructionHandlers[opcode];
         if (handler)
             handler(parameters);
 
-    }
+    };
 
 
-    function disconnect() {
+    guac_client.disconnect = function() {
 
         // Only attempt disconnection not disconnected.
         if (currentState != STATE_DISCONNECTED
@@ -430,9 +428,8 @@ Guacamole.Client = function(display, tunnel) {
             setState(STATE_DISCONNECTED);
         }
 
-    }
-
-    guac_client.disconnect = disconnect;
+    };
+    
     guac_client.connect = function(data) {
 
         setState(STATE_CONNECTING);
@@ -448,4 +445,5 @@ Guacamole.Client = function(display, tunnel) {
         setState(STATE_WAITING);
     };
 
-}
+};
+
