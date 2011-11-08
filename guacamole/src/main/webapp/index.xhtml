@@ -66,8 +66,8 @@
         <!-- Connection list UI -->
         <div id="connection-list-ui" style="display: none">
 
-            <div id="logout">
-                <a href="logout">Logout</a>
+            <div id="logout-panel">
+                <button id="logout">Logout</button>
             </div>
             
             <h1>
@@ -78,7 +78,7 @@
             <table class="connections">
                 <thead>
                     <tr>
-                        <th class="protocol">Protocol</th>
+                        <th class="protocol"> </th>
                         <th class="name">Name</th>
                     </tr>
                 </thead>
@@ -92,39 +92,10 @@
             Guacamole ${project.version}
         </div>
 
+        <script type="text/javascript" src="scripts/connections.js"></script>
+
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
-
-            function Config(protocol, id) {
-                this.protocol = protocol;
-                this.id = id;
-            }
-
-            function getConfigList() {
-
-                // Get config list
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "configs", false);
-                xhr.send(null);
-
-                // If fail, throw error
-                if (xhr.status != 200)
-                    throw new Error(xhr.statusText);
-
-                // Otherwise, get list
-                var configs = new Array();
-
-                var configElements = xhr.responseXML.getElementsByTagName("config");
-                for (var i=0; i<configElements.length; i++) {
-                    configs.push(new Config(
-                        configElements[i].getAttribute("protocol"),
-                        configElements[i].getAttribute("id")
-                    ));
-                }
-
-                return configs;
-                
-            }
 
             function resetUI() {
 
@@ -192,6 +163,11 @@
             var loginForm = document.getElementById("login-form");
             var loginUI = document.getElementById("login-ui");
             var connectionListUI = document.getElementById("connection-list-ui");
+            var logout = document.getElementById("logout");
+
+            logout.onclick = function() {
+                window.location.href = "logout";
+            };
 
             // TODO: Get connection list
             // On no-auth fail, show login UI 
