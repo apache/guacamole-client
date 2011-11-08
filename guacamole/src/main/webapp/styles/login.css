@@ -177,7 +177,6 @@ div#connection-list-ui table tbody tr {
 div#connection-list-ui table td {
     padding: 0.25em;
     text-align: center;
-    font-size: 0.9em;
 }
 
 div#connection-list-ui table td.name {
@@ -214,9 +213,7 @@ div#logout-panel {
 
 div#connection-list-ui a[href] {
     text-decoration: none;
-    color: black;
-    font-weight: bold;
-    font-size: 0.9em;
+    color: blue;
 }
 
 div#connection-list-ui a[href]:hover {
