@@ -219,3 +219,14 @@ div#connection-list-ui a[href] {
 div#connection-list-ui a[href]:hover {
     text-decoration: underline;
 }
+
+.protocol.icon {
+    width: 24px;
+    height: 24px;
+    background-image: url('../images/protocol-icons/tango/video-display.png');
+}
+
+.protocol.icon.ssh {
+    background-image: url('../images/protocol-icons/tango/terminal.png');
+}
+

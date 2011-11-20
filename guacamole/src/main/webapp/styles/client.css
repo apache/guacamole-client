@@ -86,14 +86,6 @@ div.errorDialog p {
     z-index: 1;
 }
 
-#menu.connected {
-    opacity: 0.5;
-}
-
-#menu.connected:hover {
-    opacity: 1;
-}
-
 #menu.error {
     background: #D44;
 }
@@ -139,6 +131,11 @@ div#clipboardDiv {
     border-radius: 0.5em;
 
     width: 50em;
+    opacity: 0.5;
+}
+
+#menu:hover div#clipboardDiv {
+    opacity: 1;
 }
 
 div#clipboardDiv h2 {

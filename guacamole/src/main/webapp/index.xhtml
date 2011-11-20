@@ -131,6 +131,9 @@
                     var protocol = document.createElement("td");
                     var id = document.createElement("td");
 
+                    var protocolIcon = document.createElement("div");
+                    protocolIcon.className = "protocol icon " + configs[i].protocol;
+
                     // Set CSS
                     protocol.className = "protocol";
                     id.className = "name";
@@ -141,7 +144,8 @@
                         "client.xhtml?" + encodeURIComponent(configs[i].id));
 
                     // Set cell contents
-                    protocol.textContent   = configs[i].protocol;
+                    protocol.appendChild(protocolIcon);
+                    //protocol.textContent   = configs[i].protocol;
                     clientLink.textContent = configs[i].id;
                     id.appendChild(clientLink);
 

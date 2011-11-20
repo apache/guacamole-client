@@ -97,13 +97,6 @@
             var errorDialog = document.getElementById("errorDialog");
             var errorDialogText = document.getElementById("errorText");
 
-            // Position display correctly
-            window.onresize = function() {
-                display.style.top = menu.offsetHeight + "px";
-            };
-
-            window.onresize();
-
             var state = document.getElementById("state");
             guac.onstatechange = function(clientState) {
 
@@ -184,6 +177,10 @@
             var mouse = new Guacamole.Mouse(display);
             mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
                 function(mouseState) {
+
+                    if (mouseState.y <= 5)
+                        showMenu();
+
                     guac.sendMouseState(mouseState);
                 };
 
@@ -334,6 +331,69 @@
             catch (e) {
                 // TODO: Handle exception ...
             }
+
+            var menu_shaded = false;
+
+            var hide_interval = null;
+            var show_interval = null;
+
+            function hideMenu() {
+
+                if (!menu_shaded) {
+
+                    var step = Math.floor(menu.offsetHeight / 5) + 1;
+                    var offset = 0;
+                    menu_shaded = true;
+
+                    window.clearInterval(show_interval);
+                    hide_interval = window.setInterval(function() {
+
+                        offset -= step;
+                        menu.style.top = offset + "px";
+
+                        if (offset <= -menu.offsetHeight) {
+                            window.clearInterval(hide_interval);
+                            menu.style.visiblity = "hidden";
+                        }
+
+                    }, 30);
+                }
+
+            }
+
+            function showMenu() {
+
+                if (menu_shaded) {
+
+                    var step = Math.floor(menu.offsetHeight / 5) + 1;
+                    var offset = -menu.offsetHeight;
+                    menu_shaded = false;
+                    menu.style.visiblity = "";
+
+                    window.clearInterval(hide_interval);
+                    show_interval = window.setInterval(function() {
+
+                        offset += step;
+
+                        if (offset >= 0) {
+                            offset = 0;
+                            window.clearInterval(show_interval);
+                        }
+
+                        menu.style.top = offset + "px";
+
+                    }, 30);
+                }
+
+            }
+
+            display.onmouseout = function() {
+                showMenu();
+            };
+
+            display.onmouseover = function() {
+                hideMenu();
+            };
 
 
             /* ]]> */ </script>
