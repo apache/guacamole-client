@@ -82,7 +82,7 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
                     logger.info("Connection from {} succeeded.", request.getRemoteAddr());
                 
                     try {
-                        response.getWriter().println(tunnel.getUUID().toString());
+                        response.getWriter().print(tunnel.getUUID().toString());
                     }
                     catch (IOException e) {
                         throw new GuacamoleException(e);
