@@ -125,10 +125,6 @@ div#clipboardDiv {
     padding: 1em;
 
     border: 1px solid black;
-    -khtml-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
-    border-radius: 0.5em;
 
     width: 50em;
     opacity: 0.5;

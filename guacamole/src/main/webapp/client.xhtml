@@ -79,6 +79,7 @@
         <script type="text/javascript" src="guacamole-common-js/tunnel.js"></script>
         <script type="text/javascript" src="guacamole-common-js/guacamole.js"></script>
         <script type="text/javascript" src="guacamole-common-js/oskeyboard.js"></script>
+        <script type="text/javascript" src="scripts/interface.js"></script>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
@@ -114,6 +115,7 @@
                             display.className = display.className.replace(/guac-loading/, '');
                             menu.className = "connected";
                             state.textContent = "Connected.";
+                            shadeMenu();
                             break;
                         case 4:
                             state.textContent = "Disconnecting...";
@@ -332,67 +334,12 @@
                 // TODO: Handle exception ...
             }
 
-            var menu_shaded = false;
-
-            var hide_interval = null;
-            var show_interval = null;
-
-            function hideMenu() {
-
-                if (!menu_shaded) {
-
-                    var step = Math.floor(menu.offsetHeight / 5) + 1;
-                    var offset = 0;
-                    menu_shaded = true;
-
-                    window.clearInterval(show_interval);
-                    hide_interval = window.setInterval(function() {
-
-                        offset -= step;
-                        menu.style.top = offset + "px";
-
-                        if (offset <= -menu.offsetHeight) {
-                            window.clearInterval(hide_interval);
-                            menu.style.visiblity = "hidden";
-                        }
-
-                    }, 30);
-                }
-
-            }
-
-            function showMenu() {
-
-                if (menu_shaded) {
-
-                    var step = Math.floor(menu.offsetHeight / 5) + 1;
-                    var offset = -menu.offsetHeight;
-                    menu_shaded = false;
-                    menu.style.visiblity = "";
-
-                    window.clearInterval(hide_interval);
-                    show_interval = window.setInterval(function() {
-
-                        offset += step;
-
-                        if (offset >= 0) {
-                            offset = 0;
-                            window.clearInterval(show_interval);
-                        }
-
-                        menu.style.top = offset + "px";
-
-                    }, 30);
-                }
-
-            }
-
             display.onmouseout = function() {
                 showMenu();
             };
 
             display.onmouseover = function() {
-                hideMenu();
+                shadeMenu();
             };
 
 
