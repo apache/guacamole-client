@@ -65,30 +65,87 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         this.input = input;
     }
 
-    private int usedLength = 0;
-    private char[] buffer = new char[20000];
+    private int parseStart;
 
-    private int instructionStart;
-    private char[] instructionBuffer;
+    private char[] buffer = new char[20480];
+    private int usedLength = 0;
 
     @Override
     public char[] read() throws GuacamoleException {
 
-        // If data was previously read via readInstruction(), return remaining
-        // data instead of reading more.
-        if (instructionBuffer != null) {
-            
-            char[] chunk = new char[instructionBuffer.length - instructionStart];
-            System.arraycopy(instructionBuffer, instructionStart, chunk, 0, chunk.length); 
-            instructionBuffer = null;
-            
-            return chunk;
-        }
-        
         try {
 
             // While we're blocking, or input is available
             for (;;) {
+
+                // Length of element
+                int elementLength = 0;
+                
+                // Resume where we left off
+                int i = parseStart;
+
+                // Parse instruction in buffer
+                while (i < usedLength) {
+
+                    // Read character
+                    char readChar = buffer[i++];
+
+                    // If digit, update length
+                    if (readChar >= '0' && readChar <= '9')
+                        elementLength = elementLength * 10 + readChar - '0';
+
+                    // If not digit, check for end-of-length character
+                    else if (readChar == '.') {
+
+                        // Check if element present in buffer
+                        if (i + elementLength < usedLength) {
+
+                            // Get terminator
+                            char terminator = buffer[i + elementLength];
+                            
+                            // Move to character after terminator
+                            i += elementLength + 1;
+
+                            // Reset length
+                            elementLength = 0;
+
+                            // Continue here if necessary
+                            parseStart = i;
+
+                            // If terminator is semicolon, we have a full
+                            // instruction.
+                            if (terminator == ';') {
+
+                                // Copy instruction data
+                                char[] instruction = new char[i];
+                                System.arraycopy(buffer, 0, instruction, 0, i);
+
+                                // Update buffer
+                                usedLength -= i;
+                                parseStart = 0;
+                                System.arraycopy(buffer, i, buffer, 0, usedLength);
+
+                                return instruction;
+                                
+                            }
+
+                            // Handle invalid terminator characters
+                            else if (terminator != ',')
+                                throw new GuacamoleException("Element terminator of instruction was not ';' nor ','");
+                            
+                        }
+
+                        // Otherwise, read more data
+                        else
+                            break;
+                        
+                    }
+
+                    // Otherwise, parse error
+                    else
+                        throw new GuacamoleException("Non-numeric character in element length.");
+
+                }
 
                 // If past threshold, resize buffer before reading
                 if (usedLength > buffer.length/2) {
@@ -102,29 +159,8 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
                 if (numRead == -1)
                     return null;
 
-                int prevLength = usedLength;
+                // Update used length
                 usedLength += numRead;
-
-                for (int i=usedLength-1; i>=prevLength; i--) {
-
-                    char readChar = buffer[i];
-
-                    // If end of instruction, return it.
-                    if (readChar == ';') {
-
-                        // Get instruction
-                        char[] chunk = new char[i+1];
-                        System.arraycopy(buffer, 0, chunk, 0, i+1);
-
-                        // Reset buffer
-                        usedLength -= i+1;
-                        System.arraycopy(buffer, i+1, buffer, 0, usedLength);
-
-                        // Return instruction string
-                        return chunk;
-                    }
-
-                }
 
             } // End read loop
 
@@ -138,35 +174,35 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
     @Override
     public GuacamoleInstruction readInstruction() throws GuacamoleException {
 
-        // Fill instructionBuffer if not already filled
-        if (instructionBuffer == null) {
-            instructionBuffer = read();
-            instructionStart = 0;
-        }
-
+        // Get instruction
+        char[] instructionBuffer = read();
+        
         // If EOF, return EOF
         if (instructionBuffer == null)
             return null;
         
+        // Start of element
+        int elementStart = 0;
+        
         // Build list of elements
         LinkedList<String> elements = new LinkedList<String>();
-        while (instructionStart < instructionBuffer.length) {
+        while (elementStart < instructionBuffer.length) {
 
             // Find end of length 
-            int lengthEnd = ArrayUtils.indexOf(instructionBuffer, '.', instructionStart);
+            int lengthEnd = ArrayUtils.indexOf(instructionBuffer, '.', elementStart);
 
             // Parse length
             int length = Integer.parseInt(new String(
                     instructionBuffer,
-                    instructionStart,
-                    lengthEnd - instructionStart
+                    elementStart,
+                    lengthEnd - elementStart
             ));
 
             // Parse element from just after period
-            instructionStart = lengthEnd + 1;
+            elementStart = lengthEnd + 1;
             String element = new String(
                     instructionBuffer,
-                    instructionStart,
+                    elementStart,
                     length
             );
 
@@ -174,11 +210,11 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
             elements.addLast(element);
             
             // Read terminator after element
-            instructionStart += length;
-            char terminator = instructionBuffer[instructionStart];
+            elementStart += length;
+            char terminator = instructionBuffer[elementStart];
 
             // Continue reading instructions after terminator
-            instructionStart++;
+            elementStart++;
            
             // If we've reached the end of the instruction
             if (terminator == ';')
@@ -194,10 +230,6 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
                 Operation.fromOpcode(opcode),
                 elements.toArray(new String[elements.size()])
         );
-
-        // Detect end of buffer
-        if (instructionStart >= instructionBuffer.length)
-            instructionBuffer = null;
 
         // Return parsed instruction
         return instruction;
