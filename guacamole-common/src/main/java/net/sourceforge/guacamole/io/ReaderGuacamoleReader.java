@@ -71,6 +71,16 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
     private int usedLength = 0;
 
     @Override
+    public boolean available() throws GuacamoleException {
+        try {
+            return input.ready() || usedLength != 0;
+        }
+        catch (IOException e) {
+            throw new GuacamoleException(e);
+        }
+    }
+
+    @Override
     public char[] read() throws GuacamoleException {
 
         try {

@@ -224,8 +224,12 @@ public abstract class GuacamoleTunnelServlet extends HttpServlet {
 
                 // Get message output bytes
                 out.write(message, 0, message.length);
-                out.flush();
-                response.flushBuffer();
+
+                // Flush if we expect to wait
+                if (!reader.available()) {
+                    out.flush();
+                    response.flushBuffer();
+                }
 
                 // No more messages another stream can take over
                 if (tunnel.hasQueuedReaderThreads())
