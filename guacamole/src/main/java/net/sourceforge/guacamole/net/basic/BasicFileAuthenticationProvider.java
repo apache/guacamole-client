@@ -19,9 +19,12 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.BufferedReader;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -35,6 +38,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
@@ -66,12 +70,18 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider<U
         // Parse document
         try {
 
+            // Set up parser
             BasicUserMappingContentHandler contentHandler = new BasicUserMappingContentHandler();
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setContentHandler(contentHandler);
-            parser.parse(mapFile.getAbsolutePath());
 
+            // Read and parse file
+            Reader reader = new BufferedReader(new FileReader(mapFile));
+            parser.parse(new InputSource(reader));
+            reader.close();
+
+            // Init mapping and record mod time of file
             mappingTime = mapFile.lastModified();
             mapping = contentHandler.getUserMapping();
 
