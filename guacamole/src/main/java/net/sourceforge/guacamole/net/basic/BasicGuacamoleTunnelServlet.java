@@ -19,8 +19,6 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.util.Map;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -30,32 +28,15 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleSession;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
-import net.sourceforge.guacamole.servlet.GuacamoleTunnelServlet;
+import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class BasicGuacamoleTunnelServlet extends GuacamoleTunnelServlet {
+public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
     
-    private AuthenticationProvider authProvider;
-
-    @Override
-    public void init() throws ServletException {
-
-        // Get auth provider instance
-        try {
-            authProvider = GuacamoleProperties.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error getting authentication provider from properties.", e);
-            throw new ServletException(e);
-        }
-
-    }
-
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
