@@ -53,13 +53,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A HttpServlet implementing and abstracting the operations required by the
- * JavaScript Guacamole client's tunnel.
+ * HTTP implementation of the JavaScript Guacamole client's tunnel.
  *
  * @author Michael Jumper
  */
-public abstract class GuacamoleTunnelServlet extends HttpServlet {
+public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
-    private Logger logger = LoggerFactory.getLogger(GuacamoleTunnelServlet.class);
+    private Logger logger = LoggerFactory.getLogger(GuacamoleHTTPTunnelServlet.class);
     
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
