@@ -112,6 +112,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
             // Displayed text
             var displayText = cap.textContent;
+            if (!displayText) displayText = cap.text;
             
             // Keysym
             var keysym = null;
@@ -149,7 +150,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                 sticky = true;
 
             this.getDisplayText = function() {
-                return cap.textContent;
+                return displayText;
             };
 
             this.getKeySym = function() {
