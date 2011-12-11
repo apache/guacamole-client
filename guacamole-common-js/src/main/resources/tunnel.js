@@ -223,8 +223,15 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 return;
             }
 
+            // Attempt to read status
+            var status;
+            try { status = xmlhttprequest.status; }
+
+            // If status could not be read, assume successful.
+            catch (e) { status = 200; }
+
             // Start next request as soon as possible IF request was successful
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null && xmlhttprequest.status == 200)
+            if (xmlhttprequest.readyState >= 2 && nextRequest == null && status == 200)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
@@ -261,7 +268,12 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                     return;
                 }
 
-                var current = xmlhttprequest.responseText;
+                // Attempt to read in-progress data
+                var current;
+                try { current = xmlhttprequest.responseText; }
+
+                // Do not attempt to parse if data could not be read
+                catch (e) { return; }
 
                 // While search is within currently received data
                 while (elementEnd < current.length) {
