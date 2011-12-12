@@ -1,0 +1,18 @@
+2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implemented improved instruction format
+	* Fixed errors in IE in on-screen keyboard
+	* Relicensed as Mozilla/LGPL/GPL
+	* Touch support (emulates touchpad control of mouse pointer)
+	* "rect" and "clip" instructions
+
+2011-07-13 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* "sync" instruction
+	* Channel masks (alpha compositing)
+	* Multiple tunnel support
+
+2011-03-02 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Initial release
+
