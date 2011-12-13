@@ -72,254 +72,28 @@
         </div>
 
 
-        <!-- Scripts -->
+        <!-- guacamole-common-js scripts -->
         <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>
         <script type="text/javascript" src="guacamole-common-js/mouse.js"></script>
         <script type="text/javascript" src="guacamole-common-js/layer.js"></script>
         <script type="text/javascript" src="guacamole-common-js/tunnel.js"></script>
         <script type="text/javascript" src="guacamole-common-js/guacamole.js"></script>
         <script type="text/javascript" src="guacamole-common-js/oskeyboard.js"></script>
+
+        <!-- guacamole-default-webapp scripts -->
         <script type="text/javascript" src="scripts/interface.js"></script>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
-            var display = document.getElementById("display");
-
             // Instantiate client
             var guac = new Guacamole.Client(
-                display,
+                GuacamoleUI.display,
                 new Guacamole.HTTPTunnel("tunnel")
             );
 
-            var menu = document.getElementById("menu");
-            var logo = document.getElementById("status-logo");
-
-            var errorDialog = document.getElementById("errorDialog");
-            var errorDialogText = document.getElementById("errorText");
-
-            var state = document.getElementById("state");
-            guac.onstatechange = function(clientState) {
-
-                    switch (clientState) {
-                        case 0:
-                            state.textContent = "Idle."
-                            break;
-                        case 1:
-                            state.textContent = "Connecting...";
-                            break;
-                        case 2:
-                            state.textContent = "Connected, waiting for first update...";
-                            break;
-                        case 3:
-                            display.className = display.className.replace(/guac-loading/, '');
-                            menu.className = "connected";
-                            state.textContent = "Connected.";
-                            shadeMenu();
-                            break;
-                        case 4:
-                            state.textContent = "Disconnecting...";
-                            break;
-                        case 5:
-                            state.textContent = "Disconnected.";
-                            break;
-                        default:
-                            state.textContent = "Unknown";
-                    }
-            };
-
-            // Cache error image (might not be available when error occurs)
-            var guacErrorImage = new Image();
-            guacErrorImage.src = "images/noguacamole-logo-24.png";
-
-            guac.onname = function(name) {
-                document.title = name;
-            };
-
-            guac.onerror = function(error) {
-
-                guac.disconnect();
-
-                menu.className = "error";
-                display.className += " guac-error";
-
-                logo.src = guacErrorImage.src;
-                errorDialogText.textContent = error;
-                errorDialog.style.visibility = "visible";
-
-                // Show error by desaturating display
-                var layers = guac.getLayers();
-                for (var i=0; i<layers.length; i++) {
-                    layers[i].filter(desaturateFilter);
-                }
-
-                // Filter for desaturation
-                function desaturateFilter(data, width, height) {
-
-                    for (var i=0; i<data.length; i+=4) {
-
-                        // Get RGB values
-                        var r = data[i];
-                        var g = data[i+1];
-                        var b = data[i+2];
-
-                        // Desaturate
-                        var v = Math.max(r, g, b) / 2;
-                        data[i]   = v;
-                        data[i+1] = v;
-                        data[i+2] = v;
-
-                    }
-
-                }
-
-            };
-
-            // Mouse
-            var mouse = new Guacamole.Mouse(display);
-            mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
-                function(mouseState) {
-
-                    if (mouseState.y <= 5)
-                        showMenu();
-
-                    guac.sendMouseState(mouseState);
-                };
-
-            // Keyboard
-            var keyboard = new Guacamole.Keyboard(document);
-
-            function disableKeyboard() {
-                keyboard.onkeydown = null;
-                keyboard.onkeyup = null;
-            }
-
-            function enableKeyboard() {
-                keyboard.onkeydown = 
-                    function (keysym) {
-                        guac.sendKeyEvent(1, keysym);
-                    };
-
-                keyboard.onkeyup = 
-                    function (keysym) {
-                        guac.sendKeyEvent(0, keysym);
-                    };
-            }
-
-            // Enable keyboard by default
-            enableKeyboard();
-
-            // Reconnect button
-            var reconnect = document.getElementById("reconnect");
-            reconnect.onclick = function() {
-                window.location.reload();
-            };
-
-            // Disconnect on close
-            window.onunload = function() {
-                guac.disconnect();
-            };
-
-            // Handle clipboard events
-            var clipboardElement = document.getElementById("clipboard");
-            clipboardElement.onchange = function() {
-
-                var text = clipboardElement.value;
-                guac.setClipboard(text);
-
-            };
-
-            // Ignore keypresses when clipboard is focused
-            clipboardElement.onfocus = function() {
-                disableKeyboard();
-            };
-
-            // Capture keypresses when clipboard is not focused
-            clipboardElement.onblur = function() {
-                enableKeyboard();
-            };
-
-            // Server copy handler
-            guac.onclipboard = function(data) {
-                clipboardElement.value = data;
-            };
-
-
-            // Show/Hide clipboard
-            var clipboardDiv = document.getElementById("clipboardDiv");
-            var showClipboard = document.getElementById("showClipboard");
-            showClipboard.onclick = function() {
-
-                var displayed = clipboardDiv.style.display;
-                if (displayed != "block") {
-                    clipboardDiv.style.display = "block";
-                    showClipboard.innerHTML = "Hide Clipboard";
-                }
-                else {
-                    clipboardDiv.style.display = "none";
-                    showClipboard.innerHTML = "Show Clipboard";
-                    clipboardElement.onchange();
-                }
-
-            };
-
-
-            // Show/Hide keyboard
-            var keyboardContainer = document.getElementById("keyboardContainer");
-            var showKeyboard = document.getElementById("showKeyboard");
-            showKeyboard.onclick = function() {
-
-                var displayed = keyboardContainer.style.display;
-                if (displayed != "block") {
-                    keyboardContainer.style.display = "block";
-                    showKeyboard.textContent = "Hide Keyboard";
-                }
-                else {
-                    keyboardContainer.style.display = "none";
-                    showKeyboard.textContent = "Show Keyboard";
-                }
-
-            };
-
-            // On-screen keyboard
-            var osKeyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
-            keyboardContainer.appendChild(osKeyboard);
-
-            osKeyboard.setKeyPressedHandler(
-                    function(keysym) {
-                        guac.sendKeyEvent(1, keysym);
-                    }
-            );
-
-            osKeyboard.setKeyReleasedHandler(
-                    function(keysym) {
-                        guac.sendKeyEvent(0, keysym);
-                    }
-            );
-
-            // Send Ctrl-Alt-Delete
-            var ctrlAltDelete = document.getElementById("ctrlAltDelete");
-
-            ctrlAltDelete.onclick = function() {
-
-                var KEYSYM_CTRL   = 0xFFE3;
-                var KEYSYM_ALT    = 0xFFE9;
-                var KEYSYM_DELETE = 0xFFFF;
-
-                guac.sendKeyEvent(1, KEYSYM_CTRL);
-                guac.sendKeyEvent(1, KEYSYM_ALT);
-                guac.sendKeyEvent(1, KEYSYM_DELETE);
-                guac.sendKeyEvent(0, KEYSYM_DELETE);
-                guac.sendKeyEvent(0, KEYSYM_ALT);
-                guac.sendKeyEvent(0, KEYSYM_CTRL);
-            };
-
-            // Logout
-            var logout = document.getElementById("logout");
-
-            logout.onclick = function() {
-                window.location.href = "logout";
-            };
+            // Tie UI to client
+            GuacamoleUI.attach(guac);
 
             try {
 
@@ -331,17 +105,8 @@
 
             }
             catch (e) {
-                // TODO: Handle exception ...
+                GuacamoleUI.showError(e.message);
             }
-
-            display.onmouseout = function() {
-                showMenu();
-            };
-
-            display.onmouseover = function() {
-                shadeMenu();
-            };
-
 
             /* ]]> */ </script>
 
