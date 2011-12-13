@@ -37,11 +37,4 @@
 
     </build>
 
-    <repositories>
-        <repository>
-            <id>guac-dev</id>
-            <url>http://guac-dev.org/repo</url>
-        </repository>
-    </repositories>
-
 </project>
