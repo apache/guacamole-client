@@ -35,14 +35,6 @@
             </plugin>
         </plugins>
 
-        <extensions>
-            <!-- Required for SSH deploy -->
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-            </extension>
-        </extensions>
-
     </build>
 
     <repositories>
@@ -51,12 +43,5 @@
             <url>http://guac-dev.org/repo</url>
         </repository>
     </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>guac-dev</id>
-            <url>${guac-dev.dist.repo}</url>
-        </repository>
-    </distributionManagement>
 
 </project>
