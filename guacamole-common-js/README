@@ -36,7 +36,7 @@ drawing layers.
 guacamole-common-js is built using Maven. Note that this is JavaScript code
 and not actually compiled. "Building" guacamole-common-js actually simply
 packages it into a redistributable .zip file. This .zip file can be easily
-included and expaned into other Maven-based projects (like Guacamole).
+included and expanded into other Maven-based projects (like Guacamole).
 
 Note that prebuilt versions of guacamole-common-js are available from the
 main guac-dev.org Maven repository which is referenced in all Maven
