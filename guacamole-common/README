@@ -32,7 +32,7 @@ reading configuration from a standard location (guacamole.properties).
  Compiling and installing guacamole-common
 ------------------------------------------------------------
 
-guacamole-common is built using Maven. Building guacamole-common-js
+guacamole-common is built using Maven. Building guacamole-common
 compiles all classes and packages them into a redistributable .jar file. This
 .jar file can be easily included in other Maven-based projects (like Guacamole).
 
