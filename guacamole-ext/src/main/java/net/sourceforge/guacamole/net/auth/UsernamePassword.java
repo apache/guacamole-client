@@ -13,7 +13,7 @@ package net.sourceforge.guacamole.net.auth;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-common.
+ * The Original Code is guacamole-common-auth.
  *
  * The Initial Developer of the Original Code is
  * Michael Jumper.
