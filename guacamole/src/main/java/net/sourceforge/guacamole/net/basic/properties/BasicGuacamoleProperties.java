@@ -1,8 +1,6 @@
 
 package net.sourceforge.guacamole.net.basic.properties;
 
-import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -21,17 +19,24 @@ import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
+
+/**
+ * Properties used by the default Guacamole web application.
+ * 
+ * @author Michael Jumper
+ */
 public class BasicGuacamoleProperties {
 
+    /**
+     * This class should not be instantiated.
+     */
     private BasicGuacamoleProperties() {}
 
-    public static final FileGuacamoleProperty BASIC_USER_MAPPING = new FileGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "basic-user-mapping"; }
-
-    };
-
+    /**
+     * The authentication provider to user when retrieving the authorized
+     * configurations of a user.
+     */
     public static final AuthenticationProviderProperty AUTH_PROVIDER = new AuthenticationProviderProperty() {
 
         @Override
@@ -39,6 +44,9 @@ public class BasicGuacamoleProperties {
 
     };
 
+    /**
+     * The directory to search for authentication provider classes.
+     */
     public static final FileGuacamoleProperty LIB_DIRECTORY = new FileGuacamoleProperty() {
 
         @Override

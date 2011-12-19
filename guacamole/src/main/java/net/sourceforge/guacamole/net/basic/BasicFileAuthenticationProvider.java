@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.UsernamePassword;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
@@ -44,6 +44,13 @@ import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+/**
+ * Authenticates users against a static list of username/password pairs.
+ * Each username/password may be associated with exactly one configuration.
+ * This list is stored in an XML file which is reread if modified.
+ * 
+ * @author Michael Jumper
+ */
 public class BasicFileAuthenticationProvider implements AuthenticationProvider<UsernamePassword> {
 
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
@@ -51,10 +58,20 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider<U
     private long mappingTime;
     private Map<String, AuthInfo> mapping;
 
+    /**
+     * The filename of the XML file to read the user mapping from.
+     */
+    public static final FileGuacamoleProperty BASIC_USER_MAPPING = new FileGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "basic-user-mapping"; }
+
+    };
+
     private File getUserMappingFile() throws GuacamoleException {
 
         // Get user mapping file
-        return GuacamoleProperties.getProperty(BasicGuacamoleProperties.BASIC_USER_MAPPING);
+        return GuacamoleProperties.getProperty(BASIC_USER_MAPPING);
 
     }
 

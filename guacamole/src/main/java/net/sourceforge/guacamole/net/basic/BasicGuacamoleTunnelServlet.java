@@ -33,6 +33,12 @@ import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Connects users to a tunnel associated with the authorized configuration
+ * having the given ID.
+ * 
+ * @author Michael Jumper
+ */
 public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);

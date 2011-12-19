@@ -34,6 +34,17 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Retrieves the authorized configurations associated with a given
+ * username/password pair using the authentication provider defined in
+ * guacamole.properties.
+ * 
+ * All authorized configurations will be stored in the current HttpSession.
+ * 
+ * Success and failure are logged.
+ * 
+ * @author Michael Jumper
+ */
 public class BasicLogin extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicLogin.class);
