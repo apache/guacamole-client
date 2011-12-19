@@ -2,10 +2,11 @@
 // UI Definition
 var GuacamoleUI = {
 
-    "display": document.getElementById("display"),
-    "menu"   : document.getElementById("menu"),
-    "logo"   : document.getElementById("status-logo"),
-    "state"  : document.getElementById("state"),
+    "display"     : document.getElementById("display"),
+    "menu"        : document.getElementById("menu"),
+    "menuControl" : document.getElementById("menuControl"),
+    "logo"        : document.getElementById("status-logo"),
+    "state"       : document.getElementById("state"),
 
     "buttons": {
 
@@ -137,13 +138,84 @@ var GuacamoleUI = {
         window.location.href = "logout";
     };
 
-    GuacamoleUI.display.onmouseout = function() {
-        GuacamoleUI.showMenu();
-    };
+    var detectMenuOpenTimeout = null;
+    var detectMenuCloseTimeout = null;
 
-    GuacamoleUI.display.onmouseover = function() {
-        GuacamoleUI.shadeMenu();
-    };
+    GuacamoleUI.menu.addEventListener('mouseover', function() {
+
+        // If we were waiting for menu close, we're not anymore
+        if (detectMenuCloseTimeout != null) {
+            window.clearTimeout(detectMenuCloseTimeout);
+            detectMenuCloseTimeout = null;
+        }
+
+    }, true);
+
+    GuacamoleUI.menu.addEventListener('mouseout', function(e) {
+        
+        // Get parent of the element the mouse pointer is leaving
+       	if (!e) e = window.event;
+        var target = e.relatedTarget || e.toElement;
+        
+        // Ensure target is not menu nor child of menu
+        var targetParent = target;
+        while (targetParent != null) {
+            if (targetParent == GuacamoleUI.menu) return;
+            targetParent = targetParent.parentNode;
+        }
+
+        // If not already waiting, start detection of mouse leave
+        if (detectMenuCloseTimeout == null) {
+            detectMenuCloseTimeout = window.setTimeout(function() {
+                GuacamoleUI.shadeMenu();
+                detectMenuCloseTimeout = null;
+            }, 750);
+        }
+ 
+    }, true);
+
+    // When mouse hovers over top of screen, start detection of mouse hover
+    GuacamoleUI.menuControl.addEventListener('mousemove', function() {
+
+        // If we were waiting for menu close, we're not anymore
+        if (detectMenuCloseTimeout != null) {
+            window.clearTimeout(detectMenuCloseTimeout);
+            detectMenuCloseTimeout = null;
+        }
+        
+        // Clear old timeout if mouse moved while we were waiting
+        if (detectMenuOpenTimeout != null) {
+            window.clearTimeout(detectMenuOpenTimeout);
+            detectMenuOpenTimeout = null;
+        }
+
+        // If not alread waiting, wait for 250ms before showing menu
+        detectMenuOpenTimeout = window.setTimeout(function() {
+            GuacamoleUI.showMenu();
+            detectMenuOpenTimeout = null;
+        }, 250);
+
+    }, true);
+
+    // When mouse leaves top of screen, cancel showing the menu
+    GuacamoleUI.menuControl.addEventListener('mouseout', function() {
+
+        // If we were waiting for menu open, we're not anymore
+        if (detectMenuOpenTimeout != null) {
+            window.clearTimeout(detectMenuOpenTimeout);
+            detectMenuCloseTimeout = null;
+        }
+
+        // If not already waiting, start detection of mouse leave
+        if (detectMenuCloseTimeout == null) {
+            detectMenuCloseTimeout = window.setTimeout(function() {
+                GuacamoleUI.shadeMenu();
+                detectMenuCloseTimeout = null;
+            }, 750);
+        }
+
+    }, true);
+
 
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
@@ -163,10 +235,6 @@ GuacamoleUI.attach = function(guac) {
     var mouse = new Guacamole.Mouse(GuacamoleUI.display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
-
-            if (mouseState.y <= 5)
-                GuacamoleUI.showMenu();
-
             guac.sendMouseState(mouseState);
         };
 
