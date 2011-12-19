@@ -1,0 +1,23 @@
+2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Improved UI usability
+	* Support for multiple connections per user
+	* Real support for authentication providers
+	* Logout button
+	* Connection type icons (thanks to Tango Desktop Project)
+	* Fixed Ctrl-Alt-Delete bug (ticket #57)
+	* Fixed arrow key rendering (Chrome-specific issue)
+	* Fixed exception in XMLReader.parse() (ticket #66)
+
+2011-07-13 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Migrated to new tunnel API
+	* Major cleanup of UI
+	* Fixed corrupt mouse cursor image
+	* Improved JavaScript style
+	* Logging (via SLF4J)
+
+2011-03-02 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Initial release of modern 0.3.0+ series
+
