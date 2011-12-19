@@ -53,6 +53,9 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class ReaderGuacamoleReader implements GuacamoleReader {
 
+    /**
+     * Wrapped Reader to be used for all input.
+     */
     private Reader input;
 
     /**

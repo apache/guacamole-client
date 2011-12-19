@@ -54,7 +54,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Provides abstract socket-like access to a Guacamole connection over a given
  * hostname and port.
