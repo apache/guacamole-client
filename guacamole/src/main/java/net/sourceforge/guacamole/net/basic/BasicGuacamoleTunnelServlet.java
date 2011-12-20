@@ -57,7 +57,7 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
         // If no configs in session, not authorized
         if (configs == null)
-            throw new GuacamoleException("No authorized configurations.");
+            throw new GuacamoleException("Cannot connect - user not logged in.");
 
         // Get authorized config
         GuacamoleConfiguration config = configs.get(id);
