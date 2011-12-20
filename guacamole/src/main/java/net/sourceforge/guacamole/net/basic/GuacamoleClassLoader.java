@@ -52,6 +52,11 @@ public class GuacamoleClassLoader extends ClassLoader {
             exception = e;
         }
         
+        catch (NullPointerException e) {
+            // On error, record exception
+            e.printStackTrace(System.err);
+        }
+        
     }
 
     private GuacamoleClassLoader(File libDirectory) throws GuacamoleException {
@@ -113,9 +118,9 @@ public class GuacamoleClassLoader extends ClassLoader {
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
 
-        // If no classloader, use super
+        // If no classloader, use default loader
         if (classLoader == null)
-            return super.findClass(name);
+            return Class.forName(name);
         
         // Otherwise, delegate
         return classLoader.loadClass(name);
