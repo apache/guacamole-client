@@ -1,0 +1,19 @@
+2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implemented improved instruction format
+	* Fixed failed connections when using Konqueror
+	* Relicensed as Mozilla/LGPL/GPL
+
+2011-07-13 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fixed "no element found" errors
+	* Added timeouts
+	* Multiple tunnel support
+	* Better error handling
+	* Added JavaDoc
+	* Added logging
+
+2011-03-02 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Initial release
+

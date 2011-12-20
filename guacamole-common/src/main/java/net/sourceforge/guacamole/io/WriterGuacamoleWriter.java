@@ -50,6 +50,9 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
  */
 public class WriterGuacamoleWriter implements GuacamoleWriter {
 
+    /**
+     * Wrapped Writer to be used for all output.
+     */
     private Writer output;
 
     /**

@@ -9,9 +9,9 @@ import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleSession;
-import net.sourceforge.guacamole.servlet.GuacamoleTunnelServlet;
+import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 
-public class ExampleTunnelServlet extends GuacamoleTunnelServlet {
+public class ExampleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
