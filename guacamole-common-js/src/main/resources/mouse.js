@@ -247,7 +247,17 @@ Guacamole.Mouse = function(element) {
             guac_mouse.currentState.x += delta_x;
             guac_mouse.currentState.y += delta_y;
 
-            // FIXME: Prevent mouse from leaving screen
+            // Prevent mouse from leaving screen
+
+            if (guac_mouse.currentState.x < 0)
+                guac_mouse.currentState.x = 0;
+            else if (guac_mouse.currentState.x >= element.offsetWidth)
+                guac_mouse.currentState.x = element.offsetWidth - 1;
+
+            if (guac_mouse.currentState.y < 0)
+                guac_mouse.currentState.y = 0;
+            else if (guac_mouse.currentState.y >= element.offsetHeight)
+                guac_mouse.currentState.y = element.offsetHeight - 1;
 
             // Fire movement event, if defined
             if (guac_mouse.onmousemove)
