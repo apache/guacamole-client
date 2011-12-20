@@ -76,11 +76,6 @@ public class GuacamoleClassLoader extends ClassLoader {
             exception = e;
         }
         
-        catch (NullPointerException e) {
-            // On error, record exception
-            e.printStackTrace(System.err);
-        }
-        
     }
 
     private GuacamoleClassLoader(File libDirectory) throws GuacamoleException {
