@@ -73,17 +73,14 @@ div.errorDialog p {
 
 
 #menu {
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 1em;
-    font-size: 0.8em;
-    background: #FEA;
-    border: 1px solid black;
     position: fixed;
     left: 0;
     top: 0;
     width: 100%;
-    z-index: 1;
+    z-index: 4;
+    background: #FEA;
+    border-bottom: 1px solid black;
+    font-size: 0.8em;
 }
 
 #menu.error {
@@ -127,6 +124,7 @@ div#clipboardDiv {
     border: 1px solid black;
 
     width: 50em;
+    z-index: 2;
     opacity: 0.5;
 }
 
@@ -161,3 +159,14 @@ div#clipboardDiv textarea {
     cursor: url('../images/mouse/dot.gif'),url('../images/mouse/blank.cur'),default;
 }
 
+div#menuControl {
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    width: 100%;
+    height: 3px;
+    background: none;
+
+    z-index: 3;
+}

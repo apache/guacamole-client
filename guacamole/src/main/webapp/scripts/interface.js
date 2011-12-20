@@ -2,10 +2,11 @@
 // UI Definition
 var GuacamoleUI = {
 
-    "display": document.getElementById("display"),
-    "menu"   : document.getElementById("menu"),
-    "logo"   : document.getElementById("status-logo"),
-    "state"  : document.getElementById("state"),
+    "display"     : document.getElementById("display"),
+    "menu"        : document.getElementById("menu"),
+    "menuControl" : document.getElementById("menuControl"),
+    "logo"        : document.getElementById("status-logo"),
+    "state"       : document.getElementById("state"),
 
     "buttons": {
 
@@ -55,7 +56,7 @@ var GuacamoleUI = {
 
         if (!menu_shaded) {
 
-            var step = Math.floor(GuacamoleUI.menu.offsetHeight / 5) + 1;
+            var step = Math.floor(GuacamoleUI.menu.offsetHeight / 10) + 1;
             var offset = 0;
             menu_shaded = true;
 
@@ -137,13 +138,85 @@ var GuacamoleUI = {
         window.location.href = "logout";
     };
 
-    GuacamoleUI.display.onmouseout = function() {
-        GuacamoleUI.showMenu();
-    };
+    // Timeouts for detecting if users wants menu to open or close
+    var detectMenuOpenTimeout = null;
+    var detectMenuCloseTimeout = null;
 
-    GuacamoleUI.display.onmouseover = function() {
-        GuacamoleUI.shadeMenu();
-    };
+    // Clear detection timeouts
+    function resetMenuDetect() {
+
+        if (detectMenuOpenTimeout != null) {
+            window.clearTimeout(detectMenuOpenTimeout);
+            detectMenuOpenTimeout = null;
+        }
+
+        if (detectMenuCloseTimeout != null) {
+            window.clearTimeout(detectMenuCloseTimeout);
+            detectMenuCloseTimeout = null;
+        }
+
+    }
+
+    // Initiate detection of menu open action. If not canceled through some
+    // user event, menu will open.
+    function startMenuOpenDetect() {
+
+        // Clear detection state
+        resetMenuDetect();
+
+        // Wait and then show menu
+        detectMenuOpenTimeout = window.setTimeout(function() {
+            GuacamoleUI.showMenu();
+            detectMenuOpenTimeout = null;
+        }, 325);
+
+    }
+
+    // Initiate detection of menu close action. If not canceled through some
+    // user event, menu will close.
+    function startMenuCloseDetect() {
+
+        // Clear detection state
+        resetMenuDetect();
+
+        // Wait and then shade menu
+        detectMenuCloseTimeout = window.setTimeout(function() {
+            GuacamoleUI.shadeMenu();
+            detectMenuCloseTimeout = null;
+        }, 500);
+
+    }
+
+    // Show menu if mouseover any part of menu
+    GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.showMenu, true);
+
+    // Stop detecting menu state change intents if mouse is over menu
+    GuacamoleUI.menu.addEventListener('mouseover', resetMenuDetect, true);
+
+    // When mouse hovers over top of screen, start detection of intent to open menu
+    GuacamoleUI.menuControl.addEventListener('mousemove', startMenuOpenDetect, true);
+
+    // When mouse enters display, start detection of intent to close menu
+    GuacamoleUI.display.addEventListener('mouseover', startMenuCloseDetect, true);
+
+    // Show menu if mouse leaves document
+    document.addEventListener('mouseout', function(e) {
+        
+        // Get parent of the element the mouse pointer is leaving
+       	if (!e) e = window.event;
+        var target = e.relatedTarget || e.toElement;
+        
+        // Ensure target is not document nor child of document
+        var targetParent = target;
+        while (targetParent != null) {
+            if (targetParent == document) return;
+            targetParent = targetParent.parentNode;
+        }
+
+        // Start detection of intent to open menu
+        startMenuOpenDetect();
+ 
+    }, true);
 
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
@@ -163,10 +236,6 @@ GuacamoleUI.attach = function(guac) {
     var mouse = new Guacamole.Mouse(GuacamoleUI.display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
-
-            if (mouseState.y <= 5)
-                GuacamoleUI.showMenu();
-
             guac.sendMouseState(mouseState);
         };
 

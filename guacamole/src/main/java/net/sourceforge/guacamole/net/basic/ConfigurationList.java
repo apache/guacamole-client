@@ -27,13 +27,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * Simple HttpServlet which outputs XML containing a list of all authorized
+ * configurations for the current user.
+ * 
+ * @author Michael Jumper
+ */
 public class ConfigurationList extends HttpServlet {
 
-    private Logger logger = LoggerFactory.getLogger(ConfigurationList.class);
-   
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException {

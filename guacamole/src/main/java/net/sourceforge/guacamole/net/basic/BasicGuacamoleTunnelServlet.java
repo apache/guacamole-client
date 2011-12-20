@@ -33,6 +33,12 @@ import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Connects users to a tunnel associated with the authorized configuration
+ * having the given ID.
+ * 
+ * @author Michael Jumper
+ */
 public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
@@ -51,7 +57,7 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
         // If no configs in session, not authorized
         if (configs == null)
-            throw new GuacamoleException("No authorized configurations.");
+            throw new GuacamoleException("Cannot connect - user not logged in.");
 
         // Get authorized config
         GuacamoleConfiguration config = configs.get(id);
