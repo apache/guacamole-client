@@ -138,34 +138,33 @@ var GuacamoleUI = {
         window.location.href = "logout";
     };
 
+    // Timeouts for detecting if users wants menu to open or close
     var detectMenuOpenTimeout = null;
     var detectMenuCloseTimeout = null;
 
-    GuacamoleUI.menu.addEventListener('mouseover', function() {
+    // Clear detection timeouts
+    function resetMenuDetect() {
 
-        // If we were waiting for menu close, we're not anymore
-        if (detectMenuCloseTimeout != null) {
-            window.clearTimeout(detectMenuCloseTimeout);
-            detectMenuCloseTimeout = null;
-        }
-
-    }, true);
-
-    function menuShowHandler() {
-
-        // If we were waiting for menu close, we're not anymore
-        if (detectMenuCloseTimeout != null) {
-            window.clearTimeout(detectMenuCloseTimeout);
-            detectMenuCloseTimeout = null;
-        }
-        
-        // Clear old timeout if mouse moved while we were waiting
         if (detectMenuOpenTimeout != null) {
             window.clearTimeout(detectMenuOpenTimeout);
             detectMenuOpenTimeout = null;
         }
 
-        // If not alread waiting, wait before showing menu
+        if (detectMenuCloseTimeout != null) {
+            window.clearTimeout(detectMenuCloseTimeout);
+            detectMenuCloseTimeout = null;
+        }
+
+    }
+
+    // Initiate detection of menu open action. If not canceled through some
+    // user event, menu will open.
+    function startMenuOpenDetect() {
+
+        // Clear detection state
+        resetMenuDetect();
+
+        // Wait and then show menu
         detectMenuOpenTimeout = window.setTimeout(function() {
             GuacamoleUI.showMenu();
             detectMenuOpenTimeout = null;
@@ -173,44 +172,50 @@ var GuacamoleUI = {
 
     }
 
-    // Show menu of mouseover any part of menu
+    // Initiate detection of menu close action. If not canceled through some
+    // user event, menu will close.
+    function startMenuCloseDetect() {
+
+        // Clear detection state
+        resetMenuDetect();
+
+        // Wait and then shade menu
+        detectMenuCloseTimeout = window.setTimeout(function() {
+            GuacamoleUI.shadeMenu();
+            detectMenuCloseTimeout = null;
+        }, 500);
+
+    }
+
+    // Show menu if mouseover any part of menu
     GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.showMenu, true);
 
-    // When mouse hovers over top of screen, start detection of mouse hover
-    GuacamoleUI.menuControl.addEventListener('mousemove', menuShowHandler, true);
+    // Stop detecting menu state change intents if mouse is over menu
+    GuacamoleUI.menu.addEventListener('mouseover', resetMenuDetect, true);
+
+    // When mouse hovers over top of screen, start detection of intent to open menu
+    GuacamoleUI.menuControl.addEventListener('mousemove', startMenuOpenDetect, true);
+
+    // When mouse enters display, start detection of intent to close menu
+    GuacamoleUI.display.addEventListener('mouseover', startMenuCloseDetect, true);
+
+    // Show menu if mouse leaves document
     document.addEventListener('mouseout', function(e) {
         
         // Get parent of the element the mouse pointer is leaving
        	if (!e) e = window.event;
         var target = e.relatedTarget || e.toElement;
         
-        // Ensure target is not menu nor child of menu
+        // Ensure target is not document nor child of document
         var targetParent = target;
         while (targetParent != null) {
             if (targetParent == document) return;
             targetParent = targetParent.parentNode;
         }
 
-        menuShowHandler();
+        // Start detection of intent to open menu
+        startMenuOpenDetect();
  
-    }, true);
-
-    GuacamoleUI.display.addEventListener('mouseover', function() {
-
-        // If we were detecting menu open, stop it
-        if (detectMenuOpenTimeout != null) {
-            window.clearTimeout(detectMenuOpenTimeout);
-            detectMenuOpenTimeout = null;
-        }
-
-        // If not already waiting, start detection of mouse leave
-        if (detectMenuCloseTimeout == null) {
-            detectMenuCloseTimeout = window.setTimeout(function() {
-                GuacamoleUI.shadeMenu();
-                detectMenuCloseTimeout = null;
-            }, 500);
-        }
-
     }, true);
 
     // Reconnect button
