@@ -58,10 +58,10 @@ public interface AuthenticationProvider<CredentialType> {
      * 
      * @param credentials The credentials to use to retrieve authorized
      *                    configurations.
-     * @return A Map of all configurations authorized by the given credentials.
+     * @return A Map of all configurations authorized by the given credentials,
+     *         or null if the credentials given are not authorized.
      * @throws GuacamoleException If an error occurs while retrieving
-     *                            configurations, or the credentials given
-     *                            are invalid.
+     *                            configurations.
      */
     public Map<String, GuacamoleConfiguration>
             getAuthorizedConfigurations(CredentialType credentials)
