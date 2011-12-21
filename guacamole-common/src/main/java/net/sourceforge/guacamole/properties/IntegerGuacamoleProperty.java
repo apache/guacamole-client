@@ -49,6 +49,10 @@ public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Inte
     @Override
     public Integer parseValue(String value) throws GuacamoleException {
 
+        // If no property provided, return null.
+        if (value == null)
+            return null;
+
         try {
             Integer integer = new Integer(value);
             return integer;
