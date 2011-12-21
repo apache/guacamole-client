@@ -108,6 +108,7 @@ public class GuacamoleProperties {
      *                            guacamole.properties.
      */
     public static <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
+
         if (exception != null)
             throw exception;
 

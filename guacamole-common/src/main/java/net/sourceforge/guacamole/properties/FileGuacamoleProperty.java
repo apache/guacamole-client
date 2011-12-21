@@ -49,11 +49,13 @@ public abstract class FileGuacamoleProperty implements GuacamoleProperty<File> {
 
     @Override
     public File parseValue(String value) throws GuacamoleException {
-        // having a null value is acceptable. If value is null, no error thrown.
-        if(value != null)
-            return new File(value);
-        else
+        
+        // If no property provided, return null.
+        if (value == null)
             return null;
+
+        return new File(value);
+
     }
 
 }
