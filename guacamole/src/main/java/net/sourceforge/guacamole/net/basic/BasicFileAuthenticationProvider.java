@@ -133,11 +133,10 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider<U
         if (mapping == null)
             throw new GuacamoleException("User mapping could not be read.");
         
-        Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
-        
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(credentials.getUsername());
         if (info != null && info.validate(credentials.getUsername(), credentials.getPassword())) {
+            Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
             configs.put("DEFAULT", info.getConfiguration());
             return configs;
         }
