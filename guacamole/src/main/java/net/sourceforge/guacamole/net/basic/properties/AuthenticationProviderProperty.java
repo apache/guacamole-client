@@ -35,6 +35,10 @@ public abstract class AuthenticationProviderProperty implements GuacamolePropert
     @Override
     public AuthenticationProvider parseValue(String authProviderClassName) throws GuacamoleException {
 
+        // If no property provided, return null.
+        if (authProviderClassName == null)
+            return null;
+
         // Get auth provider instance
         try {
 
