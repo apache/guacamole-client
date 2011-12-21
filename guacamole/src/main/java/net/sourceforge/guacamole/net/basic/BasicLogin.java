@@ -56,7 +56,7 @@ public class BasicLogin extends HttpServlet {
 
         // Get auth provider instance
         try {
-            authProvider = GuacamoleProperties.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+            authProvider = GuacamoleProperties.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
         }
         catch (GuacamoleException e) {
             logger.error("Error getting authentication provider from properties.", e);
