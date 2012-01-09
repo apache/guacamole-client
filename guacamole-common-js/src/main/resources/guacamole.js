@@ -404,8 +404,10 @@ Guacamole.Client = function(display, tunnel) {
 
                 // Send sync response when layers are finished
                 if (layersToSync == 0) {
-                    tunnel.sendMessage("sync", timestamp);
-                    currentTimestamp = timestamp;
+                    if (timestamp != currentTimestamp) {
+                        tunnel.sendMessage("sync", timestamp);
+                        currentTimestamp = timestamp;
+                    }
                 }
 
             }
@@ -424,8 +426,10 @@ Guacamole.Client = function(display, tunnel) {
             // If all layers are ready, then we didn't install any hooks.
             // Send sync message now,
             if (layersToSync == 0) {
-                tunnel.sendMessage("sync", timestamp);
-                currentTimestamp = timestamp;
+                if (timestamp != currentTimestamp) {
+                    tunnel.sendMessage("sync", timestamp);
+                    currentTimestamp = timestamp;
+                }
             }
 
         }
