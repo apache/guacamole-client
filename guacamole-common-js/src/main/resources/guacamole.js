@@ -60,6 +60,9 @@ Guacamole.Client = function(display, tunnel) {
     var STATE_DISCONNECTED  = 5;
 
     var currentState = STATE_IDLE;
+    
+    var currentTimestamp = 0;
+    var pingInterval = null;
 
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
@@ -400,8 +403,10 @@ Guacamole.Client = function(display, tunnel) {
                 layersToSync--;
 
                 // Send sync response when layers are finished
-                if (layersToSync == 0)
+                if (layersToSync == 0) {
                     tunnel.sendMessage("sync", timestamp);
+                    currentTimestamp = timestamp;
+                }
 
             }
 
@@ -418,8 +423,10 @@ Guacamole.Client = function(display, tunnel) {
 
             // If all layers are ready, then we didn't install any hooks.
             // Send sync message now,
-            if (layersToSync == 0)
+            if (layersToSync == 0) {
                 tunnel.sendMessage("sync", timestamp);
+                currentTimestamp = timestamp;
+            }
 
         }
       
@@ -442,9 +449,16 @@ Guacamole.Client = function(display, tunnel) {
                 && currentState != STATE_DISCONNECTING) {
 
             setState(STATE_DISCONNECTING);
+
+            // Stop ping
+            if (pingInterval)
+                window.clearInterval(pingInterval);
+
+            // Send disconnect message and disconnect
             tunnel.sendMessage("disconnect");
             tunnel.disconnect();
             setState(STATE_DISCONNECTED);
+
         }
 
     };
@@ -460,6 +474,11 @@ Guacamole.Client = function(display, tunnel) {
             setState(STATE_IDLE);
             throw e;
         }
+
+        // Ping every 5 seconds (ensure connection alive)
+        pingInterval = window.setInterval(function() {
+            tunnel.sendMessage("sync", currentTimestamp);
+        }, 5000);
 
         setState(STATE_WAITING);
     };
