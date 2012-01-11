@@ -372,7 +372,7 @@ Guacamole.Layer = function(width, height) {
      *                           pending operations are complete.
      */
     this.sync = function(handler) {
-        scheduleTask(handler);
+        return scheduleTask(handler);
     };
 
     /**
@@ -398,12 +398,18 @@ Guacamole.Layer = function(width, height) {
      */
     this.copyRect = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
+        var srcCopied = null;
+
         function doCopyRect() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
             if (srcCanvas.width != 0 && srcCanvas.height != 0)
                 displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+
+            // Unblock the copy complete task, if it exists
+            if (srcCopied != null)
+                srcCopied.handler = function() {};
         }
 
         // If we ARE the source layer, no need to sync.
@@ -413,8 +419,13 @@ Guacamole.Layer = function(width, height) {
 
         // Otherwise synchronize copy operation with source layer
         else {
+            
+            // Task which will be unblocked only when the source layer is ready
+            // This task will perform the copy
             var task = scheduleTask(null);
-            srcLayer.sync(function() {
+
+            // Task which will unblock the drawing task.
+            var srcReady = srcLayer.sync(function() {
                 
                 task.handler = doCopyRect;
 
@@ -423,6 +434,13 @@ Guacamole.Layer = function(width, height) {
                 handlePendingTasks();
 
             });
+
+            // Task which will be unblocked only after the copy has
+            // occurred (this will only be created if the draw task
+            // was postponed)
+            if (srcReady != null)
+                srcCopied = srcLayer.sync(null);
+
         }
 
     };
