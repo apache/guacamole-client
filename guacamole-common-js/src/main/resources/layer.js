@@ -201,16 +201,34 @@ Guacamole.Layer = function(width, height) {
      * @private
      * @param {function} taskHandler The function to call when this task 
      *                               runs, if any.
+     * @param {boolean} blocked Whether this task should start blocked.
      */
-    function Task(taskHandler) {
-        
+    function Task(taskHandler, blocked) {
+       
+        var task = this;
+       
+        /**
+         * Whether this Task is blocked.
+         * 
+         * @type boolean
+         */
+        this.blocked = blocked;
+
         /**
          * The handler this Task is associated with, if any.
          * 
          * @type function
          */
         this.handler = taskHandler;
-        
+       
+        /**
+         * Unblocks this Task, allowing it to run.
+         */
+        this.unblock = function() {
+            task.blocked = false;
+            handlePendingTasks();
+        }
+
     }
 
     /**
@@ -220,21 +238,22 @@ Guacamole.Layer = function(width, height) {
      * 
      * @private
      * @param {function} handler The function to call when possible, if any.
+     * @param {boolean} blocked Whether the task should start blocked.
      * @returns {Task} The Task created and added to the queue for future
      *                 running, if any, or null if the handler was run
      *                 immediately and no Task needed to be created.
      */
-    function scheduleTask(handler) {
+    function scheduleTask(handler, blocked) {
         
         // If no pending tasks, just call (if available) and exit
-        if (layer.isReady() && handler != null) {
+        if (layer.isReady() && !blocked && handler != null) {
             handler();
             return null;
         }
 
         // If tasks are pending/executing, schedule a pending task
         // and return a reference to it.
-        var task = new Task(handler);
+        var task = new Task(handler, blocked);
         tasks.push(task);
         return task;
         
@@ -256,9 +275,9 @@ Guacamole.Layer = function(width, height) {
 
         // Draw all pending tasks.
         var task;
-        while ((task = tasks[0]) != null && task.handler) {
+        while ((task = tasks[0]) != null && !task.blocked) {
             tasks.shift();
-            task.handler();
+            if (task.handler) task.handler();
         }
 
         tasksInProgress = false;
@@ -345,21 +364,14 @@ Guacamole.Layer = function(width, height) {
      * @param {String} url The URL of the image to draw.
      */
     this.draw = function(x, y, url) {
-        var task = scheduleTask(null);
+
+        var task = scheduleTask(function() {
+            if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
+            displayContext.drawImage(image, x, y);
+        }, true);
 
         var image = new Image();
-        image.onload = function() {
-
-            task.handler = function() {
-                if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
-                displayContext.drawImage(image, x, y);
-            };
-
-            // As this task originally had no handler and may have blocked
-            // other tasks, handle any blocked tasks.
-            handlePendingTasks();
-
-        };
+        image.onload = task.unblock;
         image.src = url;
 
     };
@@ -398,7 +410,7 @@ Guacamole.Layer = function(width, height) {
      */
     this.copyRect = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
-        var srcCopied = null;
+        var srcLock = null;
 
         function doCopyRect() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
@@ -408,8 +420,8 @@ Guacamole.Layer = function(width, height) {
                 displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
             // Unblock the copy complete task, if it exists
-            if (srcCopied != null)
-                srcCopied.handler = function() {};
+            if (srcLock != null) 
+                srcLock.unblock();
         }
 
         // If we ARE the source layer, no need to sync.
@@ -422,24 +434,15 @@ Guacamole.Layer = function(width, height) {
             
             // Task which will be unblocked only when the source layer is ready
             // This task will perform the copy
-            var task = scheduleTask(null);
+            var task = scheduleTask(doCopyRect, true);
 
             // Task which will unblock the drawing task.
-            var srcReady = srcLayer.sync(function() {
-                
-                task.handler = doCopyRect;
-
-                // As this task originally had no handler and may have blocked
-                // other tasks, handle any blocked tasks.
-                handlePendingTasks();
-
-            });
+            var srcReady = srcLayer.sync(task.unblock);
 
             // Task which will be unblocked only after the copy has
             // occurred (this will only be created if the draw task
             // was postponed)
-            if (srcReady != null)
-                srcCopied = srcLayer.sync(null);
+            if (srcReady != null) srcLock = srcLayer.sync(null, true);
 
         }
 
