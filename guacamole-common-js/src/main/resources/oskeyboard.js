@@ -81,7 +81,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     // Create keyboard
     var keyboard = document.createElement("div");
-    keyboard.className = "keyboard";
+    keyboard.className = "guacamole-keyboard";
 
     // Retrieve keyboard XML
     var xmlhttprequest = new XMLHttpRequest();
@@ -95,7 +95,7 @@ Guacamole.OnScreenKeyboard = function(url) {
         function parse_row(e) {
             
             var row = document.createElement("div");
-            row.className = "row";
+            row.className = "guacamole-keyboard-row";
 
             parseChildren(e, {
                 
@@ -110,9 +110,10 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Create element
                     var gap = document.createElement("div");
-                    gap.className = "gap";
+                    gap.className = "guacamole-keyboard-gap";
                     gap.textContent = " ";
 
+                    // Set gap size
                     if (gap_size)
                         gap.style.width = gap.style.height =
                             parseFloat(gap_size.value) + "em";
@@ -128,8 +129,14 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Create element
                     var key = document.createElement("div");
-                    key.className = "key";
+                    key.className = "guacamole-keyboard-key";
                     key.textContent = "K";
+
+                    // Set key size
+                    if (key_size) {
+                        key.style.width = parseFloat(key_size.value) + "em";
+                        key.style.height = "1em";
+                    }
 
                     parseChildren(e, {
                         "cap": function cap(e) {
@@ -164,7 +171,7 @@ Guacamole.OnScreenKeyboard = function(url) {
         function parse_column(e) {
             
             var col = document.createElement("div");
-            col.className = "col";
+            col.className = "guacamole-keyboard-column";
 
             var align = col.attributes["align"];
 
