@@ -51,11 +51,17 @@ Guacamole.OnScreenKeyboard = function(url) {
     // For each child of element, call handler defined in next
     function parseChildren(element, next) {
 
-        var children = root.childNodes;
+        var children = element.childNodes;
         for (var i=0; i<children.length; i++) {
 
-            // Get child node and corresponding handler
+            // Get child node
             var child = children[i];
+
+            // Do not parse text nodes
+            if (!child.tagName)
+                continue;
+
+            // Get handler for node
             var handler = next[child.tagName];
 
             // Call handler if defined
@@ -64,7 +70,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
             // Throw exception if no handler
             else
-                throw new Exception(
+                throw new Error(
                       "Unexpected " + child.tagName
                     + " within " + element.tagName
                 );
@@ -111,12 +117,19 @@ Guacamole.OnScreenKeyboard = function(url) {
                         gap.style.width = gap.style.height =
                             parseFloat(gap_size.value) + "em";
 
+                    row.appendChild(gap);
+
                 },
                 
                 "key": function parse_key(e) {
                     
                     // Get attributes
                     var key_size = e.attributes["size"];
+
+                    // Create element
+                    var key = document.createElement("div");
+                    key.className = "key";
+                    key.textContent = "K";
 
                     parseChildren(e, {
                         "cap": function cap(e) {
@@ -127,9 +140,18 @@ Guacamole.OnScreenKeyboard = function(url) {
                             var keysym   = e.attributes["keysym"];
                             var sticky   = e.attributes["sticky"];
                             
+                            // Get content of key cap
+                            var content = e.textContent;
+                            
+                            // If no requirements, then show cap by default
+                            if (!required) {
+                                key.textContent = content;
+                            }
 
                         }
                     });
+
+                    row.appendChild(key);
 
                 }
                 
@@ -162,27 +184,23 @@ Guacamole.OnScreenKeyboard = function(url) {
 
 
         // Parse document
-        parseChildren(xml.documentElement, {
-            
-            "keyboard": function parse_keyboard(e) {
-                
-                // Get attributes
-                var keyboard_size = e.attributes["size"];
-                
-                parseChildren(e, {
-                    
-                    "row": function(e) {
-                        keyboard.appendChild(parse_row(e));
-                    },
-                    
-                    "column": function(e) {
-                        keyboard.appendChild(parse_column(e));
-                    }
-                    
-                });
+        var keyboard_element = xml.documentElement;
+        if (keyboard_element.tagName != "keyboard")
+            throw new Error("Root element must be keyboard");
 
-            } // end keyboard
-                
+        // Get attributes
+        var keyboard_size = keyboard_element.attributes["size"];
+        
+        parseChildren(keyboard_element, {
+            
+            "row": function(e) {
+                keyboard.appendChild(parse_row(e));
+            },
+            
+            "column": function(e) {
+                keyboard.appendChild(parse_column(e));
+            }
+            
         });
 
     }
