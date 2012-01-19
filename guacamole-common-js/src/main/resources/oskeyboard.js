@@ -48,6 +48,25 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.OnScreenKeyboard = function(url) {
 
+    var scaledElements = [];
+
+    function ScaledElement(element, width, height, scaleFont) {
+
+        this.width = width;
+        this.height = height;
+
+        this.scale = function(pixels) {
+            element.style.width      = width  * pixels + "px";
+            element.style.height     = height * pixels + "px";
+
+            if (scaleFont) {
+                element.style.lineHeight = height * pixels + "px";
+                element.style.fontSize   = pixels + "px";
+            }
+        }
+
+    }
+
     // For each child of element, call handler defined in next
     function parseChildren(element, next) {
 
@@ -92,10 +111,6 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     if (xml) {
 
-        var width = 640;
-        var size = 20;
-        var unit = width / size;
-
         function parse_row(e) {
             
             var row = document.createElement("div");
@@ -117,10 +132,11 @@ Guacamole.OnScreenKeyboard = function(url) {
                     gap.className = "guacamole-keyboard-gap";
 
                     // Set gap size
+                    var gap_units = 1;
                     if (gap_size)
-                        gap.style.width = gap.style.height =
-                            parseFloat(gap_size.value)*unit + "px";
+                        gap_units = parseFloat(gap_size.value);
 
+                    scaledElements.push(new ScaledElement(gap, gap_units, gap_units));
                     row.appendChild(gap);
 
                 },
@@ -134,9 +150,6 @@ Guacamole.OnScreenKeyboard = function(url) {
                     // Create element
                     var key_element = document.createElement("div");
                     key_element.className = "guacamole-keyboard-key";
-                    key_element.style.fontSize = unit + "px";
-                    key_element.style.height = unit + "px";
-                    key_element.style.lineHeight = unit + "px";
                     
                     // Create cap
                     var cap_element = document.createElement("div");
@@ -144,10 +157,9 @@ Guacamole.OnScreenKeyboard = function(url) {
                     key_element.appendChild(cap_element);
 
                     // Set key size
+                    var key_units = 1;
                     if (key_size)
-                        key_element.style.width = parseFloat(key_size.value)*unit + "px";
-                    else
-                        key_element.style.width = unit + "px";
+                        key_units = parseFloat(key_size.value);
 
                     parseChildren(e, {
                         "cap": function cap(e) {
@@ -169,6 +181,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                         }
                     });
 
+                    scaledElements.push(new ScaledElement(key_element, key_units, 1, true));
                     row.appendChild(key_element);
 
                 }
@@ -207,7 +220,10 @@ Guacamole.OnScreenKeyboard = function(url) {
             throw new Error("Root element must be keyboard");
 
         // Get attributes
-        var keyboard_size = keyboard_element.attributes["size"];
+        if (!keyboard_element.attributes["size"])
+            throw new Error("size attribute is required for keyboard");
+        
+        var keyboard_size = parseFloat(keyboard_element.attributes["size"].value);
         
         parseChildren(keyboard_element, {
             
@@ -239,6 +255,19 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     this.getElement = function() {
         return keyboard;
+    };
+
+    this.resize = function(width) {
+
+        // Get pixel size of a unit
+        var unit = width / keyboard_size;
+
+        // Resize all scaled elements
+        for (var i=0; i<scaledElements.length; i++) {
+            var scaledElement = scaledElements[i];
+            scaledElement.scale(unit)
+        }
+
     };
 
 };
