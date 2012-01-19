@@ -92,6 +92,10 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     if (xml) {
 
+        var width = 640;
+        var size = 20;
+        var unit = width / size;
+
         function parse_row(e) {
             
             var row = document.createElement("div");
@@ -116,7 +120,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                     // Set gap size
                     if (gap_size)
                         gap.style.width = gap.style.height =
-                            parseFloat(gap_size.value) + "em";
+                            parseFloat(gap_size.value)*unit + "px";
 
                     row.appendChild(gap);
 
@@ -124,19 +128,27 @@ Guacamole.OnScreenKeyboard = function(url) {
                 
                 "key": function parse_key(e) {
                     
+
                     // Get attributes
                     var key_size = e.attributes["size"];
 
+                    // Create container element
+                    var key_container = document.createElement("div");
+                    key_container.style.display = "inline-block";
+                    key_container.style.fontSize = unit + "px";
+                    key_container.style.lineHeight = unit + "px";
+                    key_container.style.height = unit + "px";
+                    
                     // Create element
                     var key = document.createElement("div");
                     key.className = "guacamole-keyboard-key";
-                    key.textContent = "K";
+                    key_container.appendChild(key);
 
                     // Set key size
-                    if (key_size) {
-                        key.style.width = parseFloat(key_size.value) + "em";
-                        key.style.height = "1em";
-                    }
+                    if (key_size)
+                        key_container.style.width = parseFloat(key_size.value)*unit + "px";
+                    else
+                        key_container.style.width = unit + "px";
 
                     parseChildren(e, {
                         "cap": function cap(e) {
@@ -158,7 +170,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                         }
                     });
 
-                    row.appendChild(key);
+                    row.appendChild(key_container);
 
                 }
                 
