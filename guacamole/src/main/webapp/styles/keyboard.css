@@ -17,107 +17,79 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-div#keyboardContainer {
-    position: fixed;
-    left: 0px;
-    bottom: 0px;
+#keyboardContainer {
     text-align: center;
+
+    position: fixed;
+    left: 0;
+    bottom: 0;
     width: 100%;
+    margin: 0;
+    padding: 0.5em;
+
+    border-top: 1px solid black;
+    background: #222;
+    opacity: 0.85;
+
     display: none;
     z-index: 1;
 }
 
-div.keyboard {
-
-    font-size: 10pt;
-    white-space: pre;
-
-    border: 1px solid black;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-    background: #222;
-
-    cursor: default;
-
-    opacity: 0.85;
-
-    padding: 0.25em;
-    margin: 0.25em;
-
+.guacamole-keyboard {
     display: inline-block;
-    text-align: left;
-}
-
-div.key {
-
+    width: 100%;
     margin: 0;
     padding: 0;
+    cursor: default;
 
-    width: 5ex;
-    height: 5ex;
-
-    display: inline-block;
-    text-align: center;
+    text-align: left;
+    vertical-align: middle;
 }
 
-div.cap {
+.guacamole-keyboard .guacamole-keyboard-key {
+    display: inline-block;
+}
 
+.guacamole-keyboard .guacamole-keyboard-cap {
+
+    background: #444;
     border: 1px solid #888;
     -moz-border-radius: 0.25em;
     -webkit-border-radius: 0.25em;
     -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
-    background: #444;
-
-    margin: 0;
-    padding: 0;
 
     color: white;
+    font-family: sans-serif;
+    font-size: 50%;
     text-shadow: 0 0.1em 0.1em black;
-
-    width: 4.5ex;
-    height: 4.5ex;
-    line-height: 4.5ex;
+    text-align: center;
     white-space: pre;
 
-    display: inline-block;
-    text-align: center;
 }
 
-div.key:hover div.cap {
+.guacamole-keyboard .guacamole-keyboard-key:hover .guacamole-keyboard-cap {
     background: #666;
     border-color: #666;
     cursor: pointer;
 }
 
-div.key.pressed div.cap {
+.guacamole-keyboard .guacamole-keyboard-key.pressed:hover .guacamole-keyboard-cap {
     background: #822;
     border-color: #D44;
 }
 
-div.key.sticky.active div.cap {
+.guacamole-keyboard .guacamole-keyboard-key.active:hover .guacamole-keyboard-cap {
     background: #882;
     border-color: #DD4;
 }
 
-div.gap {
-    margin: 0;
-    padding: 0;
+.guacamole-keyboard .guacamole-keyboard-column {
+    display: inline-block;
+    text-align: center;
+}
 
-    width: 5ex;
-    height: 5ex;
-
+.guacamole-keyboard .guacamole-keyboard-gap {
     display: inline-block;
 }
-
-div.row {
-    vertical-align: top;
-}
-
-div.col {
-    display: inline-block;
-    vertical-align: top;
-}
-
+ 

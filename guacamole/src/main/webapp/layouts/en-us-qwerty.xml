@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<keyboard lang="en_US" layout="qwerty">
+<keyboard lang="en_US" layout="qwerty" size="21">
     <row>
         <key>
             <cap keysym="0xFF1B">Esc</cap>

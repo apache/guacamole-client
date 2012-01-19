@@ -119,16 +119,26 @@ var GuacamoleUI = {
     };
 
     // Show/Hide keyboard
+    var keyboardResizeInterval = null;
     GuacamoleUI.buttons.showKeyboard.onclick = function() {
 
         var displayed = GuacamoleUI.containers.keyboard.style.display;
         if (displayed != "block") {
             GuacamoleUI.containers.keyboard.style.display = "block";
             GuacamoleUI.buttons.showKeyboard.textContent = "Hide Keyboard";
+
+            // Automatically update size
+            window.onresize = updateKeyboardSize;
+            keyboardResizeInterval = window.setInterval(updateKeyboardSize, 30);
+
+            updateKeyboardSize();
         }
         else {
             GuacamoleUI.containers.keyboard.style.display = "none";
             GuacamoleUI.buttons.showKeyboard.textContent = "Show Keyboard";
+
+            window.onresize = null;
+            window.clearInterval(keyboardResizeInterval);
         }
 
     };
@@ -225,7 +235,17 @@ var GuacamoleUI = {
 
     // On-screen keyboard
     GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
-    GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard);
+    GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
+
+    // Function for automatically updating keyboard size
+    var lastKeyboardWidth;
+    function updateKeyboardSize() {
+        var currentSize = GuacamoleUI.keyboard.getElement().offsetWidth;
+        if (lastKeyboardWidth != currentSize) {
+            GuacamoleUI.keyboard.resize(currentSize);
+            lastKeyboardWidth = currentSize;
+        }
+    };
 
 })();
 
@@ -379,17 +399,13 @@ GuacamoleUI.attach = function(guac) {
         GuacamoleUI.clipboard.value = data;
     };
 
-    GuacamoleUI.keyboard.setKeyPressedHandler(
-        function(keysym) {
-            guac.sendKeyEvent(1, keysym);
-        }
-    );
+    GuacamoleUI.keyboard.onkeypress = function(keysym) {
+        guac.sendKeyEvent(1, keysym);
+    };
 
-    GuacamoleUI.keyboard.setKeyReleasedHandler(
-        function(keysym) {
-            guac.sendKeyEvent(0, keysym);
-        }
-    );
+    GuacamoleUI.keyboard.onkeyrelease = function(keysym) {
+        guac.sendKeyEvent(0, keysym);
+    };
 
     // Send Ctrl-Alt-Delete
     GuacamoleUI.buttons.ctrlAltDelete.onclick = function() {
