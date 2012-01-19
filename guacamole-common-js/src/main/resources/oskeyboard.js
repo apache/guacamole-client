@@ -134,10 +134,11 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Create container element
                     var key_container = document.createElement("div");
+                    key_container.className = "guacamole-keyboard-key-container";
                     key_container.style.display = "inline-block";
                     key_container.style.fontSize = unit + "px";
-                    key_container.style.lineHeight = unit + "px";
                     key_container.style.height = unit + "px";
+                    key_container.style.lineHeight = unit + "px";
                     
                     // Create element
                     var key = document.createElement("div");
