@@ -48,420 +48,34 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.OnScreenKeyboard = function(url) {
 
-    var allKeys = new Array();
-    var modifierState = new function() {};
+    // For each child of element, call handler defined in next
+    function parseChildren(element, next) {
 
-    function getKeySize(size) {
-        return (5*size) + "ex";
-    }
+        var children = root.childNodes;
+        for (var i=0; i<children.length; i++) {
 
-    function getCapSize(size) {
-        return (5*size - 0.5) + "ex";
-    }
+            // Get child node and corresponding handler
+            var child = children[i];
+            var handler = next[child.tagName];
 
-    function clearModifiers() {
+            // Call handler if defined
+            if (handler)
+                handler(child);
 
-        // Send key release events for all pressed modifiers
-        for (var k=0; k<allKeys.length; k++) {
-
-            var key = allKeys[k];
-            var cap = key.getCap();
-            var modifier = cap.getModifier();
-
-            if (modifier && isModifierActive(modifier) && !cap.isSticky() && key.isPressed())
-                key.release();
-
-        }
-
-    }
-
-    function setModifierReleased(modifier) {
-        if (isModifierActive(modifier))
-            modifierState[modifier]--;
-    }
-
-    function setModifierPressed(modifier) {
-        if (modifierState[modifier] == null)
-            modifierState[modifier] = 1;
-        else
-            modifierState[modifier]++;
-    }
-
-    function isModifierActive(modifier) {
-        if (modifierState[modifier] > 0)
-            return true;
-
-        return false;
-    }
-
-    function toggleModifierPressed(modifier) {
-        if (isModifierActive(modifier))
-            setModifierReleased(modifier);
-        else
-            setModifierPressed(modifier);
-    }
-
-    function refreshAllKeysState() {
-        for (var k=0; k<allKeys.length; k++)
-            allKeys[k].refreshState();
-    }
-
-    function Key(key) {
-
-        function Cap(cap) {
-
-            // Displayed text
-            var displayText = cap.textContent;
-            if (!displayText) displayText = cap.text;
-            
-            // Keysym
-            var keysym = null;
-            if (cap.attributes["keysym"])
-                keysym = parseInt(cap.attributes["keysym"].value);
-
-            // If keysym not specified, get keysym from display text.
-            else if (displayText.length == 1) {
-
-                var charCode = displayText.charCodeAt(0);
-
-                if (charCode >= 0x0000 && charCode <= 0x00FF)
-                    keysym = charCode;
-
-                else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
-                    keysym = 0x01000000 | charCode;
-            }
-
-            // Required modifiers for this keycap
-            var reqMod = null;
-            if (cap.attributes["if"])
-                reqMod = cap.attributes["if"].value.split(",");
-
-
-            // Modifier represented by this keycap
-            var modifier = null;
-            if (cap.attributes["modifier"])
-                modifier = cap.attributes["modifier"].value;
-            
-
-            // Whether this key is sticky (toggles)
-            // Currently only valid for modifiers.
-            var sticky = false;
-            if (cap.attributes["sticky"] && cap.attributes["sticky"].value == "true")
-                sticky = true;
-
-            this.getDisplayText = function() {
-                return displayText;
-            };
-
-            this.getKeySym = function() {
-                return keysym;
-            };
-
-            this.getRequiredModifiers = function() {
-                return reqMod;
-            };
-
-            this.getModifier = function() {
-                return modifier;
-            };
-
-            this.isSticky = function() {
-                return sticky;
-            };
-
-        }
-
-        var size = null;
-        if (key.attributes["size"])
-            size = parseFloat(key.attributes["size"].value);
-
-        var caps = key.getElementsByTagName("cap");
-        var keycaps = new Array();
-        for (var i=0; i<caps.length; i++)
-            keycaps.push(new Cap(caps[i]));
-
-        var rowKey = document.createElement("div");
-        rowKey.className = "key";
-
-        var keyCap = document.createElement("div");
-        keyCap.className = "cap";
-        rowKey.appendChild(keyCap);
-
-
-        var STATE_RELEASED = 0;
-        var STATE_PRESSED = 1;
-        var state = STATE_RELEASED;
-
-        rowKey.isPressed = function() {
-            return state == STATE_PRESSED;
-        }
-
-        var currentCap = null;
-        function refreshState(modifier) {
-
-            // Find current cap
-            currentCap = null;
-            for (var j=0; j<keycaps.length; j++) {
-
-                var keycap = keycaps[j];
-                var required = keycap.getRequiredModifiers();
-
-                var matches = true;
-
-                // If modifiers required, make sure all modifiers are active
-                if (required) {
-
-                    for (var k=0; k<required.length; k++) {
-                        if (!isModifierActive(required[k])) {
-                            matches = false;
-                            break;
-                        }
-                    }
-
-                }
-
-                if (matches)
-                    currentCap = keycap;
-
-            }
-
-            rowKey.className = "key";
-
-            if (currentCap.getModifier())
-                rowKey.className += " modifier";
-
-            if (currentCap.isSticky())
-                rowKey.className += " sticky";
-
-            if (isModifierActive(currentCap.getModifier()))
-                rowKey.className += " active";
-
-            if (state == STATE_PRESSED)
-                rowKey.className += " pressed";
-
-            keyCap.textContent = currentCap.getDisplayText();
-        }
-        rowKey.refreshState = refreshState;
-
-        rowKey.getCap = function() {
-            return currentCap;
-        };
-
-        refreshState();
-
-        // Set size
-        if (size) {
-            rowKey.style.width = getKeySize(size);
-            keyCap.style.width = getCapSize(size);
-        }
-
-
-
-        // Set pressed, if released
-        function press() {
-
-            if (state == STATE_RELEASED) {
-
-                state = STATE_PRESSED;
-
-                var keysym = currentCap.getKeySym();
-                var modifier = currentCap.getModifier();
-                var sticky = currentCap.isSticky();
-
-                if (keyPressedHandler && keysym)
-                    keyPressedHandler(keysym);
-
-                if (modifier) {
-
-                    // If sticky modifier, toggle
-                    if (sticky) 
-                        toggleModifierPressed(modifier);
-
-                    // Otherwise, just set on.
-                    else 
-                        setModifierPressed(modifier);
-
-                    refreshAllKeysState();
-                }
-                else
-                    refreshState();
-            }
-
-        }
-        rowKey.press = press;
-
-
-        // Set released, if pressed 
-        function release() {
-
-            if (state == STATE_PRESSED) {
-
-                state = STATE_RELEASED;
-
-                var keysym = currentCap.getKeySym();
-                var modifier = currentCap.getModifier();
-                var sticky = currentCap.isSticky();
-
-                if (keyReleasedHandler && keysym)
-                    keyReleasedHandler(keysym);
-
-                if (modifier) {
-
-                    // If not sticky modifier, release modifier
-                    if (!sticky) {
-                        setModifierReleased(modifier);
-                        refreshAllKeysState();
-                    }
-                    else
-                        refreshState();
-
-                }
-                else {
-                    refreshState();
-
-                    // If not a modifier, also release all pressed modifiers
-                    clearModifiers();
-                }
-
-            }
-
-        }
-        rowKey.release = release;
-
-        // Toggle press/release states
-        function toggle() {
-            if (state == STATE_PRESSED)
-                release();
+            // Throw exception if no handler
             else
-                press();
-        }
-
-
-        // Send key press on mousedown
-        rowKey.onmousedown = function(e) {
-
-            e.stopPropagation();
-
-            var modifier = currentCap.getModifier();
-            var sticky = currentCap.isSticky();
-
-            // Toggle non-sticky modifiers
-            if (modifier && !sticky)
-                toggle();
-
-            // Press all others
-            else
-                press();
-
-            return false;
-        };
-
-        // Send key release on mouseup/out
-        rowKey.onmouseout =
-        rowKey.onmouseout =
-        rowKey.onmouseup = function(e) {
-
-            e.stopPropagation();
-
-            var modifier = currentCap.getModifier();
-            var sticky = currentCap.isSticky();
-
-            // Release non-modifiers and sticky modifiers
-            if (!modifier || sticky)
-                release();
-
-            return false;
-        };
-
-        rowKey.onselectstart = function() { return false; };
-
-        return rowKey;
-
-    }
-
-    function Gap(gap) {
-
-        var keyboardGap = document.createElement("div");
-        keyboardGap.className = "gap";
-        keyboardGap.textContent = " ";
-
-        var size = null;
-        if (gap.attributes["size"])
-            size = parseFloat(gap.attributes["size"].value);
-
-        if (size) {
-            keyboardGap.style.width = getKeySize(size);
-            keyboardGap.style.height = getKeySize(size);
-        }
-
-        return keyboardGap;
-
-    }
-
-    function Row(row) {
-
-        var keyboardRow = document.createElement("div");
-        keyboardRow.className = "row";
-
-        var children = row.childNodes;
-        for (var j=0; j<children.length; j++) {
-            var child = children[j];
-
-            // <row> can contain <key> or <column>
-            if (child.tagName == "key") {
-                var key = new Key(child);
-                keyboardRow.appendChild(key);
-                allKeys.push(key);
-            }
-            else if (child.tagName == "gap") {
-                var gap = new Gap(child);
-                keyboardRow.appendChild(gap);
-            }
-            else if (child.tagName == "column") {
-                var col = new Column(child);
-                keyboardRow.appendChild(col);
-            }
+                throw new Exception(
+                      "Unexpected " + child.tagName
+                    + " within " + element.tagName
+                );
 
         }
 
-        return keyboardRow;
-
     }
-
-    function Column(col) {
-
-        var keyboardCol = document.createElement("div");
-        keyboardCol.className = "col";
-
-        var align = null;
-        if (col.attributes["align"])
-            align = col.attributes["align"].value;
-
-        var children = col.childNodes;
-        for (var j=0; j<children.length; j++) {
-            var child = children[j];
-
-            // <column> can only contain <row> 
-            if (child.tagName == "row") {
-                var row = new Row(child);
-                keyboardCol.appendChild(row);
-            }
-
-        }
-
-        if (align)
-            keyboardCol.style.textAlign = align;
-
-        return keyboardCol;
-
-    }
-
-
 
     // Create keyboard
     var keyboard = document.createElement("div");
     keyboard.className = "keyboard";
-
 
     // Retrieve keyboard XML
     var xmlhttprequest = new XMLHttpRequest();
@@ -472,33 +86,106 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     if (xml) {
 
-        // Parse document
-        var root = xml.documentElement;
-        if (root) {
+        function parse_row(e) {
+            
+            var row = document.createElement("div");
+            row.className = "row";
 
-            var children = root.childNodes;
-            for (var i=0; i<children.length; i++) {
-                var child = children[i];
+            parseChildren(e, {
+                
+                "column": function(e) {
+                    row.appendChild(parse_column(e));
+                },
+                
+                "gap": function parse_gap(e) {
 
-                // <keyboard> can contain <row> or <column>
-                if (child.tagName == "row") {
-                    keyboard.appendChild(new Row(child));
+                    // Get attributes
+                    var gap_size = e.attributes["size"];
+
+                    // Create element
+                    var gap = document.createElement("div");
+                    gap.className = "gap";
+                    gap.textContent = " ";
+
+                    if (gap_size)
+                        gap.style.width = gap.style.height =
+                            parseFloat(gap_size.value) + "em";
+
+                },
+                
+                "key": function parse_key(e) {
+                    
+                    // Get attributes
+                    var key_size = e.attributes["size"];
+
+                    parseChildren(e, {
+                        "cap": function cap(e) {
+
+                            // Get attributes
+                            var required = e.attributes["if"];
+                            var modifier = e.attributes["modifier"];
+                            var keysym   = e.attributes["keysym"];
+                            var sticky   = e.attributes["sticky"];
+                            
+
+                        }
+                    });
+
                 }
-                else if (child.tagName == "column") {
-                    keyboard.appendChild(new Column(child));
-                }
+                
+            });
 
-            }
+            return row;
 
         }
 
+        function parse_column(e) {
+            
+            var col = document.createElement("div");
+            col.className = "col";
+
+            var align = col.attributes["align"];
+
+            if (align)
+                col.style.textAlign = align.value;
+
+            // Columns can only contain rows
+            parseChildren(e, {
+                "row": function(e) {
+                    col.appendChild(parse_row(e));
+                }
+            });
+
+            return col;
+
+        }
+
+
+        // Parse document
+        parseChildren(xml.documentElement, {
+            
+            "keyboard": function parse_keyboard(e) {
+                
+                // Get attributes
+                var keyboard_size = e.attributes["size"];
+                
+                parseChildren(e, {
+                    
+                    "row": function(e) {
+                        keyboard.appendChild(parse_row(e));
+                    },
+                    
+                    "column": function(e) {
+                        keyboard.appendChild(parse_column(e));
+                    }
+                    
+                });
+
+            } // end keyboard
+                
+        });
+
     }
-
-    var keyPressedHandler = null;
-    var keyReleasedHandler = null;
-
-    keyboard.setKeyPressedHandler = function(kh) { keyPressedHandler = kh; };
-    keyboard.setKeyReleasedHandler = function(kh) { keyReleasedHandler = kh; };
 
     // Do not allow selection or mouse movement to propagate/register.
     keyboard.onselectstart =
@@ -510,7 +197,53 @@ Guacamole.OnScreenKeyboard = function(url) {
         return false;
     };
 
-    return keyboard;
+
+    this.onkeypressed  = null;
+    this.onkeyreleased = null;
+
+    this.getElement = function() {
+        return keyboard;
+    };
 
 };
 
+Guacamole.OnScreenKeyboard.Key = function() {
+
+    /**
+     * Width of the key, relative to the size of the keyboard.
+     */
+    this.size = 1;
+
+    /**
+     * Whether this key is currently pressed.
+     */
+    this.pressed = false;
+
+    /**
+     * An associative map of all caps by modifier.
+     */
+    this.caps = {};
+
+}
+
+Guacamole.OnScreenKeyboard.Cap = function(text, keycode, modifier) {
+    
+    /**
+     * Modifier represented by this keycap
+     */
+    this.modifier = 0;
+    
+    /**
+     * The text to be displayed within this keycap
+     */
+    this.text = text;
+
+    /**
+     * The keycode this cap sends when its associated key is pressed/released
+     */
+    this.keycode = keycode;
+
+    // Set modifier if provided
+    if (modifier) this.modifier = modifier;
+    
+}
