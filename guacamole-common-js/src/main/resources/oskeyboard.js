@@ -49,6 +49,29 @@ var Guacamole = Guacamole || {};
 Guacamole.OnScreenKeyboard = function(url) {
 
     var scaledElements = [];
+    
+    var modifiers = {};
+    var currentModifier = 1;
+
+    // Returns a unique power-of-two value for the modifier with the
+    // given name. The same value will be returned for the same modifier.
+    function getModifier(name) {
+        
+        var value = modifiers[name];
+        if (!value) {
+
+            // Get current modifier, advance to next
+            value = currentModifier;
+            currentModifier <<= 1;
+
+            // Store value of this modifier
+            modifiers[name] = value;
+
+        }
+
+        return value;
+            
+    }
 
     function ScaledElement(element, width, height, scaleFont) {
 
@@ -56,11 +79,11 @@ Guacamole.OnScreenKeyboard = function(url) {
         this.height = height;
 
         this.scale = function(pixels) {
-            element.style.width      = width  * pixels + "px";
-            element.style.height     = height * pixels + "px";
+            element.style.width      = Math.floor(width  * pixels) + "px";
+            element.style.height     = Math.floor(height * pixels) + "px";
 
             if (scaleFont) {
-                element.style.lineHeight = height * pixels + "px";
+                element.style.lineHeight = Math.floor(height * pixels) + "px";
                 element.style.fontSize   = pixels + "px";
             }
         }
@@ -143,7 +166,6 @@ Guacamole.OnScreenKeyboard = function(url) {
                 
                 "key": function parse_key(e) {
                     
-
                     // Get attributes
                     var key_size = e.attributes["size"];
 
@@ -151,18 +173,23 @@ Guacamole.OnScreenKeyboard = function(url) {
                     var key_element = document.createElement("div");
                     key_element.className = "guacamole-keyboard-key";
                     
-                    // Create cap
+                    // Create cap element
                     var cap_element = document.createElement("div");
                     cap_element.className = "guacamole-keyboard-cap";
                     key_element.appendChild(cap_element);
+
+                    // Create key
+                    var key = new Guacamole.OnScreenKeyboard.Key(cap_element);
 
                     // Set key size
                     var key_units = 1;
                     if (key_size)
                         key_units = parseFloat(key_size.value);
 
+                    key.size = key_units;
+
                     parseChildren(e, {
-                        "cap": function cap(e) {
+                        "cap": function parse_cap(e) {
 
                             // Get attributes
                             var required = e.attributes["if"];
@@ -173,16 +200,35 @@ Guacamole.OnScreenKeyboard = function(url) {
                             // Get content of key cap
                             var content = e.textContent;
                             
-                            // If no requirements, then show cap by default
-                            if (!required) {
-                                cap_element.textContent = content;
+                            // Create cap
+                            var cap = new Guacamole.OnScreenKeyboard.Cap(content,
+                                keysym ? keysym.value : null);
+                            
+                            // Get modifier value
+                            var modifierValue = 0;
+                            if (required) {
+
+                                // Get modifier value for specified comma-delimited
+                                // list of required modifiers.
+                                var requirements = required.value.split(",");
+                                for (var i=0; i<requirements.length; i++) {
+                                    modifierValue |= getModifier(requirements[i]);
+                                }
+
                             }
+
+                            // Store cap
+                            key.modifierMask |= modifierValue;
+                            key.caps[modifierValue] = cap;
 
                         }
                     });
 
                     scaledElements.push(new ScaledElement(key_element, key_units, 1, true));
                     row.appendChild(key_element);
+
+                    // Initialize key
+                    key.select(0);
 
                 }
                 
@@ -260,7 +306,7 @@ Guacamole.OnScreenKeyboard = function(url) {
     this.resize = function(width) {
 
         // Get pixel size of a unit
-        var unit = width / keyboard_size;
+        var unit = Math.floor(width / keyboard_size);
 
         // Resize all scaled elements
         for (var i=0; i<scaledElements.length; i++) {
@@ -272,7 +318,9 @@ Guacamole.OnScreenKeyboard = function(url) {
 
 };
 
-Guacamole.OnScreenKeyboard.Key = function() {
+Guacamole.OnScreenKeyboard.Key = function(element) {
+
+    var key = this;
 
     /**
      * Width of the key, relative to the size of the keyboard.
@@ -289,9 +337,30 @@ Guacamole.OnScreenKeyboard.Key = function() {
      */
     this.caps = {};
 
+    /**
+     * The currently active cap as chosen by select().
+     */
+    this.currentCap = null;
+
+    /**
+     * Bit mask with all modifiers that affect this key set.
+     */
+    this.modifierMask = 0;
+
+    /**
+     * Given the bitwise OR of all active modifiers, displays the key cap
+     * which applies.
+     */
+    this.select = function(modifier) {
+
+        key.currentCap = key.caps[modifier & key.modifierMask];
+        element.textContent = key.currentCap.text;
+
+    };
+
 }
 
-Guacamole.OnScreenKeyboard.Cap = function(text, keycode, modifier) {
+Guacamole.OnScreenKeyboard.Cap = function(text, keysym, modifier) {
     
     /**
      * Modifier represented by this keycap
@@ -304,9 +373,9 @@ Guacamole.OnScreenKeyboard.Cap = function(text, keycode, modifier) {
     this.text = text;
 
     /**
-     * The keycode this cap sends when its associated key is pressed/released
+     * The keysym this cap sends when its associated key is pressed/released
      */
-    this.keycode = keycode;
+    this.keysym = keysym;
 
     // Set modifier if provided
     if (modifier) this.modifier = modifier;
