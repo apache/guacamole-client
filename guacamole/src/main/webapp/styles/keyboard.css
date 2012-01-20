@@ -25,7 +25,7 @@
     bottom: 0;
     width: 100%;
     margin: 0;
-    padding: 0.5em;
+    padding: 0;
 
     border-top: 1px solid black;
     background: #222;
@@ -38,6 +38,7 @@
 .guacamole-keyboard {
     display: inline-block;
     width: 100%;
+    
     margin: 0;
     padding: 0;
     cursor: default;
@@ -84,9 +85,14 @@
     border-color: #DD4;
 }
 
+.guacamole-keyboard .guacamole-keyboard-row {
+    line-height: 0;
+}
+
 .guacamole-keyboard .guacamole-keyboard-column {
     display: inline-block;
     text-align: center;
+    vertical-align: top;
 }
 
 .guacamole-keyboard .guacamole-keyboard-gap {
