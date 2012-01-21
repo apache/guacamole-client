@@ -249,23 +249,20 @@ Guacamole.OnScreenKeyboard = function(url) {
                         // Update modifier state
                         if (cap.modifier) {
 
-                            // Toggle pressed state
-                            key.pressed = !key.pressed;
-
                             // Construct classname for modifier
                             var modifierClass = "guac-keyboard-modifier-" + cap.modifier;
+                            var modifierFlag = getModifier(cap.modifier);
+
+                            // Toggle modifier state
+                            on_screen_keyboard.modifiers ^= modifierFlag;
 
                             // Activate modifier if pressed
-                            if (key.pressed) {
-                                on_screen_keyboard.modifiers |= getModifier(cap.modifier);
+                            if (on_screen_keyboard.modifiers & modifierFlag)
                                 keyboard.classList.add(modifierClass);
-                            }
 
                             // Deactivate if not pressed
-                            else {
-                                on_screen_keyboard.modifiers &= ~getModifier(cap.modifier);
+                            else
                                 keyboard.classList.remove(modifierClass);
-                            }
 
                         }
 
@@ -373,11 +370,6 @@ Guacamole.OnScreenKeyboard.Key = function() {
      * Width of the key, relative to the size of the keyboard.
      */
     this.size = 1;
-
-    /**
-     * Whether this key is currently pressed.
-     */
-    this.pressed = false;
 
     /**
      * An associative map of all caps by modifier.
