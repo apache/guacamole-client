@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
-<keyboard lang="en_US" layout="qwerty" size="22">
+<keyboard lang="en_US" layout="qwerty" size="16.3">
     <row>
         <key>
             <cap keysym="0xFF1B">Esc</cap>
         </key>
-        <gap size="0.25"/>
+        <gap size="0.8"/>
         <key>
             <cap keysym="0xFFBE">F1</cap>
         </key>
@@ -39,7 +39,7 @@
         <key>
             <cap keysym="0xFFC1">F4</cap>
         </key>
-        <gap size="0.25"/>
+        <gap size="0.8"/>
         <key>
             <cap keysym="0xFFC2">F5</cap>
         </key>
@@ -55,7 +55,7 @@
         <key>
             <cap keysym="0xFFC5">F8</cap>
         </key>
-        <gap size="0.25"/>
+        <gap size="0.8"/>
         <key>
             <cap keysym="0xFFC6">F9</cap>
         </key>
@@ -430,62 +430,6 @@
             <gap size="0.1"/>
             <key size="1.6">
                 <cap modifier="control" keysym="0xFFE4">Ctrl</cap>
-            </key>
-        </row>
-    </column>
-    <column>
-        <row>
-            <gap size="0.25"/>
-        </row>
-    </column>
-    <column align="center">
-        <row>
-            <key size="1.75">
-                <cap keysym="0xFF63">Ins</cap>
-            </key>
-            <gap size="0.1"/>
-            <key size="1.75">
-                <cap keysym="0xFF50">Home</cap>
-            </key>
-            <gap size="0.1"/>
-            <key size="1.75">
-                <cap keysym="0xFF55">PgUp</cap>
-            </key>
-        </row>
-        <row><gap size="0.1"/></row>
-        <row>
-            <key size="1.75">
-                <cap keysym="0xFFFF">Del</cap>
-            </key>
-            <gap size="0.1"/>
-            <key size="1.75">
-                <cap keysym="0xFF57">End</cap>
-            </key>
-            <gap size="0.1"/>
-            <key size="1.75">
-                <cap keysym="0xFF56">PgDn</cap>
-            </key>
-        </row>
-        <row>
-            <gap/>
-        </row>
-        <row>
-            <key>
-                <cap keysym="0xFF52">&#x2191;</cap>
-            </key>
-        </row>
-        <row><gap size="0.1"/></row>
-        <row>
-            <key>
-                <cap keysym="0xFF51">&#x2190;</cap>
-            </key>
-            <gap size="0.1"/>
-            <key>
-                <cap keysym="0xFF54">&#x2193;</cap>
-            </key>
-            <gap size="0.1"/>
-            <key>
-                <cap keysym="0xFF53">&#x2192;</cap>
             </key>
         </row>
     </column>
