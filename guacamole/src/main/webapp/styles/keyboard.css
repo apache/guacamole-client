@@ -35,7 +35,7 @@
     z-index: 1;
 }
 
-.guacamole-keyboard {
+.guac-keyboard {
     display: inline-block;
     width: 100%;
     
@@ -47,11 +47,11 @@
     vertical-align: middle;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key-container {
+.guac-keyboard .guac-keyboard-key-container {
     display: inline-block;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key {
+.guac-keyboard .guac-keyboard-key {
     background: #444;
     border: 1px solid #888;
     -moz-border-radius: 0.1em;
@@ -60,7 +60,7 @@
     border-radius: 0.1em;
 }
 
-.guacamole-keyboard .guacamole-keyboard-cap {
+.guac-keyboard .guac-keyboard-cap {
     color: white;
     font-family: sans-serif;
     font-size: 50%;
@@ -69,40 +69,45 @@
     white-space: pre;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key:hover .guacamole-keyboard-cap {
+.guac-keyboard .guac-keyboard-key:hover .guac-keyboard-cap {
     background: #666;
     border-color: #666;
     cursor: pointer;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key.pressed:hover .guacamole-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.pressed:hover .guac-keyboard-cap {
     background: #822;
     border-color: #D44;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key.active:hover .guacamole-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.active:hover .guac-keyboard-cap {
     background: #882;
     border-color: #DD4;
 }
 
-.guacamole-keyboard .guacamole-keyboard-row {
+.guac-keyboard .guac-keyboard-row {
     line-height: 0;
 }
 
-.guacamole-keyboard .guacamole-keyboard-column {
+.guac-keyboard .guac-keyboard-column {
     display: inline-block;
     text-align: center;
     vertical-align: top;
 }
 
-.guacamole-keyboard .guacamole-keyboard-gap {
+.guac-keyboard .guac-keyboard-gap {
     display: inline-block;
 }
 
-.guacamole-keyboard .guacamole-keyboard-requires-caps {
+/* Hide caps which require modifiers which are not provided */
+.guac-keyboard:not(.guac-keyboard-modifier-caps) .guac-keyboard-cap.guac-keyboard-requires-caps,
+.guac-keyboard:not(.guac-keyboard-modifier-shift) .guac-keyboard-cap.guac-keyboard-requires-shift {
     display: none;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key .guacamole-keyboard-requires-shift {
+/* Hide caps not requiring a provided, used modifier ... */
+.guac-keyboard.guac-keyboard-modifier-shift .guac-keyboard-key.guac-keyboard-uses-shift .guac-keyboard-cap:not(.guac-keyboard-requires-shift),
+.guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key.guac-keyboard-uses-caps .guac-keyboard-cap:not(.guac-keyboard-requires-caps) {
     display: none;
 }
+
