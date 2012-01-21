@@ -243,14 +243,14 @@ Guacamole.OnScreenKeyboard = function(url) {
                     // Set up click handler for key
                     key_element.onclick = function() {
 
-                        // Toggle pressed state
-                        key.pressed = !key.pressed;
-
                         // Get current cap based on modifier state
                         var cap = key.getCap(on_screen_keyboard.modifiers);
 
                         // Update modifier state
                         if (cap.modifier) {
+
+                            // Toggle pressed state
+                            key.pressed = !key.pressed;
 
                             // Construct classname for modifier
                             var modifierClass = "guac-keyboard-modifier-" + cap.modifier;
