@@ -99,15 +99,23 @@
     display: inline-block;
 }
 
-/* Hide caps which require modifiers which are not provided */
-.guac-keyboard:not(.guac-keyboard-modifier-caps) .guac-keyboard-cap.guac-keyboard-requires-caps,
-.guac-keyboard:not(.guac-keyboard-modifier-shift) .guac-keyboard-cap.guac-keyboard-requires-shift {
-    display: none;
-}
+/* Hide keycaps requiring modifiers which are NOT currently active. */
+.guac-keyboard:not(.guac-keyboard-modifier-caps)
+.guac-keyboard-cap.guac-keyboard-requires-caps,
 
-/* Hide caps not requiring a provided, used modifier ... */
-.guac-keyboard.guac-keyboard-modifier-shift .guac-keyboard-key.guac-keyboard-uses-shift .guac-keyboard-cap:not(.guac-keyboard-requires-shift),
-.guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key.guac-keyboard-uses-caps .guac-keyboard-cap:not(.guac-keyboard-requires-caps) {
-    display: none;
-}
+.guac-keyboard:not(.guac-keyboard-modifier-shift)
+.guac-keyboard-cap.guac-keyboard-requires-shift,
 
+/* Hide keycaps NOT requiring modifiers which ARE currently active, where that
+   modifier is used to determine which cap is displayed for the current key. */
+.guac-keyboard.guac-keyboard-modifier-shift
+.guac-keyboard-key.guac-keyboard-uses-shift
+.guac-keyboard-cap:not(.guac-keyboard-requires-shift),
+
+.guac-keyboard.guac-keyboard-modifier-caps
+.guac-keyboard-key.guac-keyboard-uses-caps
+.guac-keyboard-cap:not(.guac-keyboard-requires-caps) {
+
+    display: none;
+    
+}
