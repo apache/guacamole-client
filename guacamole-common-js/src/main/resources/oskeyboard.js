@@ -12,7 +12,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-common-js.
+ * The Original Code is guac-common-js.
  *
  * The Initial Developer of the Original Code is
  * Michael Jumper.
@@ -47,6 +47,8 @@ var Guacamole = Guacamole || {};
  * @param {String} url The URL of an XML keyboard layout file.
  */
 Guacamole.OnScreenKeyboard = function(url) {
+
+    var on_screen_keyboard = this;
 
     var scaledElements = [];
     
@@ -123,7 +125,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     // Create keyboard
     var keyboard = document.createElement("div");
-    keyboard.className = "guacamole-keyboard";
+    keyboard.className = "guac-keyboard";
 
     // Retrieve keyboard XML
     var xmlhttprequest = new XMLHttpRequest();
@@ -137,7 +139,7 @@ Guacamole.OnScreenKeyboard = function(url) {
         function parse_row(e) {
             
             var row = document.createElement("div");
-            row.className = "guacamole-keyboard-row";
+            row.className = "guac-keyboard-row";
 
             parseChildren(e, {
                 
@@ -152,7 +154,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Create element
                     var gap = document.createElement("div");
-                    gap.className = "guacamole-keyboard-gap";
+                    gap.className = "guac-keyboard-gap";
 
                     // Set gap size
                     var gap_units = 1;
@@ -171,11 +173,11 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Create element
                     var key_element = document.createElement("div");
-                    key_element.className = "guacamole-keyboard-key";
+                    key_element.className = "guac-keyboard-key";
 
                     // Position keys using container div
                     var key_container_element = document.createElement("div");
-                    key_container_element.className = "guacamole-keyboard-key-container";
+                    key_container_element.className = "guac-keyboard-key-container";
                     key_container_element.appendChild(key_element);
 
                     // Create key
@@ -203,10 +205,13 @@ Guacamole.OnScreenKeyboard = function(url) {
                             // Create cap
                             var cap = new Guacamole.OnScreenKeyboard.Cap(content,
                                 keysym ? keysym.value : null);
+
+                            if (modifier)
+                                cap.modifier = modifier.value;
                             
                             // Create cap element
                             var cap_element = document.createElement("div");
-                            cap_element.className = "guacamole-keyboard-cap";
+                            cap_element.className = "guac-keyboard-cap";
                             cap_element.textContent = content;
                             key_element.appendChild(cap_element);
 
@@ -219,7 +224,8 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 var requirements = required.value.split(",");
                                 for (var i=0; i<requirements.length; i++) {
                                     modifierValue |= getModifier(requirements[i]);
-                                    cap_element.className += " guacamole-keyboard-requires-" + requirements[i];
+                                    cap_element.classList.add("guac-keyboard-requires-" + requirements[i]);
+                                    key_element.classList.add("guac-keyboard-uses-" + requirements[i]);
                                 }
 
                             }
@@ -234,6 +240,22 @@ Guacamole.OnScreenKeyboard = function(url) {
                     scaledElements.push(new ScaledElement(key_container_element, key_units, 1, true));
                     row.appendChild(key_container_element);
 
+                    // Set up click handler for key
+                    key_element.onclick = function() {
+
+                        // Get current cap based on modifier state
+                        var cap = key.getCap(on_screen_keyboard.modifiers);
+
+                        // Update modifier state
+                        if (cap.modifier) {
+                            on_screen_keyboard.modifiers |= getModifier(cap.modifier);
+                            keyboard.classList.add("guac-keyboard-modifier-" + cap.modifier);
+                        }
+
+                        // TODO: Send key event
+
+                    };
+
                 }
                 
             });
@@ -245,7 +267,7 @@ Guacamole.OnScreenKeyboard = function(url) {
         function parse_column(e) {
             
             var col = document.createElement("div");
-            col.className = "guacamole-keyboard-column";
+            col.className = "guac-keyboard-column";
 
             var align = col.attributes["align"];
 
@@ -299,6 +321,10 @@ Guacamole.OnScreenKeyboard = function(url) {
         return false;
     };
 
+    /**
+     * State of all modifiers.
+     */
+    this.modifiers = 0;
 
     this.onkeypressed  = null;
     this.onkeyreleased = null;
@@ -342,23 +368,16 @@ Guacamole.OnScreenKeyboard.Key = function() {
     this.caps = {};
 
     /**
-     * The currently active cap as chosen by select().
-     */
-    this.currentCap = null;
-
-    /**
      * Bit mask with all modifiers that affect this key set.
      */
     this.modifierMask = 0;
 
     /**
-     * Given the bitwise OR of all active modifiers, displays the key cap
+     * Given the bitwise OR of all active modifiers, returns the key cap
      * which applies.
      */
-    this.select = function(modifier) {
-
-        key.currentCap = key.caps[modifier & key.modifierMask];
-
+    this.getCap = function(modifier) {
+        return key.caps[modifier & key.modifierMask];
     };
 
 }
@@ -368,7 +387,7 @@ Guacamole.OnScreenKeyboard.Cap = function(text, keysym, modifier) {
     /**
      * Modifier represented by this keycap
      */
-    this.modifier = 0;
+    this.modifier = null;
     
     /**
      * The text to be displayed within this keycap
