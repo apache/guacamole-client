@@ -172,14 +172,14 @@ Guacamole.OnScreenKeyboard = function(url) {
                     // Create element
                     var key_element = document.createElement("div");
                     key_element.className = "guacamole-keyboard-key";
-                    
-                    // Create cap element
-                    var cap_element = document.createElement("div");
-                    cap_element.className = "guacamole-keyboard-cap";
-                    key_element.appendChild(cap_element);
+
+                    // Position keys using container div
+                    var key_container_element = document.createElement("div");
+                    key_container_element.className = "guacamole-keyboard-key-container";
+                    key_container_element.appendChild(key_element);
 
                     // Create key
-                    var key = new Guacamole.OnScreenKeyboard.Key(cap_element);
+                    var key = new Guacamole.OnScreenKeyboard.Key();
 
                     // Set key size
                     var key_units = 1;
@@ -204,6 +204,12 @@ Guacamole.OnScreenKeyboard = function(url) {
                             var cap = new Guacamole.OnScreenKeyboard.Cap(content,
                                 keysym ? keysym.value : null);
                             
+                            // Create cap element
+                            var cap_element = document.createElement("div");
+                            cap_element.className = "guacamole-keyboard-cap";
+                            cap_element.textContent = content;
+                            key_element.appendChild(cap_element);
+
                             // Get modifier value
                             var modifierValue = 0;
                             if (required) {
@@ -213,6 +219,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 var requirements = required.value.split(",");
                                 for (var i=0; i<requirements.length; i++) {
                                     modifierValue |= getModifier(requirements[i]);
+                                    cap_element.className += " guacamole-keyboard-requires-" + requirements[i];
                                 }
 
                             }
@@ -224,11 +231,8 @@ Guacamole.OnScreenKeyboard = function(url) {
                         }
                     });
 
-                    scaledElements.push(new ScaledElement(key_element, key_units, 1, true));
-                    row.appendChild(key_element);
-
-                    // Initialize key
-                    key.select(0);
+                    scaledElements.push(new ScaledElement(key_container_element, key_units, 1, true));
+                    row.appendChild(key_container_element);
 
                 }
                 
@@ -318,7 +322,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
 };
 
-Guacamole.OnScreenKeyboard.Key = function(element) {
+Guacamole.OnScreenKeyboard.Key = function() {
 
     var key = this;
 
@@ -354,7 +358,6 @@ Guacamole.OnScreenKeyboard.Key = function(element) {
     this.select = function(modifier) {
 
         key.currentCap = key.caps[modifier & key.modifierMask];
-        element.textContent = key.currentCap.text;
 
     };
 
