@@ -47,26 +47,26 @@
     vertical-align: middle;
 }
 
-.guacamole-keyboard .guacamole-keyboard-key {
+.guacamole-keyboard .guacamole-keyboard-key-container {
     display: inline-block;
 }
 
-.guacamole-keyboard .guacamole-keyboard-cap {
-
+.guacamole-keyboard .guacamole-keyboard-key {
     background: #444;
     border: 1px solid #888;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
+    -moz-border-radius: 0.1em;
+    -webkit-border-radius: 0.1em;
+    -khtml-border-radius: 0.1em;
+    border-radius: 0.1em;
+}
 
+.guacamole-keyboard .guacamole-keyboard-cap {
     color: white;
     font-family: sans-serif;
     font-size: 50%;
     font-weight: lighter;
     text-align: center;
     white-space: pre;
-
 }
 
 .guacamole-keyboard .guacamole-keyboard-key:hover .guacamole-keyboard-cap {
@@ -98,4 +98,11 @@
 .guacamole-keyboard .guacamole-keyboard-gap {
     display: inline-block;
 }
- 
+
+.guacamole-keyboard .guacamole-keyboard-requires-caps {
+    display: none;
+}
+
+.guacamole-keyboard .guacamole-keyboard-key .guacamole-keyboard-requires-shift {
+    display: none;
+}
