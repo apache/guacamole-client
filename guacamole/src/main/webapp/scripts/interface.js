@@ -233,8 +233,13 @@ var GuacamoleUI = {
         window.location.reload();
     };
 
+    GuacamoleUI.display.onclick = function(e) {
+        e.preventDefault();
+        return false;
+    };
+
     // On-screen keyboard
-    GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
+    GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty-mobile.xml");
     GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
 
     // Function for automatically updating keyboard size

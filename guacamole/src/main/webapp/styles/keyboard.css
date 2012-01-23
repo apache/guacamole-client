@@ -70,17 +70,20 @@
 }
 
 .guac-keyboard .guac-keyboard-key:hover .guac-keyboard-cap {
-    background: #666;
-    border-color: #666;
     cursor: pointer;
 }
 
-.guac-keyboard .guac-keyboard-key.pressed:hover .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.highlight .guac-keyboard-cap {
+    background: #666;
+    border-color: #666;
+}
+
+.guac-keyboard .guac-keyboard-key.guac-keyboard-pressed .guac-keyboard-cap {
     background: #822;
     border-color: #D44;
 }
 
-.guac-keyboard .guac-keyboard-key.active:hover .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.guac-keyboard-active .guac-keyboard-cap {
     background: #882;
     border-color: #DD4;
 }
@@ -103,6 +106,9 @@
 .guac-keyboard:not(.guac-keyboard-modifier-caps)
 .guac-keyboard-cap.guac-keyboard-requires-caps,
 
+.guac-keyboard:not(.guac-keyboard-modifier-numsym)
+.guac-keyboard-cap.guac-keyboard-requires-numsym,
+
 .guac-keyboard:not(.guac-keyboard-modifier-shift)
 .guac-keyboard-cap.guac-keyboard-requires-shift,
 
@@ -111,6 +117,10 @@
 .guac-keyboard.guac-keyboard-modifier-shift
 .guac-keyboard-key.guac-keyboard-uses-shift
 .guac-keyboard-cap:not(.guac-keyboard-requires-shift),
+
+.guac-keyboard.guac-keyboard-modifier-numsym
+.guac-keyboard-key.guac-keyboard-uses-numsym
+.guac-keyboard-cap:not(.guac-keyboard-requires-numsym),
 
 .guac-keyboard.guac-keyboard-modifier-caps
 .guac-keyboard-key.guac-keyboard-uses-caps
