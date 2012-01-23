@@ -81,11 +81,11 @@ Guacamole.OnScreenKeyboard = function(url) {
         this.height = height;
 
         this.scale = function(pixels) {
-            element.style.width      = Math.floor(width  * pixels) + "px";
-            element.style.height     = Math.floor(height * pixels) + "px";
+            element.style.width      = (width  * pixels) + "px";
+            element.style.height     = (height * pixels) + "px";
 
             if (scaleFont) {
-                element.style.lineHeight = Math.floor(height * pixels) + "px";
+                element.style.lineHeight = (height * pixels) + "px";
                 element.style.fontSize   = pixels + "px";
             }
         }
@@ -369,7 +369,7 @@ Guacamole.OnScreenKeyboard = function(url) {
     this.resize = function(width) {
 
         // Get pixel size of a unit
-        var unit = Math.floor(width / keyboard_size);
+        var unit = Math.floor(width * 10 / keyboard_size) / 10;
 
         // Resize all scaled elements
         for (var i=0; i<scaledElements.length; i++) {
