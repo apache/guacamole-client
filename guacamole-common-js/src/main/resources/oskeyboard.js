@@ -208,9 +208,24 @@ Guacamole.OnScreenKeyboard = function(url) {
                             // Get content of key cap
                             var content = e.textContent;
                             
+                            // Get keysym
+                            var real_keysym = null;
+                            if (keysym)
+                                real_keysym = parseInt(keysym.value);
+
+                            // If no keysym specified, try to get from key content
+                            else if (content.length == 1) {
+
+                                var charCode = content.charCodeAt(0);
+                                if (charCode >= 0x0000 && charCode <= 0x00FF)
+                                    real_keysym = charCode;
+                                else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
+                                    real_keysym = 0x01000000 | charCode;
+
+                            }
+                            
                             // Create cap
-                            var cap = new Guacamole.OnScreenKeyboard.Cap(content,
-                                keysym ? keysym.value : null);
+                            var cap = new Guacamole.OnScreenKeyboard.Cap(content, real_keysym);
 
                             if (modifier)
                                 cap.modifier = modifier.value;
@@ -279,14 +294,23 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         }
 
-                        // TODO: Send key event
+                        if (on_screen_keyboard.onkeydown && cap.keysym)
+                            on_screen_keyboard.onkeydown(cap.keysym);
 
                     };
 
                     key_element.onmouseup  =
                     key_element.onmouseout =
                     key_element.ontouchend = function() {
+
+                        // Get current cap based on modifier state
+                        var cap = key.getCap(on_screen_keyboard.modifiers);
+
                         key_element.classList.remove("guac-keyboard-pressed");
+
+                        if (on_screen_keyboard.onkeyup && cap.keysym)
+                            on_screen_keyboard.onkeyup(cap.keysym);
+
                     };
 
                 }
@@ -359,8 +383,8 @@ Guacamole.OnScreenKeyboard = function(url) {
      */
     this.modifiers = 0;
 
-    this.onkeypressed  = null;
-    this.onkeyreleased = null;
+    this.onkeydown = null;
+    this.onkeyup   = null;
 
     this.getElement = function() {
         return keyboard;
