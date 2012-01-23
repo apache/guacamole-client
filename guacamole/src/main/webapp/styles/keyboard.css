@@ -69,21 +69,21 @@
     white-space: pre;
 }
 
-.guac-keyboard .guac-keyboard-key:hover .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key:hover {
     cursor: pointer;
 }
 
-.guac-keyboard .guac-keyboard-key.highlight .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.highlight {
     background: #666;
     border-color: #666;
 }
 
-.guac-keyboard .guac-keyboard-key.guac-keyboard-pressed .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.guac-keyboard-pressed {
     background: #822;
     border-color: #D44;
 }
 
-.guac-keyboard .guac-keyboard-key.guac-keyboard-active .guac-keyboard-cap {
+.guac-keyboard .guac-keyboard-key.guac-keyboard-active {
     background: #882;
     border-color: #DD4;
 }
