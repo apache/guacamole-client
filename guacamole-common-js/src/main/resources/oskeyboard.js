@@ -170,10 +170,15 @@ Guacamole.OnScreenKeyboard = function(url) {
                     
                     // Get attributes
                     var key_size = e.attributes["size"];
+                    var key_class = e.attributes["class"];
 
                     // Create element
                     var key_element = document.createElement("div");
                     key_element.className = "guac-keyboard-key";
+
+                    // Append class if specified
+                    if (key_class)
+                        key_element.className += " " + key_class.value;
 
                     // Position keys using container div
                     var key_container_element = document.createElement("div");
@@ -198,6 +203,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                             var modifier = e.attributes["modifier"];
                             var keysym   = e.attributes["keysym"];
                             var sticky   = e.attributes["sticky"];
+                            var cap_class = e.attributes["class"];
                             
                             // Get content of key cap
                             var content = e.textContent;
@@ -214,6 +220,10 @@ Guacamole.OnScreenKeyboard = function(url) {
                             cap_element.className = "guac-keyboard-cap";
                             cap_element.textContent = content;
                             key_element.appendChild(cap_element);
+
+                            // Append class if specified
+                            if (cap_class)
+                                cap_element.className += " " + cap_class.value;
 
                             // Get modifier value
                             var modifierValue = 0;
