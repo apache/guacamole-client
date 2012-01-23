@@ -269,33 +269,42 @@ Guacamole.OnScreenKeyboard = function(url) {
                     key_element.onmousedown  =
                     key_element.ontouchstart = function() {
 
-                        key_element.classList.add("guac-keyboard-pressed");
+                        // Press key if not yet pressed
+                        if (!key.pressed) {
 
-                        // Get current cap based on modifier state
-                        var cap = key.getCap(on_screen_keyboard.modifiers);
+                            key_element.classList.add("guac-keyboard-pressed");
 
-                        // Update modifier state
-                        if (cap.modifier) {
+                            // Get current cap based on modifier state
+                            var cap = key.getCap(on_screen_keyboard.modifiers);
 
-                            // Construct classname for modifier
-                            var modifierClass = "guac-keyboard-modifier-" + cap.modifier;
-                            var modifierFlag = getModifier(cap.modifier);
+                            // Update modifier state
+                            if (cap.modifier) {
 
-                            // Toggle modifier state
-                            on_screen_keyboard.modifiers ^= modifierFlag;
+                                // Construct classname for modifier
+                                var modifierClass = "guac-keyboard-modifier-" + cap.modifier;
+                                var modifierFlag = getModifier(cap.modifier);
 
-                            // Activate modifier if pressed
-                            if (on_screen_keyboard.modifiers & modifierFlag)
-                                keyboard.classList.add(modifierClass);
+                                // Toggle modifier state
+                                on_screen_keyboard.modifiers ^= modifierFlag;
 
-                            // Deactivate if not pressed
-                            else
-                                keyboard.classList.remove(modifierClass);
+                                // Activate modifier if pressed
+                                if (on_screen_keyboard.modifiers & modifierFlag)
+                                    keyboard.classList.add(modifierClass);
+
+                                // Deactivate if not pressed
+                                else
+                                    keyboard.classList.remove(modifierClass);
+
+                            }
+
+                            // Send key event
+                            if (on_screen_keyboard.onkeydown && cap.keysym)
+                                on_screen_keyboard.onkeydown(cap.keysym);
+
+                            // Mark key as pressed
+                            key.pressed = true;
 
                         }
-
-                        if (on_screen_keyboard.onkeydown && cap.keysym)
-                            on_screen_keyboard.onkeydown(cap.keysym);
 
                     };
 
@@ -303,13 +312,22 @@ Guacamole.OnScreenKeyboard = function(url) {
                     key_element.onmouseout =
                     key_element.ontouchend = function() {
 
-                        // Get current cap based on modifier state
-                        var cap = key.getCap(on_screen_keyboard.modifiers);
+                        // Release key if currently pressed
+                        if (key.pressed) {
 
-                        key_element.classList.remove("guac-keyboard-pressed");
+                            // Get current cap based on modifier state
+                            var cap = key.getCap(on_screen_keyboard.modifiers);
 
-                        if (on_screen_keyboard.onkeyup && cap.keysym)
-                            on_screen_keyboard.onkeyup(cap.keysym);
+                            key_element.classList.remove("guac-keyboard-pressed");
+
+                            // Send key event
+                            if (on_screen_keyboard.onkeyup && cap.keysym)
+                                on_screen_keyboard.onkeyup(cap.keysym);
+
+                            // Mark key as released
+                            key.pressed = false;
+
+                        }
 
                     };
 
@@ -408,6 +426,11 @@ Guacamole.OnScreenKeyboard = function(url) {
 Guacamole.OnScreenKeyboard.Key = function() {
 
     var key = this;
+
+    /**
+     * Whether this key is currently pressed.
+     */
+    this.pressed = false;
 
     /**
      * Width of the key, relative to the size of the keyboard.
