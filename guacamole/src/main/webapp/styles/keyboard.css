@@ -53,7 +53,7 @@
 
 .guac-keyboard .guac-keyboard-key {
     background: #444;
-    border: 1px solid #888;
+    border: 1px outset #888;
     -moz-border-radius: 0.1em;
     -webkit-border-radius: 0.1em;
     -khtml-border-radius: 0.1em;
@@ -86,6 +86,7 @@
 .guac-keyboard .guac-keyboard-key.guac-keyboard-pressed {
     background: #822;
     border-color: #D44;
+    border-style: inset;
 }
 
 .guac-keyboard .guac-keyboard-row {
