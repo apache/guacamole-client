@@ -284,6 +284,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                     };
 
                     key_element.onmouseup  =
+                    key_element.onmouseout =
                     key_element.ontouchend = function() {
                         key_element.classList.remove("guac-keyboard-pressed");
                     };
