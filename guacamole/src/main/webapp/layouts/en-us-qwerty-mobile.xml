@@ -197,7 +197,7 @@
     <row><gap size="0.1"/></row>
 
     <row>
-        <key size="2.1">
+        <key size="2.1" class="shift">
             <cap modifier="shift" keysym="0xFFE1">Shift</cap>
         </key>
         <gap size="0.1"/>
@@ -269,7 +269,7 @@
             <cap if="shift">?</cap>
         </key>
         <gap size="0.1"/>
-        <key size="3.1">
+        <key size="3.1" class="shift">
             <cap modifier="shift" keysym="0xFFE2">Shift</cap>
         </key>
     </row>

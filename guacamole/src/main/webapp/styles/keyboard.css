@@ -78,14 +78,14 @@
     border-color: #666;
 }
 
+.guac-keyboard.guac-keyboard-modifier-shift .guac-keyboard-key.shift {
+    background: #882;
+    border-color: #DD4;
+}
+
 .guac-keyboard .guac-keyboard-key.guac-keyboard-pressed {
     background: #822;
     border-color: #D44;
-}
-
-.guac-keyboard .guac-keyboard-key.guac-keyboard-active {
-    background: #882;
-    border-color: #DD4;
 }
 
 .guac-keyboard .guac-keyboard-row {
