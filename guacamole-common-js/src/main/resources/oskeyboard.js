@@ -241,7 +241,10 @@ Guacamole.OnScreenKeyboard = function(url) {
                     row.appendChild(key_container_element);
 
                     // Set up click handler for key
-                    key_element.onclick = function() {
+                    key_element.onmousedown  =
+                    key_element.ontouchstart = function() {
+
+                        key_element.classList.add("guac-keyboard-pressed");
 
                         // Get current cap based on modifier state
                         var cap = key.getCap(on_screen_keyboard.modifiers);
@@ -268,6 +271,11 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         // TODO: Send key event
 
+                    };
+
+                    key_element.onmouseup  =
+                    key_element.ontouchend = function() {
+                        key_element.classList.remove("guac-keyboard-pressed");
                     };
 
                 }
