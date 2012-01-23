@@ -261,7 +261,38 @@ GuacamoleUI.attach = function(guac) {
     var mouse = new Guacamole.Mouse(GuacamoleUI.display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
+       
+            // Determine mouse position within view
+            var mouse_view_x = mouseState.x + GuacamoleUI.display.offsetLeft - window.pageXOffset;
+            var mouse_view_y = mouseState.y + GuacamoleUI.display.offsetTop - window.pageYOffset;
+
+            var view_width = document.body.clientWidth;
+            var view_height = document.body.clientHeight;
+
+            // Determine scroll amounts based on mouse position relative to document
+
+            var scroll_amount_x;
+            if (mouse_view_x > view_width)
+                scroll_amount_x = mouse_view_x - view_width;
+            else if (mouse_view_x < 0)
+                scroll_amount_x = mouse_view_x;
+            else
+                scroll_amount_x = 0;
+
+            var scroll_amount_y;
+            if (mouse_view_y > view_height)
+                scroll_amount_y = mouse_view_y - view_height;
+            else if (mouse_view_y < 0)
+                scroll_amount_y = mouse_view_y;
+            else
+                scroll_amount_y = 0;
+       
+            // Scroll (if necessary) to keep mouse on screen.
+            window.scrollBy(scroll_amount_x, scroll_amount_y);
+       
+            // Send mouse event
             guac.sendMouseState(mouseState);
+            
         };
 
     // Keyboard
