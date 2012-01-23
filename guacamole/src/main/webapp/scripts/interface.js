@@ -435,11 +435,11 @@ GuacamoleUI.attach = function(guac) {
         GuacamoleUI.clipboard.value = data;
     };
 
-    GuacamoleUI.keyboard.onkeypress = function(keysym) {
+    GuacamoleUI.keyboard.onkeydown = function(keysym) {
         guac.sendKeyEvent(1, keysym);
     };
 
-    GuacamoleUI.keyboard.onkeyrelease = function(keysym) {
+    GuacamoleUI.keyboard.onkeyup = function(keysym) {
         guac.sendKeyEvent(0, keysym);
     };
 
