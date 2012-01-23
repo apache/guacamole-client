@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!DOCTYPE keyboard PUBLIC
+    "-//Guacamole/Guacamole Onscreen Keyboard DTD 0.6.0//EN"
+    "http://guac-dev.org/pub/dtd/guacamole-osk-0.6.0.dtd">
+
 <!--
     Guacamole - Clientless Remote Desktop
     Copyright (C) 2010  Michael Jumper
