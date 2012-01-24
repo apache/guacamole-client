@@ -116,7 +116,7 @@
     <row><gap size="0.1"/></row>
 
     <row>
-        <key size="1.85">
+        <key size="1.85" class="numsym">
             <cap modifier="numsym" sticky="true">?123</cap>
         </key>
         <gap size="0.1"/>

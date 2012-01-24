@@ -78,7 +78,8 @@
     border-color: #666;
 }
 
-.guac-keyboard.guac-keyboard-modifier-shift .guac-keyboard-key.shift {
+.guac-keyboard.guac-keyboard-modifier-shift .guac-keyboard-key.shift,
+.guac-keyboard.guac-keyboard-modifier-numsym .guac-keyboard-key.numsym {
     background: #882;
     border-color: #DD4;
 }
