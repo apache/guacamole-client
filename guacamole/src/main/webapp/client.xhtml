@@ -50,7 +50,6 @@
 
             <!-- Logo and status -->
             <img id="status-logo" class="logo" src="images/guacamole-logo-24.png" alt="Guacamole" title="Guacamole ${project.version}"/>
-            <span id="state"></span>
 
         </div>
 
@@ -66,16 +65,18 @@
         <!-- On-screen keyboard -->
         <div id="keyboardContainer"></div>
 
-        <!-- Error Dialog-->
-        <div id="errorDialog" class="errorDialogOuter">
-            <div class="errorDialogMiddle">
-                <div class="errorDialog">
-                    <p id="errorText"></p>
+        <!-- Dialogs -->
+        <div class="dialogOuter">
+            <div class="dialogMiddle">
+
+                <!-- Status Dialog -->
+                <div id="statusDialog" class="dialog">
+                    <p id="statusText"></p>
                     <div class="buttons"><button id="reconnect">Reconnect</button></div>
                 </div>
+
             </div>
         </div>
-
 
         <!-- guacamole-common-js scripts -->
         <script type="text/javascript" src="guacamole-common-js/keyboard.js"></script>

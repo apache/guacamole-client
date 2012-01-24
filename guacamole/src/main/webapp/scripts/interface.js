@@ -5,8 +5,8 @@ var GuacamoleUI = {
     "display"     : document.getElementById("display"),
     "menu"        : document.getElementById("menu"),
     "menuControl" : document.getElementById("menuControl"),
+    "touchMenu"   : document.getElementById("touchMenu"),
     "logo"        : document.getElementById("status-logo"),
-    "state"       : document.getElementById("state"),
 
     "buttons": {
 
@@ -19,12 +19,12 @@ var GuacamoleUI = {
     },
 
     "containers": {
-        "error"    : document.getElementById("errorDialog"),
+        "state"    : document.getElementById("statusDialog"),
         "clipboard": document.getElementById("clipboardDiv"),
         "keyboard" : document.getElementById("keyboardContainer")
     },
     
-    "error"     : document.getElementById("errorText"),
+    "state"     : document.getElementById("statusText"),
     "clipboard" : document.getElementById("clipboard")
 
 };
@@ -41,15 +41,20 @@ var GuacamoleUI = {
     var guacErrorImage = new Image();
     guacErrorImage.src = "images/noguacamole-logo-24.png";
 
+    GuacamoleUI.hideStatus = function() {
+        document.body.classList.remove("guac-error");
+        GuacamoleUI.containers.state.style.visibility = "hidden";
+    };
+    
+    GuacamoleUI.showStatus = function(text) {
+        document.body.classList.remove("guac-error");
+        GuacamoleUI.containers.state.style.visibility = "visible";
+        GuacamoleUI.state.textContent = text;
+    };
+    
     GuacamoleUI.showError = function(error) {
-
-        GuacamoleUI.menu.className = "error";
-        GuacamoleUI.display.className += " guac-error";
-
-        GuacamoleUI.logo.src = guacErrorImage.src;
-        GuacamoleUI.error.textContent = error;
-        GuacamoleUI.containers.error.style.visibility = "visible";
-
+        document.body.classList.add("guac-error");
+        GuacamoleUI.state.textContent = error;
     };
 
     GuacamoleUI.shadeMenu = function() {
@@ -209,6 +214,38 @@ var GuacamoleUI = {
     // When mouse enters display, start detection of intent to close menu
     GuacamoleUI.display.addEventListener('mouseover', startMenuCloseDetect, true);
 
+    var menuShowLongPressTimeout = null;
+
+    // Detect long-press at bottom of screen
+    document.body.addEventListener('touchstart', function(e) {
+
+        if (!menuShowLongPressTimeout) {
+
+            menuShowLongPressTimeout = window.setTimeout(function() {
+                
+                menuShowLongPressTimeout = null;
+                GuacamoleUI.showMenu();
+
+            }, 1000);
+
+        }
+        
+    }, true);
+
+    // Reset detection when touch stops
+    document.body.addEventListener('touchend', function() {
+
+        // Reset opacity, stop detection of keyboard show gesture
+        GuacamoleUI.shadeMenu();
+        window.clearTimeout(menuShowLongPressTimeout);
+        menuShowLongPressTimeout = null;
+        
+    }, false);
+
+    GuacamoleUI.menu.addEventListener('touchend', function(e) {
+        e.stopPropagation();
+    }, false);
+    
     // Show menu if mouse leaves document
     document.addEventListener('mouseout', function(e) {
         
@@ -324,43 +361,43 @@ GuacamoleUI.attach = function(guac) {
 
             // Idle
             case 0:
-                GuacamoleUI.state.textContent = "Idle."
+                GuacamoleUI.showStatus("Idle.");
                 break;
 
             // Connecting
             case 1:
-                GuacamoleUI.state.textContent = "Connecting...";
+                GuacamoleUI.shadeMenu();
+                GuacamoleUI.showStatus("Connecting...");
                 break;
 
             // Connected + waiting
             case 2:
-                GuacamoleUI.state.textContent = "Connected, waiting for first update...";
+                GuacamoleUI.showStatus("Connected, waiting for first update...");
                 break;
 
             // Connected
             case 3:
                 
+                GuacamoleUI.hideStatus();
                 GuacamoleUI.display.className =
                     GuacamoleUI.display.className.replace(/guac-loading/, '');
 
                 GuacamoleUI.menu.className = "connected";
-                GuacamoleUI.state.textContent = "Connected.";
-                GuacamoleUI.shadeMenu();
                 break;
 
             // Disconnecting
             case 4:
-                GuacamoleUI.state.textContent = "Disconnecting...";
+                GuacamoleUI.showStatus("Disconnecting...");
                 break;
 
             // Disconnected
             case 5:
-                GuacamoleUI.state.textContent = "Disconnected.";
+                GuacamoleUI.showStatus("Disconnected.");
                 break;
 
             // Unknown status code
             default:
-                GuacamoleUI.state.textContent = "Unknown";
+                GuacamoleUI.showStatus("[UNKNOWN STATUS]");
 
         }
     };
