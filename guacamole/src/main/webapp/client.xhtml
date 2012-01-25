@@ -26,6 +26,7 @@
         <link rel="stylesheet" type="text/css" href="styles/client.css"/>
         <link rel="stylesheet" type="text/css" href="styles/keyboard.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
         <title>Guacamole ${project.version}</title>
     </head>
 
@@ -95,29 +96,37 @@
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
-            // Instantiate client
-            var guac = new Guacamole.Client(
-                GuacamoleUI.display,
-                new Guacamole.HTTPTunnel("tunnel")
-            );
+            // Start connect after control returns from onload (allow browser
+            // to consider the page loaded).
+            document.body.onload = function() {
 
-            // Tie UI to client
-            GuacamoleUI.attach(guac);
+                window.setTimeout(function() {
+                    // Instantiate client
+                    var guac = new Guacamole.Client(
+                        GuacamoleUI.display,
+                        new Guacamole.HTTPTunnel("tunnel")
+                    );
 
-            try {
+                    // Tie UI to client
+                    GuacamoleUI.attach(guac);
 
-                // Get ID
-                var id = window.location.search.substring(1);
+                    try {
 
-                // Connect client
-                guac.connect("id=" + id);
+                        // Get ID
+                        var id = window.location.search.substring(1);
 
-            }
-            catch (e) {
-                GuacamoleUI.showError(e.message);
-            }
+                        // Connect client
+                        guac.connect("id=" + id);
 
-            /* ]]> */ </script>
+                    }
+                    catch (e) {
+                        GuacamoleUI.showError(e.message);
+                    }
+                }, 0);
+
+            };
+
+        /* ]]> */ </script>
 
     </body>
 
