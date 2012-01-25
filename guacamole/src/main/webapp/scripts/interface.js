@@ -158,7 +158,7 @@ var GuacamoleUI = {
     var detectMenuCloseTimeout = null;
 
     // Clear detection timeouts
-    function resetMenuDetect() {
+    GuacamoleUI.resetMenuDetect = function() {
 
         if (detectMenuOpenTimeout != null) {
             window.clearTimeout(detectMenuOpenTimeout);
@@ -170,54 +170,61 @@ var GuacamoleUI = {
             detectMenuCloseTimeout = null;
         }
 
-    }
+    };
 
     // Initiate detection of menu open action. If not canceled through some
     // user event, menu will open.
-    function startMenuOpenDetect() {
+    GuacamoleUI.startMenuOpenDetect = function() {
 
-        // Clear detection state
-        resetMenuDetect();
+        if (!detectMenuOpenTimeout) {
 
-        // Wait and then show menu
-        detectMenuOpenTimeout = window.setTimeout(function() {
-            GuacamoleUI.showMenu();
-            detectMenuOpenTimeout = null;
-        }, 325);
+            // Clear detection state
+            GuacamoleUI.resetMenuDetect();
 
-    }
+            // Wait and then show menu
+            detectMenuOpenTimeout = window.setTimeout(function() {
+                GuacamoleUI.showMenu();
+                detectMenuOpenTimeout = null;
+            }, 325);
+
+        }
+
+    };
 
     // Initiate detection of menu close action. If not canceled through some
     // user event, menu will close.
-    function startMenuCloseDetect() {
+    GuacamoleUI.startMenuCloseDetect = function() {
 
-        // Clear detection state
-        resetMenuDetect();
+        if (!detectMenuCloseTimeout) {
 
-        // Wait and then shade menu
-        detectMenuCloseTimeout = window.setTimeout(function() {
-            GuacamoleUI.shadeMenu();
-            detectMenuCloseTimeout = null;
-        }, 500);
+            // Clear detection state
+            GuacamoleUI.resetMenuDetect();
 
-    }
+            // Wait and then shade menu
+            detectMenuCloseTimeout = window.setTimeout(function() {
+                GuacamoleUI.shadeMenu();
+                detectMenuCloseTimeout = null;
+            }, 500);
+
+        }
+
+    };
 
     // Show menu if mouseover any part of menu
     GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.showMenu, true);
 
     // Stop detecting menu state change intents if mouse is over menu
-    GuacamoleUI.menu.addEventListener('mouseover', resetMenuDetect, true);
+    GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.resetMenuDetect, true);
 
     // When mouse hovers over top of screen, start detection of intent to open menu
-    GuacamoleUI.menuControl.addEventListener('mousemove', startMenuOpenDetect, true);
+    GuacamoleUI.menuControl.addEventListener('mousemove', GuacamoleUI.startMenuOpenDetect, true);
 
     // When mouse enters display, start detection of intent to close menu
-    GuacamoleUI.display.addEventListener('mouseover', startMenuCloseDetect, true);
+    GuacamoleUI.display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
 
     var menuShowLongPressTimeout = null;
 
-    // Detect long-press at bottom of screen
-    document.body.addEventListener('touchstart', function(e) {
+    GuacamoleUI.startLongPressDetect = function() {
 
         if (!menuShowLongPressTimeout) {
 
@@ -229,23 +236,16 @@ var GuacamoleUI = {
             }, 1000);
 
         }
-        
-    }, true);
+    };
 
-    // Reset detection when touch stops
-    document.body.addEventListener('touchend', function() {
-
-        // Reset opacity, stop detection of keyboard show gesture
-        GuacamoleUI.shadeMenu();
+    GuacamoleUI.stopLongPressDetect = function() {
         window.clearTimeout(menuShowLongPressTimeout);
         menuShowLongPressTimeout = null;
-        
-    }, false);
+    };
 
-    GuacamoleUI.menu.addEventListener('touchend', function(e) {
-        e.stopPropagation();
-    }, false);
-    
+    // Detect long-press at bottom of screen
+    document.body.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
+
     // Show menu if mouse leaves document
     document.addEventListener('mouseout', function(e) {
         
@@ -261,7 +261,7 @@ var GuacamoleUI = {
         }
 
         // Start detection of intent to open menu
-        startMenuOpenDetect();
+        GuacamoleUI.startMenuOpenDetect();
  
     }, true);
 
@@ -327,6 +327,12 @@ GuacamoleUI.attach = function(guac) {
             // Scroll (if necessary) to keep mouse on screen.
             window.scrollBy(scroll_amount_x, scroll_amount_y);
        
+            // Hide menu on movement
+            GuacamoleUI.startMenuCloseDetect();
+
+            // Stop detecting long presses if mouse is being used
+            GuacamoleUI.stopLongPressDetect();
+
             // Send mouse event
             guac.sendMouseState(mouseState);
             
