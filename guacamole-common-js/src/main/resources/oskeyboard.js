@@ -266,8 +266,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                     row.appendChild(key_container_element);
 
                     // Set up click handler for key
-                    key_element.onmousedown  =
-                    key_element.ontouchstart = function() {
+                    function press(e) {
 
                         // Press key if not yet pressed
                         if (!key.pressed) {
@@ -306,11 +305,14 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         }
 
+                        e.preventDefault();
+
                     };
 
-                    key_element.onmouseup  =
-                    key_element.onmouseout =
-                    key_element.ontouchend = function() {
+                    key_element.addEventListener("mousedown", press, true);
+                    key_element.addEventListener("touchstart", press, true);
+
+                    function release(e) {
 
                         // Release key if currently pressed
                         if (key.pressed) {
@@ -329,7 +331,13 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         }
 
+                        e.preventDefault();
+
                     };
+
+                    key_element.addEventListener("mouseup", release, true);
+                    key_element.addEventListener("mouseout", release, true);
+                    key_element.addEventListener("touchend", release, true);
 
                 }
                 
