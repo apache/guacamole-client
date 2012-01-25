@@ -2,6 +2,7 @@
 // UI Definition
 var GuacamoleUI = {
 
+    "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "menu"        : document.getElementById("menu"),
     "menuControl" : document.getElementById("menuControl"),
@@ -303,8 +304,9 @@ GuacamoleUI.attach = function(guac) {
             var mouse_view_x = mouseState.x + GuacamoleUI.display.offsetLeft - window.pageXOffset;
             var mouse_view_y = mouseState.y + GuacamoleUI.display.offsetTop - window.pageYOffset;
 
-            var view_width = document.body.clientWidth;
-            var view_height = document.body.clientHeight;
+            // Determine viewport dimensioins
+            var view_width = GuacamoleUI.viewport.offsetWidth;
+            var view_height = GuacamoleUI.viewport.offsetHeight;
 
             // Determine scroll amounts based on mouse position relative to document
 
@@ -323,7 +325,7 @@ GuacamoleUI.attach = function(guac) {
                 scroll_amount_y = mouse_view_y;
             else
                 scroll_amount_y = 0;
-       
+
             // Scroll (if necessary) to keep mouse on screen.
             window.scrollBy(scroll_amount_x, scroll_amount_y);
        

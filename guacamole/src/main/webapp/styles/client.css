@@ -171,3 +171,16 @@ div#menuControl {
 
     z-index: 3;
 }
+
+/* Viewport Clone */
+
+div#viewportClone {
+    display: table;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+
+    visibility: hidden;
+}
