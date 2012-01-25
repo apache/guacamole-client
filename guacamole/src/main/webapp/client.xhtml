@@ -99,8 +99,8 @@
             // Start connect after control returns from onload (allow browser
             // to consider the page loaded).
             document.body.onload = function() {
-
                 window.setTimeout(function() {
+
                     // Instantiate client
                     var guac = new Guacamole.Client(
                         GuacamoleUI.display,
@@ -122,8 +122,8 @@
                     catch (e) {
                         GuacamoleUI.showError(e.message);
                     }
-                }, 0);
 
+                }, 0);
             };
 
         /* ]]> */ </script>
