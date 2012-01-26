@@ -28,6 +28,11 @@
         </session-timeout>
     </session-config>
 
+    <!-- Automatically detect and load WebSocket support -->
+    <listener>
+        <listener-class>net.sourceforge.guacamole.net.basic.WebSocketSupportLoader</listener-class>
+    </listener>
+    
     <!-- Basic Login Servlet -->
     <servlet>
         <description>Login servlet.</description>
