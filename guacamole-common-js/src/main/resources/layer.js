@@ -410,6 +410,7 @@ Guacamole.Layer = function(width, height) {
      */
     this.copyRect = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
+        var drawComplete = false;
         var srcLock = null;
 
         function doCopyRect() {
@@ -419,9 +420,12 @@ Guacamole.Layer = function(width, height) {
             if (srcCanvas.width != 0 && srcCanvas.height != 0)
                 displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
-            // Unblock the copy complete task, if it exists
+            // Unblock the source layer now that draw is complete
             if (srcLock != null) 
                 srcLock.unblock();
+
+            // Flag operation as done
+            drawComplete = true;
         }
 
         // If we ARE the source layer, no need to sync.
@@ -432,17 +436,19 @@ Guacamole.Layer = function(width, height) {
         // Otherwise synchronize copy operation with source layer
         else {
             
-            // Task which will be unblocked only when the source layer is ready
-            // This task will perform the copy
+            // Currently blocked draw task
             var task = scheduleTask(doCopyRect, true);
 
-            // Task which will unblock the drawing task.
-            var srcReady = srcLayer.sync(task.unblock);
+            // Unblock draw task once source layer is ready
+            srcLayer.sync(task.unblock);
 
-            // Task which will be unblocked only after the copy has
-            // occurred (this will only be created if the draw task
-            // was postponed)
-            if (srcReady != null) srcLock = srcLayer.sync(null, true);
+            // Block source layer until draw completes
+            // Note that the draw MAY have already been performed at this point,
+            // in which case creating a lock on the source layer will lead to
+            // deadlock (the draw task has already run and will thus never
+            // clear the lock)
+            if (!drawComplete)
+                srcLock = srcLayer.sync(null, true);
 
         }
 
