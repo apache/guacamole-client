@@ -98,7 +98,7 @@
 
             // Start connect after control returns from onload (allow browser
             // to consider the page loaded).
-            document.body.onload = function() {
+            window.onload = function() {
                 window.setTimeout(function() {
 
                     // Instantiate client
