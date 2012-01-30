@@ -246,8 +246,8 @@ Guacamole.Layer = function(width, height) {
     function scheduleTask(handler, blocked) {
         
         // If no pending tasks, just call (if available) and exit
-        if (layer.isReady() && !blocked && handler != null) {
-            handler();
+        if (layer.isReady() && !blocked) {
+            if (handler) handler();
             return null;
         }
 
@@ -382,10 +382,9 @@ Guacamole.Layer = function(width, height) {
      * 
      * @param {function} handler The function to call once all currently
      *                           pending operations are complete.
+     * @param {boolean} blocked Whether the task should start blocked.
      */
-    this.sync = function(handler) {
-        return scheduleTask(handler);
-    };
+    this.sync = scheduleTask;
 
     /**
      * Copy a rectangle of image data from one Layer to this Layer. This
