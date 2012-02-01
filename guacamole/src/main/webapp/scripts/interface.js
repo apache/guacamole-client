@@ -234,7 +234,7 @@ var GuacamoleUI = {
                 menuShowLongPressTimeout = null;
                 GuacamoleUI.showMenu();
 
-            }, 1000);
+            }, 800);
 
         }
     };
