@@ -223,6 +223,9 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 return;
             }
 
+            // Do not parse response yet if not ready
+            if (xmlhttprequest.readyState < 2) return;
+
             // Attempt to read status
             var status;
             try { status = xmlhttprequest.status; }
@@ -231,7 +234,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             catch (e) { status = 200; }
 
             // Start next request as soon as possible IF request was successful
-            if (xmlhttprequest.readyState >= 2 && nextRequest == null && status == 200)
+            if (nextRequest == null && status == 200)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
