@@ -44,8 +44,8 @@ var Guacamole = Guacamole || {};
  * mouse events into a non-browser-specific event provided by the
  * Guacamole.Mouse instance.
  * 
- * Touch event support is planned, but currently only in testing (translate
- * touch events into mouse events).
+ * Touch events are translated into mouse events as if the touches occurred
+ * on a touchpad (drag to push the mouse pointer, tap to click).
  * 
  * @constructor
  * @param {Element} element The Element to use to provide mouse events.
