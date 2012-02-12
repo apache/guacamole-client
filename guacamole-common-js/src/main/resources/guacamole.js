@@ -261,8 +261,9 @@ Guacamole.Client = function(display, tunnel) {
 
         "size": function(parameters) {
 
-            displayWidth = parseInt(parameters[0]);
-            displayHeight = parseInt(parameters[1]);
+            var layer = getLayer(parseInt(parameters[0])); /* FIXME: Implement */
+            displayWidth = parseInt(parameters[1]);
+            displayHeight = parseInt(parameters[2]);
 
             // Update (set) display size
             display.style.width = displayWidth + "px";
