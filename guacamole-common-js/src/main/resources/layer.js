@@ -116,7 +116,6 @@ Guacamole.Layer = function(width, height) {
      */
     function resize(newWidth, newHeight) {
 
-
         // Only preserve old data if width/height are both non-zero
         var oldData = null;
         if (width != 0 && height != 0) {
@@ -135,6 +134,9 @@ Guacamole.Layer = function(width, height) {
 
         }
 
+        // Preserve composite operation
+        var oldCompositeOperation = displayContext.globalCompositeOperation;
+
         // Resize canvas
         display.width = newWidth;
         display.height = newHeight;
@@ -145,8 +147,12 @@ Guacamole.Layer = function(width, height) {
                     0, 0, width, height,
                     0, 0, width, height);
 
+        // Restore composite operation
+        displayContext.globalCompositeOperation = oldCompositeOperation;
+
         width = newWidth;
         height = newHeight;
+
     }
 
     /**
