@@ -103,9 +103,11 @@
 
                     // Instantiate client
                     var guac = new Guacamole.Client(
-                        GuacamoleUI.display,
                         new Guacamole.HTTPTunnel("tunnel")
                     );
+
+                    // Add client to UI
+                    GuacamoleUI.display.appendChild(guac.getDisplay());
 
                     // Tie UI to client
                     GuacamoleUI.attach(guac);

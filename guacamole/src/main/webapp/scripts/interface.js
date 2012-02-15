@@ -423,32 +423,6 @@ GuacamoleUI.attach = function(guac) {
 
         // Display error message
         GuacamoleUI.showError(error);
-
-        // Show error by desaturating display
-        var layers = guac.getLayers();
-        for (var i=0; i<layers.length; i++) {
-            layers[i].filter(desaturateFilter);
-        }
-
-        // Filter for desaturation
-        function desaturateFilter(data, width, height) {
-
-            for (var i=0; i<data.length; i+=4) {
-
-                // Get RGB values
-                var r = data[i];
-                var g = data[i+1];
-                var b = data[i+2];
-
-                // Desaturate
-                var v = Math.max(r, g, b) / 2;
-                data[i]   = v;
-                data[i+1] = v;
-                data[i+2] = v;
-
-            }
-
-        }
         
     };
 
