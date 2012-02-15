@@ -28,7 +28,7 @@ img {
     border: none;
 }
 
-.guac-hide-cursor {
+.software-cursor {
     cursor: url('../images/mouse/dot.gif'),url('../images/mouse/blank.cur'),default;
 }
 
@@ -114,10 +114,8 @@ div.dialog p {
     background: #D44;
 }
 
-div#display {
+div#display * {
     position: relative;
-    width: 640px;
-    height: 480px;
     margin-left: auto;
     margin-right: auto;
 }
