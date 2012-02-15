@@ -75,6 +75,8 @@ Guacamole.Client = function(tunnel) {
 
     // Create default layer
     var default_layer_container = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
+
+    // Position default layer
     var default_layer_container_element = default_layer_container.getElement();
     default_layer_container_element.style.position = "absolute";
     default_layer_container_element.style.left = "0px";
@@ -82,6 +84,9 @@ Guacamole.Client = function(tunnel) {
 
     // Create cursor layer
     var cursor = new Guacamole.Client.LayerContainer(0, 0);
+    cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
+
+    // Position cursor layer
     var cursor_element = cursor.getElement();
     cursor_element.style.position = "absolute";
     cursor_element.style.left = "0px";
