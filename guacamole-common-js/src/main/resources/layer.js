@@ -39,76 +39,6 @@
 var Guacamole = Guacamole || {};
 
 /**
- * Channel mask for the composite operation "rout".
- */
-Guacamole.Layer.ROUT  = 0x2;
-
-/**
- * Channel mask for the composite operation "atop".
- */
-Guacamole.Layer.ATOP  = 0x6;
-
-/**
- * Channel mask for the composite operation "xor".
- */
-Guacamole.Layer.XOR   = 0xA;
-
-/**
- * Channel mask for the composite operation "rover".
- */
-Guacamole.Layer.ROVER = 0xB;
-
-/**
- * Channel mask for the composite operation "over".
- */
-Guacamole.Layer.OVER  = 0xE;
-
-/**
- * Channel mask for the composite operation "plus".
- */
-Guacamole.Layer.PLUS  = 0xF;
-
-/**
- * Channel mask for the composite operation "rin".
- * Beware that WebKit-based browsers may leave the contents of the destionation
- * layer where the source layer is transparent, despite the definition of this
- * operation.
- */
-Guacamole.Layer.RIN   = 0x1;
-
-/**
- * Channel mask for the composite operation "in".
- * Beware that WebKit-based browsers may leave the contents of the destionation
- * layer where the source layer is transparent, despite the definition of this
- * operation.
- */
-Guacamole.Layer.IN    = 0x4;
-
-/**
- * Channel mask for the composite operation "out".
- * Beware that WebKit-based browsers may leave the contents of the destionation
- * layer where the source layer is transparent, despite the definition of this
- * operation.
- */
-Guacamole.Layer.OUT   = 0x8;
-
-/**
- * Channel mask for the composite operation "ratop".
- * Beware that WebKit-based browsers may leave the contents of the destionation
- * layer where the source layer is transparent, despite the definition of this
- * operation.
- */
-Guacamole.Layer.RATOP = 0x9;
-
-/**
- * Channel mask for the composite operation "src".
- * Beware that WebKit-based browsers may leave the contents of the destionation
- * layer where the source layer is transparent, despite the definition of this
- * operation.
- */
-Guacamole.Layer.SRC   = 0xC;
-
-/**
  * Abstract ordered drawing surface. Each Layer contains a canvas element and
  * provides simple drawing instructions for drawing to that canvas element,
  * however unlike the canvas element itself, drawing operations on a Layer are
@@ -632,3 +562,74 @@ Guacamole.Layer = function(width, height) {
     display.height = height;
 
 };
+
+/**
+ * Channel mask for the composite operation "rout".
+ */
+Guacamole.Layer.ROUT  = 0x2;
+
+/**
+ * Channel mask for the composite operation "atop".
+ */
+Guacamole.Layer.ATOP  = 0x6;
+
+/**
+ * Channel mask for the composite operation "xor".
+ */
+Guacamole.Layer.XOR   = 0xA;
+
+/**
+ * Channel mask for the composite operation "rover".
+ */
+Guacamole.Layer.ROVER = 0xB;
+
+/**
+ * Channel mask for the composite operation "over".
+ */
+Guacamole.Layer.OVER  = 0xE;
+
+/**
+ * Channel mask for the composite operation "plus".
+ */
+Guacamole.Layer.PLUS  = 0xF;
+
+/**
+ * Channel mask for the composite operation "rin".
+ * Beware that WebKit-based browsers may leave the contents of the destionation
+ * layer where the source layer is transparent, despite the definition of this
+ * operation.
+ */
+Guacamole.Layer.RIN   = 0x1;
+
+/**
+ * Channel mask for the composite operation "in".
+ * Beware that WebKit-based browsers may leave the contents of the destionation
+ * layer where the source layer is transparent, despite the definition of this
+ * operation.
+ */
+Guacamole.Layer.IN    = 0x4;
+
+/**
+ * Channel mask for the composite operation "out".
+ * Beware that WebKit-based browsers may leave the contents of the destionation
+ * layer where the source layer is transparent, despite the definition of this
+ * operation.
+ */
+Guacamole.Layer.OUT   = 0x8;
+
+/**
+ * Channel mask for the composite operation "ratop".
+ * Beware that WebKit-based browsers may leave the contents of the destionation
+ * layer where the source layer is transparent, despite the definition of this
+ * operation.
+ */
+Guacamole.Layer.RATOP = 0x9;
+
+/**
+ * Channel mask for the composite operation "src".
+ * Beware that WebKit-based browsers may leave the contents of the destionation
+ * layer where the source layer is transparent, despite the definition of this
+ * operation.
+ */
+Guacamole.Layer.SRC   = 0xC;
+
