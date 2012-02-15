@@ -56,7 +56,7 @@
 
 
         <!-- Display -->
-        <div id="display" class="software-cursor">
+        <div id="display">
             
             <!-- Menu trigger -->
             <div id="menuControl"></div>
@@ -107,6 +107,7 @@
                     );
 
                     // Add client to UI
+                    guac.getDisplay().className = "software-cursor";
                     GuacamoleUI.display.appendChild(guac.getDisplay());
 
                     // Tie UI to client
