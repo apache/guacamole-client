@@ -282,10 +282,6 @@ Guacamole.Client = function(tunnel) {
                     display.style.width = displayWidth + "px";
                     display.style.height = displayHeight + "px";
 
-                    // Set cursor layer width/height
-                    if (cursor != null)
-                        cursor.resize(displayWidth, displayHeight);
-
                 }
 
             } // end if layer (not buffer)
@@ -406,10 +402,27 @@ Guacamole.Client = function(tunnel) {
 
             cursorHotspotX = parseInt(parameters[0]);
             cursorHotspotY = parseInt(parameters[1]);
-            var data = parameters[2];
+            var srcL = getLayer(parseInt(parameters[2]));
+            var srcX = parseInt(parameters[3]);
+            var srcY = parseInt(parameters[4]);
+            var srcWidth = parseInt(parameters[5]);
+            var srcHeight = parseInt(parameters[6]);
+
+            // Reset cursor size
+            cursor.resize(srcWidth, srcHeight);
 
             // Draw cursor to cursor layer
-            cursor.draw(0, 0, "data:image/png;base64," + data);
+            cursor.getLayer().copyRect(
+                srcL,
+                srcX,
+                srcY,
+                srcWidth, 
+                srcHeight, 
+                0,
+                0 
+            );
+
+            // FIXME: Update cursor position when hotspot changes
 
         },
 
