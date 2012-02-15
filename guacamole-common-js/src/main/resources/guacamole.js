@@ -123,17 +123,9 @@ Guacamole.Client = function(tunnel) {
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
-    var cursorHidden = 0;
-
     function moveCursor(x, y) {
 
         var element = cursor.getElement();
-
-        // Hide hardware cursor
-        if (cursorHidden == 0) {
-            display.className += " guac-hide-cursor";
-            cursorHidden = 1;
-        }
 
         // Update rect
         element.style.left = (x - cursorHotspotX) + "px";
