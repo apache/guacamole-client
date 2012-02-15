@@ -75,9 +75,17 @@ Guacamole.Client = function(tunnel) {
 
     // Create default layer
     var default_layer_container = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
+    var default_layer_container_element = default_layer_container.getElement();
+    default_layer_container_element.style.position = "absolute";
+    default_layer_container_element.style.left = "0px";
+    default_layer_container_element.style.top  = "0px";
 
     // Create cursor layer
-    var cursor = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
+    var cursor = new Guacamole.Client.LayerContainer(0, 0);
+    var cursor_element = cursor.getElement();
+    cursor_element.style.position = "absolute";
+    cursor_element.style.left = "0px";
+    cursor_element.style.top  = "0px";
 
     // Add default layer and cursor to display
     display.appendChild(default_layer_container.getElement());
@@ -107,18 +115,14 @@ Guacamole.Client = function(tunnel) {
             || currentState == STATE_WAITING;
     }
 
-    var cursorImage = null;
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
-    var cursorRectX = 0;
-    var cursorRectY = 0;
-    var cursorRectW = 0;
-    var cursorRectH = 0;
-
     var cursorHidden = 0;
 
-    function redrawCursor(x, y) {
+    function moveCursor(x, y) {
+
+        var element = cursor.getElement();
 
         // Hide hardware cursor
         if (cursorHidden == 0) {
@@ -126,17 +130,9 @@ Guacamole.Client = function(tunnel) {
             cursorHidden = 1;
         }
 
-        // Erase old cursor
-        cursor.clearRect(cursorRectX, cursorRectY, cursorRectW, cursorRectH);
-
         // Update rect
-        cursorRectX = x - cursorHotspotX;
-        cursorRectY = y - cursorHotspotY;
-        cursorRectW = cursorImage.width;
-        cursorRectH = cursorImage.height;
-
-        // Draw new cursor
-        cursor.drawImage(cursorRectX, cursorRectY, cursorImage);
+        element.style.left = (x - cursorHotspotX) + "px";
+        element.style.top  = (y - cursorHotspotY) + "px";
 
     }
 
@@ -158,13 +154,11 @@ Guacamole.Client = function(tunnel) {
         if (!isConnected())
             return;
 
-        // Draw client-side cursor
-        if (cursorImage != null) {
-            redrawCursor(
-                mouseState.x,
-                mouseState.y
-            );
-        }
+        // Update client-side cursor
+        moveCursor(
+            mouseState.x,
+            mouseState.y
+        );
 
         // Build mask
         var buttonMask = 0;
@@ -405,24 +399,12 @@ Guacamole.Client = function(tunnel) {
 
         "cursor": function(parameters) {
 
-            var x = parseInt(parameters[0]);
-            var y = parseInt(parameters[1]);
+            cursorHotspotX = parseInt(parameters[0]);
+            cursorHotspotY = parseInt(parameters[1]);
             var data = parameters[2];
 
-            // Start cursor image load
-            var image = new Image();
-            image.onload = function() {
-                cursorImage = image;
-
-                var cursorX = cursorRectX + cursorHotspotX;
-                var cursorY = cursorRectY + cursorHotspotY;
-
-                cursorHotspotX = x;
-                cursorHotspotY = y;
-
-                redrawCursor(cursorX, cursorY);
-            };
-            image.src = "data:image/png;base64," + data
+            // Draw cursor to cursor layer
+            cursor.draw(0, 0, "data:image/png;base64," + data);
 
         },
 
