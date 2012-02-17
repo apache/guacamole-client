@@ -220,9 +220,6 @@ var GuacamoleUI = {
     // When mouse hovers over top of screen, start detection of intent to open menu
     GuacamoleUI.menuControl.addEventListener('mousemove', GuacamoleUI.startMenuOpenDetect, true);
 
-    // When mouse enters display, start detection of intent to close menu
-    GuacamoleUI.display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
-
     var menuShowLongPressTimeout = null;
 
     GuacamoleUI.startLongPressDetect = function() {
@@ -271,11 +268,6 @@ var GuacamoleUI = {
         window.location.reload();
     };
 
-    GuacamoleUI.display.onclick = function(e) {
-        e.preventDefault();
-        return false;
-    };
-
     // On-screen keyboard
     GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty-mobile.xml");
     GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
@@ -295,17 +287,27 @@ var GuacamoleUI = {
 // Tie UI events / behavior to a specific Guacamole client
 GuacamoleUI.attach = function(guac) {
 
+    var guac_display = guac.getDisplay();
+
+    // When mouse enters display, start detection of intent to close menu
+    guac_display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
+
+    guac_display.onclick = function(e) {
+        e.preventDefault();
+        return false;
+    };
+
     // Mouse
-    var mouse = new Guacamole.Mouse(GuacamoleUI.display);
+    var mouse = new Guacamole.Mouse(guac_display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
        
             // Determine mouse position within view
-            var mouse_view_x = mouseState.x + GuacamoleUI.display.offsetLeft - window.pageXOffset;
-            var mouse_view_y = mouseState.y + GuacamoleUI.display.offsetTop - window.pageYOffset;
+            var mouse_view_x = mouseState.x + guac_display.offsetLeft - window.pageXOffset;
+            var mouse_view_y = mouseState.y + guac_display.offsetTop  - window.pageYOffset;
 
             // Determine viewport dimensioins
-            var view_width = GuacamoleUI.viewport.offsetWidth;
+            var view_width  = GuacamoleUI.viewport.offsetWidth;
             var view_height = GuacamoleUI.viewport.offsetHeight;
 
             // Determine scroll amounts based on mouse position relative to document
