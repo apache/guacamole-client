@@ -308,6 +308,32 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "dispose": function(parameters) {
+            
+            var layer_index = parseInt(parameters[0]);
+
+            // If visible layer, remove from parent
+            if (layer_index > 0) {
+
+                // Get container element
+                var layer_container = getLayerContainer(layer_index).getElement();
+
+                // Remove from parent
+                layer_container.parentNode.removeChild(layer_container);
+
+                // Delete reference
+                delete layers[layer_index];
+
+            }
+
+            // If buffer, just delete reference
+            else if (layer_index < 0)
+                delete buffers[-1 - layer_index];
+
+            // Attempting to dispose the root layer currently has no effect.
+
+        },
+
         "png": function(parameters) {
 
             var channelMask = parseInt(parameters[0]);
