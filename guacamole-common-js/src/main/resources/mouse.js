@@ -97,6 +97,12 @@ Guacamole.Mouse = function(element) {
      */
 	this.onmousemove = null;
 
+    function cancelEvent(e) {
+        e.stopPropagation();
+        if (e.preventDefault) e.preventDefault();
+        e.returnValue = false;
+    }
+
     function moveMouse(pageX, pageY) {
 
         guac_mouse.currentState.x = pageX - element.offsetLeft;
@@ -119,20 +125,20 @@ Guacamole.Mouse = function(element) {
 
 
     // Block context menu so right-click gets sent properly
-    element.oncontextmenu = function(e) {
-        return false;
-    };
+    element.addEventListener("contextmenu", function(e) {
+        cancelEvent(e);
+    }, false);
 
-    element.onmousemove = function(e) {
+    element.addEventListener("mousemove", function(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
 
-        e.stopPropagation();
+        cancelEvent(e);
 
         moveMouse(e.pageX, e.pageY);
 
-    };
+    }, false);
 
     var last_touch_x = 0;
     var last_touch_y = 0;
@@ -142,13 +148,12 @@ Guacamole.Mouse = function(element) {
     var gesture_in_progress = false;
     var click_release_timeout = null;
 
-    element.ontouchend = function(e) {
+    element.addEventListener("touchend", function(e) {
         
         // If we're handling a gesture
         if (gesture_in_progress) {
             
-            e.stopPropagation();
-            e.preventDefault();
+            cancelEvent(e);
             
             var time = new Date().getTime();
 
@@ -194,16 +199,15 @@ Guacamole.Mouse = function(element) {
 
         }
 
-    };
+    }, false);
 
-    element.ontouchstart = function(e) {
+    element.addEventListener("touchstart", function(e) {
 
         // Record initial touch location and time for single-touch movement
         // and tap gestures
         if (e.touches.length == 1) {
 
-            e.stopPropagation();
-            e.preventDefault();
+            cancelEvent(e);
 
             // Stop mouse events while touching
             gesture_in_progress = true;
@@ -225,15 +229,14 @@ Guacamole.Mouse = function(element) {
 
         }
 
-    };
+    }, false);
 
-    element.ontouchmove = function(e) {
+    element.addEventListener("touchmove", function(e) {
 
         // Handle single-touch movement gesture (touchpad mouse move)
         if (e.touches.length == 1) {
 
-            e.stopPropagation();
-            e.preventDefault();
+            cancelEvent(e);
 
             // Get change in touch location
             var touch = e.touches[0];
@@ -269,15 +272,15 @@ Guacamole.Mouse = function(element) {
 
         }
 
-    };
+    }, false);
 
 
-    element.onmousedown = function(e) {
+    element.addEventListener("mousedown", function(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
 
-        e.stopPropagation();
+        cancelEvent(e);
 
         switch (e.button) {
             case 0:
@@ -294,15 +297,15 @@ Guacamole.Mouse = function(element) {
         if (guac_mouse.onmousedown)
             guac_mouse.onmousedown(guac_mouse.currentState);
 
-    };
+    }, false);
 
 
-    element.onmouseup = function(e) {
+    element.addEventListener("mouseup", function(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
 
-        e.stopPropagation();
+        cancelEvent(e);
 
         switch (e.button) {
             case 0:
@@ -319,14 +322,25 @@ Guacamole.Mouse = function(element) {
         if (guac_mouse.onmouseup)
             guac_mouse.onmouseup(guac_mouse.currentState);
 
-    };
+    }, false);
 
-    element.onmouseout = function(e) {
+    element.addEventListener("mouseout", function(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
 
-        e.stopPropagation();
+        // Get parent of the element the mouse pointer is leaving
+       	if (!e) e = window.event;
+
+        // Check that mouseout is due to actually LEAVING the element
+        var target = e.relatedTarget || e.toElement;
+        while (target != null) {
+            if (target === element)
+                return;
+            target = target.parentNode;
+        }
+
+        cancelEvent(e);
 
         // Release all buttons
         if (guac_mouse.currentState.left
@@ -341,15 +355,15 @@ Guacamole.Mouse = function(element) {
                 guac_mouse.onmouseup(guac_mouse.currentState);
         }
 
-    };
+    }, true);
 
     // Override selection on mouse event element.
-    element.onselectstart = function() {
-        return false;
-    };
+    element.addEventListener("selectstart", function(e) {
+        cancelEvent(e);
+    }, false);
 
     // Scroll wheel support
-    element.onmousewheel = function(e) {
+    element.addEventListener('DOMMouseScroll', function(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
@@ -386,14 +400,9 @@ Guacamole.Mouse = function(element) {
             }
         }
 
-        if (e.preventDefault)
-            e.preventDefault();
+        cancelEvent(e);
 
-        e.returnValue = false;
-
-    };
-
-    element.addEventListener('DOMMouseScroll', element.onmousewheel, false);
+    }, false);
 
 };
 
