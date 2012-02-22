@@ -355,7 +355,7 @@ Guacamole.Mouse = function(element) {
                 guac_mouse.onmouseup(guac_mouse.currentState);
         }
 
-    }, true);
+    }, false);
 
     // Override selection on mouse event element.
     element.addEventListener("selectstart", function(e) {
