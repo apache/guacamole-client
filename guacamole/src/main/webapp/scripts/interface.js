@@ -244,25 +244,6 @@ var GuacamoleUI = {
     // Detect long-press at bottom of screen
     document.body.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
 
-    // Show menu if mouse leaves document
-    document.addEventListener('mouseout', function(e) {
-        
-        // Get parent of the element the mouse pointer is leaving
-       	if (!e) e = window.event;
-        var target = e.relatedTarget || e.toElement;
-        
-        // Ensure target is not document nor child of document
-        var targetParent = target;
-        while (targetParent != null) {
-            if (targetParent == document) return;
-            targetParent = targetParent.parentNode;
-        }
-
-        // Start detection of intent to open menu
-        GuacamoleUI.startMenuOpenDetect();
- 
-    }, true);
-
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
         window.location.reload();
