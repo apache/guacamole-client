@@ -123,6 +123,9 @@ Guacamole.Client = function(tunnel) {
     var cursorHotspotX = 0;
     var cursorHotspotY = 0;
 
+    var cursorX = 0;
+    var cursorY = 0;
+
     function moveCursor(x, y) {
 
         var element = cursor.getElement();
@@ -130,6 +133,10 @@ Guacamole.Client = function(tunnel) {
         // Update rect
         element.style.left = (x - cursorHotspotX) + "px";
         element.style.top  = (y - cursorHotspotY) + "px";
+
+        // Update stored position
+        cursorX = x;
+        cursorY = y;
 
     }
 
@@ -440,7 +447,8 @@ Guacamole.Client = function(tunnel) {
                 0 
             );
 
-            // FIXME: Update cursor position when hotspot changes
+            // Update cursor position (hotspot may have changed)
+            moveCursor(cursorX, cursorY);
 
         },
 
