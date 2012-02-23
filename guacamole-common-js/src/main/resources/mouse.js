@@ -363,7 +363,7 @@ Guacamole.Mouse = function(element) {
     }, false);
 
     // Scroll wheel support
-    element.addEventListener('DOMMouseScroll', function(e) {
+    function mousewheel_handler(e) {
 
         // Don't handle if we aren't supposed to
         if (gesture_in_progress) return;
@@ -402,7 +402,9 @@ Guacamole.Mouse = function(element) {
 
         cancelEvent(e);
 
-    }, false);
+    }
+    element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
+    element.addEventListener('mousewheel',     mousewheel_handler, false);
 
 };
 
