@@ -458,8 +458,29 @@ Guacamole.Layer = function(width, height) {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0)
-                displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
+
+                // Just copy if no transfer function
+                if (!transferFunction)
+                    displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+                
+                // Otherwise, copy via transfer function
+                else {
+
+                    // Get image data from src and dst
+                    var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+                    var dst = displayContext.getImageData(x , y, srcw, srch);
+
+                    // Apply transfer for each pixel
+                    for (var i=0; i<srcw*srch*4; i+=4) {
+                        dst.data[i  ] = transferFunction(src.data[i  ], dst.data[i  ]);
+                        dst.data[i+1] = transferFunction(src.data[i+1], dst.data[i+1]);
+                        dst.data[i+2] = transferFunction(src.data[i+2], dst.data[i+2]);
+                        dst.data[i+3] = 0xFF; // Assume output opaque
+                    }
+
+                }
+            }
 
             // Unblock the source layer now that draw is complete
             if (srcLock != null) 
