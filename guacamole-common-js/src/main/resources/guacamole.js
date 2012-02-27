@@ -67,36 +67,6 @@ Guacamole.Client = function(tunnel) {
     var displayWidth = 0;
     var displayHeight = 0;
 
-    /**
-     * Map of all Guacamole binary raster operations to transfer functions.
-     * @private
-     */
-    var transferFunctions = {
-
-        0x10: function (src, dst) { return 0x00;         }, /* BLACK */
-        0x1F: function (src, dst) { return 0xFF;         }, /* WHITE */
-
-        0x13: function (src, dst) { return src;          }, /* SRC */
-        0x15: function (src, dst) { return dst;          }, /* DEST */
-        0x1C: function (src, dst) { return ~src;         }, /* NSRC */
-        0x1A: function (src, dst) { return ~dst;         }, /* NDEST */
-
-        0x11: function (src, dst) { return src & dst;    }, /* AND */
-        0x1E: function (src, dst) { return ~(src & dst); }, /* NAND */
-
-        0x17: function (src, dst) { return src | dst;    }, /* OR */
-        0x18: function (src, dst) { return ~(src | dst); }, /* NOR */
-
-        0x16: function (src, dst) { return src ^ dst;    }, /* XOR */
-        0x19: function (src, dst) { return ~(src ^ dst); }, /* XNOR */
-
-        0x14: function (src, dst) { return ~src & dst;   }, /* AND inverted source */
-        0x1D: function (src, dst) { return ~src | dst;   }, /* OR inverted source */
-        0x12: function (src, dst) { return src & ~dst;   }, /* AND inverted destination */
-        0x1B: function (src, dst) { return src | ~dst;   }  /* OR inverted destination */
-
-    };
-
     // Create display
     var display = document.createElement("div");
     display.style.position = "relative";
@@ -426,7 +396,7 @@ Guacamole.Client = function(tunnel) {
             var srcY = parseInt(parameters[2]);
             var srcWidth = parseInt(parameters[3]);
             var srcHeight = parseInt(parameters[4]);
-            var transferFunction = transferFunctions[parameters[5]];
+            var transferFunction = Guacamole.Client.DefaultTransferFunction[parameters[5]];
             var dstL = getLayer(parseInt(parameters[6]));
             var dstX = parseInt(parameters[7]);
             var dstY = parseInt(parameters[8]);
@@ -676,5 +646,121 @@ Guacamole.Client.LayerContainer = function(width, height) {
     layer_container.getElement = function() {
         return div;
     };
+
+};
+
+/**
+ * Map of all Guacamole binary raster operations to transfer functions.
+ * @private
+ */
+Guacamole.Client.DefaultTransferFunction = {
+
+    /* BLACK */
+    0x0: function (src, dst) {
+        dst.red = dst.green = dst.blue = 0x00;
+    },
+
+    /* WHITE */
+    0xF: function (src, dst) {
+        dst.red = dst.green = dst.blue = 0xFF;
+    },
+
+    /* SRC */
+    0x3: function (src, dst) {
+        dst.red   = src.red;
+        dst.green = src.green;
+        dst.blue  = src.blue;
+        dst.alpha = src.alpha;
+    },
+
+    /* DEST (no-op) */
+    0x5: function (src, dst) {
+        // Do nothing
+    },
+
+    /* Invert SRC */
+    0xC: function (src, dst) {
+        dst.red   = ~src.red;
+        dst.green = ~src.green;
+        dst.blue  = ~src.blue;
+        dst.alpha =  src.alpha;
+    },
+    
+    /* Invert DEST */
+    0xA: function (src, dst) {
+        dst.red   = ~dst.red;
+        dst.green = ~dst.green;
+        dst.blue  = ~dst.blue;
+    },
+
+    /* AND */
+    0x1: function (src, dst) {
+        dst.red   =  ( src.red   &  dst.red);
+        dst.green =  ( src.green &  dst.green);
+        dst.blue  =  ( src.blue  &  dst.blue);
+    },
+
+    /* NAND */
+    0xE: function (src, dst) {
+        dst.red   = ~( src.red   &  dst.red);
+        dst.green = ~( src.green &  dst.green);
+        dst.blue  = ~( src.blue  &  dst.blue);
+    },
+
+    /* OR */
+    0x7: function (src, dst) {
+        dst.red   =  ( src.red   |  dst.red);
+        dst.green =  ( src.green |  dst.green);
+        dst.blue  =  ( src.blue  |  dst.blue);
+    },
+
+    /* NOR */
+    0x8: function (src, dst) {
+        dst.red   = ~( src.red   |  dst.red);
+        dst.green = ~( src.green |  dst.green);
+        dst.blue  = ~( src.blue  |  dst.blue);
+    },
+
+    /* XOR */
+    0x6: function (src, dst) {
+        dst.red   =  ( src.red   ^  dst.red);
+        dst.green =  ( src.green ^  dst.green);
+        dst.blue  =  ( src.blue  ^  dst.blue);
+    },
+
+    /* XNOR */
+    0x9: function (src, dst) {
+        dst.red   = ~( src.red   ^  dst.red);
+        dst.green = ~( src.green ^  dst.green);
+        dst.blue  = ~( src.blue  ^  dst.blue);
+    },
+
+    /* AND inverted source */
+    0x4: function (src, dst) {
+        dst.red   =  (~src.red   &  dst.red);
+        dst.green =  (~src.green &  dst.green);
+        dst.blue  =  (~src.blue  &  dst.blue);
+    },
+
+    /* OR inverted source */
+    0xD: function (src, dst) {
+        dst.red   =  (~src.red   |  dst.red);
+        dst.green =  (~src.green |  dst.green);
+        dst.blue  =  (~src.blue  |  dst.blue);
+    },
+
+    /* AND inverted destination */
+    0x2: function (src, dst) {
+        dst.red   =  ( src.red   & ~dst.red);
+        dst.green =  ( src.green & ~dst.green);
+        dst.blue  =  ( src.blue  & ~dst.blue);
+    },
+
+    /* OR inverted destination */
+    0xB: function (src, dst) {
+        dst.red   =  ( src.red   | ~dst.red);
+        dst.green =  ( src.green | ~dst.green);
+        dst.blue  =  ( src.blue  | ~dst.blue);
+    }
 
 };

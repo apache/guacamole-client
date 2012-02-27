@@ -430,10 +430,32 @@ Guacamole.Layer = function(width, height) {
 
                 // Apply transfer for each pixel
                 for (var i=0; i<srcw*srch*4; i+=4) {
-                    dst.data[i  ] = transferFunction(src.data[i  ], dst.data[i  ]);
-                    dst.data[i+1] = transferFunction(src.data[i+1], dst.data[i+1]);
-                    dst.data[i+2] = transferFunction(src.data[i+2], dst.data[i+2]);
-                    dst.data[i+3] = 0xFF; // Assume output opaque
+
+                    // Get source pixel environment
+                    var src_pixel = new Guacamole.Layer.Pixel(
+                        src.data[i],
+                        src.data[i+1],
+                        src.data[i+2],
+                        src.data[i+3]
+                    );
+                        
+                    // Get destination pixel environment
+                    var dst_pixel = new Guacamole.Layer.Pixel(
+                        dst.data[i],
+                        dst.data[i+1],
+                        dst.data[i+2],
+                        dst.data[i+3]
+                    );
+
+                    // Apply transfer function
+                    transferFunction(src_pixel, dst_pixel);
+
+                    // Save pixel data
+                    dst.data[i  ] = dst_pixel.red;
+                    dst.data[i+1] = dst_pixel.green;
+                    dst.data[i+2] = dst_pixel.blue;
+                    dst.data[i+3] = dst_pixel.alpha;
+
                 }
 
                 // Draw image data
@@ -723,3 +745,42 @@ Guacamole.Layer.RATOP = 0x9;
  */
 Guacamole.Layer.SRC   = 0xC;
 
+
+/**
+ * Represents a single pixel of image data. All components have a minimum value
+ * of 0 and a maximum value of 255.
+ * 
+ * @constructor
+ * 
+ * @param {Number} r The red component of this pixel.
+ * @param {Number} g The green component of this pixel.
+ * @param {Number} b The blue component of this pixel.
+ * @param {Number} a The alpha component of this pixel.
+ */
+Guacamole.Layer.Pixel = function(r, g, b, a) {
+
+    /**
+     * The red component of this pixel, where 0 is the minimum value,
+     * and 255 is the maximum.
+     */
+    this.red   = r;
+
+    /**
+     * The green component of this pixel, where 0 is the minimum value,
+     * and 255 is the maximum.
+     */
+    this.green = g;
+
+    /**
+     * The blue component of this pixel, where 0 is the minimum value,
+     * and 255 is the maximum.
+     */
+    this.blue  = b;
+
+    /**
+     * The alpha component of this pixel, where 0 is the minimum value,
+     * and 255 is the maximum.
+     */
+    this.alpha = a;
+
+};
