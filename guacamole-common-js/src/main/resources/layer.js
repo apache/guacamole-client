@@ -436,6 +436,9 @@ Guacamole.Layer = function(width, height) {
                     dst.data[i+3] = 0xFF; // Assume output opaque
                 }
 
+                // Draw image data
+                displayContext.putImageData(dst, x, y);
+
             }
 
             // Unblock the source layer now that draw is complete
