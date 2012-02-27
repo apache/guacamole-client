@@ -67,6 +67,36 @@ Guacamole.Client = function(tunnel) {
     var displayWidth = 0;
     var displayHeight = 0;
 
+    /**
+     * Map of all Guacamole binary raster operations to transfer functions.
+     * @private
+     */
+    var transferFunctions = {
+
+        0x10: function (src, dst) { return 0x00;         }, /* BLACK */
+        0x1F: function (src, dst) { return 0xFF;         }, /* WHITE */
+
+        0x13: function (src, dst) { return src;          }, /* SRC */
+        0x15: function (src, dst) { return dst;          }, /* DEST */
+        0x1C: function (src, dst) { return ~src;         }, /* NSRC */
+        0x1A: function (src, dst) { return ~dst;         }, /* NDEST */
+
+        0x11: function (src, dst) { return src & dst;    }, /* AND */
+        0x1E: function (src, dst) { return ~(src & dst); }, /* NAND */
+
+        0x17: function (src, dst) { return src | dst;    }, /* OR */
+        0x18: function (src, dst) { return ~(src | dst); }, /* NOR */
+
+        0x16: function (src, dst) { return src ^ dst;    }, /* XOR */
+        0x19: function (src, dst) { return ~(src ^ dst); }, /* XNOR */
+
+        0x14: function (src, dst) { return ~src & dst;   }, /* AND inverted source */
+        0x1D: function (src, dst) { return ~src | dst;   }, /* OR inverted source */
+        0x12: function (src, dst) { return src & ~dst;   }, /* AND inverted destination */
+        0x1B: function (src, dst) { return src | ~dst;   }  /* OR inverted destination */
+
+    };
+
     // Create display
     var display = document.createElement("div");
     display.style.position = "relative";
@@ -84,7 +114,7 @@ Guacamole.Client = function(tunnel) {
 
     // Create cursor layer
     var cursor = new Guacamole.Client.LayerContainer(0, 0);
-    cursor.getLayer().setCompositeOperation(Guacamole.Layer.SRC);
+    cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
 
     // Position cursor layer
     var cursor_element = cursor.getElement();
@@ -349,7 +379,7 @@ Guacamole.Client = function(tunnel) {
             var y = parseInt(parameters[3]);
             var data = parameters[4];
 
-            layer.setCompositeOperation(channelMask);
+            layer.setChannelMask(channelMask);
 
             layer.draw(
                 x,
@@ -375,7 +405,7 @@ Guacamole.Client = function(tunnel) {
             var dstX = parseInt(parameters[7]);
             var dstY = parseInt(parameters[8]);
 
-            dstL.setCompositeOperation(channelMask);
+            dstL.setChannelMask(channelMask);
 
             dstL.copyRect(
                 srcL,
@@ -385,6 +415,31 @@ Guacamole.Client = function(tunnel) {
                 srcHeight, 
                 dstX,
                 dstY 
+            );
+
+        },
+
+        "transfer": function(parameters) {
+
+            var srcL = getLayer(parseInt(parameters[0]));
+            var srcX = parseInt(parameters[1]);
+            var srcY = parseInt(parameters[2]);
+            var srcWidth = parseInt(parameters[3]);
+            var srcHeight = parseInt(parameters[4]);
+            var transferFunction = transferFunctions[parameters[5]];
+            var dstL = getLayer(parseInt(parameters[6]));
+            var dstX = parseInt(parameters[7]);
+            var dstY = parseInt(parameters[8]);
+
+            dstL.transfer(
+                srcL,
+                srcX,
+                srcY,
+                srcWidth, 
+                srcHeight, 
+                dstX,
+                dstY,
+                transferFunction
             );
 
         },
@@ -402,7 +457,7 @@ Guacamole.Client = function(tunnel) {
             var b = parseInt(parameters[8]);
             var a = parseInt(parameters[9]);
 
-            layer.setCompositeOperation(channelMask);
+            layer.setChannelMask(channelMask);
 
             layer.drawRect(
                 x, y, w, h,

@@ -75,12 +75,6 @@ Guacamole.Layer = function(width, height) {
     displayContext.save();
 
     /**
-     * The function to apply when drawing arbitrary source pixels over
-     * destination pixels.
-     */
-    var transferFunction = null;
-
-    /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO).
@@ -110,36 +104,6 @@ Guacamole.Layer = function(width, height) {
      /* 0xD NOT IMPLEMENTED */
         0xE: "source-over",
         0xF: "lighter"
-    };
-
-    /**
-     * Map of all Guacamole binary raster operations to transfer functions.
-     * @private
-     */
-    var binaryCompositeTransferFunction = {
-
-        0x10: function (src, dst) { return 0x00;         }, /* BLACK */
-        0x1F: function (src, dst) { return 0xFF;         }, /* WHITE */
-
-        0x13: function (src, dst) { return src;          }, /* SRC */
-        0x15: function (src, dst) { return dst;          }, /* DEST */
-        0x1C: function (src, dst) { return ~src;         }, /* NSRC */
-        0x1A: function (src, dst) { return ~dst;         }, /* NDEST */
-
-        0x11: function (src, dst) { return src & dst;    }, /* AND */
-        0x1E: function (src, dst) { return ~(src & dst); }, /* NAND */
-
-        0x17: function (src, dst) { return src | dst;    }, /* OR */
-        0x18: function (src, dst) { return ~(src | dst); }, /* NOR */
-
-        0x16: function (src, dst) { return src ^ dst;    }, /* XOR */
-        0x19: function (src, dst) { return ~(src ^ dst); }, /* XNOR */
-
-        0x14: function (src, dst) { return ~src & dst;   }, /* AND inverted source */
-        0x1D: function (src, dst) { return ~src | dst;   }, /* OR inverted source */
-        0x12: function (src, dst) { return src & ~dst;   }, /* AND inverted destination */
-        0x1B: function (src, dst) { return src | ~dst;   }  /* OR inverted destination */
-
     };
 
     /**
@@ -429,6 +393,86 @@ Guacamole.Layer = function(width, height) {
     this.sync = scheduleTask;
 
     /**
+     * Transfer a rectangle of image data from one Layer to this Layer using the
+     * specified transfer function.
+     * 
+     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
+     * @param {Number} srcx The X coordinate of the upper-left corner of the
+     *                      rectangle within the source Layer's coordinate
+     *                      space to copy data from.
+     * @param {Number} srcy The Y coordinate of the upper-left corner of the
+     *                      rectangle within the source Layer's coordinate
+     *                      space to copy data from.
+     * @param {Number} srcw The width of the rectangle within the source Layer's
+     *                      coordinate space to copy data from.
+     * @param {Number} srch The height of the rectangle within the source
+     *                      Layer's coordinate space to copy data from.
+     * @param {Number} x The destination X coordinate.
+     * @param {Number} y The destination Y coordinate.
+     * @param {Function} transferFunction The transfer function to use to
+     *                                    transfer data from source to
+     *                                    destination.
+     */
+    this.transfer = function(srcLayer, srcx, srcy, srcw, srch, x, y, transferFunction) {
+
+        var drawComplete = false;
+        var srcLock = null;
+
+        function doTransfer() {
+            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+
+            var srcCanvas = srcLayer.getCanvas();
+            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
+
+                // Get image data from src and dst
+                var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+                var dst = displayContext.getImageData(x , y, srcw, srch);
+
+                // Apply transfer for each pixel
+                for (var i=0; i<srcw*srch*4; i+=4) {
+                    dst.data[i  ] = transferFunction(src.data[i  ], dst.data[i  ]);
+                    dst.data[i+1] = transferFunction(src.data[i+1], dst.data[i+1]);
+                    dst.data[i+2] = transferFunction(src.data[i+2], dst.data[i+2]);
+                    dst.data[i+3] = 0xFF; // Assume output opaque
+                }
+
+            }
+
+            // Unblock the source layer now that draw is complete
+            if (srcLock != null) 
+                srcLock.unblock();
+
+            // Flag operation as done
+            drawComplete = true;
+        }
+
+        // If we ARE the source layer, no need to sync.
+        // Syncing would result in deadlock.
+        if (layer === srcLayer)
+            scheduleTask(doTransfer);
+
+        // Otherwise synchronize copy operation with source layer
+        else {
+            
+            // Currently blocked draw task
+            var task = scheduleTask(doTransfer, true);
+
+            // Unblock draw task once source layer is ready
+            srcLayer.sync(task.unblock);
+
+            // Block source layer until draw completes
+            // Note that the draw MAY have already been performed at this point,
+            // in which case creating a lock on the source layer will lead to
+            // deadlock (the draw task has already run and will thus never
+            // clear the lock)
+            if (!drawComplete)
+                srcLock = srcLayer.sync(null, true);
+
+        }
+
+    };
+
+    /**
      * Copy a rectangle of image data from one Layer to this Layer. This
      * operation will copy exactly the image data that will be drawn once all
      * operations of the source Layer that were pending at the time this
@@ -458,29 +502,8 @@ Guacamole.Layer = function(width, height) {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
-
-                // Just copy if no transfer function
-                if (!transferFunction)
-                    displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
-                
-                // Otherwise, copy via transfer function
-                else {
-
-                    // Get image data from src and dst
-                    var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
-                    var dst = displayContext.getImageData(x , y, srcw, srch);
-
-                    // Apply transfer for each pixel
-                    for (var i=0; i<srcw*srch*4; i+=4) {
-                        dst.data[i  ] = transferFunction(src.data[i  ], dst.data[i  ]);
-                        dst.data[i+1] = transferFunction(src.data[i+1], dst.data[i+1]);
-                        dst.data[i+2] = transferFunction(src.data[i+2], dst.data[i+2]);
-                        dst.data[i+3] = 0xFF; // Assume output opaque
-                    }
-
-                }
-            }
+            if (srcCanvas.width != 0 && srcCanvas.height != 0)
+                displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
             // Unblock the source layer now that draw is complete
             if (srcLock != null) 
@@ -604,9 +627,7 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Sets the composite operation for future operations on this Layer. This
-     * operation is either a channel mask, or the ID of a binary raster
-     * operation.
+     * Sets the channel mask for future operations on this Layer.
      * 
      * The channel mask is a Guacamole-specific compositing operation identifier
      * with a single bit representing each of four channels (in order): source
@@ -614,25 +635,12 @@ Guacamole.Layer = function(width, height) {
      * destination where source transparent, and destination where source
      * opaque.
      * 
-     * @param {Number} operation The composite operation (channel mask or binary
-     *                           raster operation) for future operations on this
-     *                           Layer.
+     * @param {Number} mask The channel mask for future operations on this
+     *                      Layer.
      */
-    this.setCompositeOperation = function(operation) {
+    this.setChannelMask = function(mask) {
         scheduleTask(function() {
-            
-            // If channel mask, set composite operation only
-            if (operation <= 0xF) {
-                displayContext.globalCompositeOperation = compositeOperation[operation];
-                transferFunction = null;
-            }
-
-            // Otherwise, set binary raster operation
-            else {
-                displayContext.globalCompositeOperation = "source-over";
-                transferFunction = binaryCompositeTransferFunction[operation];
-            }
-
+            displayContext.globalCompositeOperation = compositeOperation[mask];
         });
     };
 
