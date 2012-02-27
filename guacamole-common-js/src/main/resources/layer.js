@@ -75,6 +75,12 @@ Guacamole.Layer = function(width, height) {
     displayContext.save();
 
     /**
+     * The function to apply when drawing arbitrary source pixels over
+     * destination pixels.
+     */
+    var transferFunction = null;
+
+    /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO).
@@ -104,6 +110,36 @@ Guacamole.Layer = function(width, height) {
      /* 0xD NOT IMPLEMENTED */
         0xE: "source-over",
         0xF: "lighter"
+    };
+
+    /**
+     * Map of all Guacamole binary raster operations to transfer functions.
+     * @private
+     */
+    var binaryCompositeTransferFunction = {
+
+        0x10: function (src, dst) { return 0x00;         }, /* BLACK */
+        0x1F: function (src, dst) { return 0xFF;         }, /* WHITE */
+
+        0x13: function (src, dst) { return src;          }, /* SRC */
+        0x15: function (src, dst) { return dst;          }, /* DEST */
+        0x1C: function (src, dst) { return ~src;         }, /* NSRC */
+        0x1A: function (src, dst) { return ~dst;         }, /* NDEST */
+
+        0x11: function (src, dst) { return src & dst;    }, /* AND */
+        0x1E: function (src, dst) { return ~(src & dst); }, /* NAND */
+
+        0x17: function (src, dst) { return src | dst;    }, /* OR */
+        0x18: function (src, dst) { return ~(src | dst); }, /* NOR */
+
+        0x16: function (src, dst) { return src ^ dst;    }, /* XOR */
+        0x19: function (src, dst) { return ~(src ^ dst); }, /* XNOR */
+
+        0x14: function (src, dst) { return ~src & dst;   }, /* AND inverted source */
+        0x1D: function (src, dst) { return ~src | dst;   }, /* OR inverted source */
+        0x12: function (src, dst) { return src & ~dst;   }, /* AND inverted destination */
+        0x1B: function (src, dst) { return src | ~dst;   }  /* OR inverted destination */
+
     };
 
     /**
@@ -547,19 +583,35 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Sets the channel mask for future operations on this Layer. The channel
-     * mask is a Guacamole-specific compositing operation identifier with a
-     * single bit representing each of four channels (in order): source image
-     * where destination transparent, source where destination opaque,
+     * Sets the composite operation for future operations on this Layer. This
+     * operation is either a channel mask, or the ID of a binary raster
+     * operation.
+     * 
+     * The channel mask is a Guacamole-specific compositing operation identifier
+     * with a single bit representing each of four channels (in order): source
+     * image where destination transparent, source where destination opaque,
      * destination where source transparent, and destination where source
      * opaque.
      * 
-     * @param {Number} mask The channel mask for future operations on this
-     *                      Layer.
+     * @param {Number} operation The composite operation (channel mask or binary
+     *                           raster operation) for future operations on this
+     *                           Layer.
      */
-    this.setChannelMask = function(mask) {
+    this.setCompositeOperation = function(operation) {
         scheduleTask(function() {
-            displayContext.globalCompositeOperation = compositeOperation[mask];
+            
+            // If channel mask, set composite operation only
+            if (operation <= 0xF) {
+                displayContext.globalCompositeOperation = compositeOperation[operation];
+                transferFunction = null;
+            }
+
+            // Otherwise, set binary raster operation
+            else {
+                displayContext.globalCompositeOperation = "source-over";
+                transferFunction = binaryCompositeTransferFunction[operation];
+            }
+
         });
     };
 
