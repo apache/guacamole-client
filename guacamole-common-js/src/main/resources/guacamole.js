@@ -84,7 +84,7 @@ Guacamole.Client = function(tunnel) {
 
     // Create cursor layer
     var cursor = new Guacamole.Client.LayerContainer(0, 0);
-    cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
+    cursor.getLayer().setCompositeOperation(Guacamole.Layer.SRC);
 
     // Position cursor layer
     var cursor_element = cursor.getElement();
@@ -349,7 +349,7 @@ Guacamole.Client = function(tunnel) {
             var y = parseInt(parameters[3]);
             var data = parameters[4];
 
-            layer.setChannelMask(channelMask);
+            layer.setCompositeOperation(channelMask);
 
             layer.draw(
                 x,
@@ -375,7 +375,7 @@ Guacamole.Client = function(tunnel) {
             var dstX = parseInt(parameters[7]);
             var dstY = parseInt(parameters[8]);
 
-            dstL.setChannelMask(channelMask);
+            dstL.setCompositeOperation(channelMask);
 
             dstL.copyRect(
                 srcL,
@@ -402,7 +402,7 @@ Guacamole.Client = function(tunnel) {
             var b = parseInt(parameters[8]);
             var a = parseInt(parameters[9]);
 
-            layer.setChannelMask(channelMask);
+            layer.setCompositeOperation(channelMask);
 
             layer.drawRect(
                 x, y, w, h,
