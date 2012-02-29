@@ -53,6 +53,9 @@ public class ConfigurationList extends HttpServlet {
             return;
         }
 
+        // Do not cache
+        response.setHeader("Cache-Control", "no-cache");
+        
         // Write XML
         response.setHeader("Content-Type", "text/xml");
         PrintWriter out = response.getWriter();
