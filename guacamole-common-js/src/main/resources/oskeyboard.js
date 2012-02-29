@@ -55,6 +55,55 @@ Guacamole.OnScreenKeyboard = function(url) {
     var modifiers = {};
     var currentModifier = 1;
 
+    // Function for adding a class to an element
+    var addClass;
+
+    // Function for removing a class from an element
+    var removeClass;
+
+    // If Node.classList is supported, implement addClass/removeClass using that
+    if (Node.classList) {
+
+        addClass = function(element, classname) {
+            element.classList.add(classname);
+        };
+        
+        removeClass = function(element, classname) {
+            element.classList.remove(classname);
+        };
+        
+    }
+
+    // Otherwise, implement own
+    else {
+
+        addClass = function(element, classname) {
+
+            // Simply add new class
+            element.className += " " + classname;
+
+        };
+        
+        removeClass = function(element, classname) {
+
+            // Filter out classes with given name
+            element.className = element.className.replace(/([^ ]+)[ ]*/g,
+                function(match, testClassname, spaces, offset, string) {
+
+                    // If same class, remove
+                    if (testClassname == classname)
+                        return "";
+
+                    // Otherwise, allow
+                    return match;
+                    
+                }
+            );
+
+        };
+        
+    }
+
     // Returns a unique power-of-two value for the modifier with the
     // given name. The same value will be returned for the same modifier.
     function getModifier(name) {
@@ -249,8 +298,8 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 var requirements = required.value.split(",");
                                 for (var i=0; i<requirements.length; i++) {
                                     modifierValue |= getModifier(requirements[i]);
-                                    cap_element.classList.add("guac-keyboard-requires-" + requirements[i]);
-                                    key_element.classList.add("guac-keyboard-uses-" + requirements[i]);
+                                    addClass(cap_element, "guac-keyboard-requires-" + requirements[i]);
+                                    addClass(key_element, "guac-keyboard-uses-" + requirements[i]);
                                 }
 
                             }
@@ -271,7 +320,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                         // Press key if not yet pressed
                         if (!key.pressed) {
 
-                            key_element.classList.add("guac-keyboard-pressed");
+                            addClass(key_element, "guac-keyboard-pressed");
 
                             // Get current cap based on modifier state
                             var cap = key.getCap(on_screen_keyboard.modifiers);
@@ -288,11 +337,11 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                                 // Activate modifier if pressed
                                 if (on_screen_keyboard.modifiers & modifierFlag)
-                                    keyboard.classList.add(modifierClass);
+                                    addClass(keyboard, modifierClass);
 
                                 // Deactivate if not pressed
                                 else
-                                    keyboard.classList.remove(modifierClass);
+                                    removeClass(keyboard, modifierClass);
 
                             }
 
@@ -320,7 +369,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                             // Get current cap based on modifier state
                             var cap = key.getCap(on_screen_keyboard.modifiers);
 
-                            key_element.classList.remove("guac-keyboard-pressed");
+                            removeClass(key_element, "guac-keyboard-pressed");
 
                             // Send key event
                             if (on_screen_keyboard.onkeyup && cap.keysym)
