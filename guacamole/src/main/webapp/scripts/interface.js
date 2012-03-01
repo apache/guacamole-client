@@ -42,19 +42,69 @@ var GuacamoleUI = {
     var guacErrorImage = new Image();
     guacErrorImage.src = "images/noguacamole-logo-24.png";
 
+    // Function for adding a class to an element
+    var addClass;
+
+    // Function for removing a class from an element
+    var removeClass;
+
+    // If Node.classList is supported, implement addClass/removeClass using that
+    if (Node.classList) {
+
+        addClass = function(element, classname) {
+            element.classList.add(classname);
+        };
+        
+        removeClass = function(element, classname) {
+            element.classList.remove(classname);
+        };
+        
+    }
+
+    // Otherwise, implement own
+    else {
+
+        addClass = function(element, classname) {
+
+            // Simply add new class
+            element.className += " " + classname;
+
+        };
+        
+        removeClass = function(element, classname) {
+
+            // Filter out classes with given name
+            element.className = element.className.replace(/([^ ]+)[ ]*/g,
+                function(match, testClassname, spaces, offset, string) {
+
+                    // If same class, remove
+                    if (testClassname == classname)
+                        return "";
+
+                    // Otherwise, allow
+                    return match;
+                    
+                }
+            );
+
+        };
+        
+    }
+
+
     GuacamoleUI.hideStatus = function() {
-        document.body.classList.remove("guac-error");
+        removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "hidden";
     };
     
     GuacamoleUI.showStatus = function(text) {
-        document.body.classList.remove("guac-error");
+        removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "visible";
         GuacamoleUI.state.textContent = text;
     };
     
     GuacamoleUI.showError = function(error) {
-        document.body.classList.add("guac-error");
+        addClass(document.body, "guac-error");
         GuacamoleUI.state.textContent = error;
     };
 
