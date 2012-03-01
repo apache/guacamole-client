@@ -124,12 +124,41 @@ div#display * {
     vertical-align: middle;
 }
 
-#menu button {
+#menu span {
     vertical-align: middle;
 }
 
-#menu span {
+#menu button {
     vertical-align: middle;
+    background: #DC8;
+    border: 1px solid #986;
+    color: black; 
+    padding: 0.25em;
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+#menu button:hover {
+    background: #FFC;
+    border: 1px solid #DC8;
+}
+
+#menu button:active {
+    padding-top: 0.35em;
+    padding-left: 1.1em;
+
+    padding-bottom: 0.15em;
+    padding-right: 0.9em;
+}
+
+.guac-error #menu button {
+    background: #B33;
+    border: 1px solid #822;
+}
+
+.guac-error #menu button:hover {
+    background: #F44;
+    border: 1px solid #B33;
 }
 
 div#clipboardDiv {
