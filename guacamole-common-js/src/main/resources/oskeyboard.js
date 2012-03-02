@@ -198,17 +198,14 @@ Guacamole.OnScreenKeyboard = function(url) {
                 
                 "gap": function parse_gap(e) {
 
-                    // Get attributes
-                    var gap_size = e.attributes["size"];
-
                     // Create element
                     var gap = document.createElement("div");
                     gap.className = "guac-keyboard-gap";
 
                     // Set gap size
                     var gap_units = 1;
-                    if (gap_size)
-                        gap_units = parseFloat(gap_size.value);
+                    if (e.getAttribute("size"))
+                        gap_units = parseFloat(e.getAttribute("size"));
 
                     scaledElements.push(new ScaledElement(gap, gap_units, gap_units));
                     row.appendChild(gap);
@@ -217,17 +214,13 @@ Guacamole.OnScreenKeyboard = function(url) {
                 
                 "key": function parse_key(e) {
                     
-                    // Get attributes
-                    var key_size = e.attributes["size"];
-                    var key_class = e.attributes["class"];
-
                     // Create element
                     var key_element = document.createElement("div");
                     key_element.className = "guac-keyboard-key";
 
                     // Append class if specified
-                    if (key_class)
-                        key_element.className += " " + key_class.value;
+                    if (e.getAttribute("class"))
+                        key_element.className += " " + e.getAttribute("class");
 
                     // Position keys using container div
                     var key_container_element = document.createElement("div");
@@ -239,28 +232,23 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     // Set key size
                     var key_units = 1;
-                    if (key_size)
-                        key_units = parseFloat(key_size.value);
+                    if (e.getAttribute("size"))
+                        key_units = parseFloat(e.getAttribute("size"));
 
                     key.size = key_units;
 
                     parseChildren(e, {
                         "cap": function parse_cap(e) {
 
-                            // Get attributes
-                            var required = e.attributes["if"];
-                            var modifier = e.attributes["modifier"];
-                            var keysym   = e.attributes["keysym"];
-                            var sticky   = e.attributes["sticky"];
-                            var cap_class = e.attributes["class"];
+                            // TODO: Handle "sticky" attribute
                             
                             // Get content of key cap
-                            var content = e.textContent;
+                            var content = e.textContent || e.text;
                             
                             // Get keysym
                             var real_keysym = null;
-                            if (keysym)
-                                real_keysym = parseInt(keysym.value);
+                            if (e.getAttribute("keysym"))
+                                real_keysym = parseInt(e.getAttribute("keysym"));
 
                             // If no keysym specified, try to get from key content
                             else if (content.length == 1) {
@@ -276,8 +264,8 @@ Guacamole.OnScreenKeyboard = function(url) {
                             // Create cap
                             var cap = new Guacamole.OnScreenKeyboard.Cap(content, real_keysym);
 
-                            if (modifier)
-                                cap.modifier = modifier.value;
+                            if (e.getAttribute("modifier"))
+                                cap.modifier = e.getAttribute("modifier");
                             
                             // Create cap element
                             var cap_element = document.createElement("div");
@@ -286,16 +274,16 @@ Guacamole.OnScreenKeyboard = function(url) {
                             key_element.appendChild(cap_element);
 
                             // Append class if specified
-                            if (cap_class)
-                                cap_element.className += " " + cap_class.value;
+                            if (e.getAttribute("class"))
+                                cap_element.className += " " + e.getAttribute("class");
 
                             // Get modifier value
                             var modifierValue = 0;
-                            if (required) {
+                            if (e.getAttribute("if")) {
 
                                 // Get modifier value for specified comma-delimited
                                 // list of required modifiers.
-                                var requirements = required.value.split(",");
+                                var requirements = e.getAttribute("if").split(",");
                                 for (var i=0; i<requirements.length; i++) {
                                     modifierValue |= getModifier(requirements[i]);
                                     addClass(cap_element, "guac-keyboard-requires-" + requirements[i]);
@@ -401,10 +389,8 @@ Guacamole.OnScreenKeyboard = function(url) {
             var col = document.createElement("div");
             col.className = "guac-keyboard-column";
 
-            var align = col.attributes["align"];
-
-            if (align)
-                col.style.textAlign = align.value;
+            if (col.getAttribute("align"))
+                col.style.textAlign = col.getAttribute("align");
 
             // Columns can only contain rows
             parseChildren(e, {
@@ -424,10 +410,10 @@ Guacamole.OnScreenKeyboard = function(url) {
             throw new Error("Root element must be keyboard");
 
         // Get attributes
-        if (!keyboard_element.attributes["size"])
+        if (!keyboard_element.getAttribute("size"))
             throw new Error("size attribute is required for keyboard");
         
-        var keyboard_size = parseFloat(keyboard_element.attributes["size"].value);
+        var keyboard_size = parseFloat(keyboard_element.getAttribute("size"));
         
         parseChildren(keyboard_element, {
             
