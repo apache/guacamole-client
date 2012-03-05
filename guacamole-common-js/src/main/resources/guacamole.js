@@ -680,17 +680,17 @@ Guacamole.Client.DefaultTransferFunction = {
 
     /* Invert SRC */
     0xC: function (src, dst) {
-        dst.red   = ~src.red;
-        dst.green = ~src.green;
-        dst.blue  = ~src.blue;
+        dst.red   = 0xFF & ~src.red;
+        dst.green = 0xFF & ~src.green;
+        dst.blue  = 0xFF & ~src.blue;
         dst.alpha =  src.alpha;
     },
     
     /* Invert DEST */
     0xA: function (src, dst) {
-        dst.red   = ~dst.red;
-        dst.green = ~dst.green;
-        dst.blue  = ~dst.blue;
+        dst.red   = 0xFF & ~dst.red;
+        dst.green = 0xFF & ~dst.green;
+        dst.blue  = 0xFF & ~dst.blue;
     },
 
     /* AND */
@@ -702,9 +702,9 @@ Guacamole.Client.DefaultTransferFunction = {
 
     /* NAND */
     0xE: function (src, dst) {
-        dst.red   = ~( src.red   &  dst.red);
-        dst.green = ~( src.green &  dst.green);
-        dst.blue  = ~( src.blue  &  dst.blue);
+        dst.red   = 0xFF & ~( src.red   &  dst.red);
+        dst.green = 0xFF & ~( src.green &  dst.green);
+        dst.blue  = 0xFF & ~( src.blue  &  dst.blue);
     },
 
     /* OR */
@@ -716,9 +716,9 @@ Guacamole.Client.DefaultTransferFunction = {
 
     /* NOR */
     0x8: function (src, dst) {
-        dst.red   = ~( src.red   |  dst.red);
-        dst.green = ~( src.green |  dst.green);
-        dst.blue  = ~( src.blue  |  dst.blue);
+        dst.red   = 0xFF & ~( src.red   |  dst.red);
+        dst.green = 0xFF & ~( src.green |  dst.green);
+        dst.blue  = 0xFF & ~( src.blue  |  dst.blue);
     },
 
     /* XOR */
@@ -730,37 +730,37 @@ Guacamole.Client.DefaultTransferFunction = {
 
     /* XNOR */
     0x9: function (src, dst) {
-        dst.red   = ~( src.red   ^  dst.red);
-        dst.green = ~( src.green ^  dst.green);
-        dst.blue  = ~( src.blue  ^  dst.blue);
+        dst.red   = 0xFF & ~( src.red   ^  dst.red);
+        dst.green = 0xFF & ~( src.green ^  dst.green);
+        dst.blue  = 0xFF & ~( src.blue  ^  dst.blue);
     },
 
     /* AND inverted source */
     0x4: function (src, dst) {
-        dst.red   =  (~src.red   &  dst.red);
-        dst.green =  (~src.green &  dst.green);
-        dst.blue  =  (~src.blue  &  dst.blue);
+        dst.red   =  0xFF & (~src.red   &  dst.red);
+        dst.green =  0xFF & (~src.green &  dst.green);
+        dst.blue  =  0xFF & (~src.blue  &  dst.blue);
     },
 
     /* OR inverted source */
     0xD: function (src, dst) {
-        dst.red   =  (~src.red   |  dst.red);
-        dst.green =  (~src.green |  dst.green);
-        dst.blue  =  (~src.blue  |  dst.blue);
+        dst.red   =  0xFF & (~src.red   |  dst.red);
+        dst.green =  0xFF & (~src.green |  dst.green);
+        dst.blue  =  0xFF & (~src.blue  |  dst.blue);
     },
 
     /* AND inverted destination */
     0x2: function (src, dst) {
-        dst.red   =  ( src.red   & ~dst.red);
-        dst.green =  ( src.green & ~dst.green);
-        dst.blue  =  ( src.blue  & ~dst.blue);
+        dst.red   =  0xFF & ( src.red   & ~dst.red);
+        dst.green =  0xFF & ( src.green & ~dst.green);
+        dst.blue  =  0xFF & ( src.blue  & ~dst.blue);
     },
 
     /* OR inverted destination */
     0xB: function (src, dst) {
-        dst.red   =  ( src.red   | ~dst.red);
-        dst.green =  ( src.green | ~dst.green);
-        dst.blue  =  ( src.blue  | ~dst.blue);
+        dst.red   =  0xFF & ( src.red   | ~dst.red);
+        dst.green =  0xFF & ( src.green | ~dst.green);
+        dst.blue  =  0xFF & ( src.blue  | ~dst.blue);
     }
 
 };
