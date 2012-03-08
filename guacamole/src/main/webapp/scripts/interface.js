@@ -42,19 +42,69 @@ var GuacamoleUI = {
     var guacErrorImage = new Image();
     guacErrorImage.src = "images/noguacamole-logo-24.png";
 
+    // Function for adding a class to an element
+    var addClass;
+
+    // Function for removing a class from an element
+    var removeClass;
+
+    // If Node.classList is supported, implement addClass/removeClass using that
+    if (Node.classList) {
+
+        addClass = function(element, classname) {
+            element.classList.add(classname);
+        };
+        
+        removeClass = function(element, classname) {
+            element.classList.remove(classname);
+        };
+        
+    }
+
+    // Otherwise, implement own
+    else {
+
+        addClass = function(element, classname) {
+
+            // Simply add new class
+            element.className += " " + classname;
+
+        };
+        
+        removeClass = function(element, classname) {
+
+            // Filter out classes with given name
+            element.className = element.className.replace(/([^ ]+)[ ]*/g,
+                function(match, testClassname, spaces, offset, string) {
+
+                    // If same class, remove
+                    if (testClassname == classname)
+                        return "";
+
+                    // Otherwise, allow
+                    return match;
+                    
+                }
+            );
+
+        };
+        
+    }
+
+
     GuacamoleUI.hideStatus = function() {
-        document.body.classList.remove("guac-error");
+        removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "hidden";
     };
     
     GuacamoleUI.showStatus = function(text) {
-        document.body.classList.remove("guac-error");
+        removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "visible";
         GuacamoleUI.state.textContent = text;
     };
     
     GuacamoleUI.showError = function(error) {
-        document.body.classList.add("guac-error");
+        addClass(document.body, "guac-error");
         GuacamoleUI.state.textContent = error;
     };
 
@@ -220,9 +270,6 @@ var GuacamoleUI = {
     // When mouse hovers over top of screen, start detection of intent to open menu
     GuacamoleUI.menuControl.addEventListener('mousemove', GuacamoleUI.startMenuOpenDetect, true);
 
-    // When mouse enters display, start detection of intent to close menu
-    GuacamoleUI.display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
-
     var menuShowLongPressTimeout = null;
 
     GuacamoleUI.startLongPressDetect = function() {
@@ -234,7 +281,7 @@ var GuacamoleUI = {
                 menuShowLongPressTimeout = null;
                 GuacamoleUI.showMenu();
 
-            }, 1000);
+            }, 800);
 
         }
     };
@@ -247,33 +294,9 @@ var GuacamoleUI = {
     // Detect long-press at bottom of screen
     document.body.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
 
-    // Show menu if mouse leaves document
-    document.addEventListener('mouseout', function(e) {
-        
-        // Get parent of the element the mouse pointer is leaving
-       	if (!e) e = window.event;
-        var target = e.relatedTarget || e.toElement;
-        
-        // Ensure target is not document nor child of document
-        var targetParent = target;
-        while (targetParent != null) {
-            if (targetParent == document) return;
-            targetParent = targetParent.parentNode;
-        }
-
-        // Start detection of intent to open menu
-        GuacamoleUI.startMenuOpenDetect();
- 
-    }, true);
-
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
         window.location.reload();
-    };
-
-    GuacamoleUI.display.onclick = function(e) {
-        e.preventDefault();
-        return false;
     };
 
     // On-screen keyboard
@@ -295,17 +318,27 @@ var GuacamoleUI = {
 // Tie UI events / behavior to a specific Guacamole client
 GuacamoleUI.attach = function(guac) {
 
+    var guac_display = guac.getDisplay();
+
+    // When mouse enters display, start detection of intent to close menu
+    guac_display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
+
+    guac_display.onclick = function(e) {
+        e.preventDefault();
+        return false;
+    };
+
     // Mouse
-    var mouse = new Guacamole.Mouse(GuacamoleUI.display);
+    var mouse = new Guacamole.Mouse(guac_display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
        
             // Determine mouse position within view
-            var mouse_view_x = mouseState.x + GuacamoleUI.display.offsetLeft - window.pageXOffset;
-            var mouse_view_y = mouseState.y + GuacamoleUI.display.offsetTop - window.pageYOffset;
+            var mouse_view_x = mouseState.x + guac_display.offsetLeft - window.pageXOffset;
+            var mouse_view_y = mouseState.y + guac_display.offsetTop  - window.pageYOffset;
 
             // Determine viewport dimensioins
-            var view_width = GuacamoleUI.viewport.offsetWidth;
+            var view_width  = GuacamoleUI.viewport.offsetWidth;
             var view_height = GuacamoleUI.viewport.offsetHeight;
 
             // Determine scroll amounts based on mouse position relative to document
@@ -423,32 +456,6 @@ GuacamoleUI.attach = function(guac) {
 
         // Display error message
         GuacamoleUI.showError(error);
-
-        // Show error by desaturating display
-        var layers = guac.getLayers();
-        for (var i=0; i<layers.length; i++) {
-            layers[i].filter(desaturateFilter);
-        }
-
-        // Filter for desaturation
-        function desaturateFilter(data, width, height) {
-
-            for (var i=0; i<data.length; i+=4) {
-
-                // Get RGB values
-                var r = data[i];
-                var g = data[i+1];
-                var b = data[i+2];
-
-                // Desaturate
-                var v = Math.max(r, g, b) / 2;
-                data[i]   = v;
-                data[i+1] = v;
-                data[i+2] = v;
-
-            }
-
-        }
         
     };
 
