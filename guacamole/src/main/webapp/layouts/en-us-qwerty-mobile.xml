@@ -298,7 +298,7 @@
         </key>
         <gap size="0.1"/>
         <key size="1.6">
-            <cap modifier="alt" keysym="0xFFE3">Alt</cap>
+            <cap modifier="alt" keysym="0xFFEA">Alt</cap>
         </key>
         <gap size="0.1"/>
         <key size="1.6">
