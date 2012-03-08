@@ -25,14 +25,23 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import net.sourceforge.guacamole.GuacamoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Simple HttpServlet which outputs XML containing a list of all authorized
- * configurations for the current user.
+ * Simple ServletContextListener which loads a WebSocket tunnel implementation
+ * if available, using the Servlet 3.0 API to dynamically load and install
+ * the tunnel servlet.
+ * 
+ * Note that because Guacamole depends on the Servlet 2.5 API, and 3.0 may
+ * not be available or needed if WebSocket is not desired, the 3.0 API is
+ * detected and invoked dynamically via reflection.
  * 
  * @author Michael Jumper
  */
 public class WebSocketSupportLoader implements ServletContextListener {
+
+    private Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
@@ -45,8 +54,7 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
             // Attempt to find WebSocket servlet
             Class<Servlet> servlet = (Class<Servlet>) GuacamoleClassLoader.getInstance().findClass(
-                "net.sourceforge.guacamole.net.basic.BasicGuacamoleTunnelServlet"
-                //"net.sourceforge.guacamole.net.basic.BasicGuacamoleWebSocketTunnelServlet"
+                "net.sourceforge.guacamole.net.basic.BasicGuacamoleWebSocketTunnelServlet"
             ); 
 
             // Dynamically add servlet IF SERVLET 3.0 API AVAILABLE!
@@ -65,31 +73,36 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
                 // If we succesfully load and register the WebSocket tunnel servlet,
                 // WebSocket is supported.
-                System.err.println("WebSocket support found!");
+                logger.info("WebSocket support found and loaded.");
 
             }
+
+            // Servlet API 3.0 unsupported
             catch (ClassNotFoundException e) {
-                // Servlet API 3.0 unsupported
-                System.err.println("Servlet API 3.0 not found.");
+                logger.error("Servlet API 3.0 not found.", e);
             }
             catch (NoSuchMethodException e) {
-                // Servlet API 3.0 unsupported
-                System.err.println("Servlet API 3.0 not found.");
+                logger.error("Servlet API 3.0 found, but incomplete.", e);
             }
+
+            // Servlet API 3.0 found, but errors during use
             catch (IllegalAccessException e) {
+                logger.error("Unable to load WebSocket tunnel servlet.", e);
             }
             catch (InvocationTargetException e) {
+                logger.error("Internal error loading WebSocket tunnel servlet.", e);
             }
 
         }
-        catch (ClassNotFoundException e) {
-            
-            // If no such servlet class, WebSocket support not present
-            System.err.println("WebSocket support not found.");
 
+        // If no such servlet class, WebSocket support not present
+        catch (ClassNotFoundException e) {
+            logger.info("WebSocket support not found.");
         }
+
+        // Log all GuacamoleExceptions
         catch (GuacamoleException e) {
-            e.printStackTrace();
+            logger.error("Unable to load/detect WebSocket support.", e);
         }
 
     }
