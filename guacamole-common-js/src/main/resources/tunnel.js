@@ -464,6 +464,20 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         "https:": "wss:"
     };
 
+    var status_code = {
+        1000: "Connection closed normally.",
+        1001: "Connection shut down.",
+        1002: "Protocol error.",
+        1003: "Invalid data.",
+        1004: "[UNKNOWN, RESERVED]",
+        1005: "No status code present.",
+        1006: "Connection closed abnormally.",
+        1007: "Inconsistent data type.",
+        1008: "Policy violation.",
+        1009: "Message too large.",
+        1010: "Extension negotiation failed."
+    };
+
     var STATE_IDLE          = 0;
     var STATE_CONNECTED     = 1;
     var STATE_DISCONNECTED  = 2;
@@ -548,6 +562,14 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             currentState = STATE_CONNECTED;
         };
 
+        socket.onclose = function(event) {
+
+            // If connection closed abnormally, signal error.
+            if (event.code != 1000 && tunnel.onerror)
+                tunnel.onerror(status_code[event.code]);
+
+        };
+        
         socket.onerror = function(event) {
 
             // Call error handler
@@ -625,3 +647,77 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
 Guacamole.WebSocketTunnel.prototype = new Guacamole.Tunnel();
 
+
+Guacamole.ChainedTunnel = function() {
+
+    var chained_tunnel = this;
+    var current_tunnel = null;
+
+    var connect_data;
+    var tunnels = [];
+
+    // Load all tunnels into array
+    for (var i=0; i<arguments.length; i++)
+        tunnels.push(arguments[i]);
+
+    /**
+     * Sets the current tunnel
+     */
+    function attach(tunnel) {
+
+        // Set own functions to tunnel's functions
+        chained_tunnel.disconnect    = tunnel.disconnect;
+        chained_tunnel.sendMessage   = tunnel.sendMessage;
+        
+        // Record current tunnel
+        current_tunnel = tunnel;
+
+        // Wrap own oninstruction within current tunnel
+        current_tunnel.oninstruction = function(opcode, elements) {
+            chained_tunnel.oninstruction(opcode, elements);
+        }
+
+        // Attach next tunnel on error
+        current_tunnel.onerror = function(message) {
+
+            // Get next tunnel
+            var next_tunnel = tunnels.shift();
+
+            // If there IS a next tunnel, try using it.
+            if (next_tunnel)
+                attach(next_tunnel);
+
+            // Otherwise, call error handler
+            else if (chained_tunnel.onerror)
+                chained_tunnel.onerror(message);
+
+        };
+
+        // Attempt connection
+        current_tunnel.connect(connect_data);
+
+    }
+
+    this.connect = function(data) {
+       
+        // Remember connect data
+        connect_data = data;
+
+        // Get first tunnel
+        var next_tunnel = tunnels.shift();
+
+        // Attach first tunnel
+        if (next_tunnel)
+            attach(next_tunnel);
+
+        // If there IS no first tunnel, error
+        else if (chained_tunnel.onerror)
+            chained_tunnel.onerror("No tunnels to try.");
+
+    };
+    
+    this.onerror = null;
+
+};
+
+Guacamole.ChainedTunnel.prototype = new Guacamole.Tunnel();
