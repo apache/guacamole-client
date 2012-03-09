@@ -548,6 +548,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             currentState = STATE_CONNECTED;
         };
 
+        socket.onerror = function(event) {
+
+            // Call error handler
+            if (tunnel.onerror) tunnel.onerror(event.data);
+
+        };
+
         socket.onmessage = function(event) {
 
             var message = event.data;
