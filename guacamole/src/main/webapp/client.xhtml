@@ -101,10 +101,14 @@
             window.onload = function() {
                 window.setTimeout(function() {
 
+                    var tunnel;
+
+                    // TODO: Detect WebSocket and websocket-tunnel
+                    tunnel = new Guacamole.WebSocketTunnel("websocket-tunnel")
+                    //tunnel = new Guacamole.HTTPTunnel("tunnel")
+
                     // Instantiate client
-                    var guac = new Guacamole.Client(
-                        new Guacamole.HTTPTunnel("tunnel")
-                    );
+                    var guac = new Guacamole.Client(tunnel);
 
                     // Add client to UI
                     guac.getDisplay().className = "software-cursor";
