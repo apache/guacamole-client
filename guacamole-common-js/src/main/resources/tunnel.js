@@ -503,11 +503,37 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     }
 
-    this.sendMessage = function(message) {
+    this.sendMessage = function(elements) {
 
         // Do not attempt to send messages if not connected
         if (currentState != STATE_CONNECTED)
             return;
+
+        // Do not attempt to send empty messages
+        if (arguments.length == 0)
+            return;
+
+        /**
+         * Converts the given value to a length/string pair for use as an
+         * element in a Guacamole instruction.
+         * 
+         * @param value The value to convert.
+         * @return {String} The converted value. 
+         */
+        function getElement(value) {
+            var string = new String(value);
+            return string.length + "." + string; 
+        }
+
+        // Initialized message with first element
+        var message = getElement(arguments[0]);
+
+        // Append remaining elements
+        for (var i=1; i<arguments.length; i++)
+            message += "," + getElement(arguments[i]);
+
+        // Final terminator
+        message += ";";
 
         socket.send(message);
 
@@ -525,23 +551,59 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         socket.onmessage = function(event) {
 
             var message = event.data;
+            var startIndex = 0;
+            var elementEnd;
 
-            var instructions = message.split(";");
-            for (var i=0; i<instructions.length; i++) {
+            var elements = [];
 
-                var instruction = instructions[i];
+            do {
 
-                var opcodeEnd = instruction.indexOf(":");
-                if (opcodeEnd == -1)
-                    opcodeEnd = instruction.length;
+                // Search for end of length
+                var lengthEnd = message.indexOf(".", startIndex);
+                if (lengthEnd != -1) {
 
-                var opcode = instruction.substring(0, opcodeEnd);
-                var parameters = instruction.substring(opcodeEnd+1).split(",");
+                    // Parse length
+                    var length = parseInt(message.substring(elementEnd+1, lengthEnd));
 
-                if (tunnel.oninstruction)
-                    tunnel.oninstruction(opcode, parameters);
+                    // Calculate start of element
+                    startIndex = lengthEnd + 1;
 
-            }
+                    // Calculate location of element terminator
+                    elementEnd = startIndex + length;
+
+                }
+                
+                // If no period, incomplete instruction.
+                else
+                    throw new Error("Incomplete instruction.");
+
+                // We now have enough data for the element. Parse.
+                var element = message.substring(startIndex, elementEnd);
+                var terminator = message.substring(elementEnd, elementEnd+1);
+
+                // Add element to array
+                elements.push(element);
+
+                // If last element, handle instruction
+                if (terminator == ";") {
+
+                    // Get opcode
+                    var opcode = elements.shift();
+
+                    // Call instruction handler.
+                    if (tunnel.oninstruction != null)
+                        tunnel.oninstruction(opcode, elements);
+
+                    // Clear elements
+                    elements.length = 0;
+
+                }
+
+                // Start searching for length at character after
+                // element terminator
+                startIndex = elementEnd + 1;
+
+            } while (startIndex < message.length);
 
         };
 
