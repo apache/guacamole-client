@@ -103,9 +103,13 @@
 
                     var tunnel;
 
-                    // TODO: Detect WebSocket and websocket-tunnel
-                    tunnel = new Guacamole.WebSocketTunnel("websocket-tunnel")
-                    //tunnel = new Guacamole.HTTPTunnel("tunnel")
+                    // If WebSocket available, try to use it.
+                    if (window.WebSocket)
+                        tunnel = new Guacamole.WebSocketTunnel("websocket-tunnel")
+
+                    // If no WebSocket, then use HTTP.
+                    else
+                        tunnel = new Guacamole.HTTPTunnel("tunnel")
 
                     // Instantiate client
                     var guac = new Guacamole.Client(tunnel);
