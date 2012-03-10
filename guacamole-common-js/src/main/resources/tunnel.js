@@ -674,7 +674,16 @@ Guacamole.ChainedTunnel = function() {
 
         // Wrap own oninstruction within current tunnel
         current_tunnel.oninstruction = function(opcode, elements) {
+            
+            // Invoke handler
             chained_tunnel.oninstruction(opcode, elements);
+
+            // Use handler permanently from now on
+            current_tunnel.oninstruction = chained_tunnel.oninstruction;
+
+            // Pass through errors (without trying other tunnels)
+            current_tunnel.onerror = chained_tunnel.onerror;
+            
         }
 
         // Attach next tunnel on error
