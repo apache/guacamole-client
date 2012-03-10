@@ -662,6 +662,7 @@ Guacamole.WebSocketTunnel.prototype = new Guacamole.Tunnel();
 Guacamole.ChainedTunnel = function(tunnel_chain) {
 
     /**
+     * Reference to this chained tunnel.
      */
     var chained_tunnel = this;
 
