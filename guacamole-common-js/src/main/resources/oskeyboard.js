@@ -324,17 +324,31 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 on_screen_keyboard.modifiers ^= modifierFlag;
 
                                 // Activate modifier if pressed
-                                if (on_screen_keyboard.modifiers & modifierFlag)
+                                if (on_screen_keyboard.modifiers & modifierFlag) {
+                                    
                                     addClass(keyboard, modifierClass);
+                                    
+                                    // Send key event
+                                    if (on_screen_keyboard.onkeydown && cap.keysym)
+                                        on_screen_keyboard.onkeydown(cap.keysym);
+
+                                }
 
                                 // Deactivate if not pressed
-                                else
+                                else {
+
                                     removeClass(keyboard, modifierClass);
+                                    
+                                    // Send key event
+                                    if (on_screen_keyboard.onkeyup && cap.keysym)
+                                        on_screen_keyboard.onkeyup(cap.keysym);
+
+                                }
 
                             }
 
-                            // Send key event
-                            if (on_screen_keyboard.onkeydown && cap.keysym)
+                            // If not modifier, send key event now
+                            else if (on_screen_keyboard.onkeydown && cap.keysym)
                                 on_screen_keyboard.onkeydown(cap.keysym);
 
                             // Mark key as pressed
@@ -346,9 +360,6 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                     };
 
-                    key_element.addEventListener("mousedown", press, true);
-                    key_element.addEventListener("touchstart", press, true);
-
                     function release(e) {
 
                         // Release key if currently pressed
@@ -359,8 +370,8 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                             removeClass(key_element, "guac-keyboard-pressed");
 
-                            // Send key event
-                            if (on_screen_keyboard.onkeyup && cap.keysym)
+                            // Send key event if not a modifier key
+                            if (!cap.modifier && on_screen_keyboard.onkeyup && cap.keysym)
                                 on_screen_keyboard.onkeyup(cap.keysym);
 
                             // Mark key as released
@@ -371,6 +382,9 @@ Guacamole.OnScreenKeyboard = function(url) {
                         e.preventDefault();
 
                     };
+
+                    key_element.addEventListener("mousedown", press, true);
+                    key_element.addEventListener("touchstart", press, true);
 
                     key_element.addEventListener("mouseup", release, true);
                     key_element.addEventListener("mouseout", release, true);
