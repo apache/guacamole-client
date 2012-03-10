@@ -729,8 +729,19 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
         };
 
-        // Attempt connection
-        current_tunnel.connect(connect_data);
+        try {
+            
+            // Attempt connection
+            current_tunnel.connect(connect_data);
+            
+        }
+        catch (e) {
+            
+            // Call error handler of current tunnel on error
+            current_tunnel.onerror(e.message);
+            
+        }
+
 
     }
 
