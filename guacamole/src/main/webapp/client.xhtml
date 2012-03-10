@@ -105,7 +105,10 @@
 
                     // If WebSocket available, try to use it.
                     if (window.WebSocket)
-                        tunnel = new Guacamole.WebSocketTunnel("websocket-tunnel")
+                        tunnel = new Guacamole.ChainedTunnel(
+                            new Guacamole.WebSocketTunnel("websocket-tunnel"),
+                            new Guacamole.HTTPTunnel("tunnel")
+                        );
 
                     // If no WebSocket, then use HTTP.
                     else
