@@ -648,12 +648,38 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 Guacamole.WebSocketTunnel.prototype = new Guacamole.Tunnel();
 
 
-Guacamole.ChainedTunnel = function() {
+/**
+ * Guacamole Tunnel which cycles between all specified tunnels until
+ * no tunnels are left. Another tunnel is used if an error occurs but
+ * no instructions have been received. If an instruction has been
+ * received, or no tunnels remain, the error is passed directly out
+ * through the onerror handler (if defined).
+ * 
+ * @constructor
+ * @augments Guacamole.Tunnel
+ * @param {...} tunnel_chain The tunnels to use, in order of priority.
+ */
+Guacamole.ChainedTunnel = function(tunnel_chain) {
 
+    /**
+     */
     var chained_tunnel = this;
+
+    /**
+     * The currently wrapped tunnel, if any.
+     */
     var current_tunnel = null;
 
+    /**
+     * Data passed in via connect(), to be used for
+     * wrapped calls to other tunnels' connect() functions.
+     */
     var connect_data;
+
+    /**
+     * Array of all tunnels passed to this ChainedTunnel through the
+     * constructor arguments.
+     */
     var tunnels = [];
 
     // Load all tunnels into array
@@ -725,8 +751,6 @@ Guacamole.ChainedTunnel = function() {
 
     };
     
-    this.onerror = null;
-
 };
 
 Guacamole.ChainedTunnel.prototype = new Guacamole.Tunnel();
