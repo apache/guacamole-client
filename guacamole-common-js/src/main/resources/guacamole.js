@@ -439,26 +439,21 @@ Guacamole.Client = function(tunnel) {
             var width = parseInt(parameters[1]);
             var height = parseInt(parameters[2]);
 
-            // Only valid for layers (buffers auto-resize)
-            if (layer_index >= 0) {
+            // Resize layer
+            var layer_container = getLayerContainer(layer_index);
+            layer_container.resize(width, height);
 
-                // Resize layer
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.resize(width, height);
+            // If layer is default, resize display
+            if (layer_index == 0) {
 
-                // If layer is default, resize display
-                if (layer_index == 0) {
+                displayWidth = width;
+                displayHeight = height;
 
-                    displayWidth = width;
-                    displayHeight = height;
+                // Update (set) display size
+                display.style.width = displayWidth + "px";
+                display.style.height = displayHeight + "px";
 
-                    // Update (set) display size
-                    display.style.width = displayWidth + "px";
-                    display.style.height = displayHeight + "px";
-
-                }
-
-            } // end if layer (not buffer)
+            }
 
         },
 
