@@ -301,6 +301,68 @@ Guacamole.Layer = function(width, height) {
     }
 
     /**
+     * Schedules a task within the current layer just as scheduleTast() does,
+     * except that another specified layer will be blocked until this task
+     * completes, and this task will not start until the other layer is
+     * ready.
+     * 
+     * Essentially, a task is scheduled in both layers, and the specified task
+     * will only be performed once both layers are ready, and neither layer may
+     * proceed until this task completes.
+     * 
+     * Note that there is no way to specify whether the task starts blocked,
+     * as whether the task is blocked depends completely on whether the
+     * other layer is currently ready.
+     * 
+     * @param {Guacamole.Layer} otherLayer The other layer which must be blocked
+     *                          until this task completes.
+     * @param {function} handler The function to call when possible.
+     */
+    function scheduleTaskSynced(otherLayer, handler) {
+
+        // If we ARE the other layer, no need to sync.
+        // Syncing would result in deadlock.
+        if (layer === otherLayer)
+            scheduleTask(handler);
+
+        // Otherwise synchronize operation with other layer
+        else {
+
+            var drawComplete = false;
+            var layerLock = null;
+
+            function performTask() {
+
+                // Perform task
+                handler();
+
+                // Unblock the other layer now that draw is complete
+                if (layerLock != null) 
+                    layerLock.unblock();
+
+                // Flag operation as done
+                drawComplete = true;
+
+            }
+
+            // Currently blocked draw task
+            var task = scheduleTask(performTask, true);
+
+            // Unblock draw task once source layer is ready
+            otherLayer.sync(task.unblock);
+
+            // Block other layer until draw completes
+            // Note that the draw MAY have already been performed at this point,
+            // in which case creating a lock on the other layer will lead to
+            // deadlock (the draw task has already run and will thus never
+            // clear the lock)
+            if (!drawComplete)
+                layerLock = otherLayer.sync(null, true);
+
+        }
+    }
+
+    /**
      * Set to true if this Layer should resize itself to accomodate the
      * dimensions of any drawing operation, and false (the default) otherwise.
      * 
@@ -424,11 +486,8 @@ Guacamole.Layer = function(width, height) {
      *                                    destination.
      */
     this.transfer = function(srcLayer, srcx, srcy, srcw, srch, x, y, transferFunction) {
+        scheduleTaskSynced(srcLayer, function() {
 
-        var drawComplete = false;
-        var srcLock = null;
-
-        function doTransfer() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
@@ -473,38 +532,7 @@ Guacamole.Layer = function(width, height) {
 
             }
 
-            // Unblock the source layer now that draw is complete
-            if (srcLock != null) 
-                srcLock.unblock();
-
-            // Flag operation as done
-            drawComplete = true;
-        }
-
-        // If we ARE the source layer, no need to sync.
-        // Syncing would result in deadlock.
-        if (layer === srcLayer)
-            scheduleTask(doTransfer);
-
-        // Otherwise synchronize copy operation with source layer
-        else {
-            
-            // Currently blocked draw task
-            var task = scheduleTask(doTransfer, true);
-
-            // Unblock draw task once source layer is ready
-            srcLayer.sync(task.unblock);
-
-            // Block source layer until draw completes
-            // Note that the draw MAY have already been performed at this point,
-            // in which case creating a lock on the source layer will lead to
-            // deadlock (the draw task has already run and will thus never
-            // clear the lock)
-            if (!drawComplete)
-                srcLock = srcLayer.sync(null, true);
-
-        }
-
+        });
     };
 
     /**
@@ -529,49 +557,14 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
-
-        var drawComplete = false;
-        var srcLock = null;
-
-        function doCopy() {
+        scheduleTaskSynced(srcLayer, function() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
             if (srcCanvas.width != 0 && srcCanvas.height != 0)
                 displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
-            // Unblock the source layer now that draw is complete
-            if (srcLock != null) 
-                srcLock.unblock();
-
-            // Flag operation as done
-            drawComplete = true;
-        }
-
-        // If we ARE the source layer, no need to sync.
-        // Syncing would result in deadlock.
-        if (layer === srcLayer)
-            scheduleTask(doCopy);
-
-        // Otherwise synchronize copy operation with source layer
-        else {
-            
-            // Currently blocked draw task
-            var task = scheduleTask(doCopy, true);
-
-            // Unblock draw task once source layer is ready
-            srcLayer.sync(task.unblock);
-
-            // Block source layer until draw completes
-            // Note that the draw MAY have already been performed at this point,
-            // in which case creating a lock on the source layer will lead to
-            // deadlock (the draw task has already run and will thus never
-            // clear the lock)
-            if (!drawComplete)
-                srcLock = srcLayer.sync(null, true);
-
-        }
-
+        });
     };
 
     /**
@@ -648,15 +641,23 @@ Guacamole.Layer = function(width, height) {
      * for other operations (such as clip()) but a new path will be started
      * once a path drawing operation (path() or rect()) is used.
      * 
+     * @param {String} cap The line cap style. Can be "round", "square",
+     *                     or "butt".
+     * @param {String} join The line join style. Can be "round", "bevel",
+     *                      or "miter".
+     * @param {Number} thickness The line thickness in pixels.
      * @param {Number} r The red component of the color to fill.
      * @param {Number} g The green component of the color to fill.
      * @param {Number} b The blue component of the color to fill.
      * @param {Number} a The alpha component of the color to fill.
      */
-    this.strokeColor = function(r, g, b, a) {
+    this.strokeColor = function(cap, join, thickness, r, g, b, a) {
         scheduleTask(function() {
 
             // Stroke with color
+            displayContext.lineCap = cap;
+            displayContext.lineJoin = join;
+            displayContext.lineWidth = thickness;
             displayContext.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
             displayContext.stroke();
 
@@ -665,7 +666,6 @@ Guacamole.Layer = function(width, height) {
 
         });
     };
-
 
     /**
      * Fills the current path with the specified color. The current path
@@ -683,6 +683,66 @@ Guacamole.Layer = function(width, height) {
 
             // Fill with color
             displayContext.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
+            displayContext.fill();
+
+            // Path now implicitly closed
+            pathClosed = true;
+
+        });
+    };
+
+    /**
+     * Stroke the current path with the image within the specified layer. The
+     * image data will be tiled infinitely within the stroke. The current path
+     * is implicitly closed. The current path can continue to be reused
+     * for other operations (such as clip()) but a new path will be started
+     * once a path drawing operation (path() or rect()) is used.
+     * 
+     * @param {String} cap The line cap style. Can be "round", "square",
+     *                     or "butt".
+     * @param {String} join The line join style. Can be "round", "bevel",
+     *                      or "miter".
+     * @param {Number} thickness The line thickness in pixels.
+     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
+     *                                   within the stroke.
+     */
+    this.strokeLayer = function(cap, join, thickness, srcLayer) {
+        scheduleTaskSynced(srcLayer, function() {
+
+            // Stroke with image data
+            displayContext.lineCap = cap;
+            displayContext.lineJoin = join;
+            displayContext.lineWidth = thickness;
+            displayContext.strokeStyle = displayContext.createPattern(
+                srcLayer.getCanvas(),
+                "repeat"
+            );
+            displayContext.stroke();
+
+            // Path now implicitly closed
+            pathClosed = true;
+
+        });
+    };
+
+    /**
+     * Fills the current path with the image within the specified layer. The
+     * image data will be tiled infinitely within the stroke. The current path
+     * is implicitly closed. The current path can continue to be reused
+     * for other operations (such as clip()) but a new path will be started
+     * once a path drawing operation (path() or rect()) is used.
+     * 
+     * @param {Guacamole.Layer} srcLayer The layer to use as a repeating pattern
+     *                                   within the fill.
+     */
+    this.fillLayer = function(srcLayer) {
+        scheduleTask(function() {
+
+            // Fill with image data 
+            displayContext.fillStyle = displayContext.createPattern(
+                srcLayer.getCanvas(),
+                "repeat"
+            );
             displayContext.fill();
 
             // Path now implicitly closed
@@ -747,6 +807,31 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
+     * Applies the given affine transform (defined with three values from the
+     * transform's matrix).
+     * 
+     * @param {Number} a The first value in the affine transform's matrix.
+     * @param {Number} b The second value in the affine transform's matrix.
+     * @param {Number} c The third value in the affine transform's matrix.
+     * @param {Number} d The fourth value in the affine transform's matrix.
+     * @param {Number} e The fifth value in the affine transform's matrix.
+     * @param {Number} f The sixth value in the affine transform's matrix.
+     */
+    this.transform = function(a, b, c, d, e, f) {
+        scheduleTask(function() {
+
+            // Clear transform
+            displayContext.transform(
+                a, b, c,
+                d, e, f
+              /*0, 0, 1*/
+            );
+
+        });
+    };
+
+
+    /**
      * Sets the channel mask for future operations on this Layer.
      * 
      * The channel mask is a Guacamole-specific compositing operation identifier
@@ -761,6 +846,21 @@ Guacamole.Layer = function(width, height) {
     this.setChannelMask = function(mask) {
         scheduleTask(function() {
             displayContext.globalCompositeOperation = compositeOperation[mask];
+        });
+    };
+
+    /**
+     * Sets the miter limit for stroke operations using the miter join. This
+     * limit is the maximum ratio of the size of the miter join to the stroke
+     * width. If this ratio is exceeded, the miter will not be drawn for that
+     * joint of the path.
+     * 
+     * @param {Number} limit The miter limit for stroke operations using the
+     *                       miter join.
+     */
+    this.setMiterLimit = function(limit) {
+        scheduleTask(function() {
+            displayContext.miterLimit = limit;
         });
     };
 
