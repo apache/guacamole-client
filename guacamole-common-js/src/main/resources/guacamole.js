@@ -464,7 +464,7 @@ Guacamole.Client = function(tunnel) {
             cursor.resize(srcWidth, srcHeight);
 
             // Draw cursor to cursor layer
-            cursor.getLayer().copyRect(
+            cursor.getLayer().copy(
                 srcL,
                 srcX,
                 srcY,
