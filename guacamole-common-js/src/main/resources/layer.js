@@ -168,6 +168,10 @@ Guacamole.Layer = function(width, height) {
         width = newWidth;
         height = newHeight;
 
+        // Acknowledge reset of stack (happens on resize of canvas)
+        stackSize = 0;
+        displayContext.save();
+
     }
 
     /**
