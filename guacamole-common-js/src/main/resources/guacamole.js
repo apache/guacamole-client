@@ -426,7 +426,15 @@ Guacamole.Client = function(tunnel) {
             layer.rect(x, y, w, h);
 
         },
+        
+        "reset": function(parameters) {
 
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.reset();
+
+        },
+ 
         "clip": function(parameters) {
 
             var layer = getLayer(parseInt(parameters[0]));
