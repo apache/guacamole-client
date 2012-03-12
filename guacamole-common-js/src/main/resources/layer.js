@@ -72,7 +72,6 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var displayContext = display.getContext("2d");
-    displayContext.save();
 
     /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
@@ -81,6 +80,17 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var tasks = new Array();
+
+    /**
+     * Whether a new path should be started with the next path drawing
+     * operations.
+     */
+    var pathClosed = true;
+
+    /**
+     * The number of states on the state stack.
+     */
+    var stackSize = 0;
 
     /**
      * Map of all Guacamole channel masks to HTML5 canvas composite operation
@@ -518,12 +528,12 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} x The destination X coordinate.
      * @param {Number} y The destination Y coordinate.
      */
-    this.copyRect = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
+    this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
 
         var drawComplete = false;
         var srcLock = null;
 
-        function doCopyRect() {
+        function doCopy() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
@@ -541,13 +551,13 @@ Guacamole.Layer = function(width, height) {
         // If we ARE the source layer, no need to sync.
         // Syncing would result in deadlock.
         if (layer === srcLayer)
-            scheduleTask(doCopyRect);
+            scheduleTask(doCopy);
 
         // Otherwise synchronize copy operation with source layer
         else {
             
             // Currently blocked draw task
-            var task = scheduleTask(doCopyRect, true);
+            var task = scheduleTask(doCopy, true);
 
             // Unblock draw task once source layer is ready
             srcLayer.sync(task.unblock);
@@ -565,24 +575,32 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Clear the specified rectangle of image data.
+     * Add the specified cubic bezier point to the current path.
      * 
-     * @param {Number} x The X coordinate of the upper-left corner of the
-     *                   rectangle to clear.
-     * @param {Number} y The Y coordinate of the upper-left corner of the
-     *                   rectangle to clear.
-     * @param {Number} w The width of the rectangle to clear.
-     * @param {Number} h The height of the rectangle to clear.
+     * @param {Number} x The X coordinate of the point to draw.
+     * @param {Number} y The Y coordinate of the point to draw.
+     * @param {Number} cp1x The X coordinate of the first control point.
+     * @param {Number} cp1y The Y coordinate of the first control point.
+     * @param {Number} cp2x The X coordinate of the second control point.
+     * @param {Number} cp2y The Y coordinate of the second control point.
      */
-    this.clearRect = function(x, y, w, h) {
+    this.path = function(x, y, cp1x, cp1y, cp2x, cp2y) {
         scheduleTask(function() {
-            if (layer.autosize != 0) fitRect(x, y, w, h);
-            displayContext.clearRect(x, y, w, h);
+            
+            // Start a new path if current path is closed
+            if (pathClosed) {
+                displayContext.beginPath();
+                pathClosed = false;
+            }
+            
+            if (layer.autosize != 0) fitRect(x, y, 0, 0);
+            displayContext.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, y);
+            
         });
     };
 
     /**
-     * Fill the specified rectangle of image data with the specified color.
+     * Add the specified rectangle to the current path.
      * 
      * @param {Number} x The X coordinate of the upper-left corner of the
      *                   rectangle to draw.
@@ -590,64 +608,141 @@ Guacamole.Layer = function(width, height) {
      *                   rectangle to draw.
      * @param {Number} w The width of the rectangle to draw.
      * @param {Number} h The height of the rectangle to draw.
-     * @param {Number} r The red component of the color of the rectangle.
-     * @param {Number} g The green component of the color of the rectangle.
-     * @param {Number} b The blue component of the color of the rectangle.
-     * @param {Number} a The alpha component of the color of the rectangle.
      */
-    this.drawRect = function(x, y, w, h, r, g, b, a) {
+    this.rect = function(x, y, w, h) {
         scheduleTask(function() {
+            
+            // Start a new path if current path is closed
+            if (pathClosed) {
+                displayContext.beginPath();
+                pathClosed = false;
+            }
+            
             if (layer.autosize != 0) fitRect(x, y, w, h);
-            displayContext.fillStyle = "rgba("
-                        + r + "," + g + "," + b + "," + a / 255 + ")";
-            displayContext.fillRect(x, y, w, h);
+            displayContext.rect(x, y, w, h);
+            
         });
     };
 
     /**
-     * Clip all future drawing operations by the specified rectangle.
-     * 
-     * @param {Number} x The X coordinate of the upper-left corner of the
-     *                   rectangle to use for the clipping region.
-     * @param {Number} y The Y coordinate of the upper-left corner of the
-     *                   rectangle to use for the clipping region.
-     * @param {Number} w The width of the rectangle to use for the clipping region.
-     * @param {Number} h The height of the rectangle to use for the clipping region.
+     * Clip all future drawing operations by the current path. The current path
+     * is implicitly closed. The current path can continue to be reused
+     * for other operations (such as fillColor()) but a new path will be started
+     * once a path drawing operation (path() or rect()) is used.
      */
-    this.clipRect = function(x, y, w, h) {
+    this.clip = function() {
         scheduleTask(function() {
-
-            // Clear any current clipping region
-            displayContext.restore();
-            displayContext.save();
-
-            if (layer.autosize != 0) fitRect(x, y, w, h);
 
             // Set new clipping region
-            displayContext.beginPath();
-            displayContext.rect(x, y, w, h);
             displayContext.clip();
+
+            // Path now implicitly closed
+            pathClosed = true;
 
         });
     };
 
     /**
-     * Provides the given filtering function with a writable snapshot of
-     * image data and the current width and height of the Layer.
+     * Stroke the current path with the specified color. The current path
+     * is implicitly closed. The current path can continue to be reused
+     * for other operations (such as clip()) but a new path will be started
+     * once a path drawing operation (path() or rect()) is used.
      * 
-     * @param {function} filter A function which accepts an array of image
-     *                          data (as returned by the canvas element's
-     *                          display context's getImageData() function),
-     *                          the width of the Layer, and the height of the
-     *                          Layer as parameters, in that order. This
-     *                          function must accomplish its filtering by
-     *                          modifying the given image data array directly.
+     * @param {Number} r The red component of the color to fill.
+     * @param {Number} g The green component of the color to fill.
+     * @param {Number} b The blue component of the color to fill.
+     * @param {Number} a The alpha component of the color to fill.
      */
-    this.filter = function(filter) {
+    this.strokeColor = function(r, g, b, a) {
         scheduleTask(function() {
-            var imageData = displayContext.getImageData(0, 0, width, height);
-            filter(imageData.data, width, height);
-            displayContext.putImageData(imageData, 0, 0);
+
+            // Stroke with color
+            displayContext.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
+            displayContext.stroke();
+
+            // Path now implicitly closed
+            pathClosed = true;
+
+        });
+    };
+
+
+    /**
+     * Fills the current path with the specified color. The current path
+     * is implicitly closed. The current path can continue to be reused
+     * for other operations (such as clip()) but a new path will be started
+     * once a path drawing operation (path() or rect()) is used.
+     * 
+     * @param {Number} r The red component of the color to fill.
+     * @param {Number} g The green component of the color to fill.
+     * @param {Number} b The blue component of the color to fill.
+     * @param {Number} a The alpha component of the color to fill.
+     */
+    this.fillColor = function(r, g, b, a) {
+        scheduleTask(function() {
+
+            // Fill with color
+            displayContext.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
+            displayContext.fill();
+
+            // Path now implicitly closed
+            pathClosed = true;
+
+        });
+    };
+
+    /**
+     * Push current layer state onto stack.
+     */
+    this.push = function() {
+        scheduleTask(function() {
+
+            // Save current state onto stack
+            displayContext.save();
+            stackSize++;
+
+        });
+    };
+
+    /**
+     * Pop layer state off stack.
+     */
+    this.pop = function() {
+        scheduleTask(function() {
+
+            // Restore current state from stack
+            if (stackSize > 0) {
+                displayContext.restore();
+                stackSize--;
+            }
+
+        });
+    };
+
+    /**
+     * Reset the layer, clearing the stack, the current path, and any transform
+     * matrix.
+     */
+    this.reset = function() {
+        scheduleTask(function() {
+
+            // Clear stack
+            while (stackSize > 0) {
+                displaycontext.restore();
+                stackSize--;
+            }
+
+            // Clear transform
+            displayContext.setTransform(
+                1, 0, 0,
+                0, 1, 0
+              /*0, 0, 1*/
+            );
+
+            // Clear path
+            displayContext.beginPath();
+            pathClosed = false;
+
         });
     };
 

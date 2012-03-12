@@ -378,7 +378,7 @@ Guacamole.Client = function(tunnel) {
 
             dstL.setChannelMask(channelMask);
 
-            dstL.copyRect(
+            dstL.copy(
                 srcL,
                 srcX,
                 srcY,
@@ -417,35 +417,21 @@ Guacamole.Client = function(tunnel) {
 
         "rect": function(parameters) {
 
-            var channelMask = parseInt(parameters[0]);
-            var layer = getLayer(parseInt(parameters[1]));
-            var x = parseInt(parameters[2]);
-            var y = parseInt(parameters[3]);
-            var w = parseInt(parameters[4]);
-            var h = parseInt(parameters[5]);
-            var r = parseInt(parameters[6]);
-            var g = parseInt(parameters[7]);
-            var b = parseInt(parameters[8]);
-            var a = parseInt(parameters[9]);
-
-            layer.setChannelMask(channelMask);
-
-            layer.drawRect(
-                x, y, w, h,
-                r, g, b, a
-            );
-
-        },
-
-        "clip": function(parameters) {
-
             var layer = getLayer(parseInt(parameters[0]));
             var x = parseInt(parameters[1]);
             var y = parseInt(parameters[2]);
             var w = parseInt(parameters[3]);
             var h = parseInt(parameters[4]);
 
-            layer.clipRect(x, y, w, h);
+            layer.rect(x, y, w, h);
+
+        },
+
+        "clip": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.clip();
 
         },
 
