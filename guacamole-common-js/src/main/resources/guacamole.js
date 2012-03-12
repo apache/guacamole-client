@@ -246,46 +246,117 @@ Guacamole.Client = function(tunnel) {
 
     var instructionHandlers = {
 
-        "error": function(parameters) {
-            if (guac_client.onerror) guac_client.onerror(parameters[0]);
-            guac_client.disconnect();
+        "cfill": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var r = parseInt(parameters[2]);
+            var g = parseInt(parameters[3]);
+            var b = parseInt(parameters[4]);
+            var a = parseInt(parameters[5]);
+
+            layer.setChannelMask(channelMask);
+
+            layer.fillColor(r, g, b, a);
+
         },
 
-        "name": function(parameters) {
-            if (guac_client.onname) guac_client.onname(parameters[0]);
+        "clip": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.clip();
+
         },
 
         "clipboard": function(parameters) {
             if (guac_client.onclipboard) guac_client.onclipboard(parameters[0]);
         },
 
-        "size": function(parameters) {
+        "copy": function(parameters) {
 
+            var srcL = getLayer(parseInt(parameters[0]));
+            var srcX = parseInt(parameters[1]);
+            var srcY = parseInt(parameters[2]);
+            var srcWidth = parseInt(parameters[3]);
+            var srcHeight = parseInt(parameters[4]);
+            var channelMask = parseInt(parameters[5]);
+            var dstL = getLayer(parseInt(parameters[6]));
+            var dstX = parseInt(parameters[7]);
+            var dstY = parseInt(parameters[8]);
+
+            dstL.setChannelMask(channelMask);
+
+            dstL.copy(
+                srcL,
+                srcX,
+                srcY,
+                srcWidth, 
+                srcHeight, 
+                dstX,
+                dstY 
+            );
+
+        },
+
+        "cursor": function(parameters) {
+
+            cursorHotspotX = parseInt(parameters[0]);
+            cursorHotspotY = parseInt(parameters[1]);
+            var srcL = getLayer(parseInt(parameters[2]));
+            var srcX = parseInt(parameters[3]);
+            var srcY = parseInt(parameters[4]);
+            var srcWidth = parseInt(parameters[5]);
+            var srcHeight = parseInt(parameters[6]);
+
+            // Reset cursor size
+            cursor.resize(srcWidth, srcHeight);
+
+            // Draw cursor to cursor layer
+            cursor.getLayer().copy(
+                srcL,
+                srcX,
+                srcY,
+                srcWidth, 
+                srcHeight, 
+                0,
+                0 
+            );
+
+            // Update cursor position (hotspot may have changed)
+            moveCursor(cursorX, cursorY);
+
+        },
+
+        "dispose": function(parameters) {
+            
             var layer_index = parseInt(parameters[0]);
-            var width = parseInt(parameters[1]);
-            var height = parseInt(parameters[2]);
 
-            // Only valid for layers (buffers auto-resize)
-            if (layer_index >= 0) {
+            // If visible layer, remove from parent
+            if (layer_index > 0) {
 
-                // Resize layer
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.resize(width, height);
+                // Get container element
+                var layer_container = getLayerContainer(layer_index).getElement();
 
-                // If layer is default, resize display
-                if (layer_index == 0) {
+                // Remove from parent
+                layer_container.parentNode.removeChild(layer_container);
 
-                    displayWidth = width;
-                    displayHeight = height;
+                // Delete reference
+                delete layers[layer_index];
 
-                    // Update (set) display size
-                    display.style.width = displayWidth + "px";
-                    display.style.height = displayHeight + "px";
+            }
 
-                }
+            // If buffer, just delete reference
+            else if (layer_index < 0)
+                delete buffers[-1 - layer_index];
 
-            } // end if layer (not buffer)
+            // Attempting to dispose the root layer currently has no effect.
 
+        },
+
+        "error": function(parameters) {
+            if (guac_client.onerror) guac_client.onerror(parameters[0]);
+            guac_client.disconnect();
         },
 
         "move": function(parameters) {
@@ -316,30 +387,8 @@ Guacamole.Client = function(tunnel) {
 
         },
 
-        "dispose": function(parameters) {
-            
-            var layer_index = parseInt(parameters[0]);
-
-            // If visible layer, remove from parent
-            if (layer_index > 0) {
-
-                // Get container element
-                var layer_container = getLayerContainer(layer_index).getElement();
-
-                // Remove from parent
-                layer_container.parentNode.removeChild(layer_container);
-
-                // Delete reference
-                delete layers[layer_index];
-
-            }
-
-            // If buffer, just delete reference
-            else if (layer_index < 0)
-                delete buffers[-1 - layer_index];
-
-            // Attempting to dispose the root layer currently has no effect.
-
+        "name": function(parameters) {
+            if (guac_client.onname) guac_client.onname(parameters[0]);
         },
 
         "png": function(parameters) {
@@ -364,57 +413,6 @@ Guacamole.Client = function(tunnel) {
 
         },
 
-        "copy": function(parameters) {
-
-            var srcL = getLayer(parseInt(parameters[0]));
-            var srcX = parseInt(parameters[1]);
-            var srcY = parseInt(parameters[2]);
-            var srcWidth = parseInt(parameters[3]);
-            var srcHeight = parseInt(parameters[4]);
-            var channelMask = parseInt(parameters[5]);
-            var dstL = getLayer(parseInt(parameters[6]));
-            var dstX = parseInt(parameters[7]);
-            var dstY = parseInt(parameters[8]);
-
-            dstL.setChannelMask(channelMask);
-
-            dstL.copy(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                dstX,
-                dstY 
-            );
-
-        },
-
-        "transfer": function(parameters) {
-
-            var srcL = getLayer(parseInt(parameters[0]));
-            var srcX = parseInt(parameters[1]);
-            var srcY = parseInt(parameters[2]);
-            var srcWidth = parseInt(parameters[3]);
-            var srcHeight = parseInt(parameters[4]);
-            var transferFunction = Guacamole.Client.DefaultTransferFunction[parameters[5]];
-            var dstL = getLayer(parseInt(parameters[6]));
-            var dstX = parseInt(parameters[7]);
-            var dstY = parseInt(parameters[8]);
-
-            dstL.transfer(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                dstX,
-                dstY,
-                transferFunction
-            );
-
-        },
-
         "rect": function(parameters) {
 
             var layer = getLayer(parseInt(parameters[0]));
@@ -435,55 +433,32 @@ Guacamole.Client = function(tunnel) {
 
         },
  
-        "clip": function(parameters) {
+        "size": function(parameters) {
 
-            var layer = getLayer(parseInt(parameters[0]));
+            var layer_index = parseInt(parameters[0]);
+            var width = parseInt(parameters[1]);
+            var height = parseInt(parameters[2]);
 
-            layer.clip();
+            // Only valid for layers (buffers auto-resize)
+            if (layer_index >= 0) {
 
-        },
+                // Resize layer
+                var layer_container = getLayerContainer(layer_index);
+                layer_container.resize(width, height);
 
-        "cfill": function(parameters) {
+                // If layer is default, resize display
+                if (layer_index == 0) {
 
-            var channelMask = parseInt(parameters[0]);
-            var layer = getLayer(parseInt(parameters[1]));
-            var r = parseInt(parameters[2]);
-            var g = parseInt(parameters[3]);
-            var b = parseInt(parameters[4]);
-            var a = parseInt(parameters[5]);
+                    displayWidth = width;
+                    displayHeight = height;
 
-            layer.setChannelMask(channelMask);
+                    // Update (set) display size
+                    display.style.width = displayWidth + "px";
+                    display.style.height = displayHeight + "px";
 
-            layer.fillColor(r, g, b, a);
+                }
 
-        },
-
-        "cursor": function(parameters) {
-
-            cursorHotspotX = parseInt(parameters[0]);
-            cursorHotspotY = parseInt(parameters[1]);
-            var srcL = getLayer(parseInt(parameters[2]));
-            var srcX = parseInt(parameters[3]);
-            var srcY = parseInt(parameters[4]);
-            var srcWidth = parseInt(parameters[5]);
-            var srcHeight = parseInt(parameters[6]);
-
-            // Reset cursor size
-            cursor.resize(srcWidth, srcHeight);
-
-            // Draw cursor to cursor layer
-            cursor.getLayer().copy(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                0,
-                0 
-            );
-
-            // Update cursor position (hotspot may have changed)
-            moveCursor(cursorX, cursorY);
+            } // end if layer (not buffer)
 
         },
 
@@ -528,6 +503,31 @@ Guacamole.Client = function(tunnel) {
                     currentTimestamp = timestamp;
                 }
             }
+
+        },
+
+        "transfer": function(parameters) {
+
+            var srcL = getLayer(parseInt(parameters[0]));
+            var srcX = parseInt(parameters[1]);
+            var srcY = parseInt(parameters[2]);
+            var srcWidth = parseInt(parameters[3]);
+            var srcHeight = parseInt(parameters[4]);
+            var transferFunction = Guacamole.Client.DefaultTransferFunction[parameters[5]];
+            var dstL = getLayer(parseInt(parameters[6]));
+            var dstX = parseInt(parameters[7]);
+            var dstY = parseInt(parameters[8]);
+
+            dstL.transfer(
+                srcL,
+                srcX,
+                srcY,
+                srcWidth, 
+                srcHeight, 
+                dstX,
+                dstY,
+                transferFunction
+            );
 
         }
       
