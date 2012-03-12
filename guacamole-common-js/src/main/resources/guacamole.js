@@ -435,6 +435,21 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "cfill": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var r = getLayer(parseInt(parameters[2]));
+            var g = getLayer(parseInt(parameters[3]));
+            var b = getLayer(parseInt(parameters[4]));
+            var a = getLayer(parseInt(parameters[5]));
+
+            layer.setChannelMask(channelMask);
+
+            layer.fillColor(r, g, b, a);
+
+        },
+
         "cursor": function(parameters) {
 
             cursorHotspotX = parseInt(parameters[0]);
