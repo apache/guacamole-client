@@ -281,15 +281,15 @@
     <row><gap size="0.1"/></row>
 
     <row>
-        <key size="1.6">
+        <key size="1.6" class="control">
             <cap modifier="control" keysym="0xFFE3">Ctrl</cap>
         </key>
         <gap size="0.1"/>
-        <key size="1.6">
+        <key size="1.6" class="super">
             <cap modifier="super" keysym="0xFFEB">Super</cap>
         </key>
         <gap size="0.1"/>
-        <key size="1.6">
+        <key size="1.6" class="alt">
             <cap modifier="alt" keysym="0xFFE9">Alt</cap>
         </key>
         <gap size="0.1"/>
@@ -297,15 +297,15 @@
             <cap> </cap>
         </key>
         <gap size="0.1"/>
-        <key size="1.6">
+        <key size="1.6" class="alt">
             <cap modifier="alt" keysym="0xFFEA">Alt</cap>
         </key>
         <gap size="0.1"/>
         <key size="1.6">
-            <cap modifier="super" keysym="0xFF67">Menu</cap>
+            <cap keysym="0xFF67">Menu</cap>
         </key>
         <gap size="0.1"/>
-        <key size="1.6">
+        <key size="1.6" class="control">
             <cap modifier="control" keysym="0xFFE4">Ctrl</cap>
         </key>
     </row>

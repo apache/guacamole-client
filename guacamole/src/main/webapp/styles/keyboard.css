@@ -84,6 +84,24 @@
     border-color: #DD4;
 }
 
+.guac-keyboard.guac-keyboard-modifier-control .guac-keyboard-key.control,
+.guac-keyboard.guac-keyboard-modifier-numsym .guac-keyboard-key.numsym {
+    background: #882;
+    border-color: #DD4;
+}
+
+.guac-keyboard.guac-keyboard-modifier-alt .guac-keyboard-key.alt,
+.guac-keyboard.guac-keyboard-modifier-numsym .guac-keyboard-key.numsym {
+    background: #882;
+    border-color: #DD4;
+}
+
+.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key.super,
+.guac-keyboard.guac-keyboard-modifier-numsym .guac-keyboard-key.numsym {
+    background: #882;
+    border-color: #DD4;
+}
+
 .guac-keyboard .guac-keyboard-key.guac-keyboard-pressed {
     background: #822;
     border-color: #D44;
