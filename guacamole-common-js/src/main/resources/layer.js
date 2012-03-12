@@ -72,6 +72,7 @@ Guacamole.Layer = function(width, height) {
      * @private
      */
     var displayContext = display.getContext("2d");
+    displayContext.save();
 
     /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
@@ -89,6 +90,10 @@ Guacamole.Layer = function(width, height) {
 
     /**
      * The number of states on the state stack.
+     * 
+     * Note that there will ALWAYS be one element on the stack, but that
+     * element is not exposed. It is only used to reset the layer to its
+     * initial state.
      */
     var stackSize = 0;
 
@@ -788,16 +793,13 @@ Guacamole.Layer = function(width, height) {
 
             // Clear stack
             while (stackSize > 0) {
-                displaycontext.restore();
+                displayContext.restore();
                 stackSize--;
             }
 
-            // Clear transform
-            displayContext.setTransform(
-                1, 0, 0,
-                0, 1, 0
-              /*0, 0, 1*/
-            );
+            // Restore to initial state
+            displayContext.restore();
+            displayContext.save();
 
             // Clear path
             displayContext.beginPath();
