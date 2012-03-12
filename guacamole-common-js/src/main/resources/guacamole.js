@@ -439,10 +439,10 @@ Guacamole.Client = function(tunnel) {
 
             var channelMask = parseInt(parameters[0]);
             var layer = getLayer(parseInt(parameters[1]));
-            var r = getLayer(parseInt(parameters[2]));
-            var g = getLayer(parseInt(parameters[3]));
-            var b = getLayer(parseInt(parameters[4]));
-            var a = getLayer(parseInt(parameters[5]));
+            var r = parseInt(parameters[2]);
+            var g = parseInt(parameters[3]);
+            var b = parseInt(parameters[4]);
+            var a = parseInt(parameters[5]);
 
             layer.setChannelMask(channelMask);
 
