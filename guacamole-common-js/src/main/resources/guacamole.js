@@ -264,6 +264,19 @@ Guacamole.Client = function(tunnel) {
 
     var instructionHandlers = {
 
+        "arc": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var x = parseInt(parameters[1]);
+            var y = parseInt(parameters[2]);
+            var radius = parseInt(parameters[3]);
+            var startAngle = parseFloat(parameters[4]);
+            var endAngle = parseFloat(parameters[5]);
+
+            layer.arc(x, y, radius, startAngle, endAngle);
+
+        },
+
         "cfill": function(parameters) {
 
             var channelMask = parseInt(parameters[0]);
@@ -289,6 +302,14 @@ Guacamole.Client = function(tunnel) {
 
         "clipboard": function(parameters) {
             if (guac_client.onclipboard) guac_client.onclipboard(parameters[0]);
+        },
+
+        "close": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.close();
+
         },
 
         "copy": function(parameters) {
@@ -361,6 +382,20 @@ Guacamole.Client = function(tunnel) {
 
             // Update cursor position (hotspot may have changed)
             moveCursor(cursorX, cursorY);
+
+        },
+
+        "curve": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var cp1x = parseInt(parameters[1]);
+            var cp1y = parseInt(parameters[2]);
+            var cp2x = parseInt(parameters[3]);
+            var cp2y = parseInt(parameters[4]);
+            var x = parseInt(parameters[5]);
+            var y = parseInt(parameters[6]);
+
+            layer.curveTo(cp1x, cp1y, cp2x, cp2y, x, y);
 
         },
 
