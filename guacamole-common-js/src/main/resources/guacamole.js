@@ -430,6 +430,18 @@ Guacamole.Client = function(tunnel) {
             guac_client.disconnect();
         },
 
+        "lfill": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var srcLayer = getLayer(parseInt(parameters[2]));
+
+            layer.setChannelMask(channelMask);
+
+            layer.fillLayer(srcLayer);
+
+        },
+
         "line": function(parameters) {
 
             var layer = getLayer(parseInt(parameters[0]));
@@ -437,6 +449,18 @@ Guacamole.Client = function(tunnel) {
             var y = parseInt(parameters[2]);
 
             layer.lineTo(x, y);
+
+        },
+
+        "lstroke": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var srcLayer = getLayer(parseInt(parameters[2]));
+
+            layer.setChannelMask(channelMask);
+
+            layer.strokeLayer(srcLayer);
 
         },
 
