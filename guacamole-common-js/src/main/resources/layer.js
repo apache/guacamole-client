@@ -577,16 +577,12 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Add the specified cubic bezier point to the current path.
+     * Starts a new path at the specified point.
      * 
      * @param {Number} x The X coordinate of the point to draw.
      * @param {Number} y The Y coordinate of the point to draw.
-     * @param {Number} cp1x The X coordinate of the first control point.
-     * @param {Number} cp1y The Y coordinate of the first control point.
-     * @param {Number} cp2x The X coordinate of the second control point.
-     * @param {Number} cp2y The Y coordinate of the second control point.
      */
-    this.path = function(x, y, cp1x, cp1y, cp2x, cp2y) {
+    this.moveTo = function(x, y) {
         scheduleTask(function() {
             
             // Start a new path if current path is closed
@@ -596,7 +592,96 @@ Guacamole.Layer = function(width, height) {
             }
             
             if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, y);
+            displayContext.moveTo(x, y);
+            
+        });
+    };
+
+    /**
+     * Add the specified line to the current path.
+     * 
+     * @param {Number} x The X coordinate of the endpoint of the line to draw.
+     * @param {Number} y The Y coordinate of the endpoint of the line to draw.
+     */
+    this.lineTo = function(x, y) {
+        scheduleTask(function() {
+            
+            // Start a new path if current path is closed
+            if (pathClosed) {
+                displayContext.beginPath();
+                pathClosed = false;
+            }
+            
+            if (layer.autosize != 0) fitRect(x, y, 0, 0);
+            displayContext.lineTo(x, y);
+            
+        });
+    };
+
+    /**
+     * Add the specified arc to the current path. Drawing direction is
+     * determined by the start and end angles. To draw clockwise, ensure
+     * the end angle is greater than the start angle. To draw counterclockwise,
+     * ensure the end angle is less than the start angle.
+     * 
+     * @param {Number} x The X coordinate of the center of the circle which
+     *                   will contain the arc.
+     * @param {Number} y The Y coordinate of the center of the circle which
+     *                   will contain the arc.
+     * @param {Number} radius The radius of the circle.
+     * @param {Number} startAngle The starting angle of the arc, in radians.
+     * @param {Number} endAngle The ending angle of the arc, in radians.
+     */
+    this.arc = function(x, y, radius, startAngle, endAngle) {
+        scheduleTask(function() {
+            
+            // Start a new path if current path is closed
+            if (pathClosed) {
+                displayContext.beginPath();
+                pathClosed = false;
+            }
+            
+            if (layer.autosize != 0) fitRect(x, y, 0, 0);
+            displayContext.arc(x, y, radius, startAngle, endAngle, endAngle < startAngle);
+            
+        });
+    };
+
+    /**
+     * Starts a new path at the specified point.
+     * 
+     * @param {Number} cp1x The X coordinate of the first control point.
+     * @param {Number} cp1y The Y coordinate of the first control point.
+     * @param {Number} cp2x The X coordinate of the second control point.
+     * @param {Number} cp2y The Y coordinate of the second control point.
+     * @param {Number} x The X coordinate of the endpoint of the curve.
+     * @param {Number} y The Y coordinate of the endpoint of the curve.
+     */
+    this.curveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
+        scheduleTask(function() {
+            
+            // Start a new path if current path is closed
+            if (pathClosed) {
+                displayContext.beginPath();
+                pathClosed = false;
+            }
+            
+            if (layer.autosize != 0) fitRect(x, y, 0, 0);
+            displayContext.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+            
+        });
+    };
+
+    /**
+     * Closes the current path by connecting the end point with the start
+     * point (if any) with a straight line.
+     */
+    this.close = function() {
+        scheduleTask(function() {
+            
+            // Close path
+            displayContext.closePath();
+            pathClosed = true;
             
         });
     };
@@ -813,7 +898,32 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Applies the given affine transform (defined with three values from the
+     * Sets the given affine transform (defined with six values from the
+     * transform's matrix).
+     * 
+     * @param {Number} a The first value in the affine transform's matrix.
+     * @param {Number} b The second value in the affine transform's matrix.
+     * @param {Number} c The third value in the affine transform's matrix.
+     * @param {Number} d The fourth value in the affine transform's matrix.
+     * @param {Number} e The fifth value in the affine transform's matrix.
+     * @param {Number} f The sixth value in the affine transform's matrix.
+     */
+    this.setTransform = function(a, b, c, d, e, f) {
+        scheduleTask(function() {
+
+            // Set transform
+            displayContext.setTransform(
+                a, b, c,
+                d, e, f
+              /*0, 0, 1*/
+            );
+
+        });
+    };
+
+
+    /**
+     * Applies the given affine transform (defined with six values from the
      * transform's matrix).
      * 
      * @param {Number} a The first value in the affine transform's matrix.
@@ -826,7 +936,7 @@ Guacamole.Layer = function(width, height) {
     this.transform = function(a, b, c, d, e, f) {
         scheduleTask(function() {
 
-            // Clear transform
+            // Apply transform
             displayContext.transform(
                 a, b, c,
                 d, e, f
