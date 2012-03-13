@@ -560,6 +560,22 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "pop": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.pop();
+
+        },
+
+        "push": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.push();
+
+        },
+ 
         "rect": function(parameters) {
 
             var layer = getLayer(parseInt(parameters[0]));
