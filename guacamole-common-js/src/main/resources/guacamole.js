@@ -68,6 +68,24 @@ Guacamole.Client = function(tunnel) {
     var displayWidth = 0;
     var displayHeight = 0;
 
+    /**
+     * Translation from Guacamole protocol line caps to Layer line caps.
+     */
+    var lineCap = {
+        0: "butt",
+        1: "round",
+        2: "square"
+    };
+
+    /**
+     * Translation from Guacamole protocol line caps to Layer line caps.
+     */
+    var lineJoin = {
+        0: "bevel",
+        1: "miter",
+        2: "round"
+    };
+
     // Create display
     var display = document.createElement("div");
     display.style.position = "relative";
@@ -299,6 +317,24 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "cstroke": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var cap = lineCap[parseInt(parameters[2])];
+            var join = lineJoin[parseInt(parameters[3])];
+            var thickness = parseInt(parameters[4]);
+            var r = parseInt(parameters[5]);
+            var g = parseInt(parameters[6]);
+            var b = parseInt(parameters[7]);
+            var a = parseInt(parameters[8]);
+
+            layer.setChannelMask(channelMask);
+
+            layer.strokeColor(cap, join, thickness, r, g, b, a);
+
+        },
+
         "cursor": function(parameters) {
 
             cursorHotspotX = parseInt(parameters[0]);
@@ -357,6 +393,16 @@ Guacamole.Client = function(tunnel) {
         "error": function(parameters) {
             if (guac_client.onerror) guac_client.onerror(parameters[0]);
             guac_client.disconnect();
+        },
+
+        "line": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var x = parseInt(parameters[1]);
+            var y = parseInt(parameters[2]);
+
+            layer.lineTo(x, y);
+
         },
 
         "move": function(parameters) {
@@ -454,6 +500,16 @@ Guacamole.Client = function(tunnel) {
                 display.style.height = displayHeight + "px";
 
             }
+
+        },
+        
+        "start": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var x = parseInt(parameters[1]);
+            var y = parseInt(parameters[2]);
+
+            layer.moveTo(x, y);
 
         },
 
