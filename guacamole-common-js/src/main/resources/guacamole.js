@@ -430,6 +430,18 @@ Guacamole.Client = function(tunnel) {
             guac_client.disconnect();
         },
 
+        "identity": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+
+            layer.setTransform(
+                1, 0, 0,
+                0, 1, 0
+              /*0, 0, 1*/
+            );
+
+        },
+
         "lfill": function(parameters) {
 
             var channelMask = parseInt(parameters[0]);
@@ -638,6 +650,20 @@ Guacamole.Client = function(tunnel) {
                 dstY,
                 transferFunction
             );
+
+        },
+
+        "transform": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var a = parseFloat(parameters[1]);
+            var b = parseFloat(parameters[2]);
+            var c = parseFloat(parameters[3]);
+            var d = parseFloat(parameters[4]);
+            var e = parseFloat(parameters[5]);
+            var f = parseFloat(parameters[6]);
+
+            layer.transform(a, b, c, d, e, f);
 
         }
       
