@@ -264,6 +264,21 @@ Guacamole.Client = function(tunnel) {
 
     }
 
+    /**
+     * Handlers for all defined layer properties.
+     */
+    var layerPropertyHandlers = {
+
+        "miter-limit": function(layer, value) {
+            layer.setMiterLimit(parseFloat(value));
+        }
+
+    };
+    
+    /**
+     * Handlers for all instruction opcodes receivable by a Guacamole protocol
+     * client.
+     */
     var instructionHandlers = {
 
         "arc": function(parameters) {
@@ -595,6 +610,19 @@ Guacamole.Client = function(tunnel) {
             var layer = getLayer(parseInt(parameters[0]));
 
             layer.reset();
+
+        },
+        
+        "set": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var name = parameters[1];
+            var value = parameters[2];
+
+            // Call property handler if defined
+            var handler = layerPropertyHandlers[name];
+            if (handler)
+                handler(layer, value);
 
         },
 
