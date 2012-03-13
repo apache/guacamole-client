@@ -425,6 +425,40 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "distort": function(parameters) {
+
+            var layer_index = parseInt(parameters[0]);
+            var a = parseFloat(parameters[1]);
+            var b = parseFloat(parameters[2]);
+            var c = parseFloat(parameters[3]);
+            var d = parseFloat(parameters[4]);
+            var e = parseFloat(parameters[5]);
+            var f = parseFloat(parameters[6]);
+
+            // Only valid for visible layers (not buffers)
+            if (layer_index >= 0) {
+
+                // Get container element
+                var layer_container = getLayerContainer(layer_index).getElement();
+
+                // Set layer transform 
+                layer_container.style.transform =
+                layer_container.style.WebkitTransform =
+                layer_container.style.MozTransform =
+                layer_container.style.OTransform =
+                layer_container.style.msTransform =
+
+                    /* a c e
+                     * b d f
+                     * 0 0 1
+                     */
+            
+                    "matrix(" + a + "," + b + "," + c + "," + d + "," + e + "," + f + ")";
+
+             }
+
+        },
+ 
         "error": function(parameters) {
             if (guac_client.onerror) guac_client.onerror(parameters[0]);
             guac_client.disconnect();
@@ -434,11 +468,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.setTransform(
-                1, 0, 0,
-                0, 1, 0
-              /*0, 0, 1*/
-            );
+            layer.setTransform(1, 0, 0, 1, 0, 0);
 
         },
 
@@ -549,7 +579,25 @@ Guacamole.Client = function(tunnel) {
             layer.reset();
 
         },
- 
+
+        "shade": function(parameters) {
+            
+            var layer_index = parseInt(parameters[0]);
+            var a = parseInt(parameters[1]);
+
+            // Only valid for visible layers (not buffers)
+            if (layer_index >= 0) {
+
+                // Get container element
+                var layer_container = getLayerContainer(layer_index).getElement();
+
+                // Set layer opacity
+                layer_container.style.opacity = a/255.0;
+
+            }
+
+        },
+
         "size": function(parameters) {
 
             var layer_index = parseInt(parameters[0]);
