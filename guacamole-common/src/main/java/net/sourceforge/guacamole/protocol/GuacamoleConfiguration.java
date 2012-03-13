@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.protocol;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
@@ -45,8 +46,10 @@ import java.util.HashMap;
  *
  * @author Michael Jumper
  */
-public class GuacamoleConfiguration {
+public class GuacamoleConfiguration implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+    
     private String protocol;
     private HashMap<String, String> parameters = new HashMap<String, String>();
 
