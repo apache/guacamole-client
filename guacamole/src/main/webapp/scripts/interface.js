@@ -95,17 +95,20 @@ var GuacamoleUI = {
     GuacamoleUI.hideStatus = function() {
         removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "hidden";
+        GuacamoleUI.display.style.opacity = "1";
     };
     
     GuacamoleUI.showStatus = function(text) {
         removeClass(document.body, "guac-error");
         GuacamoleUI.containers.state.style.visibility = "visible";
         GuacamoleUI.state.textContent = text;
+        GuacamoleUI.display.style.opacity = "1";
     };
     
     GuacamoleUI.showError = function(error) {
         addClass(document.body, "guac-error");
         GuacamoleUI.state.textContent = error;
+        GuacamoleUI.display.style.opacity = "0.1";
     };
 
     GuacamoleUI.shadeMenu = function() {
