@@ -181,8 +181,17 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
-                if (message_xmlhttprequest.readyState == 4)
-                    sendPendingMessages();
+                if (message_xmlhttprequest.readyState == 4) {
+
+                    // If an error occurs during send, handle it
+                    if (message_xmlhttprequest.status != 200)
+                        handleHTTPTunnelError(message_xmlhttprequest);
+
+                    // Otherwise, continue the send loop
+                    else
+                        sendPendingMessages();
+
+                }
             }
 
             message_xmlhttprequest.send(outputMessageBuffer);
@@ -191,6 +200,22 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         }
         else
             sendingMessages = false;
+
+    }
+
+
+    function handleHTTPTunnelError(xmlhttprequest) {
+
+        // Get error message (if any)
+        var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
+        if (!message)
+            message = "Internal server error";
+
+        // Call error handler
+        if (tunnel.onerror) tunnel.onerror(message);
+
+        // Finish
+        tunnel.disconnect();
 
     }
 
@@ -257,17 +282,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                 // Halt on error during request
                 else if (xmlhttprequest.status != 200) {
-
-                    // Get error message (if any)
-                    var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
-                    if (!message)
-                        message = "Internal server error";
-
-                    // Call error handler
-                    if (tunnel.onerror) tunnel.onerror(message);
-
-                    // Finish
-                    tunnel.disconnect();
+                    handleHTTPTunnelError(xmlhttprequest);
                     return;
                 }
 
