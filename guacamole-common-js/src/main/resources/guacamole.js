@@ -289,8 +289,9 @@ Guacamole.Client = function(tunnel) {
             var radius = parseInt(parameters[3]);
             var startAngle = parseFloat(parameters[4]);
             var endAngle = parseFloat(parameters[5]);
+            var negative = parseInt(parameters[6]);
 
-            layer.arc(x, y, radius, startAngle, endAngle);
+            layer.arc(x, y, radius, startAngle, endAngle, negative != 0);
 
         },
 

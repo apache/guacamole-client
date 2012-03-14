@@ -619,10 +619,7 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Add the specified arc to the current path. Drawing direction is
-     * determined by the start and end angles. To draw clockwise, ensure
-     * the end angle is greater than the start angle. To draw counterclockwise,
-     * ensure the end angle is less than the start angle.
+     * Add the specified arc to the current path.
      * 
      * @param {Number} x The X coordinate of the center of the circle which
      *                   will contain the arc.
@@ -631,8 +628,10 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} radius The radius of the circle.
      * @param {Number} startAngle The starting angle of the arc, in radians.
      * @param {Number} endAngle The ending angle of the arc, in radians.
+     * @param {Boolean} negative Whether the arc should be drawn in order of
+     *                           decreasing angle.
      */
-    this.arc = function(x, y, radius, startAngle, endAngle) {
+    this.arc = function(x, y, radius, startAngle, endAngle, negative) {
         scheduleTask(function() {
             
             // Start a new path if current path is closed
@@ -642,7 +641,7 @@ Guacamole.Layer = function(width, height) {
             }
             
             if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.arc(x, y, radius, startAngle, endAngle, endAngle < startAngle);
+            displayContext.arc(x, y, radius, startAngle, endAngle, negative);
             
         });
     };
