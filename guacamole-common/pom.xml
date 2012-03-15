@@ -5,7 +5,7 @@
     <groupId>net.sourceforge.guacamole</groupId>
     <artifactId>guacamole-common</artifactId>
     <packaging>jar</packaging>
-    <version>0.5.0</version>
+    <version>0.6.0</version>
     <name>guacamole-common</name>
     <url>http://guacamole.sourceforge.net/</url>
 
