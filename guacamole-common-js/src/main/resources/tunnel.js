@@ -707,6 +707,12 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
      */
     function attach(tunnel) {
 
+        // Clear handlers of current tunnel, if any
+        if (current_tunnel) {
+            current_tunnel.onerror = null;
+            current_tunnel.oninstruction = null;
+        }
+
         // Set own functions to tunnel's functions
         chained_tunnel.disconnect    = tunnel.disconnect;
         chained_tunnel.sendMessage   = tunnel.sendMessage;
