@@ -74,7 +74,8 @@ div#login-dialog #buttons {
     text-align: right;
 }
 
-div#login-dialog #buttons input {
+div#login-dialog #buttons input,
+div#logout-panel button {
     background: #9A8;
     border: 1px solid #676;
     color: black; 
@@ -83,12 +84,14 @@ div#login-dialog #buttons input {
     padding-left: 1em;
 }
 
-div#login-dialog #buttons input:hover {
+div#login-dialog #buttons input:hover,
+div#logout-panel button:hover {
     background: #CDB;
     border: 1px solid #9A8;
 }
 
-div#login-dialog #buttons input:active {
+div#login-dialog #buttons input:active,
+div#logout-panel button:active {
     padding-top: 0.35em;
     padding-left: 1.1em;
 
