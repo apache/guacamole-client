@@ -111,10 +111,13 @@ Guacamole.Mouse = function(element) {
         // This is all JUST so we can get the mouse position within the element
         var parent = element.offsetParent;
         while (parent) {
-            if (parent.offsetLeft && parent.offsetTop) {
+
+            if (parent.offsetLeft)
                 guac_mouse.currentState.x -= parent.offsetLeft;
+
+            if (parent.offsetTop)
                 guac_mouse.currentState.y -= parent.offsetTop;
-            }
+
             parent = parent.offsetParent;
         }
 
