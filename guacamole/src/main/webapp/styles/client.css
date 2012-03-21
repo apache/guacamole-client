@@ -211,3 +211,10 @@ div#viewportClone {
 
     visibility: hidden;
 }
+
+textarea#eventTarget {
+    position: fixed;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}

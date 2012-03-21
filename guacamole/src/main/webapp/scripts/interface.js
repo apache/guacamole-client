@@ -178,7 +178,8 @@ var GuacamoleUI = {
 
     };
 
-    var assumeNativeOSK = false;
+    // Assume no native OSK by default
+    GuacamoleUI.assumeNativeOSK = false;
 
     // Show/Hide keyboard
     var keyboardResizeInterval = null;
@@ -186,7 +187,7 @@ var GuacamoleUI = {
 
         // If we think the platform has a native OSK, use the event target to
         // cause it to display.
-        if (assumeNativeOSK) {
+        if (GuacamoleUI.assumeNativeOSK) {
             GuacamoleUI.eventTarget.focus();
             return;
         }
@@ -294,7 +295,7 @@ var GuacamoleUI = {
                 menuShowLongPressTimeout = null;
 
                 // Assume native OSK if menu shown via long-press
-                assumeNativeOSK = true;
+                GuacamoleUI.assumeNativeOSK = true;
                 GuacamoleUI.showMenu();
 
             }, 800);
@@ -307,9 +308,11 @@ var GuacamoleUI = {
         menuShowLongPressTimeout = null;
     };
 
-    // Ensure the event target ALWAYS has text inside.
-    GuacamoleUI.eventTarget.onchange = function() {
-        GuacamoleUI.eventTarget.value = "x";
+    // Reset event target (add content, reposition cursor in middle.
+    GuacamoleUI.resetEventTarget = function() {
+        GuacamoleUI.eventTarget.value = "GUAC";
+        GuacamoleUI.eventTarget.selectionStart =
+        GuacamoleUI.eventTarget.selectionEnd   = 2;
     };
 
     // Detect long-press at bottom of screen
@@ -405,6 +408,12 @@ GuacamoleUI.attach = function(guac) {
     function enableKeyboard() {
         keyboard.onkeydown = 
             function (keysym) {
+          
+                // If we're using native OSK, ensure event target is reset
+                // on each key event.
+                if (GuacamoleUI.assumeNativeOSK)
+                    GuacamoleUI.resetEventTarget();
+                
                 guac.sendKeyEvent(1, keysym);
             };
 
