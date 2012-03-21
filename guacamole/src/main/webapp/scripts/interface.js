@@ -8,6 +8,7 @@ var GuacamoleUI = {
     "menuControl" : document.getElementById("menuControl"),
     "touchMenu"   : document.getElementById("touchMenu"),
     "logo"        : document.getElementById("status-logo"),
+    "eventTarget" : document.getElementById("eventTarget"),
 
     "buttons": {
 
@@ -177,10 +178,19 @@ var GuacamoleUI = {
 
     };
 
+    var assumeNativeOSK = false;
+
     // Show/Hide keyboard
     var keyboardResizeInterval = null;
     GuacamoleUI.buttons.showKeyboard.onclick = function() {
 
+        // If we think the platform has a native OSK, use the event target to
+        // cause it to display.
+        if (assumeNativeOSK) {
+            GuacamoleUI.eventTarget.focus();
+            return;
+        }
+        
         var displayed = GuacamoleUI.containers.keyboard.style.display;
         if (displayed != "block") {
             GuacamoleUI.containers.keyboard.style.display = "block";
@@ -282,6 +292,9 @@ var GuacamoleUI = {
             menuShowLongPressTimeout = window.setTimeout(function() {
                 
                 menuShowLongPressTimeout = null;
+
+                // Assume native OSK if menu shown via long-press
+                assumeNativeOSK = true;
                 GuacamoleUI.showMenu();
 
             }, 800);
@@ -292,6 +305,11 @@ var GuacamoleUI = {
     GuacamoleUI.stopLongPressDetect = function() {
         window.clearTimeout(menuShowLongPressTimeout);
         menuShowLongPressTimeout = null;
+    };
+
+    // Ensure the event target ALWAYS has text inside.
+    GuacamoleUI.eventTarget.onchange = function() {
+        GuacamoleUI.eventTarget.value = "x";
     };
 
     // Detect long-press at bottom of screen
