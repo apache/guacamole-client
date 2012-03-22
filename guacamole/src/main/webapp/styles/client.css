@@ -218,8 +218,10 @@ textarea#eventTarget {
     position: fixed;
    
     /* Hide offscreen */
-    left: 100%;
-    top: 100%;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
     opacity: 0;
 
     overflow: hidden;
