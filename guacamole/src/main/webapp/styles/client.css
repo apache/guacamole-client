@@ -217,11 +217,9 @@ div#viewportClone {
 textarea#eventTarget {
     position: fixed;
    
-    /* Zero... zero... zero... zero... zero... */
-    right: 0;
-    bottom: 0;
-    width: 0;
-    height: 0;
+    /* Hide offscreen */
+    left: 100%;
+    top: 100%;
     opacity: 0;
 
     overflow: hidden;
