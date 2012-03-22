@@ -372,7 +372,30 @@ var GuacamoleUI = {
 // Tie UI events / behavior to a specific Guacamole client
 GuacamoleUI.attach = function(guac) {
 
+    var title_prefix = null;
+    var connection_name = null 
+    
     var guac_display = guac.getDisplay();
+
+    // Set document title appropriately, based on prefix and connection name
+    function updateTitle() {
+
+        // Use title prefix if present
+        if (title_prefix) {
+            
+            document.title = title_prefix;
+
+            // Include connection name, if present
+            if (connection_name)
+                document.title += " " + connection_name;
+
+        }
+
+        // Otherwise, just set to connection name
+        else if (connection_name)
+            document.title = connection_name;
+
+    }
 
     // When mouse enters display, start detection of intent to close menu
     guac_display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
@@ -458,22 +481,26 @@ GuacamoleUI.attach = function(guac) {
 
     // Handle client state change
     guac.onstatechange = function(clientState) {
+
         switch (clientState) {
 
             // Idle
             case 0:
                 GuacamoleUI.showStatus("Idle.");
+                title_prefix = "[Idle]";
                 break;
 
             // Connecting
             case 1:
                 GuacamoleUI.shadeMenu();
                 GuacamoleUI.showStatus("Connecting...");
+                title_prefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
                 GuacamoleUI.showStatus("Connected, waiting for first update...");
+                title_prefix = "[Waiting...]";
                 break;
 
             // Connected
@@ -484,16 +511,20 @@ GuacamoleUI.attach = function(guac) {
                     GuacamoleUI.display.className.replace(/guac-loading/, '');
 
                 GuacamoleUI.menu.className = "connected";
+
+                title_prefix = null;
                 break;
 
             // Disconnecting
             case 4:
                 GuacamoleUI.showStatus("Disconnecting...");
+                title_prefix = "[Disconnecting...]";
                 break;
 
             // Disconnected
             case 5:
                 GuacamoleUI.showStatus("Disconnected.");
+                title_prefix = "[Disconnected]";
                 break;
 
             // Unknown status code
@@ -501,11 +532,14 @@ GuacamoleUI.attach = function(guac) {
                 GuacamoleUI.showStatus("[UNKNOWN STATUS]");
 
         }
+
+        updateTitle();
     };
 
     // Name instruction handler
     guac.onname = function(name) {
-        document.title = name;
+        connection_name = name;
+        updateTitle();
     };
 
     // Error handler
