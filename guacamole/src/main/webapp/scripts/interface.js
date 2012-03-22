@@ -2,6 +2,27 @@
 // UI Definition
 var GuacamoleUI = {
 
+    /* Detection Constants */
+    
+    "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
+    "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */
+    "MENU_CLOSE_DETECT_TIMEOUT"     : 500, /* milliseconds */
+    "MENU_OPEN_DETECT_TIMEOUT"      : 325, /* milliseconds */
+    "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
+
+    /* Animation Constants */
+
+    "MENU_SHADE_STEPS"    : 10, /* frames */
+    "MENU_SHADE_INTERVAL" : 30, /* milliseconds */
+    "MENU_SHOW_STEPS"     : 5,  /* frames */
+    "MENU_SHOW_INTERVAL"  : 30, /* milliseconds */
+
+    /* OSK Mode Constants */
+    "OSK_MODE_NATIVE" : 1, /* "Show Keyboard" will show the platform's native OSK */
+    "OSK_MODE_GUAC"   : 2, /* "Show Keyboard" will show Guac's built-in OSK */
+
+    /* UI Elements */
+
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "menu"        : document.getElementById("menu"),
@@ -116,7 +137,7 @@ var GuacamoleUI = {
 
         if (!menu_shaded) {
 
-            var step = Math.floor(GuacamoleUI.menu.offsetHeight / 10) + 1;
+            var step = Math.floor(GuacamoleUI.menu.offsetHeight / GuacamoleUI.MENU_SHADE_STEPS) + 1;
             var offset = 0;
             menu_shaded = true;
 
@@ -131,7 +152,7 @@ var GuacamoleUI = {
                     GuacamoleUI.menu.style.visiblity = "hidden";
                 }
 
-            }, 30);
+            }, GuacamoleUI.MENU_SHADE_INTERVAL);
         }
 
     };
@@ -140,7 +161,7 @@ var GuacamoleUI = {
 
         if (menu_shaded) {
 
-            var step = Math.floor(GuacamoleUI.menu.offsetHeight / 5) + 1;
+            var step = Math.floor(GuacamoleUI.menu.offsetHeight / GuacamoleUI.MENU_SHOW_STEPS) + 1;
             var offset = -GuacamoleUI.menu.offsetHeight;
             menu_shaded = false;
             GuacamoleUI.menu.style.visiblity = "";
@@ -157,7 +178,7 @@ var GuacamoleUI = {
 
                 GuacamoleUI.menu.style.top = offset + "px";
 
-            }, 30);
+            }, GuacamoleUI.MENU_SHOW_INTERVAL);
         }
 
     };
@@ -177,18 +198,6 @@ var GuacamoleUI = {
         }
 
     };
-
-    /**
-     * When GuacamoleUI.oskMode == OSK_MODE_NATIVE, "Show Keyboard" tries
-     * to use the native OSK instead of the Guacamole OSK.
-     */
-    GuacamoleUI.OSK_MODE_NATIVE = 1;
-
-    /**
-     * When GuacamoleUI.oskMode == OSK_MODE_GUAC, "Show Keyboard" uses the 
-     * Guacamole OSK, regardless of whether a native OSK is available.
-     */
-    GuacamoleUI.OSK_MODE_GUAC   = 2;
 
     // Assume no native OSK by default
     GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
@@ -231,7 +240,7 @@ var GuacamoleUI = {
 
             // Automatically update size
             window.onresize = updateKeyboardSize;
-            keyboardResizeInterval = window.setInterval(updateKeyboardSize, 30);
+            keyboardResizeInterval = window.setInterval(updateKeyboardSize, GuacamoleUI.KEYBOARD_AUTO_RESIZE_INTERVAL);
 
             updateKeyboardSize();
         }
@@ -280,7 +289,7 @@ var GuacamoleUI = {
 
                 GuacamoleUI.showMenu();
                 detectMenuOpenTimeout = null;
-            }, 325);
+            }, GuacamoleUI.MENU_OPEN_DETECT_TIMEOUT);
 
         }
 
@@ -299,7 +308,7 @@ var GuacamoleUI = {
             detectMenuCloseTimeout = window.setTimeout(function() {
                 GuacamoleUI.shadeMenu();
                 detectMenuCloseTimeout = null;
-            }, 500);
+            }, GuacamoleUI.MENU_CLOSE_DETECT_TIMEOUT);
 
         }
 
@@ -330,7 +339,7 @@ var GuacamoleUI = {
                 GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_NATIVE;
                 GuacamoleUI.showMenu();
 
-            }, 800);
+            }, GuacamoleUI.LONG_PRESS_DETECT_TIMEOUT);
 
         }
     };
@@ -372,8 +381,8 @@ var GuacamoleUI = {
 
             // If touch distance from start exceeds threshold, cancel long press
             var touch = e.touches[0];
-            if (Math.abs(touch.pageX - long_press_start_x) >= 10
-                || Math.abs(touch.pageY - long_press_start_y) >= 10)
+            if (Math.abs(touch.pageX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
+                || Math.abs(touch.pageY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
                 GuacamoleUI.stopLongPressDetect();
 
         }
