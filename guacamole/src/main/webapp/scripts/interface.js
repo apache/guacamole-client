@@ -179,7 +179,7 @@ var GuacamoleUI = {
     };
 
     // Assume no native OSK by default
-    GuacamoleUI.assumeNativeOSK = false;
+    GuacamoleUI.nativeOSK = false;
 
     // Show/Hide keyboard
     var keyboardResizeInterval = null;
@@ -187,7 +187,7 @@ var GuacamoleUI = {
 
         // If we think the platform has a native OSK, use the event target to
         // cause it to display.
-        if (GuacamoleUI.assumeNativeOSK) {
+        if (GuacamoleUI.nativeOSK) {
             GuacamoleUI.eventTarget.focus();
             return;
         }
@@ -248,6 +248,10 @@ var GuacamoleUI = {
 
             // Wait and then show menu
             detectMenuOpenTimeout = window.setTimeout(function() {
+
+                // If menu opened via mouse, do not show native OSK
+                GuacamoleUI.nativeOSK = false;
+
                 GuacamoleUI.showMenu();
                 detectMenuOpenTimeout = null;
             }, 325);
@@ -257,7 +261,7 @@ var GuacamoleUI = {
     };
 
     // Initiate detection of menu close action. If not canceled through some
-    // user event, menu will close.
+    // user mouse event, menu will close.
     GuacamoleUI.startMenuCloseDetect = function() {
 
         if (!detectMenuCloseTimeout) {
@@ -295,7 +299,7 @@ var GuacamoleUI = {
                 menuShowLongPressTimeout = null;
 
                 // Assume native OSK if menu shown via long-press
-                GuacamoleUI.assumeNativeOSK = true;
+                GuacamoleUI.nativeOSK = true;
                 GuacamoleUI.showMenu();
 
             }, 800);
@@ -411,7 +415,7 @@ GuacamoleUI.attach = function(guac) {
           
                 // If we're using native OSK, ensure event target is reset
                 // on each key event.
-                if (GuacamoleUI.assumeNativeOSK)
+                if (GuacamoleUI.nativeOSK)
                     GuacamoleUI.resetEventTarget();
                 
                 guac.sendKeyEvent(1, keysym);
