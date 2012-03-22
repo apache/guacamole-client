@@ -178,22 +178,54 @@ var GuacamoleUI = {
 
     };
 
+    /**
+     * When GuacamoleUI.oskMode == OSK_MODE_NATIVE, "Show Keyboard" tries
+     * to use the native OSK instead of the Guacamole OSK.
+     */
+    GuacamoleUI.OSK_MODE_NATIVE = 1;
+
+    /**
+     * When GuacamoleUI.oskMode == OSK_MODE_GUAC, "Show Keyboard" uses the 
+     * Guacamole OSK, regardless of whether a native OSK is available.
+     */
+    GuacamoleUI.OSK_MODE_GUAC   = 2;
+
     // Assume no native OSK by default
-    GuacamoleUI.nativeOSK = false;
+    GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
 
     // Show/Hide keyboard
     var keyboardResizeInterval = null;
     GuacamoleUI.buttons.showKeyboard.onclick = function() {
 
-        // If we think the platform has a native OSK, use the event target to
-        // cause it to display.
-        if (GuacamoleUI.nativeOSK) {
-            GuacamoleUI.eventTarget.focus();
-            return;
+        // If Guac OSK shown, hide it.
+        var displayed = GuacamoleUI.containers.keyboard.style.display;
+        if (displayed == "block") {
+            GuacamoleUI.containers.keyboard.style.display = "none";
+            GuacamoleUI.buttons.showKeyboard.textContent = "Show Keyboard";
+
+            window.onresize = null;
+            window.clearInterval(keyboardResizeInterval);
         }
         
-        var displayed = GuacamoleUI.containers.keyboard.style.display;
-        if (displayed != "block") {
+        // If not shown ... action depends on OSK mode.
+        else {
+
+            // If we think the platform has a native OSK, use the event target to
+            // cause it to display.
+            if (GuacamoleUI.oskMode == GuacamoleUI.OSK_MODE_NATIVE) {
+
+                // ...but use the Guac OSK if clicked again
+                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
+
+                // Try to show native OSK by focusing eventTarget.
+                GuacamoleUI.eventTarget.focus();
+                return;
+
+            }
+
+            // Ensure event target is NOT focused if we are using the Guac OSK.
+            GuacamoleUI.eventTarget.blur();
+
             GuacamoleUI.containers.keyboard.style.display = "block";
             GuacamoleUI.buttons.showKeyboard.textContent = "Hide Keyboard";
 
@@ -203,13 +235,7 @@ var GuacamoleUI = {
 
             updateKeyboardSize();
         }
-        else {
-            GuacamoleUI.containers.keyboard.style.display = "none";
-            GuacamoleUI.buttons.showKeyboard.textContent = "Show Keyboard";
-
-            window.onresize = null;
-            window.clearInterval(keyboardResizeInterval);
-        }
+        
 
     };
 
@@ -250,7 +276,7 @@ var GuacamoleUI = {
             detectMenuOpenTimeout = window.setTimeout(function() {
 
                 // If menu opened via mouse, do not show native OSK
-                GuacamoleUI.nativeOSK = false;
+                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
 
                 GuacamoleUI.showMenu();
                 detectMenuOpenTimeout = null;
@@ -299,7 +325,7 @@ var GuacamoleUI = {
                 menuShowLongPressTimeout = null;
 
                 // Assume native OSK if menu shown via long-press
-                GuacamoleUI.nativeOSK = true;
+                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_NATIVE;
                 GuacamoleUI.showMenu();
 
             }, 800);
@@ -320,7 +346,7 @@ var GuacamoleUI = {
     };
 
     // Detect long-press at bottom of screen
-    document.body.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
+    GuacamoleUI.display.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
 
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
@@ -415,7 +441,7 @@ GuacamoleUI.attach = function(guac) {
           
                 // If we're using native OSK, ensure event target is reset
                 // on each key event.
-                if (GuacamoleUI.nativeOSK)
+                if (GuacamoleUI.oskMode == GuacamoleUI.OSK_MODE_NATIVE)
                     GuacamoleUI.resetEventTarget();
                 
                 guac.sendKeyEvent(1, keysym);
