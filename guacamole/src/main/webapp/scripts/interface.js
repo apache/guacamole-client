@@ -314,6 +314,8 @@ var GuacamoleUI = {
     // When mouse hovers over top of screen, start detection of intent to open menu
     GuacamoleUI.menuControl.addEventListener('mousemove', GuacamoleUI.startMenuOpenDetect, true);
 
+    var long_press_start_x = 0;
+    var long_press_start_y = 0;
     var menuShowLongPressTimeout = null;
 
     GuacamoleUI.startLongPressDetect = function() {
@@ -346,7 +348,44 @@ var GuacamoleUI = {
     };
 
     // Detect long-press at bottom of screen
-    GuacamoleUI.display.addEventListener('touchstart', GuacamoleUI.startLongPressDetect, true);
+    GuacamoleUI.display.addEventListener('touchstart', function(e) {
+        
+        // Close menu if shown
+        GuacamoleUI.shadeMenu();
+        
+        // Record touch location
+        if (e.touches.length == 1) {
+            var touch = e.touches[0];
+            long_press_start_x = touch.pageX;
+            long_press_start_y = touch.pageY;
+        }
+        
+        // Start detection
+        GuacamoleUI.startLongPressDetect();
+        
+    }, true);
+
+    // Stop detection if touch moves significantly
+    GuacamoleUI.display.addEventListener('touchmove', function(e) {
+        
+        if (e.touches.length == 1) {
+
+            // If touch distance from start exceeds threshold, cancel long press
+            var touch = e.touches[0];
+            if (Math.abs(touch.pageX - long_press_start_x) >= 10
+                || Math.abs(touch.pageY - long_press_start_y) >= 10)
+                GuacamoleUI.stopLongPressDetect();
+
+        }
+        
+    }, true);
+
+    // Stop detection if press stops
+    GuacamoleUI.display.addEventListener('touchend', GuacamoleUI.stopLongPressDetect, true);
+
+    // Close menu on mouse movement
+    GuacamoleUI.display.addEventListener('mousemove', GuacamoleUI.startMenuCloseDetect, true);
+    GuacamoleUI.display.addEventListener('mousedown', GuacamoleUI.startMenuCloseDetect, true);
 
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
@@ -439,12 +478,6 @@ GuacamoleUI.attach = function(guac) {
             // Scroll (if necessary) to keep mouse on screen.
             window.scrollBy(scroll_amount_x, scroll_amount_y);
        
-            // Hide menu on movement
-            GuacamoleUI.startMenuCloseDetect();
-
-            // Stop detecting long presses if mouse is being used
-            GuacamoleUI.stopLongPressDetect();
-
             // Send mouse event
             guac.sendMouseState(mouseState);
             
