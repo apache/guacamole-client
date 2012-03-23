@@ -2,6 +2,7 @@
 package net.sourceforge.guacamole.net.basic;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +12,12 @@ import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.net.event.AuthenticationFailureEvent;
+import net.sourceforge.guacamole.net.event.AuthenticationSuccessEvent;
+import net.sourceforge.guacamole.net.event.listener.AuthenticationFailureListener;
+import net.sourceforge.guacamole.net.event.listener.AuthenticationSuccessListener;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
@@ -37,9 +43,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
     
+    /**
+     * The error message to be provided to the client user if authentication
+     * fails for ANY REASON.
+     */
     private static final String AUTH_ERROR_MESSAGE = 
             "User not logged in or authentication failed.";
     
+    /**
+     * The AuthenticationProvider to use to authenticate all requests.
+     */
     private AuthenticationProvider authProvider;
 
     @Override
@@ -56,6 +69,81 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     }
 
+    /**
+     * Notifies all listeners in the given collection that authentication has
+     * failed.
+     * 
+     * @param listeners A collection of all listeners that should be notified.
+     * @param credentials The credentials associated with the authentication
+     *                    request that failed.
+     */
+    private void notifyFailed(Collection listeners, Credentials credentials) {
+        
+        // Build event for auth failure
+        AuthenticationFailureEvent event = new AuthenticationFailureEvent(credentials);
+        
+        // Notify all listeners
+        for (Object listener : listeners) {
+            try {
+                if (listener instanceof AuthenticationFailureListener)
+                    ((AuthenticationFailureListener) listener).authenticationFailed(event);
+            }
+            catch (GuacamoleException e) {
+                logger.error("Error notifying AuthenticationFailureListener.", e);
+            }
+        }
+        
+    }
+
+    /**
+     * Notifies all listeners in the given collection that authentication was
+     * successful.
+     * 
+     * @param listeners A collection of all listeners that should be notified.
+     * @param credentials The credentials associated with the authentication
+     *                    request that succeeded.
+     * @return true if all listeners are allowing the authentication success,
+     *         or if there are no listeners, and false if any listener is
+     *         canceling the authentication success. Note that once one
+     *         listener cancels, no other listeners will run.
+     * @throws GuacamoleException If any listener throws an error while being
+     *                            notified. Note that if any listener throws an
+     *                            error, the success is canceled, and no other
+     *                            listeners will run.
+     */
+    private boolean notifySuccess(Collection listeners, Credentials credentials)
+            throws GuacamoleException {
+        
+        // Build event for auth success
+        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(credentials);
+        
+        // Notify all listeners
+        for (Object listener : listeners) {
+            if (listener instanceof AuthenticationSuccessListener) {
+
+                // Cancel immediately if hook returns false
+                if (!((AuthenticationSuccessListener) listener).authenticationSucceeded(event))
+                    return false;
+                
+            }
+        }
+
+        return true;
+        
+    }
+  
+    /**
+     * Sends a predefined, generic error message to the user, along with a
+     * "403 - Forbidden" HTTP status code in the response.
+     * 
+     * @param response The response to send the error within.
+     * @throws IOException If an error occurs while sending the error.
+     */
+    private void failAuthentication(HttpServletResponse response) throws IOException {
+        response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
+        response.sendError(HttpServletResponse.SC_FORBIDDEN);
+    }
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
@@ -70,6 +158,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
         // this request.
         if (configs == null) {
 
+            SessionListenerCollection listeners;
+            try {
+                listeners = new SessionListenerCollection(httpSession);
+            }
+            catch (GuacamoleException e) {
+                logger.error("Failed to retrieve listeners. Authentication canceled.", e);
+                failAuthentication(response);
+                return;
+            }
+            
             // Retrieve username and password from parms
             String username = request.getParameter("username");
             String password = request.getParameter("password");
@@ -85,28 +183,58 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             try {
                 configs = authProvider.getAuthorizedConfigurations(credentials);
             }
-            catch (GuacamoleException e) {
-                logger.error("Error retrieving configuration(s) for user {}.", username);
 
-                response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+
+            /******** HANDLE FAILED AUTHENTICATION ********/
+            
+            // If error retrieving configs, fail authentication, notify listeners
+            catch (GuacamoleException e) {
+                logger.error("Error retrieving configuration(s) for user \"{}\".", username);
+
+                notifyFailed(listeners, credentials);
+                failAuthentication(response);
                 return;
             }
             
+            // If no configs, fail authentication, notify listeners
             if (configs == null) {
                 logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                         request.getRemoteAddr(), username);
                 
-                response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
-                response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                notifyFailed(listeners, credentials);
+                failAuthentication(response);
                 return;
             }
 
-            logger.info("User \"{}\" successfully authenticated from {}.",
-                    username, request.getRemoteAddr());
+
+            /******** HANDLE SUCCESSFUL AUTHENTICATION ********/
+            
+            try {
+
+                // Otherwise, authentication has been succesful
+                logger.info("User \"{}\" successfully authenticated from {}.",
+                        username, request.getRemoteAddr());
+
+                // Notify of success, cancel if requested
+                if (!notifySuccess(listeners, credentials)) {
+                    logger.info("Successful authentication canceled by hook.");
+                    failAuthentication(response);
+                    return;
+                }
+                
+            }
+            catch (GuacamoleException e) {
+                
+                // Cancel authentication success if hook throws exception
+                logger.error("Successful authentication canceled by error in hook.");
+                failAuthentication(response);
+                return;
+                
+            }
 
             // Associate configs with session
             httpSession.setAttribute("GUAC_CONFIGS", configs);
+
 
         }
 
