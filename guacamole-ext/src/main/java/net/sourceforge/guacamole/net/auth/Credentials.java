@@ -1,5 +1,8 @@
 package net.sourceforge.guacamole.net.auth;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -43,7 +46,7 @@ package net.sourceforge.guacamole.net.auth;
  * 
  * @author Michael Jumper
  */
-public class UsernamePassword {
+public class Credentials {
 
     /**
      * An arbitrary username.
@@ -55,6 +58,16 @@ public class UsernamePassword {
      */
     private String password;
 
+    /**
+     * The HttpServletRequest carrying additional credentials, if any.
+     */
+    private HttpServletRequest request;
+
+    /**
+     * The HttpSession carrying additional credentials, if any.
+     */
+    private HttpSession session;
+    
     /**
      * Returns the password associated with this username/password pair.
      * @return The password associated with this username/password pair, or
@@ -89,6 +102,22 @@ public class UsernamePassword {
      */
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    public HttpSession getSession() {
+        return session;
+    }
+
+    public void setSession(HttpSession session) {
+        this.session = session;
     }
 
 }
