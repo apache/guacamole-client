@@ -84,10 +84,10 @@
             <version>0.6.0</version>
         </dependency>
 
-        <!-- Guacamole Authentication API -->
+        <!-- Guacamole Extension API -->
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
-            <artifactId>guacamole-auth</artifactId>
+            <artifactId>guacamole-ext</artifactId>
             <version>0.6.0</version>
         </dependency>
 
