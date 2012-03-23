@@ -89,7 +89,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             }
             
             if (configs == null) {
-                logger.warn("Authentication attempt from {} for user \"{}\".",
+                logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                         request.getRemoteAddr(), username);
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
