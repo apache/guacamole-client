@@ -24,6 +24,19 @@ public class TunnelDetachEvent implements CredentialEvent, TunnelEvent {
      */
     private GuacamoleTunnel tunnel;
 
+    /**
+     * Creates a new TunnelDetachEvent which represents the detaching of the
+     * given tunnel via a request associated with the given credentials.
+     * 
+     * @param credentials The credentials associated with the request
+     *                    detaching the tunnel.
+     * @param tunnel The tunnel being detached.
+     */
+    public TunnelDetachEvent(Credentials credentials, GuacamoleTunnel tunnel) {
+        this.credentials = credentials;
+        this.tunnel = tunnel;
+    }
+
     @Override
     public Credentials getCredentials() {
         return credentials;

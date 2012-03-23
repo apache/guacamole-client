@@ -24,6 +24,19 @@ public class TunnelAttachEvent implements CredentialEvent, TunnelEvent {
      */
     private GuacamoleTunnel tunnel;
 
+    /**
+     * Creates a new TunnelAttachEvent which represents the attaching of the
+     * given tunnel via a request associated with the given credentials.
+     * 
+     * @param credentials The credentials associated with the request
+     *                    attaching the tunnel.
+     * @param tunnel The tunnel being attached.
+     */
+    public TunnelAttachEvent(Credentials credentials, GuacamoleTunnel tunnel) {
+        this.credentials = credentials;
+        this.tunnel = tunnel;
+    }
+
     @Override
     public Credentials getCredentials() {
         return credentials;
