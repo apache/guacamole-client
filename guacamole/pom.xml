@@ -3,10 +3,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.sourceforge.guacamole</groupId>
-    <artifactId>guacamole-default-webapp</artifactId>
+    <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
     <version>0.6.0</version>
-    <name>guacamole-default-webapp</name>
+    <name>guacamole</name>
     <url>http://guacamole.sourceforge.net/</url>
 
     <properties>
@@ -87,7 +87,7 @@
         <!-- Guacamole Authentication API -->
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
-            <artifactId>guacamole-common-auth</artifactId>
+            <artifactId>guacamole-auth</artifactId>
             <version>0.6.0</version>
         </dependency>
 

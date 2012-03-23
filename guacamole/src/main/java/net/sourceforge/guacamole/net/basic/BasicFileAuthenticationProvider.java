@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.UsernamePassword;
+import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
@@ -51,7 +51,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * 
  * @author Michael Jumper
  */
-public class BasicFileAuthenticationProvider implements AuthenticationProvider<UsernamePassword> {
+public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
     
@@ -113,7 +113,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider<U
     }
 
     @Override
-    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(UsernamePassword credentials) throws GuacamoleException {
+    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
 
         // Check mapping file mod time
         File userMappingFile = getUserMappingFile();

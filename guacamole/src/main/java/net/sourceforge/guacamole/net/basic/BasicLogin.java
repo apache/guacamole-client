@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.UsernamePassword;
+import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
@@ -75,7 +75,10 @@ public class BasicLogin extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        UsernamePassword credentials = new UsernamePassword();
+        // Build credentials object
+        Credentials credentials = new Credentials ();
+        credentials.setSession(httpSession);
+        credentials.setRequest(request);
         credentials.setUsername(username);
         credentials.setPassword(password);
         
