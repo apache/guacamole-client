@@ -128,11 +128,13 @@
 
                     try {
 
-                        // Get ID
-                        var id = window.location.search.substring(1);
+                        // Get entire query string, and pass to connect().
+                        // Normally, only the "id" parameter is required, but
+                        // all parameters should be preserved and passed on for
+                        // the sake of authentication.
 
-                        // Connect client
-                        guac.connect("id=" + id);
+                        var connect_string = window.location.search.substring(1);
+                        guac.connect(connect_string);
 
                     }
                     catch (e) {
