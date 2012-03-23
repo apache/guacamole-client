@@ -25,7 +25,7 @@ public class SessionListenerCollection extends AbstractCollection {
      * The name of the session attribute which will contain the listener
      * collection.
      */
-    private static final String SESSION_ATTRIBUTE = "__GUAC_LISTENERS";
+    private static final String SESSION_ATTRIBUTE = "GUAC_LISTENERS";
 
     /**
      * The wrapped collection of listeners, possibly retrieved from the
