@@ -29,8 +29,8 @@ import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.servlet.GuacamoleSession;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
+import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
-   
+
     @Override
     protected void authenticatedService(
             Map<String, GuacamoleConfiguration> configs,
@@ -71,12 +71,14 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // Get ID of connection
             String id = request.getParameter("id");
             
+            // Get credentials
+            Credentials credentials = getCredentials(httpSession);
+            
             // Get authorized configs
-            Map<String, GuacamoleConfiguration> configs = (Map<String, GuacamoleConfiguration>) 
-                    httpSession.getAttribute("GUAC_CONFIGS");
+            Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
 
-            // If no configs in session, not authorized
-            if (configs == null)
+            // If no configs/credentials in session, not authorized
+            if (credentials == null || configs == null)
                 throw new GuacamoleException("Cannot connect - user not logged in.");
 
             // Get authorized config
@@ -99,10 +101,6 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             // Associate socket with tunnel
             GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
-
-            // Attach tunnel to session
-            GuacamoleSession session = new GuacamoleSession(httpSession);
-            session.attachTunnel(tunnel);
 
             return tunnel;
 
