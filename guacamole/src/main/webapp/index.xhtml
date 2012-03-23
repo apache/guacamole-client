@@ -98,6 +98,27 @@
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
+            // Constructs the URL for a client which connects to the connection
+            // with the given id.
+            function getClientURL(id) {
+                
+                // Get parameters from query string
+                var parameters = window.location.search.substring(1);
+
+                // Construct URL for client, including any additional
+                // parameters from the query string
+                var client_url = "client.xhtml?id=" + encodeURIComponent(id);
+                if (parameters) client_url += "&" + parameters;
+
+                return client_url;
+                
+            }
+
+            // Resets the interface such that the login UI is displayed if
+            // the user is not authenticated (or authentication fails) and
+            // the connection list UI (or the client for the only available
+            // connection, if there is only one) is displayed if the user is
+            // authenticated.
             function resetUI() {
 
                 var configs;
@@ -116,7 +137,7 @@
 
                 // If only one connection, redirect to that.
                 if (configs.length == 1) {
-                    window.location.href = "client.xhtml?id=" + encodeURIComponent(configs[0].id);
+                    window.location.href = getClientURL(configs[0].id);
                     return;
                 }
 
@@ -141,8 +162,7 @@
 
                     // Create link to client
                     var clientLink = document.createElement("a");
-                    clientLink.setAttribute("href",
-                        "client.xhtml?" + encodeURIComponent(configs[i].id));
+                    clientLink.setAttribute("href", getClientURL(configs[i].id));
 
                     // Set cell contents
                     protocol.appendChild(protocolIcon);
