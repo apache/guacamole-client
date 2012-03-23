@@ -102,15 +102,8 @@
             // with the given id.
             function getClientURL(id) {
                 
-                // Get parameters from query string
-                var parameters = window.location.search.substring(1);
-
-                // Construct URL for client, including any additional
-                // parameters from the query string
-                var client_url = "client.xhtml?id=" + encodeURIComponent(id);
-                if (parameters) client_url += "&" + parameters;
-
-                return client_url;
+                // Construct URL for client with given id
+                return "client.xhtml?id=" + encodeURIComponent(id);
                 
             }
 
@@ -121,9 +114,12 @@
             // authenticated.
             function resetUI() {
 
+                // Get parameters from query string
+                var parameters = window.location.search.substring(1);
+
                 var configs;
                 try {
-                    configs = getConfigList();
+                    configs = getConfigList(parameters);
                 }
                 catch (e) {
 
@@ -196,12 +192,19 @@
 
             loginForm.onsubmit = function() {
 
+                // Get parameters from query string
+                var parameters = window.location.search.substring(1);
+
+                // Get username and password from form
                 var username = document.getElementById("username");
                 var password = document.getElementById("password");
 
                 var data =
                        "username=" + encodeURIComponent(username.value)
                     + "&password=" + encodeURIComponent(password.value)
+
+                // Include query parameters in submission data
+                if (parameters) data += "&" + parameters;
 
                 try {
 

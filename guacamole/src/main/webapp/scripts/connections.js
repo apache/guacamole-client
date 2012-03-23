@@ -5,11 +5,15 @@ function Config(protocol, id) {
     this.id = id;
 }
 
-function getConfigList() {
+function getConfigList(parameters) {
+
+    // Construct request URL
+    var configs_url = "configs";
+    if (parameters) configs_url += "?" + parameters;
 
     // Get config list
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "configs", false);
+    xhr.open("GET", configs_url, false);
     xhr.send(null);
 
     // If fail, throw error
