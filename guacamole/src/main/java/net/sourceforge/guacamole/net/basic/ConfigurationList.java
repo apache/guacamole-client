@@ -34,24 +34,13 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * 
  * @author Michael Jumper
  */
-public class ConfigurationList extends HttpServlet {
+public class ConfigurationList extends AuthenticatingHttpServlet {
 
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
+    protected void authenticatedService(
+            Map<String, GuacamoleConfiguration> configs,
+            HttpServletRequest request, HttpServletResponse response)
     throws IOException {
-
-        HttpSession httpSession = request.getSession(true);
-
-        // Get user configuration
-        // Get authorized configs
-        Map<String, GuacamoleConfiguration> configs = (Map<String, GuacamoleConfiguration>) 
-                httpSession.getAttribute("GUAC_CONFIGS");
-
-        // If no configs in session, not authorized
-        if (configs == null) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
@@ -71,7 +60,6 @@ public class ConfigurationList extends HttpServlet {
             out.print("\" protocol=\"");
             out.print(config.getProtocol());
             out.println("\"/>");
-
 
         }
 

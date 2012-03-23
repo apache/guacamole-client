@@ -18,92 +18,30 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.IOException;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Retrieves the authorized configurations associated with a given
- * username/password pair using the authentication provider defined in
- * guacamole.properties.
- * 
- * All authorized configurations will be stored in the current HttpSession.
- * 
- * Success and failure are logged.
+ * Simple dummy AuthenticatingHttpServlet which provides an endpoint for arbitrary
+ * authentication requests that do not expect a response.
  * 
  * @author Michael Jumper
  */
-public class BasicLogin extends HttpServlet {
+public class BasicLogin extends AuthenticatingHttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicLogin.class);
     
-    private AuthenticationProvider authProvider;
-
     @Override
-    public void init() throws ServletException {
-
-        // Get auth provider instance
-        try {
-            authProvider = GuacamoleProperties.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error getting authentication provider from properties.", e);
-            throw new ServletException(e);
-        }
-
-    }
-
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
+    protected void authenticatedService(
+            Map<String, GuacamoleConfiguration> configs,
+            HttpServletRequest request, HttpServletResponse response)
     throws IOException {
-
-        HttpSession httpSession = request.getSession(true);
-
-        // Retrieve username and password from parms
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        // Build credentials object
-        Credentials credentials = new Credentials ();
-        credentials.setSession(httpSession);
-        credentials.setRequest(request);
-        credentials.setUsername(username);
-        credentials.setPassword(password);
-        
-        // Get authorized configs
-        Map<String, GuacamoleConfiguration> configs;
-        try {
-            configs = authProvider.getAuthorizedConfigurations(credentials);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error retrieving configuration(s) for user {}.", username);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-        
-        if (configs == null) {
-            logger.warn("Failed login from {} for user \"{}\".", request.getRemoteAddr(), username);
-            response.sendError(HttpServletResponse.SC_FORBIDDEN);
-            return;
-        }
-
-        logger.info("Successful login from {} for user \"{}\".", request.getRemoteAddr(), username);
-
-        // Associate configs with session
-        httpSession.setAttribute("GUAC_CONFIGS", configs);
-
+        logger.info("Login was successful.");
     }
 
 }

@@ -18,8 +18,11 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.io.IOException;
 import java.util.Map;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -39,54 +42,73 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Jumper
  */
-public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
+public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
-    
+   
     @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
-
-        HttpSession httpSession = request.getSession(true);
-
-        // Get ID of connection
-        String id = request.getParameter("id");
+    protected void authenticatedService(
+            Map<String, GuacamoleConfiguration> configs,
+            HttpServletRequest request, HttpServletResponse response)
+    throws IOException, ServletException {
         
-        // Get authorized configs
-        Map<String, GuacamoleConfiguration> configs = (Map<String, GuacamoleConfiguration>) 
-                httpSession.getAttribute("GUAC_CONFIGS");
-
-        // If no configs in session, not authorized
-        if (configs == null)
-            throw new GuacamoleException("Cannot connect - user not logged in.");
-
-        // Get authorized config
-        GuacamoleConfiguration config = configs.get(id);
-        if (config == null) {
-            logger.error("Error retrieving authorized configuration id={}.", id);
-            throw new GuacamoleException("Unknown configuration ID.");
-        }
+        // If authenticated, respond as tunnel
+        tunnelServlet.service(request, response);
         
-        logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
-
-        // Configure and connect socket
-        String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
-        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
-
-        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(hostname, port),
-                config
-        );
-
-        // Associate socket with tunnel
-        GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
-
-        // Attach tunnel to session
-        GuacamoleSession session = new GuacamoleSession(httpSession);
-        session.attachTunnel(tunnel);
-
-        return tunnel;
-
     }
+
+    /**
+     * Wrapped GuacamoleHTTPTunnelServlet which will handle all authenticated
+     * requests.
+     */
+    private GuacamoleHTTPTunnelServlet tunnelServlet = new GuacamoleHTTPTunnelServlet() {
+
+        @Override
+        protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
+
+            HttpSession httpSession = request.getSession(true);
+
+            // Get ID of connection
+            String id = request.getParameter("id");
+            
+            // Get authorized configs
+            Map<String, GuacamoleConfiguration> configs = (Map<String, GuacamoleConfiguration>) 
+                    httpSession.getAttribute("GUAC_CONFIGS");
+
+            // If no configs in session, not authorized
+            if (configs == null)
+                throw new GuacamoleException("Cannot connect - user not logged in.");
+
+            // Get authorized config
+            GuacamoleConfiguration config = configs.get(id);
+            if (config == null) {
+                logger.error("Error retrieving authorized configuration id={}.", id);
+                throw new GuacamoleException("Unknown configuration ID.");
+            }
+            
+            logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
+
+            // Configure and connect socket
+            String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
+            int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
+
+            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+                    new InetGuacamoleSocket(hostname, port),
+                    config
+            );
+
+            // Associate socket with tunnel
+            GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
+
+            // Attach tunnel to session
+            GuacamoleSession session = new GuacamoleSession(httpSession);
+            session.attachTunnel(tunnel);
+
+            return tunnel;
+
+        }
+
+    };
 
 }
 
