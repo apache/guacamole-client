@@ -96,6 +96,13 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 GuacamoleTunnel tunnel = doConnect(request);
                 if (tunnel != null) {
 
+                    // Get session
+                    HttpSession httpSession = request.getSession(true);
+                    GuacamoleSession session = new GuacamoleSession(httpSession);
+
+                    // Attach tunnel to session
+                    session.attachTunnel(tunnel);
+
                     logger.info("Connection from {} succeeded.", request.getRemoteAddr());
                 
                     try {
