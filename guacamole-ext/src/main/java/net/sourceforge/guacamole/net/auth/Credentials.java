@@ -16,7 +16,7 @@ import javax.servlet.http.HttpSession;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-common-auth.
+ * The Original Code is guacamole-auth.
  *
  * The Initial Developer of the Original Code is
  * Michael Jumper.
@@ -40,9 +40,12 @@ import javax.servlet.http.HttpSession;
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * Simple class containing username and password Strings. This class can be
- * used along with AuthenticationProvider to provide username/password
- * authentication.
+ * Simple arbitrary set of credentials, including a username/password pair,
+ * the HttpServletRequest associated with the request for authorization
+ * (if any) and the HttpSession associated with that request.
+ * 
+ * This class is used along with AuthenticationProvider to provide arbitrary
+ * HTTP-based authentication for Guacamole.
  * 
  * @author Michael Jumper
  */
@@ -69,7 +72,7 @@ public class Credentials {
     private HttpSession session;
     
     /**
-     * Returns the password associated with this username/password pair.
+     * Returns the password associated with this set of credentials.
      * @return The password associated with this username/password pair, or
      *         null if no password has been set.
      */
@@ -78,7 +81,7 @@ public class Credentials {
     }
 
     /**
-     * Sets the password associated with this username/password pair.
+     * Sets the password associated with this set of credentials.
      * @param password The password to associate with this username/password
      *                 pair.
      */
@@ -87,7 +90,7 @@ public class Credentials {
     }
 
     /**
-     * Returns the username associated with this username/password pair.
+     * Returns the username associated with this set of credentials.
      * @return The username associated with this username/password pair, or
      *         null if no username has been set.
      */
@@ -96,7 +99,7 @@ public class Credentials {
     }
 
     /**
-     * Sets the username associated with this username/password pair.
+     * Sets the username associated with this set of credentials.
      * @param username The username to associate with this username/password
      *                 pair.
      */
@@ -104,18 +107,38 @@ public class Credentials {
         this.username = username;
     }
 
+    /**
+     * Returns the HttpServletRequest associated with this set of credentials.
+     * @return The HttpServletRequest associated with this set of credentials,
+     *         or null if no such request exists.
+     */
     public HttpServletRequest getRequest() {
         return request;
     }
 
+    /**
+     * Sets the HttpServletRequest associated with this set of credentials.
+     * @param request  The HttpServletRequest to associated with this set of
+     *                 credentials.
+     */
     public void setRequest(HttpServletRequest request) {
         this.request = request;
     }
 
+    /**
+     * Returns the HttpSession associated with this set of credentials.
+     * @return The HttpSession associated with this set of credentials, or null
+     *         if no such request exists.
+     */
     public HttpSession getSession() {
         return session;
     }
 
+    /**
+     * Sets the HttpSession associated with this set of credentials.
+     * @param session The HttpSession to associated with this set of
+     *                credentials.
+     */
     public void setSession(HttpSession session) {
         this.session = session;
     }
