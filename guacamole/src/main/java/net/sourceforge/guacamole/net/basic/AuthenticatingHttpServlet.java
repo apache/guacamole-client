@@ -37,6 +37,9 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
     
+    private static final String AUTH_ERROR_MESSAGE = 
+            "User not logged in or authentication failed.";
+    
     private AuthenticationProvider authProvider;
 
     @Override
@@ -84,6 +87,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             }
             catch (GuacamoleException e) {
                 logger.error("Error retrieving configuration(s) for user {}.", username);
+
+                response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
@@ -91,6 +96,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             if (configs == null) {
                 logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                         request.getRemoteAddr(), username);
+                
+                response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
                 response.sendError(HttpServletResponse.SC_FORBIDDEN);
                 return;
             }
