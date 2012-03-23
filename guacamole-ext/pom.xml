@@ -3,10 +3,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.sourceforge.guacamole</groupId>
-    <artifactId>guacamole-auth</artifactId>
+    <artifactId>guacamole-ext</artifactId>
     <packaging>jar</packaging>
     <version>0.6.0</version>
-    <name>guacamole-auth</name>
+    <name>guacamole-ext</name>
     <url>http://guacamole.sourceforge.net/</url>
 
     <properties>
