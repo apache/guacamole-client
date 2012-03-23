@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,11 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
+import net.sourceforge.guacamole.net.event.TunnelCloseEvent;
+import net.sourceforge.guacamole.net.event.TunnelConnectEvent;
+import net.sourceforge.guacamole.net.event.listener.TunnelCloseListener;
+import net.sourceforge.guacamole.net.event.listener.TunnelConnectListener;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
@@ -58,6 +64,82 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
     }
 
     /**
+     * Notifies all listeners in the given collection that a tunnel has been
+     * connected.
+     * 
+     * @param listeners A collection of all listeners that should be notified.
+     * @param credentials The credentials associated with the authentication
+     *                    request that connected the tunnel.
+     * @return true if all listeners are allowing the tunnel to connect,
+     *         or if there are no listeners, and false if any listener is
+     *         canceling the connection. Note that once one listener cancels,
+     *         no other listeners will run.
+     * @throws GuacamoleException If any listener throws an error while being
+     *                            notified. Note that if any listener throws an
+     *                            error, the connect is canceled, and no other
+     *                            listeners will run.
+     */
+    private boolean notifyConnect(Collection listeners,
+            Credentials credentials, GuacamoleTunnel tunnel)
+            throws GuacamoleException {
+        
+        // Build event for auth success
+        TunnelConnectEvent event = new TunnelConnectEvent(credentials, tunnel);
+        
+        // Notify all listeners
+        for (Object listener : listeners) {
+            if (listener instanceof TunnelConnectListener) {
+
+                // Cancel immediately if hook returns false
+                if (!((TunnelConnectListener) listener).tunnelConnected(event))
+                    return false;
+                
+            }
+        }
+
+        return true;
+        
+    }
+
+    /**
+     * Notifies all listeners in the given collection that a tunnel has been
+     * closed.
+     * 
+     * @param listeners A collection of all listeners that should be notified.
+     * @param credentials The credentials associated with the authentication
+     *                    request that closed the tunnel.
+     * @return true if all listeners are allowing the tunnel to close,
+     *         or if there are no listeners, and false if any listener is
+     *         canceling the close. Note that once one listener cancels,
+     *         no other listeners will run.
+     * @throws GuacamoleException If any listener throws an error while being
+     *                            notified. Note that if any listener throws an
+     *                            error, the close is canceled, and no other
+     *                            listeners will run.
+     */
+    private boolean notifyClose(Collection listeners,
+            Credentials credentials, GuacamoleTunnel tunnel)
+            throws GuacamoleException {
+        
+        // Build event for auth success
+        TunnelCloseEvent event = new TunnelCloseEvent(credentials, tunnel);
+        
+        // Notify all listeners
+        for (Object listener : listeners) {
+            if (listener instanceof TunnelCloseListener) {
+
+                // Cancel immediately if hook returns false
+                if (!((TunnelCloseListener) listener).tunnelClosed(event))
+                    return false;
+                
+            }
+        }
+
+        return true;
+        
+    }
+
+    /**
      * Wrapped GuacamoleHTTPTunnelServlet which will handle all authenticated
      * requests.
      */
@@ -67,12 +149,22 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
         protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
             HttpSession httpSession = request.getSession(true);
+            
+            // Get listeners
+            final SessionListenerCollection listeners;
+            try {
+                listeners = new SessionListenerCollection(httpSession);
+            }
+            catch (GuacamoleException e) {
+                logger.error("Failed to retrieve listeners. Authentication canceled.", e);
+                throw e;
+            }
 
             // Get ID of connection
             String id = request.getParameter("id");
             
             // Get credentials
-            Credentials credentials = getCredentials(httpSession);
+            final Credentials credentials = getCredentials(httpSession);
             
             // Get authorized configs
             Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
@@ -100,8 +192,28 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             );
 
             // Associate socket with tunnel
-            GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
+            GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {
 
+                @Override
+                public void close() throws GuacamoleException {
+
+                    // Only close if not canceled
+                    if (!notifyClose(listeners, credentials, this))
+                        throw new GuacamoleException("Tunnel close canceled by listener.");
+                    
+                    // Close if no exception due to listener
+                    super.close();
+                    
+                }
+                
+            };
+
+            // Notify listeners about connection
+            if (!notifyConnect(listeners, credentials, tunnel)) {
+                logger.info("Connection canceled by listener.");
+                return null;
+            }
+            
             return tunnel;
 
         }
