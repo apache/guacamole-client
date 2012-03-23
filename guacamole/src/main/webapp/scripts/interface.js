@@ -365,8 +365,8 @@ var GuacamoleUI = {
         // Record touch location
         if (e.touches.length == 1) {
             var touch = e.touches[0];
-            long_press_start_x = touch.pageX;
-            long_press_start_y = touch.pageY;
+            long_press_start_x = touch.screenX;
+            long_press_start_y = touch.screenY;
         }
         
         // Start detection
@@ -381,8 +381,8 @@ var GuacamoleUI = {
 
             // If touch distance from start exceeds threshold, cancel long press
             var touch = e.touches[0];
-            if (Math.abs(touch.pageX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
-                || Math.abs(touch.pageY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
+            if (Math.abs(touch.screenX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
+                || Math.abs(touch.screenY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
                 GuacamoleUI.stopLongPressDetect();
 
         }
