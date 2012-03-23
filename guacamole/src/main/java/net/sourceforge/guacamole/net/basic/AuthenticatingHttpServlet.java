@@ -44,6 +44,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
     
     /**
+     * The session attribute holding the map of configurations.
+     */
+    private static final String CONFIGURATIONS_ATTRIBUTE = "GUAC_CONFIGS";
+    
+    /**
+     * The session attribute holding the credentials authorizing this session.
+     */
+    private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
+    
+    /**
      * The error message to be provided to the client user if authentication
      * fails for ANY REASON.
      */
@@ -151,7 +161,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * @return The credentials associated with the given session.
      */
     protected Credentials getCredentials(HttpSession session) {
-        return (Credentials) session.getAttribute("GUAC_CREDS");
+        return (Credentials) session.getAttribute(CREDENTIALS_ATTRIBUTE);
     }
 
     /**
@@ -161,7 +171,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * @return The configurations associated with the given session.
      */
     protected Map<String, GuacamoleConfiguration> getConfigurations(HttpSession session) {
-        return (Map<String, GuacamoleConfiguration>) session.getAttribute("GUAC_CONFIGS");
+        return (Map<String, GuacamoleConfiguration>) session.getAttribute(CONFIGURATIONS_ATTRIBUTE);
     }
     
     @Override
@@ -253,8 +263,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             }
 
             // Associate configs and credentials with session
-            httpSession.setAttribute("GUAC_CONFIGS", configs);
-            httpSession.setAttribute("GUAC_CREDS",   credentials);
+            httpSession.setAttribute(CONFIGURATIONS_ATTRIBUTE, configs);
+            httpSession.setAttribute(CREDENTIALS_ATTRIBUTE,    credentials);
 
 
         }
