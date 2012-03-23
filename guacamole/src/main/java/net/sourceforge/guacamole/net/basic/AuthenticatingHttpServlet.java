@@ -144,6 +144,26 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
     
+    /**
+     * Returns the credentials associated with the given session.
+     * 
+     * @param session The session to retrieve credentials from.
+     * @return The credentials associated with the given session.
+     */
+    protected Credentials getCredentials(HttpSession session) {
+        return (Credentials) session.getAttribute("GUAC_CREDS");
+    }
+
+    /**
+     * Returns the configurations associated with the given session.
+     * 
+     * @param session The session to retrieve configurations from.
+     * @return The configurations associated with the given session.
+     */
+    protected Map<String, GuacamoleConfiguration> getConfigurations(HttpSession session) {
+        return (Map<String, GuacamoleConfiguration>) session.getAttribute("GUAC_CONFIGS");
+    }
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
@@ -151,8 +171,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
         HttpSession httpSession = request.getSession(true);
 
         // Try to get configs from session
-        Map<String, GuacamoleConfiguration> configs =
-                (Map<String, GuacamoleConfiguration>) httpSession.getAttribute("GUAC_CONFIGS");
+        Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
 
         // If no configs, try to authenticate the user to get the configs using
         // this request.
@@ -173,12 +192,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             String password = request.getParameter("password");
 
             // Build credentials object
-            Credentials credentials = new Credentials ();
+            Credentials credentials = new Credentials();
             credentials.setSession(httpSession);
             credentials.setRequest(request);
             credentials.setUsername(username);
             credentials.setPassword(password);
-            
+
             // Get authorized configs
             try {
                 configs = authProvider.getAuthorizedConfigurations(credentials);
@@ -189,7 +208,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             
             // If error retrieving configs, fail authentication, notify listeners
             catch (GuacamoleException e) {
-                logger.error("Error retrieving configuration(s) for user \"{}\".", username);
+                logger.error("Error retrieving configuration(s) for user \"{}\".",
+                        credentials.getUsername());
 
                 notifyFailed(listeners, credentials);
                 failAuthentication(response);
@@ -199,7 +219,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             // If no configs, fail authentication, notify listeners
             if (configs == null) {
                 logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                        request.getRemoteAddr(), username);
+                        request.getRemoteAddr(), credentials.getUsername());
                 
                 notifyFailed(listeners, credentials);
                 failAuthentication(response);
@@ -213,7 +233,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
                 // Otherwise, authentication has been succesful
                 logger.info("User \"{}\" successfully authenticated from {}.",
-                        username, request.getRemoteAddr());
+                        credentials.getUsername(), request.getRemoteAddr());
 
                 // Notify of success, cancel if requested
                 if (!notifySuccess(listeners, credentials)) {
@@ -232,8 +252,9 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 
             }
 
-            // Associate configs with session
+            // Associate configs and credentials with session
             httpSession.setAttribute("GUAC_CONFIGS", configs);
+            httpSession.setAttribute("GUAC_CREDS",   credentials);
 
 
         }
