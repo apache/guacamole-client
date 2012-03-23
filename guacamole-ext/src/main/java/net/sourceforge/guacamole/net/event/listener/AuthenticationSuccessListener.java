@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.event.listener;
 
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.event.AuthenticationSuccessEvent;
 
 /**
@@ -22,7 +23,12 @@ public interface AuthenticationSuccessListener {
      * @return true if the successful authentication attempt should be
      *         allowed, or false if the attempt should be denied, causing
      *         the attempt to effectively fail.
+     * @throws GuacamoleException If an error occurs while handling the
+     *                            authentication success event. Throwing an
+     *                            exception will also cancel the authentication
+     *                            success.
      */
-    public boolean authenticationSucceeded(AuthenticationSuccessEvent e);
+    public boolean authenticationSucceeded(AuthenticationSuccessEvent e)
+            throws GuacamoleException;
 
 }

@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.event.listener;
 
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.event.TunnelDetachEvent;
 
 /**
@@ -20,7 +21,11 @@ public interface TunnelDetachListener {
      * @return true if the tunnel should be allowed to be detached, or false
      *         if the attempt should be denied, causing the attempt to
      *         effectively fail.
+     * @throws GuacamoleException If an error occurs while handling the
+     *                            tunnel detach event. Throwing an exception
+     *                            will also stop the tunnel from being detached.
      */
-    public boolean tunnelDetached(TunnelDetachEvent e);
+    public boolean tunnelDetached(TunnelDetachEvent e)
+            throws GuacamoleException;
 
 }

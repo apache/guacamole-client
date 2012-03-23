@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.event.listener;
 
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.event.TunnelAttachEvent;
 
 /**
@@ -20,7 +21,11 @@ public interface TunnelAttachListener {
      * @return true if the tunnel should be allowed to be attached, or false
      *         if the attempt should be denied, causing the attempt to
      *         effectively fail.
+     * @throws GuacamoleException If an error occurs while handling the
+     *                            tunnel attach event. Throwing an exception
+     *                            will also stop the tunnel from being attached.
      */
-    public boolean tunnelAttached(TunnelAttachEvent e);
+    public boolean tunnelAttached(TunnelAttachEvent e)
+            throws GuacamoleException;
 
 }

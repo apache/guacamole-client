@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.event.listener;
 
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.event.AuthenticationFailureEvent;
 
 /**
@@ -17,7 +18,12 @@ public interface AuthenticationFailureListener  {
      * 
      * @param e The AuthenticationFailureEvent describing the authentication
      *          failure that just occurred.
+     * @throws GuacamoleException If an error occurs while handling the
+     *                            authentication failure event. Note that
+     *                            throwing an exception will NOT cause the
+     *                            authentication failure to be canceled.
      */
-    public void authenticationFailed(AuthenticationFailureEvent e);
+    public void authenticationFailed(AuthenticationFailureEvent e)
+            throws GuacamoleException;
     
 }
