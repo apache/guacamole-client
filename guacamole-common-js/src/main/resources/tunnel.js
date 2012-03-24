@@ -203,13 +203,22 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     }
 
+    function getHTTPTunnelErrorMessage(xmlhttprequest) {
+
+        var status = xmlhttprequest.status;
+
+        if (status >= 200 && status <= 299) return "Success";
+        if (status >= 400 && status <= 499) return "Unauthorized";
+        if (status >= 500 && status <= 599) return "Connection lost";
+
+        return "Unknown error";
+
+    }
 
     function handleHTTPTunnelError(xmlhttprequest) {
 
-        // Get error message (if any)
-        var message = xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
-        if (!message)
-            message = "Internal server error";
+        // Get error message
+        var message = getHTTPTunnelErrorMessage(xmlhttprequest);
 
         // Call error handler
         if (tunnel.onerror) tunnel.onerror(message);
@@ -424,13 +433,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
         // If failure, throw error
         if (connect_xmlhttprequest.status != 200) {
-
-            var message = connect_xmlhttprequest.getResponseHeader("X-Guacamole-Error-Message");
-            if (!message)
-                message = "Internal error";
-
+            var message = getHTTPTunnelErrorMessage(connect_xmlhttprequest);
             throw new Error(message);
-
         }
 
         // Get UUID from response
