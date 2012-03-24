@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.basic.GuacamoleClassLoader;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 
