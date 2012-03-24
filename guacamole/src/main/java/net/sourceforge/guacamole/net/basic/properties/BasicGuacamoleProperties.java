@@ -54,4 +54,14 @@ public class BasicGuacamoleProperties {
 
     };
 
+    /**
+     * The comma-separated list of all classes to use as event listeners.
+     */
+    public static final EventListenersProperty EVENT_LISTENERS = new EventListenersProperty() {
+
+        @Override
+        public String getName() { return "event-listeners"; }
+
+    };
+
 }

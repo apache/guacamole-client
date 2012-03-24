@@ -8,6 +8,8 @@ import java.util.Iterator;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.basic.GuacamoleClassLoader;
+import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
 
 /**
  * A collection which iterates over instances of all listeners defined in
@@ -55,20 +57,23 @@ public class SessionListenerCollection extends AbstractCollection {
             listeners = new ArrayList();
             try {
 
-                // TODO: Retrieve list of listener classnames from properties
-                Class listenerClass = GuacamoleClassLoader.getInstance().loadClass(
-                        "net.sourceforge.guacamole.test.GenericLoggingListener"
-                );
+                // Get all listener classes from properties
+                Collection<Class> listenerClasses =
+                        GuacamoleProperties.getProperty(BasicGuacamoleProperties.EVENT_LISTENERS);
 
-                // Instantiate listener
-                Object listener = listenerClass.getConstructor().newInstance();
+                // Add an instance of each class to the list
+                if (listenerClasses != null) {
+                    for (Class listenerClass : listenerClasses) {
 
-                // Add listener to collection of listeners
-                listeners.add(listener);
+                        // Instantiate listener
+                        Object listener = listenerClass.getConstructor().newInstance();
 
-            }
-            catch (ClassNotFoundException e) {
-                throw new GuacamoleException("Could not find listener class.", e);
+                        // Add listener to collection of listeners
+                        listeners.add(listener);
+
+                    }
+                }
+
             }
             catch (InstantiationException e) {
                 throw new GuacamoleException("Listener class is abstract.", e);
