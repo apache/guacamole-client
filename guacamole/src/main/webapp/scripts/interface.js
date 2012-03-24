@@ -351,9 +351,7 @@ var GuacamoleUI = {
 
     // Reset event target (add content, reposition cursor in middle.
     GuacamoleUI.resetEventTarget = function() {
-        GuacamoleUI.eventTarget.value = "GUAC";
-        GuacamoleUI.eventTarget.selectionStart =
-        GuacamoleUI.eventTarget.selectionEnd   = 2;
+        GuacamoleUI.eventTarget.value = "";
     };
 
     // Detect long-press at bottom of screen
@@ -599,6 +597,41 @@ GuacamoleUI.attach = function(guac) {
     window.onunload = function() {
         guac.disconnect();
     };
+
+    // If text is input directly into event target without typing (as with
+    // voice input, for example), type automatically.
+    GuacamoleUI.eventTarget.oninput = function(e) {
+
+        // Get input text
+        var text = GuacamoleUI.eventTarget.value;
+
+        // Send each character
+        for (var i=0; i<text.length; i++) {
+
+            // Get char code
+            var charCode = text.charCodeAt(i);
+
+            // Convert to keysym
+            var keysym = 0x003F; // Default to a question mark
+            if (charCode >= 0x0000 && charCode <= 0x00FF)
+                keysym = charCode;
+            else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
+                keysym = 0x01000000 | charCode;
+
+            // Press and release key
+            guac.sendKeyEvent(1, keysym);
+            guac.sendKeyEvent(0, keysym);
+
+        }
+
+        // Reset target
+        GuacamoleUI.resetEventTarget();
+
+        // Stop event
+        e.preventDefault();
+        return false;
+
+    }
 
     // Handle clipboard events
     GuacamoleUI.clipboard.onchange = function() {
