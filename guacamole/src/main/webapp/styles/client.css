@@ -30,6 +30,7 @@ img {
 
 .software-cursor {
     cursor: url('../images/mouse/dot.gif'),url('../images/mouse/blank.cur'),default;
+    overflow: hidden;
 }
 
 * {
