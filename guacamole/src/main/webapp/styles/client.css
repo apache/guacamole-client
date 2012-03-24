@@ -79,9 +79,45 @@ div.dialog div.buttons {
     text-align: center;
 }
 
-*:not(.guac-error) button#reconnect {
+button {
+
+    border-style: solid;
+    border-width: 1px;
+
+    padding: 0.25em;
+    padding-right: 1em;
+    padding-left: 1em;
+
+}
+
+button:active {
+
+    padding-top: 0.35em;
+    padding-left: 1.1em;
+
+    padding-bottom: 0.15em;
+    padding-right: 0.9em;
+
+}
+
+button#reconnect {
     display: none;
 }
+
+.guac-error button#reconnect {
+    display: inline;
+
+    background:   #200;
+    border-color: #822;
+    color:        #944; 
+}
+
+.guac-error button#reconnect:hover {
+    background:   #822;
+    border-color: #B33;
+    color:        black; 
+}
+
 
 div.dialog p {
     margin: 0;
@@ -131,35 +167,24 @@ div#display * {
 
 #menu button {
     vertical-align: middle;
-    background: #DC8;
-    border: 1px solid #986;
-    color: black; 
-    padding: 0.25em;
-    padding-right: 1em;
-    padding-left: 1em;
+    background:   #DC8;
+    border-color: #986;
+    color:        black; 
 }
 
 #menu button:hover {
-    background: #FFC;
-    border: 1px solid #DC8;
-}
-
-#menu button:active {
-    padding-top: 0.35em;
-    padding-left: 1.1em;
-
-    padding-bottom: 0.15em;
-    padding-right: 0.9em;
+    background:   #FFC;
+    border-color: #DC8;
 }
 
 .guac-error #menu button {
-    background: #B33;
-    border: 1px solid #822;
+    background:   #B33;
+    border-color: #822;
 }
 
 .guac-error #menu button:hover {
-    background: #F44;
-    border: 1px solid #B33;
+    background:   #F44;
+    border-color: #B33;
 }
 
 div#clipboardDiv {
