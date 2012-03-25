@@ -148,14 +148,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 // Failed to connect
                 else {
                     logger.info("Connection from {} failed.", request.getRemoteAddr());
-
-                    try {
-                        // Send error to client
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                    }
-                    catch (IOException e) {
-                        throw new GuacamoleServerException(e);
-                    }
+                    throw new GuacamoleResourceNotFoundException("No tunnel created.");
                 }
 
             }
