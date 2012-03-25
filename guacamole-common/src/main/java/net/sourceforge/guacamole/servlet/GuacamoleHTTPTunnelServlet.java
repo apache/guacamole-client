@@ -45,7 +45,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.*;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 import org.slf4j.Logger;
@@ -71,6 +71,27 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         handleTunnelRequest(request, response);
     }
 
+    private void sendError(HttpServletResponse response, int code) throws ServletException {
+
+        try {
+
+            // If response not committed, send error code
+            if (!response.isCommitted())
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+
+        }
+        catch (IOException ioe) {
+
+            // If unable to send error at all due to I/O problems,
+            // rethrow as servlet exception
+            throw new ServletException(ioe);
+
+        }
+
+    }
+
+
+    
     /**
      * Dispatches every HTTP GET and POST request to the appropriate handler
      * function based on the query string.
@@ -87,7 +108,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             String query = request.getQueryString();
             if (query == null)
-                throw new GuacamoleException("No query string provided.");
+                throw new GuacamoleClientException("No query string provided.");
 
             // If connect operation, call doConnect() and return tunnel UUID
             // in response.
@@ -106,15 +127,27 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     logger.info("Connection from {} succeeded.", request.getRemoteAddr());
                 
                     try {
+                        // Send UUID to client
                         response.getWriter().print(tunnel.getUUID().toString());
                     }
                     catch (IOException e) {
-                        throw new GuacamoleException(e);
+                        throw new GuacamoleServerException(e);
                     }
                     
                 }
-                else
+
+                // Failed to connect
+                else {
                     logger.info("Connection from {} failed.", request.getRemoteAddr());
+
+                    try {
+                        // Send error to client
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    }
+                    catch (IOException e) {
+                        throw new GuacamoleServerException(e);
+                    }
+                }
 
             }
 
@@ -128,38 +161,26 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             // Otherwise, invalid operation
             else
-                throw new GuacamoleException("Invalid tunnel operation: " + query);
+                throw new GuacamoleClientException("Invalid tunnel operation: " + query);
         }
 
         // Catch any thrown guacamole exception and attempt to pass within the
-        // HTTP response.
+        // HTTP response, logging each error appropriately.
+        catch (GuacamoleSecurityException e) {
+            logger.warn("Authorization failed.", e);
+            sendError(response, HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        catch (GuacamoleResourceNotFoundException e) {
+            logger.debug("Resource not found.", e);
+            sendError(response, HttpServletResponse.SC_NOT_FOUND);
+        }
+        catch (GuacamoleClientException e) {
+            logger.warn("Error in client request.", e);
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST);
+        }
         catch (GuacamoleException e) {
-
-            try {
-
-                // If response not committed, send error code along with
-                // message.
-                if (!response.isCommitted()) {
-                    response.setHeader("X-Guacamole-Error-Message", e.getMessage());
-                    response.sendError(
-                            HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                            e.getMessage()
-                    );
-                }
-
-                // If unable to send error code, rethrow as servlet exception
-                else
-                    throw new ServletException(e);
-
-            }
-            catch (IOException ioe) {
-
-                // If unable to send error at all due to I/O problems,
-                // rethrow as servlet exception
-                throw new ServletException(ioe);
-
-            }
-
+            logger.error("Server error in tunnel", e);
+            sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -206,7 +227,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
         GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
         if (tunnel == null)
-            throw new GuacamoleException("No such tunnel.");
+            throw new GuacamoleResourceNotFoundException("No such tunnel.");
 
         // Obtain exclusive read access
         GuacamoleReader reader = tunnel.acquireReader();
@@ -224,7 +245,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             // data yet.
             char[] message = reader.read();
             if (message == null)
-                throw new GuacamoleException("Disconnected.");
+                throw new GuacamoleResourceNotFoundException("Tunnel reached end of stream.");
 
             // For all messages, until another stream is ready (we send at least one message)
             do {
@@ -268,7 +289,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             session.detachTunnel(tunnel);
             tunnel.close();
                 
-            throw new GuacamoleException("I/O error writing to servlet output stream.", e);
+            throw new GuacamoleServerException("I/O error writing to servlet output stream.", e);
         }
         finally {
             tunnel.releaseReader();
@@ -299,7 +320,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
         GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
         if (tunnel == null)
-            throw new GuacamoleException("No such tunnel.");
+            throw new GuacamoleResourceNotFoundException("No such tunnel.");
 
         // We still need to set the content type to avoid the default of
         // text/html, as such a content type would cause some browsers to
@@ -327,7 +348,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             session.detachTunnel(tunnel);
             tunnel.close();
 
-            throw new GuacamoleException("I/O Error sending data to server: " + e.getMessage(), e);
+            throw new GuacamoleServerException("I/O Error sending data to server: " + e.getMessage(), e);
         }
         finally {
             tunnel.releaseWriter();

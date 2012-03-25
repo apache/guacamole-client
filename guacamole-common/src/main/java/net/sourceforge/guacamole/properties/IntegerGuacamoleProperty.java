@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.properties;
  * ***** END LICENSE BLOCK ***** */
 
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 
 /**
  * A GuacamoleProperty whose value is an integer.
@@ -58,7 +59,7 @@ public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Inte
             return integer;
         }
         catch (NumberFormatException e) {
-            throw new GuacamoleException("Property \"" + getName() + "\" must be an integer.", e);
+            throw new GuacamoleServerException("Property \"" + getName() + "\" must be an integer.", e);
         }
 
     }

@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.io;
 import java.io.IOException;
 import java.io.Writer;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 
 /**
@@ -72,7 +73,7 @@ public class WriterGuacamoleWriter implements GuacamoleWriter {
             output.flush();
         }
         catch (IOException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException(e);
         }
     }
 

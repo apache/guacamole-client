@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 
 /**
  * Simple utility class for reading properties from the guacamole.properties
@@ -90,7 +91,7 @@ public class GuacamoleProperties {
 
         }
         catch (IOException e) {
-            exception = new GuacamoleException("Error reading guacamole.properties", e);
+            exception = new GuacamoleServerException("Error reading guacamole.properties", e);
         }
 
     }
@@ -135,7 +136,7 @@ public class GuacamoleProperties {
 
         Type value = getProperty(property);
         if (value == null)
-            throw new GuacamoleException("Property " + property.getName() + " is required.");
+            throw new GuacamoleServerException("Property " + property.getName() + " is required.");
 
         return value;
         

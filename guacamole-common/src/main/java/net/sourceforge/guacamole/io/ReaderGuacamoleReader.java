@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 import org.apache.commons.lang3.ArrayUtils;
@@ -79,7 +80,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
             return input.ready() || usedLength != 0;
         }
         catch (IOException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException(e);
         }
     }
 
@@ -144,7 +145,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
                             // Handle invalid terminator characters
                             else if (terminator != ',')
-                                throw new GuacamoleException("Element terminator of instruction was not ';' nor ','");
+                                throw new GuacamoleServerException("Element terminator of instruction was not ';' nor ','");
                             
                         }
 
@@ -156,7 +157,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
                     // Otherwise, parse error
                     else
-                        throw new GuacamoleException("Non-numeric character in element length.");
+                        throw new GuacamoleServerException("Non-numeric character in element length.");
 
                 }
 
@@ -179,7 +180,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
         }
         catch (IOException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException(e);
         }
 
     }

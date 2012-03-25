@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class GuacamoleSession {
     public GuacamoleSession(HttpSession session) throws GuacamoleException {
 
         if (session == null)
-            throw new GuacamoleException("User has no session.");
+            throw new GuacamoleSecurityException("User has no session.");
 
         synchronized (session) {
 

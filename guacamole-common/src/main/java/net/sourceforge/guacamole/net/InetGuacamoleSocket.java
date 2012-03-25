@@ -51,6 +51,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
 
         }
         catch (IOException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException(e);
         }
 
     }
@@ -117,7 +118,7 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
             sock.close();
         }
         catch (IOException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException(e);
         }
     }
 
