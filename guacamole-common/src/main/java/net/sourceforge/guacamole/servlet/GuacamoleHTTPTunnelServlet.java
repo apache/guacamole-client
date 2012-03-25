@@ -71,6 +71,15 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         handleTunnelRequest(request, response);
     }
 
+    /**
+     * Sends an error on the given HTTP response with the given integer error
+     * code.
+     * 
+     * @param response The HTTP response to use to send the error.
+     * @param code The HTTP status code of the error.
+     * @throws ServletException If an error prevents sending of the error
+     *                          code.
+     */
     private void sendError(HttpServletResponse response, int code) throws ServletException {
 
         try {
