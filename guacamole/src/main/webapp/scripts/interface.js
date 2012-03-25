@@ -419,7 +419,7 @@ var GuacamoleUI = {
 GuacamoleUI.attach = function(guac) {
 
     var title_prefix = null;
-    var connection_name = null 
+    var connection_name = "Guacamole"; 
     
     var guac_display = guac.getDisplay();
 
@@ -545,13 +545,7 @@ GuacamoleUI.attach = function(guac) {
 
             // Connected
             case 3:
-                
                 GuacamoleUI.hideStatus();
-                GuacamoleUI.display.className =
-                    GuacamoleUI.display.className.replace(/guac-loading/, '');
-
-                GuacamoleUI.menu.className = "connected";
-
                 title_prefix = null;
                 break;
 

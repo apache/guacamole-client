@@ -33,6 +33,10 @@ img {
     overflow: hidden;
 }
 
+.guac-error .software-cursor {
+    cursor: default;
+}
+
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
