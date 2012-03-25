@@ -244,6 +244,10 @@ Guacamole.OnScreenKeyboard = function(url) {
                             
                             // Get content of key cap
                             var content = e.textContent || e.text;
+
+                            // If read as blank, assume cap is a single space.
+                            if (content.length == 0)
+                                content = " ";
                             
                             // Get keysym
                             var real_keysym = null;
