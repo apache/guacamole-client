@@ -207,10 +207,15 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
         var status = xmlhttprequest.status;
 
-        if (status >= 200 && status <= 299) return "Success";
-        if (status >= 400 && status <= 499) return "Unauthorized";
-        if (status >= 500 && status <= 599) return "Connection lost";
+        // Special cases
+        if (status == 200) return "Success";
+        if (status == 403) return "Unauthorized";
+        if (status == 404) return "Connection does not exist";
 
+        // Internal server errors
+        if (status >= 500 && status <= 599) return "Server error";
+
+        // Otherwise, unknown
         return "Unknown error";
 
     }
