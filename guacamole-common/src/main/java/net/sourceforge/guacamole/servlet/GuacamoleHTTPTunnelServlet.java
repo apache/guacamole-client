@@ -86,7 +86,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             // If response not committed, send error code
             if (!response.isCommitted())
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.sendError(code);
 
         }
         catch (IOException ioe) {
