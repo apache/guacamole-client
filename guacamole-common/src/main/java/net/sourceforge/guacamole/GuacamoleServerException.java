@@ -44,7 +44,7 @@ package net.sourceforge.guacamole;
  *
  * @author Michael Jumper
  */
-public class GuacamoleInternalException extends GuacamoleException {
+public class GuacamoleServerException extends GuacamoleException {
 
     /**
      * Creates a new GuacamoleException with the given message and cause.
@@ -53,7 +53,7 @@ public class GuacamoleInternalException extends GuacamoleException {
      *                occurred.
      * @param cause The cause of this exception.
      */
-    public GuacamoleInternalException(String message, Throwable cause) {
+    public GuacamoleServerException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -63,7 +63,7 @@ public class GuacamoleInternalException extends GuacamoleException {
      * @param message A human readable description of the exception that
      *                occurred.
      */
-    public GuacamoleInternalException(String message) {
+    public GuacamoleServerException(String message) {
         super(message);
     }
 
@@ -72,7 +72,7 @@ public class GuacamoleInternalException extends GuacamoleException {
      *
      * @param cause The cause of this exception.
      */
-    public GuacamoleInternalException(Throwable cause) {
+    public GuacamoleServerException(Throwable cause) {
         super(cause);
     }
 

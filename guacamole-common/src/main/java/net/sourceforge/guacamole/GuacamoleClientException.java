@@ -38,41 +38,41 @@ package net.sourceforge.guacamole;
  * ***** END LICENSE BLOCK ***** */
 
 /**
- * A generic exception thrown when part of the Guacamole API fails to find
- * a requested resource, such as a configuration or tunnel.
+ * A generic exception thrown when part of the Guacamole API encounters
+ * an error in the client's request. Such an error, if correctable, usually
+ * requires correction on the client side, not the server.
  *
  * @author Michael Jumper
  */
-public class GuacamoleResourceNotFoundException extends GuacamoleClientException {
+public class GuacamoleClientException extends GuacamoleException {
 
     /**
-     * Creates a new GuacamoleResourceNotFoundException with the given message
-     * and cause.
+     * Creates a new GuacamoleException with the given message and cause.
      *
      * @param message A human readable description of the exception that
      *                occurred.
      * @param cause The cause of this exception.
      */
-    public GuacamoleResourceNotFoundException(String message, Throwable cause) {
+    public GuacamoleClientException(String message, Throwable cause) {
         super(message, cause);
     }
 
     /**
-     * Creates a new GuacamoleResourceNotFoundException with the given message.
+     * Creates a new GuacamoleException with the given message.
      *
      * @param message A human readable description of the exception that
      *                occurred.
      */
-    public GuacamoleResourceNotFoundException(String message) {
+    public GuacamoleClientException(String message) {
         super(message);
     }
 
     /**
-     * Creates a new GuacamoleResourceNotFoundException with the given cause.
+     * Creates a new GuacamoleException with the given cause.
      *
      * @param cause The cause of this exception.
      */
-    public GuacamoleResourceNotFoundException(Throwable cause) {
+    public GuacamoleClientException(Throwable cause) {
         super(cause);
     }
 

@@ -43,7 +43,7 @@ package net.sourceforge.guacamole;
  *
  * @author Michael Jumper
  */
-public class GuacamoleSecurityException extends GuacamoleException {
+public class GuacamoleSecurityException extends GuacamoleClientException {
 
     /**
      * Creates a new GuacamoleSecurityException with the given message and cause.
