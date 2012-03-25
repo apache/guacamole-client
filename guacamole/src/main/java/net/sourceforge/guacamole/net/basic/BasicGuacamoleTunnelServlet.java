@@ -176,8 +176,8 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // Get authorized config
             GuacamoleConfiguration config = configs.get(id);
             if (config == null) {
-                logger.error("Error retrieving authorized configuration id={}.", id);
-                throw new GuacamoleException("Unknown configuration ID.");
+                logger.error("Configuration id={} not found.", id);
+                return null;
             }
             
             logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);

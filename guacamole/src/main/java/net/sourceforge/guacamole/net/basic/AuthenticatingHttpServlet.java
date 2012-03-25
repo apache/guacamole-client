@@ -150,7 +150,6 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * @throws IOException If an error occurs while sending the error.
      */
     private void failAuthentication(HttpServletResponse response) throws IOException {
-        response.setHeader("X-Guacamole-Error-Message", AUTH_ERROR_MESSAGE);
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
     
