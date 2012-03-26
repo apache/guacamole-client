@@ -58,6 +58,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
     private GuacamoleSocket socket;
+    private GuacamoleConfiguration config;
 
     /**
      * Creates a new ConfiguredGuacamoleSocket which uses the given
@@ -70,7 +71,8 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      * @throws GuacamoleException If an error occurs while completing the
      *                            initial protocol handshake.
      */
-    public ConfiguredGuacamoleSocket(GuacamoleSocket socket, GuacamoleConfiguration config) throws GuacamoleException {
+    public ConfiguredGuacamoleSocket(GuacamoleSocket socket,
+            GuacamoleConfiguration config) throws GuacamoleException {
 
         this.socket = socket;
 
@@ -104,6 +106,17 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Send args
         writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_CONNECT, args));
 
+    }
+
+    /**
+     * Returns the GuacamoleConfiguration used to configure this
+     * ConfiguredGuacamoleSocket.
+     * 
+     * @return The GuacamoleConfiguration used to configure this
+     *         ConfiguredGuacamoleSocket.
+     */
+    public GuacamoleConfiguration getConfiguration() {
+        return config;
     }
 
     @Override
