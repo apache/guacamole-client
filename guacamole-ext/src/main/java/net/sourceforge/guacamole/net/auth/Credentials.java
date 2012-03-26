@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.auth;
 
+import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -49,7 +50,9 @@ import javax.servlet.http.HttpSession;
  * 
  * @author Michael Jumper
  */
-public class Credentials {
+public class Credentials implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * An arbitrary username.
@@ -64,12 +67,12 @@ public class Credentials {
     /**
      * The HttpServletRequest carrying additional credentials, if any.
      */
-    private HttpServletRequest request;
+    private transient HttpServletRequest request;
 
     /**
      * The HttpSession carrying additional credentials, if any.
      */
-    private HttpSession session;
+    private transient HttpSession session;
     
     /**
      * Returns the password associated with this set of credentials.
