@@ -211,8 +211,20 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         if (status == 0)   return "Disconnected";
         if (status == 200) return "Success";
         if (status == 403) return "Unauthorized";
-        if (status == 404) return "Connection does not exist";
-
+        if (status == 404) return "Connection closed"; /* While it may be more
+                                                        * accurate to say the
+                                                        * connection does not
+                                                        * exist, it is confusing
+                                                        * to the user.
+                                                        * 
+                                                        * In general, this error
+                                                        * will only happen when
+                                                        * the tunnel does not
+                                                        * exist, which happens
+                                                        * after the connection
+                                                        * is closed and the
+                                                        * tunnel is detached.
+                                                        */
         // Internal server errors
         if (status >= 500 && status <= 599) return "Server error";
 
