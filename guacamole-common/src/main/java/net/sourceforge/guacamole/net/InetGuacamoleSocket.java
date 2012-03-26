@@ -132,5 +132,10 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
         return writer;
     }
 
+    @Override
+    public boolean isOpen() {
+        return !sock.isClosed();
+    }
+    
 
 }

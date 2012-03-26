@@ -76,4 +76,12 @@ public interface GuacamoleSocket {
      */
     public void close() throws GuacamoleException;
 
+    /**
+     * Returns whether this GuacamoleSocket is open and can be used for reading
+     * and writing.
+     * 
+     * @return true if this GuacamoleSocket is open, false otherwise.
+     */
+    public boolean isOpen();
+
 }

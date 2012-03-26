@@ -121,4 +121,9 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         socket.close();
     }
 
+    @Override
+    public boolean isOpen() {
+        return socket.isOpen();
+    }
+
 }

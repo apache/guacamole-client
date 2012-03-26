@@ -57,6 +57,8 @@ public class GuacamoleTunnel {
     private ReentrantLock readerLock;
     private ReentrantLock writerLock;
 
+    private boolean open = true;
+
     /**
      * Creates a new GuacamoleTunnel which synchronizes access to the
      * Guacamole instruction stream associated with the given GuacamoleSocket.
@@ -147,6 +149,16 @@ public class GuacamoleTunnel {
     }
 
     /**
+     * Returns the GuacamoleSocket used by this GuacamoleTunnel for reading
+     * and writing.
+     * 
+     * @return The GuacamoleSocket used by this GuacamoleTunnel.
+     */
+    public GuacamoleSocket getSocket() {
+        return socket;
+    }
+
+    /**
      * Release all resources allocated to this GuacamoleTunnel.
      * 
      * @throws GuacamoleException if an error occurs while releasing
@@ -156,4 +168,13 @@ public class GuacamoleTunnel {
         socket.close();
     }
 
+    /**
+     * Returns whether this GuacamoleTunnel is open, or has been closed.
+     * 
+     * @return true if this GuacamoleTunnel is open, false if it is closed.
+     */
+    public boolean isOpen() {
+        return socket.isOpen();
+    }
+    
 }

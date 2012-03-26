@@ -227,10 +227,15 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         HttpSession httpSession = request.getSession(false);
         GuacamoleSession session = new GuacamoleSession(httpSession);
 
+        // Get tunnel, ensure tunnel exists
         GuacamoleTunnel tunnel = session.getTunnel(tunnelUUID);
         if (tunnel == null)
             throw new GuacamoleResourceNotFoundException("No such tunnel.");
 
+        // Ensure tunnel is open
+        if (!tunnel.isOpen())
+            throw new GuacamoleResourceNotFoundException("Tunnel is closed.");
+        
         // Obtain exclusive read access
         GuacamoleReader reader = tunnel.acquireReader();
 
@@ -265,7 +270,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 if (tunnel.hasQueuedReaderThreads())
                     break;
 
-            } while ((message = reader.read()) != null);
+            } while (tunnel.isOpen() && (message = reader.read()) != null);
 
             // Close tunnel immediately upon EOF
             if (message == null)
@@ -340,7 +345,8 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             char[] buffer = new char[8192];
 
             int length;
-            while ((length = input.read(buffer, 0, buffer.length)) != -1)
+            while (tunnel.isOpen() && 
+                    (length = input.read(buffer, 0, buffer.length)) != -1)
                 writer.write(buffer, 0, length);
 
         }
