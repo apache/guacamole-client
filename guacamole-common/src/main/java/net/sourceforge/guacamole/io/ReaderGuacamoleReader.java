@@ -44,7 +44,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
@@ -202,8 +201,19 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         LinkedList<String> elements = new LinkedList<String>();
         while (elementStart < instructionBuffer.length) {
 
-            // Find end of length 
-            int lengthEnd = ArrayUtils.indexOf(instructionBuffer, '.', elementStart);
+            // Find end of length
+            int lengthEnd = -1;
+            for (int i=elementStart; i<instructionBuffer.length; i++) {
+                if (instructionBuffer[i] == '.') {
+                    lengthEnd = i;
+                    break;
+                }
+            }
+
+            // read() is required to return a complete instruction. If it does
+            // not, this is a severe internal error.
+            if (lengthEnd == -1)
+                throw new GuacamoleServerException("Read returned incomplete instruction.");
 
             // Parse length
             int length = Integer.parseInt(new String(
