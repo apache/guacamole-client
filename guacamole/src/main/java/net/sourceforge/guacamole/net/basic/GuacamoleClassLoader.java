@@ -42,6 +42,9 @@ import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -66,14 +69,21 @@ public class GuacamoleClassLoader extends ClassLoader {
         try {
             // Attempt to create singleton classloader which loads classes from
             // all .jar's in the lib directory defined in guacamole.properties
-            instance = new GuacamoleClassLoader(
-                GuacamoleProperties.getProperty(BasicGuacamoleProperties.LIB_DIRECTORY)
-            );
+            instance = AccessController.doPrivileged(new PrivilegedExceptionAction<GuacamoleClassLoader>() {
+
+                @Override
+                public GuacamoleClassLoader run() throws GuacamoleException {
+                    return new GuacamoleClassLoader(
+                        GuacamoleProperties.getProperty(BasicGuacamoleProperties.LIB_DIRECTORY)
+                    );
+                }
+
+            });
         }
         
-        catch (GuacamoleException e) {
+        catch (PrivilegedActionException e) {
             // On error, record exception
-            exception = e;
+            exception = (GuacamoleException) e.getException();
         }
         
     }
