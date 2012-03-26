@@ -87,7 +87,9 @@ public class GuacamoleProperties {
             if (stream == null)
                 throw new IOException("Resource /guacamole.properties not found.");
 
-            properties.load(stream);
+            // Load properties, always close stream
+            try { properties.load(stream); }
+            finally { stream.close(); }
 
         }
         catch (IOException e) {
