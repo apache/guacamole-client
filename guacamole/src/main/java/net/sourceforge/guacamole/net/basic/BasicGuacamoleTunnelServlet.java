@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
@@ -177,7 +178,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             GuacamoleConfiguration config = configs.get(id);
             if (config == null) {
                 logger.error("Configuration id={} not found.", id);
-                return null;
+                throw new GuacamoleSecurityException("Requested configuration is not authorized.");
             }
             
             logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
