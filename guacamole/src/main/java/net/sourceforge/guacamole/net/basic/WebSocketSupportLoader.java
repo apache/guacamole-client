@@ -79,10 +79,10 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
             // Servlet API 3.0 unsupported
             catch (ClassNotFoundException e) {
-                logger.error("Servlet API 3.0 not found.", e);
+                logger.info("Servlet API 3.0 not found.", e);
             }
             catch (NoSuchMethodException e) {
-                logger.error("Servlet API 3.0 found, but incomplete.", e);
+                logger.warn("Servlet API 3.0 found, but incomplete.", e);
             }
 
             // Servlet API 3.0 found, but errors during use
