@@ -57,8 +57,6 @@ public class GuacamoleTunnel {
     private ReentrantLock readerLock;
     private ReentrantLock writerLock;
 
-    private boolean open = true;
-
     /**
      * Creates a new GuacamoleTunnel which synchronizes access to the
      * Guacamole instruction stream associated with the given GuacamoleSocket.
