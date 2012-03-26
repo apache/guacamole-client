@@ -208,6 +208,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         var status = xmlhttprequest.status;
 
         // Special cases
+        if (status == 0)   return "Disconnected";
         if (status == 200) return "Success";
         if (status == 403) return "Unauthorized";
         if (status == 404) return "Connection does not exist";
