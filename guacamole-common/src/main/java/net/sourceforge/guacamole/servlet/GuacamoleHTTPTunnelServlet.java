@@ -170,7 +170,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // HTTP response, logging each error appropriately.
         catch (GuacamoleSecurityException e) {
             logger.warn("Authorization failed.", e);
-            sendError(response, HttpServletResponse.SC_UNAUTHORIZED);
+            sendError(response, HttpServletResponse.SC_FORBIDDEN);
         }
         catch (GuacamoleResourceNotFoundException e) {
             logger.debug("Resource not found.", e);
