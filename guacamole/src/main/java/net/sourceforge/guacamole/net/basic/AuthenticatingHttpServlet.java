@@ -54,13 +54,6 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
     
     /**
-     * The error message to be provided to the client user if authentication
-     * fails for ANY REASON.
-     */
-    private static final String AUTH_ERROR_MESSAGE = 
-            "User not logged in or authentication failed.";
-    
-    /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
     private AuthenticationProvider authProvider;
