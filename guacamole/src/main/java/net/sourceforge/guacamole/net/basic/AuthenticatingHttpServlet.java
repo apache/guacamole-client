@@ -218,7 +218,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             // If error retrieving configs, fail authentication, notify listeners
             catch (GuacamoleException e) {
                 logger.error("Error retrieving configuration(s) for user \"{}\".",
-                        credentials.getUsername());
+                        credentials.getUsername(), e);
 
                 notifyFailed(listeners, credentials);
                 failAuthentication(response);
@@ -255,7 +255,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             catch (GuacamoleException e) {
                 
                 // Cancel authentication success if hook throws exception
-                logger.error("Successful authentication canceled by error in hook.");
+                logger.error("Successful authentication canceled by error in hook.", e);
                 failAuthentication(response);
                 return;
                 
