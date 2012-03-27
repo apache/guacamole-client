@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <version>0.6.0</version>
     <name>guacamole-common-js</name>
-    <url>http://guacamole.sourceforge.net/</url>
+    <url>http://guac-dev.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
