@@ -349,11 +349,6 @@ var GuacamoleUI = {
         menuShowLongPressTimeout = null;
     };
 
-    // Reset event target (add content, reposition cursor in middle.
-    GuacamoleUI.resetEventTarget = function() {
-        GuacamoleUI.eventTarget.value = "";
-    };
-
     // Detect long-press at bottom of screen
     GuacamoleUI.display.addEventListener('touchstart', function(e) {
         
@@ -492,6 +487,11 @@ GuacamoleUI.attach = function(guac) {
 
     // Keyboard
     var keyboard = new Guacamole.Keyboard(document);
+    var keysymPressed = [];
+
+    function isTypableCharacter(keysym) {
+        return (keysym & 0xFFFF00) != 0xFF00;
+    }
 
     function disableKeyboard() {
         keyboard.onkeydown = null;
@@ -499,21 +499,19 @@ GuacamoleUI.attach = function(guac) {
     }
 
     function enableKeyboard() {
-        keyboard.onkeydown = 
-            function (keysym) {
-          
-                // If we're using native OSK, ensure event target is reset
-                // on each key event.
-                if (GuacamoleUI.oskMode == GuacamoleUI.OSK_MODE_NATIVE)
-                    GuacamoleUI.resetEventTarget();
-                
-                guac.sendKeyEvent(1, keysym);
-            };
 
-        keyboard.onkeyup = 
-            function (keysym) {
-                guac.sendKeyEvent(0, keysym);
-            };
+        keyboard.onkeydown = function (keysym) {
+            guac.sendKeyEvent(1, keysym);
+            keysymPressed[keysym] = true;
+            return isTypableCharacter(keysym);
+        };
+
+        keyboard.onkeyup = function (keysym) {
+            guac.sendKeyEvent(0, keysym);
+            keysymPressed[keysym] = false;
+            return isTypableCharacter(keysym);
+        };
+
     }
 
     // Enable keyboard by default
@@ -592,12 +590,27 @@ GuacamoleUI.attach = function(guac) {
         guac.disconnect();
     };
 
+    // Save length for calculation of changed value
+    var currentLength = GuacamoleUI.eventTarget.value.length;
+
     // If text is input directly into event target without typing (as with
     // voice input, for example), type automatically.
     GuacamoleUI.eventTarget.oninput = function(e) {
 
-        // Get input text
-        var text = GuacamoleUI.eventTarget.value;
+        // Calculate current length and change in length
+        var newLength = GuacamoleUI.eventTarget.value.length;
+        var changeLength = newLength - currentLength;
+        currentLength = newLength;
+        
+        // If deleted or replaced text, ignore
+        if (changeLength <= 0)
+            return;
+
+        // Get changed text
+        var text = GuacamoleUI.eventTarget.value.substring(
+            GuacamoleUI.eventTarget.selectionStart,
+            GuacamoleUI.eventTarget.selectionStart + changeLength
+        );
 
         // Send each character
         for (var i=0; i<text.length; i++) {
@@ -612,18 +625,16 @@ GuacamoleUI.attach = function(guac) {
             else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
                 keysym = 0x01000000 | charCode;
 
-            // Press and release key
-            guac.sendKeyEvent(1, keysym);
-            guac.sendKeyEvent(0, keysym);
+            // Send keysym only if not already pressed
+            if (!keysymPressed[keysym]) {
+
+                // Press and release key
+                guac.sendKeyEvent(1, keysym);
+                guac.sendKeyEvent(0, keysym);
+
+            }
 
         }
-
-        // Reset target
-        GuacamoleUI.resetEventTarget();
-
-        // Stop event
-        e.preventDefault();
-        return false;
 
     }
 
