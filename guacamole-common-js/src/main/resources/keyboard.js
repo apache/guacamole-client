@@ -60,8 +60,11 @@ Guacamole.Keyboard = function(element) {
      * 
      * @event
      * @param {Number} keysym The keysym of the key being pressed.
+     * @returns {Boolean} true if the originating event of this keypress should
+     *                    be allowed through to the browser, false or undefined
+     *                    otherwise.
      */
-	this.onkeydown = null;
+    this.onkeydown = null;
 
     /**
      * Fired whenever the user releases a key with the element associated
@@ -69,8 +72,11 @@ Guacamole.Keyboard = function(element) {
      * 
      * @event
      * @param {Number} keysym The keysym of the key being released.
+     * @returns {Boolean} true if the originating event of this key release 
+     *                    should be allowed through to the browser, false or
+     *                    undefined otherwise.
      */
-	this.onkeyup = null;
+    this.onkeyup = null;
 
     /**
      * Map of known JavaScript keycodes which do not map to typable characters
@@ -127,10 +133,10 @@ Guacamole.Keyboard = function(element) {
         18:  0xFFE7  // alt
     };
 
-	// Single key state/modifier buffer
-	var modShift = false;
-	var modCtrl = false;
-	var modAlt = false;
+    // Single key state/modifier buffer
+    var modShift = false;
+    var modCtrl = false;
+    var modAlt = false;
 
     var keydownChar = new Array();
 
@@ -138,19 +144,19 @@ Guacamole.Keyboard = function(element) {
     var repeatKeyTimeoutId = -1;
     var repeatKeyIntervalId = -1;
 
-	// Starts repeating keystrokes
-	function startRepeat(keySym) {
-		repeatKeyIntervalId = setInterval(function() {
+    // Starts repeating keystrokes
+    function startRepeat(keySym) {
+        repeatKeyIntervalId = setInterval(function() {
             sendKeyReleased(keySym);
             sendKeyPressed(keySym);
         }, 50);
-	}
+    }
 
-	// Stops repeating keystrokes
-	function stopRepeat() {
-		if (repeatKeyTimeoutId != -1) clearInterval(repeatKeyTimeoutId);
-		if (repeatKeyIntervalId != -1) clearInterval(repeatKeyIntervalId);
-	}
+    // Stops repeating keystrokes
+    function stopRepeat() {
+        if (repeatKeyTimeoutId != -1) clearInterval(repeatKeyTimeoutId);
+        if (repeatKeyIntervalId != -1) clearInterval(repeatKeyIntervalId);
+    }
 
 
     function getKeySymFromKeyIdentifier(shifted, keyIdentifier) {
@@ -194,8 +200,8 @@ Guacamole.Keyboard = function(element) {
     function getKeySymFromKeyCode(keyCode) {
 
         var keysym = null;
-		if (!modShift) keysym = unshiftedKeySym[keyCode];
-		else {
+        if (!modShift) keysym = unshiftedKeySym[keyCode];
+        else {
             keysym = shiftedKeySym[keyCode];
             if (keysym == null) keysym = unshiftedKeySym[keyCode];
         }
@@ -205,17 +211,19 @@ Guacamole.Keyboard = function(element) {
     }
 
 
-	// Sends a single keystroke over the network
-	function sendKeyPressed(keysym) {
-		if (keysym != null && guac_keyboard.onkeydown)
-			guac_keyboard.onkeydown(keysym);
-	}
+    // Sends a single keystroke over the network
+    function sendKeyPressed(keysym) {
+        if (keysym != null && guac_keyboard.onkeydown)
+            return guac_keyboard.onkeydown(keysym) != false;
+        return true;
+    }
 
-	// Sends a single keystroke over the network
-	function sendKeyReleased(keysym) {
-		if (keysym != null && guac_keyboard.onkeyup)
-			guac_keyboard.onkeyup(keysym);
-	}
+    // Sends a single keystroke over the network
+    function sendKeyReleased(keysym) {
+        if (keysym != null && guac_keyboard.onkeyup)
+            return guac_keyboard.onkeyup(keysym) != false;
+        return true;
+    }
 
 
     var KEYDOWN = 1;
@@ -223,24 +231,24 @@ Guacamole.Keyboard = function(element) {
 
     var keySymSource = null;
 
-	// When key pressed
+    // When key pressed
     var keydownCode = null;
-	element.onkeydown = function(e) {
+    element.onkeydown = function(e) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown) return true;
 
-		var keynum;
-		if (window.event) keynum = window.event.keyCode;
-		else if (e.which) keynum = e.which;
+        var keynum;
+        if (window.event) keynum = window.event.keyCode;
+        else if (e.which) keynum = e.which;
 
-		// Ctrl/Alt/Shift
-		if (keynum == 16)
-			modShift = true;
-		else if (keynum == 17)
-			modCtrl = true;
-		else if (keynum == 18)
-			modAlt = true;
+        // Ctrl/Alt/Shift
+        if (keynum == 16)
+            modShift = true;
+        else if (keynum == 17)
+            modCtrl = true;
+        else if (keynum == 18)
+            modAlt = true;
 
         var keysym = getKeySymFromKeyCode(keynum);
         if (keysym) {
@@ -269,11 +277,13 @@ Guacamole.Keyboard = function(element) {
         // Send key event here
         if (keySymSource == KEYDOWN) {
 
+            var returnValue = true;
+
             if (keydownChar[keynum] != keysym) {
 
                 // Send event
                 keydownChar[keynum] = keysym;
-                sendKeyPressed(keysym);
+                returnValue = sendKeyPressed(keysym);
 
                 // Clear old key repeat, if any.
                 stopRepeat();
@@ -283,14 +293,14 @@ Guacamole.Keyboard = function(element) {
                     repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
             }
 
-            return false;
+            return returnValue;
         }
 
         return true;
 
-	};
+    };
 
-	// When key pressed
+    // When key pressed
     element.onkeypress = function(e) {
 
         // Only intercept if handler set
@@ -298,10 +308,11 @@ Guacamole.Keyboard = function(element) {
 
         if (keySymSource != KEYPRESS) return false;
 
-		var keynum;
-		if (window.event) keynum = window.event.keyCode;
-		else if (e.which) keynum = e.which;
+        var keynum;
+        if (window.event) keynum = window.event.keyCode;
+        else if (e.which) keynum = e.which;
 
+        var returnValue = true;
         var keysym = getKeySymFromCharCode(keynum);
         if (keysym && keydownChar[keynum] != keysym) {
 
@@ -316,32 +327,33 @@ Guacamole.Keyboard = function(element) {
             stopRepeat();
 
             // Send key event
-            sendKeyPressed(keysym);
+            returnValue = sendKeyPressed(keysym);
 
             // Start repeating (if not a modifier key) after a short delay
             repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
         }
 
-        return false;
-	};
+        return returnValue;
 
-	// When key released
-	element.onkeyup = function(e) {
+    };
+
+    // When key released
+    element.onkeyup = function(e) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeyup) return true;
 
-		var keynum;
-		if (window.event) keynum = window.event.keyCode;
-		else if (e.which) keynum = e.which;
-		
-		// Ctrl/Alt/Shift
-		if (keynum == 16)
-			modShift = false;
-		else if (keynum == 17)
-			modCtrl = false;
-		else if (keynum == 18)
-			modAlt = false;
+        var keynum;
+        if (window.event) keynum = window.event.keyCode;
+        else if (e.which) keynum = e.which;
+        
+        // Ctrl/Alt/Shift
+        if (keynum == 16)
+            modShift = false;
+        else if (keynum == 17)
+            modCtrl = false;
+        else if (keynum == 18)
+            modAlt = false;
         else
             stopRepeat();
 
@@ -352,16 +364,15 @@ Guacamole.Keyboard = function(element) {
         keydownChar[keynum] = null;
 
         // Send release event
-        sendKeyReleased(lastKeyDownChar);
+        return sendKeyReleased(lastKeyDownChar);
 
-		return false;
-	};
+    };
 
-	// When focus is lost, clear modifiers.
-	element.onblur = function() {
-		modAlt = false;
-		modCtrl = false;
-		modShift = false;
-	};
+    // When focus is lost, clear modifiers.
+    element.onblur = function() {
+        modAlt = false;
+        modCtrl = false;
+        modShift = false;
+    };
 
 };
