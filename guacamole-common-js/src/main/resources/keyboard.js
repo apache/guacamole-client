@@ -277,13 +277,11 @@ Guacamole.Keyboard = function(element) {
         // Send key event here
         if (keySymSource == KEYDOWN) {
 
-            var returnValue = true;
-
             if (keydownChar[keynum] != keysym) {
 
                 // Send event
                 keydownChar[keynum] = keysym;
-                returnValue = sendKeyPressed(keysym);
+                var returnValue = sendKeyPressed(keysym);
 
                 // Clear old key repeat, if any.
                 stopRepeat();
@@ -291,9 +289,16 @@ Guacamole.Keyboard = function(element) {
                 // Start repeating (if not a modifier key) after a short delay
                 if (keynum != 16 && keynum != 17 && keynum != 18)
                     repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
+
+                // Use return code provided by handler
+                return returnValue;
+
             }
 
-            return returnValue;
+            // Default to canceling event if no keypress is being sent, but
+            // source of events is keydown.
+            return false;
+
         }
 
         return true;
@@ -312,7 +317,6 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
 
-        var returnValue = true;
         var keysym = getKeySymFromCharCode(keynum);
         if (keysym && keydownChar[keynum] != keysym) {
 
@@ -327,13 +331,17 @@ Guacamole.Keyboard = function(element) {
             stopRepeat();
 
             // Send key event
-            returnValue = sendKeyPressed(keysym);
+            var returnValue = sendKeyPressed(keysym);
 
             // Start repeating (if not a modifier key) after a short delay
             repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
+
+            return returnValue;
         }
 
-        return returnValue;
+        // Default to canceling event if no keypress is being sent, but
+        // source of events is keypress.
+        return false;
 
     };
 
