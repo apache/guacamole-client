@@ -148,11 +148,8 @@ Guacamole.Client = function(tunnel) {
 
     function moveCursor(x, y) {
 
-        var element = cursor.getElement();
-
-        // Update rect
-        element.style.left = (x - cursorHotspotX) + "px";
-        element.style.top  = (y - cursorHotspotY) + "px";
+        // Move cursor layer
+        cursor.translate(x - cursorHotspotX, y - cursorHotspotY);
 
         // Update stored position
         cursorX = x;
@@ -460,18 +457,7 @@ Guacamole.Client = function(tunnel) {
                 var layer_container = getLayerContainer(layer_index).getElement();
 
                 // Set layer transform 
-                layer_container.style.transform =
-                layer_container.style.WebkitTransform =
-                layer_container.style.MozTransform =
-                layer_container.style.OTransform =
-                layer_container.style.msTransform =
-
-                    /* a c e
-                     * b d f
-                     * 0 0 1
-                     */
-            
-                    "matrix(" + a + "," + b + "," + c + "," + d + "," + e + "," + f + ")";
+                layer_container.transform(a, b, c, d, e, f);
 
              }
 
@@ -536,17 +522,17 @@ Guacamole.Client = function(tunnel) {
             if (layer_index > 0 && parent_index >= 0) {
 
                 // Get container element
-                var layer_container = getLayerContainer(layer_index).getElement();
+                var layer_container = getLayerContainer(layer_index);
+                var layer_container_element = layer_container.getElement();
                 var parent = getLayerContainer(parent_index).getElement();
 
                 // Set parent if necessary
-                if (!(layer_container.parentNode === parent))
-                    parent.appendChild(layer_container);
+                if (!(layer_container_element.parentNode === parent))
+                    parent.appendChild(layer_container_element);
 
                 // Move layer
-                layer_container.style.left   = x + "px";
-                layer_container.style.top    = y + "px";
-                layer_container.style.zIndex = z;
+                layer_container.translate(x, y);
+                layer_container_element.style.zIndex = z;
 
             }
 
@@ -886,6 +872,75 @@ Guacamole.Client.LayerContainer = function(width, height) {
      */
     layer_container.getElement = function() {
         return div;
+    };
+
+    /**
+     * The translation component of this LayerContainer's transform.
+     */
+    var translate = "translate(0px, 0px)"; // (0, 0)
+
+    /**
+     * The arbitrary matrix component of this LayerContainer's transform.
+     */
+    var matrix = "matrix(1, 0, 0, 1, 0, 0)"; // Identity
+
+    /**
+     * Moves the upper-left corner of this LayerContainer to the given X and Y
+     * coordinate.
+     * 
+     * @param {Number} x The X coordinate to move to.
+     * @param {Number} y The Y coordinate to move to.
+     */
+    layer_container.translate = function(x, y) {
+
+        // Generate translation
+        translate = "translate("
+                        + x + "px,"
+                        + y + "px)";
+
+        // Set layer transform 
+        div.style.transform =
+        div.style.WebkitTransform =
+        div.style.MozTransform =
+        div.style.OTransform =
+        div.style.msTransform =
+
+            translate + " " + matrix;
+
+    };
+
+    /**
+     * Applies the given affine transform (defined with six values from the
+     * transform's matrix).
+     * 
+     * @param {Number} a The first value in the affine transform's matrix.
+     * @param {Number} b The second value in the affine transform's matrix.
+     * @param {Number} c The third value in the affine transform's matrix.
+     * @param {Number} d The fourth value in the affine transform's matrix.
+     * @param {Number} e The fifth value in the affine transform's matrix.
+     * @param {Number} f The sixth value in the affine transform's matrix.
+     */
+    layer_container.transform = function(a, b, c, d, e, f) {
+
+        // Generate matrix transformation
+        matrix =
+
+            /* a c e
+             * b d f
+             * 0 0 1
+             */
+    
+            "matrix(" + a + "," + b + "," + c + "," + d + "," + e + "," + f + ")";
+
+        // Set layer transform 
+        div.style.transform =
+        div.style.WebkitTransform =
+        div.style.MozTransform =
+        div.style.OTransform =
+        div.style.msTransform =
+
+            translate + " " + matrix;
+
     };
 
 };
