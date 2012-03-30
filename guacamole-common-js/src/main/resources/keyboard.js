@@ -133,10 +133,35 @@ Guacamole.Keyboard = function(element) {
         18:  0xFFE7  // alt
     };
 
-    // Single key state/modifier buffer
-    var modShift = false;
-    var modCtrl = false;
-    var modAlt = false;
+    /**
+     * All modifiers and their states.
+     */
+    this.modifiers = {
+        
+        /**
+         * Whether shift is currently pressed.
+         */
+        "shift": false,
+        
+        /**
+         * Whether ctrl is currently pressed.
+         */
+        "ctrl" : false,
+        
+        /**
+         * Whether alt is currently pressed.
+         */
+        "alt"  : false
+
+    };
+
+    /**
+     * The state of every key, indexed by keysym. If a particular key is
+     * pressed, the value of pressed for that keysym will be true. If a key
+     * is not currently pressed, the value for that keysym may be false or
+     * undefined.
+     */
+    this.pressed = [];
 
     var keydownChar = new Array();
 
@@ -200,7 +225,7 @@ Guacamole.Keyboard = function(element) {
     function getKeySymFromKeyCode(keyCode) {
 
         var keysym = null;
-        if (!modShift) keysym = unshiftedKeySym[keyCode];
+        if (!guac_keyboard.modifiers.shift) keysym = unshiftedKeySym[keyCode];
         else {
             keysym = shiftedKeySym[keyCode];
             if (keysym == null) keysym = unshiftedKeySym[keyCode];
@@ -213,16 +238,30 @@ Guacamole.Keyboard = function(element) {
 
     // Sends a single keystroke over the network
     function sendKeyPressed(keysym) {
+
+        // Mark key as pressed
+        guac_keyboard.pressed[keysym] = true;
+
+        // Send key event
         if (keysym != null && guac_keyboard.onkeydown)
             return guac_keyboard.onkeydown(keysym) != false;
+        
         return true;
+
     }
 
     // Sends a single keystroke over the network
     function sendKeyReleased(keysym) {
+
+        // Mark key as released
+        guac_keyboard.pressed[keysym] = false;
+
+        // Send key event
         if (keysym != null && guac_keyboard.onkeyup)
             return guac_keyboard.onkeyup(keysym) != false;
+
         return true;
+
     }
 
 
@@ -243,32 +282,29 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) keynum = e.which;
 
         // Ctrl/Alt/Shift
-        if (keynum == 16)
-            modShift = true;
-        else if (keynum == 17)
-            modCtrl = true;
-        else if (keynum == 18)
-            modAlt = true;
+        if (keynum == 16)      guac_keyboard.modifiers.shift = true;
+        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
+        else if (keynum == 18) guac_keyboard.modifiers.alt   = true;
 
+        // If keysym is defined for given key code, key events can come from
+        // KEYDOWN.
         var keysym = getKeySymFromKeyCode(keynum);
-        if (keysym) {
-            // Get keysyms and events from KEYDOWN
+        if (keysym)
             keySymSource = KEYDOWN;
-        }
 
-        // If modifier keys are held down, and we have keyIdentifier
-        else if ((modCtrl || modAlt) && e.keyIdentifier) {
+        // Otherwise, if modifier keys are held down, try to get from keyIdentifier
+        else if ((guac_keyboard.modifiers.ctrl || guac_keyboard.modifiers.alt) && e.keyIdentifier) {
 
             // Get keysym from keyIdentifier
-            keysym = getKeySymFromKeyIdentifier(modShift, e.keyIdentifier);
+            keysym = getKeySymFromKeyIdentifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
 
             // Get keysyms and events from KEYDOWN
             keySymSource = KEYDOWN;
 
         }
 
+        // Otherwise, resort to KEYPRESS
         else
-            // Get keysyms and events from KEYPRESS
             keySymSource = KEYPRESS;
 
         keydownCode = keynum;
@@ -356,12 +392,9 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) keynum = e.which;
         
         // Ctrl/Alt/Shift
-        if (keynum == 16)
-            modShift = false;
-        else if (keynum == 17)
-            modCtrl = false;
-        else if (keynum == 18)
-            modAlt = false;
+        if (keynum == 16)      guac_keyboard.modifiers.shift = false;
+        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
+        else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
         else
             stopRepeat();
 
@@ -378,9 +411,9 @@ Guacamole.Keyboard = function(element) {
 
     // When focus is lost, clear modifiers.
     element.onblur = function() {
-        modAlt = false;
-        modCtrl = false;
-        modShift = false;
+        guac_keyboard.modifiers.alt = false;
+        guac_keyboard.modifiers.ctrl = false;
+        guac_keyboard.modifiers.shift = false;
     };
 
 };
