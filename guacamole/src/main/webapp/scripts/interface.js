@@ -489,6 +489,65 @@ GuacamoleUI.attach = function(guac) {
     var keyboard = new Guacamole.Keyboard(document);
     var keysymPressed = [];
 
+    // Monitor whether the event target is focused
+    var eventTargetFocused = false;
+
+    GuacamoleUI.eventTarget.onfocus = function() {
+        eventTargetFocused = true;
+    };
+
+    GuacamoleUI.eventTarget.onblur = function() {
+        eventTargetFocused = false;
+    };
+
+    // Save length for calculation of changed value
+    var currentLength = GuacamoleUI.eventTarget.value.length;
+
+    // If text is input directly into event target without typing (as with
+    // voice input, for example), type automatically.
+    GuacamoleUI.eventTarget.oninput = function(e) {
+
+        // Calculate current length and change in length
+        var newLength = GuacamoleUI.eventTarget.value.length;
+        var changeLength = newLength - currentLength;
+        currentLength = newLength;
+        
+        // If deleted or replaced text, ignore
+        if (changeLength <= 0)
+            return;
+
+        // Get changed text
+        var text = GuacamoleUI.eventTarget.value.substring(
+            GuacamoleUI.eventTarget.selectionStart,
+            GuacamoleUI.eventTarget.selectionStart + changeLength
+        );
+
+        // Send each character
+        for (var i=0; i<text.length; i++) {
+
+            // Get char code
+            var charCode = text.charCodeAt(i);
+
+            // Convert to keysym
+            var keysym = 0x003F; // Default to a question mark
+            if (charCode >= 0x0000 && charCode <= 0x00FF)
+                keysym = charCode;
+            else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
+                keysym = 0x01000000 | charCode;
+
+            // Send keysym only if not already pressed
+            if (!keysymPressed[keysym]) {
+
+                // Press and release key
+                guac.sendKeyEvent(1, keysym);
+                guac.sendKeyEvent(0, keysym);
+
+            }
+
+        }
+
+    }
+
     function isTypableCharacter(keysym) {
         return (keysym & 0xFFFF00) != 0xFF00;
     }
@@ -503,13 +562,13 @@ GuacamoleUI.attach = function(guac) {
         keyboard.onkeydown = function (keysym) {
             guac.sendKeyEvent(1, keysym);
             keysymPressed[keysym] = true;
-            return isTypableCharacter(keysym);
+            return eventTargetFocused && isTypableCharacter(keysym);
         };
 
         keyboard.onkeyup = function (keysym) {
             guac.sendKeyEvent(0, keysym);
             keysymPressed[keysym] = false;
-            return isTypableCharacter(keysym);
+            return eventTargetFocused && isTypableCharacter(keysym);
         };
 
     }
@@ -589,54 +648,6 @@ GuacamoleUI.attach = function(guac) {
     window.onunload = function() {
         guac.disconnect();
     };
-
-    // Save length for calculation of changed value
-    var currentLength = GuacamoleUI.eventTarget.value.length;
-
-    // If text is input directly into event target without typing (as with
-    // voice input, for example), type automatically.
-    GuacamoleUI.eventTarget.oninput = function(e) {
-
-        // Calculate current length and change in length
-        var newLength = GuacamoleUI.eventTarget.value.length;
-        var changeLength = newLength - currentLength;
-        currentLength = newLength;
-        
-        // If deleted or replaced text, ignore
-        if (changeLength <= 0)
-            return;
-
-        // Get changed text
-        var text = GuacamoleUI.eventTarget.value.substring(
-            GuacamoleUI.eventTarget.selectionStart,
-            GuacamoleUI.eventTarget.selectionStart + changeLength
-        );
-
-        // Send each character
-        for (var i=0; i<text.length; i++) {
-
-            // Get char code
-            var charCode = text.charCodeAt(i);
-
-            // Convert to keysym
-            var keysym = 0x003F; // Default to a question mark
-            if (charCode >= 0x0000 && charCode <= 0x00FF)
-                keysym = charCode;
-            else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
-                keysym = 0x01000000 | charCode;
-
-            // Send keysym only if not already pressed
-            if (!keysymPressed[keysym]) {
-
-                // Press and release key
-                guac.sendKeyEvent(1, keysym);
-                guac.sendKeyEvent(0, keysym);
-
-            }
-
-        }
-
-    }
 
     // Handle clipboard events
     GuacamoleUI.clipboard.onchange = function() {
