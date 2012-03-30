@@ -145,7 +145,14 @@ var GuacamoleUI = {
             shade_interval = window.setInterval(function() {
 
                 offset -= step;
-                GuacamoleUI.menu.style.top = offset + "px";
+
+                GuacamoleUI.menu.style.transform =
+                GuacamoleUI.menu.style.WebkitTransform =
+                GuacamoleUI.menu.style.MozTransform =
+                GuacamoleUI.menu.style.OTransform =
+                GuacamoleUI.menu.style.msTransform =
+
+                    "translateY(" + offset + "px)";
 
                 if (offset <= -GuacamoleUI.menu.offsetHeight) {
                     window.clearInterval(shade_interval);
@@ -176,7 +183,13 @@ var GuacamoleUI = {
                     window.clearInterval(show_interval);
                 }
 
-                GuacamoleUI.menu.style.top = offset + "px";
+                GuacamoleUI.menu.style.transform =
+                GuacamoleUI.menu.style.WebkitTransform =
+                GuacamoleUI.menu.style.MozTransform =
+                GuacamoleUI.menu.style.OTransform =
+                GuacamoleUI.menu.style.msTransform =
+
+                    "translateY(" + offset + "px)";
 
             }, GuacamoleUI.MENU_SHOW_INTERVAL);
         }
@@ -408,6 +421,10 @@ var GuacamoleUI = {
         }
     };
 
+    // Turn off autocorrect and autocapitalization on eventTarget
+    GuacamoleUI.eventTarget.setAttribute("autocorrect", "off");
+    GuacamoleUI.eventTarget.setAttribute("autocapitalize", "off");
+
 })();
 
 // Tie UI events / behavior to a specific Guacamole client
@@ -487,7 +504,6 @@ GuacamoleUI.attach = function(guac) {
 
     // Keyboard
     var keyboard = new Guacamole.Keyboard(document);
-    var keysymPressed = [];
 
     // Monitor whether the event target is focused
     var eventTargetFocused = false;
@@ -536,7 +552,7 @@ GuacamoleUI.attach = function(guac) {
                 keysym = 0x01000000 | charCode;
 
             // Send keysym only if not already pressed
-            if (!keysymPressed[keysym]) {
+            if (!keyboard.pressed[keysym]) {
 
                 // Press and release key
                 guac.sendKeyEvent(1, keysym);
@@ -561,13 +577,11 @@ GuacamoleUI.attach = function(guac) {
 
         keyboard.onkeydown = function (keysym) {
             guac.sendKeyEvent(1, keysym);
-            keysymPressed[keysym] = true;
             return eventTargetFocused && isTypableCharacter(keysym);
         };
 
         keyboard.onkeyup = function (keysym) {
             guac.sendKeyEvent(0, keysym);
-            keysymPressed[keysym] = false;
             return eventTargetFocused && isTypableCharacter(keysym);
         };
 
