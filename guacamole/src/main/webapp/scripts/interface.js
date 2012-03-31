@@ -383,15 +383,11 @@ var GuacamoleUI = {
     // Stop detection if touch moves significantly
     GuacamoleUI.display.addEventListener('touchmove', function(e) {
         
-        if (e.touches.length == 1) {
-
-            // If touch distance from start exceeds threshold, cancel long press
-            var touch = e.touches[0];
-            if (Math.abs(touch.screenX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
-                || Math.abs(touch.screenY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
-                GuacamoleUI.stopLongPressDetect();
-
-        }
+        // If touch distance from start exceeds threshold, cancel long press
+        var touch = e.touches[0];
+        if (Math.abs(touch.screenX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
+            || Math.abs(touch.screenY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
+            GuacamoleUI.stopLongPressDetect();
         
     }, true);
 
