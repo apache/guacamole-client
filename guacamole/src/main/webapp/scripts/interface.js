@@ -508,35 +508,33 @@ GuacamoleUI.attach = function(guac) {
     // Monitor whether the event target is focused
     var eventTargetFocused = false;
 
+    // Save length for calculation of changed value
+    var currentLength = GuacamoleUI.eventTarget.value.length;
+
     GuacamoleUI.eventTarget.onfocus = function() {
         eventTargetFocused = true;
+        GuacamoleUI.eventTarget.value = "";
+        currentLength = 0;
     };
 
     GuacamoleUI.eventTarget.onblur = function() {
         eventTargetFocused = false;
     };
 
-    // Save length for calculation of changed value
-    var currentLength = GuacamoleUI.eventTarget.value.length;
-
     // If text is input directly into event target without typing (as with
     // voice input, for example), type automatically.
     GuacamoleUI.eventTarget.oninput = function(e) {
 
         // Calculate current length and change in length
-        var newLength = GuacamoleUI.eventTarget.value.length;
-        var changeLength = newLength - currentLength;
-        currentLength = newLength;
+        var oldLength = currentLength;
+        currentLength = GuacamoleUI.eventTarget.value.length;
         
         // If deleted or replaced text, ignore
-        if (changeLength <= 0)
+        if (currentLength <= oldLength)
             return;
 
         // Get changed text
-        var text = GuacamoleUI.eventTarget.value.substring(
-            GuacamoleUI.eventTarget.selectionStart,
-            GuacamoleUI.eventTarget.selectionStart + changeLength
-        );
+        var text = GuacamoleUI.eventTarget.value.substring(oldLength);
 
         // Send each character
         for (var i=0; i<text.length; i++) {
