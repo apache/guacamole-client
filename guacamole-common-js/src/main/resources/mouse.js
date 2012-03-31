@@ -59,6 +59,24 @@ Guacamole.Mouse = function(element) {
     var guac_mouse = this;
 
     /**
+     * The number of pixels a touch must move for it to be considered a scroll
+     * wheel event.
+     */
+    this.scrollThreshold = 20;
+
+    /**
+     * The maximum number of milliseconds to wait for a touch to end for the
+     * gesture to be considered a click.
+     */
+    this.clickTimingThreshold = 250;
+
+    /**
+     * The maximum number of pixels to allow a touch to move for the gesture to
+     * be considered a click.
+     */
+    this.clickMoveThreshold = 10;
+
+    /**
      * The current mouse state. The properties of this state are updated when
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
@@ -187,7 +205,8 @@ Guacamole.Mouse = function(element) {
             }
 
             // If single tap detected (based on time and distance)
-            if (time - last_touch_time <= 250 && pixels_moved < 10) {
+            if (time - last_touch_time <= guac_mouse.clickTimingThreshold
+                    && pixels_moved < guac_mouse.clickMoveThreshold) {
 
                 // Fire button down event
                 guac_mouse.currentState[button] = true;
@@ -206,7 +225,7 @@ Guacamole.Mouse = function(element) {
                     // Allow mouse events now that touching is over
                     gesture_in_progress = false;
             
-                }, 250);
+                }, guac_mouse.clickTimingThreshold);
 
             }
 
@@ -257,29 +276,64 @@ Guacamole.Mouse = function(element) {
         // Track pixels moved
         pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
 
-        // Update mouse location
-        guac_mouse.currentState.x += delta_x;
-        guac_mouse.currentState.y += delta_y;
+        // If only one touch involved, this is mouse move
+        if (touch_count == 1) {
 
-        // Prevent mouse from leaving screen
+            // Update mouse location
+            guac_mouse.currentState.x += delta_x;
+            guac_mouse.currentState.y += delta_y;
 
-        if (guac_mouse.currentState.x < 0)
-            guac_mouse.currentState.x = 0;
-        else if (guac_mouse.currentState.x >= element.offsetWidth)
-            guac_mouse.currentState.x = element.offsetWidth - 1;
+            // Prevent mouse from leaving screen
 
-        if (guac_mouse.currentState.y < 0)
-            guac_mouse.currentState.y = 0;
-        else if (guac_mouse.currentState.y >= element.offsetHeight)
-            guac_mouse.currentState.y = element.offsetHeight - 1;
+            if (guac_mouse.currentState.x < 0)
+                guac_mouse.currentState.x = 0;
+            else if (guac_mouse.currentState.x >= element.offsetWidth)
+                guac_mouse.currentState.x = element.offsetWidth - 1;
 
-        // Fire movement event, if defined
-        if (guac_mouse.onmousemove)
-            guac_mouse.onmousemove(guac_mouse.currentState);
+            if (guac_mouse.currentState.y < 0)
+                guac_mouse.currentState.y = 0;
+            else if (guac_mouse.currentState.y >= element.offsetHeight)
+                guac_mouse.currentState.y = element.offsetHeight - 1;
 
-        // Update touch location
-        last_touch_x = touch.screenX;
-        last_touch_y = touch.screenY;
+            // Fire movement event, if defined
+            if (guac_mouse.onmousemove)
+                guac_mouse.onmousemove(guac_mouse.currentState);
+
+            // Update touch location
+            last_touch_x = touch.screenX;
+            last_touch_y = touch.screenY;
+
+        }
+
+        // Otherwise, interpret as scrollwheel
+        else {
+
+            // If change in location passes threshold for scroll
+            if (Math.abs(delta_y) >= guac_mouse.scrollThreshold) {
+
+                // Decide button based on Y movement direction
+                var button;
+                if (delta_y > 0) button = "down";
+                else             button = "up";
+
+                // Fire button down event
+                guac_mouse.currentState[button] = true;
+                if (guac_mouse.onmousedown)
+                    guac_mouse.onmousedown(guac_mouse.currentState);
+
+                // Fire button up event
+                guac_mouse.currentState[button] = false;
+                if (guac_mouse.onmouseup)
+                    guac_mouse.onmouseup(guac_mouse.currentState);
+
+                // Only update touch location after a scroll has been
+                // detected
+                last_touch_x = touch.screenX;
+                last_touch_y = touch.screenY;
+
+            }
+
+        }
 
     }, false);
 
