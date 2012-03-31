@@ -143,28 +143,38 @@ Guacamole.Mouse = function(element) {
 
     }, false);
 
+    var touch_count = 0;
     var last_touch_x = 0;
     var last_touch_y = 0;
     var last_touch_time = 0;
     var pixels_moved = 0;
+
+    var touch_buttons = {
+        1: "left",
+        2: "right",
+        3: "middle"
+    };
 
     var gesture_in_progress = false;
     var click_release_timeout = null;
 
     element.addEventListener("touchend", function(e) {
         
-        // If we're handling a gesture
-        if (gesture_in_progress) {
+        // If we're handling a gesture AND this is the last touch
+        if (gesture_in_progress && e.touches.length == 1) {
             
             cancelEvent(e);
             
             var time = new Date().getTime();
 
-            // If mouse already down, release anad clear timeout
-            if (guac_mouse.currentState.left) {
+            // Get corresponding mouse button
+            var button = touch_buttons[touch_count];
 
-                // Fire left button up event
-                guac_mouse.currentState.left = false;
+            // If mouse already down, release anad clear timeout
+            if (guac_mouse.currentState[button]) {
+
+                // Fire button up event
+                guac_mouse.currentState[button] = false;
                 if (guac_mouse.onmouseup)
                     guac_mouse.onmouseup(guac_mouse.currentState);
 
@@ -179,8 +189,8 @@ Guacamole.Mouse = function(element) {
             // If single tap detected (based on time and distance)
             if (time - last_touch_time <= 250 && pixels_moved < 10) {
 
-                // Fire left button down event
-                guac_mouse.currentState.left = true;
+                // Fire button down event
+                guac_mouse.currentState[button] = true;
                 if (guac_mouse.onmousedown)
                     guac_mouse.onmousedown(guac_mouse.currentState);
 
@@ -188,8 +198,8 @@ Guacamole.Mouse = function(element) {
                 // touchstart within timeout.
                 click_release_timeout = window.setTimeout(function() {
                     
-                    // Fire left button up event
-                    guac_mouse.currentState.left = false;
+                    // Fire button up event
+                    guac_mouse.currentState[button] = false;
                     if (guac_mouse.onmouseup)
                         guac_mouse.onmouseup(guac_mouse.currentState);
                     
@@ -206,7 +216,10 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("touchstart", function(e) {
 
-        // Record initial touch location and time for single-touch movement
+        // Track number of touches, but no more than three
+        touch_count = Math.max(e.touches.length, 3);
+
+        // Record initial touch location and time for touch movement
         // and tap gestures
         if (e.touches.length == 1) {
 
@@ -228,52 +241,45 @@ Guacamole.Mouse = function(element) {
             last_touch_time = new Date().getTime();
             pixels_moved = 0;
 
-            // TODO: Handle different buttons
-
         }
 
     }, false);
 
     element.addEventListener("touchmove", function(e) {
 
-        // Handle single-touch movement gesture (touchpad mouse move)
-        if (e.touches.length == 1) {
+        cancelEvent(e);
 
-            cancelEvent(e);
+        // Get change in touch location
+        var touch = e.touches[0];
+        var delta_x = touch.screenX - last_touch_x;
+        var delta_y = touch.screenY - last_touch_y;
 
-            // Get change in touch location
-            var touch = e.touches[0];
-            var delta_x = touch.screenX - last_touch_x;
-            var delta_y = touch.screenY - last_touch_y;
+        // Track pixels moved
+        pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
 
-            // Track pixels moved
-            pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
+        // Update mouse location
+        guac_mouse.currentState.x += delta_x;
+        guac_mouse.currentState.y += delta_y;
 
-            // Update mouse location
-            guac_mouse.currentState.x += delta_x;
-            guac_mouse.currentState.y += delta_y;
+        // Prevent mouse from leaving screen
 
-            // Prevent mouse from leaving screen
+        if (guac_mouse.currentState.x < 0)
+            guac_mouse.currentState.x = 0;
+        else if (guac_mouse.currentState.x >= element.offsetWidth)
+            guac_mouse.currentState.x = element.offsetWidth - 1;
 
-            if (guac_mouse.currentState.x < 0)
-                guac_mouse.currentState.x = 0;
-            else if (guac_mouse.currentState.x >= element.offsetWidth)
-                guac_mouse.currentState.x = element.offsetWidth - 1;
+        if (guac_mouse.currentState.y < 0)
+            guac_mouse.currentState.y = 0;
+        else if (guac_mouse.currentState.y >= element.offsetHeight)
+            guac_mouse.currentState.y = element.offsetHeight - 1;
 
-            if (guac_mouse.currentState.y < 0)
-                guac_mouse.currentState.y = 0;
-            else if (guac_mouse.currentState.y >= element.offsetHeight)
-                guac_mouse.currentState.y = element.offsetHeight - 1;
+        // Fire movement event, if defined
+        if (guac_mouse.onmousemove)
+            guac_mouse.onmousemove(guac_mouse.currentState);
 
-            // Fire movement event, if defined
-            if (guac_mouse.onmousemove)
-                guac_mouse.onmousemove(guac_mouse.currentState);
-
-            // Update touch location
-            last_touch_x = touch.screenX;
-            last_touch_y = touch.screenY;
-
-        }
+        // Update touch location
+        last_touch_x = touch.screenX;
+        last_touch_y = touch.screenY;
 
     }, false);
 
