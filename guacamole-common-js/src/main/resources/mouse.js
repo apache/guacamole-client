@@ -161,7 +161,7 @@ Guacamole.Mouse = function(element) {
     element.addEventListener("touchend", function(e) {
         
         // If we're handling a gesture AND this is the last touch
-        if (gesture_in_progress && e.touches.length == 1) {
+        if (gesture_in_progress && e.touches.length == 0) {
             
             cancelEvent(e);
             
@@ -217,7 +217,7 @@ Guacamole.Mouse = function(element) {
     element.addEventListener("touchstart", function(e) {
 
         // Track number of touches, but no more than three
-        touch_count = Math.max(e.touches.length, 3);
+        touch_count = Math.min(e.touches.length, 3);
 
         // Record initial touch location and time for touch movement
         // and tap gestures
