@@ -67,6 +67,7 @@ Guacamole.Client = function(tunnel) {
 
     var displayWidth = 0;
     var displayHeight = 0;
+    var displayScale = 1;
 
     /**
      * Translation from Guacamole protocol line caps to Layer line caps.
@@ -86,11 +87,25 @@ Guacamole.Client = function(tunnel) {
         2: "round"
     };
 
+    // Create bounding div 
+    var bounds = document.createElement("div");
+    bounds.style.position = "relative";
+    bounds.style.width = (displayWidth*displayScale) + "px";
+    bounds.style.height = (displayHeight*displayScale) + "px";
+
     // Create display
     var display = document.createElement("div");
     display.style.position = "relative";
     display.style.width = displayWidth + "px";
     display.style.height = displayHeight + "px";
+
+    // Ensure transformations on display originate at 0,0
+    display.style.transformOrigin =
+    display.style.webkitTransformOrigin =
+    display.style.MozTransformOrigin =
+    display.style.OTransformOrigin =
+    display.style.msTransformOrigin =
+        "0 0";
 
     // Create default layer
     var default_layer_container = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
@@ -115,6 +130,9 @@ Guacamole.Client = function(tunnel) {
     // Add default layer and cursor to display
     display.appendChild(default_layer_container.getElement());
     display.appendChild(cursor.getElement());
+
+    // Add display to bounds
+    bounds.appendChild(display);
 
     // Initially, only default layer exists
     var layers =  [default_layer_container];
@@ -158,7 +176,7 @@ Guacamole.Client = function(tunnel) {
     }
 
     guac_client.getDisplay = function() {
-        return display;
+        return bounds;
     };
 
     guac_client.sendKeyEvent = function(pressed, keysym) {
@@ -651,6 +669,10 @@ Guacamole.Client = function(tunnel) {
                 display.style.width = displayWidth + "px";
                 display.style.height = displayHeight + "px";
 
+                // Update bounds size
+                bounds.style.width = (displayWidth*displayScale) + "px";
+                bounds.style.height = (displayHeight*displayScale) + "px";
+
             }
 
         },
@@ -799,6 +821,24 @@ Guacamole.Client = function(tunnel) {
         }, 5000);
 
         setState(STATE_WAITING);
+    };
+
+    guac_client.scale = function(scale) {
+
+        display.style.transform =
+        display.style.WebkitTransform =
+        display.style.MozTransform =
+        display.style.OTransform =
+        display.style.msTransform =
+
+            "scale(" + scale + "," + scale + ")";
+
+        displayScale = scale;
+
+        // Update bounds size
+        bounds.style.width = (displayWidth*displayScale) + "px";
+        bounds.style.height = (displayHeight*displayScale) + "px";
+
     };
 
 };
