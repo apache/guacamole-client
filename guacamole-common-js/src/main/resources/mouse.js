@@ -59,10 +59,10 @@ Guacamole.Mouse = function(element) {
     var guac_mouse = this;
 
     /**
-     * The distance a two-finger touch must move per scrollwheel event, relative
-     * to the distance between the two touches.
+     * The distance a two-finger touch must move per scrollwheel event, in
+     * pixels.
      */
-    this.scrollThreshold = 0.5;
+    this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
 
     /**
      * The maximum number of milliseconds to wait for a touch to end for the
@@ -74,7 +74,7 @@ Guacamole.Mouse = function(element) {
      * The maximum number of pixels to allow a touch to move for the gesture to
      * be considered a click.
      */
-    this.clickMoveThreshold = 10 * (window.displayPixelRatio || 1);
+    this.clickMoveThreshold = 10 * (window.devicePixelRatio || 1);
 
     /**
      * The current mouse state. The properties of this state are updated when
@@ -263,12 +263,6 @@ Guacamole.Mouse = function(element) {
 
         }
 
-        else if (e.touches.length == 2) {
-            var diff_x = e.touches[0].screenX - e.touches[1].screenX;
-            var diff_y = e.touches[0].screenY - e.touches[1].screenY;
-            touch_distance = Math.sqrt(diff_x*diff_x + diff_y*diff_y);
-        }
-
     }, false);
 
     element.addEventListener("touchmove", function(e) {
@@ -312,11 +306,11 @@ Guacamole.Mouse = function(element) {
 
         }
 
-        // Interpret two-finger touch as scrollwheel
+        // Interpret two-finger swipe as scrollwheel
         else if (touch_count == 2) {
 
             // If change in location passes threshold for scroll
-            if (Math.abs(delta_y) >= touch_distance * guac_mouse.scrollThreshold) {
+            if (Math.abs(delta_y) >= guac_mouse.scrollThreshold) {
 
                 // Decide button based on Y movement direction
                 var button;
