@@ -841,8 +841,11 @@ Guacamole.Client = function(tunnel) {
 
     };
 
-};
+    guac_client.getScale = function() {
+        return displayScale;
+    };
 
+};
 
 /**
  * Simple container for Guacamole.Layer, allowing layers to be easily
