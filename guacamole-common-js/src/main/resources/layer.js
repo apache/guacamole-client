@@ -75,6 +75,19 @@ Guacamole.Layer = function(width, height) {
     displayContext.save();
 
     /**
+     * A temporary canvas element whose contents can be relied on only
+     * through the duration of an operation.
+     * @private
+     */
+    var temp = document.createElement("canvas");
+
+    /**
+     * The 2D display context of the temporary canvas element.
+     * @private
+     */
+    var tempContext = temp.getContext("2d");
+
+    /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO).
@@ -401,6 +414,15 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
+     * Returns the display context of the canvas element backing this layer.
+     * @returns {CanvasRenderingContext2D} The display context of the canvas
+     *                                     element backing this layer.
+     */
+    this.getContext = function() {
+        return displayContext;
+    };
+
+    /**
      * Returns whether this Layer is ready. A Layer is ready if it has no
      * pending operations and no operations in-progress.
      * 
@@ -570,8 +592,23 @@ Guacamole.Layer = function(width, height) {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0)
-                displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
+
+                // Copy source data into temporary canvas (drawing from
+                // source canvas directly can cause the operation to be
+                // performed lazily by the underlying Canvas implementation,
+                // which undermines the sychronization built into these
+                // layers).
+                temp.width = srcw;
+                temp.height = srch;
+                tempContext.putImageData(
+                    srcLayer.getContext().getImageData(srcx, srcy, srcw, srch),
+                    0, 0);
+
+                // Draw from temporary canvas
+                displayContext.drawImage(temp, 0, 0, srcw, srch, x, y, srcw, srch);
+                
+            }
 
         });
     };
