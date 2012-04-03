@@ -588,29 +588,58 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
-        scheduleTaskSynced(srcLayer, function() {
+
+        // If we are copying from ourselves, perform simple drawImage() copy.
+        // No other synchronization is necessary.
+        if (srcLayer === this) {
+
+            scheduleTask(function() {
+                if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+                displayContext.drawImage(srcLayer.getCanvas(), srcx, srcy, srcw, srch, x, y, srcw, srch);
+            });
+
+            return;
+        }
+
+        // Note that source image data MUST be retrieved with getImageData()
+        // rather than drawing directly using the source canvas as an
+        // argument to drawImage(). This is because Canvas implementations may
+        // implement drawImage() lazily, which can cause rendering issues if
+        // the source canvas is updated before drawImage() is actually
+        // performed. Retrieving the actual underlying pixel data with
+        // getImageData() ensures that the image data is truly available.
+
+        // Will contain image data once source layer is ready
+        var data;
+
+        // Draw image data from the source layer any time after the
+        // source layer is ready (the copied image data will be stored
+        // such that the source layer can continue unimpeded).
+        var task = scheduleTask(function() {
+
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
             if (srcCanvas.width != 0 && srcCanvas.height != 0) {
 
-                // Copy source data into temporary canvas (drawing from
-                // source canvas directly can cause the operation to be
-                // performed lazily by the underlying Canvas implementation,
-                // which undermines the sychronization built into these
-                // layers).
+                // Copy image data onto temporary canvas
                 temp.width = srcw;
                 temp.height = srch;
-                tempContext.putImageData(
-                    srcLayer.getContext().getImageData(srcx, srcy, srcw, srch),
-                    0, 0);
+                tempContext.putImageData(data, 0, 0);
 
                 // Draw from temporary canvas
                 displayContext.drawImage(temp, 0, 0, srcw, srch, x, y, srcw, srch);
                 
             }
 
+        }, true);
+
+        // When source layer is ready, pull data, and unblock draw task
+        srcLayer.sync(function() {
+            data = srcLayer.getContext().getImageData(srcx, srcy, srcw, srch);
+            task.unblock();
         });
+
     };
 
     /**
