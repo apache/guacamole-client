@@ -23,6 +23,7 @@
 
     <head>
         <link rel="icon" type="image/png" href="images/guacamole-logo-64.png"/>
+        <link rel="apple-touch-icon" type="image/png" href="images/guacamole-logo-64.png"/>
         <link rel="stylesheet" type="text/css" href="styles/login.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
         <title>Guacamole ${project.version}</title>
@@ -185,6 +186,8 @@
             var loginUI = document.getElementById("login-ui");
             var connectionListUI = document.getElementById("connection-list-ui");
             var logout = document.getElementById("logout");
+            var username = document.getElementById("username");
+            var password = document.getElementById("password");
 
             logout.onclick = function() {
                 window.location.href = "logout";
@@ -196,9 +199,6 @@
                 var parameters = window.location.search.substring(1);
 
                 // Get username and password from form
-                var username = document.getElementById("username");
-                var password = document.getElementById("password");
-
                 var data =
                        "username=" + encodeURIComponent(username.value)
                     + "&password=" + encodeURIComponent(password.value)
@@ -238,6 +238,10 @@
                 return false;
 
             }
+
+            // Turn off autocorrect and autocapitalization on usename 
+            username.setAttribute("autocorrect", "off");
+            username.setAttribute("autocapitalize", "off");
 
             resetUI();
 
