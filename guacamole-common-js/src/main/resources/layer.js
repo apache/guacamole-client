@@ -75,19 +75,6 @@ Guacamole.Layer = function(width, height) {
     displayContext.save();
 
     /**
-     * A temporary canvas element whose contents can be relied on only
-     * through the duration of an operation.
-     * @private
-     */
-    var temp = document.createElement("canvas");
-
-    /**
-     * The 2D display context of the temporary canvas element.
-     * @private
-     */
-    var tempContext = temp.getContext("2d");
-
-    /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO).
@@ -414,15 +401,6 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
-     * Returns the display context of the canvas element backing this layer.
-     * @returns {CanvasRenderingContext2D} The display context of the canvas
-     *                                     element backing this layer.
-     */
-    this.getContext = function() {
-        return displayContext;
-    };
-
-    /**
      * Returns whether this Layer is ready. A Layer is ready if it has no
      * pending operations and no operations in-progress.
      * 
@@ -588,58 +566,14 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
-
-        // If we are copying from ourselves, perform simple drawImage() copy.
-        // No other synchronization is necessary.
-        if (srcLayer === this) {
-
-            scheduleTask(function() {
-                if (layer.autosize != 0) fitRect(x, y, srcw, srch);
-                displayContext.drawImage(srcLayer.getCanvas(), srcx, srcy, srcw, srch, x, y, srcw, srch);
-            });
-
-            return;
-        }
-
-        // Note that source image data MUST be retrieved with getImageData()
-        // rather than drawing directly using the source canvas as an
-        // argument to drawImage(). This is because Canvas implementations may
-        // implement drawImage() lazily, which can cause rendering issues if
-        // the source canvas is updated before drawImage() is actually
-        // performed. Retrieving the actual underlying pixel data with
-        // getImageData() ensures that the image data is truly available.
-
-        // Will contain image data once source layer is ready
-        var data;
-
-        // Draw image data from the source layer any time after the
-        // source layer is ready (the copied image data will be stored
-        // such that the source layer can continue unimpeded).
-        var task = scheduleTask(function() {
-
+        scheduleTaskSynced(srcLayer, function() {
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
+            if (srcCanvas.width != 0 && srcCanvas.height != 0)
+                displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
-                // Copy image data onto temporary canvas
-                temp.width = srcw;
-                temp.height = srch;
-                tempContext.putImageData(data, 0, 0);
-
-                // Draw from temporary canvas
-                displayContext.drawImage(temp, 0, 0, srcw, srch, x, y, srcw, srch);
-                
-            }
-
-        }, true);
-
-        // When source layer is ready, pull data, and unblock draw task
-        srcLayer.sync(function() {
-            data = srcLayer.getContext().getImageData(srcx, srcy, srcw, srch);
-            task.unblock();
         });
-
     };
 
     /**
