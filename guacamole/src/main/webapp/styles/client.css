@@ -47,7 +47,7 @@ div.dialogOuter {
     display: table;
     height: 100%;
     width: 100%;
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
 
@@ -141,7 +141,7 @@ div.dialog p {
 /* Menu */
 
 #menu {
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
     width: 100%;
@@ -218,7 +218,7 @@ div#clipboardDiv textarea {
 }
 
 div#menuControl {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     
@@ -229,23 +229,21 @@ div#menuControl {
     z-index: 3;
 }
 
-/* Viewport Clone */
+/* Viewport */
 
-div#viewportClone {
-    display: table;
+div#viewport {
     height: 100%;
     width: 100%;
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
-
-    visibility: hidden;
+    overflow: auto;
 }
 
 /* Keyboard event target */
 
 textarea#eventTarget {
-    position: fixed;
+    position: absolute;
    
     /* Hide offscreen */
     left: 0;
