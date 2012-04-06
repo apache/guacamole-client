@@ -23,7 +23,7 @@ var GuacamoleUI = {
 
     /* UI Elements */
 
-    "viewport"    : document.getElementById("viewportClone"),
+    "viewport"    : document.getElementById("viewport"),
     "display"     : document.getElementById("display"),
     "menu"        : document.getElementById("menu"),
     "menuControl" : document.getElementById("menuControl"),
@@ -463,10 +463,14 @@ GuacamoleUI.attach = function(guac) {
     var mouse = new Guacamole.Mouse(guac_display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
-       
+      
+            // Get current viewport scroll
+            var scroll_x = GuacamoleUI.viewport.scrollLeft;
+            var scroll_y = GuacamoleUI.viewport.scrollTop;
+      
             // Determine mouse position within view
-            var mouse_view_x = mouseState.x + guac_display.offsetLeft - window.pageXOffset;
-            var mouse_view_y = mouseState.y + guac_display.offsetTop  - window.pageYOffset;
+            var mouse_view_x = mouseState.x + guac_display.offsetLeft - scroll_x;
+            var mouse_view_y = mouseState.y + guac_display.offsetTop  - scroll_y;
 
             // Determine viewport dimensioins
             var view_width  = GuacamoleUI.viewport.offsetWidth;
@@ -491,7 +495,8 @@ GuacamoleUI.attach = function(guac) {
                 scroll_amount_y = 0;
 
             // Scroll (if necessary) to keep mouse on screen.
-            window.scrollBy(scroll_amount_x, scroll_amount_y);
+            GuacamoleUI.viewport.scrollLeft += scroll_amount_x;
+            GuacamoleUI.viewport.scrollTop  += scroll_amount_y;
        
             // Send mouse event
             guac.sendMouseState(mouseState);
