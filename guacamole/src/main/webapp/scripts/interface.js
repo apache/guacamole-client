@@ -23,7 +23,7 @@ var GuacamoleUI = {
 
     /* UI Elements */
 
-    "viewport"    : document.getElementById("viewport"),
+    "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "menu"        : document.getElementById("menu"),
     "menuControl" : document.getElementById("menuControl"),
@@ -463,31 +463,36 @@ GuacamoleUI.attach = function(guac) {
     var mouse = new Guacamole.Mouse(guac_display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
-      
-            // Get current viewport scroll
-            var scroll_x = GuacamoleUI.viewport.scrollLeft;
-            var scroll_y = GuacamoleUI.viewport.scrollTop;
-      
+       
             // Determine mouse position within view
-            var mouse_view_x = mouseState.x + guac_display.offsetLeft - scroll_x;
-            var mouse_view_y = mouseState.y + guac_display.offsetTop  - scroll_y;
+            var mouse_view_x = mouseState.x + guac_display.offsetLeft - window.pageXOffset;
+            var mouse_view_y = mouseState.y + guac_display.offsetTop  - window.pageYOffset;
 
             // Determine viewport dimensioins
             var view_width  = GuacamoleUI.viewport.offsetWidth;
             var view_height = GuacamoleUI.viewport.offsetHeight;
 
-            // Scroll horizontally if necessary
+            // Determine scroll amounts based on mouse position relative to document
+
+            var scroll_amount_x;
             if (mouse_view_x > view_width)
-                GuacamoleUI.viewport.scrollLeft += mouse_view_x - view_width;
+                scroll_amount_x = mouse_view_x - view_width;
             else if (mouse_view_x < 0)
-                GuacamoleUI.viewport.scrollLeft += mouse_view_x;
+                scroll_amount_x = mouse_view_x;
+            else
+                scroll_amount_x = 0;
 
-            // Scroll vertically if necessary
+            var scroll_amount_y;
             if (mouse_view_y > view_height)
-                GuacamoleUI.viewport.scrollTop += mouse_view_y - view_height;
+                scroll_amount_y = mouse_view_y - view_height;
             else if (mouse_view_y < 0)
-                GuacamoleUI.viewport.scrollTop += mouse_view_y;
+                scroll_amount_y = mouse_view_y;
+            else
+                scroll_amount_y = 0;
 
+            // Scroll (if necessary) to keep mouse on screen.
+            window.scrollBy(scroll_amount_x, scroll_amount_y);
+       
             // Send mouse event
             guac.sendMouseState(mouseState);
             
