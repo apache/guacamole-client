@@ -476,28 +476,18 @@ GuacamoleUI.attach = function(guac) {
             var view_width  = GuacamoleUI.viewport.offsetWidth;
             var view_height = GuacamoleUI.viewport.offsetHeight;
 
-            // Determine scroll amounts based on mouse position relative to document
-
-            var scroll_amount_x;
+            // Scroll horizontally if necessary
             if (mouse_view_x > view_width)
-                scroll_amount_x = mouse_view_x - view_width;
+                GuacamoleUI.viewport.scrollLeft += mouse_view_x - view_width;
             else if (mouse_view_x < 0)
-                scroll_amount_x = mouse_view_x;
-            else
-                scroll_amount_x = 0;
+                GuacamoleUI.viewport.scrollLeft += mouse_view_x;
 
-            var scroll_amount_y;
+            // Scroll vertically if necessary
             if (mouse_view_y > view_height)
-                scroll_amount_y = mouse_view_y - view_height;
+                GuacamoleUI.viewport.scrollTop += mouse_view_y - view_height;
             else if (mouse_view_y < 0)
-                scroll_amount_y = mouse_view_y;
-            else
-                scroll_amount_y = 0;
+                GuacamoleUI.viewport.scrollTop += mouse_view_y;
 
-            // Scroll (if necessary) to keep mouse on screen.
-            GuacamoleUI.viewport.scrollLeft += scroll_amount_x;
-            GuacamoleUI.viewport.scrollTop  += scroll_amount_y;
-       
             // Send mouse event
             guac.sendMouseState(mouseState);
             
