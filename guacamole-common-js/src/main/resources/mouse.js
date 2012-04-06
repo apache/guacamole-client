@@ -121,20 +121,17 @@ Guacamole.Mouse = function(element) {
         e.returnValue = false;
     }
 
-    function moveMouse(pageX, pageY) {
+    function moveMouse(clientX, clientY) {
 
-        guac_mouse.currentState.x = pageX - element.offsetLeft;
-        guac_mouse.currentState.y = pageY - element.offsetTop;
+        guac_mouse.currentState.x = clientX - element.offsetLeft;
+        guac_mouse.currentState.y = clientY - element.offsetTop;
 
         // This is all JUST so we can get the mouse position within the element
         var parent = element.offsetParent;
         while (parent) {
 
-            if (parent.offsetLeft)
-                guac_mouse.currentState.x -= parent.offsetLeft;
-
-            if (parent.offsetTop)
-                guac_mouse.currentState.y -= parent.offsetTop;
+            guac_mouse.currentState.x -= parent.offsetLeft - parent.scrollLeft;
+            guac_mouse.currentState.y -= parent.offsetTop  - parent.scrollTop;
 
             parent = parent.offsetParent;
         }
@@ -157,7 +154,7 @@ Guacamole.Mouse = function(element) {
 
         cancelEvent(e);
 
-        moveMouse(e.pageX, e.pageY);
+        moveMouse(e.clientX, e.clientY);
 
     }, false);
 
