@@ -477,16 +477,24 @@ GuacamoleUI.attach = function(guac) {
             var view_height = GuacamoleUI.viewport.offsetHeight;
 
             // Scroll horizontally if necessary
-            if (mouse_view_x > view_width)
+            if (mouse_view_x > view_width) {
                 GuacamoleUI.viewport.scrollLeft += mouse_view_x - view_width;
-            else if (mouse_view_x < 0)
+                GuacamoleUI.stopLongPressDetect();
+            }
+            else if (mouse_view_x < 0) {
                 GuacamoleUI.viewport.scrollLeft += mouse_view_x;
+                GuacamoleUI.stopLongPressDetect();
+            }
 
             // Scroll vertically if necessary
-            if (mouse_view_y > view_height)
+            if (mouse_view_y > view_height) {
                 GuacamoleUI.viewport.scrollTop += mouse_view_y - view_height;
-            else if (mouse_view_y < 0)
+                GuacamoleUI.stopLongPressDetect();
+            }
+            else if (mouse_view_y < 0) {
                 GuacamoleUI.viewport.scrollTop += mouse_view_y;
+                GuacamoleUI.stopLongPressDetect();
+            }
 
             // Send mouse event
             guac.sendMouseState(mouseState);
