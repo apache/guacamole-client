@@ -250,11 +250,10 @@ textarea#eventTarget {
     /* Hide offscreen */
     left: 0;
     top: 0;
-    width: 10px;
-    height: 10px;
-    opacity: 1;
+    width: 0;
+    height: 0;
+    opacity: 0;
 
-    z-index: 100;
     overflow: hidden;
 }
 
