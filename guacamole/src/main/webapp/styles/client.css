@@ -260,9 +260,14 @@ textarea#eventTarget {
 /* Touch-specific menu */
 
 div#touchMenu {
+
+    position: absolute;
+    visibility: hidden;
+    
     display: inline-block;
     background: black;
     border: 1px solid silver;
     padding: 1em;
     opacity: 0.8;
+
 }

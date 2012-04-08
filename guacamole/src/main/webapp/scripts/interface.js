@@ -142,7 +142,19 @@ var GuacamoleUI = {
     };
     
     GuacamoleUI.showTouchMenu = function() {
+        
+        GuacamoleUI.touchMenu.style.left =
+            ((GuacamoleUI.viewport.offsetWidth - GuacamoleUI.touchMenu.offsetWidth) / 2
+            + window.pageXOffset)
+            + "px";
+
+        GuacamoleUI.touchMenu.style.top =
+            ((GuacamoleUI.viewport.offsetHeight - GuacamoleUI.touchMenu.offsetHeight) / 2
+            + window.pageYOffset)
+            + "px";
+
         GuacamoleUI.touchMenu.style.visibility = "visible";
+        
     };
 
     GuacamoleUI.shadeMenu = function() {
