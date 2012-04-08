@@ -447,6 +447,12 @@ var GuacamoleUI = {
     GuacamoleUI.eventTarget.setAttribute("autocorrect", "off");
     GuacamoleUI.eventTarget.setAttribute("autocapitalize", "off");
 
+    // Automatically reposition event target on scroll
+    window.addEventListener("scroll", function() {
+        GuacamoleUI.eventTarget.style.left = window.pageXOffset + "px";
+        GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
+    });
+
 })();
 
 // Tie UI events / behavior to a specific Guacamole client
