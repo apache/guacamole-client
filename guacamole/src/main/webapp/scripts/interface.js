@@ -37,7 +37,11 @@ var GuacamoleUI = {
         "showKeyboard" : document.getElementById("showKeyboard"),
         "ctrlAltDelete": document.getElementById("ctrlAltDelete"),
         "reconnect"    : document.getElementById("reconnect"),
-        "logout"       : document.getElementById("logout")
+        "logout"       : document.getElementById("logout"),
+
+        "touchShowClipboard" : document.getElementById("touchShowClipboard"),
+        "touchShowKeyboard"  : document.getElementById("touchShowKeyboard"),
+        "touchLogout"        : document.getElementById("touchLogout")
 
     },
 
@@ -133,6 +137,14 @@ var GuacamoleUI = {
         GuacamoleUI.display.style.opacity = "0.1";
     };
 
+    GuacamoleUI.hideTouchMenu = function() {
+        GuacamoleUI.touchMenu.style.visibility = "hidden";
+    };
+    
+    GuacamoleUI.showTouchMenu = function() {
+        GuacamoleUI.touchMenu.style.visibility = "visible";
+    };
+
     GuacamoleUI.shadeMenu = function() {
 
         if (!menu_shaded) {
@@ -212,8 +224,10 @@ var GuacamoleUI = {
 
     };
 
-    // Assume no native OSK by default
-    GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
+    GuacamoleUI.buttons.touchShowClipboard.onclick = function() {
+        // FIXME: Implement
+        alert("Not yet implemented... Sorry.");
+    };
 
     // Show/Hide keyboard
     var keyboardResizeInterval = null;
@@ -228,22 +242,9 @@ var GuacamoleUI = {
             window.onresize = null;
             window.clearInterval(keyboardResizeInterval);
         }
-        
-        // If not shown ... action depends on OSK mode.
+
+        // Otherwise, show it
         else {
-
-            // If we think the platform has a native OSK, use the event target to
-            // cause it to display.
-            if (GuacamoleUI.oskMode == GuacamoleUI.OSK_MODE_NATIVE) {
-
-                // ...but use the Guac OSK if clicked again
-                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
-
-                // Try to show native OSK by focusing eventTarget.
-                GuacamoleUI.eventTarget.focus();
-                return;
-
-            }
 
             // Ensure event target is NOT focused if we are using the Guac OSK.
             GuacamoleUI.eventTarget.blur();
@@ -253,18 +254,30 @@ var GuacamoleUI = {
 
             // Automatically update size
             window.onresize = updateKeyboardSize;
-            keyboardResizeInterval = window.setInterval(updateKeyboardSize, GuacamoleUI.KEYBOARD_AUTO_RESIZE_INTERVAL);
+            keyboardResizeInterval = window.setInterval(updateKeyboardSize,
+                GuacamoleUI.KEYBOARD_AUTO_RESIZE_INTERVAL);
 
             updateKeyboardSize();
+
         }
-        
 
     };
+
+    // Touch-specific keyboard show
+    GuacamoleUI.buttons.touchShowKeyboard.ontouchstart = 
+    GuacamoleUI.buttons.touchShowKeyboard.onclick = 
+        function(e) {
+            GuacamoleUI.eventTarget.focus();
+            GuacamoleUI.hideTouchMenu();
+            e.preventDefault();
+        };
 
     // Logout
-    GuacamoleUI.buttons.logout.onclick = function() {
-        window.location.href = "logout";
-    };
+    GuacamoleUI.buttons.logout.onclick =
+    GuacamoleUI.buttons.touchLogout.onclick =
+        function() {
+            window.location.href = "logout";
+        };
 
     // Timeouts for detecting if users wants menu to open or close
     var detectMenuOpenTimeout = null;
@@ -350,7 +363,7 @@ var GuacamoleUI = {
 
                 // Assume native OSK if menu shown via long-press
                 GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_NATIVE;
-                GuacamoleUI.showMenu();
+                GuacamoleUI.showTouchMenu();
 
             }, GuacamoleUI.LONG_PRESS_DETECT_TIMEOUT);
 
@@ -367,6 +380,7 @@ var GuacamoleUI = {
         
         // Close menu if shown
         GuacamoleUI.shadeMenu();
+        GuacamoleUI.hideTouchMenu();
         
         // Record touch location
         if (e.touches.length == 1) {

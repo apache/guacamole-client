@@ -256,3 +256,13 @@ textarea#eventTarget {
 
     overflow: hidden;
 }
+
+/* Touch-specific menu */
+
+div#touchMenu {
+    display: inline-block;
+    background: black;
+    border: 1px solid silver;
+    padding: 1em;
+    opacity: 0.8;
+}
