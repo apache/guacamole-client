@@ -279,6 +279,15 @@ var GuacamoleUI = {
     GuacamoleUI.buttons.touchShowKeyboard.ontouchstart = 
     GuacamoleUI.buttons.touchShowKeyboard.onclick = 
         function(e) {
+
+            // Center event target in case browser automatically centers
+            // input fields on focus.
+            GuacamoleUI.eventTarget.style.left =
+                (window.pageXOffset + GuacamoleUI.viewport.offsetWidth / 2) + "px";
+
+            GuacamoleUI.eventTarget.style.top =
+                (window.pageYOffset + GuacamoleUI.viewport.offsetHeight / 2) + "px";
+
             GuacamoleUI.eventTarget.focus();
             GuacamoleUI.hideTouchMenu();
             e.preventDefault();
