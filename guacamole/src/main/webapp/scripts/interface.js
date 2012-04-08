@@ -276,7 +276,6 @@ var GuacamoleUI = {
     };
 
     // Touch-specific keyboard show
-    GuacamoleUI.buttons.touchShowKeyboard.ontouchstart = 
     GuacamoleUI.buttons.touchShowKeyboard.onclick = 
         function(e) {
 
@@ -290,7 +289,7 @@ var GuacamoleUI = {
 
             GuacamoleUI.eventTarget.focus();
             GuacamoleUI.hideTouchMenu();
-            e.preventDefault();
+
         };
 
     // Logout
