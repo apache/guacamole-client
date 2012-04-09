@@ -218,6 +218,10 @@
                     if (xhr.status != 200)
                         throw new Error("Invalid login");
 
+                    // Ensure username/password fiels are blurred after submit
+                    username.blur();
+                    password.blur();
+
                     resetUI();
 
                 }
