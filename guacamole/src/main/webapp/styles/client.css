@@ -264,7 +264,7 @@ div#touchMenu {
     position: absolute;
     visibility: hidden;
     
-    display: inline-block;
+    white-space: pre;
     background: black;
     border: 1px solid silver;
     padding: 1em;

@@ -297,6 +297,7 @@ var GuacamoleUI = {
     GuacamoleUI.buttons.touchLogout.onclick =
         function() {
             window.location.href = "logout";
+            GuacamoleUI.hideTouchMenu();
         };
 
     // Timeouts for detecting if users wants menu to open or close
