@@ -163,7 +163,6 @@ Guacamole.Mouse = function(element) {
     var last_touch_y = 0;
     var last_touch_time = 0;
     var pixels_moved = 0;
-    var touch_distance = 0;
 
     var touch_buttons = {
         1: "left",
@@ -176,10 +175,10 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("touchend", function(e) {
         
+        cancelEvent(e);
+            
         // If we're handling a gesture AND this is the last touch
         if (gesture_in_progress && e.touches.length == 0) {
-            
-            cancelEvent(e);
             
             var time = new Date().getTime();
 
@@ -220,12 +219,16 @@ Guacamole.Mouse = function(element) {
                     if (guac_mouse.onmouseup)
                         guac_mouse.onmouseup(guac_mouse.currentState);
                     
-                    // Allow mouse events now that touching is over
+                    // Gesture now over
                     gesture_in_progress = false;
-            
+
                 }, guac_mouse.clickTimingThreshold);
 
             }
+
+            // If we're not waiting to see if this is a click, stop gesture
+            if (!click_release_timeout)
+                gesture_in_progress = false;
 
         }
 
@@ -233,23 +236,23 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("touchstart", function(e) {
 
+        cancelEvent(e);
+
         // Track number of touches, but no more than three
         touch_count = Math.min(e.touches.length, 3);
 
+        // Clear timeout, if set
+        if (click_release_timeout) {
+            window.clearTimeout(click_release_timeout);
+            click_release_timeout = null;
+        }
+
         // Record initial touch location and time for touch movement
         // and tap gestures
-        if (e.touches.length == 1) {
-
-            cancelEvent(e);
+        if (!gesture_in_progress) {
 
             // Stop mouse events while touching
             gesture_in_progress = true;
-
-            // Clear timeout, if set
-            if (click_release_timeout) {
-                window.clearTimeout(click_release_timeout);
-                click_release_timeout = null;
-            }
 
             // Record touch location and time
             var starting_touch = e.touches[0];
