@@ -54,22 +54,25 @@
 
         </div>
 
+        <!-- Touch-specific menu -->
+        <div id="touchMenu"><img id="touchShowClipboard" src="images/menu-icons/tango/edit-paste.png"/><img id="touchShowKeyboard" src="images/menu-icons/tango/input-keyboard.png"/><img id="touchLogout" src="images/menu-icons/tango/system-log-out.png"/></div>
+
         <!-- Keyboard event target for platforms with native OSKs -->
         <textarea id="eventTarget"></textarea>
 
-        <!-- Menu trigger -->
-        <div id="menuControl"></div>
-
-        <!-- Scrollable viewport -->
-        <div id="viewport">
-
-            <!-- Display -->
-            <div id="display"></div>
+        <!-- Display -->
+        <div id="display">
+            
+            <!-- Menu trigger -->
+            <div id="menuControl"></div>
 
         </div>
 
         <!-- On-screen keyboard -->
         <div id="keyboardContainer"></div>
+
+        <!-- Dimensional clone of viewport -->
+        <div id="viewportClone"/>
 
         <!-- Dialogs -->
         <div class="dialogOuter">
