@@ -263,6 +263,7 @@ div#touchMenu {
 
     position: absolute;
     visibility: hidden;
+    z-index: 4;
     
     white-space: pre;
     background: black;
