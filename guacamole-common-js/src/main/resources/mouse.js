@@ -277,9 +277,15 @@ Guacamole.Mouse = function(element) {
         // If only one touch involved, this is mouse move
         if (touch_count == 1) {
 
+            // Calculate average velocity in Manhatten pixels per millisecond
+            var velocity = pixels_moved / (new Date().getTime() - last_touch_time);
+
+            // Scale mouse movement relative to velocity
+            var scale = 1 + velocity;
+
             // Update mouse location
-            guac_mouse.currentState.x += delta_x;
-            guac_mouse.currentState.y += delta_y;
+            guac_mouse.currentState.x += delta_x*scale;
+            guac_mouse.currentState.y += delta_y*scale;
 
             // Prevent mouse from leaving screen
 
