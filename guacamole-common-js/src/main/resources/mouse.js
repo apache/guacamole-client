@@ -253,8 +253,8 @@ Guacamole.Mouse = function(element) {
 
             // Record touch location and time
             var starting_touch = e.touches[0];
-            last_touch_x = starting_touch.screenX;
-            last_touch_y = starting_touch.screenY;
+            last_touch_x = starting_touch.clientX;
+            last_touch_y = starting_touch.clientY;
             last_touch_time = new Date().getTime();
             pixels_moved = 0;
 
@@ -268,8 +268,8 @@ Guacamole.Mouse = function(element) {
 
         // Get change in touch location
         var touch = e.touches[0];
-        var delta_x = touch.screenX - last_touch_x;
-        var delta_y = touch.screenY - last_touch_y;
+        var delta_x = touch.clientX - last_touch_x;
+        var delta_y = touch.clientY - last_touch_y;
 
         // Track pixels moved
         pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
@@ -298,8 +298,8 @@ Guacamole.Mouse = function(element) {
                 guac_mouse.onmousemove(guac_mouse.currentState);
 
             // Update touch location
-            last_touch_x = touch.screenX;
-            last_touch_y = touch.screenY;
+            last_touch_x = touch.clientX;
+            last_touch_y = touch.clientY;
 
         }
 
@@ -326,8 +326,8 @@ Guacamole.Mouse = function(element) {
 
                 // Only update touch location after a scroll has been
                 // detected
-                last_touch_x = touch.screenX;
-                last_touch_y = touch.screenY;
+                last_touch_x = touch.clientX;
+                last_touch_y = touch.clientY;
 
             }
 
