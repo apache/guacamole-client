@@ -208,7 +208,7 @@ Guacamole.Client = function(tunnel) {
         if (mouseState.down)   buttonMask |= 16;
 
         // Send message
-        tunnel.sendMessage("mouse", mouseState.x, mouseState.y, buttonMask);
+        tunnel.sendMessage("mouse", Math.floor(mouseState.x), Math.floor(mouseState.y), buttonMask);
     };
 
     guac_client.setClipboard = function(data) {
