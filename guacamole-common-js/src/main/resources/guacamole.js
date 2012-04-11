@@ -195,8 +195,8 @@ Guacamole.Client = function(tunnel) {
 
         // Update client-side cursor
         moveCursor(
-            mouseState.x,
-            mouseState.y
+            Math.floor(mouseState.x),
+            Math.floor(mouseState.y)
         );
 
         // Build mask
