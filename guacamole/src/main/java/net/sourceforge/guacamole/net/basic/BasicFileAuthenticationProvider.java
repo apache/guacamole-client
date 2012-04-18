@@ -250,7 +250,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private enum State {
             ROOT,
             USER_MAPPING,
-            REMOTE_SERVER,
+            CONNECTION,
             AUTH_INFO,
             PROTOCOL,
             PARAMETER,
@@ -260,7 +260,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private State state = State.ROOT;
         private AuthInfo current = null;
         private String currentParameter = null;
-        private String currentRemoteServer = null;
+        private String currentConnection = null;
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
@@ -292,9 +292,9 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                 break;
                 
-            case REMOTE_SERVER:
+            case CONNECTION:
 
-                if (localName.equals("remote-server")) {
+                if (localName.equals("connection")) {
                     state = State.AUTH_INFO;
                     return;
                 }
@@ -304,7 +304,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             case PROTOCOL:
 
                 if (localName.equals("protocol")) {
-                    state = State.REMOTE_SERVER;
+                    state = State.CONNECTION;
                     return;
                 }
 
@@ -313,7 +313,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             case PARAMETER:
 
                 if (localName.equals("param")) {
-                    state = State.REMOTE_SERVER;
+                    state = State.CONNECTION;
                     return;
                 }
 
@@ -371,22 +371,22 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                 case AUTH_INFO:
 
-                    if (localName.equals("remote-server")) {
+                    if (localName.equals("connection")) {
 
-                        currentRemoteServer = attributes.getValue("servername");
-                        if (currentRemoteServer == null)
-                            throw new SAXException("Attribute \"servername\" required for param tag.");
+                        currentConnection = attributes.getValue("name");
+                        if (currentConnection == null)
+                            throw new SAXException("Attribute \"name\" required for param tag.");
                         
-                        current.addConfiguration(currentRemoteServer);
+                        current.addConfiguration(currentConnection);
                         
                         // Next state
-                        state = State.REMOTE_SERVER;
+                        state = State.CONNECTION;
                         return;
                     }
 
                     break;
                     
-                case REMOTE_SERVER:
+                case CONNECTION:
 
                     if (localName.equals("protocol")) {
                         // Next state
@@ -421,12 +421,12 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             switch (state) {
 
                 case PROTOCOL:
-                    current.getConfiguration(currentRemoteServer)
+                    current.getConfiguration(currentConnection)
                         .setProtocol(str);
                     return;
 
                 case PARAMETER:
-                    current.getConfiguration(currentRemoteServer)
+                    current.getConfiguration(currentConnection)
                             .setParameter(currentParameter, str);
                     return;
                 
