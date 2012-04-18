@@ -267,59 +267,59 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
             switch (state)  {
 
-            case USER_MAPPING:
+                case USER_MAPPING:
 
-                if (localName.equals("user-mapping")) {
-                    state = State.END;
-                    return;
-                }
+                    if (localName.equals("user-mapping")) {
+                        state = State.END;
+                        return;
+                    }
 
-                break;
+                    break;
 
-            case AUTH_INFO:
+                case AUTH_INFO:
 
-                if (localName.equals("authorize")) {
+                    if (localName.equals("authorize")) {
 
-                    // Finalize mapping for this user
-                    authMapping.put(
-                        current.auth_username,
-                        current
-                    );
+                        // Finalize mapping for this user
+                        authMapping.put(
+                            current.auth_username,
+                            current
+                        );
 
-                    state = State.USER_MAPPING;
-                    return;
-                }
+                        state = State.USER_MAPPING;
+                        return;
+                    }
 
-                break;
-                
-            case CONNECTION:
+                    break;
+                    
+                case CONNECTION:
 
-                if (localName.equals("connection")) {
-                    state = State.AUTH_INFO;
-                    return;
-                }
+                    if (localName.equals("connection")) {
+                        state = State.AUTH_INFO;
+                        return;
+                    }
 
-                break;                
+                    break;                
 
-            case PROTOCOL:
+                case PROTOCOL:
 
-                if (localName.equals("protocol")) {
-                    state = State.CONNECTION;
-                    return;
-                }
+                    if (localName.equals("protocol")) {
+                        state = State.CONNECTION;
+                        return;
+                    }
 
-                break;
+                    break;
 
-            case PARAMETER:
+                case PARAMETER:
 
-                if (localName.equals("param")) {
-                    state = State.CONNECTION;
-                    return;
-                }
+                    if (localName.equals("param")) {
+                        state = State.CONNECTION;
+                        return;
+                    }
 
-                break;
+                    break;
 
-        }
+            }
 
             throw new SAXException("Tag not yet complete: " + localName);
 
