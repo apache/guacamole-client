@@ -46,10 +46,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Authenticates users against a static list of username/password pairs.
- * Each username/password may be associated with exactly one configuration.
+ * Each username/password may be associated with multiple configurations.
  * This list is stored in an XML file which is reread if modified.
  * 
- * @author Michael Jumper
+ * This is modified version of BasicFileAuthenticationProvider written by Michael Jumper.
+ * 
+ * @author Michal Kotas
  */
 public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
@@ -136,8 +138,12 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(credentials.getUsername());
         if (info != null && info.validate(credentials.getUsername(), credentials.getPassword())) {
-            Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
-            configs.put("DEFAULT", info.getConfiguration());
+            
+            //Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
+            //configs.put("DEFAULT", info.getConfiguration());
+            //return configs;
+            
+            Map<String, GuacamoleConfiguration> configs = info.getConfigurations();          
             return configs;
         }
 
@@ -157,14 +163,14 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private String auth_password;
         private Encoding auth_encoding;
 
-        private GuacamoleConfiguration config;
+        private Map<String, GuacamoleConfiguration> configs;
 
         public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
             this.auth_username = auth_username;
             this.auth_password = auth_password;
             this.auth_encoding = auth_encoding;
 
-            config = new GuacamoleConfiguration();
+            configs = new HashMap<String, GuacamoleConfiguration>();
         }
 
         private static final char HEX_CHARS[] = {
@@ -220,12 +226,18 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
         }
 
-        public GuacamoleConfiguration getConfiguration() {
-            return config;
+        public GuacamoleConfiguration getConfiguration(String name) {
+            //return configs;
+            return configs.get(name);
+        }
+        public Map<String, GuacamoleConfiguration> getConfigurations() {
+            return configs;
+        }
+        public void addConfiguration(String name) {
+            configs.put(name, new GuacamoleConfiguration());
         }
 
     }
-
 
     private static class BasicUserMappingContentHandler extends DefaultHandler {
 
@@ -238,6 +250,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private enum State {
             ROOT,
             USER_MAPPING,
+            REMOTE_SERVER,
             AUTH_INFO,
             PROTOCOL,
             PARAMETER,
@@ -247,56 +260,66 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private State state = State.ROOT;
         private AuthInfo current = null;
         private String currentParameter = null;
+        private String currentRemoteServer = null;
 
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
 
             switch (state)  {
 
-                case USER_MAPPING:
+            case USER_MAPPING:
 
-                    if (localName.equals("user-mapping")) {
-                        state = State.END;
-                        return;
-                    }
+                if (localName.equals("user-mapping")) {
+                    state = State.END;
+                    return;
+                }
 
-                    break;
+                break;
 
-                case AUTH_INFO:
+            case AUTH_INFO:
 
-                    if (localName.equals("authorize")) {
+                if (localName.equals("authorize")) {
 
-                        // Finalize mapping for this user
-                        authMapping.put(
-                            current.auth_username,
-                            current
-                        );
+                    // Finalize mapping for this user
+                    authMapping.put(
+                        current.auth_username,
+                        current
+                    );
 
-                        state = State.USER_MAPPING;
-                        return;
-                    }
+                    state = State.USER_MAPPING;
+                    return;
+                }
 
-                    break;
+                break;
+                
+            case REMOTE_SERVER:
 
-                case PROTOCOL:
+                if (localName.equals("remote-server")) {
+                    state = State.AUTH_INFO;
+                    return;
+                }
 
-                    if (localName.equals("protocol")) {
-                        state = State.AUTH_INFO;
-                        return;
-                    }
+                break;                
 
-                    break;
+            case PROTOCOL:
 
-                case PARAMETER:
+                if (localName.equals("protocol")) {
+                    state = State.REMOTE_SERVER;
+                    return;
+                }
 
-                    if (localName.equals("param")) {
-                        state = State.AUTH_INFO;
-                        return;
-                    }
+                break;
 
-                    break;
+            case PARAMETER:
 
-            }
+                if (localName.equals("param")) {
+                    state = State.REMOTE_SERVER;
+                    return;
+                }
+
+                break;
+
+        }
 
             throw new SAXException("Tag not yet complete: " + localName);
 
@@ -317,7 +340,6 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                     break;
 
-                // Only <authorize> tags allowed in main document
                 case USER_MAPPING:
 
                     if (localName.equals("authorize")) {
@@ -349,6 +371,23 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                 case AUTH_INFO:
 
+                    if (localName.equals("remote-server")) {
+
+                        currentRemoteServer = attributes.getValue("servername");
+                        if (currentRemoteServer == null)
+                            throw new SAXException("Attribute \"servername\" required for param tag.");
+                        
+                        current.addConfiguration(currentRemoteServer);
+                        
+                        // Next state
+                        state = State.REMOTE_SERVER;
+                        return;
+                    }
+
+                    break;
+                    
+                case REMOTE_SERVER:
+
                     if (localName.equals("protocol")) {
                         // Next state
                         state = State.PROTOCOL;
@@ -366,7 +405,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                         return;
                     }
 
-                    break;
+                    break;                   
 
             }
 
@@ -378,15 +417,16 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         public void characters(char[] ch, int start, int length) throws SAXException {
 
             String str = new String(ch, start, length);
+   
             switch (state) {
 
                 case PROTOCOL:
-                    current.getConfiguration()
-                            .setProtocol(str);
+                    current.getConfiguration(currentRemoteServer)
+                        .setProtocol(str);
                     return;
 
                 case PARAMETER:
-                    current.getConfiguration()
+                    current.getConfiguration(currentRemoteServer)
                             .setParameter(currentParameter, str);
                     return;
                 

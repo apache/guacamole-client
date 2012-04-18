@@ -2,10 +2,15 @@
 	
     <!-- Per-user authentication and config information -->
     <authorize username="USERNAME" password="PASSWORD">
-        <protocol>vnc</protocol>
-        <param name="hostname">localhost</param>
-        <param name="port">5900</param>
-        <param name="password">VNCPASS</param>
+
+        <!-- Single authorized connection -->
+		<remote-server servername="localhost">
+            <protocol>vnc</protocol>
+            <param name="hostname">localhost</param>
+            <param name="port">5900</param>
+            <param name="password">VNCPASS</param>
+        </remote-server>
+
     </authorize>
 
     <!-- Another user, but using md5 to hash the password
@@ -14,10 +19,23 @@
             username="USERNAME2"
             password="319f4d26e3c536b5dd871bb2c52e3178"
             encoding="md5">
-        <protocol>vnc</protocol>
-        <param name="hostname">localhost</param>
-        <param name="port">5901</param>
-        <param name="password">VNCPASS</param>
-    </authorize>
+
+        <!-- First authorized connection -->
+		<remote-server servername="localhost">
+            <protocol>vnc</protocol>
+            <param name="hostname">localhost</param>
+            <param name="port">5901</param>
+            <param name="password">VNCPASS</param>
+        </remote-server>
+
+        <!-- Second authorized connection -->
+   		<remote-server servername="otherhost">
+            <protocol>vnc</protocol>
+            <param name="hostname">otherhost</param>
+            <param name="port">5900</param>
+            <param name="password">VNCPASS</param>
+        </remote-server>
+
+ </authorize>
 
 </user-mapping>
