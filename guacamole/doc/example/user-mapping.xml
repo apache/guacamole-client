@@ -2,15 +2,10 @@
 	
     <!-- Per-user authentication and config information -->
     <authorize username="USERNAME" password="PASSWORD">
-
-        <!-- Single authorized connection -->
-		<connection name="localhost">
-            <protocol>vnc</protocol>
-            <param name="hostname">localhost</param>
-            <param name="port">5900</param>
-            <param name="password">VNCPASS</param>
-        </connection>
-
+        <protocol>vnc</protocol>
+        <param name="hostname">localhost</param>
+        <param name="port">5900</param>
+        <param name="password">VNCPASS</param>
     </authorize>
 
     <!-- Another user, but using md5 to hash the password

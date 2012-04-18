@@ -49,9 +49,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * Each username/password may be associated with multiple configurations.
  * This list is stored in an XML file which is reread if modified.
  * 
- * This is modified version of BasicFileAuthenticationProvider written by Michael Jumper.
- * 
- * @author Michal Kotas
+ * @author Michael Jumper, Michal Kotas
  */
 public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
@@ -137,15 +135,8 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(credentials.getUsername());
-        if (info != null && info.validate(credentials.getUsername(), credentials.getPassword())) {
-            
-            //Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
-            //configs.put("DEFAULT", info.getConfiguration());
-            //return configs;
-            
-            Map<String, GuacamoleConfiguration> configs = info.getConfigurations();          
-            return configs;
-        }
+        if (info != null && info.validate(credentials.getUsername(), credentials.getPassword()))
+            return info.getConfigurations();
 
         // Unauthorized
         return null;
@@ -227,14 +218,20 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         }
 
         public GuacamoleConfiguration getConfiguration(String name) {
-            //return configs;
-            return configs.get(name);
+
+            // Create new configuration if not already in map
+            GuacamoleConfiguration config = configs.get(name);
+            if (config == null) {
+                config = new GuacamoleConfiguration();
+                configs.put(name, config);
+            }
+
+            return config;
+
         }
+
         public Map<String, GuacamoleConfiguration> getConfigurations() {
             return configs;
-        }
-        public void addConfiguration(String name) {
-            configs.put(name, new GuacamoleConfiguration());
         }
 
     }
@@ -250,10 +247,19 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         private enum State {
             ROOT,
             USER_MAPPING,
-            CONNECTION,
+
+            /* Username/password pair */
             AUTH_INFO,
+
+            /* Connection configuration information */
+            CONNECTION,
             PROTOCOL,
             PARAMETER,
+
+            /* Configuration information associated with default connection */
+            DEFAULT_CONNECTION_PROTOCOL,
+            DEFAULT_CONNECTION_PARAMETER,
+
             END;
         }
 
@@ -319,6 +325,24 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                     break;
 
+                case DEFAULT_CONNECTION_PROTOCOL:
+
+                    if (localName.equals("protocol")) {
+                        state = State.AUTH_INFO;
+                        return;
+                    }
+
+                    break;
+
+                case DEFAULT_CONNECTION_PARAMETER:
+
+                    if (localName.equals("param")) {
+                        state = State.AUTH_INFO;
+                        return;
+                    }
+
+                    break;
+
             }
 
             throw new SAXException("Tag not yet complete: " + localName);
@@ -377,10 +401,32 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                         if (currentConnection == null)
                             throw new SAXException("Attribute \"name\" required for connection tag.");
                         
-                        current.addConfiguration(currentConnection);
-                        
                         // Next state
                         state = State.CONNECTION;
+                        return;
+                    }
+
+                    if (localName.equals("protocol")) {
+
+                        // Associate protocol with default connection
+                        currentConnection = "DEFAULT";
+                        
+                        // Next state
+                        state = State.DEFAULT_CONNECTION_PROTOCOL;
+                        return;
+                    }
+
+                    if (localName.equals("param")) {
+
+                        // Associate parameter with default connection
+                        currentConnection = "DEFAULT";
+                        
+                        currentParameter = attributes.getValue("name");
+                        if (currentParameter == null)
+                            throw new SAXException("Attribute \"name\" required for param tag.");
+
+                        // Next state
+                        state = State.DEFAULT_CONNECTION_PARAMETER;
                         return;
                     }
 
