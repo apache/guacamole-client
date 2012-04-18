@@ -375,7 +375,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                         currentConnection = attributes.getValue("name");
                         if (currentConnection == null)
-                            throw new SAXException("Attribute \"name\" required for param tag.");
+                            throw new SAXException("Attribute \"name\" required for connection tag.");
                         
                         current.addConfiguration(currentConnection);
                         
