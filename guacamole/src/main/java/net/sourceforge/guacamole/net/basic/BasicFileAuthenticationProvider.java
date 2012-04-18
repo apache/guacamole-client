@@ -467,11 +467,15 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             switch (state) {
 
                 case PROTOCOL:
+                case DEFAULT_CONNECTION_PROTOCOL:
+
                     current.getConfiguration(currentConnection)
                         .setProtocol(str);
                     return;
 
                 case PARAMETER:
+                case DEFAULT_CONNECTION_PARAMETER:
+
                     current.getConfiguration(currentConnection)
                             .setParameter(currentParameter, str);
                     return;
