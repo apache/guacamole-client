@@ -292,11 +292,13 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         }
         catch (IOException e) {
 
+            // Log typically frequent I/O error if desired
+            logger.debug("Error writing to servlet output stream", e);
+            
             // Detach and close
             session.detachTunnel(tunnel);
             tunnel.close();
                 
-            throw new GuacamoleServerException("I/O error writing to servlet output stream.", e);
         }
         finally {
             tunnel.releaseReader();
