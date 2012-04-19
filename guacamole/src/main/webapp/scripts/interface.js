@@ -2,6 +2,9 @@
 // UI Definition
 var GuacamoleUI = {
 
+    "LOGOUT_PROMPT" :   "Logging out will disconnect all of your active "
+                      + "Guacamole sessions. Are you sure you wish to log out?",
+
     /* Detection Constants */
     
     "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
@@ -296,8 +299,13 @@ var GuacamoleUI = {
     GuacamoleUI.buttons.logout.onclick =
     GuacamoleUI.buttons.touchLogout.onclick =
         function() {
-            window.location.href = "logout";
-            GuacamoleUI.hideTouchMenu();
+
+            // Logout after warning user about session disconnect
+            if (confirm(GuacamoleUI.LOGOUT_PROMPT)) {
+                window.location.href = "logout";
+                GuacamoleUI.hideTouchMenu();
+            }
+            
         };
 
     // Timeouts for detecting if users wants menu to open or close
