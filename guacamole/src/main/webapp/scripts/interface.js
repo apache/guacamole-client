@@ -49,13 +49,15 @@ var GuacamoleUI = {
     },
 
     "containers": {
-        "state"    : document.getElementById("statusDialog"),
-        "clipboard": document.getElementById("clipboardDiv"),
-        "keyboard" : document.getElementById("keyboardContainer")
+        "state"         : document.getElementById("statusDialog"),
+        "clipboard"     : document.getElementById("clipboardDiv"),
+        "touchClipboard": document.getElementById("touchClipboardDiv"),
+        "keyboard"      : document.getElementById("keyboardContainer")
     },
     
-    "state"     : document.getElementById("statusText"),
-    "clipboard" : document.getElementById("clipboard")
+    "state"          : document.getElementById("statusText"),
+    "clipboard"      : document.getElementById("clipboard"),
+    "touchClipboard" : document.getElementById("touchClipboard")
 
 };
 
@@ -143,21 +145,31 @@ var GuacamoleUI = {
     GuacamoleUI.hideTouchMenu = function() {
         GuacamoleUI.touchMenu.style.visibility = "hidden";
     };
-    
-    GuacamoleUI.showTouchMenu = function() {
-        
-        GuacamoleUI.touchMenu.style.left =
-            ((GuacamoleUI.viewport.offsetWidth - GuacamoleUI.touchMenu.offsetWidth) / 2
+
+    function positionCentered(element) {
+        element.style.left =
+            ((GuacamoleUI.viewport.offsetWidth - element.offsetWidth) / 2
             + window.pageXOffset)
             + "px";
 
-        GuacamoleUI.touchMenu.style.top =
-            ((GuacamoleUI.viewport.offsetHeight - GuacamoleUI.touchMenu.offsetHeight) / 2
+        element.style.top =
+            ((GuacamoleUI.viewport.offsetHeight - element.offsetHeight) / 2
             + window.pageYOffset)
             + "px";
+    }
 
+    GuacamoleUI.showTouchMenu = function() {
+        positionCentered(GuacamoleUI.touchMenu);
         GuacamoleUI.touchMenu.style.visibility = "visible";
-        
+    };
+
+    GuacamoleUI.hideTouchClipboard = function() {
+        GuacamoleUI.containers.touchClipboard.style.visibility = "hidden";
+    };
+
+    GuacamoleUI.showTouchClipboard = function() {
+        positionCentered(GuacamoleUI.containers.touchClipboard);
+        GuacamoleUI.containers.touchClipboard.style.visibility = "visible";
     };
 
     GuacamoleUI.shadeMenu = function() {
@@ -240,8 +252,8 @@ var GuacamoleUI = {
     };
 
     GuacamoleUI.buttons.touchShowClipboard.onclick = function() {
-        // FIXME: Implement
-        alert("Not yet implemented... Sorry.");
+        GuacamoleUI.hideTouchMenu();
+        GuacamoleUI.showTouchClipboard();
     };
 
     // Show/Hide keyboard
@@ -410,6 +422,7 @@ var GuacamoleUI = {
         // Close menu if shown
         GuacamoleUI.shadeMenu();
         GuacamoleUI.hideTouchMenu();
+        GuacamoleUI.hideTouchClipboard();
         
         // Record touch location
         if (e.touches.length == 1) {
@@ -710,23 +723,35 @@ GuacamoleUI.attach = function(guac) {
     GuacamoleUI.clipboard.onchange = function() {
 
         var text = GuacamoleUI.clipboard.value;
+        GuacamoleUI.touchClipboard.value = text;
+        guac.setClipboard(text);
+
+    };
+
+    GuacamoleUI.touchClipboard.onchange = function() {
+
+        var text = GuacamoleUI.touchClipboard.value;
+        GuacamoleUI.clipboard.value = text;
         guac.setClipboard(text);
 
     };
 
     // Ignore keypresses when clipboard is focused
-    GuacamoleUI.clipboard.onfocus = function() {
+    GuacamoleUI.clipboard.onfocus =
+    GuacamoleUI.touchClipboard.onfocus = function() {
         disableKeyboard();
     };
 
     // Capture keypresses when clipboard is not focused
-    GuacamoleUI.clipboard.onblur = function() {
+    GuacamoleUI.clipboard.onblur =
+    GuacamoleUI.touchClipboard.onblur = function() {
         enableKeyboard();
     };
 
     // Server copy handler
     guac.onclipboard = function(data) {
         GuacamoleUI.clipboard.value = data;
+        GuacamoleUI.touchClipboard.value = data;
     };
 
     GuacamoleUI.keyboard.onkeydown = function(keysym) {

@@ -272,3 +272,29 @@ div#touchMenu {
     opacity: 0.8;
 
 }
+
+div#touchClipboardDiv {
+
+    position: absolute;
+    visibility: hidden;
+    z-index: 4;
+
+    color: white;
+    background: black;
+    border: 1px solid silver;
+    padding: 1em;
+    opacity: 0.8;
+
+    max-width: 50em;
+    
+}
+
+div#touchClipboardDiv h2 {
+    margin: 0;
+    font-size: 1em;
+}
+
+div#touchClipboardDiv textarea {
+    width: 100%;
+}
+

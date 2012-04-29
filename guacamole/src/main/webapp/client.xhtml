@@ -57,6 +57,15 @@
         <!-- Touch-specific menu -->
         <div id="touchMenu"><img id="touchShowClipboard" src="images/menu-icons/tango/edit-paste.png"/><img id="touchShowKeyboard" src="images/menu-icons/tango/input-keyboard.png"/><img id="touchLogout" src="images/menu-icons/tango/system-log-out.png"/></div>
 
+        <!-- Touch-specific clipboard -->
+        <div id="touchClipboardDiv">
+            <h2>Clipboard</h2>
+            <p>
+            Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.
+            </p>
+            <textarea rows="10" cols="40" id="touchClipboard"></textarea>
+        </div>
+
         <!-- Keyboard event target for platforms with native OSKs -->
         <textarea id="eventTarget"></textarea>
 
