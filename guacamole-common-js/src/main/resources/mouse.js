@@ -128,13 +128,19 @@ Guacamole.Mouse = function(element) {
 
         // This is all JUST so we can get the mouse position within the element
         var parent = element.offsetParent;
-        while (parent) {
-
+        while (parent && !(parent === document.body)) {
             guac_mouse.currentState.x -= parent.offsetLeft - parent.scrollLeft;
             guac_mouse.currentState.y -= parent.offsetTop  - parent.scrollTop;
 
             parent = parent.offsetParent;
         }
+
+        // Offset by document scroll amount
+        var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+        var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+        guac_mouse.currentState.x -= parent.offsetLeft - documentScrollLeft;
+        guac_mouse.currentState.y -= parent.offsetTop  - documentScrollTop;
 
         if (guac_mouse.onmousemove)
             guac_mouse.onmousemove(guac_mouse.currentState);
