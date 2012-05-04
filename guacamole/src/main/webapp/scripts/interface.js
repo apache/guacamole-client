@@ -460,7 +460,7 @@ var GuacamoleUI = {
     };
 
     // On-screen keyboard
-    GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty-mobile.xml");
+    GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
     GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
 
     // Function for automatically updating keyboard size
