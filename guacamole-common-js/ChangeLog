@@ -1,3 +1,10 @@
+2012-05-04 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Improved iPad and touch device support
+	* Improved touch support
+	* Implemented new drawing instructions
+	* Nestable layers
+
 2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Implemented improved instruction format
