@@ -1,3 +1,9 @@
+2012-05-04 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Improved logging and exception handling
+	* Removed minor dependency on Apache Commons
+	* Improved API usability
+
 2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Implemented improved instruction format
