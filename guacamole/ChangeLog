@@ -1,3 +1,14 @@
+2012-05-04 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Touch-specific menus and keyboard support
+	* Logout prompt
+	* Multiple connections per user in user-mapping.xml
+	* Touch-related UI usability improvements
+	* Support for single sign-on
+	* Support for authentication involving parameters in URLs
+	* Test for WebSocket support (pluggable WebSocket support not yet stable)
+	* UI style improvements
+
 2011-12-11 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Improved UI usability
