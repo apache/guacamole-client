@@ -292,13 +292,22 @@ Guacamole.Keyboard = function(element) {
 
     }
 
-    function getKeySymFromCharCode(keyCode) {
+    function isControlCharacter(codepoint) {
+        return codepoint <= 0x1F || (codepoint >= 0x7F && codepoint <= 0x9F);
+    }
 
-        if (keyCode >= 0x0000 && keyCode <= 0x00FF)
-            return keyCode;
+    function getKeySymFromCharCode(codepoint) {
 
-        if (keyCode >= 0x0100 && keyCode <= 0x10FFFF)
-            return 0x01000000 | keyCode;
+        // Keysyms for control characters
+        if (isControlCharacter(codepoint)) return 0xFF00 | codepoint;
+
+        // Keysyms for ASCII chars
+        if (codepoint >= 0x0000 && codepoint <= 0x00FF)
+            return codepoint;
+
+        // Keysyms for Unicode
+        if (codepoint >= 0x0100 && codepoint <= 0x10FFFF)
+            return 0x01000000 | codepoint;
 
         return null;
 
@@ -399,8 +408,7 @@ Guacamole.Keyboard = function(element) {
         var codepoint = parseInt(hex, 16);
 
         // If control character, not typable
-        if (codepoint <= 0x1F) return false;
-        if (codepoint >= 0x7F && codepoint <= 0x9F) return false;
+        if (isControlCharacter(codepoint)) return false;
 
         // Otherwise, typable
         return true;
@@ -465,10 +473,12 @@ Guacamole.Keyboard = function(element) {
 
         keypress_keysym = getKeySymFromCharCode(keynum);
 
-        // If event identified as a typable character (keypress involved)
+        // If event identified as a typable character
         // then release Ctrl and Alt (if pressed)
-        if (guac_keyboard.modifiers.ctrl) sendKeyReleased(0xFFE3);
-        if (guac_keyboard.modifiers.alt)  sendKeyReleased(0xFFE9);
+        if (!isControlCharacter(keynum)) {
+            if (guac_keyboard.modifiers.ctrl) sendKeyReleased(0xFFE3);
+            if (guac_keyboard.modifiers.alt)  sendKeyReleased(0xFFE9);
+        }
 
         // Defer handling of event until after any other pending
         // key events.
