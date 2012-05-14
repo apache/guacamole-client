@@ -473,11 +473,11 @@ Guacamole.Keyboard = function(element) {
 
         keypress_keysym = getKeySymFromCharCode(keynum);
 
-        // If event identified as a typable character
-        // then release Ctrl and Alt (if pressed)
-        if (!isControlCharacter(keynum)) {
-            if (guac_keyboard.modifiers.ctrl) sendKeyReleased(0xFFE3);
-            if (guac_keyboard.modifiers.alt)  sendKeyReleased(0xFFE9);
+        // If event identified as a typable character, and we're holding Ctrl+Alt,
+        // assume Ctrl+Alt is actually AltGr, and release both.
+        if (!isControlCharacter(keynum) && guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt) {
+            sendKeyReleased(0xFFE3);
+            sendKeyReleased(0xFFE9);
         }
 
         // Defer handling of event until after any other pending
