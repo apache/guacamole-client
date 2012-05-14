@@ -381,6 +381,29 @@ Guacamole.Keyboard = function(element) {
 
         // Done with deferred key event
         deferred_keypress = null;
+        keypress_keysym   = null;
+        keydown_keysym    = null;
+        keydown_code      = null;
+
+    }
+
+    function isTypable(keyIdentifier) {
+
+        // Find unicode prefix
+        var unicodePrefixLocation = keyIdentifier.indexOf("U+");
+        if (unicodePrefixLocation == -1)
+            return false;
+
+        // Parse codepoint value
+        var hex = keyIdentifier.substring(unicodePrefixLocation+2);
+        var codepoint = parseInt(hex, 16);
+
+        // If control character, not typable
+        if (codepoint <= 0x1F) return false;
+        if (codepoint >= 0x7F && codepoint <= 0x9F) return false;
+
+        // Otherwise, typable
+        return true;
 
     }
 
@@ -388,7 +411,7 @@ Guacamole.Keyboard = function(element) {
     element.onkeydown = function(e) {
 
         // Only intercept if handler set
-        if (!guac_keyboard.onkeydown) return true;
+        if (!guac_keyboard.onkeydown) return;
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
@@ -403,8 +426,22 @@ Guacamole.Keyboard = function(element) {
         keydown_keysym = getKeySymFromKeyCode(keynum);
 
         // Also try to get get keysym from keyIdentifier
-        if (e.keyIdentifier)
-            keydown_keysym = getKeySymFromKeyIdentifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
+        if (e.keyIdentifier) {
+
+            keydown_keysym = keydown_keysym ||
+                getKeySymFromKeyIdentifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
+
+            // Prevent default if non-typable character or if modifier combination
+            // likely to be eaten by browser otherwise (NOTE: We must not prevent
+            // default for Ctrl+Alt, as that combination is commonly used for
+            // AltGr. If we receive AltGr, we need to handle keypress, which
+            // means we cannot cancel keydown).
+            if (!isTypable(e.keyIdentifier)
+                    || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
+                    || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt))
+                e.preventDefault();
+            
+        }
 
         // Set keycode which will be associated with any future keypress
         keydown_code = keynum;
@@ -414,8 +451,6 @@ Guacamole.Keyboard = function(element) {
         if (!deferred_keypress)
             deferred_keypress = window.setTimeout(fireKeyPress, 0);
 
-        return false;
-
     };
 
     // When key pressed
@@ -424,13 +459,16 @@ Guacamole.Keyboard = function(element) {
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown) return true;
 
-        if (keySymSource != KEYPRESS) return false;
-
         var keynum;
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
 
         keypress_keysym = getKeySymFromCharCode(keynum);
+
+        // If event identified as a typable character (keypress involved)
+        // then release Ctrl and Alt (if pressed)
+        if (guac_keyboard.modifiers.ctrl) sendKeyReleased(0xFFE3);
+        if (guac_keyboard.modifiers.alt)  sendKeyReleased(0xFFE9);
 
         // Defer handling of event until after any other pending
         // key events.
