@@ -123,6 +123,88 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
+     * Map of known JavaScript keyidentifiers which do not map to typable
+     * characters to their unshifted X11 keysym equivalents.
+     * @private
+     */
+    var keyidentifier_keysym = {
+        "AllCandidates": 0xFF3D,
+        "Alphanumeric": 0xFF30,
+        "Alt": 0xFFE9,
+        "Attn": 0xFD0E,
+        "AltGraph": 0xFFEA,
+        "CapsLock": 0xFFE5,
+        "Clear": 0xFF0B,
+        "Convert": 0xFF21,
+        "Copy": 0xFD15,
+        "Crsel": 0xFD1C,
+        "CodeInput": 0xFF37,
+        "Control": 0xFFE3,
+        "Down": 0xFF54,
+        "End": 0xFF57,
+        "Enter": 0xFF0D,
+        "EraseEof": 0xFD06,
+        "Execute": 0xFF62,
+        "Exsel": 0xFD1D,
+        "F1": 0xFFBE,
+        "F2": 0xFFBF,
+        "F3": 0xFFC0,
+        "F4": 0xFFC1,
+        "F5": 0xFFC2,
+        "F6": 0xFFC3,
+        "F7": 0xFFC4,
+        "F8": 0xFFC5,
+        "F9": 0xFFC6,
+        "F10": 0xFFC7,
+        "F11": 0xFFC8,
+        "F12": 0xFFC9,
+        "F13": 0xFFCA,
+        "F14": 0xFFCB,
+        "F15": 0xFFCC,
+        "F16": 0xFFCD,
+        "F17": 0xFFCE,
+        "F18": 0xFFCF,
+        "F19": 0xFFD0,
+        "F20": 0xFFD1,
+        "F21": 0xFFD2,
+        "F22": 0xFFD3,
+        "F23": 0xFFD4,
+        "F24": 0xFFD5,
+        "Find": 0xFF68,
+        "FullWidth": null,
+        "HalfWidth": null,
+        "HangulMode": 0xFF31,
+        "HanjaMode": 0xFF34,
+        "Help": 0xFF6A,
+        "Hiragana": 0xFF25,
+        "Home": 0xFF50,
+        "Insert": 0xFF63,
+        "JapaneseHiragana": 0xFF25,
+        "JapaneseKatakana": 0xFF26,
+        "JapaneseRomaji": 0xFF24,
+        "JunjaMode": 0xFF38,
+        "KanaMode": 0xFF2D,
+        "KanjiMode": 0xFF21,
+        "Katakana": 0xFF26,
+        "Left": 0xFF51,
+        "Meta": 0xFFE7,
+        "NumLock": 0xFF7F,
+        "PageDown": 0xFF55,
+        "PageUp": 0xFF56,
+        "Pause": 0xFF13,
+        "PreviousCandidate": 0xFF3E,
+        "PrintScreen": 0xFD1D,
+        "Right": 0xFF53,
+        "RomanCharacters": null,
+        "Scroll": 0xFF14,
+        "Select": 0xFF60,
+        "Shift": 0xFFE1,
+        "Up": 0xFF52,
+        "Undo": 0xFF65,
+        "Win": 0xFFEB
+    };
+
+    /**
      * Map of known JavaScript keycodes which do not map to typable characters
      * to their shifted X11 keysym equivalents. Keycodes must only be listed
      * here if their shifted X11 keysym equivalents differ from their unshifted
@@ -206,7 +288,7 @@ Guacamole.Keyboard = function(element) {
 
         }
 
-        return null;
+        return keyidentifier_keysym[keyIdentifier];
 
     }
 
