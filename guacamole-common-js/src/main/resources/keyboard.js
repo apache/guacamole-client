@@ -265,13 +265,44 @@ Guacamole.Keyboard = function(element) {
     }
 
 
-    var KEYDOWN = 1;
-    var KEYPRESS = 2;
+    var keydown_code = null;
 
-    var keySymSource = null;
+    var deferred_keypress = null;
+    var keydown_keysym = null;
+    var keypress_keysym = null;
+
+    function fireKeyPress() {
+
+        // Prefer keysym from keypress
+        var keysym = keypress_keysym || keydown_keysym;
+        var keynum = keydown_code;
+
+        if (keydownChar[keynum] != keysym) {
+
+            // If this button is already pressed, release first
+            var lastKeyDownChar = keydownChar[keydown_code];
+            if (lastKeyDownChar)
+                sendKeyReleased(lastKeyDownChar);
+
+            // Send event
+            keydownChar[keynum] = keysym;
+            sendKeyPressed(keysym);
+
+            // Clear old key repeat, if any.
+            stopRepeat();
+
+            // Start repeating (if not a modifier key) after a short delay
+            if (keynum != 16 && keynum != 17 && keynum != 18)
+                repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
+
+        }
+
+        // Done with deferred key event
+        deferred_keypress = null;
+
+    }
 
     // When key pressed
-    var keydownCode = null;
     element.onkeydown = function(e) {
 
         // Only intercept if handler set
@@ -286,58 +317,22 @@ Guacamole.Keyboard = function(element) {
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
         else if (keynum == 18) guac_keyboard.modifiers.alt   = true;
 
-        // If keysym is defined for given key code, key events can come from
-        // KEYDOWN.
-        var keysym = getKeySymFromKeyCode(keynum);
-        if (keysym)
-            keySymSource = KEYDOWN;
+        // Try to get keysym from keycode
+        keydown_keysym = getKeySymFromKeyCode(keynum);
 
-        // Otherwise, if modifier keys are held down, try to get from keyIdentifier
-        else if ((guac_keyboard.modifiers.ctrl || guac_keyboard.modifiers.alt) && e.keyIdentifier) {
+        // Also try to get get keysym from keyIdentifier
+        if (e.keyIdentifier)
+            keydown_keysym = getKeySymFromKeyIdentifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
 
-            // Get keysym from keyIdentifier
-            keysym = getKeySymFromKeyIdentifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
+        // Set keycode which will be associated with any future keypress
+        keydown_code = keynum;
 
-            // Get keysyms and events from KEYDOWN
-            keySymSource = KEYDOWN;
+        // Defer handling of event until after any other pending
+        // key events.
+        if (!deferred_keypress)
+            deferred_keypress = window.setTimeout(fireKeyPress, 0);
 
-        }
-
-        // Otherwise, resort to KEYPRESS
-        else
-            keySymSource = KEYPRESS;
-
-        keydownCode = keynum;
-
-        // Ignore key if we don't need to use KEYPRESS.
-        // Send key event here
-        if (keySymSource == KEYDOWN) {
-
-            if (keydownChar[keynum] != keysym) {
-
-                // Send event
-                keydownChar[keynum] = keysym;
-                var returnValue = sendKeyPressed(keysym);
-
-                // Clear old key repeat, if any.
-                stopRepeat();
-
-                // Start repeating (if not a modifier key) after a short delay
-                if (keynum != 16 && keynum != 17 && keynum != 18)
-                    repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
-
-                // Use return code provided by handler
-                return returnValue;
-
-            }
-
-            // Default to canceling event if no keypress is being sent, but
-            // source of events is keydown.
-            return false;
-
-        }
-
-        return true;
+        return false;
 
     };
 
@@ -353,30 +348,13 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
 
-        var keysym = getKeySymFromCharCode(keynum);
-        if (keysym && keydownChar[keynum] != keysym) {
+        keypress_keysym = getKeySymFromCharCode(keynum);
 
-            // If this button already pressed, release first
-            var lastKeyDownChar = keydownChar[keydownCode];
-            if (lastKeyDownChar)
-                sendKeyReleased(lastKeyDownChar);
+        // Defer handling of event until after any other pending
+        // key events.
+        if (!deferred_keypress)
+            deferred_keypress = window.setTimeout(fireKeyPress, 0);
 
-            keydownChar[keydownCode] = keysym;
-
-            // Clear old key repeat, if any.
-            stopRepeat();
-
-            // Send key event
-            var returnValue = sendKeyPressed(keysym);
-
-            // Start repeating (if not a modifier key) after a short delay
-            repeatKeyTimeoutId = setTimeout(function() { startRepeat(keysym); }, 500);
-
-            return returnValue;
-        }
-
-        // Default to canceling event if no keypress is being sent, but
-        // source of events is keypress.
         return false;
 
     };
