@@ -93,6 +93,7 @@ Guacamole.Keyboard = function(element) {
         19:  0xFF13, // pause/break
         20:  0xFFE5, // caps lock
         27:  0xFF1B, // escape
+        32:  0x0020, // space
         33:  0xFF55, // page up
         34:  0xFF56, // page down
         35:  0xFF57, // end
@@ -438,6 +439,11 @@ Guacamole.Keyboard = function(element) {
 
         // Try to get keysym from keycode
         keydown_keysym = getKeySymFromKeyCode(keynum);
+
+        // If key is known from keycode, prevent default
+        if (keydown_keysym)
+            e.preventDefault();
+        
 
         // Also try to get get keysym from keyIdentifier
         if (e.keyIdentifier) {
