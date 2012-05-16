@@ -511,21 +511,27 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
-        // Ctrl/Alt/Shift
-        if (keynum == 16)      guac_keyboard.modifiers.shift = false;
-        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
-        else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
-        else
-            stopRepeat();
+        // Defer handling of keyup (otherwise, keyup may happen before
+        // deferred handling of keydown/keypress).
+        window.setTimeout(function() {
 
-        // Get corresponding character
-        var lastKeyDownChar = keydownChar[keynum];
+            // Ctrl/Alt/Shift
+            if (keynum == 16)      guac_keyboard.modifiers.shift = false;
+            else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
+            else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
+            else
+                stopRepeat();
 
-        // Clear character record
-        keydownChar[keynum] = null;
+            // Get corresponding character
+            var lastKeyDownChar = keydownChar[keynum];
 
-        // Send release event
-        sendKeyReleased(lastKeyDownChar);
+            // Clear character record
+            keydownChar[keynum] = null;
+
+            // Send release event
+            sendKeyReleased(lastKeyDownChar);
+
+        }, 0);
 
     };
 
