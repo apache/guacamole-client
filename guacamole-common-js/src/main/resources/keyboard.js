@@ -363,7 +363,7 @@ Guacamole.Keyboard = function(element) {
     var keydown_keysym = null;
     var keypress_keysym = null;
 
-    function fireKeyPress() {
+    function handleKeyEvents() {
 
         // Prefer keysym from keypress
         var keysym = keypress_keysym || keydown_keysym;
@@ -468,7 +468,7 @@ Guacamole.Keyboard = function(element) {
         // Defer handling of event until after any other pending
         // key events.
         if (!deferred_keypress)
-            deferred_keypress = window.setTimeout(fireKeyPress, 0);
+            deferred_keypress = window.setTimeout(handleKeyEvents, 0);
 
     };
 
@@ -496,7 +496,7 @@ Guacamole.Keyboard = function(element) {
         // Defer handling of event until after any other pending
         // key events.
         if (!deferred_keypress)
-            deferred_keypress = window.setTimeout(fireKeyPress, 0);
+            deferred_keypress = window.setTimeout(handleKeyEvents, 0);
 
     };
 
