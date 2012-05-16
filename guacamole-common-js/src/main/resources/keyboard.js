@@ -425,6 +425,12 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
 
+        // Ignore any unknown key events
+        if (keynum == 0) {
+            e.preventDefault();
+            return;
+        }
+
         // Ctrl/Alt/Shift
         if (keynum == 16)      guac_keyboard.modifiers.shift = true;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
@@ -465,7 +471,7 @@ Guacamole.Keyboard = function(element) {
     element.onkeypress = function(e) {
 
         // Only intercept if handler set
-        if (!guac_keyboard.onkeydown) return true;
+        if (!guac_keyboard.onkeydown) return;
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
@@ -485,20 +491,24 @@ Guacamole.Keyboard = function(element) {
         if (!deferred_keypress)
             deferred_keypress = window.setTimeout(fireKeyPress, 0);
 
-        return false;
-
     };
 
     // When key released
     element.onkeyup = function(e) {
 
         // Only intercept if handler set
-        if (!guac_keyboard.onkeyup) return true;
+        if (!guac_keyboard.onkeyup) return;
+
+        e.preventDefault();
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
+        // Ignore any unknown key events
+        if (keynum == 0)
+            return;
+
         // Ctrl/Alt/Shift
         if (keynum == 16)      guac_keyboard.modifiers.shift = false;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
@@ -513,7 +523,7 @@ Guacamole.Keyboard = function(element) {
         keydownChar[keynum] = null;
 
         // Send release event
-        return sendKeyReleased(lastKeyDownChar);
+        sendKeyReleased(lastKeyDownChar);
 
     };
 
