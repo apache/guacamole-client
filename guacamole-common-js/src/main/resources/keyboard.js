@@ -444,7 +444,6 @@ Guacamole.Keyboard = function(element) {
         if (keydown_keysym)
             e.preventDefault();
         
-
         // Also try to get get keysym from keyIdentifier
         if (e.keyIdentifier) {
 
@@ -478,6 +477,8 @@ Guacamole.Keyboard = function(element) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown) return;
+
+        e.preventDefault();
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
