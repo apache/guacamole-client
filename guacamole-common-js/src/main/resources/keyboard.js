@@ -262,7 +262,7 @@ Guacamole.Keyboard = function(element) {
 
     // Stops repeating keystrokes
     function stopRepeat() {
-        if (repeatKeyTimeoutId != -1) clearInterval(repeatKeyTimeoutId);
+        if (repeatKeyTimeoutId != -1) clearTimeout(repeatKeyTimeoutId);
         if (repeatKeyIntervalId != -1) clearInterval(repeatKeyIntervalId);
     }
 
@@ -511,10 +511,6 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
-        // Ignore any unknown key events
-        if (keynum == 0)
-            return;
-
         // Ctrl/Alt/Shift
         if (keynum == 16)      guac_keyboard.modifiers.shift = false;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
