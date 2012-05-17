@@ -655,24 +655,35 @@ Guacamole.Client = function(tunnel) {
             var width = parseInt(parameters[1]);
             var height = parseInt(parameters[2]);
 
-            // Resize layer
-            var layer_container = getLayerContainer(layer_index);
-            layer_container.resize(width, height);
+            // If not buffer, resize layer and container
+            if (layer_index >= 0) {
 
-            // If layer is default, resize display
-            if (layer_index == 0) {
+                // Resize layer
+                var layer_container = getLayerContainer(layer_index);
+                layer_container.resize(width, height);
 
-                displayWidth = width;
-                displayHeight = height;
+                // If layer is default, resize display
+                if (layer_index == 0) {
 
-                // Update (set) display size
-                display.style.width = displayWidth + "px";
-                display.style.height = displayHeight + "px";
+                    displayWidth = width;
+                    displayHeight = height;
 
-                // Update bounds size
-                bounds.style.width = (displayWidth*displayScale) + "px";
-                bounds.style.height = (displayHeight*displayScale) + "px";
+                    // Update (set) display size
+                    display.style.width = displayWidth + "px";
+                    display.style.height = displayHeight + "px";
 
+                    // Update bounds size
+                    bounds.style.width = (displayWidth*displayScale) + "px";
+                    bounds.style.height = (displayHeight*displayScale) + "px";
+
+                }
+
+            }
+
+            // If buffer, resize layer only
+            else {
+                var layer = getBufferLayer(parseInt(parameters[0]));
+                layer.resize(width, height);
             }
 
         },
