@@ -44,9 +44,6 @@ var Guacamole = Guacamole || {};
  * mouse events into a non-browser-specific event provided by the
  * Guacamole.Mouse instance.
  * 
- * Touch events are translated into mouse events as if the touches occurred
- * on a touchpad (drag to push the mouse pointer, tap to click).
- * 
  * @constructor
  * @param {Element} element The Element to use to provide mouse events.
  */
@@ -57,24 +54,6 @@ Guacamole.Mouse = function(element) {
      * @private
      */
     var guac_mouse = this;
-
-    /**
-     * The distance a two-finger touch must move per scrollwheel event, in
-     * pixels.
-     */
-    this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
-
-    /**
-     * The maximum number of milliseconds to wait for a touch to end for the
-     * gesture to be considered a click.
-     */
-    this.clickTimingThreshold = 250;
-
-    /**
-     * The maximum number of pixels to allow a touch to move for the gesture to
-     * be considered a click.
-     */
-    this.clickMoveThreshold = 10 * (window.devicePixelRatio || 1);
 
     /**
      * The current mouse state. The properties of this state are updated when
@@ -155,14 +134,212 @@ Guacamole.Mouse = function(element) {
 
     element.addEventListener("mousemove", function(e) {
 
-        // Don't handle if we aren't supposed to
-        if (gesture_in_progress) return;
-
         cancelEvent(e);
 
         moveMouse(e.clientX, e.clientY);
 
     }, false);
+
+    element.addEventListener("mousedown", function(e) {
+
+        cancelEvent(e);
+
+        switch (e.button) {
+            case 0:
+                guac_mouse.currentState.left = true;
+                break;
+            case 1:
+                guac_mouse.currentState.middle = true;
+                break;
+            case 2:
+                guac_mouse.currentState.right = true;
+                break;
+        }
+
+        if (guac_mouse.onmousedown)
+            guac_mouse.onmousedown(guac_mouse.currentState);
+
+    }, false);
+
+    element.addEventListener("mouseup", function(e) {
+
+        cancelEvent(e);
+
+        switch (e.button) {
+            case 0:
+                guac_mouse.currentState.left = false;
+                break;
+            case 1:
+                guac_mouse.currentState.middle = false;
+                break;
+            case 2:
+                guac_mouse.currentState.right = false;
+                break;
+        }
+
+        if (guac_mouse.onmouseup)
+            guac_mouse.onmouseup(guac_mouse.currentState);
+
+    }, false);
+
+    element.addEventListener("mouseout", function(e) {
+
+        // Get parent of the element the mouse pointer is leaving
+       	if (!e) e = window.event;
+
+        // Check that mouseout is due to actually LEAVING the element
+        var target = e.relatedTarget || e.toElement;
+        while (target != null) {
+            if (target === element)
+                return;
+            target = target.parentNode;
+        }
+
+        cancelEvent(e);
+
+        // Release all buttons
+        if (guac_mouse.currentState.left
+            || guac_mouse.currentState.middle
+            || guac_mouse.currentState.right) {
+
+            guac_mouse.currentState.left = false;
+            guac_mouse.currentState.middle = false;
+            guac_mouse.currentState.right = false;
+
+            if (guac_mouse.onmouseup)
+                guac_mouse.onmouseup(guac_mouse.currentState);
+        }
+
+    }, false);
+
+    // Override selection on mouse event element.
+    element.addEventListener("selectstart", function(e) {
+        cancelEvent(e);
+    }, false);
+
+    // Scroll wheel support
+    function mousewheel_handler(e) {
+
+        var delta = 0;
+        if (e.detail)
+            delta = e.detail;
+        else if (e.wheelDelta)
+            delta = -event.wheelDelta;
+
+        // Up
+        if (delta < 0) {
+            if (guac_mouse.onmousedown) {
+                guac_mouse.currentState.up = true;
+                guac_mouse.onmousedown(guac_mouse.currentState);
+            }
+
+            if (guac_mouse.onmouseup) {
+                guac_mouse.currentState.up = false;
+                guac_mouse.onmouseup(guac_mouse.currentState);
+            }
+        }
+
+        // Down
+        if (delta > 0) {
+            if (guac_mouse.onmousedown) {
+                guac_mouse.currentState.down = true;
+                guac_mouse.onmousedown(guac_mouse.currentState);
+            }
+
+            if (guac_mouse.onmouseup) {
+                guac_mouse.currentState.down = false;
+                guac_mouse.onmouseup(guac_mouse.currentState);
+            }
+        }
+
+        cancelEvent(e);
+
+    }
+    element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
+    element.addEventListener('mousewheel',     mousewheel_handler, false);
+
+};
+
+
+/**
+ * Provides cross-browser touch event translation for a given element.
+ * 
+ * Touch events are translated into mouse events as if the touches occurred
+ * on a touchpad (drag to push the mouse pointer, tap to click).
+ * 
+ * @constructor
+ * @param {Element} element The Element to use to provide touch events.
+ */
+Guacamole.Mouse.Touchpad = function(element) {
+
+    /**
+     * Reference to this Guacamole.Mouse.
+     * @private
+     */
+    var guac_mouse = this;
+
+    /**
+     * The distance a two-finger touch must move per scrollwheel event, in
+     * pixels.
+     */
+    this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
+
+    /**
+     * The maximum number of milliseconds to wait for a touch to end for the
+     * gesture to be considered a click.
+     */
+    this.clickTimingThreshold = 250;
+
+    /**
+     * The maximum number of pixels to allow a touch to move for the gesture to
+     * be considered a click.
+     */
+    this.clickMoveThreshold = 10 * (window.devicePixelRatio || 1);
+
+    /**
+     * The current mouse state. The properties of this state are updated when
+     * mouse events fire. This state object is also passed in as a parameter to
+     * the handler of any mouse events.
+     * 
+     * @type Guacamole.Mouse.State
+     */
+    this.currentState = new Guacamole.Mouse.State(
+        0, 0, 
+        false, false, false, false, false
+    );
+
+    /**
+     * Fired whenever the user presses a mouse button down over the element
+     * associated with this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousedown = null;
+
+    /**
+     * Fired whenever the user releases a mouse button down over the element
+     * associated with this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmouseup = null;
+
+    /**
+     * Fired whenever the user moves the mouse over the element associated with
+     * this Guacamole.Mouse.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousemove = null;
+
+    function cancelEvent(e) {
+        e.stopPropagation();
+        if (e.preventDefault) e.preventDefault();
+        e.returnValue = false;
+    }
 
     var touch_count = 0;
     var last_touch_x = 0;
@@ -349,138 +526,6 @@ Guacamole.Mouse = function(element) {
         }
 
     }, false);
-
-
-    element.addEventListener("mousedown", function(e) {
-
-        // Don't handle if we aren't supposed to
-        if (gesture_in_progress) return;
-
-        cancelEvent(e);
-
-        switch (e.button) {
-            case 0:
-                guac_mouse.currentState.left = true;
-                break;
-            case 1:
-                guac_mouse.currentState.middle = true;
-                break;
-            case 2:
-                guac_mouse.currentState.right = true;
-                break;
-        }
-
-        if (guac_mouse.onmousedown)
-            guac_mouse.onmousedown(guac_mouse.currentState);
-
-    }, false);
-
-
-    element.addEventListener("mouseup", function(e) {
-
-        // Don't handle if we aren't supposed to
-        if (gesture_in_progress) return;
-
-        cancelEvent(e);
-
-        switch (e.button) {
-            case 0:
-                guac_mouse.currentState.left = false;
-                break;
-            case 1:
-                guac_mouse.currentState.middle = false;
-                break;
-            case 2:
-                guac_mouse.currentState.right = false;
-                break;
-        }
-
-        if (guac_mouse.onmouseup)
-            guac_mouse.onmouseup(guac_mouse.currentState);
-
-    }, false);
-
-    element.addEventListener("mouseout", function(e) {
-
-        // Don't handle if we aren't supposed to
-        if (gesture_in_progress) return;
-
-        // Get parent of the element the mouse pointer is leaving
-       	if (!e) e = window.event;
-
-        // Check that mouseout is due to actually LEAVING the element
-        var target = e.relatedTarget || e.toElement;
-        while (target != null) {
-            if (target === element)
-                return;
-            target = target.parentNode;
-        }
-
-        cancelEvent(e);
-
-        // Release all buttons
-        if (guac_mouse.currentState.left
-            || guac_mouse.currentState.middle
-            || guac_mouse.currentState.right) {
-
-            guac_mouse.currentState.left = false;
-            guac_mouse.currentState.middle = false;
-            guac_mouse.currentState.right = false;
-
-            if (guac_mouse.onmouseup)
-                guac_mouse.onmouseup(guac_mouse.currentState);
-        }
-
-    }, false);
-
-    // Override selection on mouse event element.
-    element.addEventListener("selectstart", function(e) {
-        cancelEvent(e);
-    }, false);
-
-    // Scroll wheel support
-    function mousewheel_handler(e) {
-
-        // Don't handle if we aren't supposed to
-        if (gesture_in_progress) return;
-
-        var delta = 0;
-        if (e.detail)
-            delta = e.detail;
-        else if (e.wheelDelta)
-            delta = -event.wheelDelta;
-
-        // Up
-        if (delta < 0) {
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.up = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
-
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.up = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
-        }
-
-        // Down
-        if (delta > 0) {
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.down = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
-
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.down = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
-        }
-
-        cancelEvent(e);
-
-    }
-    element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
-    element.addEventListener('mousewheel',     mousewheel_handler, false);
 
 };
 
