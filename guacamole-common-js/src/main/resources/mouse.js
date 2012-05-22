@@ -273,10 +273,10 @@ Guacamole.Mouse = function(element) {
 Guacamole.Mouse.Touchpad = function(element) {
 
     /**
-     * Reference to this Guacamole.Mouse.
+     * Reference to this Guacamole.Mouse.Touchpad.
      * @private
      */
-    var guac_mouse = this;
+    var guac_touchpad = this;
 
     /**
      * The distance a two-finger touch must move per scrollwheel event, in
@@ -309,8 +309,10 @@ Guacamole.Mouse.Touchpad = function(element) {
     );
 
     /**
-     * Fired whenever the user presses a mouse button down over the element
-     * associated with this Guacamole.Mouse.
+     * Fired whenever a mouse button is effectively pressed. This can happen
+     * as part of a "click" gesture initiated by the user by tapping one
+     * or more fingers over the touchpad element, as part of a "scroll"
+     * gesture initiated by dragging two fingers up or down, etc.
      * 
      * @event
      * @param {Guacamole.Mouse.State} state The current mouse state.
@@ -318,8 +320,10 @@ Guacamole.Mouse.Touchpad = function(element) {
 	this.onmousedown = null;
 
     /**
-     * Fired whenever the user releases a mouse button down over the element
-     * associated with this Guacamole.Mouse.
+     * Fired whenever a mouse button is effectively released. This can happen
+     * as part of a "click" gesture initiated by the user by tapping one
+     * or more fingers over the touchpad element, as part of a "scroll"
+     * gesture initiated by dragging two fingers up or down, etc.
      * 
      * @event
      * @param {Guacamole.Mouse.State} state The current mouse state.
@@ -327,19 +331,13 @@ Guacamole.Mouse.Touchpad = function(element) {
 	this.onmouseup = null;
 
     /**
-     * Fired whenever the user moves the mouse over the element associated with
-     * this Guacamole.Mouse.
+     * Fired whenever the user moves the mouse by dragging their finger over
+     * the touchpad element.
      * 
      * @event
      * @param {Guacamole.Mouse.State} state The current mouse state.
      */
 	this.onmousemove = null;
-
-    function cancelEvent(e) {
-        e.stopPropagation();
-        if (e.preventDefault) e.preventDefault();
-        e.returnValue = false;
-    }
 
     var touch_count = 0;
     var last_touch_x = 0;
@@ -358,7 +356,8 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchend", function(e) {
         
-        cancelEvent(e);
+        e.stopPropagation();
+        e.preventDefault();
             
         // If we're handling a gesture AND this is the last touch
         if (gesture_in_progress && e.touches.length == 0) {
@@ -369,12 +368,12 @@ Guacamole.Mouse.Touchpad = function(element) {
             var button = touch_buttons[touch_count];
 
             // If mouse already down, release anad clear timeout
-            if (guac_mouse.currentState[button]) {
+            if (guac_touchpad.currentState[button]) {
 
                 // Fire button up event
-                guac_mouse.currentState[button] = false;
-                if (guac_mouse.onmouseup)
-                    guac_mouse.onmouseup(guac_mouse.currentState);
+                guac_touchpad.currentState[button] = false;
+                if (guac_touchpad.onmouseup)
+                    guac_touchpad.onmouseup(guac_touchpad.currentState);
 
                 // Clear timeout, if set
                 if (click_release_timeout) {
@@ -385,27 +384,27 @@ Guacamole.Mouse.Touchpad = function(element) {
             }
 
             // If single tap detected (based on time and distance)
-            if (time - last_touch_time <= guac_mouse.clickTimingThreshold
-                    && pixels_moved < guac_mouse.clickMoveThreshold) {
+            if (time - last_touch_time <= guac_touchpad.clickTimingThreshold
+                    && pixels_moved < guac_touchpad.clickMoveThreshold) {
 
                 // Fire button down event
-                guac_mouse.currentState[button] = true;
-                if (guac_mouse.onmousedown)
-                    guac_mouse.onmousedown(guac_mouse.currentState);
+                guac_touchpad.currentState[button] = true;
+                if (guac_touchpad.onmousedown)
+                    guac_touchpad.onmousedown(guac_touchpad.currentState);
 
                 // Delay mouse up - mouse up should be canceled if
                 // touchstart within timeout.
                 click_release_timeout = window.setTimeout(function() {
                     
                     // Fire button up event
-                    guac_mouse.currentState[button] = false;
-                    if (guac_mouse.onmouseup)
-                        guac_mouse.onmouseup(guac_mouse.currentState);
+                    guac_touchpad.currentState[button] = false;
+                    if (guac_touchpad.onmouseup)
+                        guac_touchpad.onmouseup(guac_touchpad.currentState);
                     
                     // Gesture now over
                     gesture_in_progress = false;
 
-                }, guac_mouse.clickTimingThreshold);
+                }, guac_touchpad.clickTimingThreshold);
 
             }
 
@@ -419,7 +418,8 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchstart", function(e) {
 
-        cancelEvent(e);
+        e.stopPropagation();
+        e.preventDefault();
 
         // Track number of touches, but no more than three
         touch_count = Math.min(e.touches.length, 3);
@@ -450,7 +450,8 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchmove", function(e) {
 
-        cancelEvent(e);
+        e.stopPropagation();
+        e.preventDefault();
 
         // Get change in touch location
         var touch = e.touches[0];
@@ -470,24 +471,24 @@ Guacamole.Mouse.Touchpad = function(element) {
             var scale = 1 + velocity;
 
             // Update mouse location
-            guac_mouse.currentState.x += delta_x*scale;
-            guac_mouse.currentState.y += delta_y*scale;
+            guac_touchpad.currentState.x += delta_x*scale;
+            guac_touchpad.currentState.y += delta_y*scale;
 
             // Prevent mouse from leaving screen
 
-            if (guac_mouse.currentState.x < 0)
-                guac_mouse.currentState.x = 0;
-            else if (guac_mouse.currentState.x >= element.offsetWidth)
-                guac_mouse.currentState.x = element.offsetWidth - 1;
+            if (guac_touchpad.currentState.x < 0)
+                guac_touchpad.currentState.x = 0;
+            else if (guac_touchpad.currentState.x >= element.offsetWidth)
+                guac_touchpad.currentState.x = element.offsetWidth - 1;
 
-            if (guac_mouse.currentState.y < 0)
-                guac_mouse.currentState.y = 0;
-            else if (guac_mouse.currentState.y >= element.offsetHeight)
-                guac_mouse.currentState.y = element.offsetHeight - 1;
+            if (guac_touchpad.currentState.y < 0)
+                guac_touchpad.currentState.y = 0;
+            else if (guac_touchpad.currentState.y >= element.offsetHeight)
+                guac_touchpad.currentState.y = element.offsetHeight - 1;
 
             // Fire movement event, if defined
-            if (guac_mouse.onmousemove)
-                guac_mouse.onmousemove(guac_mouse.currentState);
+            if (guac_touchpad.onmousemove)
+                guac_touchpad.onmousemove(guac_touchpad.currentState);
 
             // Update touch location
             last_touch_x = touch.clientX;
@@ -499,7 +500,7 @@ Guacamole.Mouse.Touchpad = function(element) {
         else if (touch_count == 2) {
 
             // If change in location passes threshold for scroll
-            if (Math.abs(delta_y) >= guac_mouse.scrollThreshold) {
+            if (Math.abs(delta_y) >= guac_touchpad.scrollThreshold) {
 
                 // Decide button based on Y movement direction
                 var button;
@@ -507,14 +508,14 @@ Guacamole.Mouse.Touchpad = function(element) {
                 else             button = "up";
 
                 // Fire button down event
-                guac_mouse.currentState[button] = true;
-                if (guac_mouse.onmousedown)
-                    guac_mouse.onmousedown(guac_mouse.currentState);
+                guac_touchpad.currentState[button] = true;
+                if (guac_touchpad.onmousedown)
+                    guac_touchpad.onmousedown(guac_touchpad.currentState);
 
                 // Fire button up event
-                guac_mouse.currentState[button] = false;
-                if (guac_mouse.onmouseup)
-                    guac_mouse.onmouseup(guac_mouse.currentState);
+                guac_touchpad.currentState[button] = false;
+                if (guac_touchpad.onmouseup)
+                    guac_touchpad.onmouseup(guac_touchpad.currentState);
 
                 // Only update touch location after a scroll has been
                 // detected
