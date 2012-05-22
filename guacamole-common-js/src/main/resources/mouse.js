@@ -604,7 +604,9 @@ Guacamole.Mouse.Touchscreen = function(element) {
         e.stopPropagation();
         e.preventDefault();
 
-        // TODO: STUB
+        // Fire release event when the last touch is released, if event defined
+        if (e.touches.length == 0 && guac_touchscreen.onmouseup)
+            guac_touchscreen.onmouseup(guac_touchscreen.currentState);
 
     }, false);
 
@@ -613,7 +615,17 @@ Guacamole.Mouse.Touchscreen = function(element) {
         e.stopPropagation();
         e.preventDefault();
 
-        // TODO: STUB
+        // Get touch
+        var touch = e.touches[0];
+
+        // Update state
+        guac_touchscreen.currentstate.x = touch.clientX;
+        guac_touchscreen.currentstate.y = touch.clientY;
+
+        // Fire press event, if defined
+        if (guac_touchscreen.onmousedown)
+            guac_touchscreen.onmousedown(guac_touchscreen.currentState);
+
 
     }, false);
 
@@ -622,7 +634,16 @@ Guacamole.Mouse.Touchscreen = function(element) {
         e.stopPropagation();
         e.preventDefault();
 
-        // TODO: STUB
+        // Get touch
+        var touch = e.touches[0];
+
+        // Update state
+        guac_touchscreen.currentstate.x = touch.clientX;
+        guac_touchscreen.currentstate.y = touch.clientY;
+
+        // Fire movement event, if defined
+        if (guac_touchscreen.onmousemove)
+            guac_touchscreen.onmousemove(guac_touchscreen.currentState);
 
     }, false);
 
