@@ -262,7 +262,7 @@ Guacamole.Mouse = function(element) {
 
 
 /**
- * Provides cross-browser touch event translation for a given element.
+ * Provides cross-browser relative touch event translation for a given element.
  * 
  * Touch events are translated into mouse events as if the touches occurred
  * on a touchpad (drag to push the mouse pointer, tap to click).
@@ -525,6 +525,104 @@ Guacamole.Mouse.Touchpad = function(element) {
             }
 
         }
+
+    }, false);
+
+};
+
+/**
+ * Provides cross-browser absolute touch event translation for a given element.
+ * 
+ * Touch events are translated into mouse events as if the touches occurred
+ * on a touchscreen (tapping anywhere on the screen clicks at that point,
+ * long-press to right-click).
+ * 
+ * @constructor
+ * @param {Element} element The Element to use to provide touch events.
+ */
+Guacamole.Mouse.Touchscreen = function(element) {
+
+    /**
+     * Reference to this Guacamole.Mouse.Touchscreen.
+     * @private
+     */
+    var guac_touchscreen = this;
+
+    /**
+     * The distance a two-finger touch must move per scrollwheel event, in
+     * pixels.
+     */
+    this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
+
+    /**
+     * The current mouse state. The properties of this state are updated when
+     * mouse events fire. This state object is also passed in as a parameter to
+     * the handler of any mouse events.
+     * 
+     * @type Guacamole.Mouse.State
+     */
+    this.currentState = new Guacamole.Mouse.State(
+        0, 0, 
+        false, false, false, false, false
+    );
+
+    /**
+     * Fired whenever a mouse button is effectively pressed. This can happen
+     * as part of a "mousedown" gesture initiated by the user by pressing one
+     * finger over the touchscreen element, as part of a "scroll" gesture
+     * initiated by dragging two fingers up or down, etc.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousedown = null;
+
+    /**
+     * Fired whenever a mouse button is effectively released. This can happen
+     * as part of a "mouseup" gesture initiated by the user by removing the
+     * finger pressed against the touchscreen element, or as part of a "scroll"
+     * gesture initiated by dragging two fingers up or down, etc.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmouseup = null;
+
+    /**
+     * Fired whenever the user moves the mouse by dragging their finger over
+     * the touchscreen element. Note that unlike Guacamole.Mouse.Touchpad,
+     * dragging a finger over the touchscreen element will always cause
+     * the mouse button to be effectively down, as if clicking-and-dragging.
+     * 
+     * @event
+     * @param {Guacamole.Mouse.State} state The current mouse state.
+     */
+	this.onmousemove = null;
+
+    element.addEventListener("touchend", function(e) {
+        
+        e.stopPropagation();
+        e.preventDefault();
+
+        // TODO: STUB
+
+    }, false);
+
+    element.addEventListener("touchstart", function(e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        // TODO: STUB
+
+    }, false);
+
+    element.addEventListener("touchmove", function(e) {
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        // TODO: STUB
 
     }, false);
 
