@@ -524,6 +524,8 @@ GuacamoleUI.attach = function(guac) {
 
     // Mouse
     var mouse = new Guacamole.Mouse(guac_display);
+    var touch = new Guacamole.Mouse.Touchpad(guac_display);
+    touch.onmousedown = touch.onmouseup = touch.onmousemove =
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
        
