@@ -164,6 +164,7 @@ var GuacamoleUI = {
     };
 
     GuacamoleUI.hideTouchClipboard = function() {
+        GuacamoleUI.touchClipboard.blur();
         GuacamoleUI.containers.touchClipboard.style.visibility = "hidden";
     };
 
