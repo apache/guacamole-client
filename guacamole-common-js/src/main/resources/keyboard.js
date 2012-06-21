@@ -432,6 +432,8 @@ Guacamole.Keyboard = function(element) {
             return;
         }
 
+        var expect_keypress = true;
+
         // Ctrl/Alt/Shift
         if (keynum == 16)      guac_keyboard.modifiers.shift = true;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
@@ -442,7 +444,7 @@ Guacamole.Keyboard = function(element) {
 
         // If key is known from keycode, prevent default
         if (keydown_keysym)
-            e.preventDefault();
+            expect_keypress = false;
         
         // Also try to get get keysym from keyIdentifier
         if (e.keyIdentifier) {
@@ -458,17 +460,25 @@ Guacamole.Keyboard = function(element) {
             if (!isTypable(e.keyIdentifier)
                     || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
                     || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt))
-                e.preventDefault();
+                expect_keypress = false;
             
         }
 
         // Set keycode which will be associated with any future keypress
         keydown_code = keynum;
 
-        // Defer handling of event until after any other pending
-        // key events.
-        if (!deferred_keypress)
-            deferred_keypress = window.setTimeout(handleKeyEvents, 0);
+        // If we expect to handle via keypress, set failsafe timeout and
+        // wait for keypress.
+        if (expect_keypress) {
+            if (!deferred_keypress)
+                deferred_keypress = window.setTimeout(handleKeyEvents, 0);
+        }
+
+        // Otherwise, handle now
+        else {
+            e.preventDefault();
+            handleKeyEvents();
+        }
 
     };
 
@@ -493,10 +503,12 @@ Guacamole.Keyboard = function(element) {
             sendKeyReleased(0xFFE9);
         }
 
-        // Defer handling of event until after any other pending
-        // key events.
-        if (!deferred_keypress)
-            deferred_keypress = window.setTimeout(handleKeyEvents, 0);
+        // Clear timeout, if any
+        if (deferred_keypress)
+            window.clearTimeout(deferred_keypress);
+
+        // Handle event with all aggregated data
+        handleKeyEvents();
 
     };
 
@@ -512,27 +524,21 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
-        // Defer handling of keyup (otherwise, keyup may happen before
-        // deferred handling of keydown/keypress).
-        window.setTimeout(function() {
+        // Ctrl/Alt/Shift
+        if (keynum == 16)      guac_keyboard.modifiers.shift = false;
+        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
+        else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
+        else
+            stopRepeat();
 
-            // Ctrl/Alt/Shift
-            if (keynum == 16)      guac_keyboard.modifiers.shift = false;
-            else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
-            else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
-            else
-                stopRepeat();
+        // Get corresponding character
+        var lastKeyDownChar = keydownChar[keynum];
 
-            // Get corresponding character
-            var lastKeyDownChar = keydownChar[keynum];
+        // Clear character record
+        keydownChar[keynum] = null;
 
-            // Clear character record
-            keydownChar[keynum] = null;
-
-            // Send release event
-            sendKeyReleased(lastKeyDownChar);
-
-        }, 0);
+        // Send release event
+        sendKeyReleased(lastKeyDownChar);
 
     };
 
