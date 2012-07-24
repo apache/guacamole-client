@@ -101,8 +101,8 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
             sock.setSoTimeout(SOCKET_TIMEOUT);
 
             // On successful connect, retrieve I/O streams
-            reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream()));
-            writer = new WriterGuacamoleWriter(new OutputStreamWriter(sock.getOutputStream()));
+            reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream(),   "UTF-8"));
+            writer = new WriterGuacamoleWriter(new OutputStreamWriter(sock.getOutputStream(), "UTF-8"));
 
         }
         catch (IOException e) {

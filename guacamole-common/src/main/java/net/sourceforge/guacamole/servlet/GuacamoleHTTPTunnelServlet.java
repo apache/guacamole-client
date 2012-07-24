@@ -36,10 +36,8 @@ package net.sourceforge.guacamole.servlet;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.io.*;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -246,7 +244,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             // anything but application/octet-stream.
             response.setContentType("application/octet-stream");
 
-            Writer out = response.getWriter();
+            Writer out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 
             // Detach tunnel and throw error if EOF (and we haven't sent any
             // data yet.
@@ -343,7 +341,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             GuacamoleWriter writer = tunnel.acquireWriter();
 
-            Reader input = request.getReader();
+            Reader input = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
             char[] buffer = new char[8192];
 
             int length;
