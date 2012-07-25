@@ -37,7 +37,6 @@ package net.sourceforge.guacamole.servlet;
  * ***** END LICENSE BLOCK ***** */
 
 import java.io.*;
-import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +45,7 @@ import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.*;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
+import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -341,7 +341,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             GuacamoleWriter writer = tunnel.acquireWriter();
 
-            Reader input = new BufferedReader(new InputStreamReader(request.getInputStream(), "UTF-8"));
+            Reader input = new InputStreamReader(request.getInputStream(), "UTF-8");
             char[] buffer = new char[8192];
 
             int length;
