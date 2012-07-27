@@ -357,6 +357,7 @@ Guacamole.Keyboard = function(element) {
     }
 
 
+    var expect_keypress = true;
     var keydown_code = null;
 
     var deferred_keypress = null;
@@ -432,7 +433,7 @@ Guacamole.Keyboard = function(element) {
             return;
         }
 
-        var expect_keypress = true;
+        expect_keypress = true;
 
         // Ctrl/Alt/Shift
         if (keynum == 16)      guac_keyboard.modifiers.shift = true;
@@ -489,6 +490,10 @@ Guacamole.Keyboard = function(element) {
         if (!guac_keyboard.onkeydown) return;
 
         e.preventDefault();
+
+        // Do not handle if we weren't expecting this event (will have already
+        // been handled by keydown)
+        if (!expect_keypress) return;
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
