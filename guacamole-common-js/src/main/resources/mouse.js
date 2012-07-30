@@ -133,36 +133,6 @@ Guacamole.Mouse = function(element) {
         e.returnValue = false;
     }
 
-    function moveMouse(clientX, clientY) {
-
-        guac_mouse.currentState.x = clientX - element.offsetLeft;
-        guac_mouse.currentState.y = clientY - element.offsetTop;
-
-        // This is all JUST so we can get the mouse position within the element
-        var parent = element.offsetParent;
-        while (parent && !(parent === document.body)) {
-            guac_mouse.currentState.x -= parent.offsetLeft - parent.scrollLeft;
-            guac_mouse.currentState.y -= parent.offsetTop  - parent.scrollTop;
-
-            parent = parent.offsetParent;
-        }
-
-        // Offset by document scroll amount
-        var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-        var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-        guac_mouse.currentState.x -= parent.offsetLeft - documentScrollLeft;
-        guac_mouse.currentState.y -= parent.offsetTop  - documentScrollTop;
-
-        if (guac_mouse.onmousemove)
-            deferred_mouse_event = window.setTimeout(function() {
-                guac_mouse.onmousemove(guac_mouse.currentState);
-                deferred_mouse_event = null;
-            }, 0);
-
-    }
-
-
     // Block context menu so right-click gets sent properly
     element.addEventListener("contextmenu", function(e) {
         cancelEvent(e);
@@ -179,7 +149,13 @@ Guacamole.Mouse = function(element) {
         if (ignore_mouse)
             return;
 
-        moveMouse(e.clientX, e.clientY);
+        guac_mouse.currentState.fromClientPosition(element, e.clientX, e.clientY);
+
+        if (guac_mouse.onmousemove)
+            deferred_mouse_event = window.setTimeout(function() {
+                guac_mouse.onmousemove(guac_mouse.currentState);
+                deferred_mouse_event = null;
+            }, 0);
 
     }, false);
 
@@ -700,8 +676,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
         // Update state
         guac_touchscreen.currentState.left = true;
-        guac_touchscreen.currentState.x = touch.clientX;
-        guac_touchscreen.currentState.y = touch.clientY;
+        guac_touchscreen.currentState.fromClientPosition(element, touch.clientX, touch.clientY);
 
         // Fire press event, if defined
         if (guac_touchscreen.onmousedown)
@@ -723,8 +698,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
         var touch = e.touches[0];
 
         // Update state
-        guac_touchscreen.currentState.x = touch.clientX;
-        guac_touchscreen.currentState.y = touch.clientY;
+        guac_touchscreen.currentState.fromClientPosition(element, touch.clientX, touch.clientY);
 
         // Fire movement event, if defined
         if (guac_touchscreen.onmousemove)
@@ -749,6 +723,12 @@ Guacamole.Mouse.Touchscreen = function(element) {
  *                       button, usually part of a scroll wheel). 
  */
 Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
+
+    /**
+     * Reference to this Guacamole.Mouse.State.
+     * @private
+     */
+    var guac_state = this;
 
     /**
      * The current X position of the mouse pointer.
@@ -795,6 +775,40 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
      * @type Boolean
      */
     this.down = down;
+
+    /**
+     * Updates the position represented within this state object by the given
+     * element and clientX/clientY coordinates (commonly available within event
+     * objects). Position is translated from clientX/clientY (relative to
+     * viewport) to element-relative coordinates.
+     * 
+     * @param {Element} element The element the coordinates should be relative
+     *                          to.
+     * @param {Number} clientX The X coordinate to translate, viewport-relative.
+     * @param {Number} clientY The Y coordinate to translate, viewport-relative.
+     */
+    this.fromClientPosition = function(element, clientX, clientY) {
     
+        guac_state.x = clientX - element.offsetLeft;
+        guac_state.y = clientY - element.offsetTop;
+
+        // This is all JUST so we can get the mouse position within the element
+        var parent = element.offsetParent;
+        while (parent && !(parent === document.body)) {
+            guac_state.x -= parent.offsetLeft - parent.scrollLeft;
+            guac_state.y -= parent.offsetTop  - parent.scrollTop;
+
+            parent = parent.offsetParent;
+        }
+
+        // Offset by document scroll amount
+        var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+        var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+        guac_state.x -= parent.offsetLeft - documentScrollLeft;
+        guac_state.y -= parent.offsetTop  - documentScrollTop;
+
+    };
+
 };
 
