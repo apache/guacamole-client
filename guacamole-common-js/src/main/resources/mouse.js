@@ -670,6 +670,10 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
     element.addEventListener("touchend", function(e) {
         
+        // Ignore if more than one touch
+        if (e.touches.length + e.changedTouches.length != 1)
+            return;
+
         e.stopPropagation();
         e.preventDefault();
 
@@ -683,6 +687,10 @@ Guacamole.Mouse.Touchscreen = function(element) {
     }, false);
 
     element.addEventListener("touchstart", function(e) {
+
+        // Ignore if more than one touch
+        if (e.touches.length != 1)
+            return;
 
         e.stopPropagation();
         e.preventDefault();
@@ -703,6 +711,10 @@ Guacamole.Mouse.Touchscreen = function(element) {
     }, false);
 
     element.addEventListener("touchmove", function(e) {
+
+        // Ignore if more than one touch
+        if (e.touches.length != 1)
+            return;
 
         e.stopPropagation();
         e.preventDefault();
