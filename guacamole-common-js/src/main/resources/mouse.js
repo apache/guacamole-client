@@ -765,12 +765,15 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
             parent = parent.offsetParent;
         }
 
-        // Offset by document scroll amount
-        var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-        var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+        // Element ultimately depends on positioning within document body,
+        // take document scroll into account. 
+        if (parent) {
+            var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+            var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
 
-        guac_state.x -= parent.offsetLeft - documentScrollLeft;
-        guac_state.y -= parent.offsetTop  - documentScrollTop;
+            guac_state.x -= parent.offsetLeft - documentScrollLeft;
+            guac_state.y -= parent.offsetTop  - documentScrollTop;
+        }
 
     };
 
