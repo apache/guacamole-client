@@ -418,7 +418,7 @@ Guacamole.Keyboard = function(element) {
     }
 
     // When key pressed
-    element.onkeydown = function(e) {
+    element.addEventListener("keydown", function(e) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown) return;
@@ -428,7 +428,7 @@ Guacamole.Keyboard = function(element) {
         else if (e.which) keynum = e.which;
 
         // Ignore any unknown key events
-        if (keynum == 0) {
+        if (keynum == 0 && !e.keyIdentifier) {
             e.preventDefault();
             return;
         }
@@ -481,10 +481,10 @@ Guacamole.Keyboard = function(element) {
             handleKeyEvents();
         }
 
-    };
+    }, true);
 
     // When key pressed
-    element.onkeypress = function(e) {
+    element.addEventListener("keypress", function(e) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown) return;
@@ -515,10 +515,10 @@ Guacamole.Keyboard = function(element) {
         // Handle event with all aggregated data
         handleKeyEvents();
 
-    };
+    }, true);
 
     // When key released
-    element.onkeyup = function(e) {
+    element.addEventListener("keyup", function(e) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeyup) return;
@@ -545,13 +545,13 @@ Guacamole.Keyboard = function(element) {
         // Send release event
         sendKeyReleased(lastKeyDownChar);
 
-    };
+    }, true);
 
     // When focus is lost, clear modifiers.
-    element.onblur = function() {
+    element.addEventListener("blur", function() {
         guac_keyboard.modifiers.alt = false;
         guac_keyboard.modifiers.ctrl = false;
         guac_keyboard.modifiers.shift = false;
-    };
+    }, true);
 
 };
