@@ -44,10 +44,10 @@ import javax.servlet.http.HttpSession;
  * Simple arbitrary set of credentials, including a username/password pair,
  * the HttpServletRequest associated with the request for authorization
  * (if any) and the HttpSession associated with that request.
- * 
+ *
  * This class is used along with AuthenticationProvider to provide arbitrary
  * HTTP-based authentication for Guacamole.
- * 
+ *
  * @author Michael Jumper
  */
 public class Credentials implements Serializable {
@@ -73,7 +73,7 @@ public class Credentials implements Serializable {
      * The HttpSession carrying additional credentials, if any.
      */
     private transient HttpSession session;
-    
+
     /**
      * Returns the password associated with this set of credentials.
      * @return The password associated with this username/password pair, or

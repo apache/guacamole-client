@@ -44,7 +44,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 /**
  * Provides means of retrieving a set of named GuacamoleConfigurations for a
  * given Credentials object.
- * 
+ *
  * @author Michael Jumper
  */
 public interface AuthenticationProvider {
@@ -53,7 +53,7 @@ public interface AuthenticationProvider {
      * Given an arbitrary credentials object, returns a Map containing all
      * configurations authorized by those credentials. The keys of this Map
      * are Strings which uniquely identify each configuration.
-     * 
+     *
      * @param credentials The credentials to use to retrieve authorized
      *                    configurations.
      * @return A Map of all configurations authorized by the given credentials,
