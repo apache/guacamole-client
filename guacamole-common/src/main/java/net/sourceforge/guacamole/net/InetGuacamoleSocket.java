@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
 public class InetGuacamoleSocket implements GuacamoleSocket {
 
     private Logger logger = LoggerFactory.getLogger(InetGuacamoleSocket.class);
-    
+
     private GuacamoleReader reader;
     private GuacamoleWriter writer;
 
@@ -86,7 +86,7 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
         try {
 
             logger.debug("Connecting to guacd at {}:{}.", hostname, port);
-            
+
             // Get address
             SocketAddress address = new InetSocketAddress(
                     InetAddress.getByName(hostname),
@@ -136,6 +136,6 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
     public boolean isOpen() {
         return !sock.isClosed();
     }
-    
+
 
 }

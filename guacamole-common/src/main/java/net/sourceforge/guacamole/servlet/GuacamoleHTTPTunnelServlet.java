@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(GuacamoleHTTPTunnelServlet.class);
-    
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         handleTunnelRequest(request, response);
@@ -72,7 +72,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     /**
      * Sends an error on the given HTTP response with the given integer error
      * code.
-     * 
+     *
      * @param response The HTTP response to use to send the error.
      * @param code The HTTP status code of the error.
      * @throws ServletException If an error prevents sending of the error
@@ -98,7 +98,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     }
 
 
-    
+
     /**
      * Dispatches every HTTP GET and POST request to the appropriate handler
      * function based on the query string.
@@ -132,7 +132,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     session.attachTunnel(tunnel);
 
                     logger.info("Connection from {} succeeded.", request.getRemoteAddr());
-                
+
                     try {
                         // Send UUID to client
                         response.getWriter().print(tunnel.getUUID().toString());
@@ -140,7 +140,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     catch (IOException e) {
                         throw new GuacamoleServerException(e);
                     }
-                    
+
                 }
 
                 // Failed to connect
@@ -233,7 +233,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // Ensure tunnel is open
         if (!tunnel.isOpen())
             throw new GuacamoleResourceNotFoundException("Tunnel is closed.");
-        
+
         // Obtain exclusive read access
         GuacamoleReader reader = tunnel.acquireReader();
 
@@ -273,7 +273,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             // Close tunnel immediately upon EOF
             if (message == null)
                 tunnel.close();
-            
+
             // End-of-instructions marker
             out.write("0.;");
             out.flush();
@@ -292,11 +292,11 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             // Log typically frequent I/O error if desired
             logger.debug("Error writing to servlet output stream", e);
-            
+
             // Detach and close
             session.detachTunnel(tunnel);
             tunnel.close();
-                
+
         }
         finally {
             tunnel.releaseReader();
@@ -345,7 +345,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             char[] buffer = new char[8192];
 
             int length;
-            while (tunnel.isOpen() && 
+            while (tunnel.isOpen() &&
                     (length = input.read(buffer, 0, buffer.length)) != -1)
                 writer.write(buffer, 0, length);
 

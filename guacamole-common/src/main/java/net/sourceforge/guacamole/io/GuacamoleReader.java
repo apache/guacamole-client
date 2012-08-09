@@ -53,14 +53,14 @@ public interface GuacamoleReader {
      * this does not guarantee an entire instruction is available. If a full
      * instruction is not available, this function can return true, and a call
      * to read() will still block.
-     * 
+     *
      * @return true if instruction data is available for reading, false
      *         otherwise.
      * @throws GuacamoleException If an error occurs while checking for
      *                            available data.
      */
     public boolean available() throws GuacamoleException;
-    
+
     /**
      * Reads at least one complete Guacamole instruction, returning a buffer
      * containing one or more complete Guacamole instructions and no

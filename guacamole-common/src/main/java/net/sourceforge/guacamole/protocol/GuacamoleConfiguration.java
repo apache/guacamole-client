@@ -49,7 +49,7 @@ import java.util.HashMap;
 public class GuacamoleConfiguration implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     private String protocol;
     private HashMap<String, String> parameters = new HashMap<String, String>();
 

@@ -93,7 +93,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
                 // Length of element
                 int elementLength = 0;
-                
+
                 // Resume where we left off
                 int i = parseStart;
 
@@ -115,7 +115,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
                             // Get terminator
                             char terminator = buffer[i + elementLength];
-                            
+
                             // Move to character after terminator
                             i += elementLength + 1;
 
@@ -139,19 +139,19 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
                                 System.arraycopy(buffer, i, buffer, 0, usedLength);
 
                                 return instruction;
-                                
+
                             }
 
                             // Handle invalid terminator characters
                             else if (terminator != ',')
                                 throw new GuacamoleServerException("Element terminator of instruction was not ';' nor ','");
-                            
+
                         }
 
                         // Otherwise, read more data
                         else
                             break;
-                        
+
                     }
 
                     // Otherwise, parse error
@@ -189,14 +189,14 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
         // Get instruction
         char[] instructionBuffer = read();
-        
+
         // If EOF, return EOF
         if (instructionBuffer == null)
             return null;
-        
+
         // Start of element
         int elementStart = 0;
-        
+
         // Build list of elements
         LinkedList<String> elements = new LinkedList<String>();
         while (elementStart < instructionBuffer.length) {
@@ -232,14 +232,14 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
             // Append element to list of elements
             elements.addLast(element);
-            
+
             // Read terminator after element
             elementStart += length;
             char terminator = instructionBuffer[elementStart];
 
             // Continue reading instructions after terminator
             elementStart++;
-           
+
             // If we've reached the end of the instruction
             if (terminator == ';')
                 break;
@@ -248,7 +248,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
         // Pull opcode off elements list
         String opcode = elements.removeFirst();
-        
+
         // Create instruction
         GuacamoleInstruction instruction = new GuacamoleInstruction(
                 Operation.fromOpcode(opcode),

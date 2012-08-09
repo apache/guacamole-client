@@ -100,7 +100,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                 args[i] = value;
             else
                 args[i] = "";
-            
+
         }
 
         // Send args
@@ -111,7 +111,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
     /**
      * Returns the GuacamoleConfiguration used to configure this
      * ConfiguredGuacamoleSocket.
-     * 
+     *
      * @return The GuacamoleConfiguration used to configure this
      *         ConfiguredGuacamoleSocket.
      */

@@ -141,6 +141,6 @@ public class GuacamoleProperties {
             throw new GuacamoleServerException("Property " + property.getName() + " is required.");
 
         return value;
-        
+
     }
 }
