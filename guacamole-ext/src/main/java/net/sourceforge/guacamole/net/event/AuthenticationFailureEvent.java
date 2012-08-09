@@ -12,7 +12,7 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 public class AuthenticationFailureEvent implements CredentialEvent {
 
     /**
-     * The credentials which failed authentication
+     * The credentials which failed authentication.
      */
     private Credentials credentials;
 
