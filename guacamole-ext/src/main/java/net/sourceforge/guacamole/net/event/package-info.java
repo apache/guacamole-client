@@ -1,10 +1,11 @@
 
 /**
- * Provides classes for hooking into various events that take place as
- * users log into and use the Guacamole web application. These event
- * hooks can be used to take action upon occurence of an event and,
- * in some cases, prevent the web application from allowing the
- * event to continue for the user that triggered it.
+ * Provides classes for storing information about events that are
+ * triggered when users log into and use the Guacamole web application.
+ * These event classes are most useful when used with hooks implemented
+ * using listener classes.
+ *
+ * @see net.sourceforge.guacamole.net.event.listener
  */
 package net.sourceforge.guacamole.net.event;
 
