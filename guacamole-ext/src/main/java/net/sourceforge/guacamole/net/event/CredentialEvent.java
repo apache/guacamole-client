@@ -16,6 +16,6 @@ public interface CredentialEvent {
      * @return The current credentials of the user triggering the event, if
      *         any, or null if no credentials are associated with the event.
      */
-    public Credentials getCredentials();
+    Credentials getCredentials();
 
 }

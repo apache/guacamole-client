@@ -15,6 +15,6 @@ public interface TunnelEvent {
      * @return The tunnel associated with this event, if any, or null if no
      *         tunnel is associated with this event.
      */
-    public GuacamoleTunnel getTunnel();
+    GuacamoleTunnel getTunnel();
 
 }

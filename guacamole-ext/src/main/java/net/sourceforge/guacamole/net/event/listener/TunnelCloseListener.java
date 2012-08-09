@@ -25,7 +25,7 @@ public interface TunnelCloseListener {
      *                            tunnel close event. Throwing an exception
      *                            will also stop the tunnel from being closed.
      */
-    public boolean tunnelClosed(TunnelCloseEvent e)
+    boolean tunnelClosed(TunnelCloseEvent e)
             throws GuacamoleException;
 
 }

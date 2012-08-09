@@ -28,7 +28,7 @@ public interface AuthenticationSuccessListener {
      *                            exception will also cancel the authentication
      *                            success.
      */
-    public boolean authenticationSucceeded(AuthenticationSuccessEvent e)
+    boolean authenticationSucceeded(AuthenticationSuccessEvent e)
             throws GuacamoleException;
 
 }

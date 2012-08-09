@@ -26,7 +26,7 @@ public interface TunnelConnectListener {
      *                            will also stop the tunnel from being made
      *                            visible to the session.
      */
-    public boolean tunnelConnected(TunnelConnectEvent e)
+    boolean tunnelConnected(TunnelConnectEvent e)
             throws GuacamoleException;
 
 }

@@ -23,7 +23,7 @@ public interface AuthenticationFailureListener  {
      *                            throwing an exception will NOT cause the
      *                            authentication failure to be canceled.
      */
-    public void authenticationFailed(AuthenticationFailureEvent e)
+    void authenticationFailed(AuthenticationFailureEvent e)
             throws GuacamoleException;
 
 }
