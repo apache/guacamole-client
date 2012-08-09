@@ -31,7 +31,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 /**
  * Simple HttpServlet which outputs XML containing a list of all authorized
  * configurations for the current user.
- * 
+ *
  * @author Michael Jumper
  */
 public class ConfigurationList extends AuthenticatingHttpServlet {
@@ -44,12 +44,12 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
-        
+
         // Write XML
         response.setHeader("Content-Type", "text/xml");
         PrintWriter out = response.getWriter();
         out.println("<configs>");
-        
+
         for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
 
             GuacamoleConfiguration config = entry.getValue();

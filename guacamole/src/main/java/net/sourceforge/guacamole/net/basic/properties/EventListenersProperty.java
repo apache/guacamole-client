@@ -27,7 +27,7 @@ import net.sourceforge.guacamole.properties.GuacamoleProperty;
 /**
  * A GuacamoleProperty whose value is a comma-separated list of class names,
  * where each class will be used as a listener for events.
- * 
+ *
  * @author Michael Jumper
  */
 public abstract class EventListenersProperty implements GuacamoleProperty<Collection<Class>> {
@@ -41,7 +41,7 @@ public abstract class EventListenersProperty implements GuacamoleProperty<Collec
 
         // Parse list
         String[] classNames = classNameList.split(",[\\s]*");
-        
+
         // Fill list of classes
         Collection<Class> listeners = new ArrayList<Class>();
         try {

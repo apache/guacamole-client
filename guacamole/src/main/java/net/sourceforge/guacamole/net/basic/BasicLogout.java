@@ -27,7 +27,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Logs out the current user by invalidating the associated HttpSession and
  * redirecting the user to the login page.
- * 
+ *
  * @author Michael Jumper
  */
 public class BasicLogout extends HttpServlet {

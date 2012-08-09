@@ -29,13 +29,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple dummy AuthenticatingHttpServlet which provides an endpoint for arbitrary
  * authentication requests that do not expect a response.
- * 
+ *
  * @author Michael Jumper
  */
 public class BasicLogin extends AuthenticatingHttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(BasicLogin.class);
-    
+
     @Override
     protected void authenticatedService(
             Map<String, GuacamoleConfiguration> configs,

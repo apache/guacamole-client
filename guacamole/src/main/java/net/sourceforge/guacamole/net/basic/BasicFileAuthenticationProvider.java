@@ -48,13 +48,13 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * Authenticates users against a static list of username/password pairs.
  * Each username/password may be associated with multiple configurations.
  * This list is stored in an XML file which is reread if modified.
- * 
+ *
  * @author Michael Jumper, Michal Kotas
  */
 public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
-    
+
     private long mappingTime;
     private Map<String, AuthInfo> mapping;
 
@@ -83,7 +83,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             throw new GuacamoleException("Missing \"basic-user-mapping\" parameter required for basic login.");
 
         logger.info("Reading user mapping file: {}", mapFile);
-        
+
         // Parse document
         try {
 
@@ -132,7 +132,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         // If no mapping available, report as such
         if (mapping == null)
             throw new GuacamoleException("User mapping could not be read.");
-        
+
         // Validate and return info for given user and pass
         AuthInfo info = mapping.get(credentials.getUsername());
         if (info != null && info.validate(credentials.getUsername(), credentials.getPassword()))
@@ -297,7 +297,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                     }
 
                     break;
-                    
+
                 case CONNECTION:
 
                     if (localName.equals("connection")) {
@@ -305,7 +305,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                         return;
                     }
 
-                    break;                
+                    break;
 
                 case PROTOCOL:
 
@@ -400,7 +400,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                         currentConnection = attributes.getValue("name");
                         if (currentConnection == null)
                             throw new SAXException("Attribute \"name\" required for connection tag.");
-                        
+
                         // Next state
                         state = State.CONNECTION;
                         return;
@@ -410,7 +410,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                         // Associate protocol with default connection
                         currentConnection = "DEFAULT";
-                        
+
                         // Next state
                         state = State.DEFAULT_CONNECTION_PROTOCOL;
                         return;
@@ -420,7 +420,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
                         // Associate parameter with default connection
                         currentConnection = "DEFAULT";
-                        
+
                         currentParameter = attributes.getValue("name");
                         if (currentParameter == null)
                             throw new SAXException("Attribute \"name\" required for param tag.");
@@ -431,7 +431,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                     }
 
                     break;
-                    
+
                 case CONNECTION:
 
                     if (localName.equals("protocol")) {
@@ -451,7 +451,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                         return;
                     }
 
-                    break;                   
+                    break;
 
             }
 
@@ -463,7 +463,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         public void characters(char[] ch, int start, int length) throws SAXException {
 
             String str = new String(ch, start, length);
-   
+
             switch (state) {
 
                 case PROTOCOL:
@@ -479,7 +479,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
                     current.getConfiguration(currentConnection)
                             .setParameter(currentParameter, str);
                     return;
-                
+
             }
 
             if (str.trim().length() != 0)

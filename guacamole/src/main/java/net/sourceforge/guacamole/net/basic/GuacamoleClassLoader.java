@@ -54,18 +54,18 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 /**
  * A ClassLoader implementation which finds classes within a configurable
  * directory. This directory is set within guacamole.properties.
- * 
+ *
  * @author Michael Jumper
  */
 public class GuacamoleClassLoader extends ClassLoader {
-    
+
     private URLClassLoader classLoader = null;
 
     private static GuacamoleException exception = null;
     private static GuacamoleClassLoader instance = null;
-    
+
     static {
-        
+
         try {
             // Attempt to create singleton classloader which loads classes from
             // all .jar's in the lib directory defined in guacamole.properties
@@ -80,12 +80,12 @@ public class GuacamoleClassLoader extends ClassLoader {
 
             });
         }
-        
+
         catch (PrivilegedActionException e) {
             // On error, record exception
             exception = (GuacamoleException) e.getException();
         }
-        
+
     }
 
     private GuacamoleClassLoader(File libDirectory) throws GuacamoleException {
@@ -93,37 +93,37 @@ public class GuacamoleClassLoader extends ClassLoader {
         // If no directory provided, just direct requests to parent classloader
         if (libDirectory == null)
             return;
-        
+
         // Validate directory is indeed a directory
         if (!libDirectory.isDirectory())
             throw new GuacamoleException(libDirectory + " is not a directory.");
-        
+
         // Get list of URLs for all .jar's in the lib directory
         Collection<URL> jarURLs = new ArrayList<URL>();
         for (File file : libDirectory.listFiles(new FilenameFilter() {
 
             @Override
             public boolean accept(File dir, String name) {
-                
+
                 // If it ends with .jar, accept the file
                 return name.endsWith(".jar");
-                
+
             }
 
         })) {
 
             try {
-                
+
                 // Add URL for the .jar to the jar URL list
                 jarURLs.add(file.toURI().toURL());
-                
+
             }
             catch (MalformedURLException e) {
                 throw new GuacamoleException(e);
             }
-                
+
         }
-        
+
         // Set delegate classloader to new URLClassLoader which loads from the
         // .jars found above.
 
@@ -132,22 +132,22 @@ public class GuacamoleClassLoader extends ClassLoader {
             jarURLs.toArray(urls),
             getClass().getClassLoader()
         );
-        
+
     }
 
     /**
      * Returns an instance of a GuacamoleClassLoader which finds classes
      * within the directory configured in guacamole.properties.
-     * 
+     *
      * @return An instance of a GuacamoleClassLoader.
      * @throws GuacamoleException If no instance could be returned due to an
      *                            error.
      */
     public static GuacamoleClassLoader getInstance() throws GuacamoleException {
-        
+
         // If instance could not be created, rethrow original exception
         if (exception != null) throw exception;
-        
+
         return instance;
 
     }
@@ -158,7 +158,7 @@ public class GuacamoleClassLoader extends ClassLoader {
         // If no classloader, use default loader
         if (classLoader == null)
             return Class.forName(name);
-        
+
         // Otherwise, delegate
         return classLoader.loadClass(name);
 

@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
  * Simple ServletContextListener which loads a WebSocket tunnel implementation
  * if available, using the Servlet 3.0 API to dynamically load and install
  * the tunnel servlet.
- * 
+ *
  * Note that because Guacamole depends on the Servlet 2.5 API, and 3.0 may
  * not be available or needed if WebSocket is not desired, the 3.0 API is
  * detected and invoked dynamically via reflection.
- * 
+ *
  * @author Michael Jumper
  */
 public class WebSocketSupportLoader implements ServletContextListener {
@@ -55,7 +55,7 @@ public class WebSocketSupportLoader implements ServletContextListener {
             // Attempt to find WebSocket servlet
             Class<Servlet> servlet = (Class<Servlet>) GuacamoleClassLoader.getInstance().findClass(
                 "net.sourceforge.guacamole.net.basic.BasicGuacamoleWebSocketTunnelServlet"
-            ); 
+            );
 
             // Dynamically add servlet IF SERVLET 3.0 API AVAILABLE!
             try {

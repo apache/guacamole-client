@@ -17,7 +17,7 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
  * collection is stored within the HttpSession, and will be reused if available.
  * Each listener is instantiated once per session. Listeners are singleton
  * classes within the session, but not globally.
- * 
+ *
  * @author Michael Jumper
  */
 public class SessionListenerCollection extends AbstractCollection {
@@ -33,19 +33,19 @@ public class SessionListenerCollection extends AbstractCollection {
      * session.
      */
     private Collection listeners;
-    
+
     /**
      * Creates a new SessionListenerCollection which stores all listeners
      * defined in guacamole.properties in the provided session. If listeners
      * are already stored in the provided session, those listeners are used
      * instead.
-     * 
+     *
      * @param session The HttpSession to store listeners within.
      * @throws GuacamoleException If an error occurs while instantiating new
      *                            listeners.
      */
     public SessionListenerCollection(HttpSession session) throws GuacamoleException {
-        
+
         // Pull cached listeners from session
         listeners = (Collection) session.getAttribute(SESSION_ATTRIBUTE);
 
@@ -96,11 +96,11 @@ public class SessionListenerCollection extends AbstractCollection {
 
             // Store listeners for next time
             session.setAttribute(SESSION_ATTRIBUTE, listeners);
-            
+
         }
-        
+
     }
-    
+
     @Override
     public Iterator iterator() {
         return listeners.iterator();
@@ -110,5 +110,5 @@ public class SessionListenerCollection extends AbstractCollection {
     public int size() {
         return listeners.size();
     }
-    
+
 }

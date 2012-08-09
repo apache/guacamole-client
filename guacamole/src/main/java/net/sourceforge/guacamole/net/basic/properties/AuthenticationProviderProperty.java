@@ -27,7 +27,7 @@ import net.sourceforge.guacamole.properties.GuacamoleProperty;
 /**
  * A GuacamoleProperty whose value is the name of a class to use to
  * authenticate users. This class must implement AuthenticationProvider.
- * 
+ *
  * @author Michael Jumper
  */
 public abstract class AuthenticationProviderProperty implements GuacamoleProperty<AuthenticationProvider> {

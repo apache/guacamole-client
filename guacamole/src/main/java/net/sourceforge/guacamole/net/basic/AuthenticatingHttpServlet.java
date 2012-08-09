@@ -27,32 +27,32 @@ import org.slf4j.LoggerFactory;
  * Abstract servlet which provides an authenticatedService() function that
  * is only called if the HTTP request is authenticated, or the current
  * HTTP session has already been authenticated.
- * 
+ *
  * Authorized configurations are retrieved using the authentication provider
  * defined in guacamole.properties. The authentication provider has access
  * to the request and session, in addition to any submitted username and
  * password, in order to authenticate the user.
- * 
+ *
  * All authorized configurations will be stored in the current HttpSession.
- * 
+ *
  * Success and failure are logged.
- * 
+ *
  * @author Michael Jumper
  */
 public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
-    
+
     /**
      * The session attribute holding the map of configurations.
      */
     private static final String CONFIGURATIONS_ATTRIBUTE = "GUAC_CONFIGS";
-    
+
     /**
      * The session attribute holding the credentials authorizing this session.
      */
     private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
-    
+
     /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
@@ -75,16 +75,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     /**
      * Notifies all listeners in the given collection that authentication has
      * failed.
-     * 
+     *
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that failed.
      */
     private void notifyFailed(Collection listeners, Credentials credentials) {
-        
+
         // Build event for auth failure
         AuthenticationFailureEvent event = new AuthenticationFailureEvent(credentials);
-        
+
         // Notify all listeners
         for (Object listener : listeners) {
             try {
@@ -95,13 +95,13 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 logger.error("Error notifying AuthenticationFailureListener.", e);
             }
         }
-        
+
     }
 
     /**
      * Notifies all listeners in the given collection that authentication was
      * successful.
-     * 
+     *
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that succeeded.
@@ -116,10 +116,10 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      */
     private boolean notifySuccess(Collection listeners, Credentials credentials)
             throws GuacamoleException {
-        
+
         // Build event for auth success
         AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(credentials);
-        
+
         // Notify all listeners
         for (Object listener : listeners) {
             if (listener instanceof AuthenticationSuccessListener) {
@@ -127,28 +127,28 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 // Cancel immediately if hook returns false
                 if (!((AuthenticationSuccessListener) listener).authenticationSucceeded(event))
                     return false;
-                
+
             }
         }
 
         return true;
-        
+
     }
-  
+
     /**
      * Sends a predefined, generic error message to the user, along with a
      * "403 - Forbidden" HTTP status code in the response.
-     * 
+     *
      * @param response The response to send the error within.
      * @throws IOException If an error occurs while sending the error.
      */
     private void failAuthentication(HttpServletResponse response) throws IOException {
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
-    
+
     /**
      * Returns the credentials associated with the given session.
-     * 
+     *
      * @param session The session to retrieve credentials from.
      * @return The credentials associated with the given session.
      */
@@ -158,14 +158,14 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     /**
      * Returns the configurations associated with the given session.
-     * 
+     *
      * @param session The session to retrieve configurations from.
      * @return The configurations associated with the given session.
      */
     protected Map<String, GuacamoleConfiguration> getConfigurations(HttpSession session) {
         return (Map<String, GuacamoleConfiguration>) session.getAttribute(CONFIGURATIONS_ATTRIBUTE);
     }
-    
+
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
@@ -188,7 +188,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 failAuthentication(response);
                 return;
             }
-            
+
             // Retrieve username and password from parms
             String username = request.getParameter("username");
             String password = request.getParameter("password");
@@ -207,7 +207,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
 
             /******** HANDLE FAILED AUTHENTICATION ********/
-            
+
             // If error retrieving configs, fail authentication, notify listeners
             catch (GuacamoleException e) {
                 logger.error("Error retrieving configuration(s) for user \"{}\".",
@@ -217,12 +217,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 failAuthentication(response);
                 return;
             }
-            
+
             // If no configs, fail authentication, notify listeners
             if (configs == null) {
                 logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                         request.getRemoteAddr(), credentials.getUsername());
-                
+
                 notifyFailed(listeners, credentials);
                 failAuthentication(response);
                 return;
@@ -230,7 +230,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
 
             /******** HANDLE SUCCESSFUL AUTHENTICATION ********/
-            
+
             try {
 
                 // Otherwise, authentication has been succesful
@@ -243,15 +243,15 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                     failAuthentication(response);
                     return;
                 }
-                
+
             }
             catch (GuacamoleException e) {
-                
+
                 // Cancel authentication success if hook throws exception
                 logger.error("Successful authentication canceled by error in hook.", e);
                 failAuthentication(response);
                 return;
-                
+
             }
 
             // Associate configs and credentials with session

@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Connects users to a tunnel associated with the authorized configuration
  * having the given ID.
- * 
+ *
  * @author Michael Jumper
  */
 public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
@@ -58,16 +58,16 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             Map<String, GuacamoleConfiguration> configs,
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
-        
+
         // If authenticated, respond as tunnel
         tunnelServlet.service(request, response);
-        
+
     }
 
     /**
      * Notifies all listeners in the given collection that a tunnel has been
      * connected.
-     * 
+     *
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that connected the tunnel.
@@ -83,10 +83,10 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
     private boolean notifyConnect(Collection listeners,
             Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
-        
+
         // Build event for auth success
         TunnelConnectEvent event = new TunnelConnectEvent(credentials, tunnel);
-        
+
         // Notify all listeners
         for (Object listener : listeners) {
             if (listener instanceof TunnelConnectListener) {
@@ -94,18 +94,18 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 // Cancel immediately if hook returns false
                 if (!((TunnelConnectListener) listener).tunnelConnected(event))
                     return false;
-                
+
             }
         }
 
         return true;
-        
+
     }
 
     /**
      * Notifies all listeners in the given collection that a tunnel has been
      * closed.
-     * 
+     *
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that closed the tunnel.
@@ -121,10 +121,10 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
     private boolean notifyClose(Collection listeners,
             Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
-        
+
         // Build event for auth success
         TunnelCloseEvent event = new TunnelCloseEvent(credentials, tunnel);
-        
+
         // Notify all listeners
         for (Object listener : listeners) {
             if (listener instanceof TunnelCloseListener) {
@@ -132,12 +132,12 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 // Cancel immediately if hook returns false
                 if (!((TunnelCloseListener) listener).tunnelClosed(event))
                     return false;
-                
+
             }
         }
 
         return true;
-        
+
     }
 
     /**
@@ -150,7 +150,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
         protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
             HttpSession httpSession = request.getSession(true);
-            
+
             // Get listeners
             final SessionListenerCollection listeners;
             try {
@@ -163,10 +163,10 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             // Get ID of connection
             String id = request.getParameter("id");
-            
+
             // Get credentials
             final Credentials credentials = getCredentials(httpSession);
-            
+
             // Get authorized configs
             Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
 
@@ -180,7 +180,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 logger.warn("Configuration id={} not found.", id);
                 throw new GuacamoleSecurityException("Requested configuration is not authorized.");
             }
-            
+
             logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
 
             // Configure and connect socket
@@ -201,12 +201,12 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                     // Only close if not canceled
                     if (!notifyClose(listeners, credentials, this))
                         throw new GuacamoleException("Tunnel close canceled by listener.");
-                    
+
                     // Close if no exception due to listener
                     super.close();
-                    
+
                 }
-                
+
             };
 
             // Notify listeners about connection
@@ -214,7 +214,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 logger.info("Connection canceled by listener.");
                 return null;
             }
-            
+
             return tunnel;
 
         }

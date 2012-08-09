@@ -23,7 +23,7 @@ import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
 
 /**
  * Properties used by the default Guacamole web application.
- * 
+ *
  * @author Michael Jumper
  */
 public class BasicGuacamoleProperties {
