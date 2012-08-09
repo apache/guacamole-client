@@ -61,7 +61,7 @@ public interface AuthenticationProvider {
      * @throws GuacamoleException If an error occurs while retrieving
      *                            configurations.
      */
-    public Map<String, GuacamoleConfiguration>
+    Map<String, GuacamoleConfiguration>
             getAuthorizedConfigurations(Credentials credentials)
             throws GuacamoleException;
 
