@@ -22,7 +22,7 @@ public class AuthenticationFailureEvent implements CredentialEvent {
      *
      * @param credentials The credentials which failed authentication.
      */
-    public AuthenticationFailureEvent(Credentials credentials) {
+    public AuthenticationFailureEvent(final Credentials credentials) {
         this.credentials = credentials;
     }
 

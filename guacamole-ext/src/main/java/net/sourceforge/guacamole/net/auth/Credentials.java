@@ -88,7 +88,7 @@ public class Credentials implements Serializable {
      * @param password The password to associate with this username/password
      *                 pair.
      */
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -106,7 +106,7 @@ public class Credentials implements Serializable {
      * @param username The username to associate with this username/password
      *                 pair.
      */
-    public void setUsername(String username) {
+    public void setUsername(final String username) {
         this.username = username;
     }
 
@@ -124,7 +124,7 @@ public class Credentials implements Serializable {
      * @param request  The HttpServletRequest to associated with this set of
      *                 credentials.
      */
-    public void setRequest(HttpServletRequest request) {
+    public void setRequest(final HttpServletRequest request) {
         this.request = request;
     }
 
@@ -142,7 +142,7 @@ public class Credentials implements Serializable {
      * @param session The HttpSession to associated with this set of
      *                credentials.
      */
-    public void setSession(HttpSession session) {
+    public void setSession(final HttpSession session) {
         this.session = session;
     }
 
