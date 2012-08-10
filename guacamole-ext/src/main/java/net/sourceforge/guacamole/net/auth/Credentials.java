@@ -52,11 +52,6 @@ import javax.servlet.http.HttpSession;
  */
 public class Credentials implements Serializable {
 
-    /**
-     * The version number of this class, used during serialization.
-     *
-     * @see Serializable
-     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -93,7 +88,7 @@ public class Credentials implements Serializable {
      * @param password The password to associate with this username/password
      *                 pair.
      */
-    public void setPassword(final String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -111,7 +106,7 @@ public class Credentials implements Serializable {
      * @param username The username to associate with this username/password
      *                 pair.
      */
-    public void setUsername(final String username) {
+    public void setUsername(String username) {
         this.username = username;
     }
 
@@ -129,7 +124,7 @@ public class Credentials implements Serializable {
      * @param request  The HttpServletRequest to associated with this set of
      *                 credentials.
      */
-    public void setRequest(final HttpServletRequest request) {
+    public void setRequest(HttpServletRequest request) {
         this.request = request;
     }
 
@@ -147,7 +142,7 @@ public class Credentials implements Serializable {
      * @param session The HttpSession to associated with this set of
      *                credentials.
      */
-    public void setSession(final HttpSession session) {
+    public void setSession(HttpSession session) {
         this.session = session;
     }
 

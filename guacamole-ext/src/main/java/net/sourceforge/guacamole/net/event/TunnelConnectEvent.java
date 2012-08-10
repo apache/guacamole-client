@@ -32,9 +32,7 @@ public class TunnelConnectEvent implements CredentialEvent, TunnelEvent {
      *                    connecting the tunnel.
      * @param tunnel The tunnel being connected.
      */
-    public TunnelConnectEvent(final Credentials credentials,
-            final GuacamoleTunnel tunnel) {
-
+    public TunnelConnectEvent(Credentials credentials, GuacamoleTunnel tunnel) {
         this.credentials = credentials;
         this.tunnel = tunnel;
     }

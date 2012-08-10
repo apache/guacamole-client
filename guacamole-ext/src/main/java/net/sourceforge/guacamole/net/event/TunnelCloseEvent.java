@@ -32,9 +32,7 @@ public class TunnelCloseEvent implements CredentialEvent, TunnelEvent {
      *                    closing the tunnel.
      * @param tunnel The tunnel being closed.
      */
-    public TunnelCloseEvent(final Credentials credentials,
-            final GuacamoleTunnel tunnel) {
-
+    public TunnelCloseEvent(Credentials credentials, GuacamoleTunnel tunnel) {
         this.credentials = credentials;
         this.tunnel = tunnel;
     }

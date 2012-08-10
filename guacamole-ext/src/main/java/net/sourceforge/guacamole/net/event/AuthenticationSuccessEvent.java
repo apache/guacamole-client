@@ -22,7 +22,7 @@ public class AuthenticationSuccessEvent implements CredentialEvent {
      *
      * @param credentials The credentials which passed authentication.
      */
-    public AuthenticationSuccessEvent(final Credentials credentials) {
+    public AuthenticationSuccessEvent(Credentials credentials) {
         this.credentials = credentials;
     }
 
