@@ -5,7 +5,7 @@
     <groupId>net.sourceforge.guacamole</groupId>
     <artifactId>guacamole-common-js</artifactId>
     <packaging>pom</packaging>
-    <version>0.6.0</version>
+    <version>0.6.1</version>
     <name>guacamole-common-js</name>
     <url>http://guac-dev.org/</url>
 

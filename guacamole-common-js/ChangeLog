@@ -1,3 +1,15 @@
+2012-08-11 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Improve documentation
+
+2012-08-02 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fix keyboard event handling
+
+2012-08-01 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implement absolute touch device emulation
+
 2012-05-04 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Improved iPad and touch device support
