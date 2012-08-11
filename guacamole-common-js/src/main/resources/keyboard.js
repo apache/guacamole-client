@@ -35,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 /**
@@ -60,9 +63,6 @@ Guacamole.Keyboard = function(element) {
      * 
      * @event
      * @param {Number} keysym The keysym of the key being pressed.
-     * @returns {Boolean} true if the originating event of this keypress should
-     *                    be allowed through to the browser, false or undefined
-     *                    otherwise.
      */
     this.onkeydown = null;
 
@@ -72,9 +72,6 @@ Guacamole.Keyboard = function(element) {
      * 
      * @event
      * @param {Number} keysym The keysym of the key being released.
-     * @returns {Boolean} true if the originating event of this key release 
-     *                    should be allowed through to the browser, false or
-     *                    undefined otherwise.
      */
     this.onkeyup = null;
 
@@ -336,9 +333,7 @@ Guacamole.Keyboard = function(element) {
 
         // Send key event
         if (keysym != null && guac_keyboard.onkeydown)
-            return guac_keyboard.onkeydown(keysym) != false;
-        
-        return true;
+            guac_keyboard.onkeydown(keysym);
 
     }
 
@@ -350,9 +345,7 @@ Guacamole.Keyboard = function(element) {
 
         // Send key event
         if (keysym != null && guac_keyboard.onkeyup)
-            return guac_keyboard.onkeyup(keysym) != false;
-
-        return true;
+            guac_keyboard.onkeyup(keysym);
 
     }
 

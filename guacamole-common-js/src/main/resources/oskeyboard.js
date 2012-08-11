@@ -35,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 /**
@@ -50,24 +53,48 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     var on_screen_keyboard = this;
 
+    /**
+     * State of all modifiers. This is the bitwise OR of all active modifier
+     * values.
+     * 
+     * @private
+     */
+    var modifiers = 0;
+
     var scaledElements = [];
     
     var modifiers = {};
     var currentModifier = 1;
 
-    // Function for adding a class to an element
+    /**
+     * Adds a class to an element.
+     * 
+     * @private
+     * @function
+     * @param {Element} element The element to add a class to.
+     * @param {String} classname The name of the class to add.
+     */
     var addClass;
 
-    // Function for removing a class from an element
+    /**
+     * Removes a class from an element.
+     * 
+     * @private
+     * @function
+     * @param {Element} element The element to remove a class from.
+     * @param {String} classname The name of the class to remove.
+     */
     var removeClass;
 
     // If Node.classList is supported, implement addClass/removeClass using that
     if (Node.classList) {
 
+        /** @ignore */
         addClass = function(element, classname) {
             element.classList.add(classname);
         };
         
+        /** @ignore */
         removeClass = function(element, classname) {
             element.classList.remove(classname);
         };
@@ -77,6 +104,7 @@ Guacamole.OnScreenKeyboard = function(url) {
     // Otherwise, implement own
     else {
 
+        /** @ignore */
         addClass = function(element, classname) {
 
             // Simply add new class
@@ -84,6 +112,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
         };
         
+        /** @ignore */
         removeClass = function(element, classname) {
 
             // Filter out classes with given name
@@ -315,7 +344,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                             addClass(key_element, "guac-keyboard-pressed");
 
                             // Get current cap based on modifier state
-                            var cap = key.getCap(on_screen_keyboard.modifiers);
+                            var cap = key.getCap(modifiers);
 
                             // Update modifier state
                             if (cap.modifier) {
@@ -325,10 +354,10 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 var modifierFlag = getModifier(cap.modifier);
 
                                 // Toggle modifier state
-                                on_screen_keyboard.modifiers ^= modifierFlag;
+                                modifiers ^= modifierFlag;
 
                                 // Activate modifier if pressed
-                                if (on_screen_keyboard.modifiers & modifierFlag) {
+                                if (modifiers & modifierFlag) {
                                     
                                     addClass(keyboard, modifierClass);
                                     
@@ -370,7 +399,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                         if (key.pressed) {
 
                             // Get current cap based on modifier state
-                            var cap = key.getCap(on_screen_keyboard.modifiers);
+                            var cap = key.getCap(modifiers);
 
                             removeClass(key_element, "guac-keyboard-pressed");
 
@@ -458,17 +487,37 @@ Guacamole.OnScreenKeyboard = function(url) {
     };
 
     /**
-     * State of all modifiers.
+     * Fired whenever the user presses a key on this Guacamole.OnScreenKeyboard.
+     * 
+     * @event
+     * @param {Number} keysym The keysym of the key being pressed.
      */
-    this.modifiers = 0;
-
     this.onkeydown = null;
+
+    /**
+     * Fired whenever the user releases a key on this Guacamole.OnScreenKeyboard.
+     * 
+     * @event
+     * @param {Number} keysym The keysym of the key being released.
+     */
     this.onkeyup   = null;
 
+    /**
+     * Returns the element containing the entire on-screen keyboard.
+     * @returns {Element} The element containing the entire on-screen keyboard.
+     */
     this.getElement = function() {
         return keyboard;
     };
 
+    /**
+     * Resizes all elements within this Guacamole.OnScreenKeyboard such that
+     * the width is close to but does not exceed the specified width. The
+     * height of the keyboard is determined based on the width.
+     * 
+     * @param {Number} width The width to resize this Guacamole.OnScreenKeyboard
+     *                       to, in pixels.
+     */
     this.resize = function(width) {
 
         // Get pixel size of a unit
@@ -484,6 +533,15 @@ Guacamole.OnScreenKeyboard = function(url) {
 
 };
 
+
+/**
+ * Basic representation of a single key of a keyboard. Each key has a set of
+ * caps associated with tuples of modifiers. The cap determins what happens
+ * when a key is pressed, while it is the state of modifier keys that determines
+ * what cap is in effect on any particular key.
+ * 
+ * @constructor
+ */
 Guacamole.OnScreenKeyboard.Key = function() {
 
     var key = this;
@@ -516,8 +574,20 @@ Guacamole.OnScreenKeyboard.Key = function() {
         return key.caps[modifier & key.modifierMask];
     };
 
-}
+};
 
+/**
+ * Basic representation of a cap of a key. The cap is the visible part of a key
+ * and determines the active behavior of a key when pressed. The state of all
+ * modifiers on the keyboard determines the active cap for all keys, thus
+ * each cap is associated with a set of modifiers.
+ * 
+ * @constructor
+ * @param {String} text The text to be displayed within this cap.
+ * @param {Number} keysym The keysym this cap sends when its associated key is
+ *                        pressed or released.
+ * @param {String} modifier The modifier represented by this cap.
+ */
 Guacamole.OnScreenKeyboard.Cap = function(text, keysym, modifier) {
     
     /**
@@ -538,4 +608,4 @@ Guacamole.OnScreenKeyboard.Cap = function(text, keysym, modifier) {
     // Set modifier if provided
     if (modifier) this.modifier = modifier;
     
-}
+};

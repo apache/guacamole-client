@@ -35,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 /**
@@ -104,6 +107,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     /**
      * Reference to this HTTP tunnel.
+     * @private
      */
     var tunnel = this;
 
@@ -142,6 +146,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
          * Converts the given value to a length/string pair for use as an
          * element in a Guacamole instruction.
          * 
+         * @private
          * @param value The value to convert.
          * @return {String} The converted value. 
          */
@@ -484,17 +489,20 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     /**
      * Reference to this WebSocket tunnel.
+     * @private
      */
     var tunnel = this;
 
     /**
      * The WebSocket used by this tunnel.
+     * @private
      */
     var socket = null;
 
     /**
      * The WebSocket protocol corresponding to the protocol used for the current
      * location.
+     * @private
      */
     var ws_protocol = {
         "http:":  "ws:",
@@ -568,6 +576,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
          * Converts the given value to a length/string pair for use as an
          * element in a Guacamole instruction.
          * 
+         * @private
          * @param value The value to convert.
          * @return {String} The converted value. 
          */
@@ -700,23 +709,27 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
     /**
      * Reference to this chained tunnel.
+     * @private
      */
     var chained_tunnel = this;
 
     /**
      * The currently wrapped tunnel, if any.
+     * @private
      */
     var current_tunnel = null;
 
     /**
      * Data passed in via connect(), to be used for
      * wrapped calls to other tunnels' connect() functions.
+     * @private
      */
     var connect_data;
 
     /**
      * Array of all tunnels passed to this ChainedTunnel through the
      * constructor arguments.
+     * @private
      */
     var tunnels = [];
 
@@ -725,7 +738,10 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         tunnels.push(arguments[i]);
 
     /**
-     * Sets the current tunnel
+     * Sets the current tunnel.
+     * 
+     * @private
+     * @param {Guacamole.Tunnel} tunnel The tunnel to set as the current tunnel.
      */
     function attach(tunnel) {
 

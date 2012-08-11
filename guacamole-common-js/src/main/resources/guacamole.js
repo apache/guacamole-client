@@ -36,7 +36,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 
@@ -71,6 +74,7 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Translation from Guacamole protocol line caps to Layer line caps.
+     * @private
      */
     var lineCap = {
         0: "butt",
@@ -80,6 +84,7 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Translation from Guacamole protocol line caps to Layer line caps.
+     * @private
      */
     var lineJoin = {
         0: "bevel",
@@ -175,11 +180,27 @@ Guacamole.Client = function(tunnel) {
 
     }
 
-    guac_client.getDisplay = function() {
+    /**
+     * Returns an element containing the display of this Guacamole.Client.
+     * Adding the element returned by this function to an element in the body
+     * of a document will cause the client's display to be visible.
+     * 
+     * @return {Element} An element containing ths display of this
+     *                   Guacamole.Client.
+     */
+    this.getDisplay = function() {
         return bounds;
     };
 
-    guac_client.sendKeyEvent = function(pressed, keysym) {
+    /**
+     * Sends a key event having the given properties as if the user
+     * pressed or released a key.
+     * 
+     * @param {Boolean} pressed Whether the key is pressed (true) or released
+     *                          (false).
+     * @param {Number} keysym The keysym of the key being pressed or released.
+     */
+    this.sendKeyEvent = function(pressed, keysym) {
         // Do not send requests if not connected
         if (!isConnected())
             return;
@@ -187,7 +208,14 @@ Guacamole.Client = function(tunnel) {
         tunnel.sendMessage("key", keysym, pressed);
     };
 
-    guac_client.sendMouseState = function(mouseState) {
+    /**
+     * Sends a mouse event having the properties provided by the given mouse
+     * state.
+     * 
+     * @param {Guacamole.Mouse.State} mouseState The state of the mouse to send
+     *                                           in the mouse event.
+     */
+    this.sendMouseState = function(mouseState) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -211,7 +239,12 @@ Guacamole.Client = function(tunnel) {
         tunnel.sendMessage("mouse", Math.floor(mouseState.x), Math.floor(mouseState.y), buttonMask);
     };
 
-    guac_client.setClipboard = function(data) {
+    /**
+     * Sets the clipboard of the remote client to the given text data.
+     * 
+     * @param {String} data The data to send as the clipboard contents.
+     */
+    this.setClipboard = function(data) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -220,11 +253,38 @@ Guacamole.Client = function(tunnel) {
         tunnel.sendMessage("clipboard", data);
     };
 
-    // Handlers
-    guac_client.onstatechange = null;
-    guac_client.onname = null;
-    guac_client.onerror = null;
-    guac_client.onclipboard = null;
+    /**
+     * Fired whenever the state of this Guacamole.Client changes.
+     * 
+     * @event
+     * @param {Number} state The new state of the client.
+     */
+    this.onstatechange = null;
+
+    /**
+     * Fired when the remote client sends a name update.
+     * 
+     * @event
+     * @param {String} name The new name of this client.
+     */
+    this.onname = null;
+
+    /**
+     * Fired when an error is reported by the remote client, and the connection
+     * is being closed.
+     * 
+     * @event
+     * @param {String} error A human-readable description of the error.
+     */
+    this.onerror = null;
+
+    /**
+     * Fired when the clipboard of the remote client is changing.
+     * 
+     * @event
+     * @param {String} data The new text data of the remote clipboard.
+     */
+    this.onclipboard = null;
 
     // Layers
     function getBufferLayer(index) {
@@ -281,6 +341,7 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Handlers for all defined layer properties.
+     * @private
      */
     var layerPropertyHandlers = {
 
@@ -293,6 +354,7 @@ Guacamole.Client = function(tunnel) {
     /**
      * Handlers for all instruction opcodes receivable by a Guacamole protocol
      * client.
+     * @private
      */
     var instructionHandlers = {
 
@@ -793,7 +855,7 @@ Guacamole.Client = function(tunnel) {
     };
 
 
-    guac_client.disconnect = function() {
+    this.disconnect = function() {
 
         // Only attempt disconnection not disconnected.
         if (currentState != STATE_DISCONNECTED
@@ -814,7 +876,7 @@ Guacamole.Client = function(tunnel) {
 
     };
     
-    guac_client.connect = function(data) {
+    this.connect = function(data) {
 
         setState(STATE_CONNECTING);
 
@@ -834,7 +896,7 @@ Guacamole.Client = function(tunnel) {
         setState(STATE_WAITING);
     };
 
-    guac_client.scale = function(scale) {
+    this.scale = function(scale) {
 
         display.style.transform =
         display.style.WebkitTransform =
@@ -852,7 +914,7 @@ Guacamole.Client = function(tunnel) {
 
     };
 
-    guac_client.getScale = function() {
+    this.getScale = function() {
         return displayScale;
     };
 
@@ -901,7 +963,7 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * @param {Number} width The new width to assign to this Layer.
      * @param {Number} height The new height to assign to this Layer.
      */
-    layer_container.resize = function(width, height) {
+    this.resize = function(width, height) {
 
         // Resize layer
         layer.resize(width, height);
@@ -916,7 +978,7 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * Returns the Layer contained within this LayerContainer.
      * @returns {Guacamole.Layer} The Layer contained within this LayerContainer.
      */
-    layer_container.getLayer = function() {
+    this.getLayer = function() {
         return layer;
     };
 
@@ -924,17 +986,19 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * Returns the element containing the Layer within this LayerContainer.
      * @returns {Element} The element containing the Layer within this LayerContainer.
      */
-    layer_container.getElement = function() {
+    this.getElement = function() {
         return div;
     };
 
     /**
      * The translation component of this LayerContainer's transform.
+     * @private
      */
     var translate = "translate(0px, 0px)"; // (0, 0)
 
     /**
      * The arbitrary matrix component of this LayerContainer's transform.
+     * @private
      */
     var matrix = "matrix(1, 0, 0, 1, 0, 0)"; // Identity
 
@@ -945,7 +1009,7 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * @param {Number} x The X coordinate to move to.
      * @param {Number} y The Y coordinate to move to.
      */
-    layer_container.translate = function(x, y) {
+    this.translate = function(x, y) {
 
         // Generate translation
         translate = "translate("
@@ -974,7 +1038,7 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * @param {Number} e The fifth value in the affine transform's matrix.
      * @param {Number} f The sixth value in the affine transform's matrix.
      */
-    layer_container.transform = function(a, b, c, d, e, f) {
+    this.transform = function(a, b, c, d, e, f) {
 
         // Generate matrix transformation
         matrix =

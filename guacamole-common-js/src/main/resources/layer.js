@@ -35,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 /**
@@ -85,6 +88,7 @@ Guacamole.Layer = function(width, height) {
     /**
      * Whether a new path should be started with the next path drawing
      * operations.
+     * @private
      */
     var pathClosed = true;
 
@@ -94,6 +98,8 @@ Guacamole.Layer = function(width, height) {
      * Note that there will ALWAYS be one element on the stack, but that
      * element is not exposed. It is only used to reset the layer to its
      * initial state.
+     * 
+     * @private
      */
     var stackSize = 0;
 
@@ -323,6 +329,7 @@ Guacamole.Layer = function(width, height) {
      * as whether the task is blocked depends completely on whether the
      * other layer is currently ready.
      * 
+     * @private
      * @param {Guacamole.Layer} otherLayer The other layer which must be blocked
      *                          until this task completes.
      * @param {function} handler The function to call when possible.

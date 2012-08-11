@@ -35,7 +35,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Guacamole namespace
+/**
+ * Namespace for all Guacamole JavaScript objects.
+ * @namespace
+ */
 var Guacamole = Guacamole || {};
 
 /**
@@ -103,6 +106,7 @@ Guacamole.Mouse = function(element) {
     /**
      * Counter of mouse events to ignore. This decremented by mousemove, and
      * while non-zero, mouse events will have no effect.
+     * @private
      */
     var ignore_mouse = 0;
 
