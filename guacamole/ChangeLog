@@ -1,3 +1,12 @@
+2012-08-11 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Migrate to guacamole-common 0.6.1
+	* Migrate to guacamole-common-js 0.6.1
+
+2012-06-03 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fix clipboard blur bug
+
 2012-05-04 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Touch-specific menus and keyboard support
