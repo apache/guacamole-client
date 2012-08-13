@@ -88,7 +88,7 @@
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.6.0</version>
+            <version>0.6.1</version>
         </dependency>
 
         <!-- Guacamole JavaScript API -->
