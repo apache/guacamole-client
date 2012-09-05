@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.basic.properties;
+package org.glyptodon.guacamole.net.basic.properties;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -19,7 +19,7 @@ package net.sourceforge.guacamole.net.basic.properties;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
+import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 
 /**
  * Properties used by the default Guacamole web application.

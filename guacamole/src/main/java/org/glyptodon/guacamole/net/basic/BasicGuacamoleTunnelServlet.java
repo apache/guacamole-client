@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -25,21 +25,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.InetGuacamoleSocket;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.net.GuacamoleTunnel;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
-import net.sourceforge.guacamole.net.event.TunnelCloseEvent;
-import net.sourceforge.guacamole.net.event.TunnelConnectEvent;
-import net.sourceforge.guacamole.net.event.listener.TunnelCloseListener;
-import net.sourceforge.guacamole.net.event.listener.TunnelConnectListener;
-import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
-import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.net.InetGuacamoleSocket;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.basic.event.SessionListenerCollection;
+import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
+import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
+import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
+import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
+import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
+import org.glyptodon.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

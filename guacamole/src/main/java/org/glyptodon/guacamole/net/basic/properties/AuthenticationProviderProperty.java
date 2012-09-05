@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic.properties;
+package org.glyptodon.guacamole.net.basic.properties;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -19,10 +19,10 @@ package net.sourceforge.guacamole.net.basic.properties;
  */
 
 import java.lang.reflect.InvocationTargetException;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
-import net.sourceforge.guacamole.net.basic.GuacamoleClassLoader;
-import net.sourceforge.guacamole.properties.GuacamoleProperty;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
+import org.glyptodon.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is the name of a class to use to

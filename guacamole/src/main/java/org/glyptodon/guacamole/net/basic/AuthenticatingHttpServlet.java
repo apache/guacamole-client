@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -9,17 +9,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import net.sourceforge.guacamole.net.event.AuthenticationFailureEvent;
-import net.sourceforge.guacamole.net.event.AuthenticationSuccessEvent;
-import net.sourceforge.guacamole.net.event.listener.AuthenticationFailureListener;
-import net.sourceforge.guacamole.net.event.listener.AuthenticationSuccessListener;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.basic.event.SessionListenerCollection;
+import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import org.glyptodon.guacamole.net.event.AuthenticationFailureEvent;
+import org.glyptodon.guacamole.net.event.AuthenticationSuccessEvent;
+import org.glyptodon.guacamole.net.event.listener.AuthenticationFailureListener;
+import org.glyptodon.guacamole.net.event.listener.AuthenticationSuccessListener;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

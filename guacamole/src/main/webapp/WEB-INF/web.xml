@@ -30,14 +30,14 @@
 
     <!-- Automatically detect and load WebSocket support -->
     <listener>
-        <listener-class>net.sourceforge.guacamole.net.basic.WebSocketSupportLoader</listener-class>
+        <listener-class>org.glyptodon.guacamole.net.basic.WebSocketSupportLoader</listener-class>
     </listener>
     
     <!-- Basic Login Servlet -->
     <servlet>
         <description>Login servlet.</description>
         <servlet-name>Login</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogin</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicLogin</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
@@ -48,7 +48,7 @@
     <servlet>
         <description>Logout servlet.</description>
         <servlet-name>Logout</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogout</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicLogout</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>
@@ -59,7 +59,7 @@
     <servlet>
         <description>Configuration list servlet.</description>
         <servlet-name>Configs</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.ConfigurationList</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.ConfigurationList</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Configs</servlet-name>
@@ -70,7 +70,7 @@
     <servlet>
         <description>Tunnel servlet.</description>
         <servlet-name>Tunnel</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicGuacamoleTunnelServlet</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicGuacamoleTunnelServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Tunnel</servlet-name>

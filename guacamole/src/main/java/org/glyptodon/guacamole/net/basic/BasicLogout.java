@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop

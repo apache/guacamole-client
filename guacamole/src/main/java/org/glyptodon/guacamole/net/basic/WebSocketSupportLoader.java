@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -24,7 +24,7 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import net.sourceforge.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
             // Attempt to find WebSocket servlet
             Class<Servlet> servlet = (Class<Servlet>) GuacamoleClassLoader.getInstance().findClass(
-                "net.sourceforge.guacamole.net.basic.BasicGuacamoleWebSocketTunnelServlet"
+                "org.glyptodon.guacamole.net.basic.BasicGuacamoleWebSocketTunnelServlet"
             );
 
             // Dynamically add servlet IF SERVLET 3.0 API AVAILABLE!

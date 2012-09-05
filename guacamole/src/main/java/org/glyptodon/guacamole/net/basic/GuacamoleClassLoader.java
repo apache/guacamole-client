@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -47,9 +47,9 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * A ClassLoader implementation which finds classes within a configurable

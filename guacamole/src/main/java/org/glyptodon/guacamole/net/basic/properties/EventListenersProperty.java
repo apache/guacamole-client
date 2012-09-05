@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic.properties;
+package org.glyptodon.guacamole.net.basic.properties;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -20,9 +20,9 @@ package net.sourceforge.guacamole.net.basic.properties;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.basic.GuacamoleClassLoader;
-import net.sourceforge.guacamole.properties.GuacamoleProperty;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
+import org.glyptodon.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is a comma-separated list of class names,

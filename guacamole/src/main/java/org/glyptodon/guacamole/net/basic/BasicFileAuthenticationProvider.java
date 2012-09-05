@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -20,7 +20,7 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.BufferedReader;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,11 +30,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;

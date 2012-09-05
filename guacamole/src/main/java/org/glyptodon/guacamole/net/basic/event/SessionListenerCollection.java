@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic.event;
+package org.glyptodon.guacamole.net.basic.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.AbstractCollection;
@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * A collection which iterates over instances of all listeners defined in
