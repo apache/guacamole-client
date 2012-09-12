@@ -33,6 +33,7 @@ var GuacamoleUI = {
     "touchMenu"   : document.getElementById("touchMenu"),
     "logo"        : document.getElementById("status-logo"),
     "eventTarget" : document.getElementById("eventTarget"),
+    "download"    : document.getElementById("download"),
 
     "buttons": {
 
@@ -755,6 +756,59 @@ GuacamoleUI.attach = function(guac) {
     guac.onclipboard = function(data) {
         GuacamoleUI.clipboard.value = data;
         GuacamoleUI.touchClipboard.value = data;
+    };
+
+    // Resource handler
+    guac.onresource = function(index, uri, mimetypes) {
+
+        // Get tunnel UUID
+        var uuid = guac.getTunnel().getUUID();
+
+        // If UUID not defined, there is currently no way to get resource
+        // content. Reject the resource.
+        if (!uuid) {
+            guac.rejectResource(index);
+            return;
+        }
+
+        // File resource
+        if (uri.substring(0, 7) == "file://") {
+
+            // Get name from URI
+            var name = uri.substring(7);
+
+            // Prompt user for download
+            var download = window.confirm(
+                  "The remote desktop you are connected to is offering to send "
+                + "a file (" + name + "). Would you like to accept and "
+                + "download it?"
+            );
+
+            // Accept file
+            if (download) {
+
+                // Accept file resource
+                guac.acceptResource(index, mimetypes[0]);
+            
+                // Start download
+                GuacamoleUI.download.src =
+                    "resource?index=" + index
+                          + "&name="  + name
+                          + "&uuid="  + uuid;
+                    
+            }
+
+            // User rejected resource
+            else
+                guac.rejectResource(index);
+
+
+        }
+
+        // Otherwise, reject (unknown URI)
+        else
+            guac.rejectResource(index);
+
     };
 
     GuacamoleUI.keyboard.onkeydown = function(keysym) {

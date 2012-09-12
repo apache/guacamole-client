@@ -298,3 +298,6 @@ div#touchClipboardDiv textarea {
     width: 100%;
 }
 
+iframe#download {
+    display: none;
+}
