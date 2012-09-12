@@ -77,4 +77,15 @@
         <url-pattern>/tunnel</url-pattern>
     </servlet-mapping>
 
+    <!-- Guacamole Resource Servlet -->
+    <servlet>
+        <description>Resource servlet.</description>
+        <servlet-name>Resource</servlet-name>
+        <servlet-class>org.glyptodon.guacamole.net.basic.resource.BasicResource</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Resource</servlet-name>
+        <url-pattern>/resource</url-pattern>
+    </servlet-mapping>
+
 </web-app>
