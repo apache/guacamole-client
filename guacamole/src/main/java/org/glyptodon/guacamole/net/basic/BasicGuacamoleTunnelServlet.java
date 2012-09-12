@@ -27,18 +27,21 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.net.InetGuacamoleSocket;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.io.GuacamoleWriter;
+import org.glyptodon.guacamole.net.GuacamoleResourcePipe;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.basic.event.SessionListenerCollection;
 import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
 import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
 import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
 import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.protocol.GuacamoleInstruction;
 import org.glyptodon.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -217,6 +220,88 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             return tunnel;
 
+        }
+
+        @Override
+        protected void handleClientInstruction(GuacamoleTunnel tunnel,
+            GuacamoleInstruction instruction, GuacamoleWriter writer)
+            throws GuacamoleException {
+
+            switch (instruction.getOperation()) {
+
+                // Intercept reject
+                case REJECT: {
+
+                    // Get resource tunnel
+                    GuacamoleResourcePipe resource = tunnel.getResourcePipe(
+                            Integer.parseInt(instruction.getArgs()[0]));
+
+                    // Detach resource
+                    tunnel.detachResourcePipe(resource);
+                    break;
+
+                }
+
+            }
+            
+            // Pass through all client-to-server instructions
+            super.handleClientInstruction(tunnel, instruction, writer);
+            
+        }
+
+        @Override
+        protected void handleServerInstruction(GuacamoleTunnel tunnel,
+            GuacamoleInstruction instruction, GuacamoleWriter writer)
+            throws GuacamoleException {
+
+            switch (instruction.getOperation()) {
+
+                // Intercept resource instructions, handle on behalf of client.
+                case RESOURCE: {
+
+                    // Allocate resource
+                    GuacamoleResourcePipe resource = new GuacamoleResourcePipe(
+                            Integer.parseInt(instruction.getArgs()[0]));
+
+                    // Attach resource
+                    tunnel.attachResourcePipe(resource);
+
+                    // Pass through to client
+                    super.handleServerInstruction(tunnel, instruction, writer);
+                    break;
+                }
+
+                // Intercept data instructions, appending received data to
+                // allocated resources.
+                case DATA: {
+
+                    // Get resource tunnel
+                    GuacamoleResourcePipe resource = tunnel.getResourcePipe(
+                            Integer.parseInt(instruction.getArgs()[0]));
+
+                    // Write data
+                    resource.write(instruction.getArgs()[1]);
+                    break;
+                }
+
+                // Intercept end instructions, closing associated resources.
+                case END: {
+
+                    // Get resource tunnel
+                    GuacamoleResourcePipe resource = tunnel.getResourcePipe(
+                            Integer.parseInt(instruction.getArgs()[0]));
+
+                    // End of stream
+                    resource.close();
+                    break;
+                }
+
+                // Pass through all other instructions.
+                default:
+                    super.handleServerInstruction(tunnel, instruction, writer);
+                
+            }
+            
         }
 
     };
