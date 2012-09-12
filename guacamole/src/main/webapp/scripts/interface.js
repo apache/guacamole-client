@@ -62,6 +62,9 @@ var GuacamoleUI = {
 
 };
 
+// Supported mimetypes
+GuacamoleUI.supportedAudio = {};
+
 // Constant UI initialization and behavior
 (function() {
 
@@ -485,6 +488,33 @@ var GuacamoleUI = {
         GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
     });
 
+    function testAudio(url, mimetype) {
+
+        // If browser says we can't play it, don't try
+        var audio = new Audio();
+        if (!audio.canPlayType(mimetype))
+            return;
+
+        // Otherwise, test
+        audio.src = url;
+
+        // On error, explicitly unsupported
+        audio.addEventListener("error", function() {
+            GuacamoleUI.supportedAudio[mimetype] = false;
+        });
+
+        // On successful play, explicitly supported
+        audio.addEventListener("ended", function() {
+            GuacamoleUI.supportedAudio[mimetype] = true;
+        });
+
+        audio.play();
+
+    }
+
+    testAudio("sounds/silence.mp3", "audio/mpeg");
+    testAudio("sounds/silence.ogg", "audio/ogg");
+
 })();
 
 // Tie UI events / behavior to a specific Guacamole client
@@ -792,9 +822,10 @@ GuacamoleUI.attach = function(guac) {
             
                 // Start download
                 GuacamoleUI.download.src =
-                    "resource?index=" + index
-                          + "&name="  + name
-                          + "&uuid="  + uuid;
+                    "resource?index="    + index
+                          + "&name="     + name
+                          + "&uuid="     + uuid
+                          + "&mimetype=" + mimetypes[0];
                     
             }
 
@@ -802,6 +833,64 @@ GuacamoleUI.attach = function(guac) {
             else
                 guac.rejectResource(index);
 
+
+        }
+
+        // Audio resource
+        else if (uri.substring(0, 8) == "audio://") {
+
+            // Create audio playing object
+            var audio = new Audio();
+            
+            // Determine a supported mimetype
+            var mimetype = null;
+            for (var i=0; i<mimetypes.length; i++) {
+
+                // Don't bother if support was not detected
+                if (GuacamoleUI.supportedAudio[mimetypes[i]] == false)
+                    continue;
+                
+                // If mimetype support explicitly detected, use it
+                if (GuacamoleUI.supportedAudio[mimetypes[i]]) {
+                    mimetype = mimetypes[i];
+                    break;
+                }
+
+                // Get level of support for mimetype
+                var certainty = audio.canPlayType(mimetypes[i]);
+
+                // If likely to have support, use that
+                if (certainty == "probably") {
+                    mimetype = mimetypes[i];
+                    break;
+                }
+
+                // Otherwise, choose if not already chosen, but keep trying
+                else if (certainty == "maybe" && !mimetype)
+                    mimetype = mimetypes[i];
+
+            }
+
+            // If unable to find a mimetype, reject
+            if (!mimetype)
+                guac.rejectResource(index);
+
+            // Otherwise, start playing stream
+            else {
+
+                // Accept file resource
+                guac.acceptResource(index, mimetype);
+            
+                // Play audio stream
+                audio.src = 
+                    "resource?index="    + index
+                          + "&name="     + name
+                          + "&uuid="     + uuid
+                          + "&mimetype=" + mimetype;
+
+                audio.play();
+
+            }
 
         }
 

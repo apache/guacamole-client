@@ -88,4 +88,13 @@
         <url-pattern>/resource</url-pattern>
     </servlet-mapping>
 
+    <mime-mapping>
+        <extension>mp3</extension>
+        <mime-type>audio/mpeg</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>ogg</extension>
+        <mime-type>audio/ogg</mime-type>
+    </mime-mapping>
+
 </web-app>

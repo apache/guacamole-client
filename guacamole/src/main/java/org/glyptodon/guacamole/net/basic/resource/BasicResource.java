@@ -46,6 +46,7 @@ public class BasicResource extends AuthenticatingHttpServlet {
         int index = Integer.parseInt(indexString);
         String name  = request.getParameter("name");
         String tunnelUUID = request.getParameter("uuid");
+        String mimetype = request.getParameter("mimetype");
         
         // Get session
         GuacamoleSession session;
@@ -67,6 +68,9 @@ public class BasicResource extends AuthenticatingHttpServlet {
         // If name provided, provide name in header.
         if (name != null)
             response.setHeader("Content-Disposition", "attachment; filename=" + name);
+        
+        // If mimetype provided, reflect back
+        response.setContentType(mimetype);
         
         // Get output stream and pipe
         OutputStream out = response.getOutputStream();
