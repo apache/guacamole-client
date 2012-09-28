@@ -63,8 +63,8 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     var scaledElements = [];
     
-    var modifiers = {};
-    var currentModifier = 1;
+    var modifier_masks = {};
+    var next_mask = 1;
 
     /**
      * Adds a class to an element.
@@ -135,17 +135,17 @@ Guacamole.OnScreenKeyboard = function(url) {
 
     // Returns a unique power-of-two value for the modifier with the
     // given name. The same value will be returned for the same modifier.
-    function getModifier(name) {
+    function getModifierMask(name) {
         
-        var value = modifiers[name];
+        var value = modifier_masks[name];
         if (!value) {
 
             // Get current modifier, advance to next
-            value = currentModifier;
-            currentModifier <<= 1;
+            value = next_mask;
+            next_mask <<= 1;
 
             // Store value of this modifier
-            modifiers[name] = value;
+            modifier_masks[name] = value;
 
         }
 
@@ -318,7 +318,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 // list of required modifiers.
                                 var requirements = e.getAttribute("if").split(",");
                                 for (var i=0; i<requirements.length; i++) {
-                                    modifierValue |= getModifier(requirements[i]);
+                                    modifierValue |= getModifierMask(requirements[i]);
                                     addClass(cap_element, "guac-keyboard-requires-" + requirements[i]);
                                     addClass(key_element, "guac-keyboard-uses-" + requirements[i]);
                                 }
@@ -351,13 +351,13 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                                 // Construct classname for modifier
                                 var modifierClass = "guac-keyboard-modifier-" + cap.modifier;
-                                var modifierFlag = getModifier(cap.modifier);
+                                var modifierMask = getModifierMask(cap.modifier);
 
                                 // Toggle modifier state
-                                modifiers ^= modifierFlag;
+                                modifiers ^= modifierMask;
 
                                 // Activate modifier if pressed
-                                if (modifiers & modifierFlag) {
+                                if (modifiers & modifierMask) {
                                     
                                     addClass(keyboard, modifierClass);
                                     
@@ -391,7 +391,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         e.preventDefault();
 
-                    };
+                    }
 
                     function release(e) {
 
@@ -414,7 +414,7 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         e.preventDefault();
 
-                    };
+                    }
 
                     key_element.addEventListener("mousedown", press, true);
                     key_element.addEventListener("touchstart", press, true);
