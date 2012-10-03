@@ -1,3 +1,7 @@
+2012-10-03 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fix NPE in handshake if end-of-stream encountered (ticket #195)
+
 2012-08-09 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Improve documentation
