@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.protocol;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
@@ -86,7 +87,12 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Wait for server args
         GuacamoleInstruction instruction;
         do {
+            
+            // Read instruction, fail if end-of-stream
             instruction = reader.readInstruction();
+            if (instruction == null)
+                throw new GuacamoleServerException("End of stream during initial handshake.");
+            
         } while (instruction.getOperation() != Operation.SERVER_ARGS);
 
         // Build args list off provided names and config
