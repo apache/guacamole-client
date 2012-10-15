@@ -1,3 +1,7 @@
+2012-09-27 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fix variable naming conflict (ticket #191)
+
 2012-08-11 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Improve documentation
