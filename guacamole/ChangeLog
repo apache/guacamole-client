@@ -1,3 +1,8 @@
+2012-10-15 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Migrate to guacamole-common 0.6.2
+	* Migrate to guacamole-common-js 0.6.2
+
 2012-08-11 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Migrate to guacamole-common 0.6.1
