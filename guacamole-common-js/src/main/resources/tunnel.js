@@ -434,12 +434,16 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     }
 
+    /**
+     * Arbitrary integer, unique for each tunnel read request.
+     */
+    var request_id = 0;
 
     function makeRequest() {
 
-        // Download self
+        // Make request, increment request ID
         var xmlhttprequest = new XMLHttpRequest();
-        xmlhttprequest.open("POST", TUNNEL_READ + tunnel_uuid);
+        xmlhttprequest.open("GET", TUNNEL_READ + tunnel_uuid + ":" + (request_id++));
         xmlhttprequest.send(null);
 
         return xmlhttprequest;
