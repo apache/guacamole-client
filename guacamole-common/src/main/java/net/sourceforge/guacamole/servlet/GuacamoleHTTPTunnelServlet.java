@@ -59,6 +59,31 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
     private Logger logger = LoggerFactory.getLogger(GuacamoleHTTPTunnelServlet.class);
 
+    /**
+     * The prefix of the query string which denotes a tunnel read operation.
+     */
+    private static final String READ_PREFIX  = "read:";
+
+    /**
+     * The prefix of the query string which denotes a tunnel write operation.
+     */
+    private static final String WRITE_PREFIX = "write:";
+
+    /**
+     * The length of the read prefix, in characters.
+     */
+    private static final int READ_PREFIX_LENGTH = READ_PREFIX.length();
+
+    /**
+     * The length of the write prefix, in characters.
+     */
+    private static final int WRITE_PREFIX_LENGTH = WRITE_PREFIX.length();
+
+    /**
+     * The length of every tunnel UUID, in characters.
+     */
+    private static final int UUID_LENGTH = 36;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         handleTunnelRequest(request, response);
@@ -151,13 +176,19 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
             }
 
-            // If read operation, call doRead() with tunnel UUID
-            else if(query.startsWith("read:"))
-                doRead(request, response, query.substring(5));
+            // If read operation, call doRead() with tunnel UUID, ignoring any
+            // characters following the tunnel UUID.
+            else if(query.startsWith(READ_PREFIX))
+                doRead(request, response, query.substring(
+                        READ_PREFIX_LENGTH,
+                        READ_PREFIX_LENGTH + UUID_LENGTH));
 
-            // If write operation, call doWrite() with tunnel UUID
-            else if(query.startsWith("write:"))
-                doWrite(request, response, query.substring(6));
+            // If write operation, call doWrite() with tunnel UUID, ignoring any
+            // characters following the tunnel UUID.
+            else if(query.startsWith(WRITE_PREFIX))
+                doWrite(request, response, query.substring(
+                        WRITE_PREFIX_LENGTH,
+                        WRITE_PREFIX_LENGTH + UUID_LENGTH));
 
             // Otherwise, invalid operation
             else
