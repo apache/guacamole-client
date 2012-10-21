@@ -270,6 +270,9 @@ Guacamole.Client = function(tunnel) {
     // No initial buffers
     var buffers = [];
 
+    // No initial parsers
+    var parsers = [];
+
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
             guac_client.onerror(message);
@@ -461,6 +464,21 @@ Guacamole.Client = function(tunnel) {
 
         // Otherwise, retrieve layer from layer container
         return getLayerContainer(index).getLayer();
+
+    }
+
+    function getParser(index) {
+
+        var parser = parsers[index];
+
+        // If parser not yet created, create it, and tie to the
+        // oninstruction handler of the tunnel.
+        if (parser == null) {
+            parser = parsers[index] = new Guacamole.Parser();
+            parser.oninstruction = tunnel.oninstruction;
+        }
+
+        return parser;
 
     }
 
@@ -745,6 +763,11 @@ Guacamole.Client = function(tunnel) {
 
         "name": function(parameters) {
             if (guac_client.onname) guac_client.onname(parameters[0]);
+        },
+
+        "nest": function(parameters) {
+            var parser = getParser(parseInt(parameters[0]));
+            parser.receive(parameters[1]);
         },
 
         "png": function(parameters) {
