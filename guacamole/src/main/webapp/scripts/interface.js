@@ -722,6 +722,11 @@ GuacamoleUI.attach = function(guac) {
         guac.disconnect();
     };
 
+    // Send size events on resize
+    window.onresize = function() {
+        guac.sendSize(window.innerWidth, window.innerHeight);
+    };
+
     // Handle clipboard events
     GuacamoleUI.clipboard.onchange = function() {
 
