@@ -53,6 +53,25 @@ public class GuacamoleInstruction {
      */
     public enum Operation {
 
+
+        /**
+         * Message sent from client to server specifying the optimal or
+         * desired screen size.
+         */
+        CLIENT_SIZE("size"),
+
+        /**
+         * Message sent from client to server specifying which audio mimetypes
+         * are supported.
+         */
+        CLIENT_AUDIO("audio"),
+
+        /**
+         * Message sent from client to server specifying which video mimetypes
+         * are supported.
+         */
+        CLIENT_VIDEO("video"),
+
         /**
          * Message sent from client to server specifying which protocol is
          * to be used.
