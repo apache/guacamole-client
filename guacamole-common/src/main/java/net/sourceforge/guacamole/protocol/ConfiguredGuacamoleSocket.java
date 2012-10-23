@@ -64,7 +64,8 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
     /**
      * Creates a new ConfiguredGuacamoleSocket which uses the given
      * GuacamoleConfiguration to complete the initial protocol handshake over
-     * the given GuacamoleSocket.
+     * the given GuacamoleSocket. A default GuacamoleClientInformation object
+     * is used to provide basic client information.
      *
      * @param socket The GuacamoleSocket to wrap.
      * @param config The GuacamoleConfiguration to use to complete the initial
@@ -74,6 +75,26 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      */
     public ConfiguredGuacamoleSocket(GuacamoleSocket socket,
             GuacamoleConfiguration config) throws GuacamoleException {
+        this(socket, config, new GuacamoleClientInformation());
+    }
+
+
+    /**
+     * Creates a new ConfiguredGuacamoleSocket which uses the given
+     * GuacamoleConfiguration and GuacamoleClientInformation to complete the
+     * initial protocol handshake over the given GuacamoleSocket.
+     *
+     * @param socket The GuacamoleSocket to wrap.
+     * @param config The GuacamoleConfiguration to use to complete the initial
+     *               protocol handshake.
+     * @param info The GuacamoleClientInformation to use to complete the initial
+     *             protocol handshake.
+     * @throws GuacamoleException If an error occurs while completing the
+     *                            initial protocol handshake.
+     */
+    public ConfiguredGuacamoleSocket(GuacamoleSocket socket,
+            GuacamoleConfiguration config,
+            GuacamoleClientInformation info) throws GuacamoleException {
 
         this.socket = socket;
 
@@ -108,6 +129,21 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                 args[i] = "";
 
         }
+
+        // Send size 
+        writer.writeInstruction(
+            new GuacamoleInstruction(
+                Operation.CLIENT_SIZE,
+                Integer.toString(info.getOptimalScreenWidth()),
+                Integer.toString(info.getOptimalScreenHeight())
+            )
+        );
+
+        // Send supported audio formats (STUB)
+        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_AUDIO));
+
+        // Send supported video formats (STUB)
+        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_VIDEO));
 
         // Send args
         writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_CONNECT, args));
