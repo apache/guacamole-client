@@ -832,10 +832,6 @@ Guacamole.Client = function(tunnel) {
                 "data:image/png;base64," + data
             );
 
-            // If received first update, no longer waiting.
-            if (currentState == STATE_WAITING)
-                setState(STATE_CONNECTED);
-
         },
 
         "pop": function(parameters) {
@@ -995,6 +991,10 @@ Guacamole.Client = function(tunnel) {
                     currentTimestamp = timestamp;
                 }
             }
+
+            // If received first update, no longer waiting.
+            if (currentState == STATE_WAITING)
+                setState(STATE_CONNECTED);
 
         },
 
