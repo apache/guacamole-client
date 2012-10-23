@@ -145,7 +145,10 @@
                         // all parameters should be preserved and passed on for
                         // the sake of authentication.
 
-                        var connect_string = window.location.search.substring(1);
+                        var connect_string =
+                            window.location.search.substring(1)
+                            + "&width="  + window.innerWidth
+                            + "&height=" + window.innerHeight;
                         guac.connect(connect_string);
 
                     }
