@@ -148,8 +148,8 @@
                         // Scale width/height to be at least 600x600
                         if (optimal_width < 600 || optimal_height < 600) {
                             var scale = Math.max(600 / optimal_width, 600 / optimal_height);
-                            optimal_width *= scale;
-                            optimal_height *= scale;
+                            optimal_width = Math.floor(optimal_width * scale);
+                            optimal_height = Math.floor(optimal_height * scale);
                         }
 
                         // Get entire query string, and pass to connect().

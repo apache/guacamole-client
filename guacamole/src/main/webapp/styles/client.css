@@ -262,7 +262,7 @@ textarea#eventTarget {
 div#touchMenu {
 
     position: absolute;
-    visibility: hidden;
+    display: none;
     z-index: 4;
     
     white-space: pre;

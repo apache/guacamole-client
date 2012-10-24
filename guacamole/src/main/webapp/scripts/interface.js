@@ -149,7 +149,7 @@ GuacamoleUI.supportedAudio = [];
     };
 
     GuacamoleUI.hideTouchMenu = function() {
-        GuacamoleUI.touchMenu.style.visibility = "hidden";
+        GuacamoleUI.touchMenu.style.display = "none";
     };
 
     function positionCentered(element) {
@@ -165,8 +165,8 @@ GuacamoleUI.supportedAudio = [];
     }
 
     GuacamoleUI.showTouchMenu = function() {
+        GuacamoleUI.touchMenu.style.display= "";
         positionCentered(GuacamoleUI.touchMenu);
-        GuacamoleUI.touchMenu.style.visibility = "visible";
     };
 
     GuacamoleUI.hideTouchClipboard = function() {
