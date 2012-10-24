@@ -37,7 +37,8 @@ package net.sourceforge.guacamole.protocol;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -59,14 +60,14 @@ public class GuacamoleClientInformation {
     private int optimalScreenHeight = 768;
   
     /**
-     * The set of audio mimetypes reported by the client to be supported¾.
+     * The list of audio mimetypes reported by the client to be supported.
      */
-    private Set<String> audioMimetypes = new HashSet<String>();
+    private List<String> audioMimetypes = new ArrayList<String>();
   
     /**
-     * The set of audio mimetypes reported by the client to be supported¾.
+     * The list of audio mimetypes reported by the client to be supported.
      */
-    private Set<String> videoMimetypes = new HashSet<String>();
+    private List<String> videoMimetypes = new ArrayList<String>();
 
     /**
      * Returns the optimal screen width requested by the client, in pixels.
@@ -101,24 +102,24 @@ public class GuacamoleClientInformation {
     }
 
     /**
-     * Returns the set of audio mimetypes supported by the client. To add or
-     * removed supported mimetypes, the set returned by this function can be
+     * Returns the list of audio mimetypes supported by the client. To add or
+     * removed supported mimetypes, the list returned by this function can be
      * modified.
      * 
      * @return The set of audio mimetypes supported by the client.
      */
-    public Set<String> getAudioMimetypes() {
+    public List<String> getAudioMimetypes() {
         return audioMimetypes;
     }
 
     /**
-     * Returns the set of video mimetypes supported by the client. To add or
-     * removed supported mimetypes, the set returned by this function can be
+     * Returns the list of video mimetypes supported by the client. To add or
+     * removed supported mimetypes, the list returned by this function can be
      * modified.
      * 
      * @return The set of video mimetypes supported by the client.
      */
-    public Set<String> getVideoMimetypes() {
+    public List<String> getVideoMimetypes() {
         return videoMimetypes;
     }
 
