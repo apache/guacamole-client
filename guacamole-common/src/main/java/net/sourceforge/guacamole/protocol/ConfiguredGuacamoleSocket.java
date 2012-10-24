@@ -37,10 +37,10 @@ package net.sourceforge.guacamole.protocol;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.io.GuacamoleReader;
-import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleServerException;
+import net.sourceforge.guacamole.io.GuacamoleReader;
+import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
@@ -139,11 +139,19 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             )
         );
 
-        // Send supported audio formats (STUB)
-        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_AUDIO));
+        // Send supported audio formats
+        writer.writeInstruction(
+                new GuacamoleInstruction(
+                    Operation.CLIENT_AUDIO,
+                    info.getAudioMimetypes().toArray(new String[0])
+                ));
 
-        // Send supported video formats (STUB)
-        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_VIDEO));
+        // Send supported video formats
+        writer.writeInstruction(
+                new GuacamoleInstruction(
+                    Operation.CLIENT_VIDEO,
+                    info.getAudioMimetypes().toArray(new String[0])
+                ));
 
         // Send args
         writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_CONNECT, args));
