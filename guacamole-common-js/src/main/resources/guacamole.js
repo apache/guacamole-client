@@ -463,6 +463,16 @@ Guacamole.Client = function(tunnel) {
      */
     this.onclipboard = null;
 
+    /**
+     * Fired when the default layer (and thus the entire Guacamole display)
+     * is resized.
+     * 
+     * @event
+     * @param {Number} width The new width of the Guacamole display.
+     * @param {Number} height The new height of the Guacamole display.
+     */
+    this.onresize = null;
+
     // Layers
     function getBufferLayer(index) {
 
@@ -954,6 +964,10 @@ Guacamole.Client = function(tunnel) {
                     bounds.style.width = (displayWidth*displayScale) + "px";
                     bounds.style.height = (displayHeight*displayScale) + "px";
 
+                    // Call resize event handler if defined
+                    if (guac_client.onresize)
+                        guac_client.onresize(width, height);
+
                 }
 
             }
@@ -1132,6 +1146,14 @@ Guacamole.Client = function(tunnel) {
         bounds.style.width = (displayWidth*displayScale) + "px";
         bounds.style.height = (displayHeight*displayScale) + "px";
 
+    };
+
+    this.getWidth = function() {
+        return displayWidth;
+    };
+
+    this.getHeight = function() {
+        return displayHeight;
     };
 
     this.getScale = function() {
