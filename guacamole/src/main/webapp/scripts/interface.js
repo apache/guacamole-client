@@ -592,9 +592,19 @@ GuacamoleUI.attach = function(guac) {
 
             // Scroll (if necessary) to keep mouse on screen.
             window.scrollBy(scroll_amount_x, scroll_amount_y);
-       
+
+            // Scale event by current scale
+            var scaledState = new Guacamole.Mouse.State(
+                    mouseState.x / guac.getScale(),
+                    mouseState.y / guac.getScale(),
+                    mouseState.left,
+                    mouseState.middle,
+                    mouseState.right,
+                    mouseState.up,
+                    mouseState.down);
+
             // Send mouse event
-            guac.sendMouseState(mouseState);
+            guac.sendMouseState(scaledState);
             
         };
 
@@ -684,6 +694,20 @@ GuacamoleUI.attach = function(guac) {
     // Enable keyboard by default
     enableKeyboard();
 
+    // Handle resize
+    guac.onresize = function(width, height) {
+
+        // Calculate scale to fit screen
+        var fit_scale = Math.min(
+            window.innerWidth / width,
+            window.innerHeight / height
+        );
+          
+        // Scale client
+        guac.scale(fit_scale);
+
+    }
+
     // Handle client state change
     guac.onstatechange = function(clientState) {
 
@@ -759,7 +783,18 @@ GuacamoleUI.attach = function(guac) {
 
     // Send size events on resize
     window.onresize = function() {
+
         guac.sendSize(window.innerWidth, window.innerHeight);
+
+        // Calculate scale to fit screen
+        var fit_scale = Math.min(
+            window.innerWidth / guac.getWidth(),
+            window.innerHeight / guac.getHeight()
+        );
+          
+        // Scale client
+        guac.scale(fit_scale);
+
     };
 
     // Handle clipboard events
