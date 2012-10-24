@@ -1,3 +1,7 @@
+2012-10-24 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implement audio/video/size preamble in handshake
+
 2012-10-16 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Ignore data after tunnel UUID (part of fix for ticket #201)
