@@ -1,3 +1,10 @@
+2012-10-24 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implement base audio support
+	* Implement audio instruction
+	* Add width/height getters to client
+	* Add onresize event to client
+
 2012-10-16 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Fix stream inefficiency bug (ticket #201)
