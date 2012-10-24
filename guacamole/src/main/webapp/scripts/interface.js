@@ -490,6 +490,9 @@ GuacamoleUI.supportedAudio = [];
         GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
     });
 
+    var probably_supported = [];
+    var maybe_supported = [];
+
     // Build array of supported audio formats
     [
         'audio/ogg; codecs="vorbis"',
@@ -500,10 +503,21 @@ GuacamoleUI.supportedAudio = [];
         var audio = new Audio();
         var support_level = audio.canPlayType(mimetype);
 
-        if (support_level != "")
-            GuacamoleUI.supportedAudio.push(mimetype);
+        // Trim semicolon and trailer
+        var semicolon = mimetype.indexOf(";");
+        if (semicolon != -1)
+            mimetype = mimetype.substring(0, semicolon);
+
+        // Partition by probably/maybe
+        if (support_level == "probably")
+            probably_supported.push(mimetype);
+        else if (support_level == "maybe")
+            maybe_supported.push(mimetype);
 
     });
+
+    Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
+    Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
 
 })();
 
