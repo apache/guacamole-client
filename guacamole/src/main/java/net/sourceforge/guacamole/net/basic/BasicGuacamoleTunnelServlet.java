@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -196,7 +197,17 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             String height = request.getParameter("height");
             if (height != null)
                 info.setOptimalScreenHeight(Integer.parseInt(height));
+           
+            // Add audio mimetypes
+            String[] audio_mimetypes = request.getParameterValues("audio");
+            if (audio_mimetypes != null)
+                info.getAudioMimetypes().addAll(Arrays.asList(audio_mimetypes));
             
+            // Add video mimetypes
+            String[] video_mimetypes = request.getParameterValues("video");
+            if (video_mimetypes != null)
+                info.getVideoMimetypes().addAll(Arrays.asList(video_mimetypes));
+
             // Configure and connect socket
             String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
             int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
