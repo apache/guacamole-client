@@ -61,8 +61,11 @@ var GuacamoleUI = {
 
 };
 
-// Supported mimetypes
-GuacamoleUI.supportedAudio = {};
+/**
+ * Array of all supported audio mimetypes, populated when this script is
+ * loaded.
+ */
+GuacamoleUI.supportedAudio = [];
 
 // Constant UI initialization and behavior
 (function() {
@@ -487,32 +490,20 @@ GuacamoleUI.supportedAudio = {};
         GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
     });
 
-    function testAudio(url, mimetype) {
+    // Build array of supported audio formats
+    [
+        'audio/ogg; codecs="vorbis"',
+        'audio/mpeg; codecs="mp3"',
+        'audio/wav'
+    ].forEach(function(mimetype) {
 
-        // If browser says we can't play it, don't try
         var audio = new Audio();
-        if (!audio.canPlayType(mimetype))
-            return;
+        var support_level = audio.canPlayType(mimetype);
 
-        // Otherwise, test
-        audio.src = url;
+        if (support_level != "")
+            GuacamoleUI.supportedAudio.push(mimetype);
 
-        // On error, explicitly unsupported
-        audio.addEventListener("error", function() {
-            GuacamoleUI.supportedAudio[mimetype] = false;
-        });
-
-        // On successful play, explicitly supported
-        audio.addEventListener("ended", function() {
-            GuacamoleUI.supportedAudio[mimetype] = true;
-        });
-
-        audio.play();
-
-    }
-
-    testAudio("sounds/silence.mp3", "audio/mpeg");
-    testAudio("sounds/silence.ogg", "audio/ogg");
+    });
 
 })();
 

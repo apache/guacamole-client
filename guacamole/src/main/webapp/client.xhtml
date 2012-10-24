@@ -149,6 +149,12 @@
                             window.location.search.substring(1)
                             + "&width="  + window.innerWidth
                             + "&height=" + window.innerHeight;
+
+                        // Add audio mimetypes to connect_string
+                        GuacamoleUI.supportedAudio.forEach(function(mimetype) {
+                            connect_string += "&audio=" + mimetype;
+                        });
+
                         guac.connect(connect_string);
 
                     }
