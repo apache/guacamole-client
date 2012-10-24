@@ -157,6 +157,9 @@ div.dialog p {
 
 div#display * {
     position: relative;
+}
+
+div#display > * {
     margin-left: auto;
     margin-right: auto;
 }
