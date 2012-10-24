@@ -273,6 +273,9 @@ Guacamole.Client = function(tunnel) {
     // No initial parsers
     var parsers = [];
 
+    // No initial audio channels 
+    var audio_channels = [];
+
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
             guac_client.onerror(message);
@@ -528,6 +531,18 @@ Guacamole.Client = function(tunnel) {
 
     }
 
+    function getAudioChannel(index) {
+
+        var audio_channel = audio_channels[index];
+
+        // If audio channel not yet created, create it
+        if (audio_channel == null)
+            audio_channel = audio_channels[index] = new Guacamole.AudioChannel();
+
+        return audio_channel;
+
+    }
+
     /**
      * Handlers for all defined layer properties.
      * @private
@@ -558,6 +573,17 @@ Guacamole.Client = function(tunnel) {
             var negative = parseInt(parameters[6]);
 
             layer.arc(x, y, radius, startAngle, endAngle, negative != 0);
+
+        },
+
+        "audio": function(parameters) {
+
+            var channel = getAudioChannel(parseInt(parameters[0]));
+            var mimetype = parameters[1];
+            var duration = parseInt(parameters[2]);
+            var data = parameters[3];
+
+            channel.play(mimetype, duration, data);
 
         },
 
