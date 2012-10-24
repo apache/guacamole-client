@@ -1,3 +1,9 @@
+2012-10-24 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Implement auto-scaling
+	* Send optimal width/height
+	* Detect and send supported audio mimetypes
+
 2012-10-15 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Migrate to guacamole-common 0.6.2
