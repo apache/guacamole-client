@@ -256,8 +256,10 @@ Guacamole.Layer = function(width, height) {
          * Unblocks this Task, allowing it to run.
          */
         this.unblock = function() {
-            task.blocked = false;
-            handlePendingTasks();
+            if (task.blocked) {
+                task.blocked = false;
+                handlePendingTasks();
+            }
         }
 
     }
@@ -467,6 +469,55 @@ Guacamole.Layer = function(width, height) {
         var image = new Image();
         image.onload = task.unblock;
         image.src = url;
+
+    };
+
+    /**
+     * Plays the video at the specified URL within this layer. The video
+     * will be loaded automatically, and this and any future operations will
+     * wait for the video to finish loading. Future operations will not be
+     * executed until the video finishes playing.
+     * 
+     * @param {String} mimetype The mimetype of the video to play.
+     * @param {Number} duration The duration of the video in milliseconds.
+     * @param {String} url The URL of the video to play.
+     */
+    this.play = function(mimetype, duration, url) {
+
+        // Start loading the video
+        var video = document.createElement("video");
+        video.type = mimetype;
+        video.src = url;
+
+        // Main task - playing the video
+        var task = scheduleTask(function() {
+            video.play();
+        }, true);
+
+        // Lock which will be cleared after video ends
+        var lock = scheduleTask(null, true);
+
+        // Start copying frames when playing
+        video.addEventListener("play", function() {
+            
+            function render_callback() {
+                displayContext.drawImage(video, 0, 0, width, height);
+                if (!video.ended)
+                    window.setTimeout(render_callback, 20);
+                else
+                    lock.unblock();
+            }
+            
+            render_callback();
+            
+        });
+
+        // Unblock future operations after an error
+        video.addEventListener("error", lock.unblock);
+
+        // Play video as soon as current tasks are complete, now that the
+        // lock has been set up.
+        task.unblock();
 
     };
 
