@@ -1075,8 +1075,20 @@ Guacamole.Client = function(tunnel) {
 
             layer.transform(a, b, c, d, e, f);
 
+        },
+
+        "video": function(parameters) {
+
+            var layer = getLayer(parseInt(parameters[0]));
+            var mimetype = parameters[1];
+            var duration = parseInt(parameters[2]);
+            var data = parameters[3];
+
+            layer.play(mimetype, duration, "data:" + mimetype + ";base64," + data);
+
         }
-      
+
+
     };
 
 
