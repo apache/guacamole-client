@@ -82,7 +82,7 @@ Guacamole.Parser = function() {
     this.receive = function(packet) {
 
         // Truncate buffer as necessary
-        if (start_index > 4096) {
+        if (start_index > 4096 && element_end >= start_index) {
 
             buffer = buffer.substring(start_index);
 
@@ -473,6 +473,18 @@ Guacamole.Client = function(tunnel) {
      */
     this.onresize = null;
 
+    /**
+     * Fired when a file is received. Note that this will contain the entire
+     * data of the file.
+     * 
+     * @event
+     * @param {String} name A human-readable name describing the file.
+     * @param {String} mimetype The mimetype of the file received.
+     * @param {String} data The actual entire contents of the file,
+     *                      base64-encoded.
+     */
+    this.onfile = null;
+
     // Layers
     function getBufferLayer(index) {
 
@@ -771,6 +783,15 @@ Guacamole.Client = function(tunnel) {
         "error": function(parameters) {
             if (guac_client.onerror) guac_client.onerror(parameters[0]);
             guac_client.disconnect();
+        },
+
+        "file": function(parameters) {
+            if (guac_client.onfile)
+                guac_client.onfile(
+                    parameters[0], // Name
+                    parameters[1], // Mimetype
+                    parameters[2]  // Data
+                );
         },
 
         "identity": function(parameters) {
