@@ -67,6 +67,12 @@ var GuacamoleUI = {
  */
 GuacamoleUI.supportedAudio = [];
 
+/**
+ * Array of all supported video mimetypes, populated when this script is
+ * loaded.
+ */
+GuacamoleUI.supportedVideo = [];
+
 // Constant UI initialization and behavior
 (function() {
 
@@ -490,34 +496,71 @@ GuacamoleUI.supportedAudio = [];
         GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
     });
 
-    var probably_supported = [];
-    var maybe_supported = [];
+    // Query audio support
+    (function () {
+        var probably_supported = [];
+        var maybe_supported = [];
 
-    // Build array of supported audio formats
-    [
-        'audio/ogg; codecs="vorbis"',
-        'audio/mpeg; codecs="mp3"',
-        'audio/wav'
-    ].forEach(function(mimetype) {
+        // Build array of supported audio formats
+        [
+            'audio/ogg; codecs="vorbis"',
+            'audio/mp4; codecs="mp4a.40.5"',
+            'audio/mpeg; codecs="mp3"',
+            'audio/webm; codecs="vorbis"',
+            'audio/wav; codecs=1'
+        ].forEach(function(mimetype) {
 
-        var audio = new Audio();
-        var support_level = audio.canPlayType(mimetype);
+            var audio = new Audio();
+            var support_level = audio.canPlayType(mimetype);
 
-        // Trim semicolon and trailer
-        var semicolon = mimetype.indexOf(";");
-        if (semicolon != -1)
-            mimetype = mimetype.substring(0, semicolon);
+            // Trim semicolon and trailer
+            var semicolon = mimetype.indexOf(";");
+            if (semicolon != -1)
+                mimetype = mimetype.substring(0, semicolon);
 
-        // Partition by probably/maybe
-        if (support_level == "probably")
-            probably_supported.push(mimetype);
-        else if (support_level == "maybe")
-            maybe_supported.push(mimetype);
+            // Partition by probably/maybe
+            if (support_level == "probably")
+                probably_supported.push(mimetype);
+            else if (support_level == "maybe")
+                maybe_supported.push(mimetype);
 
-    });
+        });
 
-    Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
-    Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
+        Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
+        Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
+    })();
+
+    // Query video support
+    (function () {
+        var probably_supported = [];
+        var maybe_supported = [];
+
+        // Build array of supported video formats
+        [
+            'video/ogg; codecs="theora, vorbis"',
+            'video/mp4; codecs="avc1.4D401E, mp4a.40.5"',
+            'video/webm; codecs="vp8.0, vorbis"'
+        ].forEach(function(mimetype) {
+
+            var video = document.createElement("video");
+            var support_level = video.canPlayType(mimetype);
+
+            // Trim semicolon and trailer
+            var semicolon = mimetype.indexOf(";");
+            if (semicolon != -1)
+                mimetype = mimetype.substring(0, semicolon);
+
+            // Partition by probably/maybe
+            if (support_level == "probably")
+                probably_supported.push(mimetype);
+            else if (support_level == "maybe")
+                maybe_supported.push(mimetype);
+
+        });
+
+        Array.prototype.push.apply(GuacamoleUI.supportedVideo, probably_supported);
+        Array.prototype.push.apply(GuacamoleUI.supportedVideo, maybe_supported);
+    })();
 
 })();
 
