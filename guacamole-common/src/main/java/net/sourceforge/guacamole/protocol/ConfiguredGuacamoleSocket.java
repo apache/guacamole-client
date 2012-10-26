@@ -150,7 +150,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         writer.writeInstruction(
                 new GuacamoleInstruction(
                     Operation.CLIENT_VIDEO,
-                    info.getAudioMimetypes().toArray(new String[0])
+                    info.getVideoMimetypes().toArray(new String[0])
                 ));
 
         // Send args
