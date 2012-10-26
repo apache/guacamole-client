@@ -167,6 +167,11 @@
                             connect_string += "&audio=" + mimetype;
                         });
 
+                        // Add video mimetypes to connect_string
+                        GuacamoleUI.supportedVideo.forEach(function(mimetype) {
+                            connect_string += "&video=" + mimetype;
+                        });
+
                         guac.connect(connect_string);
 
                     }
