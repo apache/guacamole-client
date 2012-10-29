@@ -111,6 +111,11 @@ Guacamole.AudioChannel = function() {
 
 };
 
+// Define context if available
+if (window.webkitAudioContext) {
+    Guacamole.AudioChannel.context = new webkitAudioContext();
+}
+
 /**
  * Abstract representation of an audio packet.
  * 
@@ -122,23 +127,76 @@ Guacamole.AudioChannel = function() {
  */
 Guacamole.AudioChannel.Packet = function(mimetype, duration, data) {
 
-    // Build data URI
-    var data_uri = "data:" + mimetype + ";base64," + data;
-   
-    // Create audio element to house and play the data
-    var audio = new Audio();
-    audio.src = data_uri;
-  
     /**
      * The duration of this packet, in milliseconds.
      */
     this.duration = duration;
 
-    /**
-     * Plays the sound data contained by this packet immediately.
-     */
-    this.play = function() {
-        audio.play();
-    };
+    // If audio API available, use it.
+    if (Guacamole.AudioChannel.context) {
+
+        var readyBuffer = null;
+
+        // By default, when decoding finishes, store buffer for future
+        // playback
+        var handleReady = function(buffer) {
+            readyBuffer = buffer;
+        };
+
+        // Convert to ArrayBuffer
+        var binary = window.atob(data);
+        var arrayBuffer = new ArrayBuffer(binary.length);
+        var bufferView = new Uint8Array(arrayBuffer);
+
+        for (var i=0; i<binary.length; i++)
+            bufferView[i] = binary.charCodeAt(i);
+
+        // Get context and start decoding
+        Guacamole.AudioChannel.context.decodeAudioData(
+            arrayBuffer,
+            function(buffer) { handleReady(buffer); },
+            function(e) { console.log("play error", e); }
+        );
+
+        // Set up buffer source
+        var source = Guacamole.AudioChannel.context.createBufferSource();
+        source.connect(Guacamole.AudioChannel.context.destination);
+
+        function playImmediately(buffer) {
+            source.buffer = buffer;
+            source.noteOn(0);
+        }
+
+        this.play = function() {
+            
+            // If buffer available, play it NOW
+            if (readyBuffer)
+                playImmediately(readyBuffer);
+
+            // Otherwise, play when decoded
+            else
+                handleReady = playImmediately;
+
+        };
+
+    }
+
+    else {
+
+        // Build data URI
+        var data_uri = "data:" + mimetype + ";base64," + data;
+       
+        // Create audio element to house and play the data
+        var audio = new Audio();
+        audio.src = data_uri;
+      
+        /**
+         * Plays the sound data contained by this packet immediately.
+         */
+        this.play = function() {
+            audio.play();
+        };
+
+    }
 
 };
