@@ -324,36 +324,6 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
-     * Sends a supported audio mimetype.
-     * 
-     * @param {String} mimetype The supported mimetype to send.
-     */
-    this.sendAudioMimetype = function(mimetype) {
-
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
-
-        tunnel.sendMessage("audio", mimetype);
-
-    };
-
-    /**
-     * Sends a supported video mimetype.
-     * 
-     * @param {String} mimetype The supported mimetype to send.
-     */
-    this.sendVideoMimetype = function(mimetype) {
-
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
-
-        tunnel.sendMessage("video", mimetype);
-
-    };
-
-    /**
      * Sends the current size of the screen.
      * 
      * @param {Number} width The width of the screen.
