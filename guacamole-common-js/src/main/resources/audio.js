@@ -76,8 +76,10 @@ Guacamole.AudioChannel = function() {
         var now = new Date().getTime();
 
         // If time not initialized, initialize now
-        if (next_packet_time == 0)
-            next_packet_time = now;
+        if (next_packet_time == 0 || next_packet_time < now) {
+            next_packet_time = now + 50;
+            console.log("underflow");
+        }
 
         var time_until_play = next_packet_time - now;
 
@@ -101,7 +103,6 @@ if (window.webkitAudioContext) {
  * @constructor
  * 
  * @param {String} mimetype The mimetype of the data contained by this packet.
- * @param {Number} duration The duration of the data contained by this packet.
  * @param {String} data The base64-encoded sound data contained by this packet.
  */
 Guacamole.AudioChannel.Packet = function(mimetype, data) {
@@ -143,9 +144,18 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
 
             // Calculate time since call to play()
             var offset = new Date().getTime() - play_call;
+            var delay = play_delay - offset;
 
             source.buffer = buffer;
-            source.noteOn(Math.max(play_delay - offset, 0) / 1000);
+
+            if (delay <= 0)
+                source.noteOn(0);
+            else
+                window.setTimeout(function() {
+                    source.noteOn(0);
+                }, delay);
+
+            //source.noteOn(Math.max(play_delay - offset, 0) / 1000);
 
             if (offset > play_delay)
                 console.log("processing lag", offset - play_delay);
