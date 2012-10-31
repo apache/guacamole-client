@@ -54,32 +54,9 @@ Guacamole.AudioChannel = function() {
     var channel = this;
 
     /**
-     * Packet queue.
+     * When the next packet should play.
      */
-    var packets = [];
-
-    /**
-     * Whether this channel is currently playing sound.
-     */
-    var playing = false;
-
-    /**
-     * Advances to the next audio packet, if any, and plays it.
-     */
-    function advance() {
-
-        // If packets remain, play next
-        if (packets.length != 0) {
-            var packet = packets.shift();
-            packet.play();
-            window.setTimeout(advance, packet.duration);
-        }
-
-        // Otherwise, no longer playing
-        else
-            playing = false;
-
-    }
+    var next_packet_time = 0;
 
     /**
      * Queues up the given data for playing by this channel once all previously
@@ -94,18 +71,20 @@ Guacamole.AudioChannel = function() {
     this.play = function(mimetype, duration, data) {
 
         var packet =
-            new Guacamole.AudioChannel.Packet(mimetype, duration, data);
+            new Guacamole.AudioChannel.Packet(mimetype, data);
 
-        // If currently playing sound, add packet to queue
-        if (playing)
-            packets.push(packet);
+        var now = new Date().getTime();
 
-        // Otherwise, play now, flag channel as playing
-        else {
-            playing = true;
-            packet.play();
-            window.setTimeout(advance, packet.duration);
-        }
+        // If time not initialized, initialize now
+        if (next_packet_time == 0)
+            next_packet_time = now;
+
+        var time_until_play = next_packet_time - now;
+
+        // Schedule next packet
+        next_packet_time += duration;
+
+        packet.play(time_until_play);
 
     };
 
@@ -125,12 +104,7 @@ if (window.webkitAudioContext) {
  * @param {Number} duration The duration of the data contained by this packet.
  * @param {String} data The base64-encoded sound data contained by this packet.
  */
-Guacamole.AudioChannel.Packet = function(mimetype, duration, data) {
-
-    /**
-     * The duration of this packet, in milliseconds.
-     */
-    this.duration = duration;
+Guacamole.AudioChannel.Packet = function(mimetype, data) {
 
     // If audio API available, use it.
     if (Guacamole.AudioChannel.context) {
@@ -162,20 +136,34 @@ Guacamole.AudioChannel.Packet = function(mimetype, duration, data) {
         var source = Guacamole.AudioChannel.context.createBufferSource();
         source.connect(Guacamole.AudioChannel.context.destination);
 
-        function playImmediately(buffer) {
+        var play_call;
+        var play_delay;
+
+        function playDelayed(buffer) {
+
+            // Calculate time since call to play()
+            var offset = new Date().getTime() - play_call;
+
             source.buffer = buffer;
-            source.noteOn(0);
+            source.noteOn(Math.max(play_delay - offset, 0) / 1000);
+
+            if (offset > play_delay)
+                console.log("processing lag", offset - play_delay);
+
         }
 
-        this.play = function() {
+        this.play = function(delay) {
             
+            play_call  = new Date().getTime();
+            play_delay = delay;
+           
             // If buffer available, play it NOW
             if (readyBuffer)
-                playImmediately(readyBuffer);
+                playDelayed(readyBuffer);
 
             // Otherwise, play when decoded
             else
-                handleReady = playImmediately;
+                handleReady = playDelayed;
 
         };
 
@@ -193,8 +181,10 @@ Guacamole.AudioChannel.Packet = function(mimetype, duration, data) {
         /**
          * Plays the sound data contained by this packet immediately.
          */
-        this.play = function() {
-            audio.play();
+        this.play = function(delay) {
+            window.setTimeout(function() {
+                audio.play();
+            }, delay);
         };
 
     }
