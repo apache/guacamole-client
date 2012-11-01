@@ -122,6 +122,8 @@ Guacamole.Parser = function() {
                     element_buffer.length = 0;
 
                 }
+                else if (terminator != ',')
+                    throw new Error("Illegal terminator.");
 
                 // Start searching for length at character after
                 // element terminator
@@ -135,6 +137,8 @@ Guacamole.Parser = function() {
 
                 // Parse length
                 var length = parseInt(buffer.substring(element_end+1, length_end));
+                if (length == NaN)
+                    throw new Error("Non-numeric character in element length.");
 
                 // Calculate start of element
                 start_index = length_end + 1;
