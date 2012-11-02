@@ -576,7 +576,7 @@ Guacamole.Client = function(tunnel) {
 
             var channel = getAudioChannel(parseInt(parameters[0]));
             var mimetype = parameters[1];
-            var duration = parseInt(parameters[2]);
+            var duration = parseFloat(parameters[2]);
             var data = parameters[3];
 
             channel.play(mimetype, duration, data);
@@ -1076,7 +1076,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
             var mimetype = parameters[1];
-            var duration = parseInt(parameters[2]);
+            var duration = parseFloat(parameters[2]);
             var data = parameters[3];
 
             layer.play(mimetype, duration, "data:" + mimetype + ";base64," + data);
