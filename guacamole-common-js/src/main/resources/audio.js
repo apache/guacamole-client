@@ -73,20 +73,19 @@ Guacamole.AudioChannel = function() {
         var packet =
             new Guacamole.AudioChannel.Packet(mimetype, data);
 
-        var now = new Date().getTime();
+        var now;
+        if (Guacamole.AudioChannel.context)
+            now = Guacamole.AudioChannel.context.currentTime * 1000;
+        else
+            now = new Date().getTime();
 
-        // If time not initialized, initialize now
-        if (next_packet_time == 0 || next_packet_time < now) {
+        // If underflow is detected, delay start
+        if (next_packet_time < now)
             next_packet_time = now + 50;
-            console.log("underflow");
-        }
-
-        var time_until_play = next_packet_time - now;
 
         // Schedule next packet
+        packet.play(next_packet_time);
         next_packet_time += duration;
-
-        packet.play(time_until_play);
 
     };
 
@@ -129,44 +128,24 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         // Get context and start decoding
         Guacamole.AudioChannel.context.decodeAudioData(
             arrayBuffer,
-            function(buffer) { handleReady(buffer); },
-            function(e) { console.log("play error", e); }
+            function(buffer) { handleReady(buffer); }
         );
 
         // Set up buffer source
         var source = Guacamole.AudioChannel.context.createBufferSource();
         source.connect(Guacamole.AudioChannel.context.destination);
 
-        var play_call;
-        var play_delay;
+        var play_when;
 
         function playDelayed(buffer) {
-
-            // Calculate time since call to play()
-            var offset = new Date().getTime() - play_call;
-            var delay = play_delay - offset;
-
             source.buffer = buffer;
-
-            if (delay <= 0)
-                source.noteOn(0);
-            else
-                window.setTimeout(function() {
-                    source.noteOn(0);
-                }, delay);
-
-            //source.noteOn(Math.max(play_delay - offset, 0) / 1000);
-
-            if (offset > play_delay)
-                console.log("processing lag", offset - play_delay);
-
+            source.noteOn(play_when / 1000);
         }
 
-        this.play = function(delay) {
+        this.play = function(when) {
             
-            play_call  = new Date().getTime();
-            play_delay = delay;
-           
+            play_when = when;
+            
             // If buffer available, play it NOW
             if (readyBuffer)
                 playDelayed(readyBuffer);
@@ -191,10 +170,22 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         /**
          * Plays the sound data contained by this packet immediately.
          */
-        this.play = function(delay) {
-            window.setTimeout(function() {
+        this.play = function(when) {
+            
+            // Calculate time until play
+            var now = new Date().getTime();
+            var delay = when - now;
+            
+            // Play now if too late
+            if (delay < 0)
                 audio.play();
-            }, delay);
+
+            // Otherwise, schedule later playback
+            else
+                window.setTimeout(function() {
+                    audio.play();
+                }, delay);
+
         };
 
     }
