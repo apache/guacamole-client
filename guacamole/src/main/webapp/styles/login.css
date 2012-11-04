@@ -225,11 +225,24 @@ div#connection-list-ui h2 {
     
 }
 
+.history-unavailable div#recent-connections {
+    display: none;
+}
+
 div#recent-connections {
     margin: 1em;
     margin-top: 0;
     text-align: center;
-    min-height: 240px;
+}
+
+#no-recent {
+
+    color: black;
+    text-shadow: 1px 1px white;
+    opacity: 0.5;
+    
+    font-size: 2em;
+    font-weight: bolder;
 }
 
 div#recent-connections div.connection {

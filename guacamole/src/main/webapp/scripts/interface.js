@@ -781,45 +781,47 @@ GuacamoleUI.attach = function(guac) {
                 GuacamoleUI.hideStatus();
                 title_prefix = null;
 
-                window.setTimeout(function() {
+                if (localStorage) {
+                    window.setTimeout(function() {
 
-                    // Get screenshot
-                    var canvas = guac.flatten();
+                        // Get screenshot
+                        var canvas = guac.flatten();
 
-                    // Calculate scale of thumbnail (max 320x240, max zoom 100%)
-                    var scale = Math.min(
-                        320 / canvas.width,
-                        240 / canvas.height,
-                        1
-                    );
+                        // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+                        var scale = Math.min(
+                            320 / canvas.width,
+                            240 / canvas.height,
+                            1
+                        );
 
-                    // Create thumbnail canvas
-                    var thumbnail = document.createElement("canvas");
-                    thumbnail.width  = canvas.width*scale;
-                    thumbnail.height = canvas.height*scale;
+                        // Create thumbnail canvas
+                        var thumbnail = document.createElement("canvas");
+                        thumbnail.width  = canvas.width*scale;
+                        thumbnail.height = canvas.height*scale;
 
-                    // Scale screenshot to thumbnail
-                    var context = thumbnail.getContext("2d");
-                    context.drawImage(canvas,
-                        0, 0, canvas.width, canvas.height,
-                        0, 0, thumbnail.width, thumbnail.height
-                    );
+                        // Scale screenshot to thumbnail
+                        var context = thumbnail.getContext("2d");
+                        context.drawImage(canvas,
+                            0, 0, canvas.width, canvas.height,
+                            0, 0, thumbnail.width, thumbnail.height
+                        );
 
-                    // Get thumbnail set from local storage
-                    var thumbnails = {};
-                    try {
-                        thumbnails = JSON.parse(localStorage.getItem("GUAC_THUMBNAILS"));
-                    }
-                    catch (e) {
-                    }
+                        // Get thumbnail set from local storage
+                        var thumbnails = {};
+                        try {
+                            var thumbnail_json = localStorage.getItem("GUAC_THUMBNAILS");
+                            if (thumbnail_json)
+                                thumbnails = JSON.parse(thumbnail_json);
+                        }
+                        catch (e) {}
 
-                    // Save thumbnail to local storage
-                    var id = decodeURIComponent(window.location.search.substring(4));
-                    thumbnails[id] = thumbnail.toDataURL();
-                    localStorage.setItem("GUAC_THUMBNAILS", JSON.stringify(thumbnails));
+                        // Save thumbnail to local storage
+                        var id = decodeURIComponent(window.location.search.substring(4));
+                        thumbnails[id] = thumbnail.toDataURL();
+                        localStorage.setItem("GUAC_THUMBNAILS", JSON.stringify(thumbnails));
 
-                }, 5000);
-
+                    }, 5000);
+                }
                 break;
 
             // Disconnecting

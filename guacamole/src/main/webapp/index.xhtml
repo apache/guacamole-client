@@ -74,6 +74,7 @@
            
             <h2>Recent Connections</h2>
             <div id="recent-connections">
+                <p id="no-recent">No recent connections.</p>
             </div>
 
             <h2>Other Connections</h2>
@@ -133,16 +134,20 @@
                 // Remove all rows from connections list
                 var recent_connections = document.getElementById("recent-connections");
                 var other_connections = document.getElementById("other-connections");
+                var no_recent_connections = document.getElementById("no-recent");
                 
                 // Get thumbnail set from local storage
-                var thumbnails = {};
-                try {
-                    thumbnails = JSON.parse(localStorage.getItem("GUAC_THUMBNAILS"));
+                if (localStorage) {
+                    var thumbnails = {};
+                    try {
+                        var thumbnail_json = localStorage.getItem("GUAC_THUMBNAILS");
+                        if (thumbnail_json)
+                            thumbnails = JSON.parse(thumbnail_json);
+                    }
+                    catch (e) {}
                 }
-                catch (e) {
-                }
-                for (var test in thumbnails)
-                    console.log(test);
+                else
+                    document.body.className += " history-unavailable";
 
                 // Add connection icons
                 for (var i=0; i<configs.length; i++) {
@@ -166,15 +171,18 @@
                     var thumbnail = document.createElement("div");
                     thumbnail.className = "thumbnail";
 
-                    // Create link to client
-                    var url = getClientURL(configs[i].id)
-                    var clientLink = document.createElement("a");
-                    clientLink.setAttribute("href", url);
-
-                    connection.onclick = function() {
-                        window.location = url;
-                    };
+                    function redirect(url) {
+                        return function() {
+                            window.location = url;
+                        };
+                    }
                     
+                    // Create link to client
+                    var clientLink = document.createElement("a");
+                    var url = getClientURL(configs[i].id)
+                    clientLink.setAttribute("href", url);
+                    connection.onclick = redirect(url);
+
                     protocol.appendChild(protocolIcon);
 
                     clientLink.textContent = configs[i].id;
@@ -197,6 +205,7 @@
                         thumbnail.appendChild(img);
 
                         recent_connections.appendChild(connection);
+                        no_recent_connections.style.display = "none";
                     }
                     else
                         other_connections.appendChild(connection);
