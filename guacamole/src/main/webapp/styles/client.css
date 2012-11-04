@@ -146,7 +146,11 @@ div.dialog p {
     top: 0;
     width: 100%;
     z-index: 4;
-    background: #FEA;
+    background: #888;
+    padding: 0.5em;
+    font-weight: bold;
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.7);
     border-bottom: 1px solid black;
     font-size: 0.8em;
 }

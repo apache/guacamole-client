@@ -2,62 +2,23 @@
 // UI Definition
 var GuacamoleUI = {
 
-    "LOGOUT_PROMPT" :   "Logging out will disconnect all of your active "
-                      + "Guacamole sessions. Are you sure you wish to log out?",
-
-    /* Detection Constants */
-    
-    "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
-    "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */
-    "MENU_CLOSE_DETECT_TIMEOUT"     : 500, /* milliseconds */
-    "MENU_OPEN_DETECT_TIMEOUT"      : 325, /* milliseconds */
-    "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
-
-    /* Animation Constants */
-
-    "MENU_SHADE_STEPS"    : 10, /* frames */
-    "MENU_SHADE_INTERVAL" : 30, /* milliseconds */
-    "MENU_SHOW_STEPS"     : 5,  /* frames */
-    "MENU_SHOW_INTERVAL"  : 30, /* milliseconds */
-
-    /* OSK Mode Constants */
-    "OSK_MODE_NATIVE" : 1, /* "Show Keyboard" will show the platform's native OSK */
-    "OSK_MODE_GUAC"   : 2, /* "Show Keyboard" will show Guac's built-in OSK */
-
     /* UI Elements */
 
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
-    "menu"        : document.getElementById("menu"),
-    "menuControl" : document.getElementById("menuControl"),
-    "touchMenu"   : document.getElementById("touchMenu"),
     "logo"        : document.getElementById("status-logo"),
     "eventTarget" : document.getElementById("eventTarget"),
 
     "buttons": {
-
-        "showClipboard": document.getElementById("showClipboard"),
-        "showKeyboard" : document.getElementById("showKeyboard"),
-        "ctrlAltDelete": document.getElementById("ctrlAltDelete"),
-        "reconnect"    : document.getElementById("reconnect"),
-        "logout"       : document.getElementById("logout"),
-
-        "touchShowClipboard" : document.getElementById("touchShowClipboard"),
-        "touchShowKeyboard"  : document.getElementById("touchShowKeyboard"),
-        "touchLogout"        : document.getElementById("touchLogout")
-
+        "reconnect"    : document.getElementById("reconnect")
     },
 
     "containers": {
-        "state"         : document.getElementById("statusDialog"),
-        "clipboard"     : document.getElementById("clipboardDiv"),
-        "touchClipboard": document.getElementById("touchClipboardDiv"),
-        "keyboard"      : document.getElementById("keyboardContainer")
+        "state"         : document.getElementById("statusDialog")
     },
     
     "state"          : document.getElementById("statusText"),
-    "clipboard"      : document.getElementById("clipboard"),
-    "touchClipboard" : document.getElementById("touchClipboard")
+    "client"         : null
 
 };
 
@@ -75,11 +36,6 @@ GuacamoleUI.supportedVideo = [];
 
 // Constant UI initialization and behavior
 (function() {
-
-    var menu_shaded = false;
-
-    var shade_interval = null;
-    var show_interval = null;
 
     // Cache error image (might not be available when error occurs)
     var guacErrorImage = new Image();
@@ -154,10 +110,6 @@ GuacamoleUI.supportedVideo = [];
         GuacamoleUI.display.style.opacity = "0.1";
     };
 
-    GuacamoleUI.hideTouchMenu = function() {
-        GuacamoleUI.touchMenu.style.display = "none";
-    };
-
     function positionCentered(element) {
         element.style.left =
             ((GuacamoleUI.viewport.offsetWidth - element.offsetWidth) / 2
@@ -170,320 +122,9 @@ GuacamoleUI.supportedVideo = [];
             + "px";
     }
 
-    GuacamoleUI.showTouchMenu = function() {
-        GuacamoleUI.touchMenu.style.display= "";
-        positionCentered(GuacamoleUI.touchMenu);
-    };
-
-    GuacamoleUI.hideTouchClipboard = function() {
-        GuacamoleUI.touchClipboard.blur();
-        GuacamoleUI.containers.touchClipboard.style.visibility = "hidden";
-    };
-
-    GuacamoleUI.showTouchClipboard = function() {
-        positionCentered(GuacamoleUI.containers.touchClipboard);
-        GuacamoleUI.containers.touchClipboard.style.visibility = "visible";
-    };
-
-    GuacamoleUI.shadeMenu = function() {
-
-        if (!menu_shaded) {
-
-            var step = Math.floor(GuacamoleUI.menu.offsetHeight / GuacamoleUI.MENU_SHADE_STEPS) + 1;
-            var offset = 0;
-            menu_shaded = true;
-
-            window.clearInterval(show_interval);
-            shade_interval = window.setInterval(function() {
-
-                offset -= step;
-
-                GuacamoleUI.menu.style.transform =
-                GuacamoleUI.menu.style.WebkitTransform =
-                GuacamoleUI.menu.style.MozTransform =
-                GuacamoleUI.menu.style.OTransform =
-                GuacamoleUI.menu.style.msTransform =
-
-                    "translateY(" + offset + "px)";
-
-                if (offset <= -GuacamoleUI.menu.offsetHeight) {
-                    window.clearInterval(shade_interval);
-                    GuacamoleUI.menu.style.visiblity = "hidden";
-                }
-
-            }, GuacamoleUI.MENU_SHADE_INTERVAL);
-        }
-
-    };
-
-    GuacamoleUI.showMenu = function() {
-
-        if (menu_shaded) {
-
-            var step = Math.floor(GuacamoleUI.menu.offsetHeight / GuacamoleUI.MENU_SHOW_STEPS) + 1;
-            var offset = -GuacamoleUI.menu.offsetHeight;
-            menu_shaded = false;
-            GuacamoleUI.menu.style.visiblity = "";
-
-            window.clearInterval(shade_interval);
-            show_interval = window.setInterval(function() {
-
-                offset += step;
-
-                if (offset >= 0) {
-                    offset = 0;
-                    window.clearInterval(show_interval);
-                }
-
-                GuacamoleUI.menu.style.transform =
-                GuacamoleUI.menu.style.WebkitTransform =
-                GuacamoleUI.menu.style.MozTransform =
-                GuacamoleUI.menu.style.OTransform =
-                GuacamoleUI.menu.style.msTransform =
-
-                    "translateY(" + offset + "px)";
-
-            }, GuacamoleUI.MENU_SHOW_INTERVAL);
-        }
-
-    };
-
-    // Show/Hide clipboard
-    GuacamoleUI.buttons.showClipboard.onclick = function() {
-
-        var displayed = GuacamoleUI.containers.clipboard.style.display;
-        if (displayed != "block") {
-            GuacamoleUI.containers.clipboard.style.display = "block";
-            GuacamoleUI.buttons.showClipboard.innerHTML = "Hide Clipboard";
-        }
-        else {
-            GuacamoleUI.containers.clipboard.style.display = "none";
-            GuacamoleUI.buttons.showClipboard.innerHTML = "Show Clipboard";
-            GuacamoleUI.clipboard.onchange();
-        }
-
-    };
-
-    GuacamoleUI.buttons.touchShowClipboard.onclick = function() {
-        GuacamoleUI.hideTouchMenu();
-        GuacamoleUI.showTouchClipboard();
-    };
-
-    // Show/Hide keyboard
-    var keyboardResizeInterval = null;
-    GuacamoleUI.buttons.showKeyboard.onclick = function() {
-
-        // If Guac OSK shown, hide it.
-        var displayed = GuacamoleUI.containers.keyboard.style.display;
-        if (displayed == "block") {
-            GuacamoleUI.containers.keyboard.style.display = "none";
-            GuacamoleUI.buttons.showKeyboard.textContent = "Show Keyboard";
-
-            window.onresize = null;
-            window.clearInterval(keyboardResizeInterval);
-        }
-
-        // Otherwise, show it
-        else {
-
-            // Ensure event target is NOT focused if we are using the Guac OSK.
-            GuacamoleUI.eventTarget.blur();
-
-            GuacamoleUI.containers.keyboard.style.display = "block";
-            GuacamoleUI.buttons.showKeyboard.textContent = "Hide Keyboard";
-
-            // Automatically update size
-            window.onresize = updateKeyboardSize;
-            keyboardResizeInterval = window.setInterval(updateKeyboardSize,
-                GuacamoleUI.KEYBOARD_AUTO_RESIZE_INTERVAL);
-
-            updateKeyboardSize();
-
-        }
-
-    };
-
-    // Touch-specific keyboard show
-    GuacamoleUI.buttons.touchShowKeyboard.onclick = 
-        function(e) {
-
-            // Center event target in case browser automatically centers
-            // input fields on focus.
-            GuacamoleUI.eventTarget.style.left =
-                (window.pageXOffset + GuacamoleUI.viewport.offsetWidth / 2) + "px";
-
-            GuacamoleUI.eventTarget.style.top =
-                (window.pageYOffset + GuacamoleUI.viewport.offsetHeight / 2) + "px";
-
-            GuacamoleUI.eventTarget.focus();
-            GuacamoleUI.hideTouchMenu();
-
-        };
-
-    // Logout
-    GuacamoleUI.buttons.logout.onclick =
-    GuacamoleUI.buttons.touchLogout.onclick =
-        function() {
-
-            // Logout after warning user about session disconnect
-            if (confirm(GuacamoleUI.LOGOUT_PROMPT)) {
-                window.location.href = "logout";
-                GuacamoleUI.hideTouchMenu();
-            }
-            
-        };
-
-    // Timeouts for detecting if users wants menu to open or close
-    var detectMenuOpenTimeout = null;
-    var detectMenuCloseTimeout = null;
-
-    // Clear detection timeouts
-    GuacamoleUI.resetMenuDetect = function() {
-
-        if (detectMenuOpenTimeout != null) {
-            window.clearTimeout(detectMenuOpenTimeout);
-            detectMenuOpenTimeout = null;
-        }
-
-        if (detectMenuCloseTimeout != null) {
-            window.clearTimeout(detectMenuCloseTimeout);
-            detectMenuCloseTimeout = null;
-        }
-
-    };
-
-    // Initiate detection of menu open action. If not canceled through some
-    // user event, menu will open.
-    GuacamoleUI.startMenuOpenDetect = function() {
-
-        if (!detectMenuOpenTimeout) {
-
-            // Clear detection state
-            GuacamoleUI.resetMenuDetect();
-
-            // Wait and then show menu
-            detectMenuOpenTimeout = window.setTimeout(function() {
-
-                // If menu opened via mouse, do not show native OSK
-                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_GUAC;
-
-                GuacamoleUI.showMenu();
-                detectMenuOpenTimeout = null;
-            }, GuacamoleUI.MENU_OPEN_DETECT_TIMEOUT);
-
-        }
-
-    };
-
-    // Initiate detection of menu close action. If not canceled through some
-    // user mouse event, menu will close.
-    GuacamoleUI.startMenuCloseDetect = function() {
-
-        if (!detectMenuCloseTimeout) {
-
-            // Clear detection state
-            GuacamoleUI.resetMenuDetect();
-
-            // Wait and then shade menu
-            detectMenuCloseTimeout = window.setTimeout(function() {
-                GuacamoleUI.shadeMenu();
-                detectMenuCloseTimeout = null;
-            }, GuacamoleUI.MENU_CLOSE_DETECT_TIMEOUT);
-
-        }
-
-    };
-
-    // Show menu if mouseover any part of menu
-    GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.showMenu, true);
-
-    // Stop detecting menu state change intents if mouse is over menu
-    GuacamoleUI.menu.addEventListener('mouseover', GuacamoleUI.resetMenuDetect, true);
-
-    // When mouse hovers over top of screen, start detection of intent to open menu
-    GuacamoleUI.menuControl.addEventListener('mousemove', GuacamoleUI.startMenuOpenDetect, true);
-
-    var long_press_start_x = 0;
-    var long_press_start_y = 0;
-    var menuShowLongPressTimeout = null;
-
-    GuacamoleUI.startLongPressDetect = function() {
-
-        if (!menuShowLongPressTimeout) {
-
-            menuShowLongPressTimeout = window.setTimeout(function() {
-                
-                menuShowLongPressTimeout = null;
-
-                // Assume native OSK if menu shown via long-press
-                GuacamoleUI.oskMode = GuacamoleUI.OSK_MODE_NATIVE;
-                GuacamoleUI.showTouchMenu();
-
-            }, GuacamoleUI.LONG_PRESS_DETECT_TIMEOUT);
-
-        }
-    };
-
-    GuacamoleUI.stopLongPressDetect = function() {
-        window.clearTimeout(menuShowLongPressTimeout);
-        menuShowLongPressTimeout = null;
-    };
-
-    // Detect long-press at bottom of screen
-    GuacamoleUI.display.addEventListener('touchstart', function(e) {
-        
-        // Close menu if shown
-        GuacamoleUI.shadeMenu();
-        GuacamoleUI.hideTouchMenu();
-        GuacamoleUI.hideTouchClipboard();
-        
-        // Record touch location
-        if (e.touches.length == 1) {
-            var touch = e.touches[0];
-            long_press_start_x = touch.screenX;
-            long_press_start_y = touch.screenY;
-        }
-        
-        // Start detection
-        GuacamoleUI.startLongPressDetect();
-        
-    }, true);
-
-    // Stop detection if touch moves significantly
-    GuacamoleUI.display.addEventListener('touchmove', function(e) {
-        
-        // If touch distance from start exceeds threshold, cancel long press
-        var touch = e.touches[0];
-        if (Math.abs(touch.screenX - long_press_start_x) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD
-            || Math.abs(touch.screenY - long_press_start_y) >= GuacamoleUI.LONG_PRESS_MOVEMENT_THRESHOLD)
-            GuacamoleUI.stopLongPressDetect();
-        
-    }, true);
-
-    // Stop detection if press stops
-    GuacamoleUI.display.addEventListener('touchend', GuacamoleUI.stopLongPressDetect, true);
-
-    // Close menu on mouse movement
-    GuacamoleUI.display.addEventListener('mousemove', GuacamoleUI.startMenuCloseDetect, true);
-    GuacamoleUI.display.addEventListener('mousedown', GuacamoleUI.startMenuCloseDetect, true);
-
     // Reconnect button
     GuacamoleUI.buttons.reconnect.onclick = function() {
         window.location.reload();
-    };
-
-    // On-screen keyboard
-    GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
-    GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
-
-    // Function for automatically updating keyboard size
-    var lastKeyboardWidth;
-    function updateKeyboardSize() {
-        var currentSize = GuacamoleUI.keyboard.getElement().offsetWidth;
-        if (lastKeyboardWidth != currentSize) {
-            GuacamoleUI.keyboard.resize(currentSize);
-            lastKeyboardWidth = currentSize;
-        }
     };
 
     // Turn off autocorrect and autocapitalization on eventTarget
@@ -567,6 +208,8 @@ GuacamoleUI.supportedVideo = [];
 // Tie UI events / behavior to a specific Guacamole client
 GuacamoleUI.attach = function(guac) {
 
+    GuacamoleUI.client = guac;
+
     var title_prefix = null;
     var connection_name = "Guacamole"; 
     
@@ -591,9 +234,6 @@ GuacamoleUI.attach = function(guac) {
             document.title = connection_name;
 
     }
-
-    // When mouse enters display, start detection of intent to close menu
-    guac_display.addEventListener('mouseover', GuacamoleUI.startMenuCloseDetect, true);
 
     guac_display.onclick = function(e) {
         e.preventDefault();
@@ -804,7 +444,6 @@ GuacamoleUI.attach = function(guac) {
 
             // Connecting
             case 1:
-                GuacamoleUI.shadeMenu();
                 GuacamoleUI.showStatus("Connecting...");
                 title_prefix = "[Connecting...]";
                 break;
@@ -891,62 +530,9 @@ GuacamoleUI.attach = function(guac) {
 
     };
 
-    // Handle clipboard events
-    GuacamoleUI.clipboard.onchange = function() {
-
-        var text = GuacamoleUI.clipboard.value;
-        GuacamoleUI.touchClipboard.value = text;
-        guac.setClipboard(text);
-
-    };
-
-    GuacamoleUI.touchClipboard.onchange = function() {
-
-        var text = GuacamoleUI.touchClipboard.value;
-        GuacamoleUI.clipboard.value = text;
-        guac.setClipboard(text);
-
-    };
-
-    // Ignore keypresses when clipboard is focused
-    GuacamoleUI.clipboard.onfocus =
-    GuacamoleUI.touchClipboard.onfocus = function() {
-        disableKeyboard();
-    };
-
-    // Capture keypresses when clipboard is not focused
-    GuacamoleUI.clipboard.onblur =
-    GuacamoleUI.touchClipboard.onblur = function() {
-        enableKeyboard();
-    };
-
     // Server copy handler
     guac.onclipboard = function(data) {
-        GuacamoleUI.clipboard.value = data;
-        GuacamoleUI.touchClipboard.value = data;
-    };
-
-    GuacamoleUI.keyboard.onkeydown = function(keysym) {
-        guac.sendKeyEvent(1, keysym);
-    };
-
-    GuacamoleUI.keyboard.onkeyup = function(keysym) {
-        guac.sendKeyEvent(0, keysym);
-    };
-
-    // Send Ctrl-Alt-Delete
-    GuacamoleUI.buttons.ctrlAltDelete.onclick = function() {
-
-        var KEYSYM_CTRL   = 0xFFE3;
-        var KEYSYM_ALT    = 0xFFE9;
-        var KEYSYM_DELETE = 0xFFFF;
-
-        guac.sendKeyEvent(1, KEYSYM_CTRL);
-        guac.sendKeyEvent(1, KEYSYM_ALT);
-        guac.sendKeyEvent(1, KEYSYM_DELETE);
-        guac.sendKeyEvent(0, KEYSYM_DELETE);
-        guac.sendKeyEvent(0, KEYSYM_ALT);
-        guac.sendKeyEvent(0, KEYSYM_CTRL);
+        window.opener.setClipboard(data);
     };
 
 };

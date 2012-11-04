@@ -25,60 +25,22 @@
         <link rel="icon" type="image/png" href="images/guacamole-logo-64.png"/>
         <link rel="stylesheet" type="text/css" href="styles/client.css"/>
         <link rel="stylesheet" type="text/css" href="styles/keyboard.css"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <title>Guacamole ${project.version}</title>
     </head>
 
     <body>
 
-        <!-- Menu -->
-        <div id="menu">
-
-            <!-- Clipboard -->
-            <button id="showClipboard">Show Clipboard</button>
-            <div id="clipboardDiv">
-                <h2>Clipboard</h2>
-                <p>
-                Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.
-                </p>
-                <textarea rows="10" cols="40" id="clipboard"></textarea>
-            </div>
-
-            <button id="showKeyboard">Show Keyboard</button>
-            <button id="ctrlAltDelete">Ctrl-Alt-Delete</button>
-            <button id="logout">Logout</button>
-
-            <!-- Logo and status -->
-            <img id="status-logo" class="logo" src="images/guacamole-logo-24.png" alt="Guacamole" title="Guacamole ${project.version}"/>
-
-        </div>
-
         <!-- Touch-specific menu -->
         <div id="touchMenu"><img id="touchShowClipboard" src="images/menu-icons/tango/edit-paste.png"/><img id="touchShowKeyboard" src="images/menu-icons/tango/input-keyboard.png"/><img id="touchLogout" src="images/menu-icons/tango/system-log-out.png"/></div>
-
-        <!-- Touch-specific clipboard -->
-        <div id="touchClipboardDiv">
-            <h2>Clipboard</h2>
-            <p>
-            Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.
-            </p>
-            <textarea rows="10" cols="40" id="touchClipboard"></textarea>
-        </div>
 
         <!-- Keyboard event target for platforms with native OSKs -->
         <textarea id="eventTarget"></textarea>
 
         <!-- Display -->
         <div id="display">
-            
-            <!-- Menu trigger -->
-            <div id="menuControl"></div>
-
         </div>
-
-        <!-- On-screen keyboard -->
-        <div id="keyboardContainer"></div>
 
         <!-- Dimensional clone of viewport -->
         <div id="viewportClone"/>

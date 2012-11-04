@@ -360,3 +360,11 @@ div#recent-connections .protocol {
 .caption .name {
     margin-left: 0.25em;
 }
+
+#clipboardDiv {
+    padding: 1em;
+}
+
+#clipboardDiv textarea {
+    width: 100%;
+}
