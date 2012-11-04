@@ -1167,6 +1167,17 @@ Guacamole.Client = function(tunnel) {
         return displayScale;
     };
 
+    /**
+     * Returns a canvas element containing the entire display, with all child
+     * layers composited within.
+     */
+    this.flatten = function() {
+        
+        // STUB: For now, just return canvas from root layer
+        return getLayer(0).getCanvas();
+        
+    };
+
 };
 
 /**
