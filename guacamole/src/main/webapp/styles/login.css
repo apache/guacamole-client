@@ -133,6 +133,7 @@ div#login-dialog th {
 div#login-dialog #login-fields input {
     border: 1px solid #777;
     border-radius: 0.2em;
+    width: 100%;
 }
 
 div#login-dialog #login-fields img.logo {
@@ -278,6 +279,8 @@ div#recent-connections div.connection {
     padding: 1em;
     margin: 1em;
     text-align: center;
+    max-width: 75%;
+    overflow: hidden;
 }
 
 .connection {
@@ -302,6 +305,7 @@ div#recent-connections div.connection {
 .connection .thumbnail img {
     border: 1px solid black;
     box-shadow: 1px 1px 5px black;
+    max-width: 75%;
 }
 
 div#other-connections {
