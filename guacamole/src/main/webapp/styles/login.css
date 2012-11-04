@@ -141,6 +141,7 @@ div#login-dialog #login-fields img.logo {
     left: 0;
     bottom: 0;
     opacity: 0.1;
+    z-index: -1;
 }
 
 div#version-dialog {
@@ -154,7 +155,7 @@ div#version-dialog {
     color: black;
     opacity: 0.5;
 
-    padding: 0.25em;
+    padding: 0.5em;
 }
 
 img {
