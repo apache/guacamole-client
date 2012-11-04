@@ -777,8 +777,49 @@ GuacamoleUI.attach = function(guac) {
 
             // Connected
             case 3:
+
                 GuacamoleUI.hideStatus();
                 title_prefix = null;
+
+                window.setTimeout(function() {
+
+                    // Get screenshot
+                    var canvas = guac.flatten();
+
+                    // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+                    var scale = Math.min(
+                        320 / canvas.width,
+                        240 / canvas.height,
+                        1
+                    );
+
+                    // Create thumbnail canvas
+                    var thumbnail = document.createElement("canvas");
+                    thumbnail.width  = canvas.width*scale;
+                    thumbnail.height = canvas.height*scale;
+
+                    // Scale screenshot to thumbnail
+                    var context = thumbnail.getContext("2d");
+                    context.drawImage(canvas,
+                        0, 0, canvas.width, canvas.height,
+                        0, 0, thumbnail.width, thumbnail.height
+                    );
+
+                    // Get thumbnail set from local storage
+                    var thumbnails = {};
+                    try {
+                        thumbnails = JSON.parse(localStorage.getItem("GUAC_THUMBNAILS"));
+                    }
+                    catch (e) {
+                    }
+
+                    // Save thumbnail to local storage
+                    var id = decodeURIComponent(window.location.search.substring(4));
+                    thumbnails[id] = thumbnail.toDataURL();
+                    localStorage.setItem("GUAC_THUMBNAILS", JSON.stringify(thumbnails));
+
+                }, 5000);
+
                 break;
 
             // Disconnecting

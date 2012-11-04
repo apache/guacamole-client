@@ -18,8 +18,8 @@
  */
 
 body {
-    background: gray;
-    font-family: sans-serif;
+    background: #EEE;
+    font-family: FreeSans, Helvetica, Arial, sans-serif;
     padding: 0;
     margin: 0;
 }
@@ -140,10 +140,6 @@ img#license {
     margin: 2px;
 }
 
-div#connection-list-ui {
-    background: #BCA;
-}
-
 div#connection-list-ui table {
     width: 100%;
     border-collapse: collapse;
@@ -214,22 +210,100 @@ div#logout-panel {
     float: right;
 }
 
-div#connection-list-ui a[href] {
+div#connection-list-ui h2 {
+
+    padding: 0.5em;
+    margin: 0;
+    font-size: 1.5em;
+
+    font-weight: lighter;
+    text-shadow: 1px 1px white;
+
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    background: #DDD;
+    
+}
+
+div#recent-connections {
+    margin: 1em;
+    margin-top: 0;
+    text-align: center;
+    min-height: 240px;
+}
+
+div#recent-connections div.connection {
+    border-radius: 0.5em;
+    display: inline-block;
+    padding: 1em;
+    margin: 1em;
+    text-align: center;
+}
+
+.connection {
+    cursor: pointer;
+}
+
+.connection:hover {
+    background: #CDA;
+}
+
+.connection .name a[href] {
     text-decoration: none;
-    color: blue;
+    color: black;
+    font-weight: normal;
+    padding: 0.1em;
 }
 
-div#connection-list-ui a[href]:hover {
-    text-decoration: underline;
+.connection .thumbnail {
+    margin: 0.5em;
 }
 
-.protocol.icon {
+.connection .thumbnail img {
+    border: 1px solid black;
+    box-shadow: 1px 1px 5px black;
+}
+
+div#other-connections {
+    margin: 0;
+    padding: 1em;
+}
+
+div#other-connections .connection {
+    display: block;
+    text-align: left;
+}
+
+div#other-connections .connection .thumbnail {
+    display: none;
+}
+
+div#other-connections .connection {
+    padding: 0.1em;
+}
+
+.protocol {
+    display: inline-block;
+}
+
+.protocol .icon {
     width: 24px;
     height: 24px;
     background-image: url('../images/protocol-icons/tango/video-display.png');
 }
 
-.protocol.icon.ssh {
+.protocol .icon.ssh {
     background-image: url('../images/protocol-icons/tango/terminal.png');
 }
 
+div#recent-connections .protocol {
+    display: none;
+}
+
+.caption * {
+    vertical-align: middle;
+}
+
+.caption .name {
+    margin-left: 0.25em;
+}

@@ -71,22 +71,14 @@
             <div id="logout-panel">
                 <button id="logout">Logout</button>
             </div>
-            
-            <h1>
-                <img class="logo" src="images/guacamole-logo-64.png" alt=""/>
-                Available Connections
-            </h1>
-            
-            <table class="connections">
-                <thead>
-                    <tr>
-                        <th class="protocol"> </th>
-                        <th class="name">Name</th>
-                    </tr>
-                </thead>
-                <tbody id="connections-tbody">
-                </tbody>
-            </table>
+           
+            <h2>Recent Connections</h2>
+            <div id="recent-connections">
+            </div>
+
+            <h2>Other Connections</h2>
+            <div id="other-connections">
+            </div>
 
         </div>
 
@@ -139,40 +131,75 @@
                 }
 
                 // Remove all rows from connections list
-                var tbody = document.getElementById("connections-tbody");
-                tbody.innerHTML = "";
+                var recent_connections = document.getElementById("recent-connections");
+                var other_connections = document.getElementById("other-connections");
                 
-                // Add one row per connection
+                // Get thumbnail set from local storage
+                var thumbnails = {};
+                try {
+                    thumbnails = JSON.parse(localStorage.getItem("GUAC_THUMBNAILS"));
+                }
+                catch (e) {
+                }
+                for (var test in thumbnails)
+                    console.log(test);
+
+                // Add connection icons
                 for (var i=0; i<configs.length; i++) {
 
-                    // Create row and cells
-                    var tr = document.createElement("tr");
-                    var protocol = document.createElement("td");
-                    var id = document.createElement("td");
+                    // Create connection display elements
+                    var connection = document.createElement("div");
+                    connection.className = "connection";
 
-                    var protocolIcon = document.createElement("div");
-                    protocolIcon.className = "protocol icon " + configs[i].protocol;
+                    var caption = document.createElement("div");
+                    caption.className = "caption";
 
-                    // Set CSS
+                    var protocol = document.createElement("div");
                     protocol.className = "protocol";
+
+                    var id = document.createElement("span");
                     id.className = "name";
 
-                    // Create link to client
-                    var clientLink = document.createElement("a");
-                    clientLink.setAttribute("href", getClientURL(configs[i].id));
+                    var protocolIcon = document.createElement("div");
+                    protocolIcon.className = "icon " + configs[i].protocol;
 
-                    // Set cell contents
+                    var thumbnail = document.createElement("div");
+                    thumbnail.className = "thumbnail";
+
+                    // Create link to client
+                    var url = getClientURL(configs[i].id)
+                    var clientLink = document.createElement("a");
+                    clientLink.setAttribute("href", url);
+
+                    connection.onclick = function() {
+                        window.location = url;
+                    };
+                    
                     protocol.appendChild(protocolIcon);
-                    //protocol.textContent   = configs[i].protocol;
+
                     clientLink.textContent = configs[i].id;
                     id.appendChild(clientLink);
 
-                    // Add cells
-                    tr.appendChild(protocol);
-                    tr.appendChild(id);
+                    // Assemble caption
+                    caption.appendChild(protocol);
+                    caption.appendChild(id);
 
-                    // Add row
-                    tbody.appendChild(tr);
+                    // Assemble connection icon
+                    connection.appendChild(thumbnail);
+                    connection.appendChild(caption);
+
+                    // Add screenshot if available
+                    var thumbnail_url = thumbnails[configs[i].id];
+                    if (thumbnail_url) {
+
+                        var img = document.createElement("img");
+                        img.src = thumbnail_url;
+                        thumbnail.appendChild(img);
+
+                        recent_connections.appendChild(connection);
+                    }
+                    else
+                        other_connections.appendChild(connection);
 
                 }
 
