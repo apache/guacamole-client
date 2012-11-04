@@ -25,7 +25,6 @@ body {
 }
 
 div#login-ui {
-    background: #BCA;
     height: 100%;
     width: 100%;
     position: fixed;
@@ -76,45 +75,72 @@ div#login-dialog #buttons {
 
 div#login-dialog #buttons input,
 div#logout-panel button {
-    background: #9A8;
-    border: 1px solid #676;
-    color: black; 
-    padding: 0.25em;
+
+    background: #8A6;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    border-radius: 0.6em;
+
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    font-size: 1.125em;
+
+    box-shadow: inset -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                inset 1px 1px 0.25em rgba(255, 255, 255, 0.25),
+                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                1px 1px 0.25em rgba(255, 255, 255, 0.25);
+    
+    padding: 0.35em;
     padding-right: 1em;
     padding-left: 1em;
+    min-width: 5em;
+
 }
 
 div#login-dialog #buttons input:hover,
 div#logout-panel button:hover {
-    background: #CDB;
-    border: 1px solid #9A8;
+    background: #9C7;
 }
 
 div#login-dialog #buttons input:active,
 div#logout-panel button:active {
-    padding-top: 0.35em;
-    padding-left: 1.1em;
 
-    padding-bottom: 0.15em;
+    padding-left: 1.1em;
     padding-right: 0.9em;
+    padding-top: 0.45em;
+    padding-bottom: 0.25em;
+    
+    box-shadow: 
+                inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
+                1px 1px 0.25em rgba(0, 0, 0, 0.25);
 }
 
 div#login-dialog #login-fields {
     
-    background: #CDB;
     vertical-align: middle;
 
     padding: 1em;
-    border: 1px solid #676;
+    background: #DDD;
+    border: 1px solid #999;
+    border-radius: 0.25em;
 
+}
+
+div#login-dialog th {
+    text-shadow: 1px 1px white;
 }
 
 div#login-dialog #login-fields input {
-    border: 1px solid #676;
+    border: 1px solid #777;
+    border-radius: 0.2em;
 }
 
 div#login-dialog #login-fields img.logo {
-    float: left;
+    position: fixed;
+    margin: 10px;
+    left: 0;
+    bottom: 0;
+    opacity: 0.1;
 }
 
 div#version-dialog {
