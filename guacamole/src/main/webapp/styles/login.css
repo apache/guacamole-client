@@ -319,6 +319,8 @@ div#recent-connections .protocol {
 
 #clipboardDiv textarea {
     width: 100%;
+    border: 1px solid #AAA;
+    border-radius: 0.25em;
 }
 
 #settings dt {

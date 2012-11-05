@@ -35,7 +35,8 @@ var GuacamoleUI = {
     },
     
     "state"          : document.getElementById("statusText"),
-    "client"         : null
+    "client"         : null,
+    "sessionState"   : new GuacamoleSessionState()
 
 };
 
@@ -145,38 +146,39 @@ GuacamoleUI.supportedVideo = [];
     };
 
     // Query audio support
-    (function () {
-        var probably_supported = [];
-        var maybe_supported = [];
+    if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
+        (function () {
+            var probably_supported = [];
+            var maybe_supported = [];
 
-        // Build array of supported audio formats
-        [
-            'audio/ogg; codecs="vorbis"',
-            'audio/mp4; codecs="mp4a.40.5"',
-            'audio/mpeg; codecs="mp3"',
-            'audio/webm; codecs="vorbis"',
-            'audio/wav; codecs=1'
-        ].forEach(function(mimetype) {
+            // Build array of supported audio formats
+            [
+                'audio/ogg; codecs="vorbis"',
+                'audio/mp4; codecs="mp4a.40.5"',
+                'audio/mpeg; codecs="mp3"',
+                'audio/webm; codecs="vorbis"',
+                'audio/wav; codecs=1'
+            ].forEach(function(mimetype) {
 
-            var audio = new Audio();
-            var support_level = audio.canPlayType(mimetype);
+                var audio = new Audio();
+                var support_level = audio.canPlayType(mimetype);
 
-            // Trim semicolon and trailer
-            var semicolon = mimetype.indexOf(";");
-            if (semicolon != -1)
-                mimetype = mimetype.substring(0, semicolon);
+                // Trim semicolon and trailer
+                var semicolon = mimetype.indexOf(";");
+                if (semicolon != -1)
+                    mimetype = mimetype.substring(0, semicolon);
 
-            // Partition by probably/maybe
-            if (support_level == "probably")
-                probably_supported.push(mimetype);
-            else if (support_level == "maybe")
-                maybe_supported.push(mimetype);
+                // Partition by probably/maybe
+                if (support_level == "probably")
+                    probably_supported.push(mimetype);
+                else if (support_level == "maybe")
+                    maybe_supported.push(mimetype);
 
-        });
+            });
 
-        Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
-        Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
-    })();
+            Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
+            Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
+        })();
 
     // Query video support
     (function () {
@@ -221,8 +223,6 @@ GuacamoleUI.attach = function(guac) {
     var connection_name = "Guacamole"; 
     
     var guac_display = guac.getDisplay();
-
-    var state = new GuacamoleSessionState();
 
     // Set document title appropriately, based on prefix and connection name
     function updateTitle() {
@@ -370,7 +370,7 @@ GuacamoleUI.attach = function(guac) {
     function updateDisplayScale() {
 
         // If auto-fit is enabled, scale display
-        if (state.getProperty("auto-fit")) {
+        if (GuacamoleUI.sessionState.getProperty("auto-fit")) {
 
             // Calculate scale to fit screen
             var fit_scale = Math.min(
@@ -425,8 +425,8 @@ GuacamoleUI.attach = function(guac) {
                 title_prefix = null;
 
                 // Update clipboard with current data
-                if (state.getProperty("clipboard"))
-                    guac.setClipboard(state.getProperty("clipboard"));
+                if (GuacamoleUI.sessionState.getProperty("clipboard"))
+                    guac.setClipboard(GuacamoleUI.sessionState.getProperty("clipboard"));
 
                 // Regularly update screenshot if storage available
                 if (localStorage)
@@ -492,10 +492,10 @@ GuacamoleUI.attach = function(guac) {
 
     // Server copy handler
     guac.onclipboard = function(data) {
-        state.setProperty("clipboard", data);
+        GuacamoleUI.sessionState.setProperty("clipboard", data);
     };
 
-    state.onchange = function(old_state, new_state, name) {
+    GuacamoleUI.sessionState.onchange = function(old_state, new_state, name) {
         if (name == "clipboard")
             guac.setClipboard(new_state[name]);
         else if (name == "auto-fit")
