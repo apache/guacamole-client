@@ -25,7 +25,6 @@ var GuacamoleUI = {
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "logo"        : document.getElementById("status-logo"),
-    "eventTarget" : document.getElementById("eventTarget"),
 
     "buttons": {
         "reconnect"    : document.getElementById("reconnect")
@@ -144,16 +143,6 @@ GuacamoleUI.supportedVideo = [];
     GuacamoleUI.buttons.reconnect.onclick = function() {
         window.location.reload();
     };
-
-    // Turn off autocorrect and autocapitalization on eventTarget
-    GuacamoleUI.eventTarget.setAttribute("autocorrect", "off");
-    GuacamoleUI.eventTarget.setAttribute("autocapitalize", "off");
-
-    // Automatically reposition event target on scroll
-    window.addEventListener("scroll", function() {
-        GuacamoleUI.eventTarget.style.left = window.pageXOffset + "px";
-        GuacamoleUI.eventTarget.style.top = window.pageYOffset + "px";
-    });
 
     // Query audio support
     (function () {
@@ -314,63 +303,6 @@ GuacamoleUI.attach = function(guac) {
     // Keyboard
     var keyboard = new Guacamole.Keyboard(document);
 
-    // Monitor whether the event target is focused
-    var eventTargetFocused = false;
-
-    // Save length for calculation of changed value
-    var currentLength = GuacamoleUI.eventTarget.value.length;
-
-    GuacamoleUI.eventTarget.onfocus = function() {
-        eventTargetFocused = true;
-        GuacamoleUI.eventTarget.value = "";
-        currentLength = 0;
-    };
-
-    GuacamoleUI.eventTarget.onblur = function() {
-        eventTargetFocused = false;
-    };
-
-    // If text is input directly into event target without typing (as with
-    // voice input, for example), type automatically.
-    GuacamoleUI.eventTarget.oninput = function(e) {
-
-        // Calculate current length and change in length
-        var oldLength = currentLength;
-        currentLength = GuacamoleUI.eventTarget.value.length;
-        
-        // If deleted or replaced text, ignore
-        if (currentLength <= oldLength)
-            return;
-
-        // Get changed text
-        var text = GuacamoleUI.eventTarget.value.substring(oldLength);
-
-        // Send each character
-        for (var i=0; i<text.length; i++) {
-
-            // Get char code
-            var charCode = text.charCodeAt(i);
-
-            // Convert to keysym
-            var keysym = 0x003F; // Default to a question mark
-            if (charCode >= 0x0000 && charCode <= 0x00FF)
-                keysym = charCode;
-            else if (charCode >= 0x0100 && charCode <= 0x10FFFF)
-                keysym = 0x01000000 | charCode;
-
-            // Send keysym only if not already pressed
-            if (!keyboard.pressed[keysym]) {
-
-                // Press and release key
-                guac.sendKeyEvent(1, keysym);
-                guac.sendKeyEvent(0, keysym);
-
-            }
-
-        }
-
-    }
-
     function isTypableCharacter(keysym) {
         return (keysym & 0xFFFF00) != 0xFF00;
     }
@@ -384,12 +316,10 @@ GuacamoleUI.attach = function(guac) {
 
         keyboard.onkeydown = function (keysym) {
             guac.sendKeyEvent(1, keysym);
-            return eventTargetFocused && isTypableCharacter(keysym);
         };
 
         keyboard.onkeyup = function (keysym) {
             guac.sendKeyEvent(0, keysym);
-            return eventTargetFocused && isTypableCharacter(keysym);
         };
 
     }
