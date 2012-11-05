@@ -20,7 +20,6 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.BufferedReader;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,6 +30,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;

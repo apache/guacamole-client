@@ -96,32 +96,22 @@
         </div>
 
         <script type="text/javascript" src="scripts/connections.js"></script>
+        <script type="text/javascript" src="scripts/session.js"></script>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
-            var clients = [];
+            var state = new GuacamoleSessionState();
             var clipboard = document.getElementById("clipboard");
 
             clipboard.onchange = function() {
-                propagateClipboard(clipboard.value);
+                state.setProperty("clipboard", clipboard.value);
             };
 
-            function setClipboard(text) {
-                clipboard.value = text;
-                propagateClipboard(text);
-            }
-
-            // Propogate clipboard data across all open clients
-            function propagateClipboard(text) {
-                for (var i=0; i<clients.length; i++) {
-
-                    var guac = clients[i].GuacamoleUI.client;
-                    if (guac)
-                        guac.setClipboard(text);
-
-                }
-            }
+            state.onchange = function(old_state, new_state, name) {
+                if (name == "clipboard")
+                    clipboard.value = new_state[name];
+            };
 
             // Constructs the URL for a client which connects to the connection
             // with the given id.
@@ -198,7 +188,7 @@
 
                     function new_client(url) {
                         return function() {
-                            clients.push(window.open(url));
+                            window.open(url);
                         };
                     }
                     
