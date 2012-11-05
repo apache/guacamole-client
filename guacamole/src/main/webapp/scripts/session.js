@@ -19,6 +19,7 @@
 
 /**
  * Maintains state across multiple Guacamole pages via HTML5 Web Storage.
+ * @constructor
  */
 function GuacamoleSessionState() {
 
@@ -84,7 +85,19 @@ function GuacamoleSessionState() {
         return state[name];
     };
 
-    // Reload properties every 5 seconds
+    /**
+     * Event which is fired whenever a property value is changed externally.
+     * 
+     * @event
+     * @param old_state An object whose properties' values are the old values
+     *                  of this GuacamoleSessionState.
+     * @param new_state An object whose properties' values are the new values
+     *                  of this GuacamoleSessionState.
+     * @param {String} name The name of the property that is being changed.
+     */
+    this.onchange = null;
+
+    // Reload properties every second
     window.setInterval(guac_state.reload, 1000);
 
     // Initial load
