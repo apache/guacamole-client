@@ -113,6 +113,10 @@
                     clipboard.value = new_state[name];
             };
 
+            // Update clipboard with current data
+            if (state.getProperty("clipboard"))
+                clipboard.value = state.getProperty("clipboard");
+
             // Constructs the URL for a client which connects to the connection
             // with the given id.
             function getClientURL(id) {
@@ -193,14 +197,12 @@
                     }
                     
                     // Create link to client
-                    var clientLink = document.createElement("a");
                     var url = getClientURL(configs[i].id)
                     connection.onclick = new_client(url);
 
                     protocol.appendChild(protocolIcon);
 
-                    clientLink.textContent = configs[i].id;
-                    id.appendChild(clientLink);
+                    id.textContent = configs[i].id;
 
                     // Assemble caption
                     caption.appendChild(protocol);

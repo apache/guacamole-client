@@ -233,6 +233,8 @@ GuacamoleUI.attach = function(guac) {
     
     var guac_display = guac.getDisplay();
 
+    var state = new GuacamoleSessionState();
+
     // Set document title appropriately, based on prefix and connection name
     function updateTitle() {
 
@@ -478,6 +480,10 @@ GuacamoleUI.attach = function(guac) {
                 GuacamoleUI.hideStatus();
                 title_prefix = null;
 
+                // Update clipboard with current data
+                if (state.getProperty("clipboard"))
+                    guac.setClipboard(state.getProperty("clipboard"));
+
                 // Regularly update screenshot if storage available
                 if (localStorage)
                     window.setInterval(updateThumbnail, 5000);
@@ -547,8 +553,6 @@ GuacamoleUI.attach = function(guac) {
         guac.scale(fit_scale);
 
     };
-
-    var state = new GuacamoleSessionState();
 
     // Server copy handler
     guac.onclipboard = function(data) {
