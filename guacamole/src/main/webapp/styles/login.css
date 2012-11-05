@@ -80,7 +80,7 @@ div#logout-panel button {
     border: 1px solid rgba(0, 0, 0, 0.4);
     border-radius: 0.6em;
 
-    color: rgba(255, 255, 255, 0.95);
+    color: white;
     text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
     font-weight: bold;
     font-size: 1.125em;
