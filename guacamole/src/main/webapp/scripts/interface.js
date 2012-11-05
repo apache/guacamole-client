@@ -367,18 +367,34 @@ GuacamoleUI.attach = function(guac) {
     // Enable keyboard by default
     enableKeyboard();
 
+    function updateDisplayScale() {
+
+        console.log(state.getProperty("auto-fit"));
+
+        // If auto-fit is enabled, scale display
+        if (state.getProperty("auto-fit")) {
+
+            // Calculate scale to fit screen
+            var fit_scale = Math.min(
+                window.innerWidth / guac.getWidth(),
+                window.innerHeight / guac.getHeight()
+            );
+              
+            // Scale client
+            if (fit_scale != guac.getScale())
+                guac.scale(fit_scale);
+
+        }
+
+        // Otherwise, scale to 100%
+        else if (guac.getScale() != 1.0)
+            guac.scale(1.0);
+
+    }
+
     // Handle resize
     guac.onresize = function(width, height) {
-
-        // Calculate scale to fit screen
-        var fit_scale = Math.min(
-            window.innerWidth / width,
-            window.innerHeight / height
-        );
-          
-        // Scale client
-        guac.scale(fit_scale);
-
+        updateDisplayScale();
     }
 
     // Handle client state change
@@ -472,15 +488,7 @@ GuacamoleUI.attach = function(guac) {
     window.onresize = function() {
 
         guac.sendSize(window.innerWidth, window.innerHeight);
-
-        // Calculate scale to fit screen
-        var fit_scale = Math.min(
-            window.innerWidth / guac.getWidth(),
-            window.innerHeight / guac.getHeight()
-        );
-          
-        // Scale client
-        guac.scale(fit_scale);
+        updateDisplayScale();
 
     };
 
@@ -492,6 +500,9 @@ GuacamoleUI.attach = function(guac) {
     state.onchange = function(old_state, new_state, name) {
         if (name == "clipboard")
             guac.setClipboard(new_state[name]);
+        else if (name == "auto-fit")
+            updateDisplayScale();
+
     };
 
 };

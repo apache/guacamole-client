@@ -90,6 +90,23 @@
                 <textarea rows="10" cols="40" id="clipboard"></textarea>
             </div>
 
+            <h2>Settings</h2>
+            <div id="settings">
+                <dl>
+                    <dt>
+                        <input type="checkbox" id="auto-fit"/>
+                        Auto-fit display to browser window.
+                    </dt>
+                    <dd>
+                        If checked, remote displays are automatically
+                        scaled to exactly fit within the browser window. If
+                        unchecked, remote displays are always shown at their
+                        natural resolution, even if doing so causes the display
+                        to extend beyond the bounds of the window.
+                    </dd>
+                </dl>
+            </div>
+
         </div>
 
         <div id="version-dialog">
@@ -103,7 +120,12 @@
         <script type="text/javascript"> /* <![CDATA[ */
 
             var state = new GuacamoleSessionState();
+            var auto_fit = document.getElementById("auto-fit");
             var clipboard = document.getElementById("clipboard");
+
+            auto_fit.onchange = auto_fit.onclick = function() {
+                state.setProperty("auto-fit", auto_fit.checked);
+            };
 
             clipboard.onchange = function() {
                 state.setProperty("clipboard", clipboard.value);
@@ -112,11 +134,20 @@
             state.onchange = function(old_state, new_state, name) {
                 if (name == "clipboard")
                     clipboard.value = new_state[name];
+                else if (name == "auto-fit")
+                    auto_fit.checked = new_state[name];
             };
 
             // Update clipboard with current data
             if (state.getProperty("clipboard"))
                 clipboard.value = state.getProperty("clipboard");
+
+            // Default to true if auto-fit not specified
+            if (state.getProperty("auto-fit") === undefined)
+                state.setProperty("auto-fit", true);
+
+            // Update auto-fit setting in UI
+            auto_fit.checked = state.getProperty("auto-fit");
 
             // Constructs the URL for a client which connects to the connection
             // with the given id.

@@ -44,11 +44,15 @@ function GuacamoleSessionState() {
         // Pull current state
         var new_state = JSON.parse(localStorage.getItem("GUACAMOLE_STATE") || "{}");
         
-        // Check if value is different
+        // Assign new state
+        var old_state = state;
+        state = new_state;
+
+        // Check if any values are different
         for (var name in new_state) {
 
             // If value changed, call handler
-            var old = state[name];
+            var old = old_state[name];
             if (old != new_state[name]) {
 
                 // Call change handler
@@ -58,9 +62,6 @@ function GuacamoleSessionState() {
             }
 
         }
-
-        // Assign new state
-        state = new_state;
 
     };
 
@@ -100,6 +101,9 @@ function GuacamoleSessionState() {
     // Reload properties every second
     window.setInterval(guac_state.reload, 1000);
 
+    // Reload properties when focus is gained
+    window.addEventListener("focus", guac_state.reload);
+    
     // Initial load
     guac_state.reload();
 

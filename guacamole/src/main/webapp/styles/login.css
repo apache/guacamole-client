@@ -184,16 +184,6 @@ div#connection-list-ui h1 {
 
 }
 
-div#connection-list-ui img {
-    vertical-align: middle;
-}
-
-div#logout-panel {
-    padding: 0.45em;
-    text-align: right;
-    float: right;
-}
-
 div#connection-list-ui h2 {
 
     padding: 0.5em;
@@ -209,13 +199,29 @@ div#connection-list-ui h2 {
     
 }
 
+div#connection-list-ui img {
+    vertical-align: middle;
+}
+
+div#logout-panel {
+    padding: 0.45em;
+    text-align: right;
+    float: right;
+}
+
 .history-unavailable div#recent-connections {
     display: none;
 }
 
+div#recent-connections,
+div#clipboardDiv,
+div#settings,
+div#other-connections {
+    margin: 0;
+    padding: 1em;
+}
+
 div#recent-connections {
-    margin: 1em;
-    margin-top: 0;
     text-align: center;
 }
 
@@ -261,11 +267,6 @@ div#recent-connections div.connection {
     border: 1px solid black;
     box-shadow: 1px 1px 5px black;
     max-width: 75%;
-}
-
-div#other-connections {
-    margin: 0;
-    padding: 1em;
 }
 
 div#other-connections .connection {
@@ -316,10 +317,17 @@ div#recent-connections .protocol {
     margin-left: 0.25em;
 }
 
-#clipboardDiv {
-    padding: 1em;
-}
-
 #clipboardDiv textarea {
     width: 100%;
+}
+
+#settings dt {
+    border-bottom: 1px dotted #AAA;
+    padding-bottom: 0.25em;
+}
+
+#settings dd {
+    margin: 1.5em;
+    margin-left: 2.5em;
+    font-size: 0.75em;
 }
