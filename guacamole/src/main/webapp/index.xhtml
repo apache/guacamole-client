@@ -190,15 +190,27 @@
                     var thumbnail = document.createElement("div");
                     thumbnail.className = "thumbnail";
 
-                    function new_client(url) {
+                    function new_client(id) {
+
+                        // Get URL
+                        var url = getClientURL(id)
+
                         return function() {
-                            window.open(url);
+
+                            // Attempt to focus existing window
+                            var current = window.open(null, id);
+
+                            // If window did not already exist, set up as
+                            // Guacamole client
+                            if (!current.GuacamoleUI)
+                                window.open(url, id);
+
                         };
+
                     }
                     
                     // Create link to client
-                    var url = getClientURL(configs[i].id)
-                    connection.onclick = new_client(url);
+                    connection.onclick = new_client(configs[i].id);
 
                     protocol.appendChild(protocolIcon);
 
