@@ -369,8 +369,6 @@ GuacamoleUI.attach = function(guac) {
 
     function updateDisplayScale() {
 
-        console.log(state.getProperty("auto-fit"));
-
         // If auto-fit is enabled, scale display
         if (state.getProperty("auto-fit")) {
 
