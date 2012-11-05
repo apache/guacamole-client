@@ -291,7 +291,7 @@ div#recent-connections div.connection {
     background: #CDA;
 }
 
-.connection .name a[href] {
+.connection .name a {
     text-decoration: none;
     color: black;
     font-weight: normal;
