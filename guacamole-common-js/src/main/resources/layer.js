@@ -510,10 +510,10 @@ Guacamole.Layer = function(width, height) {
             
             render_callback();
             
-        });
+        }, false);
 
         // Unblock future operations after an error
-        video.addEventListener("error", lock.unblock);
+        video.addEventListener("error", lock.unblock, false);
 
         // Play video as soon as current tasks are complete, now that the
         // lock has been set up.
