@@ -24,21 +24,21 @@ GuacamoleHistory = new (function() {
 
     function truncate() {
 
-        // Avoid history growth beyond defined number of entries
-        if (history.length > IDEAL_LENGTH) {
+        // Build list of entries
+        var entries = [];
+        for (var old_id in history)
+            entries.push(history[old_id]);
 
-            // Build list of entries
-            var entries = [];
-            for (var old_entry in history)
-                entries.push(old_entry);
+        // Avoid history growth beyond defined number of entries
+        if (entries.length > IDEAL_LENGTH) {
 
             // Sort list
-            entries.sort(GuacamoleHistory.Entries.compare);
+            entries.sort(GuacamoleHistory.Entry.compare);
 
             // Remove entries until length is ideal or all are recent
             var now = new Date().getTime();
             while (entries.length > IDEAL_LENGTH 
-                    && entries[0].accessed - now > CUTOFF_AGE) {
+                    && now - entries[0].accessed > CUTOFF_AGE) {
 
                 // Remove entry
                 var removed = entries.shift();

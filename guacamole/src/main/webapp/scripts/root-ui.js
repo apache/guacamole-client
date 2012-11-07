@@ -367,6 +367,14 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
 };
 
 /*
+ * This window has no name. We need it to have no name. If someone navigates
+ * to the root UI within the same window as a previous connection, we need to
+ * remove the name from that window such that new attempts to use that previous
+ * connection do not replace the contents of this very window.
+ */
+window.name = "";
+
+/*
  * Update session state when auto-fit checkbox is changed
  */
 
