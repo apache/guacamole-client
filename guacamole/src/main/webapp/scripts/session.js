@@ -98,12 +98,9 @@ function GuacamoleSessionState() {
      */
     this.onchange = null;
 
-    // Reload properties every second
-    window.setInterval(guac_state.reload, 1000);
+    // Reload when modified
+    window.addEventListener("storage", guac_state.reload);
 
-    // Reload properties when focus is gained
-    window.addEventListener("focus", guac_state.reload);
-    
     // Initial load
     guac_state.reload();
 

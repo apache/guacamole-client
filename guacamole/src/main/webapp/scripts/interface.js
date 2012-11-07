@@ -418,9 +418,8 @@ GuacamoleUI.attach = function(guac) {
                 if (GuacamoleUI.sessionState.getProperty("clipboard"))
                     guac.setClipboard(GuacamoleUI.sessionState.getProperty("clipboard"));
 
-                // Regularly update screenshot if storage available
-                if (localStorage)
-                    window.setInterval(updateThumbnail, 5000);
+                // Regularly update screenshot
+                window.setInterval(updateThumbnail, 1000);
 
                 break;
 

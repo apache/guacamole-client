@@ -323,12 +323,6 @@ GuacamoleRootUI.reset = function() {
     GuacamoleRootUI.views.login.style.display = "none";
     GuacamoleRootUI.views.connections.style.display = "";
 
-    // Reload history every 5 seconds
-    window.setInterval(GuacamoleHistory.reload, 5000);
-
-    // Reload history when focus gained
-    window.onfocus = GuacamoleHistory.reload;
-
 };
 
 GuacamoleHistory.onchange = function(id, old_entry, new_entry) {

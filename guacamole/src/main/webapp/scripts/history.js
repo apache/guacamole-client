@@ -132,6 +132,9 @@ GuacamoleHistory = new (function() {
      */
     this.onchange = null;
 
+    // Reload when modified
+    window.addEventListener("storage", guac_history.reload);
+
     // Initial load
     guac_history.reload();
 
