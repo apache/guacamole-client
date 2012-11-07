@@ -92,28 +92,61 @@ GuacamoleRootUI.login = function(username, password) {
 };
 
 /**
- * Set of thumbnails for each connection, indexed by ID.
+ * An arbitrary Guacamole configuration, consisting of an ID/protocol pair.
+ * 
+ * @constructor
+ * @param {String} protocol The protocol used by this configuration.
+ * @param {String} id The ID associated with this configuration.
  */
-GuacamoleRootUI.Thumbnails = new (function() {
-
-    var thumbnails =
-        JSON.parse(localStorage.getItem("GUAC_THUMBNAILS") || "{}");
+GuacamoleRootUI.Configuration = function(protocol, id) {
 
     /**
-     * Returns the URL for the thumbnail of the connection with the given ID,
-     * or undefined if no thumbnail is associated with that connection.
+     * The protocol associated with this configuration.
      */
-    this.getURL = function(id) {
-        return thumbnails[id];
-    };
+    this.protocol = protocol;
 
-});
+    /**
+     * The ID associated with this configuration.
+     */
+    this.id = id;
+
+};
+
+GuacamoleRootUI.getConfigurations = function(parameters) {
+
+    // Construct request URL
+    var configs_url = "configs";
+    if (parameters) configs_url += "?" + parameters;
+
+    // Get config list
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", configs_url, false);
+    xhr.send(null);
+
+    // If fail, throw error
+    if (xhr.status != 200)
+        throw new Error(xhr.statusText);
+
+    // Otherwise, get list
+    var configs = new Array();
+
+    var configElements = xhr.responseXML.getElementsByTagName("config");
+    for (var i=0; i<configElements.length; i++) {
+        configs.push(new Config(
+            configElements[i].getAttribute("protocol"),
+            configElements[i].getAttribute("id")
+        ));
+    }
+
+    return configs;
+ 
+};
 
 /**
  * A connection UI object which can be easily added to a list of connections
  * for sake of display.
  */
-GuacamoleRootUI.Connection = function(id, protocol_name) {
+GuacamoleRootUI.Connection = function(config) {
 
     function element(tagname, classname) {
         var new_element = document.createElement(tagname);
@@ -126,22 +159,22 @@ GuacamoleRootUI.Connection = function(id, protocol_name) {
     var caption       = element("div",  "caption");
     var protocol      = element("div",  "protocol");
     var name          = element("span", "name");
-    var protocol_icon = element("div",  "icon " + protocol_name);
+    var protocol_icon = element("div",  "icon " + config.protocol);
     var thumbnail     = element("div",  "thumbnail");
 
     // Get URL
-    var url = "client.xhtml?id=" + encodeURIComponent(id);
+    var url = "client.xhtml?id=" + encodeURIComponent(config.id);
 
     // Create link to client
     connection.onclick = function() {
 
         // Attempt to focus existing window
-        var current = window.open(null, id);
+        var current = window.open(null, config.id);
 
         // If window did not already exist, set up as
         // Guacamole client
         if (!current.GuacamoleUI)
-            window.open(url, id);
+            window.open(url, config.id);
 
     };
 
@@ -149,7 +182,7 @@ GuacamoleRootUI.Connection = function(id, protocol_name) {
     protocol.appendChild(protocol_icon);
 
     // Set name
-    name.textContent = id;
+    name.textContent = config.id;
 
     // Assemble caption
     caption.appendChild(protocol);
@@ -160,7 +193,7 @@ GuacamoleRootUI.Connection = function(id, protocol_name) {
     connection.appendChild(caption);
 
     // Add screenshot if available
-    var thumbnail_url = GuacamoleRootUI.Thumbnails.getURL(id);
+    var thumbnail_url = GuacamoleHistory.get(config.id).thumbnail;
     if (thumbnail_url) {
 
         // Create thumbnail element
@@ -201,7 +234,7 @@ GuacamoleRootUI.reset = function() {
     // Read configs
     var configs;
     try {
-        configs = getConfigList(parameters);
+        configs = GuacamoleRootUI.getConfigurations(parameters);
     }
     catch (e) {
 
@@ -217,8 +250,7 @@ GuacamoleRootUI.reset = function() {
     for (var i=0; i<configs.length; i++) {
 
         // Create connection element
-        var connection = new GuacamoleRootUI.Connection(
-            configs[i].id, configs[i].protocol);
+        var connection = new GuacamoleRootUI.Connection(configs[i]);
 
         // If screenshot presennt, add to recent connections
         if (connection.hasThumbnail()) {

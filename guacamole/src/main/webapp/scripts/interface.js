@@ -348,19 +348,9 @@ GuacamoleUI.attach = function(guac) {
             0, 0, thumbnail.width, thumbnail.height
         );
 
-        // Get thumbnail set from local storage
-        var thumbnails = {};
-        try {
-            var thumbnail_json = localStorage.getItem("GUAC_THUMBNAILS");
-            if (thumbnail_json)
-                thumbnails = JSON.parse(thumbnail_json);
-        }
-        catch (e) {}
-
-        // Save thumbnail to local storage
+        // Save thumbnail to history
         var id = decodeURIComponent(window.location.search.substring(4));
-        thumbnails[id] = thumbnail.toDataURL();
-        localStorage.setItem("GUAC_THUMBNAILS", JSON.stringify(thumbnails));
+        GuacamoleHistory.update(id, thumbnail.toDataURL());
 
     }
 
@@ -474,10 +464,8 @@ GuacamoleUI.attach = function(guac) {
 
     // Disconnect and update thumbnail on close
     window.onunload = function() {
-        
-        if (localStorage)
-            updateThumbnail();
 
+        updateThumbnail();
         guac.disconnect();
 
     };
