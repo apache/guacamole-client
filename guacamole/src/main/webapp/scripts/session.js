@@ -99,7 +99,7 @@ function GuacamoleSessionState() {
     this.onchange = null;
 
     // Reload when modified
-    window.addEventListener("storage", guac_state.reload);
+    window.addEventListener("storage", guac_state.reload, false);
 
     // Initial load
     guac_state.reload();
