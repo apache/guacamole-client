@@ -216,7 +216,7 @@ div#logout-panel {
 div#recent-connections,
 div#clipboardDiv,
 div#settings,
-div#other-connections {
+div#all-connections {
     margin: 0;
     padding: 1em;
 }
@@ -269,16 +269,16 @@ div#recent-connections div.connection {
     max-width: 75%;
 }
 
-div#other-connections .connection {
+div#all-connections .connection {
     display: block;
     text-align: left;
 }
 
-div#other-connections .connection .thumbnail {
+div#all-connections .connection .thumbnail {
     display: none;
 }
 
-div#other-connections .connection {
+div#all-connections .connection {
     padding: 0.1em;
 }
 

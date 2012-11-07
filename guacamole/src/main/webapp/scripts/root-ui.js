@@ -26,7 +26,7 @@ var GuacamoleRootUI = {
     "sections": {
         "login_form"         : document.getElementById("login-form"),
         "recent_connections" : document.getElementById("recent-connections"),
-        "other_connections"  : document.getElementById("other-connections")
+        "all_connections"  : document.getElementById("all-connections")
     },
 
     "messages": {
@@ -148,6 +148,11 @@ GuacamoleRootUI.getConfigurations = function(parameters) {
  */
 GuacamoleRootUI.Connection = function(config) {
 
+    /**
+     * The configuration associated with this connection.
+     */
+    this.configuration = config;
+
     function element(tagname, classname) {
         var new_element = document.createElement(tagname);
         new_element.className = classname;
@@ -161,6 +166,7 @@ GuacamoleRootUI.Connection = function(config) {
     var name          = element("span", "name");
     var protocol_icon = element("div",  "icon " + config.protocol);
     var thumbnail     = element("div",  "thumbnail");
+    var thumb_img;
 
     // Get URL
     var url = "client.xhtml?id=" + encodeURIComponent(config.id);
@@ -197,9 +203,9 @@ GuacamoleRootUI.Connection = function(config) {
     if (thumbnail_url) {
 
         // Create thumbnail element
-        var img = document.createElement("img");
-        img.src = thumbnail_url;
-        thumbnail.appendChild(img);
+        thumb_img = document.createElement("img");
+        thumb_img.src = thumbnail_url;
+        thumbnail.appendChild(thumb_img);
 
     }
 
@@ -214,10 +220,58 @@ GuacamoleRootUI.Connection = function(config) {
      * Returns whether this connection has an associated thumbnail.
      */
     this.hasThumbnail = function() {
-        return thumbnail_url && true;
+        return thumb_img && true;
+    };
+
+    /**
+     * Sets the thumbnail URL of this existing connection. Note that this will
+     * only work if the connection already had a thumbnail associated with it.
+     */
+    this.setThumbnail = function(url) {
+
+        // If no image element, create it
+        if (!thumb_img) {
+            thumb_img = document.createElement("img");
+            thumb_img.src = url;
+            thumbnail.appendChild(thumb_img);
+        }
+
+        // Otherwise, set source of existing
+        else
+            thumb_img.src = url;
+
     };
 
 };
+
+/**
+ * Set of all thumbnailed connections, indexed by ID.
+ */
+GuacamoleRootUI.thumbnailConnections = {};
+
+/**
+ * Set of all configurations, indexed by ID.
+ */
+GuacamoleRootUI.configurations = {};
+
+/**
+ * Adds the given connection to the recent connections list.
+ */
+GuacamoleRootUI.addRecentConnection = function(connection) {
+
+    // Add connection object to list of thumbnailed connections
+    GuacamoleRootUI.thumbnailConnections[connection.configuration.id] =
+        connection;
+    
+    // Add connection to recent list
+    GuacamoleRootUI.sections.recent_connections.appendChild(
+        connection.getElement());
+
+    // Hide "No recent connections" message
+    GuacamoleRootUI.messages.no_recent_connections.style.display = "none";
+
+};
+
 
 /**
  * Resets the interface such that the login UI is displayed if
@@ -249,26 +303,19 @@ GuacamoleRootUI.reset = function() {
     // Add connection icons
     for (var i=0; i<configs.length; i++) {
 
-        // Create connection element
+        // Add configuration to set
+        GuacamoleRootUI.configurations[configs[i].id] = configs[i];
+
+        // Get connection element
         var connection = new GuacamoleRootUI.Connection(configs[i]);
 
-        // If screenshot presennt, add to recent connections
-        if (connection.hasThumbnail()) {
+        // If screenshot present, add to recent connections
+        if (connection.hasThumbnail())
+            GuacamoleRootUI.addRecentConnection(connection);
 
-            // Add connection to recent list
-            GuacamoleRootUI.sections.recent_connections.appendChild(
-                connection.getElement());
-
-            // Hide "No recent connections" message
-            GuacamoleRootUI.messages.no_recent_connections.style.display =
-                "none";
-
-        }
-
-        // Otherwise, add conection to other connection list
-        else
-            GuacamoleRootUI.sections.other_connections.appendChild(
-                connection.getElement());
+        // Add connection to connection list
+        GuacamoleRootUI.sections.all_connections.appendChild(
+            new GuacamoleRootUI.Connection(configs[i]).getElement());
 
     }
 
@@ -276,6 +323,53 @@ GuacamoleRootUI.reset = function() {
     GuacamoleRootUI.views.login.style.display = "none";
     GuacamoleRootUI.views.connections.style.display = "";
 
+    // Reload history every 5 seconds
+    window.setInterval(GuacamoleHistory.reload, 5000);
+
+    // Reload history when focus gained
+    window.onfocus = GuacamoleHistory.reload;
+
+};
+
+GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
+
+    // Get existing connection, if any
+    var connection = GuacamoleRootUI.thumbnailConnections[id];
+
+    // If we are adding or updating a connection
+    if (new_entry) {
+
+        // Ensure connection is added
+        if (!connection) {
+
+            // Create new connection
+            connection = new GuacamoleRootUI.Connection(
+                GuacamoleRootUI.configurations[id]
+            );
+
+            GuacamoleRootUI.addRecentConnection(connection);
+
+        }
+
+        // Set new thumbnail 
+        connection.setThumbnail(new_entry.thumbnail);
+
+    }
+
+    // Otherwise, delete existing connection
+    else {
+
+        GuacamoleRootUI.sections.recent_connections.removeChild(
+            connection.getElement());
+
+        delete GuacamoleRootUI.thumbnailConnections[id];
+
+        // Display "No recent connections" message if none left
+        if (GuacamoleRootUI.thumbnailConnections.length == 0)
+            GuacamoleRootUI.messages.no_recent_connections.style.display = "";
+
+    }
+    
 };
 
 /*
