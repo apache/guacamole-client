@@ -393,6 +393,13 @@ GuacamoleUI.attach = function(guac) {
 
     };
 
+    GuacamoleUI.keyboard.onkeydown = function(keysym) {
+        guac.sendKeyEvent(1, keysym);
+    };
+
+    GuacamoleUI.keyboard.onkeyup = function(keysym) {
+        guac.sendKeyEvent(0, keysym);
+    };
 
     function isTypableCharacter(keysym) {
         return (keysym & 0xFFFF00) != 0xFF00;
