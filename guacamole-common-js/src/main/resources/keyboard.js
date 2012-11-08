@@ -238,8 +238,7 @@ Guacamole.Keyboard = function(element) {
     /**
      * The state of every key, indexed by keysym. If a particular key is
      * pressed, the value of pressed for that keysym will be true. If a key
-     * is not currently pressed, the value for that keysym may be false or
-     * undefined.
+     * is not currently pressed, it will not be defined. 
      */
     this.pressed = {};
 
@@ -341,7 +340,7 @@ Guacamole.Keyboard = function(element) {
     function sendKeyReleased(keysym) {
 
         // Mark key as released
-        guac_keyboard.pressed[keysym] = false;
+        delete guac_keyboard.pressed[keysym];
 
         // Send key event
         if (keysym != null && guac_keyboard.onkeyup)
