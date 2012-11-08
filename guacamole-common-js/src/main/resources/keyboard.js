@@ -241,7 +241,7 @@ Guacamole.Keyboard = function(element) {
      * is not currently pressed, the value for that keysym may be false or
      * undefined.
      */
-    this.pressed = [];
+    this.pressed = {};
 
     var keydownChar = new Array();
 
