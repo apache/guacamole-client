@@ -20,10 +20,8 @@
 // UI Definition
 var GuacamoleUI = {
 
-    /* Detection Constants */
+    /* Constants */
     
-    "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
-    "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */
     "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
 
     /* UI Components */
@@ -184,6 +182,15 @@ GuacamoleUI.toggleKeyboard = function() {
         GuacamoleUI.state.textContent = error;
         GuacamoleUI.display.style.opacity = "0.1";
     };
+
+    // Detect three-finger tap
+    GuacamoleUI.display.addEventListener('touchstart', function(e) {
+        
+        // If three touches, toggle keyboard
+        if (e.touches.length == 3)
+            GuacamoleUI.toggleKeyboard();
+        
+    }, true);
 
     function positionCentered(element) {
         element.style.left =
