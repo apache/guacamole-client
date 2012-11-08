@@ -86,6 +86,22 @@ Guacamole.OnScreenKeyboard = function(url) {
      */
     var removeClass;
 
+    /**
+     * The number of mousemove events to require before re-enabling mouse
+     * event handling after receiving a touch event.
+     */
+    this.touchMouseThreshold = 3;
+
+    /**
+     * Counter of mouse events to ignore. This decremented by mousemove, and
+     * while non-zero, mouse events will have no effect.
+     * @private
+     */
+    var ignore_mouse = 0;
+
+    // Ignore all pending mouse events when touch events are the apparent source
+    function ignorePendingMouseEvents() { ignore_mouse = on_screen_keyboard.touchMouseThreshold; }
+
     // If Node.classList is supported, implement addClass/removeClass using that
     if (Node.classList) {
 
@@ -336,7 +352,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                     row.appendChild(key_container_element);
 
                     // Set up click handler for key
-                    function press(e) {
+                    function press() {
 
                         // Press key if not yet pressed
                         if (!key.pressed) {
@@ -389,11 +405,9 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         }
 
-                        e.preventDefault();
-
                     }
 
-                    function release(e) {
+                    function release() {
 
                         // Release key if currently pressed
                         if (key.pressed) {
@@ -412,16 +426,38 @@ Guacamole.OnScreenKeyboard = function(url) {
 
                         }
 
-                        e.preventDefault();
-
                     }
 
-                    key_element.addEventListener("mousedown", press, true);
-                    key_element.addEventListener("touchstart", press, true);
+                    function touchPress(e) {
+                        e.preventDefault();
+                        ignore_mouse = on_screen_keyboard.touchMouseThreshold;
+                        press();
+                    }
 
-                    key_element.addEventListener("mouseup", release, true);
-                    key_element.addEventListener("mouseout", release, true);
-                    key_element.addEventListener("touchend", release, true);
+                    function touchRelease(e) {
+                        e.preventDefault();
+                        ignore_mouse = on_screen_keyboard.touchMouseThreshold;
+                        release();
+                    }
+
+                    function mousePress(e) {
+                        e.preventDefault();
+                        if (ignore_mouse == 0)
+                            press();
+                    }
+
+                    function mouseRelease(e) {
+                        e.preventDefault();
+                        if (ignore_mouse == 0)
+                            release();
+                    }
+
+                    key_element.addEventListener("touchstart", touchPress, true);
+                    key_element.addEventListener("touchend",   touchRelease, true);
+
+                    key_element.addEventListener("mousedown", mousePress,   true);
+                    key_element.addEventListener("mouseup",   mouseRelease, true);
+                    key_element.addEventListener("mouseout",  mouseRelease, true);
 
                 }
                 
@@ -482,8 +518,14 @@ Guacamole.OnScreenKeyboard = function(url) {
     keyboard.onmouseup     =
     keyboard.onmousedown   =
     function(e) {
+
+        // If ignoring events, decrement counter
+        if (ignore_mouse)
+            ignore_mouse--;
+
         e.stopPropagation();
         return false;
+
     };
 
     /**
