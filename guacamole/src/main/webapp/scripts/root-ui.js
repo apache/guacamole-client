@@ -402,6 +402,7 @@ GuacamoleRootUI.settings.disable_sound.onclick  = function() {
  * Update clipboard contents when changed
  */
 
+window.onblur =
 GuacamoleRootUI.fields.clipboard.onchange = function() {
 
     GuacamoleRootUI.session_state.setProperty(
