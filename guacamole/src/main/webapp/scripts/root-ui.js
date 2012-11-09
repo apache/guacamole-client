@@ -405,8 +405,10 @@ GuacamoleRootUI.settings.disable_sound.onclick  = function() {
 window.onblur =
 GuacamoleRootUI.fields.clipboard.onchange = function() {
 
-    GuacamoleRootUI.session_state.setProperty(
-        "clipboard", GuacamoleRootUI.fields.clipboard.value);
+    // Set value if changed
+    var new_value = GuacamoleRootUI.fields.clipboard.value;
+    if (GuacamoleRootUI.session_state.getProperty("clipboard") != new_value)
+        GuacamoleRootUI.session_state.setProperty("clipboard", new_value);
 
 };
 
