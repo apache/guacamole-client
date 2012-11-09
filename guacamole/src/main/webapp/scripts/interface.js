@@ -107,157 +107,91 @@ GuacamoleUI.toggleKeyboard = function() {
 
 };
 
-// Constant UI initialization and behavior
-(function() {
+// If Node.classList is supported, implement addClass/removeClass using that
+if (Node.classList) {
 
-    // Cache error image (might not be available when error occurs)
-    var guacErrorImage = new Image();
-    guacErrorImage.src = "images/noguacamole-logo-24.png";
-
-    // Function for adding a class to an element
-    var addClass;
-
-    // Function for removing a class from an element
-    var removeClass;
-
-    // If Node.classList is supported, implement addClass/removeClass using that
-    if (Node.classList) {
-
-        addClass = function(element, classname) {
-            element.classList.add(classname);
-        };
-        
-        removeClass = function(element, classname) {
-            element.classList.remove(classname);
-        };
-        
-    }
-
-    // Otherwise, implement own
-    else {
-
-        addClass = function(element, classname) {
-
-            // Simply add new class
-            element.className += " " + classname;
-
-        };
-        
-        removeClass = function(element, classname) {
-
-            // Filter out classes with given name
-            element.className = element.className.replace(/([^ ]+)[ ]*/g,
-                function(match, testClassname, spaces, offset, string) {
-
-                    // If same class, remove
-                    if (testClassname == classname)
-                        return "";
-
-                    // Otherwise, allow
-                    return match;
-                    
-                }
-            );
-
-        };
-        
-    }
-
-
-    GuacamoleUI.hideStatus = function() {
-        removeClass(document.body, "guac-error");
-        GuacamoleUI.containers.state.style.visibility = "hidden";
-        GuacamoleUI.display.style.opacity = "1";
+    GuacamoleUI.addClass = function(element, classname) {
+        element.classList.add(classname);
     };
     
-    GuacamoleUI.showStatus = function(text) {
-        removeClass(document.body, "guac-error");
-        GuacamoleUI.containers.state.style.visibility = "visible";
-        GuacamoleUI.state.textContent = text;
-        GuacamoleUI.display.style.opacity = "1";
+    GuacamoleUI.removeClass = function(element, classname) {
+        element.classList.remove(classname);
     };
     
-    GuacamoleUI.showError = function(error) {
-        addClass(document.body, "guac-error");
-        GuacamoleUI.state.textContent = error;
-        GuacamoleUI.display.style.opacity = "0.1";
+}
+
+// Otherwise, implement own
+else {
+
+    GuacamoleUI.addClass = function(element, classname) {
+
+        // Simply add new class
+        element.className += " " + classname;
+
     };
+    
+    GuacamoleUI.removeClass = function(element, classname) {
 
-    // Detect three-finger tap
-    GuacamoleUI.display.addEventListener('touchstart', function(e) {
-        
-        // If three touches, toggle keyboard
-        if (e.touches.length == 3)
-            GuacamoleUI.toggleKeyboard();
-        
-    }, true);
+        // Filter out classes with given name
+        element.className = element.className.replace(/([^ ]+)[ ]*/g,
+            function(match, testClassname, spaces, offset, string) {
 
-    function positionCentered(element) {
-        element.style.left =
-            ((GuacamoleUI.viewport.offsetWidth - element.offsetWidth) / 2
-            + window.pageXOffset)
-            + "px";
+                // If same class, remove
+                if (testClassname == classname)
+                    return "";
 
-        element.style.top =
-            ((GuacamoleUI.viewport.offsetHeight - element.offsetHeight) / 2
-            + window.pageYOffset)
-            + "px";
-    }
+                // Otherwise, allow
+                return match;
+                
+            }
+        );
 
-    // Reconnect button
-    GuacamoleUI.buttons.reconnect.onclick = function() {
-        window.location.reload();
     };
+    
+}
 
-    // Query audio support
-    if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
-        (function () {
-            var probably_supported = [];
-            var maybe_supported = [];
 
-            // Build array of supported audio formats
-            [
-                'audio/ogg; codecs="vorbis"',
-                'audio/mp4; codecs="mp4a.40.5"',
-                'audio/mpeg; codecs="mp3"',
-                'audio/webm; codecs="vorbis"',
-                'audio/wav; codecs=1'
-            ].forEach(function(mimetype) {
+GuacamoleUI.hideStatus = function() {
+    GuacamoleUI.removeClass(document.body, "guac-error");
+    GuacamoleUI.containers.state.style.visibility = "hidden";
+    GuacamoleUI.display.style.opacity = "1";
+};
 
-                var audio = new Audio();
-                var support_level = audio.canPlayType(mimetype);
+GuacamoleUI.showStatus = function(text) {
+    GuacamoleUI.removeClass(document.body, "guac-error");
+    GuacamoleUI.containers.state.style.visibility = "visible";
+    GuacamoleUI.state.textContent = text;
+    GuacamoleUI.display.style.opacity = "1";
+};
 
-                // Trim semicolon and trailer
-                var semicolon = mimetype.indexOf(";");
-                if (semicolon != -1)
-                    mimetype = mimetype.substring(0, semicolon);
+GuacamoleUI.showError = function(error) {
+    GuacamoleUI.addClass(document.body, "guac-error");
+    GuacamoleUI.state.textContent = error;
+    GuacamoleUI.display.style.opacity = "0.1";
+};
 
-                // Partition by probably/maybe
-                if (support_level == "probably")
-                    probably_supported.push(mimetype);
-                else if (support_level == "maybe")
-                    maybe_supported.push(mimetype);
+// Reconnect button
+GuacamoleUI.buttons.reconnect.onclick = function() {
+    window.location.reload();
+};
 
-            });
-
-            Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
-            Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
-        })();
-
-    // Query video support
+// Query audio support
+if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
     (function () {
         var probably_supported = [];
         var maybe_supported = [];
 
-        // Build array of supported video formats
+        // Build array of supported audio formats
         [
-            'video/ogg; codecs="theora, vorbis"',
-            'video/mp4; codecs="avc1.4D401E, mp4a.40.5"',
-            'video/webm; codecs="vp8.0, vorbis"'
+            'audio/ogg; codecs="vorbis"',
+            'audio/mp4; codecs="mp4a.40.5"',
+            'audio/mpeg; codecs="mp3"',
+            'audio/webm; codecs="vorbis"',
+            'audio/wav; codecs=1'
         ].forEach(function(mimetype) {
 
-            var video = document.createElement("video");
-            var support_level = video.canPlayType(mimetype);
+            var audio = new Audio();
+            var support_level = audio.canPlayType(mimetype);
 
             // Trim semicolon and trailer
             var semicolon = mimetype.indexOf(";");
@@ -272,10 +206,40 @@ GuacamoleUI.toggleKeyboard = function() {
 
         });
 
-        Array.prototype.push.apply(GuacamoleUI.supportedVideo, probably_supported);
-        Array.prototype.push.apply(GuacamoleUI.supportedVideo, maybe_supported);
+        Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
+        Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
     })();
 
+// Query video support
+(function () {
+    var probably_supported = [];
+    var maybe_supported = [];
+
+    // Build array of supported video formats
+    [
+        'video/ogg; codecs="theora, vorbis"',
+        'video/mp4; codecs="avc1.4D401E, mp4a.40.5"',
+        'video/webm; codecs="vp8.0, vorbis"'
+    ].forEach(function(mimetype) {
+
+        var video = document.createElement("video");
+        var support_level = video.canPlayType(mimetype);
+
+        // Trim semicolon and trailer
+        var semicolon = mimetype.indexOf(";");
+        if (semicolon != -1)
+            mimetype = mimetype.substring(0, semicolon);
+
+        // Partition by probably/maybe
+        if (support_level == "probably")
+            probably_supported.push(mimetype);
+        else if (support_level == "maybe")
+            maybe_supported.push(mimetype);
+
+    });
+
+    Array.prototype.push.apply(GuacamoleUI.supportedVideo, probably_supported);
+    Array.prototype.push.apply(GuacamoleUI.supportedVideo, maybe_supported);
 })();
 
 // Tie UI events / behavior to a specific Guacamole client
