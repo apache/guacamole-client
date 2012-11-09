@@ -138,6 +138,22 @@ div.dialog p {
     color: #D44;
 }
 
+div.displayOuter {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: table;
+}
+
+div.displayMiddle {
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
 div#display * {
     position: relative;
 }
