@@ -277,6 +277,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             // buffer 1024 bytes before starting a normal stream if we use
             // anything but application/octet-stream.
             response.setContentType("application/octet-stream");
+            response.setHeader("Cache-Control", "no-cache");
 
             Writer out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
 
@@ -368,6 +369,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // attempt to parse the result, even though the JavaScript client
         // does not explicitly request such parsing.
         response.setContentType("application/octet-stream");
+        response.setHeader("Cache-Control", "no-cache");
         response.setContentLength(0);
 
         // Send data
