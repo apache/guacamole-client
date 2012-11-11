@@ -159,6 +159,9 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     logger.info("Connection from {} succeeded.", request.getRemoteAddr());
 
                     try {
+                        // Ensure buggy browsers do not cache response
+                        response.setHeader("Cache-Control", "no-cache");
+                        
                         // Send UUID to client
                         response.getWriter().print(tunnel.getUUID().toString());
                     }
