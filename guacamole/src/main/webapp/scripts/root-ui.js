@@ -519,3 +519,9 @@ GuacamoleRootUI.fields.username.setAttribute("autocapitalize", "off");
  */
 
 GuacamoleRootUI.reset();
+
+/*
+ * Make sure body has an associated touch event handler such that CSS styles
+ * will work in browsers that require this.
+ */
+document.body.ontouchstart = function() {};
