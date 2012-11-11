@@ -21,6 +21,10 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
+input[type=submit], button {
+    -webkit-appearance: none;
+}
+
 body {
     background: #EEE;
     font-family: FreeSans, Helvetica, Arial, sans-serif;
