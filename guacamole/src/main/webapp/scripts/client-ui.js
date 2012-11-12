@@ -67,8 +67,8 @@ GuacUI.Client = {
 
     "expected_input_x" : 0,
     "expected_input_y" : 0,
-    "expected_input_width" : 0,
-    "expected_input_height" : 0
+    "expected_input_width" : 1,
+    "expected_input_height" : 1
 
 };
 
@@ -272,9 +272,10 @@ GuacUI.Client.PanOverlay = function() {
      * Transition to PAN_TYPING when the user taps on the overlay.
      */
 
-    pan_overlay.addEventListener("click", function() {
-        GuacUI.StateManager.setState(GuacUI.Client.PAN_TYPING);
-    }, false);
+    pan_overlay.addEventListener("click", function(e) {
+        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
+        e.stopPropagation();
+    }, true);
 
 };
 
