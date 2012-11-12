@@ -59,7 +59,6 @@ GuacUI.Client = {
         "keyboard"  : document.getElementById("keyboardContainer")
     },
     
-    "pan_overlay"  : document.getElementById("pan-overlay"),
     "state"        : document.getElementById("statusText"),
     "client"       : null,
     "sessionState" : new GuacamoleSessionState(),
@@ -254,14 +253,19 @@ GuacUI.StateManager.registerComponent(
  * @constructor
  * @augments GuacUI.Component
  */
-GuacUI.Client.PanOverlay = function(pan_overlay) {
+GuacUI.Client.PanOverlay = function() {
+
+    /**
+     * Overlay which will provide the means of scrolling the screen.
+     */
+    var pan_overlay = GuacUI.createElement("div", "pan-overlay");
 
     this.show = function() {
-        pan_overlay.style.display = "block";
+        document.body.appendChild(pan_overlay);
     };
 
     this.hide = function() {
-        pan_overlay.style.display = "none";
+        document.body.removeChild(pan_overlay);
     };
 
     /*
@@ -281,9 +285,7 @@ GuacUI.Client.PanOverlay.prototype = new GuacUI.Component();
  */
 
 GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.PanOverlay(
-        document.getElementById("pan-overlay")
-    ),
+    new GuacUI.Client.PanOverlay(),
     GuacUI.Client.states.PAN,
     GuacUI.Client.states.PAN_TYPING
 );

@@ -191,13 +191,12 @@ div.magnifier {
 
 }
 
-div#pan-overlay {
-    display: none;
-    width: 100%;
-    height: 100%;
+.pan-overlay {
     position: absolute;
     left: 0;
     top: 0;
+    width: 100%;
+    height: 100%;
 }
 
 /* Viewport Clone */
