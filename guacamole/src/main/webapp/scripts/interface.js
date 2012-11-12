@@ -335,6 +335,9 @@ if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
         Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
     })();
 
+GuacamoleUI.eventTarget.setAttribute("autocorrect", "off");
+GuacamoleUI.eventTarget.setAttribute("autocapitalize", "off");
+
 // Query video support
 (function () {
     var probably_supported = [];
