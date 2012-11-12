@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#keyboardContainer {
+.keyboard-container {
     text-align: center;
 
     position: fixed;
@@ -31,7 +31,6 @@
     background: #222;
     opacity: 0.85;
 
-    display: none;
     z-index: 1;
 }
 

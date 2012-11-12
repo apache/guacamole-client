@@ -37,8 +37,7 @@ var GuacamoleUI = {
     },
 
     "containers": {
-        "state"     : document.getElementById("statusDialog"),
-        "keyboard"  : document.getElementById("keyboardContainer")
+        "state"     : document.getElementById("statusDialog")
     },
     
     "state"        : document.getElementById("statusText"),
@@ -58,56 +57,6 @@ GuacamoleUI.supportedAudio = [];
  * loaded.
  */
 GuacamoleUI.supportedVideo = [];
-
-// On-screen keyboard
-GuacamoleUI.keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
-GuacamoleUI.containers.keyboard.appendChild(GuacamoleUI.keyboard.getElement());
-
-GuacamoleUI.lastKeyboardWidth = 0;
-
-// Function for automatically updating keyboard size
-GuacamoleUI.updateKeyboardSize = function() {
-    var currentSize = GuacamoleUI.keyboard.getElement().offsetWidth;
-    if (GuacamoleUI.lastKeyboardWidth != currentSize) {
-        GuacamoleUI.keyboard.resize(currentSize);
-        GuacamoleUI.lastKeyboardWidth = currentSize;
-    }
-};
-
-GuacamoleUI.keyboardResizeInterval = null;
-
-// Show/Hide keyboard
-GuacamoleUI.toggleKeyboard = function() {
-
-    // If Guac OSK shown, hide it.
-    var displayed = GuacamoleUI.containers.keyboard.style.display;
-    if (displayed == "block") {
-
-        // Hide keyboard
-        GuacamoleUI.containers.keyboard.style.display = "none";
-
-        // Stop automatic periodic update
-        window.clearInterval(GuacamoleUI.keyboardResizeInterval);
-
-    }
-
-    // Otherwise, show it
-    else {
-
-        // Show keyboard
-        GuacamoleUI.containers.keyboard.style.display = "block";
-
-        // Start periodic update of keyboard size
-        GuacamoleUI.keyboardResizeInterval = window.setInterval(
-            GuacamoleUI.updateKeyboardSize,
-            GuacamoleUI.KEYBOARD_AUTO_RESIZE_INTERVAL);
-
-        // Update keyboard size initially
-        GuacamoleUI.updateKeyboardSize();
-
-    }
-
-};
 
 // If Node.classList is supported, implement addClass/removeClass using that
 if (Node.classList) {
@@ -350,7 +299,7 @@ GuacamoleUI.attach = function(guac) {
         // conditions satisfied
         if (show_keyboard_gesture_possible && keysym == 0xFFE1) {
             if (keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9])
-                GuacamoleUI.toggleKeyboard();
+                GuacUI.StateManager.setState(GuacUI.Client.states.OSK);
         }
 
         // Detect if no keys are pressed
@@ -364,14 +313,6 @@ GuacamoleUI.attach = function(guac) {
         if (reset_gesture)
             show_keyboard_gesture_possible = true;
 
-    };
-
-    GuacamoleUI.keyboard.onkeydown = function(keysym) {
-        guac.sendKeyEvent(1, keysym);
-    };
-
-    GuacamoleUI.keyboard.onkeyup = function(keysym) {
-        guac.sendKeyEvent(0, keysym);
     };
 
     function isTypableCharacter(keysym) {
@@ -525,7 +466,6 @@ GuacamoleUI.attach = function(guac) {
 
         guac.sendSize(window.innerWidth, window.innerHeight);
         updateDisplayScale();
-        GuacamoleUI.updateKeyboardSize();
 
     };
 

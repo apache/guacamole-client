@@ -363,6 +363,84 @@ GuacUI.StateManager.registerComponent(
     GuacUI.Client.states.PAN_TYPING
 );
 
+/**
+ * On-screen Keyboard. This component provides a clickable/touchable keyboard
+ * which sends key events to the Guacamole client.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
+ */
+GuacUI.Client.OnScreenKeyboard = function() {
+
+    /**
+     * Event target. This is a hidden textarea element which will receive
+     * key events.
+     * @private
+     */
+    var keyboard_container = GuacUI.createElement("div", "keyboard-container");
+
+    var keyboard_resize_interval = null;
+
+    // On-screen keyboard
+    var keyboard = new Guacamole.OnScreenKeyboard("layouts/en-us-qwerty.xml");
+    keyboard_container.appendChild(keyboard.getElement());
+
+    var last_keyboard_width = 0;
+
+    // Function for automatically updating keyboard size
+    function updateKeyboardSize() {
+        var currentSize = keyboard.getElement().offsetWidth;
+        if (last_keyboard_width != currentSize) {
+            keyboard.resize(currentSize);
+            last_keyboard_width = currentSize;
+        }
+    }
+
+    keyboard.onkeydown = function(keysym) {
+        GuacamoleUI.client.sendKeyEvent(1, keysym);
+    };
+
+    keyboard.onkeyup = function(keysym) {
+        GuacamoleUI.client.sendKeyEvent(0, keysym);
+    };
+
+
+    this.show = function() {
+
+        // Show keyboard
+        document.body.appendChild(keyboard_container);
+
+        // Start periodic update of keyboard size
+        keyboard_resize_interval = window.setInterval(
+            updateKeyboardSize,
+            GuacUI.Client.KEYBOARD_AUTO_RESIZE_INTERVAL);
+
+        updateKeyboardSize();
+
+    };
+
+    this.hide = function() {
+
+        // Hide keyboard
+        document.body.removeChild(keyboard_container);
+        window.clearInterval(keyboard_resize_interval);
+
+    };
+
+};
+
+GuacUI.Client.OnScreenKeyboard.prototype = new GuacUI.Component();
+
+/*
+ * Show on-screen keyboard during OSK mode only.
+ */
+
+GuacUI.StateManager.registerComponent(
+    new GuacUI.Client.OnScreenKeyboard(),
+    GuacUI.Client.states.OSK
+);
+
+
 /*
  * Set initial state
  */
