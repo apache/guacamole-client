@@ -172,8 +172,7 @@ div#display > * {
     margin-right: auto;
 }
 
-div#magnifier-background {
-    display: none;
+div.magnifier-background {
     position: absolute;
     left: 0;
     top: 0;
@@ -183,7 +182,7 @@ div#magnifier-background {
     overflow: hidden;
 }
 
-div#magnifier {
+div.magnifier {
 
     position: absolute;
     left: 0;

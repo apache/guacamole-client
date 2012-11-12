@@ -57,27 +57,15 @@ GuacUI.Client = {
 
     "containers": {
         "state"     : document.getElementById("statusDialog"),
-        "keyboard"  : document.getElementById("keyboardContainer"),
-        "magnifier" : document.getElementById("magnifier")
+        "keyboard"  : document.getElementById("keyboardContainer")
     },
     
     "pan_overlay"  : document.getElementById("pan-overlay"),
-    "magnifier_background"    : document.getElementById("magnifier-background"),
-    "magnifier"    : document.getElementById("magnifier-display"),
     "state"        : document.getElementById("statusText"),
     "client"       : null,
     "sessionState" : new GuacamoleSessionState()
 
 };
-
-GuacUI.Client.magnifier_background.onclick = function() {
-    GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-};
-
-GuacUI.Client.containers.magnifier.addEventListener("click", function(e) {
-    GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
-    e.stopPropagation();
-}, true);
 
 /**
  * Component which displays a magnified (100% zoomed) client display.
@@ -85,7 +73,7 @@ GuacUI.Client.containers.magnifier.addEventListener("click", function(e) {
  * @constructor
  * @augments GuacUI.DraggableComponent
  */
-GuacUI.Client.Magnifier = function(magnifier) {
+GuacUI.Client.Magnifier = function() {
 
     /**
      * Reference to this magnifier.
@@ -93,21 +81,50 @@ GuacUI.Client.Magnifier = function(magnifier) {
      */
     var guac_magnifier = this;
 
+    /**
+     * Large background div which will block touch events from reaching the
+     * client while also providing a click target to deactivate the
+     * magnifier.
+     * @private
+     */
+    var magnifier_background = GuacUI.createElement("div", "magnifier-background");
+
+    /**
+     * Container div for the magnifier, providing a clipping rectangle.
+     * @private
+     */
+    var magnifier = GuacUI.createChildElement(magnifier_background,
+        "div", "magnifier");
+
+    /**
+     * Canvas which will contain the static image copy of the display at time
+     * of show.
+     * @private
+     */
+    var magnifier_display = GuacUI.createChildElement(magnifier, "canvas");
+
+    /**
+     * Context of magnifier display.
+     * @private
+     */
+    var magnifier_context = magnifier_display.getContext("2d");
+
     /*
-     * Call parent constructor. 
+     * This component is draggable.
      */
     GuacUI.DraggableComponent.apply(this, [magnifier]);
 
     // Ensure transformations on display originate at 0,0
-    GuacamoleUI.containers.magnifier.style.transformOrigin =
-    GuacamoleUI.containers.magnifier.style.webkitTransformOrigin =
-    GuacamoleUI.containers.magnifier.style.MozTransformOrigin =
-    GuacamoleUI.containers.magnifier.style.OTransformOrigin =
-    GuacamoleUI.containers.magnifier.style.msTransformOrigin =
+    magnifier.style.transformOrigin =
+    magnifier.style.webkitTransformOrigin =
+    magnifier.style.MozTransformOrigin =
+    magnifier.style.OTransformOrigin =
+    magnifier.style.msTransformOrigin =
         "0 0";
 
-    var magnifier_display = GuacUI.Client.magnifier;
-    var magnifier_context = magnifier_display.getContext("2d");
+    /*
+     * Reposition magnifier display relative to own position on screen.
+     */
 
     this.onmove = function(x, y) {
 
@@ -132,6 +149,10 @@ GuacUI.Client.Magnifier = function(magnifier) {
 
     };
 
+    /*
+     * Copy display and add self to body on show.
+     */
+
     this.show = function() {
 
         // Copy displayed image
@@ -140,16 +161,40 @@ GuacUI.Client.Magnifier = function(magnifier) {
         magnifier_context.drawImage(GuacamoleUI.client.flatten(), 0, 0);
 
         // Show magnifier container
-        GuacUI.Client.magnifier_background.style.display = "block";
+        document.body.appendChild(magnifier_background);
+
+        GuacamoleUI.eventTarget.style.width = magnifier.offsetWidth + "px";
+        GuacamoleUI.eventTarget.style.height = magnifier.offsetHeight + "px";
 
     };
+
+    /*
+     * Remove self from body on hide.
+     */
 
     this.hide = function() {
 
         // Hide magnifier container
-        GuacUI.Client.magnifier_background.style.display = "none";
+        document.body.removeChild(magnifier_background);
 
     };
+
+    /*
+     * If the user clicks on the background, switch to INTERACTIVE mode.
+     */
+
+    magnifier_background.addEventListener("click", function() {
+        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+    }, true);
+
+    /*
+     * If the user clicks on the magnifier, switch to PAN_TYPING mode.
+     */
+
+    magnifier.addEventListener("click", function(e) {
+        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
+        e.stopPropagation();
+    }, true);
 
 };
 
@@ -159,7 +204,7 @@ GuacUI.Client.Magnifier = function(magnifier) {
 GuacUI.Client.Magnifier.prototype = new GuacUI.DraggableComponent();
 
 GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.Magnifier(GuacUI.Client.containers.magnifier),
+    new GuacUI.Client.Magnifier(),
     GuacUI.Client.states.MAGNIFIER
 );
 
@@ -194,22 +239,28 @@ GuacUI.StateManager.registerComponent(
  * Pan UI
  */
 
-GuacUI.Client.PanOverlay = function(client) {
+GuacUI.Client.PanOverlay = function(pan_overlay) {
 
     this.show = function() {
-        GuacUI.Client.pan_overlay.style.display = "block";
+        pan_overlay.style.display = "block";
     };
 
     this.hide = function() {
-        GuacUI.Client.pan_overlay.style.display = "none";
+        pan_overlay.style.display = "none";
     };
+
+    pan_overlay.addEventListener("click", function() {
+        GuacUI.StateManager.setState(GuacUI.Client.PAN_TYPING);
+    }, false);
 
 };
 
 GuacUI.Client.PanOverlay.prototype = new GuacUI.Component();
 
 GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.PanOverlay(),
+    new GuacUI.Client.PanOverlay(
+        document.getElementById("pan-overlay")
+    ),
     GuacUI.Client.states.PAN,
     GuacUI.Client.states.PAN_TYPING
 );
@@ -218,26 +269,30 @@ GuacUI.StateManager.registerComponent(
  * Native Keyboard
  */
 
-GuacUI.Client.NativeKeyboard = function() {
+GuacUI.Client.NativeKeyboard = function(eventTarget) {
 
     this.show = function() {
-        GuacamoleUI.eventTarget.focus();
+        eventTarget.style.display = "block";
+        eventTarget.focus();
     };
 
     this.hide = function() {
-        GuacamoleUI.eventTarget.blur();
+        eventTarget.blur();
+        eventTarget.style.display = "none";
     };
+
+    eventTarget.addEventListener("blur", function() {
+        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+    }, false);
 
 };
 
 GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.NativeKeyboard(),
+    new GuacUI.Client.NativeKeyboard(
+        document.getElementById("eventTarget")
+    ),
     GuacUI.Client.states.PAN_TYPING
 );
-
-GuacUI.Client.eventTarget.onblur = function() {
-    GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-};
 
 /*
  * Set initial state

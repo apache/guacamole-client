@@ -19,6 +19,21 @@
 var GuacUI = GuacUI || {};
 
 /**
+ * Creates a new element having the given tagname and CSS class.
+ */
+GuacUI.createElement = function(tagname, classname) {
+    var new_element = document.createElement(tagname);
+    new_element.className = classname;
+    return new_element;
+};
+
+GuacUI.createChildElement = function(parent, tagname, classname) {
+    var element = GuacUI.createElement(tagname, classname);
+    parent.appendChild(element);
+    return element;
+};
+
+/**
  * Central registry of all components for all states.
  */
 GuacUI.StateManager = new (function() {

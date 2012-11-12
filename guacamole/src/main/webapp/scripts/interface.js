@@ -50,8 +50,6 @@ var GuacamoleUI = {
 
 };
 
-GuacamoleUI.magnifierContext = GuacamoleUI.magnifier.getContext("2d");
-
 /**
  * Array of all supported audio mimetypes, populated when this script is
  * loaded.
@@ -560,7 +558,10 @@ GuacamoleUI.attach = function(guac) {
 
             longPressTimeout = window.setTimeout(function() {
                 longPressTimeout = null;
-                GuacUI.StateManager.setState(GuacUI.Client.states.MAGNIFIER);
+                if (GuacamoleUI.client.getScale() != 1.0)
+                    GuacUI.StateManager.setState(GuacUI.Client.states.MAGNIFIER);
+                else
+                    GuacUI.StateManager.setState(GuacUI.Client.states.PAN);
             }, GuacamoleUI.LONG_PRESS_DETECT_TIMEOUT);
 
         }
