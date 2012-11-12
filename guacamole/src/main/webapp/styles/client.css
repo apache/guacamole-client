@@ -42,9 +42,11 @@ img {
 }
 
 #eventTarget {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
     opacity: 0;
 }
 
@@ -170,19 +172,37 @@ div#display > * {
     margin-right: auto;
 }
 
-div#magnifier {
-
+div#magnifier-background {
     display: none;
     position: absolute;
     left: 0;
-    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
     z-index: 1;
+    overflow: hidden;
+}
+
+div#magnifier {
+
+    position: absolute;
+    left: 0;
+    top: 0;
     
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.75);
     width: 50%;
     height: 50%;
     overflow: hidden;
 
+}
+
+div#pan-overlay {
+    display: none;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 /* Viewport Clone */

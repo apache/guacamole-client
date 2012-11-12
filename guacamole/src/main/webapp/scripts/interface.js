@@ -114,124 +114,6 @@ GuacamoleUI.toggleKeyboard = function() {
 
 };
 
-GuacamoleUI.Magnifier = new (function() {
-
-    var guac_magnifier = this;
-
-    var position_x = 0;
-    var position_y = 0;
-
-    var start_x = 0;
-    var start_y = 0;
-
-    GuacamoleUI.containers.magnifier.addEventListener("touchstart", function(e) {
-        
-        if (e.touches.length == 1) {
-
-            start_x = e.touches[0].screenX;
-            start_y = e.touches[0].screenY;
-
-        }
-        
-    }, false);
-
-    GuacamoleUI.containers.magnifier.addEventListener("touchmove", function(e) {
-        
-        if (e.touches.length == 1) {
-            
-            var width = GuacamoleUI.containers.magnifier.offsetWidth;
-            var height = GuacamoleUI.containers.magnifier.offsetHeight;
-          
-            var new_x = e.touches[0].screenX;
-            var new_y = e.touches[0].screenY;
-
-            position_x += new_x - start_x;
-            position_y += new_y - start_y;
-
-            if      (position_x < 0) position_x = 0;
-            else if (position_x > window.innerWidth - width)
-                position_x = window.innerWidth - width;
-
-            if      (position_y < 0) position_y = 0;
-            else if (position_y > window.innerHeight - height)
-                position_y = window.innerHeight - height;
-
-            start_x = new_x;
-            start_y = new_y;
-
-            // Move magnifier to new position
-            guac_magnifier.move(position_x, position_y);
-
-            // Update contents relative to new position
-            var clip_x = position_x
-                / (window.innerWidth - width) * (GuacamoleUI.client.getWidth() - width);
-            var clip_y = position_y
-                / (window.innerHeight - height) * (GuacamoleUI.client.getHeight() - height);
-           
-            GuacamoleUI.magnifier.style.WebkitTransform =
-            GuacamoleUI.magnifier.style.MozTransform =
-            GuacamoleUI.magnifier.style.OTransform =
-            GuacamoleUI.magnifier.style.msTransform =
-            GuacamoleUI.magnifier.style.transform = "translate("
-                + (-clip_x) + "px, " + (-clip_y) + "px)";
-            
-        }
-        
-        e.preventDefault();
-    }, false);
-
-    GuacamoleUI.containers.magnifier.addEventListener("click", function(e) {
-        GuacamoleUI.eventTarget.focus();
-    }, false);
-
-    this.move = function(x, y) {
-
-        GuacamoleUI.containers.magnifier.style.WebkitTransform =
-        GuacamoleUI.containers.magnifier.style.MozTransform =
-        GuacamoleUI.containers.magnifier.style.OTransform =
-        GuacamoleUI.containers.magnifier.style.msTransform =
-        GuacamoleUI.containers.magnifier.style.transform = "translate("
-            + x + "px, " + y + "px)";
-
-    };
-
-    this.update = function() {
-
-        GuacamoleUI.magnifierContext.drawImage(GuacamoleUI.client.flatten(),
-            0, 0);
-
-    };
-
-    this.show = function(x, y) {
-
-        // Get client dimensions
-        var width = GuacamoleUI.client.getWidth();
-        var height = GuacamoleUI.client.getHeight();
-      
-        // Resize to fit client
-        GuacamoleUI.magnifier.width = width;
-        GuacamoleUI.magnifier.height = height;
-
-        // Ensure transformations on display originate at 0,0
-        GuacamoleUI.containers.magnifier.style.transformOrigin =
-        GuacamoleUI.containers.magnifier.style.webkitTransformOrigin =
-        GuacamoleUI.containers.magnifier.style.MozTransformOrigin =
-        GuacamoleUI.containers.magnifier.style.OTransformOrigin =
-        GuacamoleUI.containers.magnifier.style.msTransformOrigin =
-            "0 0";
- 
-        // Show magnifier
-        GuacamoleUI.containers.magnifier.style.display = "block";
-        guac_magnifier.update();
-
-    };
-
-    this.hide = function() {
-        GuacamoleUI.containers.magnifier.style.display = "none";
-    };
-
-})();
-
 // If Node.classList is supported, implement addClass/removeClass using that
 if (Node.classList) {
 
@@ -678,7 +560,7 @@ GuacamoleUI.attach = function(guac) {
 
             longPressTimeout = window.setTimeout(function() {
                 longPressTimeout = null;
-                GuacamoleUI.Magnifier.show();
+                GuacUI.StateManager.setState(GuacUI.Client.states.MAGNIFIER);
             }, GuacamoleUI.LONG_PRESS_DETECT_TIMEOUT);
 
         }
@@ -691,9 +573,6 @@ GuacamoleUI.attach = function(guac) {
 
     // Detect long-press at bottom of screen
     GuacamoleUI.display.addEventListener('touchstart', function(e) {
-        
-        // Close magnifier
-        GuacamoleUI.Magnifier.hide();
         
         // Record touch location
         if (e.touches.length == 1) {

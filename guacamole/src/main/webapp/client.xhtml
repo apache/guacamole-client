@@ -40,11 +40,16 @@
             </div>
         </div>
 
+        <textarea id="eventTarget"></textarea>
+
         <!-- On-screen magnifier -->
-        <div id="magnifier">
-            <textarea id="eventTarget"></textarea>
-            <canvas id="magnifier-display"></canvas>
+        <div id="magnifier-background">
+            <div id="magnifier">
+                <canvas id="magnifier-display"></canvas>
+            </div>
         </div>
+
+        <div id="pan-overlay"></div>
         
         <!-- On-screen keyboard -->
         <div id="keyboardContainer"></div>
@@ -78,6 +83,8 @@
         <script type="text/javascript" src="scripts/session.js"></script>
         <script type="text/javascript" src="scripts/history.js"></script>
         <script type="text/javascript" src="scripts/interface.js"></script>
+        <script type="text/javascript" src="scripts/guac-ui.js"></script>
+        <script type="text/javascript" src="scripts/client-ui.js"></script>
 
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
