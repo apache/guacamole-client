@@ -31,7 +31,6 @@ var GuacamoleUI = {
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "logo"        : document.getElementById("status-logo"),
-    "eventTarget" : document.getElementById("eventTarget"),
 
     "buttons": {
         "reconnect" : document.getElementById("reconnect")
@@ -39,11 +38,9 @@ var GuacamoleUI = {
 
     "containers": {
         "state"     : document.getElementById("statusDialog"),
-        "keyboard"  : document.getElementById("keyboardContainer"),
-        "magnifier" : document.getElementById("magnifier")
+        "keyboard"  : document.getElementById("keyboardContainer")
     },
     
-    "magnifier"    : document.getElementById("magnifier-display"),
     "state"        : document.getElementById("statusText"),
     "client"       : null,
     "sessionState" : new GuacamoleSessionState()
@@ -214,9 +211,6 @@ if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
         Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
         Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
     })();
-
-GuacamoleUI.eventTarget.setAttribute("autocorrect", "off");
-GuacamoleUI.eventTarget.setAttribute("autocapitalize", "off");
 
 // Query video support
 (function () {

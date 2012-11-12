@@ -49,7 +49,6 @@ GuacUI.Client = {
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
     "logo"        : document.getElementById("status-logo"),
-    "eventTarget" : document.getElementById("eventTarget"),
 
     "buttons": {
         "reconnect" : document.getElementById("reconnect")
@@ -63,7 +62,14 @@ GuacUI.Client = {
     "pan_overlay"  : document.getElementById("pan-overlay"),
     "state"        : document.getElementById("statusText"),
     "client"       : null,
-    "sessionState" : new GuacamoleSessionState()
+    "sessionState" : new GuacamoleSessionState(),
+
+    /* Expected Input Rectangle */
+
+    "expected_input_x" : 0,
+    "expected_input_y" : 0,
+    "expected_input_width" : 0,
+    "expected_input_height" : 0
 
 };
 
@@ -144,8 +150,11 @@ GuacUI.Client.Magnifier = function() {
         magnifier_display.style.transform = "translate("
             + (-clip_x) + "px, " + (-clip_y) + "px)";
 
-        GuacamoleUI.eventTarget.style.left = clip_x + "px";
-        GuacamoleUI.eventTarget.style.top  = clip_y + "px";
+        /* Update expected input rectangle */
+        GuacUI.Client.expected_input_x = clip_x;
+        GuacUI.Client.expected_input_y = clip_y;
+        GuacUI.Client.expected_input_width  = width;
+        GuacUI.Client.expected_input_height = height;
 
     };
 
@@ -162,9 +171,6 @@ GuacUI.Client.Magnifier = function() {
 
         // Show magnifier container
         document.body.appendChild(magnifier_background);
-
-        GuacamoleUI.eventTarget.style.width = magnifier.offsetWidth + "px";
-        GuacamoleUI.eventTarget.style.height = magnifier.offsetHeight + "px";
 
     };
 
@@ -208,11 +214,13 @@ GuacUI.StateManager.registerComponent(
     GuacUI.Client.states.MAGNIFIER
 );
 
-/*
- * Zoomed Display
+/**
+ * Zoomed Display, a pseudo-component.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
  */
-
-GuacUI.Client.ZoomedDisplay = function(client) {
+GuacUI.Client.ZoomedDisplay = function() {
 
     var old_scale = null;
 
@@ -229,16 +237,23 @@ GuacUI.Client.ZoomedDisplay = function(client) {
 
 GuacUI.Client.ZoomedDisplay.prototype = new GuacUI.Component();
 
+/*
+ * Zoom the main display during PAN and PAN_TYPING modes.
+ */
+
 GuacUI.StateManager.registerComponent(
     new GuacUI.Client.ZoomedDisplay(),
     GuacUI.Client.states.PAN,
     GuacUI.Client.states.PAN_TYPING
 );
 
-/*
- * Pan UI
+/**
+ * Pan overlay UI. This component functions to receive touch events and
+ * translate them into scrolling of the main UI.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
  */
-
 GuacUI.Client.PanOverlay = function(pan_overlay) {
 
     this.show = function() {
@@ -249,6 +264,10 @@ GuacUI.Client.PanOverlay = function(pan_overlay) {
         pan_overlay.style.display = "none";
     };
 
+    /*
+     * Transition to PAN_TYPING when the user taps on the overlay.
+     */
+
     pan_overlay.addEventListener("click", function() {
         GuacUI.StateManager.setState(GuacUI.Client.PAN_TYPING);
     }, false);
@@ -256,6 +275,10 @@ GuacUI.Client.PanOverlay = function(pan_overlay) {
 };
 
 GuacUI.Client.PanOverlay.prototype = new GuacUI.Component();
+
+/*
+ * Show the pan overlay during PAN or PAN_TYPING modes.
+ */
 
 GuacUI.StateManager.registerComponent(
     new GuacUI.Client.PanOverlay(
@@ -265,21 +288,51 @@ GuacUI.StateManager.registerComponent(
     GuacUI.Client.states.PAN_TYPING
 );
 
-/*
- * Native Keyboard
+/**
+ * Native Keyboard. This component uses a hidden textarea field to show the
+ * platforms native on-screen keyboard (if any) or otherwise enable typing,
+ * should the platform require a text field with focus for keyboard events to
+ * register.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
  */
+GuacUI.Client.NativeKeyboard = function() {
 
-GuacUI.Client.NativeKeyboard = function(eventTarget) {
+    /**
+     * Event target. This is a hidden textarea element which will receive
+     * key events.
+     * @private
+     */
+    var eventTarget = GuacUI.createElement("textarea", "event-target");
+    eventTarget.setAttribute("autocorrect", "off");
+    eventTarget.setAttribute("autocapitalize", "off");
 
     this.show = function() {
-        eventTarget.style.display = "block";
+
+        // Move to location of expected input
+        eventTarget.style.left   = GuacUI.Client.expected_input_x + "px";
+        eventTarget.style.top    = GuacUI.Client.expected_input_y + "px";
+        eventTarget.style.width  = GuacUI.Client.expected_input_width + "px";
+        eventTarget.style.height = GuacUI.Client.expected_input_height + "px";
+
+        // Show and focus target
+        document.body.appendChild(eventTarget);
         eventTarget.focus();
+
     };
 
     this.hide = function() {
+
+        // Hide and blur target
         eventTarget.blur();
-        eventTarget.style.display = "none";
+        document.body.removeChild(eventTarget);
+
     };
+
+    /*
+     * Automatically switch to INTERACTIVE mode after target loses focus
+     */
 
     eventTarget.addEventListener("blur", function() {
         GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
@@ -287,10 +340,14 @@ GuacUI.Client.NativeKeyboard = function(eventTarget) {
 
 };
 
+GuacUI.Client.NativeKeyboard.prototype = new GuacUI.Component();
+
+/*
+ * Show native keyboard during PAN_TYPING mode only.
+ */
+
 GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.NativeKeyboard(
-        document.getElementById("eventTarget")
-    ),
+    new GuacUI.Client.NativeKeyboard(),
     GuacUI.Client.states.PAN_TYPING
 );
 
