@@ -16,6 +16,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**
+ * Main Guacamole UI namespace.
+ * @namespace
+ */
 var GuacUI = GuacUI || {};
 
 /**

@@ -24,7 +24,6 @@ var GuacamoleUI = {
     
     "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
     "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */    
-    "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
 
     /* UI Components */
 

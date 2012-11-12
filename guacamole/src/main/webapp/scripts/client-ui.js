@@ -1,10 +1,7 @@
 
 /**
- * Client UI namespace.
- * @namespace
+ * Client UI root object.
  */
-GuacUI.Client = GuacUI.Client || {};
-
 GuacUI.Client = {
 
     /**
