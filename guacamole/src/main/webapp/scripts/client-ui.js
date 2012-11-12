@@ -260,6 +260,15 @@ GuacUI.Client.PanOverlay = function() {
      */
     var pan_overlay = GuacUI.createElement("div", "pan-overlay");
 
+    /*
+     * Add arrows
+     */
+
+    GuacUI.createChildElement(pan_overlay, "div", "indicator up");
+    GuacUI.createChildElement(pan_overlay, "div", "indicator down");
+    GuacUI.createChildElement(pan_overlay, "div", "indicator right");
+    GuacUI.createChildElement(pan_overlay, "div", "indicator left");
+
     this.show = function() {
         document.body.appendChild(pan_overlay);
     };
