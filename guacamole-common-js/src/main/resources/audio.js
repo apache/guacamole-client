@@ -73,15 +73,11 @@ Guacamole.AudioChannel = function() {
         var packet =
             new Guacamole.AudioChannel.Packet(mimetype, data);
 
-        var now;
-        if (Guacamole.AudioChannel.context)
-            now = Guacamole.AudioChannel.context.currentTime * 1000;
-        else
-            now = new Date().getTime();
+        var now = Guacamole.AudioChannel.getTimestamp();
 
-        // If underflow is detected, delay start
+        // If underflow is detected, reschedule new packets relative to now.
         if (next_packet_time < now)
-            next_packet_time = now + 50;
+            next_packet_time = now;
 
         // Schedule next packet
         packet.play(next_packet_time);
@@ -95,6 +91,28 @@ Guacamole.AudioChannel = function() {
 if (window.webkitAudioContext) {
     Guacamole.AudioChannel.context = new webkitAudioContext();
 }
+
+Guacamole.AudioChannel.getTimestamp = function() {
+
+    // If we have an audio context, use its timestamp
+    if (Guacamole.AudioChannel.context)
+        return Guacamole.AudioChannel.context.currentTime * 1000;
+
+    // If we have high-resolution timers, use those
+    if (window.performance) {
+
+        if (window.performance.now)
+            return window.peformance.now();
+
+        if (window.performance.webkitNow)
+            return window.performance.webkitNow();
+        
+    }
+
+    // Fallback to millisecond-resolution system time
+    return new Date().getTime();
+
+};
 
 /**
  * Abstract representation of an audio packet.
@@ -173,7 +191,7 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         this.play = function(when) {
             
             // Calculate time until play
-            var now = new Date().getTime();
+            var now = Guacamole.AudioChannel.getTimestamp();
             var delay = when - now;
             
             // Play now if too late
