@@ -102,7 +102,7 @@ Guacamole.AudioChannel.getTimestamp = function() {
     if (window.performance) {
 
         if (window.performance.now)
-            return window.peformance.now();
+            return window.performance.now();
 
         if (window.performance.webkitNow)
             return window.performance.webkitNow();
