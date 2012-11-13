@@ -1172,9 +1172,21 @@ Guacamole.Client = function(tunnel) {
      * layers composited within.
      */
     this.flatten = function() {
+       
+        // Get source and destination canvases
+        var source = getLayer(0).getCanvas();
+        var canvas = document.createElement("canvas");
+
+        // Set dimensions
+        canvas.width = source.width;
+        canvas.height = source.height;
+
+        // Copy image from source
+        var context = canvas.getContext("2d");
+        context.drawImage(source, 0, 0);
         
-        // STUB: For now, just return canvas from root layer
-        return getLayer(0).getCanvas();
+        // Return new canvas copy
+        return canvas;
         
     };
 
