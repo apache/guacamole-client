@@ -127,12 +127,12 @@
                             + "&height=" + optimal_height;
 
                         // Add audio mimetypes to connect_string
-                        GuacamoleUI.supportedAudio.forEach(function(mimetype) {
+                        GuacUI.Audio.supported.forEach(function(mimetype) {
                             connect_string += "&audio=" + encodeURIComponent(mimetype);
                         });
 
                         // Add video mimetypes to connect_string
-                        GuacamoleUI.supportedVideo.forEach(function(mimetype) {
+                        GuacUI.Video.supported.forEach(function(mimetype) {
                             connect_string += "&video=" + encodeURIComponent(mimetype);
                         });
 

@@ -31,11 +31,167 @@ GuacUI.createElement = function(tagname, classname) {
     return new_element;
 };
 
+/**
+ * Creates a new element having the given tagname, CSS class, and specified
+ * parent element.
+ */
 GuacUI.createChildElement = function(parent, tagname, classname) {
     var element = GuacUI.createElement(tagname, classname);
     parent.appendChild(element);
     return element;
 };
+
+/**
+ * Adds the given CSS class to the given element.
+ */
+GuacUI.addClass = function(element, classname) {
+
+    // If supported, use native classlist for addClass()
+    if (Node.classlist)
+        element.classList.add(classname);
+
+    // Otherwise, simply add new class via string manipulation
+    else
+        element.className += " " + classname;
+
+};
+
+/**
+ * Removes the given CSS class from the given element.
+ */
+GuacUI.removeClass = function(element, classname) {
+
+    // If supported, use native classlist for removeClass()
+    if (Node.classlist)
+        element.classList.remove(classname);
+
+    // Otherwise, remove class via string manipulation
+    else {
+
+        // Filter out classes with given name
+        element.className = element.className.replace(/([^ ]+)[ ]*/g,
+            function(match, testClassname, spaces, offset, string) {
+
+                // If same class, remove
+                if (testClassname == classname)
+                    return "";
+
+                // Otherwise, allow
+                return match;
+                
+            }
+        );
+
+    } // end if no classlist support
+
+};
+   
+/**
+ * Object describing the UI's level of audio support. If the user has request
+ * that audio be disabled, this object will pretend that audio is not
+ * supported.
+ */
+GuacUI.Audio = new (function() {
+
+    var codecs = [
+        'audio/ogg; codecs="vorbis"',
+        'audio/mp4; codecs="mp4a.40.5"',
+        'audio/mpeg; codecs="mp3"',
+        'audio/webm; codecs="vorbis"',
+        'audio/wav; codecs=1'
+    ];
+
+    var probably_supported = [];
+    var maybe_supported = [];
+
+    /**
+     * Array of all supported audio mimetypes, ordered by liklihood of
+     * working.
+     */
+    this.supported = [];
+
+    // If sound disabled, we're done now.
+    if (GuacamoleUI.sessionState.getProperty("disable-sound"))
+        return;
+    
+    // Build array of supported audio formats
+    codecs.forEach(function(mimetype) {
+
+        var audio = new Audio();
+        var support_level = audio.canPlayType(mimetype);
+
+        // Trim semicolon and trailer
+        var semicolon = mimetype.indexOf(";");
+        if (semicolon != -1)
+            mimetype = mimetype.substring(0, semicolon);
+
+        // Partition by probably/maybe
+        if (support_level == "probably")
+            probably_supported.push(mimetype);
+        else if (support_level == "maybe")
+            maybe_supported.push(mimetype);
+
+    });
+
+    // Add probably supported types first
+    Array.prototype.push.apply(
+        this.supported, probably_supported);
+
+    // Prioritize "maybe" supported types second
+    Array.prototype.push.apply(
+        this.supported, maybe_supported);
+
+})();
+
+/**
+ * Object describing the UI's level of video support.
+ */
+GuacUI.Video = new (function() {
+
+    var codecs = [
+        'video/ogg; codecs="theora, vorbis"',
+        'video/mp4; codecs="avc1.4D401E, mp4a.40.5"',
+        'video/webm; codecs="vp8.0, vorbis"'
+    ];
+
+    var probably_supported = [];
+    var maybe_supported = [];
+
+    /**
+     * Array of all supported video mimetypes, ordered by liklihood of
+     * working.
+     */
+    this.supported = [];
+    
+    // Build array of supported audio formats
+    codecs.forEach(function(mimetype) {
+
+        var video = document.createElement("video");
+        var support_level = video.canPlayType(mimetype);
+
+        // Trim semicolon and trailer
+        var semicolon = mimetype.indexOf(";");
+        if (semicolon != -1)
+            mimetype = mimetype.substring(0, semicolon);
+
+        // Partition by probably/maybe
+        if (support_level == "probably")
+            probably_supported.push(mimetype);
+        else if (support_level == "maybe")
+            maybe_supported.push(mimetype);
+
+    });
+
+    // Add probably supported types first
+    Array.prototype.push.apply(
+        this.supported, probably_supported);
+
+    // Prioritize "maybe" supported types second
+    Array.prototype.push.apply(
+        this.supported, maybe_supported);
+
+})();
+
 
 /**
  * Central registry of all components for all states.

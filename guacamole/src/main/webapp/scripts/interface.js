@@ -45,77 +45,21 @@ var GuacamoleUI = {
 
 };
 
-/**
- * Array of all supported audio mimetypes, populated when this script is
- * loaded.
- */
-GuacamoleUI.supportedAudio = [];
-
-/**
- * Array of all supported video mimetypes, populated when this script is
- * loaded.
- */
-GuacamoleUI.supportedVideo = [];
-
-// If Node.classList is supported, implement addClass/removeClass using that
-if (Node.classList) {
-
-    GuacamoleUI.addClass = function(element, classname) {
-        element.classList.add(classname);
-    };
-    
-    GuacamoleUI.removeClass = function(element, classname) {
-        element.classList.remove(classname);
-    };
-    
-}
-
-// Otherwise, implement own
-else {
-
-    GuacamoleUI.addClass = function(element, classname) {
-
-        // Simply add new class
-        element.className += " " + classname;
-
-    };
-    
-    GuacamoleUI.removeClass = function(element, classname) {
-
-        // Filter out classes with given name
-        element.className = element.className.replace(/([^ ]+)[ ]*/g,
-            function(match, testClassname, spaces, offset, string) {
-
-                // If same class, remove
-                if (testClassname == classname)
-                    return "";
-
-                // Otherwise, allow
-                return match;
-                
-            }
-        );
-
-    };
-    
-}
-
-
 GuacamoleUI.hideStatus = function() {
-    GuacamoleUI.removeClass(document.body, "guac-error");
+    GuacUI.removeClass(document.body, "guac-error");
     GuacamoleUI.containers.state.style.visibility = "hidden";
     GuacamoleUI.display.style.opacity = "1";
 };
 
 GuacamoleUI.showStatus = function(text) {
-    GuacamoleUI.removeClass(document.body, "guac-error");
+    GuacUI.removeClass(document.body, "guac-error");
     GuacamoleUI.containers.state.style.visibility = "visible";
     GuacamoleUI.state.textContent = text;
     GuacamoleUI.display.style.opacity = "1";
 };
 
 GuacamoleUI.showError = function(error) {
-    GuacamoleUI.addClass(document.body, "guac-error");
+    GuacUI.addClass(document.body, "guac-error");
     GuacamoleUI.state.textContent = error;
     GuacamoleUI.display.style.opacity = "0.1";
 };
@@ -124,73 +68,6 @@ GuacamoleUI.showError = function(error) {
 GuacamoleUI.buttons.reconnect.onclick = function() {
     window.location.reload();
 };
-
-// Query audio support
-if (!GuacamoleUI.sessionState.getProperty("disable-sound"))
-    (function () {
-        var probably_supported = [];
-        var maybe_supported = [];
-
-        // Build array of supported audio formats
-        [
-            'audio/ogg; codecs="vorbis"',
-            'audio/mp4; codecs="mp4a.40.5"',
-            'audio/mpeg; codecs="mp3"',
-            'audio/webm; codecs="vorbis"',
-            'audio/wav; codecs=1'
-        ].forEach(function(mimetype) {
-
-            var audio = new Audio();
-            var support_level = audio.canPlayType(mimetype);
-
-            // Trim semicolon and trailer
-            var semicolon = mimetype.indexOf(";");
-            if (semicolon != -1)
-                mimetype = mimetype.substring(0, semicolon);
-
-            // Partition by probably/maybe
-            if (support_level == "probably")
-                probably_supported.push(mimetype);
-            else if (support_level == "maybe")
-                maybe_supported.push(mimetype);
-
-        });
-
-        Array.prototype.push.apply(GuacamoleUI.supportedAudio, probably_supported);
-        Array.prototype.push.apply(GuacamoleUI.supportedAudio, maybe_supported);
-    })();
-
-// Query video support
-(function () {
-    var probably_supported = [];
-    var maybe_supported = [];
-
-    // Build array of supported video formats
-    [
-        'video/ogg; codecs="theora, vorbis"',
-        'video/mp4; codecs="avc1.4D401E, mp4a.40.5"',
-        'video/webm; codecs="vp8.0, vorbis"'
-    ].forEach(function(mimetype) {
-
-        var video = document.createElement("video");
-        var support_level = video.canPlayType(mimetype);
-
-        // Trim semicolon and trailer
-        var semicolon = mimetype.indexOf(";");
-        if (semicolon != -1)
-            mimetype = mimetype.substring(0, semicolon);
-
-        // Partition by probably/maybe
-        if (support_level == "probably")
-            probably_supported.push(mimetype);
-        else if (support_level == "maybe")
-            maybe_supported.push(mimetype);
-
-    });
-
-    Array.prototype.push.apply(GuacamoleUI.supportedVideo, probably_supported);
-    Array.prototype.push.apply(GuacamoleUI.supportedVideo, maybe_supported);
-})();
 
 // Tie UI events / behavior to a specific Guacamole client
 GuacamoleUI.attach = function(guac) {
