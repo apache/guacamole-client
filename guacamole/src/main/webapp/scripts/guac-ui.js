@@ -104,6 +104,13 @@ GuacUI.StateManager = new (function() {
 
     };
 
+    /**
+     * Returns the current visible state.
+     */
+    this.getState = function() {
+        return current_state;
+    };
+
 })();
 
 

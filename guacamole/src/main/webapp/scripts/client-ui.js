@@ -412,6 +412,10 @@ GuacUI.Client.OnScreenKeyboard = function() {
             updateKeyboardSize,
             GuacUI.Client.KEYBOARD_AUTO_RESIZE_INTERVAL);
 
+        // Resize on window resize
+        window.addEventListener("resize", updateKeyboardSize, true);
+
+        // Initialize size
         updateKeyboardSize();
 
     };
@@ -421,6 +425,7 @@ GuacUI.Client.OnScreenKeyboard = function() {
         // Hide keyboard
         document.body.removeChild(keyboard_container);
         window.clearInterval(keyboard_resize_interval);
+        window.removeEventListener("resize", updateKeyboardSize, true);
 
     };
 

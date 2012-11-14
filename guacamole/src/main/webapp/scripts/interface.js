@@ -297,8 +297,17 @@ GuacamoleUI.attach = function(guac) {
         // If lifting up on shift, toggle keyboard if rest of gesture
         // conditions satisfied
         if (show_keyboard_gesture_possible && keysym == 0xFFE1) {
-            if (keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9])
-                GuacUI.StateManager.setState(GuacUI.Client.states.OSK);
+            if (keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9]) {
+
+                // If in INTERACTIVE mode, switch to OSK
+                if (GuacUI.StateManager.getState() == GuacUI.Client.states.INTERACTIVE)
+                    GuacUI.StateManager.setState(GuacUI.Client.states.OSK);
+
+                // If in OSK mode, switch to INTERACTIVE 
+                else if (GuacUI.StateManager.getState() == GuacUI.Client.states.OSK)
+                    GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+
+            }
         }
 
         // Detect if no keys are pressed
