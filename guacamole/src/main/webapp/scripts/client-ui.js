@@ -12,10 +12,10 @@ GuacUI.Client = {
         /**
          * The normal default Guacamole client UI mode
          */
-        "FULL_INTERACTIVE" : 0,
+        "INTERACTIVE" : 0,
 
         /**
-         * Same as FULL_INTERACTIVE except with visible on-screen keyboard.
+         * Same as INTERACTIVE except with visible on-screen keyboard.
          */
         "OSK"              : 1,
 
