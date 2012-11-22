@@ -598,26 +598,26 @@ GuacUI.Client.attach = function(guac) {
 
             // Idle
             case 0:
-                showStatus("Idle.");
+                GuacUI.Client.showStatus("Idle.");
                 title_prefix = "[Idle]";
                 break;
 
             // Connecting
             case 1:
-                showStatus("Connecting...");
+                GuacUI.Client.showStatus("Connecting...");
                 title_prefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
-                showStatus("Connected, waiting for first update...");
+                GuacUI.Client.showStatus("Connected, waiting for first update...");
                 title_prefix = "[Waiting...]";
                 break;
 
             // Connected
             case 3:
 
-                hideStatus();
+                GuacUI.Client.hideStatus();
                 title_prefix = null;
 
                 // Update clipboard with current data
@@ -628,19 +628,19 @@ GuacUI.Client.attach = function(guac) {
 
             // Disconnecting
             case 4:
-                showStatus("Disconnecting...");
+                GuacUI.Client.showStatus("Disconnecting...");
                 title_prefix = "[Disconnecting...]";
                 break;
 
             // Disconnected
             case 5:
-                showStatus("Disconnected.");
+                GuacUI.Client.showStatus("Disconnected.");
                 title_prefix = "[Disconnected]";
                 break;
 
             // Unknown status code
             default:
-                showStatus("[UNKNOWN STATUS]");
+                GuacUI.Client.showStatus("[UNKNOWN STATUS]");
 
         }
 
@@ -667,7 +667,7 @@ GuacUI.Client.attach = function(guac) {
         guac.disconnect();
 
         // Display error message
-        showError(error);
+        GuacUI.Client.showError(error);
         
     };
 
@@ -794,7 +794,8 @@ GuacUI.Client.attach = function(guac) {
     window.onblur = function() {
 
         // Regularly update screenshot if window not visible
-        thumbnail_update_interval = window.setInterval(updateThumbnail, 1000);
+        thumbnail_update_interval =
+            window.setInterval(GuacUI.Client.updateThumbnail, 1000);
 
     };
 
@@ -807,7 +808,7 @@ GuacUI.Client.attach = function(guac) {
      */
     window.onunload = function() {
 
-        updateThumbnail();
+        GuacUI.Client.updateThumbnail();
         guac.disconnect();
 
     };
@@ -818,7 +819,7 @@ GuacUI.Client.attach = function(guac) {
     window.onresize = function() {
 
         guac.sendSize(window.innerWidth, window.innerHeight);
-        updateDisplayScale();
+        GuacUI.Client.updateDisplayScale();
 
     };
 
@@ -826,7 +827,7 @@ GuacUI.Client.attach = function(guac) {
         if (name == "clipboard")
             guac.setClipboard(new_state[name]);
         else if (name == "auto-fit")
-            updateDisplayScale();
+            GuacUI.Client.updateDisplayScale();
     };
 
     var long_press_start_x = 0;
