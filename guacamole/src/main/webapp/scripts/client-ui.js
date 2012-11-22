@@ -53,8 +53,9 @@ GuacUI.Client = {
     "expected_input_width"  : 1,
     "expected_input_height" : 1,
 
-    "connectionName" : "Guacamole",
-    "attachedClient" : null
+    "connectionName"  : "Guacamole",
+    "overrideAutoFit" : false,
+    "attachedClient"  : null
 
 };
 
@@ -207,15 +208,14 @@ GuacUI.StateManager.registerComponent(
  */
 GuacUI.Client.ZoomedDisplay = function() {
 
-    var old_scale = null;
-
     this.show = function() {
-        old_scale = GuacUI.Client.attachedClient.getScale();
-        GuacUI.Client.attachedClient.scale(1.0);
+        GuacUI.Client.overrideAutoFit = true;
+        GuacUI.Client.updateDisplayScale();
     };
 
     this.hide = function() {
-        GuacUI.Client.attachedClient.scale(old_scale);
+        GuacUI.Client.overrideAutoFit = false;
+        GuacUI.Client.updateDisplayScale();
     };
 
 };
@@ -515,7 +515,8 @@ GuacUI.Client.updateDisplayScale = function() {
     var guac = GuacUI.Client.attachedClient;
 
     // If auto-fit is enabled, scale display
-    if (GuacUI.sessionState.getProperty("auto-fit")) {
+    if (!GuacUI.Client.overrideAutoFit
+         && GuacUI.sessionState.getProperty("auto-fit")) {
 
         // Calculate scale to fit screen
         var fit_scale = Math.min(
@@ -532,6 +533,18 @@ GuacUI.Client.updateDisplayScale = function() {
     // Otherwise, scale to 100%
     else if (guac.getScale() != 1.0)
         guac.scale(1.0);
+
+};
+
+/**
+ * Updates the document title based on the connection name.
+ */
+GuacUI.Client.updateTitle = function () {
+    
+    if (GuacUI.Client.titlePrefix)
+        document.title = GuacUI.Client.titlePrefix + " " + GuacUI.Client.connectionName;
+    else
+        document.title = GuacUI.Client.connectionName;
 
 };
 
@@ -583,7 +596,7 @@ GuacUI.Client.attach = function(guac) {
      */
 
     guac.onresize = function(width, height) {
-        updateDisplayScale();
+        GuacUI.Client.updateDisplayScale();
     }
 
     /*
@@ -592,33 +605,31 @@ GuacUI.Client.attach = function(guac) {
 
     guac.onstatechange = function(clientState) {
 
-        var title_prefix;
-
         switch (clientState) {
 
             // Idle
             case 0:
                 GuacUI.Client.showStatus("Idle.");
-                title_prefix = "[Idle]";
+                GuacUI.Client.titlePrefix = "[Idle]";
                 break;
 
             // Connecting
             case 1:
                 GuacUI.Client.showStatus("Connecting...");
-                title_prefix = "[Connecting...]";
+                GuacUI.Client.titlePrefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
                 GuacUI.Client.showStatus("Connected, waiting for first update...");
-                title_prefix = "[Waiting...]";
+                GuacUI.Client.titlePrefix = "[Waiting...]";
                 break;
 
             // Connected
             case 3:
 
                 GuacUI.Client.hideStatus();
-                title_prefix = null;
+                GuacUI.Client.titlePrefix = null;
 
                 // Update clipboard with current data
                 if (GuacUI.sessionState.getProperty("clipboard"))
@@ -629,13 +640,13 @@ GuacUI.Client.attach = function(guac) {
             // Disconnecting
             case 4:
                 GuacUI.Client.showStatus("Disconnecting...");
-                title_prefix = "[Disconnecting...]";
+                GuacUI.Client.titlePrefix = "[Disconnecting...]";
                 break;
 
             // Disconnected
             case 5:
                 GuacUI.Client.showStatus("Disconnected.");
-                title_prefix = "[Disconnected]";
+                GuacUI.Client.titlePrefix = "[Disconnected]";
                 break;
 
             // Unknown status code
@@ -644,7 +655,7 @@ GuacUI.Client.attach = function(guac) {
 
         }
 
-        document.title = title_prefix + " " + GuacUI.Client.connectionName;
+        GuacUI.Client.updateTitle();
 
     };
 
@@ -654,6 +665,7 @@ GuacUI.Client.attach = function(guac) {
 
     guac.onname = function(name) {
         GuacUI.Client.connectionName = name;
+        GuacUI.Client.updateTitle();
     };
 
     /*
