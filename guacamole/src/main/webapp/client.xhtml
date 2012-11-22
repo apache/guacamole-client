@@ -55,7 +55,6 @@
         <!-- guacamole-default-webapp scripts -->
         <script type="text/javascript" src="scripts/session.js"></script>
         <script type="text/javascript" src="scripts/history.js"></script>
-        <script type="text/javascript" src="scripts/interface.js"></script>
         <script type="text/javascript" src="scripts/guac-ui.js"></script>
         <script type="text/javascript" src="scripts/client-ui.js"></script>
 
@@ -85,10 +84,10 @@
 
                     // Add client to UI
                     guac.getDisplay().className = "software-cursor";
-                    GuacamoleUI.display.appendChild(guac.getDisplay());
+                    GuacUI.Client.display.appendChild(guac.getDisplay());
 
                     // Tie UI to client
-                    GuacamoleUI.attach(guac);
+                    GuacUI.Client.attach(guac);
 
                     try {
 
@@ -127,7 +126,7 @@
 
                     }
                     catch (e) {
-                        GuacamoleUI.showError(e.message);
+                        GuacUI.Client.showError(e.message);
                     }
 
                 }, 0);
