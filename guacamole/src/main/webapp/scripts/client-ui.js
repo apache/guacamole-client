@@ -448,13 +448,17 @@ GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
  * @constructor
  * @augments GuacUI.Component
  */
-GuacUI.Client.ModalStatus = function(text) {
+GuacUI.Client.ModalStatus = function(text, classname) {
 
     // Create element hierarchy
     var outer  = GuacUI.createElement("div", "dialogOuter");
     var middle = GuacUI.createChildElement(outer, "div", "dialogMiddle");
     var dialog = GuacUI.createChildElement(middle, "div", "dialog");
     var status = GuacUI.createChildElement(dialog, "p", "status");
+
+    // Set classname if given
+    if (classname)
+        GuacUI.addClass(outer, classname);
 
     // Set status text
     status.textContent = text;
@@ -573,7 +577,8 @@ GuacUI.Client.showStatus = function(status) {
 GuacUI.Client.showError = function(status) {
     GuacUI.Client.hideStatus();
 
-    GuacUI.Client.visibleStatus = new GuacUI.Client.ModalStatus(status);
+    GuacUI.Client.visibleStatus =
+        new GuacUI.Client.ModalStatus(status, "guac-error");
     GuacUI.Client.visibleStatus.show();
 }
 
@@ -703,7 +708,7 @@ GuacUI.Client.attach = function(guac) {
 
     // Mouse
     var mouse = new Guacamole.Mouse(guac_display);
-    var touch = new Guacamole.Mouse.Touchpad(document);
+    var touch = new Guacamole.Mouse.Touchpad(guac_display);
     touch.onmousedown = touch.onmouseup = touch.onmousemove =
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {

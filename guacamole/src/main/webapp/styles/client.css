@@ -72,7 +72,6 @@ div.dialog {
     text-align: left;
 
     display: inline-block;
-    visibility: visible;
 }
 
 div.dialog h1 {
@@ -131,17 +130,6 @@ div.dialog p {
     margin: 0;
 }
 
-#statusText {
-    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
-    font-size: xx-large;
-    color: white;
-}
-
-.guac-error #statusText {
-    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
-    color: #D44;
-}
-
 div.displayOuter {
     height: 100%;
     width: 100%;
@@ -191,7 +179,7 @@ div.magnifier {
 }
 
 .pan-overlay {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;
@@ -268,5 +256,10 @@ div#viewportClone {
     text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
     font-size: xx-large;
     color: white;
+}
+
+.guac-error .status {
+    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
+    color: #D44;
 }
 
