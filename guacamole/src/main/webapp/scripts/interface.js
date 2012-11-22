@@ -29,44 +29,10 @@ var GuacamoleUI = {
 
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
-    "logo"        : document.getElementById("status-logo"),
 
-    "buttons": {
-        "reconnect" : document.getElementById("reconnect")
-    },
-
-    "containers": {
-        "state"     : document.getElementById("statusDialog")
-    },
-    
-    "state"        : document.getElementById("statusText"),
     "client"       : null,
     "sessionState" : new GuacamoleSessionState()
 
-};
-
-GuacamoleUI.hideStatus = function() {
-    GuacUI.removeClass(document.body, "guac-error");
-    GuacamoleUI.containers.state.style.visibility = "hidden";
-    GuacamoleUI.display.style.opacity = "1";
-};
-
-GuacamoleUI.showStatus = function(text) {
-    GuacUI.removeClass(document.body, "guac-error");
-    GuacamoleUI.containers.state.style.visibility = "visible";
-    GuacamoleUI.state.textContent = text;
-    GuacamoleUI.display.style.opacity = "1";
-};
-
-GuacamoleUI.showError = function(error) {
-    GuacUI.addClass(document.body, "guac-error");
-    GuacamoleUI.state.textContent = error;
-    GuacamoleUI.display.style.opacity = "0.1";
-};
-
-// Reconnect button
-GuacamoleUI.buttons.reconnect.onclick = function() {
-    window.location.reload();
 };
 
 // Tie UI events / behavior to a specific Guacamole client
@@ -262,6 +228,27 @@ GuacamoleUI.attach = function(guac) {
         updateDisplayScale();
     }
 
+    var last_status_notification = null;
+    function hideStatus() {
+        if (last_status_notification)
+            last_status_notification.hide();
+        last_status_notification = null;
+    }
+
+    function showStatus(status) {
+        hideStatus();
+
+        last_status_notification = new GuacUI.Client.ModalStatus(status);
+        last_status_notification.show();
+    }
+
+    function showError(status) {
+        hideStatus();
+
+        last_status_notification = new GuacUI.Client.ModalStatus(status);
+        last_status_notification.show();
+    }
+
     // Handle client state change
     guac.onstatechange = function(clientState) {
 
@@ -269,26 +256,26 @@ GuacamoleUI.attach = function(guac) {
 
             // Idle
             case 0:
-                GuacamoleUI.showStatus("Idle.");
+                showStatus("Idle.");
                 title_prefix = "[Idle]";
                 break;
 
             // Connecting
             case 1:
-                GuacamoleUI.showStatus("Connecting...");
+                showStatus("Connecting...");
                 title_prefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
-                GuacamoleUI.showStatus("Connected, waiting for first update...");
+                showStatus("Connected, waiting for first update...");
                 title_prefix = "[Waiting...]";
                 break;
 
             // Connected
             case 3:
 
-                GuacamoleUI.hideStatus();
+                hideStatus();
                 title_prefix = null;
 
                 // Update clipboard with current data
@@ -302,19 +289,19 @@ GuacamoleUI.attach = function(guac) {
 
             // Disconnecting
             case 4:
-                GuacamoleUI.showStatus("Disconnecting...");
+                showStatus("Disconnecting...");
                 title_prefix = "[Disconnecting...]";
                 break;
 
             // Disconnected
             case 5:
-                GuacamoleUI.showStatus("Disconnected.");
+                showStatus("Disconnected.");
                 title_prefix = "[Disconnected]";
                 break;
 
             // Unknown status code
             default:
-                GuacamoleUI.showStatus("[UNKNOWN STATUS]");
+                showStatus("[UNKNOWN STATUS]");
 
         }
 
@@ -334,7 +321,7 @@ GuacamoleUI.attach = function(guac) {
         guac.disconnect();
 
         // Display error message
-        GuacamoleUI.showError(error);
+        showError(error);
         
     };
 

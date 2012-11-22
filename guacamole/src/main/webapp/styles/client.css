@@ -55,8 +55,6 @@ div.dialogOuter {
     position: fixed;
     left: 0;
     top: 0;
-
-    visibility: hidden;
 }
 
 div.dialogMiddle {
@@ -264,3 +262,10 @@ div#viewportClone {
 
     visibility: hidden;
 }
+
+.status {
+    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
+    font-size: xx-large;
+    color: white;
+}
+

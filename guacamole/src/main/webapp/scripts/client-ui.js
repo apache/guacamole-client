@@ -448,3 +448,37 @@ GuacUI.StateManager.registerComponent(
  */
 
 GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+
+/**
+ * Modal status display. Displays a message to the user, covering the entire
+ * screen.
+ * 
+ * Normally, this should only be used when user interaction with other
+ * components is impossible.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
+ */
+GuacUI.Client.ModalStatus = function(text) {
+
+    // Create element hierarchy
+    var outer  = GuacUI.createElement("div", "dialogOuter");
+    var middle = GuacUI.createChildElement(outer, "div", "dialogMiddle");
+    var dialog = GuacUI.createChildElement(middle, "div", "dialog");
+    var status = GuacUI.createChildElement(dialog, "p", "status");
+
+    // Set status text
+    status.textContent = text;
+
+    this.show = function() {
+        document.body.appendChild(outer);
+    };
+
+    this.hide = function() {
+        document.body.removeChild(outer);
+    };
+
+};
+
+GuacUI.Client.ModalStatus.prototype = new GuacUI.Component();
+
