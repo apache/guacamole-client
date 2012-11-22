@@ -45,18 +45,7 @@ GuacUI.Client = {
 
     "viewport"    : document.getElementById("viewportClone"),
     "display"     : document.getElementById("display"),
-    "logo"        : document.getElementById("status-logo"),
 
-    "buttons": {
-        "reconnect" : document.getElementById("reconnect")
-    },
-
-    "containers": {
-        "state"     : document.getElementById("statusDialog"),
-        "keyboard"  : document.getElementById("keyboardContainer")
-    },
-    
-    "state"        : document.getElementById("statusText"),
     "client"       : null,
 
     /* Expected Input Rectangle */
