@@ -179,7 +179,7 @@ GuacamoleRootUI.Connection = function(config) {
 
         // If window did not already exist, set up as
         // Guacamole client
-        if (!current.GuacamoleUI)
+        if (!current.GuacUI)
             window.open(url, config.id);
 
     };
