@@ -178,7 +178,8 @@ div.magnifier {
 
 }
 
-.pan-overlay {
+.pan-overlay,
+.type-overlay {
     position: fixed;
     left: 0;
     top: 0;

@@ -32,7 +32,14 @@ GuacUI.Client = {
         /**
          * Same as PAN, but with visible native OSK.
          */
-        "PAN_TYPING"       : 4
+        "PAN_TYPING"       : 4,
+
+        /**
+         * Precursor to PAN_TYPING, like PAN, except does not pan the
+         * screen, but rather hints at how to start typing.
+         */
+        "WAIT_TYPING"      : 5
+
     },
 
     /* Constants */
@@ -230,6 +237,63 @@ GuacUI.StateManager.registerComponent(
     new GuacUI.Client.ZoomedDisplay(),
     GuacUI.Client.states.PAN,
     GuacUI.Client.states.PAN_TYPING
+);
+
+/**
+ * Type overlay UI. This component functions to provide a means of activating
+ * the keyboard, when neither panning nor magnification make sense.
+ * 
+ * @constructor
+ * @augments GuacUI.Component
+ */
+GuacUI.Client.TypeOverlay = function() {
+
+    /**
+     * Overlay which will provide the means of scrolling the screen.
+     */
+    var type_overlay = GuacUI.createElement("div", "type-overlay");
+
+    /*
+     * Add exit button
+     */
+
+    var start = GuacUI.createChildElement(type_overlay, "p", "hint");
+    start.textContent = "Tap here to type, or tap the screen to cancel.";
+
+    // Begin typing when user clicks hint
+    start.addEventListener("click", function(e) {
+        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
+        e.stopPropagation();
+    }, false);
+
+    this.show = function() {
+        document.body.appendChild(type_overlay);
+    };
+
+    this.hide = function() {
+        document.body.removeChild(type_overlay);
+    };
+
+    /*
+     * Cancel when user taps screen
+     */
+
+    type_overlay.addEventListener("click", function(e) {
+        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+        e.stopPropagation();
+    }, false);
+
+};
+
+GuacUI.Client.TypeOverlay.prototype = new GuacUI.Component();
+
+/*
+ * Show the type overlay during WAIT_TYPING mode only
+ */
+
+GuacUI.StateManager.registerComponent(
+    new GuacUI.Client.TypeOverlay(),
+    GuacUI.Client.states.WAIT_TYPING
 );
 
 /**
@@ -873,10 +937,21 @@ GuacUI.Client.attach = function(guac) {
 
             longPressTimeout = window.setTimeout(function() {
                 longPressTimeout = null;
-                if (GuacUI.Client.attachedClient.getScale() != 1.0)
+
+                // If screen shrunken, show magnifier
+                if (GuacUI.Client.attachedClient.getScale() < 1.0)
                     GuacUI.StateManager.setState(GuacUI.Client.states.MAGNIFIER);
-                else
+
+                // Otherwise, if screen too big to fit, use panning mode
+                else if (
+                       GuacUI.Client.attachedClient.getWidth() > window.innerWidth
+                    || GuacUI.Client.attachedClient.getHeight() > window.innerHeight
+                )
                     GuacUI.StateManager.setState(GuacUI.Client.states.PAN);
+
+                // Otherwise, just show a hint
+                else
+                    GuacUI.StateManager.setState(GuacUI.Client.states.WAIT_TYPING);
             }, GuacUI.Client.LONG_PRESS_DETECT_TIMEOUT);
 
         }
