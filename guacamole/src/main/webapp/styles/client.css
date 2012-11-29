@@ -263,3 +263,22 @@ div#viewportClone {
     color: #D44;
 }
 
+p.hint {
+    
+    border: 0.25em solid rgba(255, 255, 255, 0.25);
+    background: black;
+    opacity: 0.75;
+
+    color: white;
+
+    max-width: 10em;
+    padding: 1em;
+    margin: 1em;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
+    
+}

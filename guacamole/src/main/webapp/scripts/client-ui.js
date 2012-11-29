@@ -255,6 +255,18 @@ GuacUI.Client.PanOverlay = function() {
     GuacUI.createChildElement(pan_overlay, "div", "indicator right");
     GuacUI.createChildElement(pan_overlay, "div", "indicator left");
 
+    /*
+     * Add exit button
+     */
+
+    var back = GuacUI.createChildElement(pan_overlay, "p", "hint");
+    back.textContent = "Tap here to exit panning mode";
+
+    // Return to interactive when back is clicked
+    back.addEventListener("click", function() {
+        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+    }, false);
+
     this.show = function() {
         document.body.appendChild(pan_overlay);
     };
