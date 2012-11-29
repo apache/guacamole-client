@@ -335,6 +335,9 @@ Guacamole.Keyboard = function(element) {
      */
     function press_key(keysym) {
 
+        // Don't bother with pressing the key if the key is unknown
+        if (keysym == null) return;
+
         // Only press if released
         if (!guac_keyboard.pressed[keysym]) {
 
@@ -342,7 +345,7 @@ Guacamole.Keyboard = function(element) {
             guac_keyboard.pressed[keysym] = true;
 
             // Send key event
-            if (keysym != null && guac_keyboard.onkeydown) {
+            if (guac_keyboard.onkeydown) {
                 guac_keyboard.onkeydown(keysym);
 
                 // Stop any current repeat
@@ -458,8 +461,13 @@ Guacamole.Keyboard = function(element) {
         // If we do not expect to handle via keypress, handle now
         if (!expect_keypress) {
             e.preventDefault();
-            keydownChar[keynum] = keysym;
-            press_key(keysym);
+
+            // Press key if known
+            if (keysym != null) {
+                keydownChar[keynum] = keysym;
+                press_key(keysym);
+            }
+            
         }
 
     }, true);
@@ -485,9 +493,11 @@ Guacamole.Keyboard = function(element) {
             release_key(0xFFE9);
         }
 
-        // Send press + release
-        press_key(keysym);
-        release_key(keysym);
+        // Send press + release if keysym known
+        if (keysym != null) {
+            press_key(keysym);
+            release_key(keysym);
+        }
 
     }, true);
 
@@ -508,8 +518,10 @@ Guacamole.Keyboard = function(element) {
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
         else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
 
-        // Send release event
-        release_key(keydownChar[keynum]);
+        // Send release event if original key known
+        var keydown_keysym = keydownChar[keynum];
+        if (keydown_keysym != null)
+            release_key(keydown_keysym);
 
         // Clear character record
         keydownChar[keynum] = null;
