@@ -354,7 +354,7 @@ Guacamole.Keyboard = function(element) {
 
                 // Repeat after a delay as long as pressed
                 if (!no_repeat[keysym])
-                    key_repeat_timeout = setTimeout(function() {
+                    key_repeat_timeout = window.setTimeout(function() {
                         key_repeat_interval = window.setInterval(function() {
                             guac_keyboard.onkeyup(keysym);
                             guac_keyboard.onkeydown(keysym);
