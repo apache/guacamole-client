@@ -191,6 +191,9 @@ div.magnifier {
 .pan-overlay .indicator {
     position: fixed;
     background-size: 32px 32px;
+    -moz-background-size: 32px 32px;
+    -webkit-background-size: 32px 32px;
+    -khtml-background-size: 32px 32px;
     background-position: center;
     background-repeat: no-repeat;
     opacity: 0.8;

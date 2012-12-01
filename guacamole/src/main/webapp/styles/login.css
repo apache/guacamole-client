@@ -90,6 +90,9 @@ div#logout-panel button {
 
     background: #8A6;
     border: 1px solid rgba(0, 0, 0, 0.4);
+    -moz-border-radius: 0.6em;
+    -webkit-border-radius: 0.6em;
+    -khtml-border-radius: 0.6em;
     border-radius: 0.6em;
 
     color: white;
@@ -135,6 +138,9 @@ div#login-dialog #login-fields {
     padding: 1em;
     background: #DDD;
     border: 1px solid #999;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
 
 }
@@ -145,6 +151,9 @@ div#login-dialog th {
 
 div#login-dialog #login-fields input {
     border: 1px solid #777;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
     width: 100%;
 }
@@ -244,6 +253,9 @@ div#recent-connections {
 }
 
 div#recent-connections div.connection {
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -khtml-border-radius: 0.5em;
     border-radius: 0.5em;
     display: inline-block;
     padding: 1em;
@@ -299,6 +311,9 @@ div#all-connections .connection {
     height: 24px;
     background-image: url('../images/protocol-icons/guac-plug.png');
     background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
     background-repeat: no-repeat;
     background-position: center center;
     opacity: 0.5;
@@ -328,6 +343,9 @@ div#recent-connections .protocol {
 #clipboardDiv textarea {
     width: 100%;
     border: 1px solid #AAA;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
 }
 
