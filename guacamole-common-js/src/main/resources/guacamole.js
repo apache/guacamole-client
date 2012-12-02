@@ -61,7 +61,7 @@ Guacamole.Parser = function() {
      * element is available. After a full element is available, that element
      * is flushed into the element buffer.
      * 
-     * @priate
+     * @private
      */
     var buffer = "";
 
@@ -69,7 +69,7 @@ Guacamole.Parser = function() {
      * Buffer of all received, complete elements. After an entire instruction
      * is read, this buffer is flushed, and a new instruction begins.
      * 
-     * @priate
+     * @private
      */
     var element_buffer = [];
 
@@ -79,6 +79,13 @@ Guacamole.Parser = function() {
     // Where to start the next length search or the next element
     var start_index = 0;
 
+    /**
+     * Appends the given instruction data packet to the internal buffer of
+     * this Guacamole.Parser, executing all completed instructions at
+     * the beginning of this buffer, if any.
+     *
+     * @param {String} packet The instruction data to append.
+     */
     this.receive = function(packet) {
 
         // Truncate buffer as necessary
@@ -1096,6 +1103,9 @@ Guacamole.Client = function(tunnel) {
     };
 
 
+    /**
+     * Sends a disconnect instruction to the server and closes the tunnel.
+     */
     this.disconnect = function() {
 
         // Only attempt disconnection not disconnected.
@@ -1117,6 +1127,13 @@ Guacamole.Client = function(tunnel) {
 
     };
     
+    /**
+     * Connects the underlying tunnel of this Guacamole.Client, passing the
+     * given arbitrary data to the tunnel during the connection process.
+     *
+     * @param data Arbitrary connection data to be sent to the underlying
+     *             tunnel during the connection process.
+     */
     this.connect = function(data) {
 
         setState(STATE_CONNECTING);
@@ -1137,6 +1154,14 @@ Guacamole.Client = function(tunnel) {
         setState(STATE_WAITING);
     };
 
+    /**
+     * Sets the scale of the client display element such that it renders at
+     * a relatively smaller or larger size, without affecting the true
+     * resolution of the display.
+     *
+     * @param {Number} scale The scale to resize to, where 1.0 is normal
+     *                       size (1:1 scale).
+     */
     this.scale = function(scale) {
 
         display.style.transform =
@@ -1155,14 +1180,29 @@ Guacamole.Client = function(tunnel) {
 
     };
 
+    /**
+     * Returns the width of the display.
+     *
+     * @return {Number} The width of the display.
+     */
     this.getWidth = function() {
         return displayWidth;
     };
 
+    /**
+     * Returns the height of the display.
+     *
+     * @return {Number} The height of the display.
+     */
     this.getHeight = function() {
         return displayHeight;
     };
 
+    /**
+     * Returns the scale of the display.
+     *
+     * @return {Number} The scale of the display.
+     */
     this.getScale = function() {
         return displayScale;
     };
@@ -1170,6 +1210,9 @@ Guacamole.Client = function(tunnel) {
     /**
      * Returns a canvas element containing the entire display, with all child
      * layers composited within.
+     *
+     * @return {HTMLCanvasElement} A new canvas element containing a copy of
+     *                             the display.
      */
     this.flatten = function() {
        
@@ -1248,7 +1291,8 @@ Guacamole.Client.LayerContainer = function(width, height) {
   
     /**
      * Returns the Layer contained within this LayerContainer.
-     * @returns {Guacamole.Layer} The Layer contained within this LayerContainer.
+     * @returns {Guacamole.Layer} The Layer contained within this
+     *                            LayerContainer.
      */
     this.getLayer = function() {
         return layer;
@@ -1256,7 +1300,8 @@ Guacamole.Client.LayerContainer = function(width, height) {
 
     /**
      * Returns the element containing the Layer within this LayerContainer.
-     * @returns {Element} The element containing the Layer within this LayerContainer.
+     * @returns {Element} The element containing the Layer within this
+     *                    LayerContainer.
      */
     this.getElement = function() {
         return div;

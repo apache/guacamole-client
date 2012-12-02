@@ -55,6 +55,7 @@ Guacamole.AudioChannel = function() {
 
     /**
      * When the next packet should play.
+     * @private
      */
     var next_packet_time = 0;
 
@@ -92,6 +93,14 @@ if (window.webkitAudioContext) {
     Guacamole.AudioChannel.context = new webkitAudioContext();
 }
 
+/**
+ * Returns a base timestamp which can be used for scheduling future audio
+ * playback. Scheduling playback for the value returned by this function plus
+ * N will cause the associated audio to be played back N milliseconds after
+ * the function is called.
+ *
+ * @return {Number} An arbitrary channel-relative timestamp, in milliseconds.
+ */
 Guacamole.AudioChannel.getTimestamp = function() {
 
     // If we have an audio context, use its timestamp
@@ -123,6 +132,15 @@ Guacamole.AudioChannel.getTimestamp = function() {
  * @param {String} data The base64-encoded sound data contained by this packet.
  */
 Guacamole.AudioChannel.Packet = function(mimetype, data) {
+
+    /**
+     * Schedules this packet for playback at the given time.
+     *
+     * @function
+     * @param {Number} when The time this packet should be played, in
+     *                      milliseconds.
+     */
+    this.play = undefined; // Defined conditionally depending on support
 
     // If audio API available, use it.
     if (Guacamole.AudioChannel.context) {
@@ -160,6 +178,7 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
             source.noteOn(play_when / 1000);
         }
 
+        /** @ignore */
         this.play = function(when) {
             
             play_when = when;
@@ -185,9 +204,7 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         var audio = new Audio();
         audio.src = data_uri;
       
-        /**
-         * Plays the sound data contained by this packet immediately.
-         */
+        /** @ignore */
         this.play = function(when) {
             
             // Calculate time until play

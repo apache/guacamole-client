@@ -215,6 +215,7 @@ Guacamole.Keyboard = function(element) {
 
     /**
      * All keysyms which should not repeat when held down.
+     * @private
      */
     var no_repeat = {
         0xFFE1: true,
@@ -253,17 +254,20 @@ Guacamole.Keyboard = function(element) {
 
     /**
      * The keysym associated with a given keycode when keydown fired.
+     * @private
      */
     var keydownChar = [];
 
     /**
      * Timeout before key repeat starts.
+     * @private
      */
     var key_repeat_timeout = null;
 
     /**
      * Interval which presses and releases the last key pressed while that
      * key is still being held down.
+     * @private
      */
     var key_repeat_interval = null;
 
@@ -332,6 +336,7 @@ Guacamole.Keyboard = function(element) {
      * Marks a key as pressed, firing the keydown event if registered. Key
      * repeat for the pressed key will start after a delay if that key is
      * not a modifier.
+     * @private
      */
     function press_key(keysym) {
 
@@ -369,6 +374,7 @@ Guacamole.Keyboard = function(element) {
 
     /**
      * Marks a key as released, firing the keyup event if registered.
+     * @private
      */
     function release_key(keysym) {
 

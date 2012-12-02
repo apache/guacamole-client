@@ -436,6 +436,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     /**
      * Arbitrary integer, unique for each tunnel read request.
+     * @private
      */
     var request_id = 0;
 
