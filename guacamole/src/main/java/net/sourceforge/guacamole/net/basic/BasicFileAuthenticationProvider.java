@@ -29,6 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
@@ -161,7 +162,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             this.auth_password = auth_password;
             this.auth_encoding = auth_encoding;
 
-            configs = new HashMap<String, GuacamoleConfiguration>();
+            configs = new TreeMap<String, GuacamoleConfiguration>();
         }
 
         private static final char HEX_CHARS[] = {
