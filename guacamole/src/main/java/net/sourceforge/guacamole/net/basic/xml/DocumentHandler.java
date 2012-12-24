@@ -72,6 +72,11 @@ public class DocumentHandler extends DefaultHandler {
      * @return The current element state.
      */
     private DocumentHandlerState getCurrentState() {
+
+        // If no state, return null
+        if (stack.isEmpty())
+            return null;
+
         return stack.getLast();
     }
     
