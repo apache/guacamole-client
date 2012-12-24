@@ -106,6 +106,10 @@ public class DocumentHandler extends DefaultHandler {
             handler = parent_handler.childElement(localName, attributes);
         }
 
+        // If no handler returned, the element was not expected
+        if (handler == null)
+            throw new SAXException("Unexpected element: '" + localName + "'");
+        
         // Append new element state to stack
         stack.addLast(new DocumentHandlerState(handler));
         
@@ -136,7 +140,7 @@ public class DocumentHandler extends DefaultHandler {
     /**
      * The current state of the DocumentHandler.
      */
-    private class DocumentHandlerState {
+    private static class DocumentHandlerState {
 
         /**
          * The current text content of the current element being parsed.
