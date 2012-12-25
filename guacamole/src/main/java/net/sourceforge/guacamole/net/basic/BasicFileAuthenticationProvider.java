@@ -53,11 +53,18 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
 
-    private long mappingTime;
-    private UserMapping mapping;
+    /**
+     * The time the user mapping file was last modified.
+     */
+    private long mod_time;
 
     /**
-     * The filename of the XML file to read the user mapping from.
+     * The parsed UserMapping read when the user mapping file was last parsed.
+     */
+    private UserMapping user_mapping;
+
+    /**
+     * The filename of the XML file to read the user user_mapping from.
      */
     public static final FileGuacamoleProperty BASIC_USER_MAPPING = new FileGuacamoleProperty() {
 
@@ -66,77 +73,74 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
     };
 
-    private File getUserMappingFile() throws GuacamoleException {
+    /**
+     * Returns a UserMapping containing all authorization data given within
+     * the XML file specified by the "basic-user-mapping" property in
+     * guacamole.properties. If the XML file has been modified or has not yet
+     * been read, this function may reread the file.
+     * 
+     * @return A UserMapping containing all authorization data within the
+     *         user mapping XML file.
+     * @throws GuacamoleException If the user mapping property is missing or
+     *                            an error occurs while parsing the XML file.
+     */
+    private UserMapping getUserMapping() throws GuacamoleException {
 
-        // Get user mapping file
-        return GuacamoleProperties.getProperty(BASIC_USER_MAPPING);
+        // Get user user_mapping file
+        File user_mapping_file =
+                GuacamoleProperties.getRequiredProperty(BASIC_USER_MAPPING);
 
-    }
+        // If user_mapping not yet read, or user_mapping has been modified, reread
+        if (user_mapping == null ||
+                (user_mapping_file.exists()
+                 && mod_time < user_mapping_file.lastModified())) {
 
-    public synchronized void init() throws GuacamoleException {
+            logger.info("Reading user mapping file: {}", user_mapping_file);
 
-        // Get user mapping file
-        File mapFile = getUserMappingFile();
-        if (mapFile == null)
-            throw new GuacamoleException("Missing \"basic-user-mapping\" parameter required for basic login.");
+            // Parse document
+            try {
 
-        logger.info("Reading user mapping file: {}", mapFile);
+                // Get handler for root element
+                UserMappingTagHandler userMappingHandler =
+                        new UserMappingTagHandler();
+                
+                // Set up document handler
+                DocumentHandler contentHandler = new DocumentHandler(
+                        "user-mapping", userMappingHandler);
 
-        // Parse document
-        try {
+                // Set up XML parser
+                XMLReader parser = XMLReaderFactory.createXMLReader();
+                parser.setContentHandler(contentHandler);
 
-            UserMappingTagHandler userMappingHandler =
-                    new UserMappingTagHandler();
-            
-            // Set up parser
-            DocumentHandler contentHandler = new DocumentHandler(
-                    "user-mapping", userMappingHandler);
+                // Read and parse file
+                Reader reader = new BufferedReader(new FileReader(user_mapping_file));
+                parser.parse(new InputSource(reader));
+                reader.close();
 
-            XMLReader parser = XMLReaderFactory.createXMLReader();
-            parser.setContentHandler(contentHandler);
+                // Store mod time and user mapping
+                mod_time = user_mapping_file.lastModified();
+                user_mapping = userMappingHandler.asUserMapping();
 
-            // Read and parse file
-            Reader reader = new BufferedReader(new FileReader(mapFile));
-            parser.parse(new InputSource(reader));
-            reader.close();
-
-            // Init mapping and record mod time of file
-            mappingTime = mapFile.lastModified();
-            mapping = userMappingHandler.asUserMapping();
+            }
+            catch (IOException e) {
+                throw new GuacamoleException("Error reading basic user mapping file.", e);
+            }
+            catch (SAXException e) {
+                throw new GuacamoleException("Error parsing basic user mapping XML.", e);
+            }
 
         }
-        catch (IOException e) {
-            throw new GuacamoleException("Error reading basic user mapping file.", e);
-        }
-        catch (SAXException e) {
-            throw new GuacamoleException("Error parsing basic user mapping XML.", e);
-        }
+
+        // Return (possibly cached) user mapping
+        return user_mapping;
 
     }
 
     @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
 
-        // Check mapping file mod time
-        File userMappingFile = getUserMappingFile();
-        if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified()) {
-
-            // If modified recently, gain exclusive access and recheck
-            synchronized (this) {
-                if (userMappingFile.exists() && mappingTime < userMappingFile.lastModified()) {
-                    logger.info("User mapping file {} has been modified.", userMappingFile);
-                    init(); // If still not up to date, re-init
-                }
-            }
-
-        }
-
-        // If no mapping available, report as such
-        if (mapping == null)
-            throw new GuacamoleException("User mapping could not be read.");
-
         // Validate and return info for given user and pass
-        Authorization auth = mapping.getAuthorization(credentials.getUsername());
+        Authorization auth = getUserMapping().getAuthorization(credentials.getUsername());
         if (auth != null && auth.validate(credentials.getUsername(), credentials.getPassword()))
             return auth.getConfigurations();
 
