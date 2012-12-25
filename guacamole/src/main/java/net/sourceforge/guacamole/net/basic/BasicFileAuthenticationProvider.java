@@ -24,25 +24,22 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.basic.auth.Authorization;
+import net.sourceforge.guacamole.net.basic.auth.UserMapping;
+import net.sourceforge.guacamole.net.basic.xml.DocumentHandler;
+import net.sourceforge.guacamole.net.basic.xml.user_mapping.UserMappingTagHandler;
 import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
@@ -57,7 +54,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
 
     private long mappingTime;
-    private Map<String, AuthInfo> mapping;
+    private UserMapping mapping;
 
     /**
      * The filename of the XML file to read the user mapping from.
@@ -88,8 +85,12 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
         // Parse document
         try {
 
+            UserMappingTagHandler userMappingHandler =
+                    new UserMappingTagHandler();
+            
             // Set up parser
-            BasicUserMappingContentHandler contentHandler = new BasicUserMappingContentHandler();
+            DocumentHandler contentHandler = new DocumentHandler(
+                    "user-mapping", userMappingHandler);
 
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setContentHandler(contentHandler);
@@ -101,7 +102,7 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
 
             // Init mapping and record mod time of file
             mappingTime = mapFile.lastModified();
-            mapping = contentHandler.getUserMapping();
+            mapping = userMappingHandler.asUserMapping();
 
         }
         catch (IOException e) {
@@ -135,361 +136,13 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
             throw new GuacamoleException("User mapping could not be read.");
 
         // Validate and return info for given user and pass
-        AuthInfo info = mapping.get(credentials.getUsername());
-        if (info != null && info.validate(credentials.getUsername(), credentials.getPassword()))
-            return info.getConfigurations();
+        Authorization auth = mapping.getAuthorization(credentials.getUsername());
+        if (auth != null && auth.validate(credentials.getUsername(), credentials.getPassword()))
+            return auth.getConfigurations();
 
         // Unauthorized
         return null;
 
     }
-
-    public static class AuthInfo {
-
-        public static enum Encoding {
-            PLAIN_TEXT,
-            MD5
-        }
-
-        private String auth_username;
-        private String auth_password;
-        private Encoding auth_encoding;
-
-        private Map<String, GuacamoleConfiguration> configs;
-
-        public AuthInfo(String auth_username, String auth_password, Encoding auth_encoding) {
-            this.auth_username = auth_username;
-            this.auth_password = auth_password;
-            this.auth_encoding = auth_encoding;
-
-            configs = new TreeMap<String, GuacamoleConfiguration>();
-        }
-
-        private static final char HEX_CHARS[] = {
-            '0', '1', '2', '3', '4', '5', '6', '7',
-            '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-        };
-
-        public static String getHexString(byte[] bytes) {
-
-            if (bytes == null)
-                return null;
-
-            StringBuilder hex = new StringBuilder(2 * bytes.length);
-            for (byte b : bytes) {
-                hex.append(HEX_CHARS[(b & 0xF0) >> 4])
-                   .append(HEX_CHARS[(b & 0x0F)     ]);
-            }
-
-            return hex.toString();
-
-        }
-
-
-        public boolean validate(String username, String password) {
-
-            // If username matches
-            if (username != null && password != null && username.equals(auth_username)) {
-
-                switch (auth_encoding) {
-
-                    case PLAIN_TEXT:
-
-                        // Compare plaintext
-                        return password.equals(auth_password);
-
-                    case MD5:
-
-                        // Compare hashed password
-                        try {
-                            MessageDigest digest = MessageDigest.getInstance("MD5");
-                            String hashedPassword = getHexString(digest.digest(password.getBytes()));
-                            return hashedPassword.equals(auth_password.toUpperCase());
-                        }
-                        catch (NoSuchAlgorithmException e) {
-                            throw new UnsupportedOperationException("Unexpected lack of MD5 support.", e);
-                        }
-
-                }
-
-            }
-
-            return false;
-
-        }
-
-        public GuacamoleConfiguration getConfiguration(String name) {
-
-            // Create new configuration if not already in map
-            GuacamoleConfiguration config = configs.get(name);
-            if (config == null) {
-                config = new GuacamoleConfiguration();
-                configs.put(name, config);
-            }
-
-            return config;
-
-        }
-
-        public Map<String, GuacamoleConfiguration> getConfigurations() {
-            return configs;
-        }
-
-    }
-
-    private static class BasicUserMappingContentHandler extends DefaultHandler {
-
-        private Map<String, AuthInfo> authMapping = new HashMap<String, AuthInfo>();
-
-        public Map<String, AuthInfo> getUserMapping() {
-            return Collections.unmodifiableMap(authMapping);
-        }
-
-        private enum State {
-            ROOT,
-            USER_MAPPING,
-
-            /* Username/password pair */
-            AUTH_INFO,
-
-            /* Connection configuration information */
-            CONNECTION,
-            PROTOCOL,
-            PARAMETER,
-
-            /* Configuration information associated with default connection */
-            DEFAULT_CONNECTION_PROTOCOL,
-            DEFAULT_CONNECTION_PARAMETER,
-
-            END;
-        }
-
-        private State state = State.ROOT;
-        private AuthInfo current = null;
-        private String currentParameter = null;
-        private String currentConnection = null;
-
-        @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-
-            switch (state)  {
-
-                case USER_MAPPING:
-
-                    if (localName.equals("user-mapping")) {
-                        state = State.END;
-                        return;
-                    }
-
-                    break;
-
-                case AUTH_INFO:
-
-                    if (localName.equals("authorize")) {
-
-                        // Finalize mapping for this user
-                        authMapping.put(
-                            current.auth_username,
-                            current
-                        );
-
-                        state = State.USER_MAPPING;
-                        return;
-                    }
-
-                    break;
-
-                case CONNECTION:
-
-                    if (localName.equals("connection")) {
-                        state = State.AUTH_INFO;
-                        return;
-                    }
-
-                    break;
-
-                case PROTOCOL:
-
-                    if (localName.equals("protocol")) {
-                        state = State.CONNECTION;
-                        return;
-                    }
-
-                    break;
-
-                case PARAMETER:
-
-                    if (localName.equals("param")) {
-                        state = State.CONNECTION;
-                        return;
-                    }
-
-                    break;
-
-                case DEFAULT_CONNECTION_PROTOCOL:
-
-                    if (localName.equals("protocol")) {
-                        state = State.AUTH_INFO;
-                        return;
-                    }
-
-                    break;
-
-                case DEFAULT_CONNECTION_PARAMETER:
-
-                    if (localName.equals("param")) {
-                        state = State.AUTH_INFO;
-                        return;
-                    }
-
-                    break;
-
-            }
-
-            throw new SAXException("Tag not yet complete: " + localName);
-
-        }
-
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-
-            switch (state)  {
-
-                // Document must be <user-mapping>
-                case ROOT:
-
-                    if (localName.equals("user-mapping")) {
-                        state = State.USER_MAPPING;
-                        return;
-                    }
-
-                    break;
-
-                case USER_MAPPING:
-
-                    if (localName.equals("authorize")) {
-
-                        AuthInfo.Encoding encoding;
-                        String encodingString = attributes.getValue("encoding");
-                        if (encodingString == null)
-                            encoding = AuthInfo.Encoding.PLAIN_TEXT;
-                        else if (encodingString.equals("plain"))
-                            encoding = AuthInfo.Encoding.PLAIN_TEXT;
-                        else if (encodingString.equals("md5"))
-                            encoding = AuthInfo.Encoding.MD5;
-                        else
-                            throw new SAXException("Invalid encoding type");
-
-
-                        current = new AuthInfo(
-                            attributes.getValue("username"),
-                            attributes.getValue("password"),
-                            encoding
-                        );
-
-                        // Next state
-                        state = State.AUTH_INFO;
-                        return;
-                    }
-
-                    break;
-
-                case AUTH_INFO:
-
-                    if (localName.equals("connection")) {
-
-                        currentConnection = attributes.getValue("name");
-                        if (currentConnection == null)
-                            throw new SAXException("Attribute \"name\" required for connection tag.");
-
-                        // Next state
-                        state = State.CONNECTION;
-                        return;
-                    }
-
-                    if (localName.equals("protocol")) {
-
-                        // Associate protocol with default connection
-                        currentConnection = "DEFAULT";
-
-                        // Next state
-                        state = State.DEFAULT_CONNECTION_PROTOCOL;
-                        return;
-                    }
-
-                    if (localName.equals("param")) {
-
-                        // Associate parameter with default connection
-                        currentConnection = "DEFAULT";
-
-                        currentParameter = attributes.getValue("name");
-                        if (currentParameter == null)
-                            throw new SAXException("Attribute \"name\" required for param tag.");
-
-                        // Next state
-                        state = State.DEFAULT_CONNECTION_PARAMETER;
-                        return;
-                    }
-
-                    break;
-
-                case CONNECTION:
-
-                    if (localName.equals("protocol")) {
-                        // Next state
-                        state = State.PROTOCOL;
-                        return;
-                    }
-
-                    if (localName.equals("param")) {
-
-                        currentParameter = attributes.getValue("name");
-                        if (currentParameter == null)
-                            throw new SAXException("Attribute \"name\" required for param tag.");
-
-                        // Next state
-                        state = State.PARAMETER;
-                        return;
-                    }
-
-                    break;
-
-            }
-
-            throw new SAXException("Unexpected tag: " + localName);
-
-        }
-
-        @Override
-        public void characters(char[] ch, int start, int length) throws SAXException {
-
-            String str = new String(ch, start, length);
-
-            switch (state) {
-
-                case PROTOCOL:
-                case DEFAULT_CONNECTION_PROTOCOL:
-
-                    current.getConfiguration(currentConnection)
-                        .setProtocol(str);
-                    return;
-
-                case PARAMETER:
-                case DEFAULT_CONNECTION_PARAMETER:
-
-                    current.getConfiguration(currentConnection)
-                            .setParameter(currentParameter, str);
-                    return;
-
-            }
-
-            if (str.trim().length() != 0)
-                throw new SAXException("Unexpected character data.");
-
-        }
-
-
-    }
-
 
 }
