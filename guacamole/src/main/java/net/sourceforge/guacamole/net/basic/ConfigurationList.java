@@ -19,11 +19,13 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -45,23 +47,38 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
         // Write XML
         response.setHeader("Content-Type", "text/xml");
-        PrintWriter out = response.getWriter();
-        out.println("<configs>");
 
-        for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
+        try {
 
-            GuacamoleConfiguration config = entry.getValue();
+            XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+            XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
 
-            // Write config
-            out.print("<config id=\"");
-            out.print(entry.getKey());
-            out.print("\" protocol=\"");
-            out.print(config.getProtocol());
-            out.println("\"/>");
+            // Begin document
+            xml.writeStartDocument();
+            xml.writeStartElement("configs");
+            
+            // For each entry, write corresponding config element
+            for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
+
+                // Get config
+                GuacamoleConfiguration config = entry.getValue();
+
+                // Write config
+                xml.writeEmptyElement("config");
+                xml.writeAttribute("id", entry.getKey());
+                xml.writeAttribute("protocol", config.getProtocol());
+
+            }
+
+            // End document
+            xml.writeEndElement();
+            xml.writeEndDocument();
 
         }
+        catch (XMLStreamException e) {
+            throw new IOException("Unable to write configuration list XML.", e);
+        }
 
-        out.println("</configs>");
     }
 
 }
