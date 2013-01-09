@@ -37,6 +37,11 @@ public class ParamTagHandler implements TagHandler {
     private GuacamoleConfiguration config;
     
     /**
+     * The name of the parameter
+     */
+    private String name;
+    
+    /**
      * Creates a new handler for an "param" tag having the given
      * attributes.
      * 
@@ -47,6 +52,10 @@ public class ParamTagHandler implements TagHandler {
      */
     public ParamTagHandler(GuacamoleConfiguration config,
             Attributes attributes) throws SAXException {
+
+        this.config = config;
+        this.name = attributes.getValue("name");
+
     }
 
     @Override
@@ -56,7 +65,7 @@ public class ParamTagHandler implements TagHandler {
 
     @Override
     public void complete(String textContent) throws SAXException {
-        // Do nothing
+        config.setParameter(name, textContent);
     }
    
 }
