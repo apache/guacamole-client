@@ -42,7 +42,6 @@ import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
 /**
  * A GuacamoleSocket which pre-configures the connection based on a given
@@ -104,7 +103,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         GuacamoleWriter writer = socket.getWriter();
 
         // Send protocol
-        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_SELECT, config.getProtocol()));
+        writer.writeInstruction(new GuacamoleInstruction("select", config.getProtocol()));
 
         // Wait for server args
         GuacamoleInstruction instruction;
@@ -115,7 +114,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             if (instruction == null)
                 throw new GuacamoleServerException("End of stream during initial handshake.");
             
-        } while (instruction.getOperation() != Operation.SERVER_ARGS);
+        } while (!instruction.getOpcode().equals("args"));
 
         // Build args list off provided names and config
         String[] args = new String[instruction.getArgs().length];
@@ -134,7 +133,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Send size 
         writer.writeInstruction(
             new GuacamoleInstruction(
-                Operation.CLIENT_SIZE,
+                "size",
                 Integer.toString(info.getOptimalScreenWidth()),
                 Integer.toString(info.getOptimalScreenHeight())
             )
@@ -143,19 +142,19 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Send supported audio formats
         writer.writeInstruction(
                 new GuacamoleInstruction(
-                    Operation.CLIENT_AUDIO,
+                    "audio",
                     info.getAudioMimetypes().toArray(new String[0])
                 ));
 
         // Send supported video formats
         writer.writeInstruction(
                 new GuacamoleInstruction(
-                    Operation.CLIENT_VIDEO,
+                    "video",
                     info.getVideoMimetypes().toArray(new String[0])
                 ));
 
         // Send args
-        writer.writeInstruction(new GuacamoleInstruction(Operation.CLIENT_CONNECT, args));
+        writer.writeInstruction(new GuacamoleInstruction("connect", args));
 
     }
 

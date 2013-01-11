@@ -43,7 +43,6 @@ import java.util.LinkedList;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.protocol.GuacamoleInstruction;
-import net.sourceforge.guacamole.protocol.GuacamoleInstruction.Operation;
 
 /**
  * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
@@ -251,7 +250,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
 
         // Create instruction
         GuacamoleInstruction instruction = new GuacamoleInstruction(
-                Operation.fromOpcode(opcode),
+                opcode,
                 elements.toArray(new String[elements.size()])
         );
 
