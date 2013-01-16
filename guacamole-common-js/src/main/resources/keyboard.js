@@ -241,7 +241,12 @@ Guacamole.Keyboard = function(element) {
         /**
          * Whether alt is currently pressed.
          */
-        "alt"  : false
+        "alt"  : false,
+        
+        /**
+         * Whether meta (apple key) is currently pressed.
+         */
+        "meta" : false
 
     };
 
@@ -431,10 +436,11 @@ Guacamole.Keyboard = function(element) {
             return;
         }
 
-        // Ctrl/Alt/Shift
+        // Ctrl/Alt/Shift/Meta
         if      (keynum == 16) guac_keyboard.modifiers.shift = true;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
         else if (keynum == 18) guac_keyboard.modifiers.alt   = true;
+        else if (keynum == 91) guac_keyboard.modifiers.meta  = true;
 
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum);
@@ -450,7 +456,7 @@ Guacamole.Keyboard = function(element) {
         if (e.keyIdentifier) {
 
             keysym = keysym ||
-                keysym_from_key_identifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
+            keysym_from_key_identifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
 
             // Prevent default if non-typable character or if modifier combination
             // likely to be eaten by browser otherwise (NOTE: We must not prevent
@@ -458,8 +464,9 @@ Guacamole.Keyboard = function(element) {
             // AltGr. If we receive AltGr, we need to handle keypress, which
             // means we cannot cancel keydown).
             if (!isTypable(e.keyIdentifier)
-                    || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
-                    || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt))
+                || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
+                || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt)
+                || (guac_keyboard.modifiers.meta))
                 expect_keypress = false;
             
         }
@@ -519,10 +526,11 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
-        // Ctrl/Alt/Shift
+        // Ctrl/Alt/Shift/Meta
         if      (keynum == 16) guac_keyboard.modifiers.shift = false;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
         else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
+        else if (keynum == 91) guac_keyboard.modifiers.meta  = false;
 
         // Send release event if original key known
         var keydown_keysym = keydownChar[keynum];
@@ -539,6 +547,7 @@ Guacamole.Keyboard = function(element) {
         guac_keyboard.modifiers.alt   = false;
         guac_keyboard.modifiers.ctrl  = false;
         guac_keyboard.modifiers.shift = false;
+        guac_keyboard.modifiers.meta  = false;
     }, true);
 
 };
