@@ -479,6 +479,11 @@ Guacamole.Keyboard = function(element) {
             if (keysym != null) {
                 keydownChar[keynum] = keysym;
                 press_key(keysym);
+                
+                // If a key is pressed while meta is held down, the keyup will never be sent in Chrome, so send it now. (bug #108404)
+                if(guac_keyboard.modifiers.meta) {
+                    release_key(keysym);
+                }
             }
             
         }
