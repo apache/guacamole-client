@@ -323,7 +323,7 @@ Guacamole.Keyboard = function(element) {
 
     }
 
-    function keysyom_from_keycode(keyCode) {
+    function keysym_from_keycode(keyCode) {
 
         var keysym = null;
         if (!guac_keyboard.modifiers.shift) keysym = unshiftedKeysym[keyCode];
@@ -443,7 +443,7 @@ Guacamole.Keyboard = function(element) {
         else if (keynum == 91) guac_keyboard.modifiers.meta  = true;
 
         // Try to get keysym from keycode
-        var keysym = keysyom_from_keycode(keynum);
+        var keysym = keysym_from_keycode(keynum);
 
         // By default, we expect a corresponding keypress event
         var expect_keypress = true;
