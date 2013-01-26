@@ -42,17 +42,18 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Provides means of retrieving a set of named GuacamoleConfigurations for a
- * given Credentials object.
+ * Provides means of accessing and managing the available
+ * GuacamoleConfiguration objects and User objects. Access to each configuration
+ * and each user is limited by a given Credentials object.
  *
  * @author Michael Jumper
  */
 public interface AuthenticationProvider {
 
     /**
-     * Given an arbitrary credentials object, returns a Map containing all
-     * configurations authorized by those credentials. The keys of this Map
-     * are Strings which uniquely identify each configuration.
+     * Given an arbitrary Credentials object, returns a Map containing all
+     * GuacamoleConfigurations authorized by those credentials. The keys of
+     * this Map are Strings which uniquely identify each configuration.
      *
      * @param credentials The credentials to use to retrieve authorized
      *                    configurations.
@@ -62,7 +63,55 @@ public interface AuthenticationProvider {
      *                            configurations.
      */
     Map<String, GuacamoleConfiguration>
-            getAuthorizedConfigurations(Credentials credentials)
+            getConfigurations(Credentials credentials)
             throws GuacamoleException;
 
+    /**
+     * Adds the given GuacamoleConfiguration to the overall set of available
+     * GuacamoleConfigurations, using the given unique identifier and
+     * credentials.
+     * 
+     * @param credentials The credentials to use when adding the given
+     *                    configuration.
+     * @param identifier The identifier to assign to the configuration.
+     * @param config The configuration to add.
+     * @throws GuacamoleException If an error occurs while adding the
+     *                            configuration, or if adding the configuration
+     *                            is not allowed.
+     */
+    void addConfiguration(Credentials credentials, String identifier,
+            GuacamoleConfiguration config) throws GuacamoleException;
+    
+    /**
+     * Updates the GuacamoleConfiguration having the given unique identifier
+     * with the data contained in the given GuacamoleConfiguration, using the
+     * given credentials.
+     * 
+     * @param credentials The credentials to use when updating the configuration
+     *                    having the given identifier.
+     * @param identifier The identifier to use when locating the configuration
+     *                   to update.
+     * @param config The configuration to use when updating the stored
+     *               configuration.
+     * @throws GuacamoleException If an error occurs while updating the
+     *                            configuration, or if updating the
+     *                            configuration is not allowed.
+     */
+    void updateConfiguration(Credentials credentials, String identifier,
+            GuacamoleConfiguration config) throws GuacamoleException;
+    
+    /**
+     * Removes the GuacamoleConfiguration having the given unique identifier,
+     * using the given credentials.
+     * 
+     * @param credentials The credentials to use when removing the configuration
+     *                    having the given identifier.
+     * @param identifier The identifier of the configuration to remove.
+     * @throws GuacamoleException If an error occurs while removing the
+     *                            configuration, or if removing the
+     *                            configuration is not allowed.
+     */
+    void removeConfiguration(Credentials credentials, String identifier)
+            throws GuacamoleException;
+    
 }
