@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth;
  * ***** END LICENSE BLOCK ***** */
 
 import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -51,8 +52,22 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface AuthenticationProvider {
 
     /**
+     * Converts the given Credentials to a corresponding User, which need not
+     * actually exist.
+     * 
+     * @param ownCredentials The credentials to use to authorize the conversion.
+     * @param credentials The credentials to convert.
+     * @return A User which corresponds to the given Credentials.
+     * @throws GuacamoleException If an error occurs converting the Credentials
+     *                            into a User, or if such conversion is not
+     *                            allowed.
+     */
+    User toUser(Credentials ownCredentials, Credentials credentials)
+            throws GuacamoleException;
+
+    /**
      * Given an arbitrary Credentials object, returns a Map containing all
-     * GuacamoleConfigurations authorized by those credentials. The keys of
+     * GuacamoleConfigurations visible with those credentials. The keys of
      * this Map are Strings which uniquely identify each configuration.
      *
      * @param credentials The credentials to use to retrieve authorized
@@ -112,6 +127,54 @@ public interface AuthenticationProvider {
      *                            configuration is not allowed.
      */
     void removeConfiguration(Credentials credentials, String identifier)
+            throws GuacamoleException;
+ 
+    /**
+     * Given an arbitrary Credentials object, returns a Set containing all
+     * Users visible with those credentials.
+     *
+     * @param credentials The credentials to use to retrieve users. 
+     * @return A Set of all users visible with the given credentials,
+     *         or null if the credentials given are not authorized.
+     * @throws GuacamoleException If an error occurs while retrieving
+     *                            users.
+     */
+    Set<User> getUsers(Credentials credentials) throws GuacamoleException;
+
+    /**
+     * Adds the given User to the overall set of available Users, using the
+     * given credentials.
+     * 
+     * @param credentials The credentials to use when adding the given
+     *                    user.
+     * @param user The user to add.
+     * @throws GuacamoleException If an error occurs while adding the user, or
+     *                            if adding the user is not allowed.
+     */
+    void addUser(Credentials credentials, User user)
+            throws GuacamoleException;
+    
+    /**
+     * Updates the User with the data contained in the given User, using the
+     * given credentials. The user to update is identified using the username
+     * of the User given.
+     * 
+     * @param credentials The credentials to use when updating the user. 
+     * @param user The user to use when updating the stored user.
+     * @throws GuacamoleException If an error occurs while updating the user,
+     *                            or if updating the user is not allowed.
+     */
+    void updateUser(Credentials credentials, User user)
+            throws GuacamoleException;
+    
+    /**
+     * Removes the User using the given credentials.
+     * 
+     * @param credentials The credentials to use when removing the user. 
+     * @throws GuacamoleException If an error occurs while removing the user,
+     *                            or if removing user is not allowed.
+     */
+    void removeUser(Credentials credentials, User user)
             throws GuacamoleException;
     
 }
