@@ -17,7 +17,7 @@ import javax.servlet.http.HttpSession;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-auth.
+ * The Original Code is guacamole-ext.
  *
  * The Initial Developer of the Original Code is
  * Michael Jumper.
