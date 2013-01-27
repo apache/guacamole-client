@@ -46,8 +46,7 @@ import net.sourceforge.guacamole.GuacamoleException;
  * 
  * @author Michael Jumper 
  */
-public class AbstractUser extends RestrictedObject
-    implements User, Comparable<AbstractUser> {
+public abstract class AbstractUser implements User, Comparable<AbstractUser> {
 
     /**
      * The name of this user.

@@ -50,16 +50,30 @@ import net.sourceforge.guacamole.GuacamoleException;
 public interface AuthenticationProvider {
 
     /**
-     * Returns the Environment authorized by the given credentials, or null if
-     * the given credentials are not authorized.
+     * Returns the environment exposed by this AuthenticationProvider. The
+     * environment provides unrestricted access to all available users and
+     * configurations, though operations which permanently affect users and
+     * configurations are only possible through a UserContext.
+     * 
+     * @return An Environment containing all Users and GuacamoleConfigurations
+     *         currently available through this AuthenticationProvider.
+     * 
+     * @throws GuacamoleException If an error occurs while retrieving the
+     *                            environment.
+     */
+    Environment getEnvironment() throws GuacamoleException;
+    
+    /**
+     * Returns the UserContext of the user authorized by the given credentials.
      * 
      * @param credentials The credentials to use to retrieve the environment.
-     * @return An Environment containing all Users and GuacamoleConfigurations
-     *         the credentials provide access to.
+     * @return The UserContext of the user authorized by the given credentials,
+     *         or null if the credentials are not authorized.
+     * 
      * @throws GuacamoleException If an error occurs while creating the
-     *                            Environment.
+     *                            UserContext.
      */
-    Environment getAuthorizedEnvironment(Credentials credentials)
+    UserContext getUserContext(Credentials credentials)
             throws GuacamoleException;
    
 }

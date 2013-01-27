@@ -57,24 +57,8 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface Environment {
 
     /**
-     * Returns the User represented by the Credentials that own this
-     * Environment.
-     * 
-     * @return The User represented by the Credentials that own this
-     *         Environment.
-     */
-    User self();
-
-
-    /*
-     * CONFIGURATION FUNCTIONS
-     */
-
-
-    /**
-     * Returns a Map containing all GuacamoleConfigurations visible within this
-     * Environment. The keys of this Map are Strings which uniquely identify
-     * each configuration.
+     * Returns a Map containing absolutely all GuacamoleConfigurations. The
+     * keys of this Map are Strings which uniquely identify each configuration.
      *
      * @return A Map of all configurations visible.
      * @throws GuacamoleException If an error occurs while retrieving
@@ -84,83 +68,12 @@ public interface Environment {
             throws GuacamoleException;
 
     /**
-     * Adds the given GuacamoleConfiguration to the overall set of available
-     * GuacamoleConfigurations, using the given unique identifier.
-     * 
-     * @param identifier The identifier to assign to the configuration.
-     * @param config The configuration to add.
-     * @throws GuacamoleException If an error occurs while adding the
-     *                            configuration, or if adding the configuration
-     *                            is not allowed.
-     */
-    void addConfiguration(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException;
-    
-    /**
-     * Updates the GuacamoleConfiguration having the given unique identifier
-     * with the data contained in the given GuacamoleConfiguration.
-     * 
-     * @param identifier The identifier to use when locating the configuration
-     *                   to update.
-     * @param config The configuration to use when updating the stored
-     *               configuration.
-     * @throws GuacamoleException If an error occurs while updating the
-     *                            configuration, or if updating the
-     *                            configuration is not allowed.
-     */
-    void updateConfiguration(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException;
-    
-    /**
-     * Removes the GuacamoleConfiguration having the given unique identifier.
-     * 
-     * @param identifier The identifier of the configuration to remove.
-     * @throws GuacamoleException If an error occurs while removing the
-     *                            configuration, or if removing the
-     *                            configuration is not allowed.
-     */
-    void removeConfiguration(String identifier) throws GuacamoleException;
- 
-
-    /*
-     * USER FUNCTIONS
-     */
-
-
-    /**
-     * Returns a Set containing all Users visible within this Environment.
+     * Returns a Set containing absolutely all Users.
      *
-     * @return A Set of all users visible.
+     * @return A Set of all users.
      * @throws GuacamoleException If an error occurs while retrieving
      *                            users.
      */
     Set<User> getUsers() throws GuacamoleException;
 
-    /**
-     * Adds the given User to the overall set of available Users.
-     * 
-     * @param user The user to add.
-     * @throws GuacamoleException If an error occurs while adding the user, or
-     *                            if adding the user is not allowed.
-     */
-    void addUser(User user) throws GuacamoleException;
-    
-    /**
-     * Updates the User with the data contained in the given User. The user to
-     * update is identified using the username of the User given.
-     * 
-     * @param user The user to use when updating the stored user.
-     * @throws GuacamoleException If an error occurs while updating the user,
-     *                            or if updating the user is not allowed.
-     */
-    void updateUser(User user) throws GuacamoleException;
-    
-    /**
-     * Removes the given User from the overall set of available Users.
-     * 
-     * @throws GuacamoleException If an error occurs while removing the user,
-     *                            or if removing user is not allowed.
-     */
-    void removeUser(User user) throws GuacamoleException;
- 
 }

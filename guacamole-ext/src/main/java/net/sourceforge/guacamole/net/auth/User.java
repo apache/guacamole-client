@@ -45,7 +45,7 @@ import net.sourceforge.guacamole.GuacamoleException;
  * 
  * @author Michael Jumper 
  */
-public interface User extends Restrictable {
+public interface User {
 
     /**
      * Returns the name of this user, which must be unique across all users.
