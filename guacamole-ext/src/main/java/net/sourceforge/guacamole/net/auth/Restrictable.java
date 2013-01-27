@@ -1,8 +1,6 @@
 
 package net.sourceforge.guacamole.net.auth;
 
-import net.sourceforge.guacamole.GuacamoleException;
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -38,6 +36,8 @@ import net.sourceforge.guacamole.GuacamoleException;
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+
+import net.sourceforge.guacamole.GuacamoleException;
 
 
 /**
