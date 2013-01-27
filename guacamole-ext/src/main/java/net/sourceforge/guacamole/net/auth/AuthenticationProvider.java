@@ -37,10 +37,8 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Map;
-import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+
 
 /**
  * Provides means of accessing and managing the available
@@ -52,129 +50,16 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface AuthenticationProvider {
 
     /**
-     * Converts the given Credentials to a corresponding User, which need not
-     * actually exist.
+     * Returns the Environment authorized by the given credentials, or null if
+     * the given credentials are not authorized.
      * 
-     * @param ownCredentials The credentials to use to authorize the conversion.
-     * @param credentials The credentials to convert.
-     * @return A User which corresponds to the given Credentials.
-     * @throws GuacamoleException If an error occurs converting the Credentials
-     *                            into a User, or if such conversion is not
-     *                            allowed.
+     * @param credentials The credentials to use to retrieve the environment.
+     * @return An Environment containing all Users and GuacamoleConfigurations
+     *         the credentials provide access to.
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Environment.
      */
-    User toUser(Credentials ownCredentials, Credentials credentials)
+    Environment getAuthorizedEnvironment(Credentials credentials)
             throws GuacamoleException;
-
-    /**
-     * Given an arbitrary Credentials object, returns a Map containing all
-     * GuacamoleConfigurations visible with those credentials. The keys of
-     * this Map are Strings which uniquely identify each configuration.
-     *
-     * @param credentials The credentials to use to retrieve authorized
-     *                    configurations.
-     * @return A Map of all configurations authorized by the given credentials,
-     *         or null if the credentials given are not authorized.
-     * @throws GuacamoleException If an error occurs while retrieving
-     *                            configurations.
-     */
-    Map<String, GuacamoleConfiguration>
-            getConfigurations(Credentials credentials)
-            throws GuacamoleException;
-
-    /**
-     * Adds the given GuacamoleConfiguration to the overall set of available
-     * GuacamoleConfigurations, using the given unique identifier and
-     * credentials.
-     * 
-     * @param credentials The credentials to use when adding the given
-     *                    configuration.
-     * @param identifier The identifier to assign to the configuration.
-     * @param config The configuration to add.
-     * @throws GuacamoleException If an error occurs while adding the
-     *                            configuration, or if adding the configuration
-     *                            is not allowed.
-     */
-    void addConfiguration(Credentials credentials, String identifier,
-            GuacamoleConfiguration config) throws GuacamoleException;
-    
-    /**
-     * Updates the GuacamoleConfiguration having the given unique identifier
-     * with the data contained in the given GuacamoleConfiguration, using the
-     * given credentials.
-     * 
-     * @param credentials The credentials to use when updating the configuration
-     *                    having the given identifier.
-     * @param identifier The identifier to use when locating the configuration
-     *                   to update.
-     * @param config The configuration to use when updating the stored
-     *               configuration.
-     * @throws GuacamoleException If an error occurs while updating the
-     *                            configuration, or if updating the
-     *                            configuration is not allowed.
-     */
-    void updateConfiguration(Credentials credentials, String identifier,
-            GuacamoleConfiguration config) throws GuacamoleException;
-    
-    /**
-     * Removes the GuacamoleConfiguration having the given unique identifier,
-     * using the given credentials.
-     * 
-     * @param credentials The credentials to use when removing the configuration
-     *                    having the given identifier.
-     * @param identifier The identifier of the configuration to remove.
-     * @throws GuacamoleException If an error occurs while removing the
-     *                            configuration, or if removing the
-     *                            configuration is not allowed.
-     */
-    void removeConfiguration(Credentials credentials, String identifier)
-            throws GuacamoleException;
- 
-    /**
-     * Given an arbitrary Credentials object, returns a Set containing all
-     * Users visible with those credentials.
-     *
-     * @param credentials The credentials to use to retrieve users. 
-     * @return A Set of all users visible with the given credentials,
-     *         or null if the credentials given are not authorized.
-     * @throws GuacamoleException If an error occurs while retrieving
-     *                            users.
-     */
-    Set<User> getUsers(Credentials credentials) throws GuacamoleException;
-
-    /**
-     * Adds the given User to the overall set of available Users, using the
-     * given credentials.
-     * 
-     * @param credentials The credentials to use when adding the given
-     *                    user.
-     * @param user The user to add.
-     * @throws GuacamoleException If an error occurs while adding the user, or
-     *                            if adding the user is not allowed.
-     */
-    void addUser(Credentials credentials, User user)
-            throws GuacamoleException;
-    
-    /**
-     * Updates the User with the data contained in the given User, using the
-     * given credentials. The user to update is identified using the username
-     * of the User given.
-     * 
-     * @param credentials The credentials to use when updating the user. 
-     * @param user The user to use when updating the stored user.
-     * @throws GuacamoleException If an error occurs while updating the user,
-     *                            or if updating the user is not allowed.
-     */
-    void updateUser(Credentials credentials, User user)
-            throws GuacamoleException;
-    
-    /**
-     * Removes the User using the given credentials.
-     * 
-     * @param credentials The credentials to use when removing the user. 
-     * @throws GuacamoleException If an error occurs while removing the user,
-     *                            or if removing user is not allowed.
-     */
-    void removeUser(Credentials credentials, User user)
-            throws GuacamoleException;
-    
+   
 }
