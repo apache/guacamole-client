@@ -37,8 +37,6 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.GuacamoleException;
-
 
 /**
  * Basic implementation of a Guacamole user which uses the username to
@@ -60,24 +58,39 @@ public abstract class AbstractUser implements User, Comparable<AbstractUser> {
      */
     private String password;
 
+    /**
+     * This user's role.
+     */
+    private Role role;
+    
     @Override
-    public String getUsername() throws GuacamoleException {
+    public String getUsername() {
         return username;
     }
 
     @Override
-    public void setUsername(String username) throws GuacamoleException {
+    public void setUsername(String username) {
         this.username = username;
     }
 
     @Override
-    public String getPassword() throws GuacamoleException {
+    public String getPassword() {
         return password;
     }
 
     @Override
-    public void setPassword(String password) throws GuacamoleException {
+    public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public Role getRole() {
+        return role;
+    }
+
+    @Override
+    public void setRole(Role role) {
+        this.role = role;
     }
 
 

@@ -1,4 +1,3 @@
-
 package net.sourceforge.guacamole.net.auth;
 
 /* ***** BEGIN LICENSE BLOCK *****
@@ -39,56 +38,27 @@ package net.sourceforge.guacamole.net.auth;
 
 
 /**
- * A user of the Guacamole web application.
+ * The role of a particular user, defining the access levels of that user.
  * 
- * @author Michael Jumper 
+ * @author Michael Jumper
  */
-public interface User {
-
-    /**
-     * Returns the name of this user, which must be unique across all users.
+public interface Role {
+   
+    /* FIXME: STUB */
+    
+    /*
+     * POSSIBLE PERMISSIONS:
+     *
+     * UserManagementPermission(ADD/UPDATE/DELETE/VIEW, user or ANY)
+     * ConfigurationPermission(ADD/UPDATE/DELETE/VIEW, config or ANY)
+     * AdministrationPermission(ADD/REMOVE, permission or ANY)
+     *
+     * Each can be used with:
      * 
-     * @return The name of this user.
-     */
-    public String getUsername();
-
-    /**
-     * Sets the name of this user, which must be unique across all users.
+     * add(Permission)
+     * remove(Permission)
+     * has(Permission)
      * 
-     * @param username  The name of this user.
      */
-    public void setUsername(String username);
-
-    /**
-     * Returns this user's password. Note that the password returned may be
-     * hashed or completely arbitrary.
-     * 
-     * @return A String which may (or may not) be the user's password.
-     */
-    public String getPassword();
-
-    /**
-     * Sets this user's password. Note that while this function is guaranteed
-     * to change the password of this User object, there is no guarantee that
-     * getPassword() will return the value given to setPassword().
-     * 
-     * @param password The password to set.
-     */
-    public void setPassword(String password);
-
-    /**
-     * Returns the role of this User. The role defines exactly which permissions
-     * a particular user has.
-     * 
-     * @return The role of this User.
-     */
-    public Role getRole();
-
-    /**
-     * Sets the role of this User to the given Role.
-     * 
-     * @param role The role which this User should have.
-     */
-    public void setRole(Role role);
     
 }
