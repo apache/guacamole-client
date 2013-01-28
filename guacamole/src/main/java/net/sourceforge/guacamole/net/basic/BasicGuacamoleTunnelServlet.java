@@ -32,6 +32,8 @@ import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
 import net.sourceforge.guacamole.net.event.TunnelCloseEvent;
 import net.sourceforge.guacamole.net.event.TunnelConnectEvent;
@@ -57,7 +59,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
     @Override
     protected void authenticatedService(
-            Map<String, GuacamoleConfiguration> configs,
+            UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
@@ -169,8 +171,16 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // Get credentials
             final Credentials credentials = getCredentials(httpSession);
 
-            // Get authorized configs
-            Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
+            // Get context
+            UserContext context = getUserContext(httpSession);
+
+            // Get configuration directory
+            GuacamoleConfigurationDirectory directory =
+                    context.getGuacamoleConfigurationDirectory();
+                
+            // Attempt to get configurations from directory
+            Map<String, GuacamoleConfiguration> configs =
+                    directory.getConfigurations();
 
             // If no configs/credentials in session, not authorized
             if (credentials == null || configs == null)

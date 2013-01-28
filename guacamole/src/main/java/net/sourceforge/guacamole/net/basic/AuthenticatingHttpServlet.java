@@ -21,7 +21,6 @@ package net.sourceforge.guacamole.net.basic;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
 import net.sourceforge.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import net.sourceforge.guacamole.net.event.AuthenticationFailureEvent;
@@ -37,7 +37,6 @@ import net.sourceforge.guacamole.net.event.AuthenticationSuccessEvent;
 import net.sourceforge.guacamole.net.event.listener.AuthenticationFailureListener;
 import net.sourceforge.guacamole.net.event.listener.AuthenticationSuccessListener;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +45,12 @@ import org.slf4j.LoggerFactory;
  * is only called if the HTTP request is authenticated, or the current
  * HTTP session has already been authenticated.
  *
- * Authorized configurations are retrieved using the authentication provider
- * defined in guacamole.properties. The authentication provider has access
- * to the request and session, in addition to any submitted username and
- * password, in order to authenticate the user.
+ * The user context is retrieved using the authentication provider defined in
+ * guacamole.properties. The authentication provider has access to the request
+ * and session, in addition to any submitted username and password, in order
+ * to authenticate the user.
  *
- * All authorized configurations will be stored in the current HttpSession.
+ * The user context will be stored in the current HttpSession.
  *
  * Success and failure are logged.
  *
@@ -62,9 +61,9 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
 
     /**
-     * The session attribute holding the map of configurations.
+     * The session attribute holding the current UserContext.
      */
-    private static final String CONFIGURATIONS_ATTRIBUTE = "GUAC_CONFIGS";
+    private static final String CONTEXT_ATTRIBUTE = "GUAC_CONTEXT";
 
     /**
      * The session attribute holding the credentials authorizing this session.
@@ -175,13 +174,13 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     }
 
     /**
-     * Returns the configurations associated with the given session.
+     * Returns the UserContext associated with the given session.
      *
-     * @param session The session to retrieve configurations from.
-     * @return The configurations associated with the given session.
+     * @param session The session to retrieve UserContext from.
+     * @return The UserContext associated with the given session.
      */
-    protected Map<String, GuacamoleConfiguration> getConfigurations(HttpSession session) {
-        return (Map<String, GuacamoleConfiguration>) session.getAttribute(CONFIGURATIONS_ATTRIBUTE);
+    protected UserContext getUserContext(HttpSession session) {
+        return (UserContext) session.getAttribute(CONTEXT_ATTRIBUTE);
     }
 
     @Override
@@ -190,12 +189,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
         HttpSession httpSession = request.getSession(true);
 
-        // Try to get configs from session
-        Map<String, GuacamoleConfiguration> configs = getConfigurations(httpSession);
+        // Try to get user context from session
+        UserContext context = getUserContext(httpSession);
 
-        // If no configs, try to authenticate the user to get the configs using
+        // If no context, try to authenticate the user to get the context using
         // this request.
-        if (configs == null) {
+        if (context == null) {
 
             SessionListenerCollection listeners;
             try {
@@ -218,17 +217,17 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             credentials.setUsername(username);
             credentials.setPassword(password);
 
-            // Get authorized configs
+            // Get authorized context
             try {
-                configs = authProvider.getAuthorizedConfigurations(credentials);
+                context = authProvider.getUserContext(credentials);
             }
 
 
             /******** HANDLE FAILED AUTHENTICATION ********/
 
-            // If error retrieving configs, fail authentication, notify listeners
+            // If error retrieving context, fail authentication, notify listeners
             catch (GuacamoleException e) {
-                logger.error("Error retrieving configuration(s) for user \"{}\".",
+                logger.error("Error retrieving context for user \"{}\".",
                         credentials.getUsername(), e);
 
                 notifyFailed(listeners, credentials);
@@ -236,8 +235,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 return;
             }
 
-            // If no configs, fail authentication, notify listeners
-            if (configs == null) {
+            // If no context, fail authentication, notify listeners
+            if (context == null) {
                 logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                         request.getRemoteAddr(), credentials.getUsername());
 
@@ -272,20 +271,35 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
             }
 
-            // Associate configs and credentials with session
-            httpSession.setAttribute(CONFIGURATIONS_ATTRIBUTE, configs);
-            httpSession.setAttribute(CREDENTIALS_ATTRIBUTE,    credentials);
+            // Associate context and credentials with session
+            httpSession.setAttribute(CONTEXT_ATTRIBUTE,     context);
+            httpSession.setAttribute(CREDENTIALS_ATTRIBUTE, credentials);
 
 
         }
 
         // Allow servlet to run now that authentication has been validated
-        authenticatedService(configs, request, response);
+        authenticatedService(context, request, response);
 
     }
 
+    /**
+     * Function called after the credentials given in the request (if any)
+     * are authenticated. If the current session is not associated with
+     * valid credentials, this function will not be called.
+     * 
+     * @param context The current UserContext.
+     * @param request The HttpServletRequest being serviced.
+     * @param response An HttpServletResponse which controls the HTTP response
+     *                 of this servlet.
+     * 
+     * @throws ServletException If an error occurs that interferes with the
+     *                          normal operation of this servlet.
+     * @throws IOException If an error occurs that prevents this servlet from
+     *                     communicating.
+     */
     protected abstract void authenticatedService(
-            Map<String, GuacamoleConfiguration> configs,
+            UserContext context,
             HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException;
 

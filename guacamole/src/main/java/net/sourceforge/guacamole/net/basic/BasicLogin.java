@@ -19,10 +19,9 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
-import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import net.sourceforge.guacamole.net.auth.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +37,7 @@ public class BasicLogin extends AuthenticatingHttpServlet {
 
     @Override
     protected void authenticatedService(
-            Map<String, GuacamoleConfiguration> configs,
+            UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws IOException {
         logger.info("Login was successful.");

@@ -21,11 +21,15 @@ package net.sourceforge.guacamole.net.basic;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -38,16 +42,33 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
     @Override
     protected void authenticatedService(
-            Map<String, GuacamoleConfiguration> configs,
+            UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException {
+    throws IOException, ServletException {
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
 
-        // Write XML
+        // Write XML content type
         response.setHeader("Content-Type", "text/xml");
 
+        // Attempt to get configurations
+        Map<String, GuacamoleConfiguration> configs;
+        try {
+
+            // Get configuration directory
+            GuacamoleConfigurationDirectory directory =
+                context.getGuacamoleConfigurationDirectory();
+            
+            // Get configurations
+            configs = directory.getConfigurations();
+
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to retrieve configurations.", e);
+        }
+        
+        // Write actual XML
         try {
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
