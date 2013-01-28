@@ -50,20 +50,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 public interface AuthenticationProvider {
 
     /**
-     * Returns the environment exposed by this AuthenticationProvider. The
-     * environment provides unrestricted access to all available users and
-     * configurations, though operations which permanently affect users and
-     * configurations are only possible through a UserContext.
-     * 
-     * @return An Environment containing all Users and GuacamoleConfigurations
-     *         currently available through this AuthenticationProvider.
-     * 
-     * @throws GuacamoleException If an error occurs while retrieving the
-     *                            environment.
-     */
-    Environment getEnvironment() throws GuacamoleException;
-    
-    /**
      * Returns the UserContext of the user authorized by the given credentials.
      * 
      * @param credentials The credentials to use to retrieve the environment.
