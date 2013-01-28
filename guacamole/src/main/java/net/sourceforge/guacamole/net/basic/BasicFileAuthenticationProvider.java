@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import net.sourceforge.guacamole.net.basic.auth.Authorization;
 import net.sourceforge.guacamole.net.basic.auth.UserMapping;
 import net.sourceforge.guacamole.net.basic.xml.DocumentHandler;
@@ -49,7 +49,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Michael Jumper, Michal Kotas
  */
-public class BasicFileAuthenticationProvider implements AuthenticationProvider {
+public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvider {
 
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
 
@@ -137,7 +137,9 @@ public class BasicFileAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
-    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
+    public Map<String, GuacamoleConfiguration>
+            getAuthorizedConfigurations(Credentials credentials)
+            throws GuacamoleException {
 
         // Validate and return info for given user and pass
         Authorization auth = getUserMapping().getAuthorization(credentials.getUsername());
