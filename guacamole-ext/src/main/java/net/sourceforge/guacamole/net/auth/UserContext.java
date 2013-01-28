@@ -37,10 +37,7 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Map;
-import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * The context of an active user. The functions of this class enforce all
@@ -51,20 +48,6 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface UserContext {
 
     /**
-     * All possible permissions for user within a UserContext.
-     * 
-     * Absolutely ALL possible operations that can possibly fail due to
-     * security issues within a UserContext must have a means of querying
-     * beforehand whether the operation will fail, and thus must have an
-     * associated permission value.
-     */
-    public enum Permission {
-
-        /* STUB */
-        
-    }
-
-    /**
      * Returns the User whose access rights control the operations of this
      * UserContext.
      * 
@@ -73,98 +56,44 @@ public interface UserContext {
      */
     User self();
 
-    /*
-     * USER FUNCTIONS
-     */
-
     /**
-     * Returns a Set containing all Users visible within this UserContext.
-     *
-     * @return A Set of all users visible.
-     * @throws GuacamoleException If an error occurs while retrieving
-     *                            users.
-     */
-    Set<User> getUsers() throws GuacamoleException;
-
-    /**
-     * Adds the given User to the overall set of available Users.
+     * Retrieves a UserDirectory which can be used to view and manipulate other
+     * users, but only as allowed by the permissions given to the user of this
+     * UserContext.
      * 
-     * @param user The user to add.
-     * @throws GuacamoleException If an error occurs while adding the user, or
-     *                            if adding the user is not allowed.
-     */
-    void addUser(User user) throws GuacamoleException;
-    
-    /**
-     * Updates the User with the data contained in the given User. The user to
-     * update is identified using the username of the User given.
+     * @return A UserDirectory whose operations are bound by the restrictions
+     *         of this UserContext.
      * 
-     * @param user The user to use when updating the stored user.
-     * @throws GuacamoleException If an error occurs while updating the user,
-     *                            or if updating the user is not allowed.
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            UserDirectory.
      */
-    void updateUser(User user) throws GuacamoleException;
-    
-    /**
-     * Removes the given User from the overall set of available Users.
-     * 
-     * @throws GuacamoleException If an error occurs while removing the user,
-     *                            or if removing user is not allowed.
-     */
-    void removeUser(User user) throws GuacamoleException;
+    UserDirectory getUserDirectory() throws GuacamoleException;
  
-    /*
-     * CONFIGURATION FUNCTIONS
-     */
-
     /**
-     * Returns a Map containing all GuacamoleConfigurations visible within this
-     * UserContext. The keys of this Map are Strings which uniquely identify
-     * each configuration.
-     *
-     * @return A Map of all configurations visible.
-     * @throws GuacamoleException If an error occurs while retrieving
-     *                            configurations.
-     */
-    Map<String, GuacamoleConfiguration> getConfigurations()
+     * Retrieves a GuacamoleConfigurationDirectory which can be used to view
+     * and manipulate configurations, but only as allowed by the permissions
+     * given to the user of this UserContext.
+     * 
+     * @return A GuacamoleConfigurationdirectory whose operations are bound by
+     *         the restrictions of this UserContext.
+     * 
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            GuacamoleConfigurationDirectory.
+     */   
+    GuacamoleConfigurationDirectory getGuacamoleConfigurationDirectory()
             throws GuacamoleException;
 
     /**
-     * Adds the given GuacamoleConfiguration to the overall set of available
-     * GuacamoleConfigurations, using the given unique identifier.
+     * Retrieves a PermissionDirectory which can be used to view and manipulate
+     * permissions, but only as allowed by the permissions given to the user of
+     * this UserContext.
      * 
-     * @param identifier The identifier to assign to the configuration.
-     * @param config The configuration to add.
-     * @throws GuacamoleException If an error occurs while adding the
-     *                            configuration, or if adding the configuration
-     *                            is not allowed.
+     * @return A PermissionDirectory whose operations are bound by the
+     *         restrictions of this UserContext.
+     * 
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            PermissionDirectory.
      */
-    void addConfiguration(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException;
+    PermissionDirectory getPermissionDirectory() throws GuacamoleException;
     
-    /**
-     * Updates the GuacamoleConfiguration having the given unique identifier
-     * with the data contained in the given GuacamoleConfiguration.
-     * 
-     * @param identifier The identifier to use when locating the configuration
-     *                   to update.
-     * @param config The configuration to use when updating the stored
-     *               configuration.
-     * @throws GuacamoleException If an error occurs while updating the
-     *                            configuration, or if updating the
-     *                            configuration is not allowed.
-     */
-    void updateConfiguration(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException;
-    
-    /**
-     * Removes the GuacamoleConfiguration having the given unique identifier.
-     * 
-     * @param identifier The identifier of the configuration to remove.
-     * @throws GuacamoleException If an error occurs while removing the
-     *                            configuration, or if removing the
-     *                            configuration is not allowed.
-     */
-    void removeConfiguration(String identifier) throws GuacamoleException;
- 
 }
