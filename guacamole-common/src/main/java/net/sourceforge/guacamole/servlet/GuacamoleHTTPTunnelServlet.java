@@ -279,40 +279,51 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             response.setContentType("application/octet-stream");
             response.setHeader("Cache-Control", "no-cache");
 
-            Writer out = new BufferedWriter(new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
+            // Get writer for response
+            Writer out = new BufferedWriter(new OutputStreamWriter(
+                    response.getOutputStream(), "UTF-8"));
 
-            // Detach tunnel and throw error if EOF (and we haven't sent any
-            // data yet.
-            char[] message = reader.read();
-            if (message == null)
-                throw new GuacamoleResourceNotFoundException("Tunnel reached end of stream.");
+            // Stream data to response, ensuring output stream is closed
+            try {
 
-            // For all messages, until another stream is ready (we send at least one message)
-            do {
+                // Detach tunnel and throw error if EOF (and we haven't sent any
+                // data yet.
+                char[] message = reader.read();
+                if (message == null)
+                    throw new GuacamoleResourceNotFoundException("Tunnel reached end of stream.");
 
-                // Get message output bytes
-                out.write(message, 0, message.length);
+                // For all messages, until another stream is ready (we send at least one message)
+                do {
 
-                // Flush if we expect to wait
-                if (!reader.available()) {
-                    out.flush();
-                    response.flushBuffer();
-                }
+                    // Get message output bytes
+                    out.write(message, 0, message.length);
 
-                // No more messages another stream can take over
-                if (tunnel.hasQueuedReaderThreads())
-                    break;
+                    // Flush if we expect to wait
+                    if (!reader.available()) {
+                        out.flush();
+                        response.flushBuffer();
+                    }
 
-            } while (tunnel.isOpen() && (message = reader.read()) != null);
+                    // No more messages another stream can take over
+                    if (tunnel.hasQueuedReaderThreads())
+                        break;
 
-            // Close tunnel immediately upon EOF
-            if (message == null)
-                tunnel.close();
+                } while (tunnel.isOpen() && (message = reader.read()) != null);
 
-            // End-of-instructions marker
-            out.write("0.;");
-            out.flush();
-            response.flushBuffer();
+                // Close tunnel immediately upon EOF
+                if (message == null)
+                    tunnel.close();
+
+                // End-of-instructions marker
+                out.write("0.;");
+                out.flush();
+                response.flushBuffer();
+            }
+
+            // Always close output stream
+            finally {
+                out.close();
+            }
 
         }
         catch (GuacamoleException e) {
@@ -375,15 +386,32 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // Send data
         try {
 
+            // Get writer from tunnel
             GuacamoleWriter writer = tunnel.acquireWriter();
 
-            Reader input = new InputStreamReader(request.getInputStream(), "UTF-8");
-            char[] buffer = new char[8192];
+            // Get input reader for HTTP stream
+            Reader input = new InputStreamReader(
+                    request.getInputStream(), "UTF-8");
 
-            int length;
-            while (tunnel.isOpen() &&
-                    (length = input.read(buffer, 0, buffer.length)) != -1)
-                writer.write(buffer, 0, length);
+            // Transfer data from input stream to tunnel output, ensuring
+            // input is always closed
+            try {
+
+                // Buffer
+                int length;
+                char[] buffer = new char[8192];
+                
+                // Transfer data using buffer
+                while (tunnel.isOpen() &&
+                        (length = input.read(buffer, 0, buffer.length)) != -1)
+                    writer.write(buffer, 0, length);
+                
+            }
+
+            // Close input stream in all cases
+            finally {
+                input.close();
+            }
 
         }
         catch (IOException e) {
