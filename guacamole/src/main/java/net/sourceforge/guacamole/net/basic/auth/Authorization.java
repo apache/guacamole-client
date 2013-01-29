@@ -1,5 +1,6 @@
 package net.sourceforge.guacamole.net.basic.auth;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -195,8 +196,11 @@ public class Authorization {
                     // Compare hashed password
                     try {
                         MessageDigest digest = MessageDigest.getInstance("MD5");
-                        String hashedPassword = getHexString(digest.digest(password.getBytes()));
+                        String hashedPassword = getHexString(digest.digest(password.getBytes("UTF-8")));
                         return hashedPassword.equals(this.password.toUpperCase());
+                    }
+                    catch (UnsupportedEncodingException e) {
+                        throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
                     }
                     catch (NoSuchAlgorithmException e) {
                         throw new UnsupportedOperationException("Unexpected lack of MD5 support.", e);
