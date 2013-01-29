@@ -37,8 +37,6 @@ package net.sourceforge.guacamole.net.auth.permission;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.net.auth.User;
-
 
 /**
  * A permission which controls operations that directly affect a specific
@@ -52,7 +50,7 @@ public class UserPermission implements ObjectPermission<String> {
      * The username of the User associated with the operation affected by this
      * permission.
      */
-    private String subject;
+    private String identifier;
 
     /**
      * The type of operation affected by this permission.
@@ -60,22 +58,23 @@ public class UserPermission implements ObjectPermission<String> {
     private Type type;
 
     /**
-     * Creates a new UserPermission having the given type and subject.
+     * Creates a new UserPermission having the given type and identifier. The
+     * identifier must be the user's username.
      * 
      * @param type The type of operation affected by this permission.
-     * @param subject The username of the User associated with the operation
-     *                affected by this permission.
+     * @param identifier The username of the User associated with the operation
+     *                   affected by this permission.
      */
-    public UserPermission(String subject, Type type) {
+    public UserPermission(String identifier, Type type) {
 
-        this.subject = subject;
+        this.identifier = identifier;
         this.type = type;
 
     }
 
     @Override
-    public String getSubject() {
-        return subject;
+    public String getObjectIdentifier() {
+        return identifier;
     }
 
     @Override

@@ -53,7 +53,7 @@ public class GuacamoleConfigurationPermission
      * The identifier of the GuacamoleConfiguration associated with the
      * operation affected by this permission.
      */
-    private String subject;
+    private String identifier;
 
     /**
      * The type of operation affected by this permission.
@@ -62,22 +62,23 @@ public class GuacamoleConfigurationPermission
 
     /**
      * Creates a new GuacamoleConfigurationPermission having the given type
-     * and subject.
+     * and identifier. The identifier must be the unique identifier assigned
+     * to the GuacamoleConfiguration by the AuthenticationProvider in use.
      * 
      * @param type The type of operation affected by this permission.
-     * @param subject The identifier of the GuacamoleConfiguration associated
-     *                with the operation affected by this permission.
+     * @param identifier The identifier of the GuacamoleConfiguration associated
+     *                   with the operation affected by this permission.
      */
-    public GuacamoleConfigurationPermission(Type type, String subject) {
+    public GuacamoleConfigurationPermission(Type type, String identifier) {
         
-        this.subject = subject;
+        this.identifier = identifier;
         this.type = type;
 
     }
 
     @Override
-    public String getSubject() {
-        return subject;
+    public String getObjectIdentifier() {
+        return identifier;
     }
 
     @Override
