@@ -41,6 +41,7 @@ import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationTemplate;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
@@ -74,6 +75,12 @@ public class SimpleGuacamoleConfigurationDirectory
     public Map<String, GuacamoleConfiguration> getConfigurations()
             throws GuacamoleException {
         return configs;
+    }
+
+    @Override
+    public Map<String, GuacamoleConfigurationTemplate> getTemplates()
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
