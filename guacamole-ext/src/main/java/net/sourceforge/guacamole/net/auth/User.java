@@ -76,19 +76,4 @@ public interface User {
      */
     public void setPassword(String password);
 
-    /**
-     * Returns the role of this User. The role defines exactly which permissions
-     * a particular user has.
-     * 
-     * @return The role of this User.
-     */
-    public Role getRole();
-
-    /**
-     * Sets the role of this User to the given Role.
-     * 
-     * @param role The role which this User should have.
-     */
-    public void setRole(Role role);
-    
 }

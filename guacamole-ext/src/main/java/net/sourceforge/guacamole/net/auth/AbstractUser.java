@@ -58,11 +58,6 @@ public abstract class AbstractUser implements User, Comparable<AbstractUser> {
      */
     private String password;
 
-    /**
-     * This user's role.
-     */
-    private Role role;
-    
     @Override
     public String getUsername() {
         return username;
@@ -82,17 +77,6 @@ public abstract class AbstractUser implements User, Comparable<AbstractUser> {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    @Override
-    public Role getRole() {
-        return role;
-    }
-
-    @Override
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
 
     @Override
     public int hashCode() {
