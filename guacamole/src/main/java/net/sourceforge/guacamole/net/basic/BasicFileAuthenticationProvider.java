@@ -19,11 +19,11 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Credentials;
@@ -113,9 +113,9 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
                 parser.setContentHandler(contentHandler);
 
                 // Read and parse file
-                Reader reader = new BufferedReader(new FileReader(user_mapping_file));
-                parser.parse(new InputSource(reader));
-                reader.close();
+                InputStream input = new BufferedInputStream(new FileInputStream(user_mapping_file));
+                parser.parse(new InputSource(input));
+                input.close();
 
                 // Store mod time and user mapping
                 mod_time = user_mapping_file.lastModified();
