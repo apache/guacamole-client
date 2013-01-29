@@ -1,6 +1,10 @@
 
 package net.sourceforge.guacamole.protocol;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -45,8 +49,15 @@ package net.sourceforge.guacamole.protocol;
  */
 public class GuacamoleInstruction {
 
+    /**
+     * The opcode of this instruction.
+     */
     private String opcode;
-    private String[] args;
+
+    /**
+     * All arguments of this instruction, in order.
+     */
+    private List<String> args;
 
     /**
      * Creates a new GuacamoleInstruction having the given Operation and
@@ -58,7 +69,7 @@ public class GuacamoleInstruction {
      */
     public GuacamoleInstruction(String opcode, String... args) {
         this.opcode = opcode;
-        this.args = args;
+        this.args = Collections.unmodifiableList(Arrays.asList(args));
     }
 
     /**
@@ -70,13 +81,14 @@ public class GuacamoleInstruction {
     }
 
     /**
-     * Returns an array of all argument values specified for this
-     * GuacamoleInstruction.
+     * Returns a List of all argument values specified for this
+     * GuacamoleInstruction. Note that the List returned is immutable.
+     * Attempts to modify the list will result in exceptions.
      *
-     * @return An array of all argument values specified for this
+     * @return A List of all argument values specified for this
      *         GuacamoleInstruction.
      */
-    public String[] getArgs() {
+    public List<String> getArgs() {
         return args;
     }
 
@@ -92,17 +104,20 @@ public class GuacamoleInstruction {
 
         StringBuilder buff = new StringBuilder();
 
+        // Write opcode
         buff.append(opcode.length());
         buff.append('.');
         buff.append(opcode);
 
-        for (int i=0; i<args.length; i++) {
+        // Write argument values
+        for (String value : args) {
             buff.append(',');
-            buff.append(args[i].length());
+            buff.append(value.length());
             buff.append('.');
-            buff.append(args[i]);
+            buff.append(value);
         }
 
+        // Write terminator
         buff.append(';');
 
         return buff.toString();

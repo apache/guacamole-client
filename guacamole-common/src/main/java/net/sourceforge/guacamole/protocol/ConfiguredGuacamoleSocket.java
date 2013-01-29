@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.protocol;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
@@ -117,16 +118,21 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         } while (!instruction.getOpcode().equals("args"));
 
         // Build args list off provided names and config
-        String[] args = new String[instruction.getArgs().length];
-        for (int i=0; i<instruction.getArgs().length; i++) {
+        List<String> arg_names = instruction.getArgs();
+        String[] arg_values = new String[arg_names.size()];
+        for (int i=0; i<arg_names.size(); i++) {
 
-            String requiredArg = instruction.getArgs()[i];
+            // Retrieve argument name
+            String arg_name = arg_names.get(i);
 
-            String value = config.getParameter(requiredArg);
-            if (value != null)
-                args[i] = value;
-            else
-                args[i] = "";
+            // Get defined value for name
+            String value = config.getParameter(arg_name);
+
+            // If value defined, set that value
+            if (value != null) arg_values[i] = value;
+
+            // Otherwise, leave value blank
+            else arg_values[i] = "";
 
         }
 
@@ -154,7 +160,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                 ));
 
         // Send args
-        writer.writeInstruction(new GuacamoleInstruction("connect", args));
+        writer.writeInstruction(new GuacamoleInstruction("connect", arg_values));
 
     }
 
