@@ -46,12 +46,13 @@ import net.sourceforge.guacamole.net.auth.User;
  * 
  * @author Michael Jumper
  */
-public class UserPermission implements ObjectPermission<User> {
+public class UserPermission implements ObjectPermission<String> {
 
     /**
-     * The User associated with the operation affected by this permission.
+     * The username of the User associated with the operation affected by this
+     * permission.
      */
-    private User subject;
+    private String subject;
 
     /**
      * The type of operation affected by this permission.
@@ -62,10 +63,10 @@ public class UserPermission implements ObjectPermission<User> {
      * Creates a new UserPermission having the given type and subject.
      * 
      * @param type The type of operation affected by this permission.
-     * @param subject The User associated with the operation affected by this
-     *                permission.
+     * @param subject The username of the User associated with the operation
+     *                affected by this permission.
      */
-    public UserPermission(User subject, Type type) {
+    public UserPermission(String subject, Type type) {
 
         this.subject = subject;
         this.type = type;
@@ -73,7 +74,7 @@ public class UserPermission implements ObjectPermission<User> {
     }
 
     @Override
-    public User getSubject() {
+    public String getSubject() {
         return subject;
     }
 
