@@ -97,6 +97,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             GuacamoleClientInformation info) throws GuacamoleException {
 
         this.socket = socket;
+        this.config = config;
 
         // Get reader and writer
         GuacamoleReader reader = socket.getReader();
