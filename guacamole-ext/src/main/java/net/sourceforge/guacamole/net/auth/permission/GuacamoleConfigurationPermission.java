@@ -37,23 +37,23 @@ package net.sourceforge.guacamole.net.auth.permission;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-
 
 /**
  * A permission which controls operations that directly affect a specific
- * GuacamoleConfiguration.
+ * GuacamoleConfiguration. Note that this permission only refers to the
+ * GuacamoleConfiguration by its identifier. The actual GuacamoleConfiguration
+ * is not stored within.
  * 
  * @author Michael Jumper
  */
 public class GuacamoleConfigurationPermission
-    implements ObjectPermission<GuacamoleConfiguration> {
+    implements ObjectPermission<String> {
 
     /**
-     * The GuacamoleConfiguration associated with the operation affected by
-     * this permission.
+     * The identifier of the GuacamoleConfiguration associated with the
+     * operation affected by this permission.
      */
-    private GuacamoleConfiguration subject;
+    private String subject;
 
     /**
      * The type of operation affected by this permission.
@@ -65,11 +65,10 @@ public class GuacamoleConfigurationPermission
      * and subject.
      * 
      * @param type The type of operation affected by this permission.
-     * @param subject The GuacamoleConfiguration associated with the operation
-     *                affected by this permission.
+     * @param subject The identifier of the GuacamoleConfiguration associated
+     *                with the operation affected by this permission.
      */
-    public GuacamoleConfigurationPermission(Type type,
-            GuacamoleConfiguration subject) {
+    public GuacamoleConfigurationPermission(Type type, String subject) {
         
         this.subject = subject;
         this.type = type;
@@ -77,7 +76,7 @@ public class GuacamoleConfigurationPermission
     }
 
     @Override
-    public GuacamoleConfiguration getSubject() {
+    public String getSubject() {
         return subject;
     }
 
