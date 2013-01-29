@@ -38,86 +38,84 @@ package net.sourceforge.guacamole.net.auth.simple;
  * ***** END LICENSE BLOCK ***** */
 
 import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
 import net.sourceforge.guacamole.net.auth.PermissionDirectory;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.UserDirectory;
+import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
+import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
+import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
+
 /**
- * An extremely simple UserContext implementation which provides access to
- * a defined and restricted set of GuacamoleConfigurations. Access to
- * querying or modifying either users or permissions is denied.
+ * A simple read-only PermissionDirectory which manages the permissions for a
+ * single user.
  * 
  * @author Michael Jumper
  */
-public class SimpleUserContext implements UserContext {
+public class SimplePermissionDirectory implements PermissionDirectory {
 
     /**
-     * Reference to the user whose permissions dictate the configurations
-     * accessible within this UserContext.
+     * The user that has access to all given configs.
      */
-    private final User self;
-    
-    /**
-     * The GuacamoleConfigurationDirectory with access only to those
-     * configurations that the User associated with this UserContext has
-     * read access to.
-     */
-    private final GuacamoleConfigurationDirectory configDirectory;
+    private User user;
 
     /**
-     * The PermissionDirectory describing which permissions are available for
-     * the configurations provided.
+     * The identifiers of all available configs.
      */
-    private final PermissionDirectory permissionDirectory;
+    private Set<String> configIdentifiers;
     
     /**
-     * Creates a new SimpleUserContext which provides access to only those
-     * configurations within the given Map. The User given must be the user
-     * that owns this UserContext, and the Map given must contain only
-     * GuacamoleConfigurations that the given User has read access to.
+     * Creates a new SimplePermissionDirectory which manages the permissions of
+     * the given user and the given Map of GuacamoleConfigurations, which must
+     * contain only those GuacamoleConfigurations the given user has access to.
      * 
-     * @param self The owner of this UserContext.
-     * @param configs A Map of all configurations for which the user associated
-     *                with this UserContext has read access.
+     * @param user The user to manage permissions for.
+     * @param configs All available configurations for the user given.
      */
-    public SimpleUserContext(User self,
+    public SimplePermissionDirectory(User user,
             Map<String, GuacamoleConfiguration> configs) {
 
-        this.self = self;
-
-        this.configDirectory =
-                new SimpleGuacamoleConfigurationDirectory(configs);
+        this.user = user;
+        configIdentifiers = configs.keySet();
         
-        this.permissionDirectory =
-                new SimplePermissionDirectory(self, configs);
-
     }
     
     @Override
-    public User self() {
-        return self;
+    public boolean hasPermission(User user, Permission permission) throws GuacamoleException {
+
+        // No permssion to check permissions of other users
+        if (!this.user.equals(user))
+            throw new GuacamoleSecurityException("Permission denied.");
+        
+        // If correct user, validate config permission
+        if (permission instanceof GuacamoleConfigurationPermission) {
+
+            // Get permission
+            GuacamoleConfigurationPermission guacConfigPerm =
+                    (GuacamoleConfigurationPermission) permission;
+
+            // If type is READ, permission given if the config exists in the set
+            if (guacConfigPerm.getType() == ObjectPermission.Type.READ)
+                return configIdentifiers.contains(guacConfigPerm.getObjectIdentifier());
+            
+        }
+
+        // No permission by default
+        return false;
+
     }
 
     @Override
-    public GuacamoleConfigurationDirectory getGuacamoleConfigurationDirectory()
-            throws GuacamoleException {
-        return configDirectory;
-    }
-
-    @Override
-    public UserDirectory getUserDirectory() throws GuacamoleException {
+    public void addPermission(User user, Permission permission) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public PermissionDirectory getPermissionDirectory()
-            throws GuacamoleException {
-        return permissionDirectory;
+    public void removePermission(User user, Permission permission) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
 }
