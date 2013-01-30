@@ -101,7 +101,7 @@ public interface GuacamoleConfigurationTemplate {
          * @return The set of all possible legal values for this field, or null
          *         if this field can have any value.
          */
-        Collection<String> getDefaultValues();
+        Collection<String> getPossibleValues();
 
     }
     
