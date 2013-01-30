@@ -28,8 +28,16 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.PermissionDirectory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
+import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
+import net.sourceforge.guacamole.net.auth.permission.Permission;
+import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -40,6 +48,72 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  */
 public class ConfigurationList extends AuthenticatingHttpServlet {
 
+    /**
+     * Checks whether the given user has permission to perform the given
+     * system operation. Security exceptions are handled appropriately - only
+     * non-security exceptions pass through.
+     * 
+     * @param permissions The PermissionsDirectory to check.
+     * @param user The user whose permissions should be verified.
+     * @param type The type of operation to check for permission for.
+     * @return true if permission is granted, false otherwise.
+     * 
+     * @throws GuacamoleException If an error occurs while checking permissions.
+     */
+    private boolean hasConfigPermission(PermissionDirectory permissions,
+            User user, SystemPermission.Type type)
+    throws GuacamoleException {
+
+        // Build permission
+        Permission permission =
+                new GuacamoleConfigurationDirectoryPermission(type);
+
+        try {
+            // Return result of permission check, if possible
+            return permissions.hasPermission(user, permission);
+        }
+        catch (GuacamoleSecurityException e) {
+            // If cannot check due to security restrictions, no permission
+            return false;
+        }
+
+    }
+
+    /**
+     * Checks whether the given user has permission to perform the given
+     * object operation. Security exceptions are handled appropriately - only
+     * non-security exceptions pass through.
+     * 
+     * @param permissions The PermissionsDirectory to check.
+     * @param user The user whose permissions should be verified.
+     * @param type The type of operation to check for permission for.
+     * @param identifier The identifier of the configuration the operation
+     *                   would be performed upon.
+     * @return true if permission is granted, false otherwise.
+     * 
+     * @throws GuacamoleException If an error occurs while checking permissions.
+     */
+    private boolean hasConfigPermission(PermissionDirectory permissions,
+            User user, ObjectPermission.Type type, String identifier)
+    throws GuacamoleException {
+
+        // Build permission
+        Permission permission = new GuacamoleConfigurationPermission(
+            type,
+            identifier
+        );
+
+        try {
+            // Return result of permission check, if possible
+            return permissions.hasPermission(user, permission);
+        }
+        catch (GuacamoleSecurityException e) {
+            // If cannot check due to security restrictions, no permission
+            return false;
+        }
+
+    }
+    
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -68,6 +142,19 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
             throw new ServletException("Unable to retrieve configurations.", e);
         }
         
+        // Try to get permission directory
+        PermissionDirectory permissions = null;
+        try {
+            permissions = context.getPermissionDirectory();
+        }
+        catch (GuacamoleSecurityException e) {
+            // Soft fail - can't check permissions ... assume have READ and
+            // nothing else
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to retrieve permissions.", e);
+        }
+
         // Write actual XML
         try {
 
@@ -89,6 +176,31 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
                 xml.writeAttribute("id", entry.getKey());
                 xml.writeAttribute("protocol", config.getProtocol());
 
+                // Save config create permission attribute
+                if (hasConfigPermission(permissions, context.self(),
+                        SystemPermission.Type.CREATE))
+                    xml.writeAttribute("create", "yes");
+                
+                // Check permissions and set attributes appropriately
+                if (permissions != null) {
+
+                    // Save update permission attribute
+                    if (hasConfigPermission(permissions, context.self(),
+                            ObjectPermission.Type.UPDATE, entry.getKey()))
+                        xml.writeAttribute("update", "yes");
+                    
+                    // Save admin permission attribute
+                    if (hasConfigPermission(permissions, context.self(),
+                            ObjectPermission.Type.ADMINSTER, entry.getKey()))
+                        xml.writeAttribute("admin", "yes");
+                    
+                    // Save delete permission attribute
+                    if (hasConfigPermission(permissions, context.self(),
+                            ObjectPermission.Type.DELETE, entry.getKey()))
+                        xml.writeAttribute("delete", "yes");
+                    
+                }
+                
             }
 
             // End document
@@ -98,6 +210,9 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
         }
         catch (XMLStreamException e) {
             throw new IOException("Unable to write configuration list XML.", e);
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to read configurations.", e);
         }
 
     }
