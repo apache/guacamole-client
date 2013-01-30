@@ -171,7 +171,7 @@ public class PermissionList extends AuthenticatingHttpServlet {
                     UserPermission up = (UserPermission) permission;
                     
                     // Write permission 
-                    xml.writeEmptyElement("users");
+                    xml.writeEmptyElement("user");
                     xml.writeAttribute("type", toString(up.getType()));
                     xml.writeAttribute("name", up.getObjectIdentifier());
 
