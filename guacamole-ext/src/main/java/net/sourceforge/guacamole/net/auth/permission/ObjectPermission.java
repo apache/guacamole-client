@@ -71,7 +71,7 @@ public interface ObjectPermission<T> extends Permission<ObjectPermission.Type> {
         /**
          * Change who has access to an object.
          */
-        ADMINSTER
+        ADMINISTER
 
     }
 
