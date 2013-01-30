@@ -66,6 +66,28 @@
         <url-pattern>/configs</url-pattern>
     </servlet-mapping>
 
+    <!-- User List Servlet -->
+    <servlet>
+        <description>User list servlet.</description>
+        <servlet-name>Users</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.UserList</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Users</servlet-name>
+        <url-pattern>/users</url-pattern>
+    </servlet-mapping>
+
+    <!-- Permission List Servlet -->
+    <servlet>
+        <description>Permission list servlet.</description>
+        <servlet-name>Permissions</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.PermissionList</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Permissions</servlet-name>
+        <url-pattern>/permissions</url-pattern>
+    </servlet-mapping>
+
     <!-- Guacamole Tunnel Servlet -->
     <servlet>
         <description>Tunnel servlet.</description>
