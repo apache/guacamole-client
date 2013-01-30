@@ -65,7 +65,7 @@ public class UserPermission implements ObjectPermission<String> {
      * @param identifier The username of the User associated with the operation
      *                   affected by this permission.
      */
-    public UserPermission(String identifier, Type type) {
+    public UserPermission(Type type, String identifier) {
 
         this.identifier = identifier;
         this.type = type;
