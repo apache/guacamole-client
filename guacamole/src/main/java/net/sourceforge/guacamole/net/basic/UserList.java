@@ -152,7 +152,7 @@ public class UserList extends AuthenticatingHttpServlet {
             xml.writeStartElement("users");
             
             // Save user create permission attribute
-            if (hasUserPermission(permissions, username,
+            if (permissions != null && hasUserPermission(permissions, username,
                     SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
             

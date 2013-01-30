@@ -168,7 +168,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
             xml.writeStartElement("configs");
             
             // Save config create permission attribute
-            if (hasConfigPermission(permissions, username,
+            if (permissions != null && hasConfigPermission(permissions, username,
                     SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
             
