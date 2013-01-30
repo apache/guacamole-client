@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -58,9 +59,9 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public class SimplePermissionDirectory implements PermissionDirectory {
 
     /**
-     * The user that has access to all given configs.
+     * The username of the user that has access to all given configs.
      */
-    private User user;
+    private String user;
 
     /**
      * The identifiers of all available configs.
@@ -78,13 +79,38 @@ public class SimplePermissionDirectory implements PermissionDirectory {
     public SimplePermissionDirectory(User user,
             Map<String, GuacamoleConfiguration> configs) {
 
-        this.user = user;
+        this.user = user.getUsername();
         configIdentifiers = configs.keySet();
         
     }
     
     @Override
-    public boolean hasPermission(User user, Permission permission) throws GuacamoleException {
+    public Set<Permission> getPermissions(String user) throws GuacamoleException {
+
+        // No permssion to check permissions of other users
+        if (!this.user.equals(user))
+            throw new GuacamoleSecurityException("Permission denied.");
+        
+        // If correct user, build list all permissions
+        Set<Permission> permissions = new HashSet<Permission>();
+        for (String identifier : configIdentifiers) {
+           
+            // Add permission to set
+            permissions.add(
+                new GuacamoleConfigurationPermission(
+                    ObjectPermission.Type.READ,
+                    identifier
+                )
+            );
+            
+        }
+
+        return permissions;
+        
+    }
+
+    @Override
+    public boolean hasPermission(String user, Permission permission) throws GuacamoleException {
 
         // No permssion to check permissions of other users
         if (!this.user.equals(user))
@@ -109,12 +135,12 @@ public class SimplePermissionDirectory implements PermissionDirectory {
     }
 
     @Override
-    public void addPermission(User user, Permission permission) throws GuacamoleException {
+    public void addPermission(String user, Permission permission) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void removePermission(User user, Permission permission) throws GuacamoleException {
+    public void removePermission(String user, Permission permission) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 

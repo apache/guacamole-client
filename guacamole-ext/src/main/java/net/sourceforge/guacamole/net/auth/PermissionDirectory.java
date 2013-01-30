@@ -36,6 +36,7 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
@@ -49,9 +50,21 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
 public interface PermissionDirectory {
 
     /**
+     * Lists all permissions given to the specified user.
+     * 
+     * @param user The username of the user to list permissions of.
+     * @return A Set of all permissions granted to the specified user.
+     * 
+     * @throws GuacamoleException  If an error occurs while retrieving
+     *                             permissions, or if reading all permissions
+     *                             is not allowed.
+     */
+    Set<Permission> getPermissions(String user) throws GuacamoleException;
+    
+    /**
      * Tests whether the specified user has the specified permission.
      * 
-     * @param user The user to check permissions for.
+     * @param user The username of the user to check permissions for.
      * @param permission The permission to check.
      * @return true if the permission is granted to the user specified, false
      *         otherwise.
@@ -60,33 +73,33 @@ public interface PermissionDirectory {
      *                            or if permissions cannot be checked due to
      *                            lack of permissions to do so.
      */
-    boolean hasPermission(User user, Permission permission)
+    boolean hasPermission(String user, Permission permission)
             throws GuacamoleException;
     
     /**
      * Adds the specified permission to the specified user.
      * 
-     * @param user The user to add the permission to.
+     * @param user The username of the user to add the permission to.
      * @param permission The permission to add.
      * 
      * @throws GuacamoleException If an error occurs while adding the
      *                            permission. or if permission to add
      *                            permissions is denied.
      */
-    void addPermission(User user, Permission permission)
+    void addPermission(String user, Permission permission)
             throws GuacamoleException;
 
     /**
      * Removes the specified permission from the specified user.
      * 
-     * @param user The user to remove the permission from.
+     * @param user The username of the user to remove the permission from.
      * @param permission The permission to remove.
      * 
      * @throws GuacamoleException If an error occurs while removing the
      *                            permission. or if permission to remove
      *                            permissions is denied.
      */
-    void removePermission(User user, Permission permission)
+    void removePermission(String user, Permission permission)
             throws GuacamoleException;
 
 }
