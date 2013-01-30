@@ -31,7 +31,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
 import net.sourceforge.guacamole.net.auth.PermissionDirectory;
-import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
@@ -61,7 +60,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasConfigPermission(PermissionDirectory permissions,
-            User user, SystemPermission.Type type)
+            String user, SystemPermission.Type type)
     throws GuacamoleException {
 
         // Build permission
@@ -94,7 +93,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasConfigPermission(PermissionDirectory permissions,
-            User user, ObjectPermission.Type type, String identifier)
+            String user, ObjectPermission.Type type, String identifier)
     throws GuacamoleException {
 
         // Build permission
@@ -158,12 +157,20 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
         // Write actual XML
         try {
 
+            // Get username
+            String username = context.self().getUsername();
+            
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
 
             // Begin document
             xml.writeStartDocument();
             xml.writeStartElement("configs");
+            
+            // Save config create permission attribute
+            if (hasConfigPermission(permissions, username,
+                    SystemPermission.Type.CREATE))
+                xml.writeAttribute("create", "yes");
             
             // For each entry, write corresponding config element
             for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
@@ -176,26 +183,21 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
                 xml.writeAttribute("id", entry.getKey());
                 xml.writeAttribute("protocol", config.getProtocol());
 
-                // Save config create permission attribute
-                if (hasConfigPermission(permissions, context.self(),
-                        SystemPermission.Type.CREATE))
-                    xml.writeAttribute("create", "yes");
-                
                 // Check permissions and set attributes appropriately
                 if (permissions != null) {
 
                     // Save update permission attribute
-                    if (hasConfigPermission(permissions, context.self(),
+                    if (hasConfigPermission(permissions, username,
                             ObjectPermission.Type.UPDATE, entry.getKey()))
                         xml.writeAttribute("update", "yes");
                     
                     // Save admin permission attribute
-                    if (hasConfigPermission(permissions, context.self(),
-                            ObjectPermission.Type.ADMINSTER, entry.getKey()))
+                    if (hasConfigPermission(permissions, username,
+                            ObjectPermission.Type.ADMINISTER, entry.getKey()))
                         xml.writeAttribute("admin", "yes");
                     
                     // Save delete permission attribute
-                    if (hasConfigPermission(permissions, context.self(),
+                    if (hasConfigPermission(permissions, username,
                             ObjectPermission.Type.DELETE, entry.getKey()))
                         xml.writeAttribute("delete", "yes");
                     
