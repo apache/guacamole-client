@@ -37,6 +37,8 @@ package net.sourceforge.guacamole.properties;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -83,9 +85,36 @@ public class GuacamoleProperties {
 
         try {
 
-            InputStream stream = GuacamoleProperties.class.getResourceAsStream("/guacamole.properties");
-            if (stream == null)
-                throw new IOException("Resource /guacamole.properties not found.");
+            // Attempt to find Guacamole home
+            File guacHome;
+            
+            // Get explicitly specified directory, if any
+            String desiredDir = System.getProperty("guacamole.home");
+            if (desiredDir != null)
+                guacHome = new File(desiredDir);
+
+            // If not explicitly-define directory, use ~/.guacamole
+            else
+                guacHome = new File(System.getProperty("user.home"), ".guacamole");
+
+            InputStream stream;
+            
+            // If not a directory, load from classpath
+            if (!guacHome.isDirectory()) {
+
+                // Read from classpath
+                stream = GuacamoleProperties.class.getResourceAsStream("/guacamole.properties");
+                if (stream == null)
+                    throw new IOException(
+                        "guacamole.properties not loaded from " + guacHome
+                      + " (not a directory), and guacamole.properties could"
+                      + " not be found as a resource in the classpath.");
+
+            }
+
+            // Otherwise, try to load from file
+            else
+                stream = new FileInputStream(new File(guacHome, "guacamole.properties"));
 
             // Load properties, always close stream
             try { properties.load(stream); }
