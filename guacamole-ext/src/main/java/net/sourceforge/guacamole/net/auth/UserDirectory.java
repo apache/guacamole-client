@@ -47,7 +47,20 @@ import net.sourceforge.guacamole.GuacamoleException;
  * @author Michael Jumper
  */
 public interface UserDirectory {
- 
+
+    /**
+     * Returns the User having the given username.
+     * 
+     * @param username The username of the User to return.
+     * @return The User having the given username, or null if no such user
+     *         exists.
+     * 
+     * @throws GuacamoleException If an error occurs while retrieving the user,
+     *                            or if permission for retrieving the user is
+     *                            denied.
+     */
+    User getUser(String username) throws GuacamoleException;
+    
     /**
      * Returns a Set containing all Users.
      *
