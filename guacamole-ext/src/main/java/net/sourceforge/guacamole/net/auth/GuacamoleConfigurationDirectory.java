@@ -51,6 +51,21 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface GuacamoleConfigurationDirectory {
 
     /**
+     * Returns the GuacamoleConfiguration having the given identifier.
+     * 
+     * @param identifier The identifier of the GuacamoleConfiguration to
+     *                   return.
+     * @return The GuacamoleConfiguration having the given identifier, or null
+     *         if no such GuacamoleConfiguration exists.
+     * 
+     * @throws GuacamoleException If an error occurs while retrieving the
+     *                            configuration, or if access to the
+     *                            configuration is denied.
+     */
+    GuacamoleConfiguration getConfiguration(String identifier)
+            throws GuacamoleException;
+
+    /**
      * Returns a Map containing all GuacamoleConfigurations. The keys of this
      * Map are Strings which uniquely identify each configuration.
      *

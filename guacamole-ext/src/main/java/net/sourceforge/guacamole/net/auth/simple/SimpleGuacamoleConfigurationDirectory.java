@@ -71,6 +71,12 @@ public class SimpleGuacamoleConfigurationDirectory
     }
     
     @Override
+    public GuacamoleConfiguration getConfiguration(String identifier)
+            throws GuacamoleException {
+        return configs.get(identifier);
+    }
+
+    @Override
     public Map<String, GuacamoleConfiguration> getConfigurations()
             throws GuacamoleException {
         return configs;
