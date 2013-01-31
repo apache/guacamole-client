@@ -27,8 +27,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.PermissionDirectory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.UserDirectory;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
@@ -102,14 +103,17 @@ public class PermissionList extends AuthenticatingHttpServlet {
         // Write actual XML
         try {
 
-            // Get permission directory
-            PermissionDirectory permissions = context.getPermissionDirectory();
-
             // Get username
             String username = request.getParameter("user");
             if (username == null)
                 throw new ServletException("No user specified.");
 
+            // Get user directory
+            UserDirectory users = context.getUserDirectory();
+            
+            // Get specific user
+            User user = users.getUser(username);
+            
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
             
@@ -122,7 +126,7 @@ public class PermissionList extends AuthenticatingHttpServlet {
             xml.writeAttribute("user", username);
             
             // For each entry, write corresponding user element
-            for (Permission permission : permissions.getPermissions(username)) {
+            for (Permission permission : user.getPermissions()) {
 
                 // Config directory permission
                 if (permission instanceof GuacamoleConfigurationDirectoryPermission) {

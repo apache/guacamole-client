@@ -28,7 +28,6 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.PermissionDirectory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.UserDirectory;
@@ -50,15 +49,13 @@ public class UserList extends AuthenticatingHttpServlet {
      * system operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
      * 
-     * @param permissions The PermissionsDirectory to check.
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @return true if permission is granted, false otherwise.
      * 
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
-    private boolean hasUserPermission(PermissionDirectory permissions,
-            String user, SystemPermission.Type type)
+    private boolean hasUserPermission(User user, SystemPermission.Type type)
     throws GuacamoleException {
 
         // Build permission
@@ -66,7 +63,7 @@ public class UserList extends AuthenticatingHttpServlet {
 
         try {
             // Return result of permission check, if possible
-            return permissions.hasPermission(user, permission);
+            return user.hasPermission(permission);
         }
         catch (GuacamoleSecurityException e) {
             // If cannot check due to security restrictions, no permission
@@ -80,7 +77,6 @@ public class UserList extends AuthenticatingHttpServlet {
      * object operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
      * 
-     * @param permissions The PermissionsDirectory to check.
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @param identifier The identifier of the user the operation would be
@@ -89,8 +85,8 @@ public class UserList extends AuthenticatingHttpServlet {
      * 
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
-    private boolean hasUserPermission(PermissionDirectory permissions,
-            String user, ObjectPermission.Type type, String identifier)
+    private boolean hasUserPermission(User user, ObjectPermission.Type type,
+            String identifier)
     throws GuacamoleException {
 
         // Build permission
@@ -98,7 +94,7 @@ public class UserList extends AuthenticatingHttpServlet {
 
         try {
             // Return result of permission check, if possible
-            return permissions.hasPermission(user, permission);
+            return user.hasPermission(permission);
         }
         catch (GuacamoleSecurityException e) {
             // If cannot check due to security restrictions, no permission
@@ -119,19 +115,6 @@ public class UserList extends AuthenticatingHttpServlet {
         // Write XML content type
         response.setHeader("Content-Type", "text/xml");
 
-        // Try to get permission directory
-        PermissionDirectory permissions = null;
-        try {
-            permissions = context.getPermissionDirectory();
-        }
-        catch (GuacamoleSecurityException e) {
-            // Soft fail - can't check permissions ... assume have READ and
-            // nothing else
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to retrieve permissions.", e);
-        }
-
         // Write actual XML
         try {
 
@@ -141,8 +124,8 @@ public class UserList extends AuthenticatingHttpServlet {
             // Get users
             Set<User> users = directory.getUsers();
 
-            // Get username
-            String username = context.self().getUsername();
+            // Get self
+            User self = context.self();
 
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
@@ -152,8 +135,7 @@ public class UserList extends AuthenticatingHttpServlet {
             xml.writeStartElement("users");
             
             // Save user create permission attribute
-            if (permissions != null && hasUserPermission(permissions, username,
-                    SystemPermission.Type.CREATE))
+            if (hasUserPermission(self, SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
             
             // For each entry, write corresponding user element
@@ -163,25 +145,20 @@ public class UserList extends AuthenticatingHttpServlet {
                 xml.writeEmptyElement("user");
                 xml.writeAttribute("name", user.getUsername());
 
-                // Check permissions and set attributes appropriately
-                if (permissions != null) {
-
-                    // Save update permission attribute
-                    if (hasUserPermission(permissions, username,
-                            ObjectPermission.Type.UPDATE, user.getUsername()))
-                        xml.writeAttribute("update", "yes");
-                    
-                    // Save admin permission attribute
-                    if (hasUserPermission(permissions, username,
-                            ObjectPermission.Type.ADMINISTER, user.getUsername()))
-                        xml.writeAttribute("admin", "yes");
-                    
-                    // Save delete permission attribute
-                    if (hasUserPermission(permissions, username,
-                            ObjectPermission.Type.DELETE, user.getUsername()))
-                        xml.writeAttribute("delete", "yes");
-                    
-                }
+                // Save update permission attribute
+                if (hasUserPermission(self, ObjectPermission.Type.UPDATE,
+                        user.getUsername()))
+                    xml.writeAttribute("update", "yes");
+                
+                // Save admin permission attribute
+                if (hasUserPermission(self, ObjectPermission.Type.ADMINISTER,
+                        user.getUsername()))
+                    xml.writeAttribute("admin", "yes");
+                
+                // Save delete permission attribute
+                if (hasUserPermission(self, ObjectPermission.Type.DELETE,
+                        user.getUsername()))
+                    xml.writeAttribute("delete", "yes");
                 
             }
 

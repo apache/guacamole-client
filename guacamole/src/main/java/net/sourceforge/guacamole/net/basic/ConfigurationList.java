@@ -30,7 +30,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
-import net.sourceforge.guacamole.net.auth.PermissionDirectory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
@@ -52,15 +52,13 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * system operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
      * 
-     * @param permissions The PermissionsDirectory to check.
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @return true if permission is granted, false otherwise.
      * 
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
-    private boolean hasConfigPermission(PermissionDirectory permissions,
-            String user, SystemPermission.Type type)
+    private boolean hasConfigPermission(User user, SystemPermission.Type type)
     throws GuacamoleException {
 
         // Build permission
@@ -69,7 +67,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
         try {
             // Return result of permission check, if possible
-            return permissions.hasPermission(user, permission);
+            return user.hasPermission(permission);
         }
         catch (GuacamoleSecurityException e) {
             // If cannot check due to security restrictions, no permission
@@ -83,7 +81,6 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * object operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
      * 
-     * @param permissions The PermissionsDirectory to check.
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @param identifier The identifier of the configuration the operation
@@ -92,8 +89,8 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * 
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
-    private boolean hasConfigPermission(PermissionDirectory permissions,
-            String user, ObjectPermission.Type type, String identifier)
+    private boolean hasConfigPermission(User user, ObjectPermission.Type type,
+            String identifier)
     throws GuacamoleException {
 
         // Build permission
@@ -104,7 +101,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
         try {
             // Return result of permission check, if possible
-            return permissions.hasPermission(user, permission);
+            return user.hasPermission(permission);
         }
         catch (GuacamoleSecurityException e) {
             // If cannot check due to security restrictions, no permission
@@ -140,25 +137,12 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
         catch (GuacamoleException e) {
             throw new ServletException("Unable to retrieve configurations.", e);
         }
-        
-        // Try to get permission directory
-        PermissionDirectory permissions = null;
-        try {
-            permissions = context.getPermissionDirectory();
-        }
-        catch (GuacamoleSecurityException e) {
-            // Soft fail - can't check permissions ... assume have READ and
-            // nothing else
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to retrieve permissions.", e);
-        }
-
+       
         // Write actual XML
         try {
 
-            // Get username
-            String username = context.self().getUsername();
+            // Get self 
+            User self = context.self();
             
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
@@ -168,8 +152,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
             xml.writeStartElement("configs");
             
             // Save config create permission attribute
-            if (permissions != null && hasConfigPermission(permissions, username,
-                    SystemPermission.Type.CREATE))
+            if (hasConfigPermission(self, SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
             
             // For each entry, write corresponding config element
@@ -183,25 +166,20 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
                 xml.writeAttribute("id", entry.getKey());
                 xml.writeAttribute("protocol", config.getProtocol());
 
-                // Check permissions and set attributes appropriately
-                if (permissions != null) {
-
-                    // Save update permission attribute
-                    if (hasConfigPermission(permissions, username,
-                            ObjectPermission.Type.UPDATE, entry.getKey()))
-                        xml.writeAttribute("update", "yes");
-                    
-                    // Save admin permission attribute
-                    if (hasConfigPermission(permissions, username,
-                            ObjectPermission.Type.ADMINISTER, entry.getKey()))
-                        xml.writeAttribute("admin", "yes");
-                    
-                    // Save delete permission attribute
-                    if (hasConfigPermission(permissions, username,
-                            ObjectPermission.Type.DELETE, entry.getKey()))
-                        xml.writeAttribute("delete", "yes");
-                    
-                }
+                // Save update permission attribute
+                if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
+                        entry.getKey()))
+                    xml.writeAttribute("update", "yes");
+                
+                // Save admin permission attribute
+                if (hasConfigPermission(self, ObjectPermission.Type.ADMINISTER,
+                        entry.getKey()))
+                    xml.writeAttribute("admin", "yes");
+                
+                // Save delete permission attribute
+                if (hasConfigPermission(self, ObjectPermission.Type.DELETE,
+                        entry.getKey()))
+                    xml.writeAttribute("delete", "yes");
                 
             }
 
