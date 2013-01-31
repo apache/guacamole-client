@@ -69,6 +69,12 @@ public class SimpleUserContext implements UserContext {
     private final GuacamoleConfigurationDirectory configDirectory;
 
     /**
+     * The UserDirectory with access only to the User associated with this
+     * UserContext.
+     */
+    private final UserDirectory userDirectory;
+    
+    /**
      * Creates a new SimpleUserContext which provides access to only those
      * configurations within the given Map. The User given must be the user
      * that owns this UserContext, and the Map given must contain only
@@ -86,6 +92,8 @@ public class SimpleUserContext implements UserContext {
         this.configDirectory =
                 new SimpleGuacamoleConfigurationDirectory(configs);
         
+        this.userDirectory = new SimpleUserDirectory(self);
+        
     }
     
     @Override
@@ -101,7 +109,7 @@ public class SimpleUserContext implements UserContext {
 
     @Override
     public UserDirectory getUserDirectory() throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        return userDirectory;
     }
 
 }
