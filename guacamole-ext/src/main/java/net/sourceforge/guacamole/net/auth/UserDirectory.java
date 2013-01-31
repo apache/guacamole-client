@@ -77,11 +77,12 @@ public interface UserDirectory {
     void updateUser(User user) throws GuacamoleException;
     
     /**
-     * Removes the given User from the overall set of available Users.
+     * Removes the user with the given username from the overall set of
+     * available Users.
      * 
      * @throws GuacamoleException If an error occurs while removing the user,
      *                            or if removing user is not allowed.
      */
-    void removeUser(User user) throws GuacamoleException;
+    void removeUser(String username) throws GuacamoleException;
  
 }
