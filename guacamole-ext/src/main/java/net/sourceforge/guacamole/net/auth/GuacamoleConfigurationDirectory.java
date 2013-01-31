@@ -62,18 +62,6 @@ public interface GuacamoleConfigurationDirectory {
             throws GuacamoleException;
 
     /**
-     * Returns a Map containing GuacamoleConfigurationTemplates which describe
-     * legal parameters and value. These templates are expected to be used as
-     * the blueprints for new connections.
-     * 
-     * @return A Map of configuration templates.
-     * @throws GuacamoleException If an error occurs while retrieving the
-     *                            templates.
-     */
-    Map<String, GuacamoleConfigurationTemplate> getTemplates()
-            throws GuacamoleException;
-
-    /**
      * Adds the given GuacamoleConfiguration to the overall set of available
      * GuacamoleConfigurations, using the given unique identifier.
      * 
