@@ -37,7 +37,16 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.AbstractUser;
+import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
+import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
+import net.sourceforge.guacamole.net.auth.permission.Permission;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
 /**
@@ -48,6 +57,11 @@ import net.sourceforge.guacamole.net.auth.AbstractUser;
 public class SimpleUser extends AbstractUser {
 
     /**
+     * The set of all permissions available to this user.
+     */
+    private Set<Permission> permissions = new HashSet<Permission>();
+    
+    /**
      * Creates a completely uninitialized SimpleUser.
      */
     public SimpleUser() {
@@ -57,9 +71,51 @@ public class SimpleUser extends AbstractUser {
      * Creates a new SimpleUser having the given username.
      * 
      * @param username The username to assign to this SimpleUser.
+     * @param configs All configurations this user has read access to.
      */
-    public SimpleUser(String username) {
+    public SimpleUser(String username,
+            Map<String, GuacamoleConfiguration> configs) {
+
+        // Set username
         setUsername(username);
+
+        // Add permissions
+        for (String identifier : configs.keySet()) {
+
+            // Create permission
+            Permission permission = new GuacamoleConfigurationPermission(
+                ObjectPermission.Type.READ,
+                identifier
+            );
+
+            // Add to set
+            permissions.add(permission);
+            
+        }
+        
+    }
+
+    @Override
+    public Set<Permission> getPermissions() throws GuacamoleException {
+        return permissions;
+    }
+
+    @Override
+    public boolean hasPermission(Permission permission) throws GuacamoleException {
+
+        /* FIXME: STUB! */
+        throw new UnsupportedOperationException("Not supported yet.");
+
+    }
+
+    @Override
+    public void addPermission(Permission permission) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void removePermission(Permission permission) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
     
 }

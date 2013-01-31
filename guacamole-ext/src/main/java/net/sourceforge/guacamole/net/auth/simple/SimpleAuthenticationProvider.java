@@ -90,7 +90,7 @@ public abstract class SimpleAuthenticationProvider
             return null;
         
         // Build new user from credentials
-        User user = new SimpleUser(credentials.getUsername());
+        User user = new SimpleUser(credentials.getUsername(), configs);
         
         // Return user context restricted to authorized configs
         return new SimpleUserContext(user, configs);
