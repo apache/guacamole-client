@@ -92,95 +92,44 @@ GuacamoleRootUI.login = function(username, password) {
 };
 
 /**
- * An arbitrary Guacamole configuration, consisting of an ID/protocol pair.
- * 
- * @constructor
- * @param {String} protocol The protocol used by this configuration.
- * @param {String} id The ID associated with this configuration.
- */
-GuacamoleRootUI.Configuration = function(protocol, id) {
-
-    /**
-     * The protocol associated with this configuration.
-     */
-    this.protocol = protocol;
-
-    /**
-     * The ID associated with this configuration.
-     */
-    this.id = id;
-
-};
-
-GuacamoleRootUI.getConfigurations = function(parameters) {
-
-    // Construct request URL
-    var configs_url = "configs";
-    if (parameters) configs_url += "?" + parameters;
-
-    // Get config list
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", configs_url, false);
-    xhr.send(null);
-
-    // If fail, throw error
-    if (xhr.status != 200)
-        throw new Error(xhr.statusText);
-
-    // Otherwise, get list
-    var configs = new Array();
-
-    var configElements = xhr.responseXML.getElementsByTagName("config");
-    for (var i=0; i<configElements.length; i++) {
-        configs.push(new Config(
-            configElements[i].getAttribute("protocol"),
-            configElements[i].getAttribute("id")
-        ));
-    }
-
-    return configs;
- 
-};
-
-/**
  * A connection UI object which can be easily added to a list of connections
  * for sake of display.
  */
-GuacamoleRootUI.Connection = function(config) {
+GuacamoleRootUI.Connection = function(connection) {
 
     /**
-     * The configuration associated with this connection.
+     * The actual connection associated with this connection UI element.
      */
-    this.configuration = config;
+    this.connection = connection;
 
-    function element(tagname, classname) {
+    function createElement(tagname, classname) {
         var new_element = document.createElement(tagname);
         new_element.className = classname;
         return new_element;
     }
 
     // Create connection display elements
-    var connection    = element("div",  "connection");
-    var caption       = element("div",  "caption");
-    var protocol      = element("div",  "protocol");
-    var name          = element("span", "name");
-    var protocol_icon = element("div",  "icon " + config.protocol);
-    var thumbnail     = element("div",  "thumbnail");
+    var element       = createElement("div",  "connection");
+    var caption       = createElement("div",  "caption");
+    var protocol      = createElement("div",  "protocol");
+    var name          = createElement("span", "name");
+    var protocol_icon = createElement("div",  "icon " + connection.protocol);
+    var thumbnail     = createElement("div",  "thumbnail");
     var thumb_img;
 
     // Get URL
-    var url = "client.xhtml?id=" + encodeURIComponent(config.id);
+    var url = "client.xhtml?id=" + encodeURIComponent(connection.id);
 
     // Create link to client
-    connection.onclick = function() {
+    element.onclick = function() {
 
         // Attempt to focus existing window
-        var current = window.open(null, config.id);
+        var current = window.open(null, connection.id);
 
         // If window did not already exist, set up as
         // Guacamole client
         if (!current.GuacUI)
-            window.open(url, config.id);
+            window.open(url, connection.id);
 
     };
 
@@ -188,18 +137,18 @@ GuacamoleRootUI.Connection = function(config) {
     protocol.appendChild(protocol_icon);
 
     // Set name
-    name.textContent = config.id;
+    name.textContent = connection.id;
 
     // Assemble caption
     caption.appendChild(protocol);
     caption.appendChild(name);
 
     // Assemble connection icon
-    connection.appendChild(thumbnail);
-    connection.appendChild(caption);
+    element.appendChild(thumbnail);
+    element.appendChild(caption);
 
     // Add screenshot if available
-    var thumbnail_url = GuacamoleHistory.get(config.id).thumbnail;
+    var thumbnail_url = GuacamoleHistory.get(connection.id).thumbnail;
     if (thumbnail_url) {
 
         // Create thumbnail element
@@ -213,7 +162,7 @@ GuacamoleRootUI.Connection = function(config) {
      * Returns the DOM element representing this connection.
      */
     this.getElement = function() {
-        return connection;
+        return element;
     };
 
     /**
@@ -250,9 +199,9 @@ GuacamoleRootUI.Connection = function(config) {
 GuacamoleRootUI.thumbnailConnections = {};
 
 /**
- * Set of all configurations, indexed by ID.
+ * Set of all connections, indexed by ID.
  */
-GuacamoleRootUI.configurations = {};
+GuacamoleRootUI.connections = {};
 
 /**
  * Adds the given connection to the recent connections list.
@@ -260,7 +209,7 @@ GuacamoleRootUI.configurations = {};
 GuacamoleRootUI.addRecentConnection = function(connection) {
 
     // Add connection object to list of thumbnailed connections
-    GuacamoleRootUI.thumbnailConnections[connection.configuration.id] =
+    GuacamoleRootUI.thumbnailConnections[connection.connection.id] =
         connection;
     
     // Add connection to recent list
@@ -285,14 +234,14 @@ GuacamoleRootUI.reset = function() {
     // Get parameters from query string
     var parameters = window.location.search.substring(1);
 
-    // Read configs
-    var configs;
+    // Read connections
+    var connections;
     try {
-        configs = GuacamoleRootUI.getConfigurations(parameters);
+        connections = GuacamoleService.getConnections(parameters);
     }
     catch (e) {
 
-        // Show login UI if unable to get configs
+        // Show login UI if unable to get connections
         GuacamoleRootUI.views.login.style.display = "";
         GuacamoleRootUI.views.connections.style.display = "none";
 
@@ -301,13 +250,13 @@ GuacamoleRootUI.reset = function() {
     }
 
     // Add connection icons
-    for (var i=0; i<configs.length; i++) {
+    for (var i=0; i<connections.length; i++) {
 
-        // Add configuration to set
-        GuacamoleRootUI.configurations[configs[i].id] = configs[i];
+        // Add connection to set
+        GuacamoleRootUI.connections[connections[i].id] = connections[i];
 
         // Get connection element
-        var connection = new GuacamoleRootUI.Connection(configs[i]);
+        var connection = new GuacamoleRootUI.Connection(connections[i]);
 
         // If screenshot present, add to recent connections
         if (connection.hasThumbnail())
@@ -315,11 +264,11 @@ GuacamoleRootUI.reset = function() {
 
         // Add connection to connection list
         GuacamoleRootUI.sections.all_connections.appendChild(
-            new GuacamoleRootUI.Connection(configs[i]).getElement());
+            new GuacamoleRootUI.Connection(connections[i]).getElement());
 
     }
 
-    // If configs could be retrieved, display list
+    // If connections could be retrieved, display list
     GuacamoleRootUI.views.login.style.display = "none";
     GuacamoleRootUI.views.connections.style.display = "";
 
@@ -338,7 +287,7 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
 
             // Create new connection
             connection = new GuacamoleRootUI.Connection(
-                GuacamoleRootUI.configurations[id]
+                GuacamoleRootUI.connections[id]
             );
 
             GuacamoleRootUI.addRecentConnection(connection);
