@@ -86,4 +86,36 @@ public class GuacamoleConfigurationPermission
         return type;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        if (identifier != null) hash = 47 * hash + identifier.hashCode();
+        if (type != null)       hash = 47 * hash + type.hashCode();
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        // Not equal if null or wrong type
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        final GuacamoleConfigurationPermission other =
+                (GuacamoleConfigurationPermission) obj;
+
+        // Not equal if different type
+        if (this.type != other.type)
+            return false;
+
+        // If null identifier, equality depends on whether other identifier
+        // is null
+        if (identifier == null)
+            return other.identifier != null;
+
+        // Otherwise, equality depends entirely on identifier
+        return identifier.equals(other.identifier);
+
+    }
+
 }

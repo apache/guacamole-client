@@ -64,4 +64,25 @@ public class UserDirectoryPermission implements SystemPermission {
         return type;
     }
 
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        // Not equal if null or wrong type
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        final UserDirectoryPermission other = (UserDirectoryPermission) obj;
+
+        // Compare types
+        if (type != other.type)
+            return false;
+
+        return true;
+    }
+
 }
