@@ -41,7 +41,6 @@ import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
-import net.sourceforge.guacamole.net.auth.PermissionDirectory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.UserDirectory;
@@ -70,12 +69,6 @@ public class SimpleUserContext implements UserContext {
     private final GuacamoleConfigurationDirectory configDirectory;
 
     /**
-     * The PermissionDirectory describing which permissions are available for
-     * the configurations provided.
-     */
-    private final PermissionDirectory permissionDirectory;
-    
-    /**
      * Creates a new SimpleUserContext which provides access to only those
      * configurations within the given Map. The User given must be the user
      * that owns this UserContext, and the Map given must contain only
@@ -93,9 +86,6 @@ public class SimpleUserContext implements UserContext {
         this.configDirectory =
                 new SimpleGuacamoleConfigurationDirectory(configs);
         
-        this.permissionDirectory =
-                new SimplePermissionDirectory(self, configs);
-
     }
     
     @Override
@@ -112,12 +102,6 @@ public class SimpleUserContext implements UserContext {
     @Override
     public UserDirectory getUserDirectory() throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public PermissionDirectory getPermissionDirectory()
-            throws GuacamoleException {
-        return permissionDirectory;
     }
 
 }

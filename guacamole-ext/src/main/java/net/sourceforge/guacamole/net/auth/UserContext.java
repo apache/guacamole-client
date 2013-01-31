@@ -83,17 +83,4 @@ public interface UserContext {
     GuacamoleConfigurationDirectory getGuacamoleConfigurationDirectory()
             throws GuacamoleException;
 
-    /**
-     * Retrieves a PermissionDirectory which can be used to view and manipulate
-     * permissions, but only as allowed by the permissions given to the user of
-     * this UserContext.
-     * 
-     * @return A PermissionDirectory whose operations are bound by the
-     *         restrictions of this UserContext.
-     * 
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            PermissionDirectory.
-     */
-    PermissionDirectory getPermissionDirectory() throws GuacamoleException;
-    
 }
