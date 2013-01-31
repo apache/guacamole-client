@@ -113,6 +113,8 @@ public class PermissionList extends AuthenticatingHttpServlet {
             
             // Get specific user
             User user = users.getUser(username);
+            if (user == null)
+                throw new GuacamoleSecurityException("No such user.");
             
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
