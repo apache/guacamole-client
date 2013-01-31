@@ -47,7 +47,12 @@ import net.sourceforge.guacamole.GuacamoleServerException;
 
 /**
  * Simple utility class for reading properties from the guacamole.properties
- * file in the root of the classpath.
+ * file. The guacamole.properties file is preferably located in the servlet
+ * container's user's home directory, in a subdirectory called .guacamole, or
+ * in the directory set by the system property: guacamole.home.
+ * 
+ * If none of those locations are possible, guacamole.properties will also
+ * be read from the root of the classpath.
  *
  * @author Michael Jumper
  */
