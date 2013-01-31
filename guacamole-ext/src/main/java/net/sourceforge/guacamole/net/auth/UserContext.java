@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth;
  * ***** END LICENSE BLOCK ***** */
 
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * The context of an active user. The functions of this class enforce all
@@ -67,7 +68,7 @@ public interface UserContext {
      * @throws GuacamoleException If an error occurs while creating the
      *                            UserDirectory.
      */
-    UserDirectory getUserDirectory() throws GuacamoleException;
+    Directory<String, User> getUserDirectory() throws GuacamoleException;
  
     /**
      * Retrieves a GuacamoleConfigurationDirectory which can be used to view
@@ -80,7 +81,8 @@ public interface UserContext {
      * @throws GuacamoleException If an error occurs while creating the
      *                            GuacamoleConfigurationDirectory.
      */   
-    GuacamoleConfigurationDirectory getGuacamoleConfigurationDirectory()
+    Directory<String, GuacamoleConfiguration>
+            getGuacamoleConfigurationDirectory()
             throws GuacamoleException;
 
 }

@@ -41,17 +41,17 @@ import java.util.Collections;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserDirectory;
 
 
 /**
- * An extremely simple read-only implementation of a UserDirectory which
+ * An extremely simple read-only implementation of a Directory of Users which
  * provides access to a single pre-defined User.
  * 
  * @author Michael Jumper
  */
-public class SimpleUserDirectory implements UserDirectory {
+public class SimpleUserDirectory implements Directory<String, User> {
 
     /**
      * The only user to be contained within this directory.
@@ -69,7 +69,7 @@ public class SimpleUserDirectory implements UserDirectory {
     }
 
     @Override
-    public User getUser(String username) throws GuacamoleException {
+    public User get(String username) throws GuacamoleException {
 
         // If username matches, return the user
         if (user.getUsername().equals(username))
@@ -81,22 +81,22 @@ public class SimpleUserDirectory implements UserDirectory {
     }
 
     @Override
-    public Set<User> getUsers() throws GuacamoleException {
-        return Collections.singleton(user);
+    public Set<String> getIdentifiers() throws GuacamoleException {
+        return Collections.singleton(user.getUsername());
     }
 
     @Override
-    public void addUser(User user) throws GuacamoleException {
+    public void add(String username, User user) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void updateUser(User user) throws GuacamoleException {
+    public void update(String username, User user) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void removeUser(String username) throws GuacamoleException {
+    public void remove(String username) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 

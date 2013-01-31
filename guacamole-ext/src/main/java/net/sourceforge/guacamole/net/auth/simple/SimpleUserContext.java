@@ -39,11 +39,9 @@ package net.sourceforge.guacamole.net.auth.simple;
 
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.UserDirectory;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -66,13 +64,13 @@ public class SimpleUserContext implements UserContext {
      * configurations that the User associated with this UserContext has
      * read access to.
      */
-    private final GuacamoleConfigurationDirectory configDirectory;
+    private final Directory<String, GuacamoleConfiguration> configDirectory;
 
     /**
      * The UserDirectory with access only to the User associated with this
      * UserContext.
      */
-    private final UserDirectory userDirectory;
+    private final Directory<String, User> userDirectory;
     
     /**
      * Creates a new SimpleUserContext which provides access to only those
@@ -102,13 +100,15 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public GuacamoleConfigurationDirectory getGuacamoleConfigurationDirectory()
+    public Directory<String, GuacamoleConfiguration>
+            getGuacamoleConfigurationDirectory()
             throws GuacamoleException {
         return configDirectory;
     }
 
     @Override
-    public UserDirectory getUserDirectory() throws GuacamoleException {
+    public Directory<String, User> getUserDirectory()
+            throws GuacamoleException {
         return userDirectory;
     }
 

@@ -38,21 +38,22 @@ package net.sourceforge.guacamole.net.auth.simple;
  * ***** END LICENSE BLOCK ***** */
 
 import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
 /**
- * An extremely simple read-only implementation of a
- * GuacamoleConfigurationDirectory which provides access to a pre-defined
- * Map of GuacamoleConfigurations.
+ * An extremely simple read-only implementation of a Directory of
+ * GuacamoleConfigurations which provides access to a pre-defined Map of
+ * GuacamoleConfigurations.
  * 
  * @author Michael Jumper
  */
 public class SimpleGuacamoleConfigurationDirectory 
-    implements GuacamoleConfigurationDirectory {
+    implements Directory<String, GuacamoleConfiguration> {
 
     /**
      * The Map of GuacamoleConfigurations to provide access to.
@@ -71,32 +72,30 @@ public class SimpleGuacamoleConfigurationDirectory
     }
     
     @Override
-    public GuacamoleConfiguration getConfiguration(String identifier)
+    public GuacamoleConfiguration get(String identifier)
             throws GuacamoleException {
         return configs.get(identifier);
     }
 
     @Override
-    public Map<String, GuacamoleConfiguration> getConfigurations()
-            throws GuacamoleException {
-        return configs;
+    public Set<String> getIdentifiers() throws GuacamoleException {
+        return configs.keySet();
     }
 
     @Override
-    public void addConfiguration(String identifier,
-        GuacamoleConfiguration config) throws GuacamoleException {
+    public void add(String identifier, GuacamoleConfiguration config)
+            throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void updateConfiguration(String identifier,
-        GuacamoleConfiguration config) throws GuacamoleException {
+    public void update(String identifier, GuacamoleConfiguration config)
+            throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void removeConfiguration(String identifier)
-            throws GuacamoleException {
+    public void remove(String identifier) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
