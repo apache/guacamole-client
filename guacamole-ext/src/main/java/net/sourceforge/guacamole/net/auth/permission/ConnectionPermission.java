@@ -39,12 +39,21 @@ package net.sourceforge.guacamole.net.auth.permission;
 
 
 /**
- * A permission which controls access to a GuacamoleConfigurationDirectory.
+ * A permission which controls operations that directly affect a specific
+ * GuacamoleConfiguration. Note that this permission only refers to the
+ * GuacamoleConfiguration by its identifier. The actual GuacamoleConfiguration
+ * is not stored within.
  * 
  * @author Michael Jumper
  */
-public class GuacamoleConfigurationDirectoryPermission
-    implements SystemPermission {
+public class ConnectionPermission
+    implements ObjectPermission<String> {
+
+    /**
+     * The identifier of the GuacamoleConfiguration associated with the
+     * operation affected by this permission.
+     */
+    private String identifier;
 
     /**
      * The type of operation affected by this permission.
@@ -52,15 +61,26 @@ public class GuacamoleConfigurationDirectoryPermission
     private Type type;
 
     /**
-     * Creates a new GuacamoleConfigurationDirectoryPermission with the given
-     * type.
+     * Creates a new ConnectionPermission having the given type
+     * and identifier. The identifier must be the unique identifier assigned
+     * to the GuacamoleConfiguration by the AuthenticationProvider in use.
      * 
-     * @param type The type of operation controlled by this permission.
+     * @param type The type of operation affected by this permission.
+     * @param identifier The identifier of the GuacamoleConfiguration associated
+     *                   with the operation affected by this permission.
      */
-    public GuacamoleConfigurationDirectoryPermission(Type type) {
+    public ConnectionPermission(Type type, String identifier) {
+        
+        this.identifier = identifier;
         this.type = type;
+
     }
-    
+
+    @Override
+    public String getObjectIdentifier() {
+        return identifier;
+    }
+
     @Override
     public Type getType() {
         return type;
@@ -68,7 +88,10 @@ public class GuacamoleConfigurationDirectoryPermission
 
     @Override
     public int hashCode() {
-        return type.hashCode();
+        int hash = 5;
+        if (identifier != null) hash = 47 * hash + identifier.hashCode();
+        if (type != null)       hash = 47 * hash + type.hashCode();
+        return hash;
     }
 
     @Override
@@ -78,14 +101,21 @@ public class GuacamoleConfigurationDirectoryPermission
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
 
-        final GuacamoleConfigurationDirectoryPermission other =
-                (GuacamoleConfigurationDirectoryPermission) obj;
+        final ConnectionPermission other =
+                (ConnectionPermission) obj;
 
-        // Compare types
-        if (type != other.type)
+        // Not equal if different type
+        if (this.type != other.type)
             return false;
 
-        return true;
+        // If null identifier, equality depends on whether other identifier
+        // is null
+        if (identifier == null)
+            return other.identifier != null;
+
+        // Otherwise, equality depends entirely on identifier
+        return identifier.equals(other.identifier);
+
     }
 
 }

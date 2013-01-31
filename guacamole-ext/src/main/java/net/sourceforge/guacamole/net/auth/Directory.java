@@ -48,6 +48,9 @@ import net.sourceforge.guacamole.GuacamoleException;
  * function.
  * 
  * @author Michael Jumper
+ * @param <IdentifierType> The type of identifier used to identify objects
+ *                         stored within this Directory.
+ * @param <ObjectType> The type of objects stored within this Directory.
  */
 public interface Directory<IdentifierType, ObjectType> {
 
@@ -82,13 +85,12 @@ public interface Directory<IdentifierType, ObjectType> {
     /**
      * Adds the given object to the overall set.
      * 
-     * @param identifier The identifier to use when adding the object.
      * @param object The object to add.
      * 
      * @throws GuacamoleException If an error occurs while adding the object , or
      *                            if adding the object is not allowed.
      */
-    void add(IdentifierType identifier, ObjectType object)
+    void add(ObjectType object)
             throws GuacamoleException;
     
     /**
@@ -101,7 +103,7 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while updating the object,
      *                            or if updating the object is not allowed.
      */
-    void update(IdentifierType identifier, ObjectType object)
+    void update(ObjectType object)
             throws GuacamoleException;
     
     /**

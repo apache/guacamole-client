@@ -37,66 +37,68 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Map;
-import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.net.InetGuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.AbstractConnection;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
+import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
 /**
- * An extremely simple read-only implementation of a Directory of
- * GuacamoleConfigurations which provides access to a pre-defined Map of
- * GuacamoleConfigurations.
+ * An extremely basic Connection implementation.
  * 
  * @author Michael Jumper
  */
-public class SimpleGuacamoleConfigurationDirectory 
-    implements Directory<String, GuacamoleConfiguration> {
+public class SimpleConnection extends AbstractConnection {
 
     /**
-     * The Map of GuacamoleConfigurations to provide access to.
+     * Backing configuration, containing all sensitive information.
      */
-    private Map<String, GuacamoleConfiguration> configs;
-
+    private GuacamoleConfiguration config;
+    
     /**
-     * Creates a new SimpleGuacamoleConfigurationDirectory which provides
-     * access to the configurations contained within the given Map.
-     * 
-     * @param configs The Map of GuacamoleConfigurations to provide access to.
+     * Creates a completely uninitialized SimpleConnection.
      */
-    public SimpleGuacamoleConfigurationDirectory(
-            Map<String, GuacamoleConfiguration> configs) {
-        this.configs = configs;
+    public SimpleConnection() {
     }
     
+    /**
+     * Creates a new SimpleConnection having the given identifier and
+     * GuacamoleConfiguration.
+     * 
+     * @param identifier The identifier to associated with this connection.
+     * @param config The configuration describing how to connect to this
+     *               connection.
+     */
+    public SimpleConnection(String identifier,
+            GuacamoleConfiguration config) {
+
+        // Set identifier
+        setIdentifier(identifier);
+
+        // Set config
+        setConfiguration(config);
+        this.config = config;
+
+    }
+
     @Override
-    public GuacamoleConfiguration get(String identifier)
+    public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException {
-        return configs.get(identifier);
-    }
 
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return configs.keySet();
-    }
-
-    @Override
-    public void add(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void update(String identifier, GuacamoleConfiguration config)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        // Get guacd connection parameters
+        String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
+        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
+        
+        // Return connected socket
+        return new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket(hostname, port),
+                config, info
+        );
+        
     }
 
 }

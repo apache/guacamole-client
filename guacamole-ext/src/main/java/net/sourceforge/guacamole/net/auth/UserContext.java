@@ -38,7 +38,6 @@ package net.sourceforge.guacamole.net.auth;
  * ***** END LICENSE BLOCK ***** */
 
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * The context of an active user. The functions of this class enforce all
@@ -58,31 +57,30 @@ public interface UserContext {
     User self();
 
     /**
-     * Retrieves a UserDirectory which can be used to view and manipulate other
+     * Retrieves a Directory which can be used to view and manipulate other
      * users, but only as allowed by the permissions given to the user of this
      * UserContext.
      * 
-     * @return A UserDirectory whose operations are bound by the restrictions
+     * @return A Directory whose operations are bound by the restrictions
      *         of this UserContext.
      * 
      * @throws GuacamoleException If an error occurs while creating the
-     *                            UserDirectory.
+     *                            Directory.
      */
     Directory<String, User> getUserDirectory() throws GuacamoleException;
  
     /**
-     * Retrieves a GuacamoleConfigurationDirectory which can be used to view
-     * and manipulate configurations, but only as allowed by the permissions
-     * given to the user of this UserContext.
+     * Retrieves a Directory which can be used to view and manipulate
+     * connections and their configurations, but only as allowed by the
+     * permissions given to the user of this UserContext.
      * 
-     * @return A GuacamoleConfigurationdirectory whose operations are bound by
-     *         the restrictions of this UserContext.
+     * @return A Directory whose operations are bound by the restrictions
+     *         of this UserContext.
      * 
      * @throws GuacamoleException If an error occurs while creating the
-     *                            GuacamoleConfigurationDirectory.
+     *                            Directory.
      */   
-    Directory<String, GuacamoleConfiguration>
-            getGuacamoleConfigurationDirectory()
+    Directory<String, Connection> getConnectionDirectory()
             throws GuacamoleException;
 
 }

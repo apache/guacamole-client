@@ -37,82 +37,75 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.AbstractUser;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
-import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
-import net.sourceforge.guacamole.net.auth.permission.Permission;
+import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
 /**
- * An extremely basic User implementation.
+ * An extremely simple read-only implementation of a Directory of
+ * GuacamoleConfigurations which provides access to a pre-defined Map of
+ * GuacamoleConfigurations.
  * 
  * @author Michael Jumper
  */
-public class SimpleUser extends AbstractUser {
+public class SimpleConnectionDirectory 
+    implements Directory<String, Connection> {
 
     /**
-     * The set of all permissions available to this user.
+     * The Map of Connections to provide access to.
      */
-    private Set<Permission> permissions = new HashSet<Permission>();
-    
+    private Map<String, Connection> connections =
+            new HashMap<String, Connection>();
+
     /**
-     * Creates a completely uninitialized SimpleUser.
-     */
-    public SimpleUser() {
-    }
-    
-    /**
-     * Creates a new SimpleUser having the given username.
+     * Creates a new SimpleConnectionDirectory which provides
+     * access to the configurations contained within the given Map.
      * 
-     * @param username The username to assign to this SimpleUser.
-     * @param configs All configurations this user has read access to.
+     * @param configs The Map of GuacamoleConfigurations to provide access to.
      */
-    public SimpleUser(String username,
+    public SimpleConnectionDirectory(
             Map<String, GuacamoleConfiguration> configs) {
 
-        // Set username
-        setUsername(username);
-
-        // Add permissions
-        for (String identifier : configs.keySet()) {
-
-            // Create permission
-            Permission permission = new ConnectionPermission(
-                ObjectPermission.Type.READ,
-                identifier
-            );
-
-            // Add to set
-            permissions.add(permission);
-            
-        }
+        // Create connections for each config
+        for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet())
+            connections.put(entry.getKey(),
+                    new SimpleConnection(entry.getKey(), entry.getValue()));
         
     }
-
-    @Override
-    public Set<Permission> getPermissions() throws GuacamoleException {
-        return permissions;
-    }
-
-    @Override
-    public boolean hasPermission(Permission permission) throws GuacamoleException {
-        return permissions.contains(permission);
-    }
-
-    @Override
-    public void addPermission(Permission permission) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void removePermission(Permission permission) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
     
+    @Override
+    public Connection get(String identifier)
+            throws GuacamoleException {
+        return connections.get(identifier);
+    }
+
+    @Override
+    public Set<String> getIdentifiers() throws GuacamoleException {
+        return connections.keySet();
+    }
+
+    @Override
+    public void add(Connection connection)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void update(Connection connection)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void remove(String identifier) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
 }

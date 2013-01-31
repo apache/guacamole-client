@@ -39,21 +39,12 @@ package net.sourceforge.guacamole.net.auth.permission;
 
 
 /**
- * A permission which controls operations that directly affect a specific
- * GuacamoleConfiguration. Note that this permission only refers to the
- * GuacamoleConfiguration by its identifier. The actual GuacamoleConfiguration
- * is not stored within.
+ * A permission which controls access to a GuacamoleConfigurationDirectory.
  * 
  * @author Michael Jumper
  */
-public class GuacamoleConfigurationPermission
-    implements ObjectPermission<String> {
-
-    /**
-     * The identifier of the GuacamoleConfiguration associated with the
-     * operation affected by this permission.
-     */
-    private String identifier;
+public class ConnectionDirectoryPermission
+    implements SystemPermission {
 
     /**
      * The type of operation affected by this permission.
@@ -61,26 +52,15 @@ public class GuacamoleConfigurationPermission
     private Type type;
 
     /**
-     * Creates a new GuacamoleConfigurationPermission having the given type
-     * and identifier. The identifier must be the unique identifier assigned
-     * to the GuacamoleConfiguration by the AuthenticationProvider in use.
+     * Creates a new ConnectionDirectoryPermission with the given
+     * type.
      * 
-     * @param type The type of operation affected by this permission.
-     * @param identifier The identifier of the GuacamoleConfiguration associated
-     *                   with the operation affected by this permission.
+     * @param type The type of operation controlled by this permission.
      */
-    public GuacamoleConfigurationPermission(Type type, String identifier) {
-        
-        this.identifier = identifier;
+    public ConnectionDirectoryPermission(Type type) {
         this.type = type;
-
     }
-
-    @Override
-    public String getObjectIdentifier() {
-        return identifier;
-    }
-
+    
     @Override
     public Type getType() {
         return type;
@@ -88,10 +68,7 @@ public class GuacamoleConfigurationPermission
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        if (identifier != null) hash = 47 * hash + identifier.hashCode();
-        if (type != null)       hash = 47 * hash + type.hashCode();
-        return hash;
+        return type.hashCode();
     }
 
     @Override
@@ -101,21 +78,14 @@ public class GuacamoleConfigurationPermission
         if (obj == null) return false;
         if (getClass() != obj.getClass()) return false;
 
-        final GuacamoleConfigurationPermission other =
-                (GuacamoleConfigurationPermission) obj;
+        final ConnectionDirectoryPermission other =
+                (ConnectionDirectoryPermission) obj;
 
-        // Not equal if different type
-        if (this.type != other.type)
+        // Compare types
+        if (type != other.type)
             return false;
 
-        // If null identifier, equality depends on whether other identifier
-        // is null
-        if (identifier == null)
-            return other.identifier != null;
-
-        // Otherwise, equality depends entirely on identifier
-        return identifier.equals(other.identifier);
-
+        return true;
     }
 
 }

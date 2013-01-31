@@ -86,12 +86,12 @@ public class SimpleUserDirectory implements Directory<String, User> {
     }
 
     @Override
-    public void add(String username, User user) throws GuacamoleException {
+    public void add(User user) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void update(String username, User user) throws GuacamoleException {
+    public void update(User user) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
