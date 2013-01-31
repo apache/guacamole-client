@@ -102,10 +102,7 @@ public class SimpleUser extends AbstractUser {
 
     @Override
     public boolean hasPermission(Permission permission) throws GuacamoleException {
-
-        /* FIXME: STUB! */
-        throw new UnsupportedOperationException("Not supported yet.");
-
+        return permissions.contains(permission);
     }
 
     @Override
