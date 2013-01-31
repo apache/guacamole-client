@@ -28,9 +28,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.UserDirectory;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -119,10 +119,10 @@ public class UserList extends AuthenticatingHttpServlet {
         try {
 
             // Get user directory
-            UserDirectory directory = context.getUserDirectory();
+            Directory<String, User> directory = context.getUserDirectory();
             
             // Get users
-            Set<User> users = directory.getUsers();
+            Set<String> users = directory.getIdentifiers();
 
             // Get self
             User self = context.self();
@@ -139,8 +139,11 @@ public class UserList extends AuthenticatingHttpServlet {
                 xml.writeAttribute("create", "yes");
             
             // For each entry, write corresponding user element
-            for (User user : users) {
+            for (String username : users) {
 
+                // Get user
+                User user = directory.get(username);
+                
                 // Write user 
                 xml.writeEmptyElement("user");
                 xml.writeAttribute("name", user.getUsername());

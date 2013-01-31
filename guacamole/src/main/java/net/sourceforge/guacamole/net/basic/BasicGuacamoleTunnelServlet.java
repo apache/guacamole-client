@@ -21,7 +21,6 @@ package net.sourceforge.guacamole.net.basic;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +31,7 @@ import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
 import net.sourceforge.guacamole.net.event.TunnelCloseEvent;
@@ -175,19 +174,15 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             UserContext context = getUserContext(httpSession);
 
             // Get configuration directory
-            GuacamoleConfigurationDirectory directory =
+            Directory<String, GuacamoleConfiguration> directory =
                     context.getGuacamoleConfigurationDirectory();
                 
-            // Attempt to get configurations from directory
-            Map<String, GuacamoleConfiguration> configs =
-                    directory.getConfigurations();
-
             // If no configs/credentials in session, not authorized
-            if (credentials == null || configs == null)
+            if (credentials == null)
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
             // Get authorized config
-            GuacamoleConfiguration config = configs.get(id);
+            GuacamoleConfiguration config = directory.get(id);
             if (config == null) {
                 logger.warn("Configuration id={} not found.", id);
                 throw new GuacamoleSecurityException("Requested configuration is not authorized.");

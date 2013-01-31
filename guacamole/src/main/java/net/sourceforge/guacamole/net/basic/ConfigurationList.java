@@ -19,8 +19,6 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.Map.Entry;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +27,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.GuacamoleConfigurationDirectory;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
@@ -123,15 +121,11 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
         response.setHeader("Content-Type", "text/xml");
 
         // Attempt to get configurations
-        Map<String, GuacamoleConfiguration> configs;
+        Directory<String, GuacamoleConfiguration> directory;
         try {
 
             // Get configuration directory
-            GuacamoleConfigurationDirectory directory =
-                context.getGuacamoleConfigurationDirectory();
-            
-            // Get configurations
-            configs = directory.getConfigurations();
+            directory = context.getGuacamoleConfigurationDirectory();
 
         }
         catch (GuacamoleException e) {
@@ -156,29 +150,29 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
                 xml.writeAttribute("create", "yes");
             
             // For each entry, write corresponding config element
-            for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet()) {
+            for (String identifier : directory.getIdentifiers()) {
 
                 // Get config
-                GuacamoleConfiguration config = entry.getValue();
+                GuacamoleConfiguration config = directory.get(identifier);
 
                 // Write config
                 xml.writeEmptyElement("config");
-                xml.writeAttribute("id", entry.getKey());
+                xml.writeAttribute("id", identifier);
                 xml.writeAttribute("protocol", config.getProtocol());
 
                 // Save update permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
-                        entry.getKey()))
+                        identifier))
                     xml.writeAttribute("update", "yes");
                 
                 // Save admin permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.ADMINISTER,
-                        entry.getKey()))
+                        identifier))
                     xml.writeAttribute("admin", "yes");
                 
                 // Save delete permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.DELETE,
-                        entry.getKey()))
+                        identifier))
                     xml.writeAttribute("delete", "yes");
                 
             }
