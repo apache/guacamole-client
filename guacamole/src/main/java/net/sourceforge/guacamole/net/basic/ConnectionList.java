@@ -27,15 +27,15 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
-import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all authorized
@@ -43,7 +43,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public class ConfigurationList extends AuthenticatingHttpServlet {
+public class ConnectionList extends AuthenticatingHttpServlet {
 
     /**
      * Checks whether the given user has permission to perform the given
@@ -61,7 +61,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
         // Build permission
         Permission permission =
-                new GuacamoleConfigurationDirectoryPermission(type);
+                new ConnectionDirectoryPermission(type);
 
         try {
             // Return result of permission check, if possible
@@ -81,7 +81,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
      * 
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
-     * @param identifier The identifier of the configuration the operation
+     * @param identifier The identifier of the connection the operation
      *                   would be performed upon.
      * @return true if permission is granted, false otherwise.
      * 
@@ -92,7 +92,7 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
     throws GuacamoleException {
 
         // Build permission
-        Permission permission = new GuacamoleConfigurationPermission(
+        Permission permission = new ConnectionPermission(
             type,
             identifier
         );
@@ -120,16 +120,16 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
         // Write XML content type
         response.setHeader("Content-Type", "text/xml");
 
-        // Attempt to get configurations
-        Directory<String, GuacamoleConfiguration> directory;
+        // Attempt to get connections 
+        Directory<String, Connection> directory;
         try {
 
-            // Get configuration directory
-            directory = context.getGuacamoleConfigurationDirectory();
+            // Get connection directory
+            directory = context.getConnectionDirectory();
 
         }
         catch (GuacamoleException e) {
-            throw new ServletException("Unable to retrieve configurations.", e);
+            throw new ServletException("Unable to retrieve connections.", e);
         }
        
         // Write actual XML
@@ -143,22 +143,23 @@ public class ConfigurationList extends AuthenticatingHttpServlet {
 
             // Begin document
             xml.writeStartDocument();
-            xml.writeStartElement("configs");
+            xml.writeStartElement("connections");
             
-            // Save config create permission attribute
+            // Save connection create permission attribute
             if (hasConfigPermission(self, SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
             
-            // For each entry, write corresponding config element
+            // For each entry, write corresponding connection element
             for (String identifier : directory.getIdentifiers()) {
 
-                // Get config
-                GuacamoleConfiguration config = directory.get(identifier);
+                // Get connection 
+                Connection connection = directory.get(identifier);
 
-                // Write config
-                xml.writeEmptyElement("config");
+                // Write connection
+                xml.writeEmptyElement("connection");
                 xml.writeAttribute("id", identifier);
-                xml.writeAttribute("protocol", config.getProtocol());
+                xml.writeAttribute("protocol",
+                        connection.getConfiguration().getProtocol());
 
                 // Save update permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,

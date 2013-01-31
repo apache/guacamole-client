@@ -55,15 +55,15 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
-    <!-- Configuration List Servlet -->
+    <!-- Connection List Servlet -->
     <servlet>
-        <description>Configuration list servlet.</description>
-        <servlet-name>Configs</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.ConfigurationList</servlet-class>
+        <description>Connection list servlet.</description>
+        <servlet-name>Connections</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.ConnectionList</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Configs</servlet-name>
-        <url-pattern>/configs</url-pattern>
+        <servlet-name>Connections</servlet-name>
+        <url-pattern>/connections</url-pattern>
     </servlet-mapping>
 
     <!-- User List Servlet -->

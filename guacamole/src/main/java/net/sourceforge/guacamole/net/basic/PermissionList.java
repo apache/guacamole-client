@@ -30,8 +30,8 @@ import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationDirectoryPermission;
-import net.sourceforge.guacamole.net.auth.permission.GuacamoleConfigurationPermission;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -131,29 +131,29 @@ public class PermissionList extends AuthenticatingHttpServlet {
             for (Permission permission : user.getPermissions()) {
 
                 // Config directory permission
-                if (permission instanceof GuacamoleConfigurationDirectoryPermission) {
+                if (permission instanceof ConnectionDirectoryPermission) {
 
                     // Get permission
-                    GuacamoleConfigurationDirectoryPermission gcdp =
-                            (GuacamoleConfigurationDirectoryPermission) permission;
+                    ConnectionDirectoryPermission cdp =
+                            (ConnectionDirectoryPermission) permission;
                     
                     // Write permission 
-                    xml.writeEmptyElement("configs");
-                    xml.writeAttribute("type", toString(gcdp.getType()));
+                    xml.writeEmptyElement("connections");
+                    xml.writeAttribute("type", toString(cdp.getType()));
 
                 }
 
                 // Config permission
-                else if (permission instanceof GuacamoleConfigurationPermission) {
+                else if (permission instanceof ConnectionPermission) {
 
                     // Get permission
-                    GuacamoleConfigurationPermission gcp =
-                            (GuacamoleConfigurationPermission) permission;
+                    ConnectionPermission cp =
+                            (ConnectionPermission) permission;
                     
                     // Write permission 
-                    xml.writeEmptyElement("config");
-                    xml.writeAttribute("type", toString(gcp.getType()));
-                    xml.writeAttribute("name", gcp.getObjectIdentifier());
+                    xml.writeEmptyElement("connection");
+                    xml.writeAttribute("type", toString(cp.getType()));
+                    xml.writeAttribute("name", cp.getObjectIdentifier());
 
                 }
 

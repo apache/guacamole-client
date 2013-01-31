@@ -29,7 +29,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
-import net.sourceforge.guacamole.net.InetGuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -38,16 +38,13 @@ import net.sourceforge.guacamole.net.event.TunnelCloseEvent;
 import net.sourceforge.guacamole.net.event.TunnelConnectEvent;
 import net.sourceforge.guacamole.net.event.listener.TunnelCloseListener;
 import net.sourceforge.guacamole.net.event.listener.TunnelConnectListener;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Connects users to a tunnel associated with the authorized configuration
+ * Connects users to a tunnel associated with the authorized connection
  * having the given ID.
  *
  * @author Michael Jumper
@@ -173,19 +170,18 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // Get context
             UserContext context = getUserContext(httpSession);
 
-            // Get configuration directory
-            Directory<String, GuacamoleConfiguration> directory =
-                    context.getGuacamoleConfigurationDirectory();
+            // Get connection directory
+            Directory<String, Connection> directory = context.getConnectionDirectory();
                 
-            // If no configs/credentials in session, not authorized
+            // If no credentials in session, not authorized
             if (credentials == null)
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
-            // Get authorized config
-            GuacamoleConfiguration config = directory.get(id);
-            if (config == null) {
-                logger.warn("Configuration id={} not found.", id);
-                throw new GuacamoleSecurityException("Requested configuration is not authorized.");
+            // Get authorized connection 
+            Connection connection = directory.get(id);
+            if (connection == null) {
+                logger.warn("Connection id={} not found.", id);
+                throw new GuacamoleSecurityException("Requested connection is not authorized.");
             }
 
             logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
@@ -213,14 +209,8 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             if (video_mimetypes != null)
                 info.getVideoMimetypes().addAll(Arrays.asList(video_mimetypes));
 
-            // Configure and connect socket
-            String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
-            int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
-
-            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                    new InetGuacamoleSocket(hostname, port),
-                    config, info
-            );
+            // Connect socket
+            GuacamoleSocket socket = connection.connect(info);
 
             // Associate socket with tunnel
             GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {
