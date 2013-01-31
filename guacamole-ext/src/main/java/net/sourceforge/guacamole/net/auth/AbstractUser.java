@@ -44,7 +44,7 @@ package net.sourceforge.guacamole.net.auth;
  * 
  * @author Michael Jumper 
  */
-public abstract class AbstractUser implements User, Comparable<AbstractUser> {
+public abstract class AbstractUser implements User {
 
     /**
      * The name of this user.
@@ -102,27 +102,4 @@ public abstract class AbstractUser implements User, Comparable<AbstractUser> {
 
     }
 
-    @Override
-    public int compareTo(AbstractUser user) {
-
-        // Having a username is greater than lack of a username
-        if (user.username == null) {
-
-            // If both null, then equal
-            if (username == null)
-                return 0;
-
-            return 1;
-
-        }
-
-        // Lacking a username is less than having a username
-        if (username == null)
-            return -1;
-       
-        // Otherwise, compare strings
-        return username.compareTo(user.username);
-        
-    }
-    
 }
