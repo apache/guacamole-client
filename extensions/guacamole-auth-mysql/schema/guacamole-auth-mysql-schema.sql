@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE `guacamole_connection` (
-  `connection_id` int(11) NOT NULL,
+  `connection_id` int(11) NOT NULL AUTO_INCREMENT,
   `connection_name` varchar(128) NOT NULL,
   `protocol` varchar(32) NOT NULL,
   PRIMARY KEY (`connection_id`),
@@ -15,7 +15,7 @@ CREATE TABLE `guacamole_connection` (
 --
 
 CREATE TABLE `guacamole_user` (
-  `user_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) NOT NULL,
   `password_hash` binary(32) NOT NULL,
   `password_salt` varchar(100) NOT NULL,
