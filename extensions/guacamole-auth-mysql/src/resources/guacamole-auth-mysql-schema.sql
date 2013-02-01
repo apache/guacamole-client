@@ -152,7 +152,6 @@ CREATE TABLE `guacamole_user_permission` (
   `other_user_id` int(11) NOT NULL DEFAULT '0',
   `permission` enum('READ','WRITE','DELETE','ADMINISTER') NOT NULL,
   PRIMARY KEY (`user_id`,`other_user_id`,`permission`),
-  KEY `other_user_id` (`other_user_id`),
   CONSTRAINT `guacamole_user_permission_ibfk_1` FOREIGN KEY (`other_user_id`) REFERENCES `guacamole_user` (`user_id`),
   CONSTRAINT `guacamole_user_permission_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `guacamole_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
