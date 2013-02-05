@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+
+<!--
+    Guacamole - Clientless Remote Desktop
+    Copyright (C) 2010  Michael Jumper
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+    <head>
+        <link rel="icon" type="image/png" href="images/guacamole-logo-64.png"/>
+        <link rel="apple-touch-icon" type="image/png" href="images/guacamole-logo-144.png"/>
+        <link rel="stylesheet" type="text/css" href="styles/ui.css"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi"/>
+        <title>Guacamole ${project.version}</title>
+    </head>
+
+    <body>
+
+        <h1>Administration</h1>
+        
+        <h2>Users</h2>
+        <div class="settings section" id="users">
+
+            <p>
+                Click or tap on a user below to manage that user. Depending
+                on your access level, users can be added and deleted, and their
+                passwords can be changed.
+            </p>
+            
+            <div class="user">
+                <div class="caption"><div class="type"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add user"/></span></div>
+            </div>
+            
+        </div>
+
+        <h2>Connections</h2>
+        <div class="settings section" id="connections">
+
+            <p>
+                Click or tap on a connection below to manage that connection.
+                Depending on your access level, connections can be added and
+                deleted, and their properties (protocol, hostname, port, etc.)
+                can be changed.
+            </p>
+
+            <div class="connection">
+                <div class="caption"><div class="protocol"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add connection"/></span></div>
+            </div>
+            
+            <div class="connection edit">
+                <div class="caption"><div class="protocol"><div class="icon vnc"/></div><span class="name">Another connection</span></div>
+                <div class="fields">
+                    <table>
+                        <tr>
+                            <th>Protocol:</th>
+                            <td>
+                                <select>
+                                    <option>vnc</option>
+                                    <option>rdp</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Hostname:</th>
+                            <td><input type="text" value="anotherhost"/></td>
+                        </tr>
+                        <tr>
+                            <th>Password:</th>
+                            <td><input type="password" value="1241234134134"/></td>
+                        </tr>
+                        <tr>
+                            <th>Port:</th>
+                            <td><input type="text" value="5901"/></td>
+                        </tr>
+                        <tr>
+                            <th>Read-only:</th>
+                            <td><input type="checkbox"/></td>
+                        </tr>
+                        <tr>
+                            <th>Swap red/blue:</th>
+                            <td><input type="checkbox"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="object-buttons">
+                    <button>Save</button>
+                    <button>Cancel</button>
+                    <button class="danger">Delete</button>
+                </div>
+            </div>
+            
+        </div>
+
+        <div id="version-dialog">
+            Guacamole ${project.version}
+        </div>
+
+        <script type="text/javascript" src="scripts/service.js"></script>
+        <script type="text/javascript" src="scripts/session.js"></script>
+        <script type="text/javascript" src="scripts/history.js"></script>
+        <script type="text/javascript" src="scripts/guac-ui.js"></script>
+
+        <script type="text/javascript"><![CDATA[
+
+            var connections = document.getElementById("connections");
+            var users = document.getElementById("users");
+
+            var connection = new GuacamoleService.Connection("vnc", "Test connection");
+            for (var i=0; i<10; i++) {
+
+                var conn = new GuacUI.Connection(connection);
+                connections.appendChild(conn.getElement());
+
+                (function() {
+                    var user = new GuacUI.EditableUser("testuser");
+                    users.appendChild(user.getElement());
+                    user.getElement().onclick = function() {
+                        user.setEditMode(!user.edit);
+                    };
+                })();
+
+            }
+
+        ]]></script>
+
+    </body>
+
+</html>

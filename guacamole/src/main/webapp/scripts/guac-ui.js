@@ -393,3 +393,244 @@ GuacUI.DraggableComponent = function(element) {
     this.onmove = null;
 
 };
+
+/**
+ * A connection UI object which can be easily added to a list of connections
+ * for sake of display.
+ */
+GuacUI.Connection = function(connection) {
+
+    /**
+     * The actual connection associated with this connection UI element.
+     */
+    this.connection = connection;
+
+    function createElement(tagname, classname) {
+        var new_element = document.createElement(tagname);
+        new_element.className = classname;
+        return new_element;
+    }
+
+    // Create connection display elements
+    var element       = createElement("div",  "connection");
+    var caption       = createElement("div",  "caption");
+    var protocol      = createElement("div",  "protocol");
+    var name          = createElement("span", "name");
+    var protocol_icon = createElement("div",  "icon " + connection.protocol);
+    var thumbnail     = createElement("div",  "thumbnail");
+    var thumb_img;
+
+    // Get URL
+    var url = "client.xhtml?id=" + encodeURIComponent(connection.id);
+
+    // Create link to client
+    element.onclick = function() {
+
+        // Attempt to focus existing window
+        var current = window.open(null, connection.id);
+
+        // If window did not already exist, set up as
+        // Guacamole client
+        if (!current.GuacUI)
+            window.open(url, connection.id);
+
+    };
+
+    // Add icon
+    protocol.appendChild(protocol_icon);
+
+    // Set name
+    name.textContent = connection.id;
+
+    // Assemble caption
+    caption.appendChild(protocol);
+    caption.appendChild(name);
+
+    // Assemble connection icon
+    element.appendChild(thumbnail);
+    element.appendChild(caption);
+
+    // Add screenshot if available
+    var thumbnail_url = GuacamoleHistory.get(connection.id).thumbnail;
+    if (thumbnail_url) {
+
+        // Create thumbnail element
+        thumb_img = document.createElement("img");
+        thumb_img.src = thumbnail_url;
+        thumbnail.appendChild(thumb_img);
+
+    }
+
+    /**
+     * Returns the DOM element representing this connection.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Returns whether this connection has an associated thumbnail.
+     */
+    this.hasThumbnail = function() {
+        return thumb_img && true;
+    };
+
+    /**
+     * Sets the thumbnail URL of this existing connection. Note that this will
+     * only work if the connection already had a thumbnail associated with it.
+     */
+    this.setThumbnail = function(url) {
+
+        // If no image element, create it
+        if (!thumb_img) {
+            thumb_img = document.createElement("img");
+            thumb_img.src = url;
+            thumbnail.appendChild(thumb_img);
+        }
+
+        // Otherwise, set source of existing
+        else
+            thumb_img.src = url;
+
+    };
+
+};
+
+/**
+ * An arbitrary table-based form.
+ */
+GuacUI.Form = function() {
+
+    var element = GuacUI.createElement("table");
+
+    /**
+     * Returns the DOM element representing this form.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    this.addField = function(title, type, value) {
+
+        // Add elements
+        var row    = GuacUI.createChildElement(element, "tr");
+        var header = GuacUI.createChildElement(row, "th");
+        var cell   = GuacUI.createChildElement(row, "td");
+        var input  = GuacUI.createChildElement(cell, "input");
+
+        // Set title
+        header.textContent = title;
+
+        // Set type and value
+        input.setAttribute("type", type);
+        if (value) input.setAttribute("value", value);
+
+    };
+
+};
+
+/**
+ * A user UI object.
+ */
+GuacUI.User = function(username) {
+
+    /**
+     * This user's username.
+     */
+    this.username = username;
+
+    var user_type = "normal";
+
+    // Create connection display elements
+    var element       = GuacUI.createElement("div",  "user");
+    var caption       = GuacUI.createChildElement(element ,"div",  "caption");
+    var type          = GuacUI.createChildElement(caption, "div",  "type");
+    var name          = GuacUI.createChildElement(caption, "span", "name");
+    GuacUI.createChildElement(type, "div",  "icon " + user_type);
+
+    // Get URL
+    var url = "user.xhtml?name=" + encodeURIComponent(username);
+
+    // Create link to client
+    element.onclick = function() {
+
+        // Attempt to focus existing window
+        var current = window.open(null, username);
+
+        // If window did not already exist, set up as
+        // Guacamole client
+        if (!current.GuacUI)
+            window.open(url, username);
+
+    };
+
+    // Set name
+    name.textContent = username;
+
+    /**
+     * Returns the DOM element representing this connection.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+};
+
+
+/**
+ * An editable user UI object.
+ */
+GuacUI.EditableUser = function(username) {
+
+    /**
+     * This user's username.
+     */
+    this.username = username;
+
+    /**
+     * Current status of edit mode.
+     */
+    this.edit = false;
+
+    // Create contained user
+    var user = new GuacUI.User(username);
+    var element = user.getElement();
+    GuacUI.addClass(element, "editable");
+
+    // Fields
+    var fields = GuacUI.createChildElement(element, "div", "fields");
+    var form = new GuacUI.Form();
+
+    // Add form
+    fields.appendChild(form.getElement());
+
+    // Add fields
+    form.addField("Password:",          "password", "123412341234");
+    form.addField("Re-enter Password:", "password", "123412341234");
+
+    /**
+     * Returns the DOM element representing this connection.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Sets/unsets edit mode. When edit mode is on, the user's properties
+     * will be visible and editable.
+     */
+    this.setEditMode = function(enabled) {
+
+        // Set edit mode
+        this.edit = enabled;
+
+        // Alter class accordingly
+        if (enabled)
+            GuacUI.addClass(element, "edit");
+        else
+            GuacUI.removeClass(element, "edit");
+
+    };
+
+};
+

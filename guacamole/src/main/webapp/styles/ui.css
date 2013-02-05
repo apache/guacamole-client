@@ -1,0 +1,328 @@
+
+/*
+ *  Guacamole - Clientless Remote Desktop
+ *  Copyright (C) 2010  Michael Jumper
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import url('animation.css');
+ 
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+input[type=checkbox], input[type=text], textarea {
+    -webkit-tap-highlight-color: rgba(128,192,128,0.5);
+}
+
+input[type=submit], button {
+    -webkit-appearance: none;
+}
+
+input[type=text], input[type=password] {
+    border: 1px solid #777;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+    width: 100%;
+}
+
+button {
+
+    background: #8A6;
+    border: 1px solid rgba(0, 0, 0, 0.4);
+    -moz-border-radius: 0.6em;
+    -webkit-border-radius: 0.6em;
+    -khtml-border-radius: 0.6em;
+    border-radius: 0.6em;
+
+    color: white;
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
+    font-weight: bold;
+    font-size: 1.125em;
+
+    box-shadow: inset -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                inset 1px 1px 0.25em rgba(255, 255, 255, 0.25),
+                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                1px 1px 0.25em rgba(255, 255, 255, 0.25);
+    
+    padding: 0.35em;
+    padding-right: 1em;
+    padding-left: 1em;
+    min-width: 5em;
+
+}
+
+button:hover {
+    background: #9C7;
+}
+
+button:active {
+
+    padding-left: 1.1em;
+    padding-right: 0.9em;
+    padding-top: 0.45em;
+    padding-bottom: 0.25em;
+    
+    box-shadow: 
+                inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
+                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
+                1px 1px 0.25em rgba(255, 255, 255, 0.25);
+}
+
+button.danger {
+    background: #A43;
+}
+
+button.danger:hover {
+    background: #C54;
+}
+
+body {
+    background: #EEE;
+    font-family: FreeSans, Helvetica, Arial, sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+img {
+    border: none;
+    vertical-align: middle;
+}
+
+div#version-dialog {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    text-align: right;
+
+    font-style: italic;
+    font-size: 0.75em;
+    color: black;
+    opacity: 0.5;
+
+    padding: 0.5em;
+}
+
+h2 {
+
+    padding: 0.5em;
+    margin: 0;
+    font-size: 1.5em;
+
+    font-weight: lighter;
+    text-shadow: 1px 1px white;
+
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    background: #DDD;
+    
+}
+
+h1 {
+    
+    margin: 0;
+    padding: 0.5em;
+
+    font-size: 2em;
+    vertical-align: middle;
+    text-align: center;
+
+}
+
+div.section {
+    margin: 0;
+    padding: 1em;
+}
+
+/*
+ * List elements
+ */
+
+.user,
+.connection {
+
+    display: block;
+    text-align: left;
+    padding: 0.1em;
+    cursor: pointer;
+
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+    border: 1px solid rgba(0, 0, 0, 0);
+    
+    position: relative;
+
+}
+
+.connection .thumbnail {
+    margin: 0.5em;
+    display: none;
+}
+
+.connection .thumbnail img {
+    border: 1px solid black;
+    box-shadow: 1px 1px 5px black;
+    max-width: 75%;
+}
+
+.user .type,
+.connection .protocol {
+    display: inline-block;
+}
+
+.user .icon,
+.connection .icon {
+    width: 24px;
+    height: 24px;
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0.5;
+}
+
+.user .caption,
+.connection .caption {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.user .caption *,
+.connection .caption * {
+    vertical-align: middle;
+}
+
+.user .name,
+.connection .name {
+    color: black;
+    font-weight: normal;
+    padding: 0.1em;
+    margin-left: 0.25em;
+}
+
+/*
+ * List element edit / non-edit styling
+ */
+
+.user.edit,
+.connection.edit {
+    background: #DEB;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.user.edit .icon,
+.connection.edit .icon {
+    opacity: 1.0;
+}
+
+.user:not(.edit):hover,
+.connection:not(.edit):hover {
+    background: #CDA;
+}
+
+/*
+ * List element fields (editing)
+ */
+
+.user .fields,
+.connection .fields {
+
+    position: absolute;
+    display: inline-block;
+    vertical-align: top;
+    z-index: 1;
+
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: #DDD;
+    padding: 0.25em;
+    margin: 0.25em;
+
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
+
+}
+
+.user .fields th,
+.connection .fields th {
+    font-weight: normal;
+    font-size: 0.8em;
+}
+
+.user:not(.edit) .fields,
+.connection:not(.edit) .fields {
+    display: none;
+}
+
+.user.edit .fields,
+.connection.edit .fields {
+    animation-name: fadein;
+    -webkit-animation-name: fadein;
+    animation-duration: 0.125s;
+    -webkit-animation-duration: 0.125s;
+}
+
+/*
+ * List element icons
+ */
+
+.user .icon {
+    background-image: url('../images/user-icons/guac-user.png');
+}
+
+.user .icon.add {
+    background-image: url('../images/action-icons/guac-user-add.png');
+}
+
+.protocol .icon {
+    background-image: url('../images/protocol-icons/guac-plug.png');
+}
+
+.protocol .icon.ssh {
+    background-image: url('../images/protocol-icons/guac-text.png');
+}
+
+.protocol .icon.add{
+    background-image: url('../images/action-icons/guac-monitor-add.png');
+}
+
+.protocol .icon.vnc,
+.protocol .icon.rdp {
+    background-image: url('../images/protocol-icons/guac-monitor.png');
+}
+
+/*
+ * Settings formatting
+ */
+
+.settings dt {
+    border-bottom: 1px dotted #AAA;
+    padding-bottom: 0.25em;
+}
+
+.settings dd {
+    margin: 1.5em;
+    margin-left: 2.5em;
+    font-size: 0.75em;
+}
