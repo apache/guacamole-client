@@ -608,6 +608,18 @@ GuacUI.EditableUser = function(username) {
     form.addField("Password:",          "password", "123412341234");
     form.addField("Re-enter Password:", "password", "123412341234");
 
+    // Buttons
+    var buttons = GuacUI.createChildElement(fields, "div", "object-buttons");
+    
+    var save    = GuacUI.createChildElement(buttons, "button", "save");
+    save.textContent = "Save";
+    
+    var cancel  = GuacUI.createChildElement(buttons, "button", "cancel");
+    cancel.textContent = "Cancel";
+    
+    var del     = GuacUI.createChildElement(buttons, "button", "delete");
+    del.textContent = "Delete";
+
     /**
      * Returns the DOM element representing this connection.
      */

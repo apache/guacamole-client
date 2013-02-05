@@ -83,11 +83,11 @@ button:active {
                 1px 1px 0.25em rgba(255, 255, 255, 0.25);
 }
 
-button.danger {
+button.delete {
     background: #A43;
 }
 
-button.danger:hover {
+button.delete:hover {
     background: #C54;
 }
 
@@ -252,7 +252,7 @@ div.section {
 
     border: 1px solid rgba(0, 0, 0, 0.1);
     background: #DDD;
-    padding: 0.25em;
+    padding: 0.5em;
     margin: 0.25em;
 
     -moz-border-radius: 0.2em;
@@ -281,6 +281,17 @@ div.section {
     -webkit-animation-name: fadein;
     animation-duration: 0.125s;
     -webkit-animation-duration: 0.125s;
+}
+
+.object-buttons {
+
+    text-align: right;
+    font-size: 0.8em;
+
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding-top: 0.5em;
+    margin-top: 0.5em;
+
 }
 
 /*
