@@ -57,14 +57,14 @@
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.7.0</version>
+            <version>0.8.0</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>net.sourceforge.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.7.0</version>
+            <version>0.8.0</version>
         </dependency>
 
         <!-- MyBatis -->
