@@ -646,3 +646,67 @@ GuacUI.EditableUser = function(username) {
 
 };
 
+
+/**
+ * An editable connection UI object.
+ */
+GuacUI.EditableConnection = function(connection) {
+
+    /**
+     * Current status of edit mode.
+     */
+    this.edit = false;
+
+    // Create contained connection 
+    var conn = new GuacUI.Connection(connection);
+    var element = conn.getElement();
+    GuacUI.addClass(element, "editable");
+
+    // Fields
+    var fields = GuacUI.createChildElement(element, "div", "fields");
+    var form = new GuacUI.Form();
+
+    // Add form
+    fields.appendChild(form.getElement());
+
+    // Add fields
+    form.addField("Password:",          "password", "123412341234");
+    form.addField("Re-enter Password:", "password", "123412341234");
+
+    // Buttons
+    var buttons = GuacUI.createChildElement(fields, "div", "object-buttons");
+    
+    var save    = GuacUI.createChildElement(buttons, "button", "save");
+    save.textContent = "Save";
+    
+    var cancel  = GuacUI.createChildElement(buttons, "button", "cancel");
+    cancel.textContent = "Cancel";
+    
+    var del     = GuacUI.createChildElement(buttons, "button", "delete");
+    del.textContent = "Delete";
+
+    /**
+     * Returns the DOM element representing this connection.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Sets/unsets edit mode. When edit mode is on, the connection's properties
+     * will be visible and editable.
+     */
+    this.setEditMode = function(enabled) {
+
+        // Set edit mode
+        this.edit = enabled;
+
+        // Alter class accordingly
+        if (enabled)
+            GuacUI.addClass(element, "edit");
+        else
+            GuacUI.removeClass(element, "edit");
+
+    };
+
+};
