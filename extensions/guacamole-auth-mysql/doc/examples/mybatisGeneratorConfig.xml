@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <!-- Location of MySQL jdbc driver. -->
+  <classPathEntry location="mysql-connector-java-5.1.23-bin.jar" />
+
+  <context id="guacamoleTables" targetRuntime="MyBatis3">
+    <!-- MySQL JDBC driver class. -->
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+        connectionURL="jdbc:mysql://127.0.0.1:3306"
+        userId="root"
+        password="root">
+    </jdbcConnection>
+
+    <!-- Set targetProject to the desired location for the generated model source. -->
+    <javaModelGenerator targetPackage="net.sourceforge.guacamole.net.auth.mysql.model" targetProject="/path/to/target/folder">
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+    <!-- Set targetProject to the desired location for the generated xml mapping files. -->
+    <sqlMapGenerator targetPackage="net.sourceforge.guacamole.net.auth.mysql.xml"  targetProject="/path/to/target/folder">
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+
+    <!-- Set targetProject to the desired location for the generated acces object source. -->
+    <javaClientGenerator type="XMLMAPPER" targetPackage="net.sourceforge.guacamole.net.auth.mysql.dao"  targetProject="/path/to/target/folder">
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+
+    <!-- The guacamole authentication tables: If the names of the tables change, they have to be changed here as well. -->
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_connection" domainObjectName="Connection" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_connection_parameter" domainObjectName="ConnectionParameter" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_connection_permission" domainObjectName="ConnectionPermission" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_system_permission" domainObjectName="SystemPermission" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_user" domainObjectName="User" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_user_permission" domainObjectName="UserPermission" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+  </context>
+</generatorConfiguration>
+
