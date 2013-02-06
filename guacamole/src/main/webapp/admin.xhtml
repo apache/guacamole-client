@@ -81,8 +81,13 @@
             var connection = new GuacamoleService.Connection("vnc", "Test connection");
             for (var i=0; i<10; i++) {
 
-                var conn = new GuacUI.Connection(connection);
-                connections.appendChild(conn.getElement());
+                (function() {
+                    var conn = new GuacUI.EditableConnection(connection);
+                    connections.appendChild(conn.getElement());
+                    conn.getElement().onclick = function() {
+                        conn.setEditMode(!conn.edit);
+                    };
+                })();
 
                 (function() {
                     var user = new GuacUI.EditableUser("testuser");
