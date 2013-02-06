@@ -21,10 +21,10 @@ Distribution-specific documentation is provided on the Guacamole wiki:
 ------------------------------------------------------------
 
 guacamole-auth-ldap is a Java library for use with the Guacamole web
-application to provide mysql based authentication.
+application to provide MySQL based authentication.
 
 guacamole-auth-mysql provides an authentication provider which can be
-set in guacamole.properties to allow mysql authentication of Guacamole
+set in guacamole.properties to allow MySQL authentication of Guacamole
 users. Additional properties are required to configure the mysql
 connection parameters.
 
