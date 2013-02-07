@@ -190,22 +190,9 @@ GuacAdmin.UserManager = function() {
     var element = GuacUI.createElement("div", "user-list");
 
     /**
-     * User property form.
+     * The selected username.
      */
-    var user_properties = new GuacAdmin.Form(
-
-        /* Fields */
-        [new GuacAdmin.Field("Password:", "password", "12341234"),
-         new GuacAdmin.Field("Re-enter Password:", "password", "12341234"),
-         new GuacAdmin.Field("Connections:", "connections")],
-
-        /* Buttons */
-        [new GuacAdmin.Button("Save"),
-         new GuacAdmin.Button("Cancel"),
-         new GuacAdmin.Button("Delete")]
-
-    );
-
+    this.selected = null;
 
     /**
      * Returns the DOM element representing this UserManager.
@@ -219,9 +206,47 @@ GuacAdmin.UserManager = function() {
      */
     this.add = function(username) {
 
-        // Create and append item
+        // Create item
         var item = new GuacAdmin.ListItem("user", username);
-        element.appendChild(item.getElement());
+        var item_element = item.getElement();
+
+        // Select on click
+        item_element.onclick = function() {
+
+            // If nothing selected, select this item
+            if (!user_manager.selected) {
+
+                // Change styling to reflect selected item
+                GuacUI.addClass(element, "disabled");
+                GuacUI.addClass(item_element, "selected");
+
+                // Update selected item
+                user_manager.selected = username;
+
+                // User property form.
+                var user_properties = new GuacAdmin.Form(
+
+                    /* Fields */
+                    [new GuacAdmin.Field("Password:", "password", "12341234"),
+                     new GuacAdmin.Field("Re-enter Password:", "password", "12341234"),
+                     new GuacAdmin.Field("Connections:", "connections")],
+
+                    /* Buttons */
+                    [new GuacAdmin.Button("Save"),
+                     new GuacAdmin.Button("Cancel"),
+                     new GuacAdmin.Button("Delete")]
+
+                );
+
+                // Display properties
+                item_element.appendChild(user_properties.getElement());
+
+            }
+
+        };
+
+        // Append item
+        element.appendChild(item_element);
 
     };
 
