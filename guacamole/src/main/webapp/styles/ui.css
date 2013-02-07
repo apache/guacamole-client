@@ -152,8 +152,7 @@ div.section {
  * List elements
  */
 
-.user,
-.connection {
+.list-item {
 
     display: block;
     text-align: left;
@@ -170,24 +169,7 @@ div.section {
 
 }
 
-.connection .thumbnail {
-    margin: 0.5em;
-    display: none;
-}
-
-.connection .thumbnail img {
-    border: 1px solid black;
-    box-shadow: 1px 1px 5px black;
-    max-width: 75%;
-}
-
-.user .type,
-.connection .protocol {
-    display: inline-block;
-}
-
-.user .icon,
-.connection .icon {
+.list-item .icon {
     width: 24px;
     height: 24px;
     background-size: 16px 16px;
@@ -199,19 +181,15 @@ div.section {
     opacity: 0.5;
 }
 
-.user .caption,
-.connection .caption {
+.list-item .icon {
     display: inline-block;
-    vertical-align: top;
 }
 
-.user .caption *,
-.connection .caption * {
+.list-item * {
     vertical-align: middle;
 }
 
-.user .name,
-.connection .name {
+.list-item .name {
     color: black;
     font-weight: normal;
     padding: 0.1em;
@@ -219,31 +197,35 @@ div.section {
 }
 
 /*
- * List element edit / non-edit styling
+ * List element styling
  */
 
-.user.edit,
-.connection.edit {
+.list-item.selected {
     background: #DEB;
     border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
-.user.edit .icon,
-.connection.edit .icon {
+.list-item.selected.icon {
     opacity: 1.0;
 }
 
-.user:not(.edit):hover,
-.connection:not(.edit):hover {
+.list-item:not(.selected):hover {
     background: #CDA;
+}
+
+.disabled .list-item:not(.selected) {
+    opacity: 0.25;
+}
+
+.disabled .list-item:not(.selected):hover {
+    background: inherit;
 }
 
 /*
  * List element fields (editing)
  */
 
-.user .fields,
-.connection .fields {
+.form {
 
     position: absolute;
     display: inline-block;
@@ -264,24 +246,25 @@ div.section {
 
 }
 
-.user .fields th,
-.connection .fields th {
+.form .fields th {
     font-weight: normal;
     font-size: 0.8em;
+    vertical-align: top;
+    text-align: left;
 }
 
-.user:not(.edit) .fields,
-.connection:not(.edit) .fields {
-    display: none;
-}
-
-.user.edit .fields,
-.connection.edit .fields {
+.form {
     cursor: auto;
     animation-name: fadein;
     -webkit-animation-name: fadein;
     animation-duration: 0.125s;
     -webkit-animation-duration: 0.125s;
+}
+
+.form .connection-list {
+    border: 1px solid gray;
+    min-width: 10em;
+    min-height: 10em;
 }
 
 .object-buttons {
@@ -299,28 +282,28 @@ div.section {
  * List element icons
  */
 
-.user .icon {
+.list-item .icon.user {
     background-image: url('../images/user-icons/guac-user.png');
 }
 
-.user .icon.add {
+.list-item .icon.user.add {
     background-image: url('../images/action-icons/guac-user-add.png');
 }
 
-.protocol .icon {
+.list-item .icon.connection {
     background-image: url('../images/protocol-icons/guac-plug.png');
 }
 
-.protocol .icon.ssh {
+.list-item .icon.connection.ssh {
     background-image: url('../images/protocol-icons/guac-text.png');
 }
 
-.protocol .icon.add{
+.list-item .icon.connection.add {
     background-image: url('../images/action-icons/guac-monitor-add.png');
 }
 
-.protocol .icon.vnc,
-.protocol .icon.rdp {
+.list-item .icon.connection.vnc,
+.list-item .icon.connection.rdp {
     background-image: url('../images/protocol-icons/guac-monitor.png');
 }
 

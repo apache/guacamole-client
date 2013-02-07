@@ -41,10 +41,12 @@
                 on your access level, users can be added and deleted, and their
                 passwords can be changed.
             </p>
-            
+           
+            <!--
             <div class="user">
                 <div class="caption"><div class="type"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add user"/></span></div>
             </div>
+            -->
             
         </div>
 
@@ -58,9 +60,11 @@
                 can be changed.
             </p>
 
+            <!--
             <div class="connection">
                 <div class="caption"><div class="protocol"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add connection"/></span></div>
             </div>
+            -->
             
         </div>
 
@@ -68,6 +72,7 @@
             Guacamole ${project.version}
         </div>
 
+        <script type="text/javascript" src="scripts/admin.js"></script>
         <script type="text/javascript" src="scripts/service.js"></script>
         <script type="text/javascript" src="scripts/session.js"></script>
         <script type="text/javascript" src="scripts/history.js"></script>
@@ -75,29 +80,10 @@
 
         <script type="text/javascript"><![CDATA[
 
-            var connections = document.getElementById("connections");
             var users = document.getElementById("users");
 
-            var connection = new GuacamoleService.Connection("vnc", "Test connection");
-            for (var i=0; i<10; i++) {
-
-                (function() {
-                    var conn = new GuacUI.EditableConnection(connection);
-                    connections.appendChild(conn.getElement());
-                    conn.getElement().onclick = function() {
-                        conn.setEditMode(!conn.edit);
-                    };
-                })();
-
-                (function() {
-                    var user = new GuacUI.EditableUser("testuser");
-                    users.appendChild(user.getElement());
-                    user.getElement().onclick = function() {
-                        user.setEditMode(!user.edit);
-                    };
-                })();
-
-            }
+            var user_manager = new GuacAdmin.UserManager();
+            users.appendChild(user_manager.getElement());
 
         ]]></script>
 
