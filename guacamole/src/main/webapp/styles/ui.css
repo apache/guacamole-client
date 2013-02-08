@@ -262,9 +262,15 @@ div.section {
 }
 
 .form .connection-list {
-    border: 1px solid gray;
-    min-width: 10em;
-    min-height: 10em;
+
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    padding: 0.5em;
+
 }
 
 .object-buttons {
