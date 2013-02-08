@@ -29,10 +29,10 @@ var GuacAdmin = GuacAdmin || {};
  * 
  * @constructor
  * @param {String} title A human-readable title for the field.
- * @param {String} type The type of the input field.
- * @param {String} value The default value, if any.
+ * @param {String[]} available The allowed value(s), if any.
+ * @param {String[]} selected The selected value(s), if any.
  */
-GuacAdmin.Field = function(title, type, value) {
+GuacAdmin.Field = function(title, available, selected) {
 
     /**
      * A human-readable title describing this field.
@@ -40,17 +40,147 @@ GuacAdmin.Field = function(title, type, value) {
     this.title = title;
 
     /**
-     * The type of this field. Possible values are "text", "password", and
-     * "checkbox".
+     * All available values, if any.
      */
-    this.type = type;
+    this.available = available || [];
 
     /**
-     * The default value of this field.
+     * All selected values, if any.
      */
-    this.value = value;
+    this.selected = selected || [];
+
+    /**
+     * Returns the DOM Element representing this field.
+     * 
+     * @return {Element} The DOM Element representing this field.
+     */
+    this.getElement = function() {};
+
+    /**
+     * Returns the selected values of this field.
+     * 
+     * @return {String[]} All selected values.
+     */
+    this.getSelected = function() {};
 
 };
+
+
+/**
+ * Simple HTML input field.
+ * 
+ * @augments GuacAdmin.Field
+ */
+GuacAdmin.Field._HTML_INPUT = function(type, title, available, selected) {
+
+    // Call parent constructor
+    GuacAdmin.Field.apply(this, [title, available, selected]);
+
+    // Create backing element
+    var element = GuacUI.createElement("input");
+    element.setAttribute("type", type);
+    if (selected && selected.length == 1)
+        element.setAttribute("value", selected[0]);
+
+    this.getSelected = function() {
+        return [element.value];
+    };
+
+    this.getElement = function() {
+        return element;
+    };
+
+};
+
+GuacAdmin.Field._HTML_INPUT.prototype = new GuacAdmin.Field();
+
+
+/**
+ * A basic text field.
+ * 
+ * @augments GuacAdmin.Field._HTML_INPUT
+ */
+GuacAdmin.Field.TEXT = function(title, available, selected) {
+    GuacAdmin.Field._HTML_INPUT.apply(this, ["text", title, available, selected]);
+};
+
+GuacAdmin.Field.TEXT.prototype = new GuacAdmin.Field._HTML_INPUT();
+
+
+/**
+ * A basic password field.
+ * 
+ * @augments GuacAdmin.Field._HTML_INPUT
+ */
+GuacAdmin.Field.PASSWORD = function(title, available, selected) {
+    GuacAdmin.Field._HTML_INPUT.apply(this, ["password", title, available, selected]);
+};
+
+GuacAdmin.Field.PASSWORD.prototype = new GuacAdmin.Field._HTML_INPUT();
+
+
+/**
+ * Multi-select list where each element has a corresponding checkbox.
+ * 
+ * @augments GuacAdmin.Field
+ */
+GuacAdmin.Field.LIST = function(title, available, selected) {
+
+    // Call parent constructor
+    GuacAdmin.Field.apply(this, [title, available, selected]);
+
+    var i;
+
+    // All selected connections 
+    var is_selected = {};
+    for (i=0; i<selected.length; i++)
+        is_selected[selected[i]] = true;
+
+    // Add elements for all list items
+    var element = GuacUI.createElement("div", "list");
+    for (i=0; i<available.length; i++) {
+
+        // Get name 
+        var name = available[i];
+
+        // Containing div
+        var list_item = GuacUI.createChildElement(element, "div", "connection");
+
+        // Checkbox
+        var checkbox = GuacUI.createChildElement(list_item, "input");
+        checkbox.setAttribute("type", "checkbox");
+        if (is_selected[name])
+            checkbox.checked = true;
+
+        // Update selected set when changed
+        checkbox.onclick =
+        checkbox.onchange = function() {
+
+            if (checkbox.checked)
+                is_selected[name] = true;
+            else if (is_selected[name])
+                delete is_selected[name];
+
+        };
+
+        // Connection name
+        var name_element = GuacUI.createChildElement(list_item, "span", "name");
+        name_element.textContent = name;
+
+    }
+
+    this.getElement = function() {
+        return element;
+    };
+
+    this.getSelected = function() {
+        return Object.keys(is_selected);
+    };
+
+};
+
+GuacAdmin.Field.LIST.prototype = new GuacAdmin.Field();
+
 
 /**
  * An arbitrary button. Note that this object is not a component, and has
@@ -81,19 +211,36 @@ GuacAdmin.Button = function(title) {
  */
 GuacAdmin.Form = function(fields, buttons) {
 
+    /**
+     * Reference to this form.
+     */
+    var guac_form = this;
+
     // Main div and fields
     var element     = GuacUI.createElement("div", "form");
     var field_table = GuacUI.createChildElement(element, "table", "fields");
 
     // Buttons
     var button_div = GuacUI.createChildElement(element, "div", "object-buttons");
-    
+   
+    // Array of field value getters, corresponding to each field in the
+    // original field array.
+    var value_getters = [];
+   
     /**
      * Returns the DOM element representing this form.
      */
     this.getElement = function() {
         return element;
     };
+
+    /**
+     * Event called when a button is clicked.
+     * 
+     * @event
+     * @param {String} title The title of the button clicked.
+     */
+    this.onaction = null;
 
     /*
      * Add all fields
@@ -113,25 +260,8 @@ GuacAdmin.Form = function(fields, buttons) {
         // Set title
         header.textContent = field.title;
 
-        switch (field.type) {
-
-            // HTML types
-            case "text":
-            case "password":
-            case "checkbox":
-                var input  = GuacUI.createChildElement(cell, "input");
-
-                // Set type and value
-                input.setAttribute("type", field.type);
-                if (field.value) input.setAttribute("value", field.value);
-                break;
-
-            // Connection list
-            case "connections":
-                var connection_selector = GuacUI.createChildElement(cell, "div", "connection-list");
-                break;
-
-        }
+        // Add to cell
+        cell.appendChild(field.getElement());
 
     }
     
@@ -144,6 +274,29 @@ GuacAdmin.Form = function(fields, buttons) {
         // Add new button
         var button = GuacUI.createChildElement(button_div, "button", name);
         button.textContent = buttons[i].title;
+
+        // Set up event
+        (function() {
+
+            var title = buttons[i].title;
+
+            button.addEventListener("click", function(e) {
+
+                if (guac_form.onaction) {
+
+                    // Build array of field values
+                    var field_values = [];
+                    for (var j=0; j<fields.length; j++)
+                        field_values.push(fields[j].getSelected());
+
+                    guac_form.onaction(title, field_values);
+                    e.stopPropagation();
+                    
+                }
+
+            });
+
+        })();
 
     }
 
@@ -227,9 +380,15 @@ GuacAdmin.UserManager = function() {
                 var user_properties = new GuacAdmin.Form(
 
                     /* Fields */
-                    [new GuacAdmin.Field("Password:", "password", "12341234"),
-                     new GuacAdmin.Field("Re-enter Password:", "password", "12341234"),
-                     new GuacAdmin.Field("Connections:", "connections")],
+                    [new GuacAdmin.Field.PASSWORD("Password:", [],
+                         ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
+
+                     new GuacAdmin.Field.PASSWORD("Re-enter Password:", [],
+                         ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
+                    
+                     new GuacAdmin.Field.LIST("Connections:",
+                         ["A", "B", "C"],
+                         ["A"])],
 
                     /* Buttons */
                     [new GuacAdmin.Button("Save"),
@@ -237,6 +396,28 @@ GuacAdmin.UserManager = function() {
                      new GuacAdmin.Button("Delete")]
 
                 );
+
+                // Set up events
+                user_properties.onaction = function(title, fields) {
+
+                    // FIXME: STUB
+                    if (title == "Delete") {
+                        alert("Deletion not yet supported.");
+                        return;
+                    }
+
+                    // Save user
+                    if (title == "Save") {
+                        console.log(fields);
+                    }
+
+                    // Hide
+                    user_manager.selected = null;
+                    item_element.removeChild(user_properties.getElement());
+                    GuacUI.removeClass(element, "disabled");
+                    GuacUI.removeClass(item_element, "selected");
+                    
+                };
 
                 // Display properties
                 item_element.appendChild(user_properties.getElement());

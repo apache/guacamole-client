@@ -261,7 +261,7 @@ div.section {
     -webkit-animation-duration: 0.125s;
 }
 
-.form .connection-list {
+.form .list {
 
     border: 1px solid rgba(0, 0, 0, 0.25);
     -moz-border-radius: 0.2em;
