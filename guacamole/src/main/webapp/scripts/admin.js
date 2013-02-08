@@ -23,9 +23,7 @@
 var GuacAdmin = GuacAdmin || {};
 
 /**
- * An arbitrary input field. Note that this object is not a component, and has
- * no corresponding element. Other objects which use GuacAdmin.Field may
- * interpret its values and render an element, however.
+ * An arbitrary input field.
  * 
  * @constructor
  * @param {String} title A human-readable title for the field.
@@ -140,32 +138,36 @@ GuacAdmin.Field.LIST = function(title, available, selected) {
     var element = GuacUI.createElement("div", "list");
     for (i=0; i<available.length; i++) {
 
-        // Get name 
-        var name = available[i];
+        (function() {
 
-        // Containing div
-        var list_item = GuacUI.createChildElement(element, "div", "connection");
+            // Get name 
+            var name = available[i];
 
-        // Checkbox
-        var checkbox = GuacUI.createChildElement(list_item, "input");
-        checkbox.setAttribute("type", "checkbox");
-        if (is_selected[name])
-            checkbox.checked = true;
+            // Containing div
+            var list_item = GuacUI.createChildElement(element, "div", "connection");
 
-        // Update selected set when changed
-        checkbox.onclick =
-        checkbox.onchange = function() {
+            // Checkbox
+            var checkbox = GuacUI.createChildElement(list_item, "input");
+            checkbox.setAttribute("type", "checkbox");
+            if (is_selected[name])
+                checkbox.checked = true;
 
-            if (checkbox.checked)
-                is_selected[name] = true;
-            else if (is_selected[name])
-                delete is_selected[name];
+            // Update selected set when changed
+            checkbox.onclick =
+            checkbox.onchange = function() {
 
-        };
+                if (checkbox.checked)
+                    is_selected[name] = true;
+                else if (is_selected[name])
+                    delete is_selected[name];
 
-        // Connection name
-        var name_element = GuacUI.createChildElement(list_item, "span", "name");
-        name_element.textContent = name;
+            };
+
+            // Connection name
+            var name_element = GuacUI.createChildElement(list_item, "span", "name");
+            name_element.textContent = name;
+
+        })();
 
     }
 
@@ -183,9 +185,7 @@ GuacAdmin.Field.LIST.prototype = new GuacAdmin.Field();
 
 
 /**
- * An arbitrary button. Note that this object is not a component, and has
- * no corresponding element. Other objects which use GuacAdmin.Button may
- * interpret its values and render an element, however.
+ * An arbitrary button.
  * 
  * @constructor
  * @param {String} title A human-readable title for the button.
@@ -196,6 +196,17 @@ GuacAdmin.Button = function(title) {
      * A human-readable title describing this button.
      */
     this.title = title;
+
+    // Button element
+    var element = GuacUI.createElement("button");
+    element.textContent = title;
+
+    /**
+     * Returns the DOM element associated with this button.
+     */
+    this.getElement = function() {
+        return element;
+    };
 
 };
 
@@ -222,10 +233,6 @@ GuacAdmin.Form = function(fields, buttons) {
 
     // Buttons
     var button_div = GuacUI.createChildElement(element, "div", "object-buttons");
-   
-    // Array of field value getters, corresponding to each field in the
-    // original field array.
-    var value_getters = [];
    
     /**
      * Returns the DOM element representing this form.
@@ -271,16 +278,14 @@ GuacAdmin.Form = function(fields, buttons) {
 
     for (i=0; i<buttons.length; i++) {
 
-        // Add new button
-        var button = GuacUI.createChildElement(button_div, "button", name);
-        button.textContent = buttons[i].title;
-
-        // Set up event
         (function() {
 
+            // Get title and element
             var title = buttons[i].title;
+            var button_element = buttons[i].getElement();
 
-            button.addEventListener("click", function(e) {
+            // Trigger onaction event when clicked
+            button_element.addEventListener("click", function(e) {
 
                 if (guac_form.onaction) {
 
@@ -295,6 +300,9 @@ GuacAdmin.Form = function(fields, buttons) {
                 }
 
             });
+
+            // Add to cell
+            button_div.appendChild(button_element);
 
         })();
 
@@ -400,15 +408,31 @@ GuacAdmin.UserManager = function() {
                 // Set up events
                 user_properties.onaction = function(title, fields) {
 
-                    // FIXME: STUB
+                    // Call removal handler, keep window up if not allowed.
                     if (title == "Delete") {
-                        alert("Deletion not yet supported.");
-                        return;
+                        if (user_manager.onremove) {
+                            if (!user_manager.onremove(user_manager.selected))
+                                return;
+                        }
+                        else
+                            return;
                     }
 
-                    // Save user
+                    // Call save handler, keep window up if not allowed.
                     if (title == "Save") {
-                        console.log(fields);
+
+                        if (user_manager.onsave) {
+
+                            // FIXME: Validate passwords match
+                            var password = fields[0][0];
+                            var connections = fields[2];
+
+                            if (!user_manager.onsave(user_manager.selected, password, connections))
+                                return;
+                        }
+                        else
+                            return;
+
                     }
 
                     // Hide
@@ -467,6 +491,8 @@ GuacAdmin.UserManager = function() {
      * 
      * @event
      * @param {String} username The username edited.
+     * @param {String} password The password chosen.
+     * @param {String[]} connections The IDs of the connections chosen.
      */
     this.onsave = null;
 

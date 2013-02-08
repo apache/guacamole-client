@@ -85,6 +85,11 @@
             var user_manager = new GuacAdmin.UserManager();
             users.appendChild(user_manager.getElement());
 
+            user_manager.onsave = function(id, password, connections) {
+                console.log(id, password, connections);
+                return true;
+            };
+
         ]]></script>
 
     </body>
