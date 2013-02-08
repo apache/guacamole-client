@@ -356,6 +356,11 @@ GuacAdmin.UserManager = function() {
     this.selected = null;
 
     /**
+     * Set of all user GuacAdmin.ListItems.
+     */
+    this.items = {};
+
+    /**
      * Returns the DOM element representing this UserManager.
      */
     this.getElement = function() {
@@ -452,6 +457,7 @@ GuacAdmin.UserManager = function() {
 
         // Append item
         element.appendChild(item_element);
+        user_manager.items[username] = item;
 
     };
 
@@ -459,7 +465,14 @@ GuacAdmin.UserManager = function() {
      * Removes the given username from the users visible within this UserManager.
      */
     this.remove = function(username) {
-        /* STUB */
+
+        // If user exists, remove corresponding element and item entry
+        var item = user_manager.items[username];
+        if (item) {
+            element.removeChild(item.getElement());
+            delete user_manager.items[username];
+        }
+
     };
 
     /**
