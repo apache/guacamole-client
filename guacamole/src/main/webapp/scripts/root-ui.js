@@ -42,7 +42,8 @@ var GuacamoleRootUI = {
     
     "buttons": {
         "login"  : document.getElementById("login"),
-        "logout" : document.getElementById("logout")
+        "logout" : document.getElementById("logout"),
+        "manage" : document.getElementById("manage")
     },
 
     "settings": {
@@ -154,7 +155,7 @@ GuacamoleRootUI.reset = function() {
         GuacamoleRootUI.connections[connections[i].id] = connections[i];
 
         // Get connection element
-        var connection = new GuacamoleRootUI.Connection(connections[i]);
+        var connection = new GuacUI.Connection(connections[i]);
 
         // If screenshot present, add to recent connections
         if (connection.hasThumbnail())
@@ -162,7 +163,7 @@ GuacamoleRootUI.reset = function() {
 
         // Add connection to connection list
         GuacamoleRootUI.sections.all_connections.appendChild(
-            new GuacamoleRootUI.Connection(connections[i]).getElement());
+            new GuacUI.Connection(connections[i]).getElement());
 
     }
 
@@ -184,7 +185,7 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
         if (!connection) {
 
             // Create new connection
-            connection = new GuacamoleRootUI.Connection(
+            connection = new GuacUI.Connection(
                 GuacamoleRootUI.connections[id]
             );
 
@@ -314,6 +315,14 @@ GuacamoleRootUI.settings.disable_sound.checked =
 
 GuacamoleRootUI.buttons.logout.onclick = function() {
     window.location.href = "logout";
+};
+
+/*
+ * Set handler for admin
+ */
+
+GuacamoleRootUI.buttons.manage.onclick = function() {
+    window.location.href = "admin.xhtml";
 };
 
 /*
