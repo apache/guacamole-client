@@ -476,10 +476,33 @@ GuacAdmin.UserManager = function() {
     };
 
     /**
+     * Removes all visible usernames.
+     */
+    this.clear = function() {
+
+        // Remove all elements
+        for (var item in user_manager.items)
+            element.removeChild(user_manager.items[item].getElement());
+
+        // Remove all items
+        user_manager.items = {};
+
+    };
+
+    /**
      * Sets all visible usernames.
+     * 
+     * @param {String[]} users Array of usernames to add.
      */
     this.setUsers = function(users) {
-        /* STUB */
+
+        // Clear all users
+        user_manager.clear();
+
+        // Add given users
+        for (var i=0; i<users.length; i++)
+            user_manager.add(users[i]);
+
     };
 
     /**
