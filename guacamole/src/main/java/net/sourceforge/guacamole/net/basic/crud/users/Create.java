@@ -61,7 +61,7 @@ public class Create extends AuthenticatingHttpServlet {
             
         }
         catch (GuacamoleException e) {
-            throw new ServletException("Unable to create connection.", e);
+            throw new ServletException("Unable to create user.", e);
         }
  
         
