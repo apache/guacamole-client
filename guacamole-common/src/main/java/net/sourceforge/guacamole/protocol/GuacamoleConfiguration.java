@@ -39,6 +39,7 @@ package net.sourceforge.guacamole.protocol;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * All information necessary to complete the initial protocol handshake of a
@@ -51,7 +52,7 @@ public class GuacamoleConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String protocol;
-    private HashMap<String, String> parameters = new HashMap<String, String>();
+    private Map<String, String> parameters = new HashMap<String, String>();
 
     /**
      * Returns the name of the protocol to be used.
