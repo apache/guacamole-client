@@ -90,6 +90,16 @@
                 return true;
             };
 
+            user_manager.onadd = function(username) {
+                user_manager.add(username);
+                return true;
+            };
+
+            user_manager.onremove = function(username) {
+                user_manager.remove(username);
+                return true;
+            };
+
         ]]></script>
 
     </body>

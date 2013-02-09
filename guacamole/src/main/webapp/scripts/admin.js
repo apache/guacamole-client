@@ -350,6 +350,28 @@ GuacAdmin.UserManager = function() {
      */
     var element = GuacUI.createElement("div", "user-list");
 
+    // Create connection display elements
+    var add_item = GuacUI.createChildElement(element, "div", "add-user");
+
+    GuacUI.createChildElement(add_item, "div",  "icon user add");
+    var name = GuacUI.createChildElement(add_item, "input", "name");
+    name.setAttribute("type", "text");
+    name.setAttribute("placeholder", "Add user");
+
+    var add_button = GuacUI.createChildElement(add_item, "button");
+    add_button.textContent = "Add";
+
+    // If "Add" clicked, trigger onadd event
+    add_button.onclick = function() {
+        if (user_manager.onadd) {
+
+            // Clear name if successful
+            if (user_manager.onadd(name.value))
+                name.value = "";
+
+        }
+    };
+
     /**
      * The selected username.
      */

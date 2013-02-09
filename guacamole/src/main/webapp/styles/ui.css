@@ -169,7 +169,7 @@ div.section {
 
 }
 
-.list-item .icon {
+.icon {
     width: 24px;
     height: 24px;
     background-size: 16px 16px;
@@ -179,9 +179,6 @@ div.section {
     background-repeat: no-repeat;
     background-position: center center;
     opacity: 0.5;
-}
-
-.list-item .icon {
     display: inline-block;
 }
 
@@ -288,28 +285,28 @@ div.section {
  * List element icons
  */
 
-.list-item .icon.user {
+.icon.user {
     background-image: url('../images/user-icons/guac-user.png');
 }
 
-.list-item .icon.user.add {
+.icon.user.add {
     background-image: url('../images/action-icons/guac-user-add.png');
 }
 
-.list-item .icon.connection {
+.icon.connection {
     background-image: url('../images/protocol-icons/guac-plug.png');
 }
 
-.list-item .icon.connection.ssh {
+.icon.connection.ssh {
     background-image: url('../images/protocol-icons/guac-text.png');
 }
 
-.list-item .icon.connection.add {
+.icon.connection.add {
     background-image: url('../images/action-icons/guac-monitor-add.png');
 }
 
-.list-item .icon.connection.vnc,
-.list-item .icon.connection.rdp {
+.icon.connection.vnc,
+.icon.connection.rdp {
     background-image: url('../images/protocol-icons/guac-monitor.png');
 }
 
@@ -326,4 +323,12 @@ div.section {
     margin: 1.5em;
     margin-left: 2.5em;
     font-size: 0.75em;
+}
+
+.user-list input.name {
+    max-width: 20em;
+}
+
+.user-list .add-user button {
+    font-size: 0.8em;
 }
