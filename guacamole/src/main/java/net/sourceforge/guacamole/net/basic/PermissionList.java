@@ -60,7 +60,7 @@ public class PermissionList extends AuthenticatingHttpServlet {
         throws GuacamoleException {
 
         switch (type) {
-            case CREATE: return "read";
+            case CREATE: return "create";
         }
     
         throw new GuacamoleException("Unknown permission type: " + type);
