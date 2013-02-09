@@ -22,6 +22,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
@@ -38,7 +41,29 @@ public class Create extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
-        /* FIXME: STUB */
+        // Create user as specified
+        String username = request.getParameter("name");
+        String password = request.getParameter("password");
+        
+        try {
+
+            // Attempt to get user directory
+            Directory<String, User> directory =
+                    context.getUserDirectory();
+
+            // Create user skeleton
+            User user = new DummyUser();
+            user.setUsername(username);
+            user.setPassword(password);
+            
+            // Add user
+            directory.add(user);
+            
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to create connection.", e);
+        }
+ 
         
     }
 
