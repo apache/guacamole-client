@@ -59,7 +59,7 @@
     <servlet>
         <description>Connection list servlet.</description>
         <servlet-name>Connections</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.ConnectionList</servlet-class>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Connections</servlet-name>
@@ -70,7 +70,7 @@
     <servlet>
         <description>User list servlet.</description>
         <servlet-name>Users</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.UserList</servlet-class>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.users.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Users</servlet-name>
@@ -81,7 +81,7 @@
     <servlet>
         <description>Permission list servlet.</description>
         <servlet-name>Permissions</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.PermissionList</servlet-class>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.permissions.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Permissions</servlet-name>
