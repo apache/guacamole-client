@@ -22,6 +22,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
@@ -38,7 +41,22 @@ public class Delete extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
-        /* FIXME: STUB */
+        // Get ID
+        String identifier = request.getParameter("id");
+        
+        try {
+
+            // Attempt to get connection directory
+            Directory<String, Connection> directory =
+                    context.getConnectionDirectory();
+           
+            // Remove connection
+            directory.remove(identifier);
+ 
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to remove connection.", e);
+        }
         
     }
 

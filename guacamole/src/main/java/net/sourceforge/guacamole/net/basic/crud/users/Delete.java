@@ -22,6 +22,9 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
@@ -38,7 +41,21 @@ public class Delete extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
-        /* FIXME: STUB */
+        // Get username 
+        String username = request.getParameter("name");
+        
+        try {
+
+            // Attempt to get user directory
+            Directory<String, User> directory = context.getUserDirectory();
+           
+            // Remove user 
+            directory.remove(username);
+ 
+        }
+        catch (GuacamoleException e) {
+            throw new ServletException("Unable to remove user.", e);
+        }
         
     }
 
