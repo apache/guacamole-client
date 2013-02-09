@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic;
+package net.sourceforge.guacamole.net.basic.crud.users;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -36,13 +36,14 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
+import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all visible users.
  *
  * @author Michael Jumper
  */
-public class UserList extends AuthenticatingHttpServlet {
+public class List extends AuthenticatingHttpServlet {
 
     /**
      * Checks whether the given user has permission to perform the given

@@ -1,4 +1,4 @@
-package net.sourceforge.guacamole.net.basic;
+package net.sourceforge.guacamole.net.basic.crud.connections;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -36,6 +36,7 @@ import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
+import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all authorized
@@ -43,7 +44,7 @@ import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
  *
  * @author Michael Jumper
  */
-public class ConnectionList extends AuthenticatingHttpServlet {
+public class List extends AuthenticatingHttpServlet {
 
     /**
      * Checks whether the given user has permission to perform the given
