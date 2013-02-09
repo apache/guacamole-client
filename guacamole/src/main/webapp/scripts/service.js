@@ -43,6 +43,21 @@ GuacamoleService.Connection = function(protocol, id) {
 
 };
 
+/**
+ * An arbitrary Guacamole user, consisting of a username.
+ * 
+ * @constructor
+ * @param {String} username The username associate with this user.
+ */
+GuacamoleService.User = function(username) {
+
+    /**
+     * The username associated with this user.
+     */
+    this.username = username;
+
+};
+
 GuacamoleService.getConnections = function(parameters) {
 
     // Construct request URL
@@ -73,3 +88,31 @@ GuacamoleService.getConnections = function(parameters) {
  
 };
 
+GuacamoleService.getUsers = function(parameters) {
+
+    // Construct request URL
+    var users_url = "users";
+    if (parameters) users_url += "?" + parameters;
+
+    // Get user list
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", users_url, false);
+    xhr.send(null);
+
+    // If fail, throw error
+    if (xhr.status != 200)
+        throw new Error(xhr.statusText);
+
+    // Otherwise, get list
+    var users = new Array();
+
+    var userElements = xhr.responseXML.getElementsByTagName("user");
+    for (var i=0; i<userElements.length; i++) {
+        users.push(new GuacamoleService.User(
+            userElements[i].getAttribute("name")
+        ));
+    }
+
+    return users;
+ 
+}
