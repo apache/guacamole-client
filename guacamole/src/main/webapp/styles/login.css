@@ -36,6 +36,14 @@ body {
     margin: 0;
 }
 
+#manage {
+    display: none;
+}
+
+.admin #manage {
+    display: inline-block;
+}
+
 div#login-ui {
     height: 100%;
     width: 100%;

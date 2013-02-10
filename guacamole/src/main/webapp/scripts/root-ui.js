@@ -133,10 +133,31 @@ GuacamoleRootUI.reset = function() {
     // Get parameters from query string
     var parameters = window.location.search.substring(1);
 
+    function hasEntry(object) {
+        for (var name in object)
+            return true;
+        return false;
+    }
+
     // Read connections
     var connections;
     try {
         connections = GuacamoleService.Connections.list(parameters);
+
+        // Show admin elements if admin permissions available
+        var permissions = GuacamoleService.Permissions.list();
+        if (permissions.create_connection
+            || permissions.create_user
+            || hasEntry(permissions.update_user)
+            || hasEntry(permissions.remove_user)
+            || hasEntry(permissions.administer_user)
+            || hasEntry(permissions.update_connection)
+            || hasEntry(permissions.remove_connection)
+            || hasEntry(permissions.administer_connection))
+                GuacUI.addClass(document.body, "admin");
+            else
+                GuacUI.removeClass(document.body, "admin");
+
     }
     catch (e) {
 
