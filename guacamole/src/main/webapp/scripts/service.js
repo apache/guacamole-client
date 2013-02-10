@@ -91,6 +91,10 @@ GuacamoleService.Connections = {
 
 };
 
+/**
+ * Collection of service functions which deal with users. Each function
+ * makes an explicit HTTP query to the server, and parses the response.
+ */
 GuacamoleService.Users = {
 
     /**
