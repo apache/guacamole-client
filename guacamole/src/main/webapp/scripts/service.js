@@ -126,6 +126,56 @@ GuacamoleService.Users = {
 
         return users;
      
+    },
+
+    /**
+     * Creates a new user having the given username.
+     * 
+     * @param {String} username The username of the user to create.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "create" : function(username, parameters) {
+
+        // Construct request URL
+        var users_url = "users/create?name=" + encodeURIComponent(username);
+        if (parameters) users_url += "&" + parameters;
+
+        // Add user
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", users_url, false);
+        xhr.send(null);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
+    },
+
+    /**
+     * Deletes the user having the given username.
+     * 
+     * @param {String} username The username of the user to delete.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "delete" : function(username, parameters) {
+
+        // Construct request URL
+        var users_url = "users/delete?name=" + encodeURIComponent(username);
+        if (parameters) users_url += "&" + parameters;
+
+        // Add user
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", users_url, false);
+        xhr.send(null);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
     }
 
 };
