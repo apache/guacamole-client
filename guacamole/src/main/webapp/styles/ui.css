@@ -202,7 +202,7 @@ div.section {
     border: 1px solid rgba(0, 0, 0, 0.25);
 }
 
-.list-item.selected.icon {
+.list-item.selected .icon {
     opacity: 1.0;
 }
 

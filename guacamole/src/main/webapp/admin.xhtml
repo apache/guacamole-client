@@ -42,16 +42,13 @@
                 passwords can be changed.
             </p>
            
-            <!--
-            <div class="user">
-                <div class="caption"><div class="type"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add user"/></span></div>
-            </div>
-            -->
-            
             <div id="user-add-form">
                 <div class="icon user add"/><input type="text" class="name" id="username" placeholder="Add user"/><button id="add-user">Add</button>
             </div>
             
+            <div id="user-list">
+            </div>
+                
         </div>
 
         <h2 class="require-manage-connections">Connections</h2>
@@ -68,6 +65,9 @@
                 <div class="icon connection add"/><select id="protocol"><option value="vnc">VNC</option><option value="rdp">RDP</option></select><input type="text" id="connection-id" class="name" placeholder="Add connection"/><button id="add-connection">Add</button>
             </div>
             
+            <div id="connection-list">
+            </div>
+                
         </div>
 
         <div id="version-dialog">
@@ -88,51 +88,212 @@
                 return false;
             }
 
-            var connections = document.getElementById("connections");
-            var users = document.getElementById("users");
+            // Elements
+            var connection_list = document.getElementById("connection-list");
+            var user_list = document.getElementById("user-list");
+            var add_connection = document.getElementById("add-connection");
+            var connection_id = document.getElementById("connection-id");
+            var protocol = document.getElementById("protocol");
+            var add_user = document.getElementById("add-user");
+            var username = document.getElementById("username");
 
-            // Show admin elements if admin permissions available
-            var permissions = GuacamoleService.Permissions.list();
+            function reset_admin_ui() {
 
-            if (permissions.create_connection
-                || hasEntry(permissions.update_connection)
-                || hasEntry(permissions.remove_connection)
-                || hasEntry(permissions.administer_connection))
-                    GuacUI.addClass(document.body, "manage-connections");
+                /*
+                 * Show admin elements if admin permissions available
+                 */
 
-            if (permissions.create_user
-                || hasEntry(permissions.update_user)
-                || hasEntry(permissions.remove_user)
-                || hasEntry(permissions.administer_user))
-                    GuacUI.addClass(document.body, "manage-users");
+                // Get permissions
+                var permissions = GuacamoleService.Permissions.list();
 
-            // Connection creation 
-            if (permissions.create_connection) {
-                GuacUI.addClass(document.body, "add-connections");
+                // Connection management
+                if (permissions.create_connection
+                    || hasEntry(permissions.update_connection)
+                    || hasEntry(permissions.remove_connection)
+                    || hasEntry(permissions.administer_connection))
+                        GuacUI.addClass(document.body, "manage-connections");
+                    else
+                        GuacUI.removeClass(document.body, "manage-connections");
 
-                var add_connection = document.getElementById("add-connection");
-                var connection_id = document.getElementById("connection-id");
-                var protocol = document.getElementById("protocol");
+                // User management
+                if (permissions.create_user
+                    || hasEntry(permissions.update_user)
+                    || hasEntry(permissions.remove_user)
+                    || hasEntry(permissions.administer_user))
+                        GuacUI.addClass(document.body, "manage-users");
+                    else
+                        GuacUI.removeClass(document.body, "manage-users");
 
-                add_connection.onclick = function() {
-                    var connection = new GuacamoleService.Connection(
-                        protocol.value, connection_id.value);
-                    GuacamoleService.Connections.create(connection);
-                };
+                // Connection creation 
+                if (permissions.create_connection) {
+                    GuacUI.addClass(document.body, "add-connections");
+
+                    add_connection.onclick = function() {
+
+                        // Try to create connection
+                        try {
+                            var connection = new GuacamoleService.Connection(
+                                protocol.value, connection_id.value);
+                            GuacamoleService.Connections.create(connection);
+                            connection_id.value = "";
+                            reset_admin_ui();
+                        }
+
+                        // Alert on failure
+                        catch (e) {
+                            alert(e.message);
+                        }
+
+                    };
+
+                }
+
+                // User creation
+                if (permissions.create_user) {
+                    GuacUI.addClass(document.body, "add-users");
+
+                    add_user.onclick = function() {
+
+                        // Attempt to create user
+                        try {
+                            GuacamoleService.Users.create(username.value);
+                            username.value = "";
+                            reset_admin_ui();
+                        }
+
+                        // Alert on failure
+                        catch (e) {
+                            alert(e.message);
+                        }
+
+                    };
+
+                }
+
+                /*
+                 * Add readable users.
+                 */
+
+                var name;
+                var selected_user = null;
+
+                // Add users to list
+                user_list.innerHTML = "";
+                for (name in permissions.read_user) {(function(name){
+
+                    var item = new GuacAdmin.ListItem("user", name);
+                    var item_element = item.getElement();
+                    user_list.appendChild(item_element);
+
+                    item_element.onclick = function() {
+
+                        // Ignore clicks if any item is selected
+                        if (selected_user) return;
+                        else selected_user = name;
+
+                        // Get user permissions
+                        var user_perms = GuacamoleService.Permissions.list(name);
+
+                        // Load buttons
+                        var buttons = [new GuacAdmin.Button("Save"),
+                                       new GuacAdmin.Button("Cancel")];
+
+                        if (name in permissions.remove_user)
+                            buttons.push(new GuacAdmin.Button("Delete"));
+
+                        // User property form.
+                        var user_properties = new GuacAdmin.Form(
+
+                            /* Fields */
+                            [new GuacAdmin.Field.PASSWORD("Password:", [],
+                                 ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
+
+                             new GuacAdmin.Field.PASSWORD("Re-enter Password:", [],
+                                 ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
+                            
+                             new GuacAdmin.Field.LIST("Connections:",
+                                 Object.keys(permissions.read_connection),
+                                 Object.keys(user_perms.read_connection))],
+
+                            /* Buttons */
+                            buttons
+
+                        );
+
+                        // Select
+                        GuacUI.addClass(user_list, "disabled");
+                        GuacUI.addClass(item_element, "selected");
+
+                        // Handle buttons
+                        user_properties.onaction = function(title, fields) {
+                            
+                            try {
+
+                                if (title == "Save") {
+
+                                    // Get passwords
+                                    var password = fields[0][0];
+                                    var reentered_password = fields[1][0];
+
+                                    // Check that passwords match
+                                    if (password != reentered_password)
+                                        throw new Error("Passwords do not match.");
+
+                                    // Set user permissions
+                                    user_perms.read_connection = {};
+                                    var connections = fields[2];
+                                    for (var i=0; i<connections.length; i++)
+                                        user_perms.read_connection[connections[i]] = true;
+
+                                    // Save user
+                                    GuacamoleService.Users.update(
+                                        selected_user, password, user_perms);
+                                    reset_admin_ui();
+
+                                }
+                                else if (title == "Delete") {
+                                    GuacamoleService.Users.remove(selected_user);
+                                    reset_admin_ui();
+                                }
+
+                                // Deselect
+                                GuacUI.removeClass(user_list, "disabled");
+                                GuacUI.removeClass(item_element, "selected");
+                                item_element.removeChild(user_properties.getElement());
+                                selected_user = null;
+
+                            }
+                            catch (e) {
+                                alert(e.message);
+                            }
+                                
+                        };
+
+                        item_element.appendChild(user_properties.getElement());
+
+                    };
+
+                })(name)};
+
+                /*
+                 * Add readable connections.
+                 */
+
+                var selected_connection = null;
+
+                // Add connections to list
+                connection_list.innerHTML = "";
+                for (name in permissions.read_connection) {(function(name){
+
+                    var item = new GuacAdmin.ListItem("connection", name);
+                    connection_list.appendChild(item.getElement());
+
+                })(name)};
 
             }
 
-            // User creation
-            if (permissions.create_user) {
-                GuacUI.addClass(document.body, "add-users");
-
-                var add_user = document.getElementById("add-user");
-                var username = document.getElementById("username");
-                add_user.onclick = function() {
-                    GuacamoleService.Users.create(username.value);
-                };
-
-            }
+            // Initial load
+            reset_admin_ui();
 
         ]]></script>
 
