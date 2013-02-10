@@ -184,6 +184,10 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
         // Ensure connection is added
         if (!connection) {
 
+            // If connection not actually defined, storage must be being
+            // modified externally. Stop early.
+            if (!GuacamoleRootUI.connections[id]) return;
+
             // Create new connection
             connection = new GuacUI.Connection(
                 GuacamoleRootUI.connections[id]
