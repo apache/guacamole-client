@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net.basic.crud.users;
  */
 
 import java.io.IOException;
+import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,6 @@ public class Create extends AuthenticatingHttpServlet {
 
         // Create user as specified
         String username = request.getParameter("name");
-        String password = request.getParameter("password");
         
         try {
 
@@ -54,7 +54,7 @@ public class Create extends AuthenticatingHttpServlet {
             // Create user skeleton
             User user = new DummyUser();
             user.setUsername(username);
-            user.setPassword(password);
+            user.setPassword(UUID.randomUUID().toString());
             
             // Add user
             directory.add(user);
