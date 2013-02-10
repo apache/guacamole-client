@@ -136,7 +136,7 @@ GuacamoleRootUI.reset = function() {
     // Read connections
     var connections;
     try {
-        connections = GuacamoleService.getConnections(parameters);
+        connections = GuacamoleService.Connections.list(parameters);
     }
     catch (e) {
 

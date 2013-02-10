@@ -44,75 +44,88 @@ GuacamoleService.Connection = function(protocol, id) {
 };
 
 /**
- * An arbitrary Guacamole user, consisting of a username.
- * 
- * @constructor
- * @param {String} username The username associate with this user.
+ * Collection of service functions which deal with connections. Each function
+ * makes an explicit HTTP query to the server, and parses the response.
  */
-GuacamoleService.User = function(username) {
+GuacamoleService.Connections = {
+
+     /**
+      * Returns an array of Connections for which the current user has access.
+      * 
+      * @param {String} parameters Any parameters which should be passed to the
+      *                            server for the sake of authentication
+      *                            (optional).
+      * @return {GuacamoleService.Connection[]} An array of Connections for
+      *                                         which the current user has
+      *                                         access.
+      */   
+    "list" : function(parameters) {
+
+        // Construct request URL
+        var list_url = "connections";
+        if (parameters) list_url += "?" + parameters;
+
+        // Get connection list
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", list_url, false);
+        xhr.send(null);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
+        // Otherwise, get list
+        var connections = new Array();
+
+        var connectionElements = xhr.responseXML.getElementsByTagName("connection");
+        for (var i=0; i<connectionElements.length; i++) {
+            connections.push(new GuacamoleService.Connection(
+                connectionElements[i].getAttribute("protocol"),
+                connectionElements[i].getAttribute("id")
+            ));
+        }
+
+        return connections;
+ 
+    }
+
+};
+
+GuacamoleService.Users = {
 
     /**
-     * The username associated with this user.
+     * Returns an array of usernames for which the current user has access.
+     * 
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     * @return {String[]} An array of usernames for which the current user has
+     *                    access.
      */
-    this.username = username;
+    "list" : function(parameters) {
 
-};
+        // Construct request URL
+        var users_url = "users";
+        if (parameters) users_url += "?" + parameters;
 
-GuacamoleService.getConnections = function(parameters) {
+        // Get user list
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", users_url, false);
+        xhr.send(null);
 
-    // Construct request URL
-    var connections_url = "connections";
-    if (parameters) connections_url += "?" + parameters;
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
 
-    // Get connection list
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", connections_url, false);
-    xhr.send(null);
+        // Otherwise, get list
+        var users = new Array();
 
-    // If fail, throw error
-    if (xhr.status != 200)
-        throw new Error(xhr.statusText);
+        var userElements = xhr.responseXML.getElementsByTagName("user");
+        for (var i=0; i<userElements.length; i++)
+            users.push(userElements[i].getAttribute("name"));
 
-    // Otherwise, get list
-    var connections = new Array();
-
-    var connectionElements = xhr.responseXML.getElementsByTagName("connection");
-    for (var i=0; i<connectionElements.length; i++) {
-        connections.push(new GuacamoleService.Connection(
-            connectionElements[i].getAttribute("protocol"),
-            connectionElements[i].getAttribute("id")
-        ));
+        return users;
+     
     }
 
-    return connections;
- 
 };
-
-GuacamoleService.getUsers = function(parameters) {
-
-    // Construct request URL
-    var users_url = "users";
-    if (parameters) users_url += "?" + parameters;
-
-    // Get user list
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", users_url, false);
-    xhr.send(null);
-
-    // If fail, throw error
-    if (xhr.status != 200)
-        throw new Error(xhr.statusText);
-
-    // Otherwise, get list
-    var users = new Array();
-
-    var userElements = xhr.responseXML.getElementsByTagName("user");
-    for (var i=0; i<userElements.length; i++) {
-        users.push(new GuacamoleService.User(
-            userElements[i].getAttribute("name")
-        ));
-    }
-
-    return users;
- 
-}
