@@ -85,20 +85,46 @@
             var user_manager = new GuacAdmin.UserManager();
             users.appendChild(user_manager.getElement());
 
+            function updateUsers() {
+                var user_list = GuacamoleService.Users.list();
+                user_manager.setUsers(user_list);
+            }
+
             user_manager.onsave = function(id, password, connections) {
+                updateUsers();
                 console.log(id, password, connections);
                 return true;
             };
 
             user_manager.onadd = function(username) {
-                user_manager.add(username);
-                return true;
+
+                try {
+                    GuacamoleService.Users.create(username);
+                    updateUsers();
+                    return true;
+                }
+                catch (e) {
+                    alert("User \"" + username + "\" cannot be created: " + e.message);
+                    return false;
+                }
+
             };
 
             user_manager.onremove = function(username) {
-                user_manager.remove(username);
-                return true;
+
+                try {
+                    GuacamoleService.Users.remove(username);
+                    updateUsers();
+                    return true;
+                }
+                catch (e) {
+                    alert("User \"" + username + "\" cannot be deleted: " + e.message);
+                    return false;
+                }
+
             };
+
+            updateUsers();
 
         ]]></script>
 
