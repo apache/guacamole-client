@@ -192,6 +192,64 @@ GuacamoleService.Users = {
     },
 
     /**
+     * Updates the user having the given username.
+     * 
+     * @param {String} username The username of the user to create.
+     * @param {String} password The password to assign to the user.
+     * @param {GuacamoleService.PermissionSet} permissions The permissions to
+     *                                                     assign.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "update" : function(username, password, permissions, parameters) {
+
+        // Construct request URL
+        var users_url = "users/update?name=" + encodeURIComponent(username);
+        if (parameters) users_url += "&" + parameters;
+
+        // Init POST data
+        var data = "password=" + encodeURIComponent(password);
+
+        // Creation permissions
+        if (permissions.create_user)       data += "&user=create";
+        if (permissions.create_connection) data += "&connection=create";
+
+        var name;
+
+        // User permissions 
+        for (name in permissions.read_user)
+            data += "&user=read:"  + encodeURIComponent(name);
+        for (name in permissions.administer_user)
+            data += "&user=admin:" + encodeURIComponent(name);
+        for (name in permissions.update_user)
+            data += "&user=update:" + encodeURIComponent(name);
+        for (name in permissions.remove_user)
+            data += "&user=delete:" + encodeURIComponent(name);
+
+        // Connection permissions 
+        for (name in permissions.read_connection)
+            data += "&connection=read:" + encodeURIComponent(name);
+        for (name in permissions.administer_connection)
+            data += "&connection=admin:" + encodeURIComponent(name);
+        for (name in permissions.update_connection)
+            data += "&connection=update:" + encodeURIComponent(name);
+        for (name in permissions.remove_connection)
+            data += "&connection=delete:" + encodeURIComponent(name);
+
+        // Update user
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", users_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
+    },
+
+    /**
      * Creates a new user having the given username.
      * 
      * @param {String} username The username of the user to create.
@@ -215,7 +273,6 @@ GuacamoleService.Users = {
             throw new Error(xhr.statusText);
 
     },
-
     /**
      * Deletes the user having the given username.
      * 
