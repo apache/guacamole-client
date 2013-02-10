@@ -293,7 +293,7 @@ GuacamoleService.Users = {
      * Updates the user having the given username.
      * 
      * @param {String} username The username of the user to create.
-     * @param {String} password The password to assign to the user.
+     * @param {String} password The password to assign to the user (optional).
      * @param {GuacamoleService.PermissionSet} permissions The permissions to
      *                                                     assign.
      * @param {String} parameters Any parameters which should be passed to the
@@ -303,11 +303,12 @@ GuacamoleService.Users = {
     "update" : function(username, password, permissions, parameters) {
 
         // Construct request URL
-        var users_url = "users/update?name=" + encodeURIComponent(username);
-        if (parameters) users_url += "&" + parameters;
+        var users_url = "users/update";
+        if (parameters) users_url += "?" + parameters;
 
         // Init POST data
-        var data = "password=" + encodeURIComponent(password);
+        var data = "name=" + encodeURIComponent(username);
+        if (password) data += "&password=" + encodeURIComponent(password);
 
         // Creation permissions
         if (permissions.create_user)       data += "&user=create";

@@ -239,6 +239,11 @@
                                     if (password != reentered_password)
                                         throw new Error("Passwords do not match.");
 
+                                    // Do not update password if it's just the
+                                    // not-changed token
+                                    if (password == "f12a1930-7195-11e2-bcfd-0800200c9a66")
+                                        password = null;
+
                                     // Set user permissions
                                     user_perms.read_connection = {};
                                     var connections = fields[2];
