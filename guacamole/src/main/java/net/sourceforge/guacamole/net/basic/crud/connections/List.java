@@ -157,16 +157,11 @@ public class List extends AuthenticatingHttpServlet {
                 Connection connection = directory.get(identifier);
 
                 // Write connection
-                xml.writeEmptyElement("connection");
+                xml.writeStartElement("connection");
                 xml.writeAttribute("id", identifier);
                 xml.writeAttribute("protocol",
                         connection.getConfiguration().getProtocol());
 
-                // Save update permission attribute
-                if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
-                        identifier))
-                    xml.writeAttribute("update", "yes");
-                
                 // Save admin permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.ADMINISTER,
                         identifier))
@@ -177,6 +172,32 @@ public class List extends AuthenticatingHttpServlet {
                         identifier))
                     xml.writeAttribute("delete", "yes");
                 
+                // Save update permission attribute, include parameters
+                if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
+                        identifier)) {
+
+                    xml.writeAttribute("update", "yes");
+
+                    // FIXME: Read available parameters, parameter title, type, etc. from XML
+                    // As update permission is present, also list parameters
+                    for (String name : new String[]{"hostname", "port"}) {
+
+                        String value = connection.getConfiguration().getParameter(name);
+                        xml.writeStartElement("param");
+                        xml.writeAttribute("name", name);
+                        xml.writeAttribute("title", name);
+                        xml.writeAttribute("type", "text");
+
+                        if (value != null)
+                            xml.writeCharacters(value);
+
+                        xml.writeEndElement();
+                    }
+
+                }
+
+                xml.writeEndElement();
+
             }
 
             // End document
