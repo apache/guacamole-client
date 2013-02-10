@@ -325,10 +325,28 @@ div.section {
     font-size: 0.75em;
 }
 
-.user-list input.name {
+#connections input.name,
+#users input.name {
     max-width: 20em;
 }
 
-.user-list .add-user button {
+#connections #add-connection,
+#users #add-user {
     font-size: 0.8em;
+}
+
+body:not(.manage-connections) .require-manage-connections {
+    display: none;
+}
+
+body:not(.manage-users) .require-manage-users {
+    display: none;
+}
+
+body:not(.add-connections) #connection-add-form {
+    display: none;
+}
+
+body:not(.add-users) #user-add-form {
+    display: none;
 }

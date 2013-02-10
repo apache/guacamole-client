@@ -33,8 +33,8 @@
 
         <h1>Administration</h1>
         
-        <h2>Users</h2>
-        <div class="settings section" id="users">
+        <h2 class="require-manage-users">Users</h2>
+        <div class="settings section require-manage-users" id="users">
 
             <p>
                 Click or tap on a user below to manage that user. Depending
@@ -48,10 +48,14 @@
             </div>
             -->
             
+            <div id="user-add-form">
+                <div class="icon user add"/><input type="text" class="name" id="username" placeholder="Add user"/><button id="add-user">Add</button>
+            </div>
+            
         </div>
 
-        <h2>Connections</h2>
-        <div class="settings section" id="connections">
+        <h2 class="require-manage-connections">Connections</h2>
+        <div class="settings section require-manage-connections" id="connections">
 
             <p>
                 Click or tap on a connection below to manage that connection.
@@ -60,11 +64,9 @@
                 can be changed.
             </p>
 
-            <!--
-            <div class="connection">
-                <div class="caption"><div class="protocol"><div class="icon add"/></div><span class="name"><input style="width: 20em; padding: 0.25em" type="text" placeholder="Add connection"/></span></div>
+            <div id="connection-add-form">
+                <div class="icon connection add"/><select id="protocol"><option value="vnc">VNC</option><option value="rdp">RDP</option></select><input type="text" id="connection-id" class="name" placeholder="Add connection"/><button id="add-connection">Add</button>
             </div>
-            -->
             
         </div>
 
@@ -80,51 +82,57 @@
 
         <script type="text/javascript"><![CDATA[
 
-            var users = document.getElementById("users");
-
-            var user_manager = new GuacAdmin.UserManager();
-            users.appendChild(user_manager.getElement());
-
-            function updateUsers() {
-                var user_list = GuacamoleService.Users.list();
-                user_manager.setUsers(user_list);
+            function hasEntry(object) {
+                for (var name in object)
+                    return true;
+                return false;
             }
 
-            user_manager.onsave = function(id, password, connections) {
-                updateUsers();
-                console.log(id, password, connections);
-                return true;
-            };
+            var connections = document.getElementById("connections");
+            var users = document.getElementById("users");
 
-            user_manager.onadd = function(username) {
+            // Show admin elements if admin permissions available
+            var permissions = GuacamoleService.Permissions.list();
 
-                try {
-                    GuacamoleService.Users.create(username);
-                    updateUsers();
-                    return true;
-                }
-                catch (e) {
-                    alert("User \"" + username + "\" cannot be created: " + e.message);
-                    return false;
-                }
+            if (permissions.create_connection
+                || hasEntry(permissions.update_connection)
+                || hasEntry(permissions.remove_connection)
+                || hasEntry(permissions.administer_connection))
+                    GuacUI.addClass(document.body, "manage-connections");
 
-            };
+            if (permissions.create_user
+                || hasEntry(permissions.update_user)
+                || hasEntry(permissions.remove_user)
+                || hasEntry(permissions.administer_user))
+                    GuacUI.addClass(document.body, "manage-users");
 
-            user_manager.onremove = function(username) {
+            // Connection creation 
+            if (permissions.create_connection) {
+                GuacUI.addClass(document.body, "add-connections");
 
-                try {
-                    GuacamoleService.Users.remove(username);
-                    updateUsers();
-                    return true;
-                }
-                catch (e) {
-                    alert("User \"" + username + "\" cannot be deleted: " + e.message);
-                    return false;
-                }
+                var add_connection = document.getElementById("add-connection");
+                var connection_id = document.getElementById("connection-id");
+                var protocol = document.getElementById("protocol");
 
-            };
+                add_connection.onclick = function() {
+                    var connection = new GuacamoleService.Connection(
+                        protocol.value, connection_id.value);
+                    GuacamoleService.Connections.create(connection);
+                };
 
-            updateUsers();
+            }
+
+            // User creation
+            if (permissions.create_user) {
+                GuacUI.addClass(document.body, "add-users");
+
+                var add_user = document.getElementById("add-user");
+                var username = document.getElementById("username");
+                add_user.onclick = function() {
+                    GuacamoleService.Users.create(username.value);
+                };
+
+            }
 
         ]]></script>
 
