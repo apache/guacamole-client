@@ -41,6 +41,11 @@ GuacamoleService.Connection = function(protocol, id) {
      */
     this.id = id;
 
+    /**
+     * All parameters associated with this connection, if available.
+     */
+    this.parameters = {};
+
 };
 
 /**
@@ -146,6 +151,99 @@ GuacamoleService.Connections = {
 
         return connections;
  
+    },
+
+    /**
+     * Creates a new connection.
+     * 
+     * @param {GuacamoleService.Connection} connection The connection to create.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "create" : function(connection, parameters) {
+
+        // Construct request URL
+        var users_url = "connections/create?id=" + encodeURIComponent(connection.id);
+        if (parameters) users_url += "&" + parameters;
+
+        // Init POST data
+        var data = "protocol=" + encodeURIComponent(connection.protocol);
+
+        // Add parameters
+        for (var name in connection.parameters)
+            data += "&_" + encodeURIComponent(name)
+                 +  "="  + encodeURIComponent(connection.parameters[name]);
+
+        // Add user
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", users_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
+    },
+
+    /**
+     * Updates an existing connection.
+     * 
+     * @param {GuacamoleService.Connection} connection The connection to create.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "update" : function(connection, parameters) {
+
+        // Construct request URL
+        var users_url = "connections/update?id=" + encodeURIComponent(connection.id);
+        if (parameters) users_url += "&" + parameters;
+
+        // Init POST data
+        var data = "protocol=" + encodeURIComponent(connection.protocol);
+
+        // Add parameters
+        for (var name in connection.parameters)
+            data += "&_" + encodeURIComponent(name)
+                 +  "="  + encodeURIComponent(connection.parameters[name]);
+
+        // Add user
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", users_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
+    },
+
+    /**
+     * Deletes the connection having the given identifier.
+     * 
+     * @param {String} id The identifier of the connection to delete.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "remove" : function(id, parameters) {
+
+        // Construct request URL
+        var connections_url = "connections/delete?id=" + encodeURIComponent(id);
+        if (parameters) connections_url += "&" + parameters;
+
+        // Add user
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", connections_url, false);
+        xhr.send(null);
+
+        // If fail, throw error
+        if (xhr.status != 200)
+            throw new Error(xhr.statusText);
+
     }
 
 };
@@ -273,6 +371,7 @@ GuacamoleService.Users = {
             throw new Error(xhr.statusText);
 
     },
+
     /**
      * Deletes the user having the given username.
      * 
