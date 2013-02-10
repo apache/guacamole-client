@@ -421,13 +421,21 @@ GuacamoleService.Permissions = {
     "list" : function(username, parameters) {
 
         // Construct request URL
-        var list_url = "permissions?user=" + encodeURIComponent(username);
-        if (parameters) list_url += "&" + parameters;
+        var list_url = "permissions";
+        if (parameters) list_url += "?" + parameters;
+
+        // Init POST data
+        var data;
+        if (username)
+            data = "user=" + encodeURIComponent(username);
+        else
+            data = null;
 
         // Get permission list
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", list_url, false);
-        xhr.send(null);
+        xhr.open("POST", list_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data);
 
         // If fail, throw error
         if (xhr.status != 200)

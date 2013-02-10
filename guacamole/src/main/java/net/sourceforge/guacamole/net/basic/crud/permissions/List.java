@@ -104,18 +104,23 @@ public class List extends AuthenticatingHttpServlet {
         // Write actual XML
         try {
 
+            User user;
+            
             // Get username
             String username = request.getParameter("user");
-            if (username == null)
-                throw new ServletException("No user specified.");
+            if (username != null) {
 
-            // Get user directory
-            Directory<String, User> users = context.getUserDirectory();
-            
-            // Get specific user
-            User user = users.get(username);
-            if (user == null)
-                throw new GuacamoleSecurityException("No such user.");
+                // Get user directory
+                Directory<String, User> users = context.getUserDirectory();
+                
+                // Get specific user
+                user = users.get(username);
+                if (user == null)
+                    throw new GuacamoleSecurityException("No such user.");
+
+            }
+            else
+                user = context.self();
             
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
@@ -126,7 +131,7 @@ public class List extends AuthenticatingHttpServlet {
             // Begin document
             xml.writeStartDocument();
             xml.writeStartElement("permissions");
-            xml.writeAttribute("user", username);
+            xml.writeAttribute("user", user.getUsername());
             
             // For each entry, write corresponding user element
             for (Permission permission : user.getPermissions()) {
