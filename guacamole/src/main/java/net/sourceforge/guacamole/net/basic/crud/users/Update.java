@@ -160,10 +160,10 @@ public class Update extends AuthenticatingHttpServlet {
             Directory<String, User> directory =
                     context.getUserDirectory();
 
-            // Create user skeleton
-            User user = new DummyUser();
-            user.setUsername(username);
-            user.setPassword(password);
+            // Get user data, setting password if given
+            User user = directory.get(username);
+            if (password != null)
+                user.setPassword(password);
             
             // Set user permissions
             String[] user_permission = request.getParameterValues("user");
