@@ -165,7 +165,7 @@ GuacamoleService.Users = {
      *                            server for the sake of authentication
      *                            (optional).
      */
-    "delete" : function(username, parameters) {
+    "remove" : function(username, parameters) {
 
         // Construct request URL
         var users_url = "users/delete?name=" + encodeURIComponent(username);
