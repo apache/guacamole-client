@@ -67,6 +67,19 @@
             <version>0.8.0</version>
         </dependency>
 
+        <!-- SLF4J - logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>1.6.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- MyBatis -->
         <dependency>
             <groupId>org.mybatis</groupId>

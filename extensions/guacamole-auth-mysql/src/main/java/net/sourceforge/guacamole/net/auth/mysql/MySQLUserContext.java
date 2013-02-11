@@ -42,6 +42,8 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,9 +51,10 @@ import net.sourceforge.guacamole.net.auth.UserContext;
  */
 public class MySQLUserContext implements UserContext {
     
-    @Inject
-    MySQLUserContext(Credentials credentials) {
-        
+    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
+    
+    void init(Credentials credentials) {
+        // load the required data with the provided credentials
     }
 
     @Override

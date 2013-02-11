@@ -39,7 +39,6 @@ import com.google.inject.Binder;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import com.google.inject.Provider;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -57,6 +56,8 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
@@ -65,13 +66,14 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
  */
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
+    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
+    
     private Injector injector;
-    private Credentials credentials;
     
     @Override
     public UserContext getUserContext(Credentials credentials) throws GuacamoleException {
-        this.credentials = credentials;
-        UserContext context = injector.getInstance(UserContext.class);
+        MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
+        context.init(credentials);
         return context;
     }
     
@@ -102,13 +104,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
                     addMapperClass(UserPermissionMapper.class);
-                    bind(UserContext.class).to(MySQLUserContext.class);
-                    bind(Credentials.class).toProvider(new Provider<Credentials>() {
-                        @Override
-                        public Credentials get() {
-                            return credentials;
-                        }
-                    });
+                    bind(MySQLUserContext.class);
                 }
             }
         );
