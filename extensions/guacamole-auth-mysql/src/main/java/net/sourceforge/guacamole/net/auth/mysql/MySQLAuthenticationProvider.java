@@ -11,10 +11,10 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-ext.
+ * The Original Code is guacamole-auth-mysql.
  *
  * The Initial Developer of the Original Code is
- * Michael Jumper.
+ * James Muehlner.
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
  * functionality.
- * @author dagger10k
+ * @author James Muehlner
  */
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
