@@ -73,6 +73,13 @@
             <artifactId>mybatis</artifactId>
             <version>3.1.1</version>
         </dependency>
+        
+        <!-- MyBatis Guice -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-guice</artifactId>
+            <version>3.2</version>
+        </dependency>
 
     </dependencies>
 
