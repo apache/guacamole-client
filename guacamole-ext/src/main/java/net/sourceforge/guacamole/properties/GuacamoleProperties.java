@@ -91,17 +91,8 @@ public class GuacamoleProperties {
         try {
 
             // Attempt to find Guacamole home
-            File guacHome;
+            File guacHome = GuacamoleHome.getDirectory();
             
-            // Get explicitly specified directory, if any
-            String desiredDir = System.getProperty("guacamole.home");
-            if (desiredDir != null)
-                guacHome = new File(desiredDir);
-
-            // If not explicitly-define directory, use ~/.guacamole
-            else
-                guacHome = new File(System.getProperty("user.home"), ".guacamole");
-
             InputStream stream;
             
             // If not a directory, load from classpath
