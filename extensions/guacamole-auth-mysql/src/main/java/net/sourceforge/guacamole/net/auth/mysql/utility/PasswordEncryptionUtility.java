@@ -51,7 +51,7 @@ public interface PasswordEncryptionUtility {
      * @param dbSalt
      * @return true if the provided credentials match what's in the database for that user.
      */
-    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, String dbSalt);
+    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt);
     
     /**
      * Creates a password hash based on the provided username, password, and salt.
@@ -60,5 +60,5 @@ public interface PasswordEncryptionUtility {
      * @param salt
      * @return the generated password hash.
      */
-    public byte[] createPasswordHash(String password, String salt);
+    public byte[] createPasswordHash(String password, byte[] salt);
 }

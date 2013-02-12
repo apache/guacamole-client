@@ -35,7 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 
 /**
@@ -47,13 +46,9 @@ public class SecureRandomSaltUtility implements SaltUtility {
     SecureRandom secureRandom = new SecureRandom();
     
     @Override
-    public String generateSalt() {
+    public byte[] generateSalt() {
         byte[] salt = new byte[32];
         secureRandom.nextBytes(salt);
-        try {
-            return new String(salt, "UTF-8");
-        } catch (UnsupportedEncodingException ex) { // should not happen
-            throw new RuntimeException(ex);
-        }
+        return salt;
     }
 }

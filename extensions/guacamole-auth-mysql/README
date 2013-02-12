@@ -63,6 +63,10 @@ guacamole.properties such that the authentication provider is available.
     A schema file is provided in the schema directory for creating
     the guacamole authentication tables in your MySQL database.
 
+    Additionally, a script is provided to create a default admin user
+    with username 'guacadmin' and password 'guacadmin'. This user can 
+    be used to set up any other connections and users.
+
 4) Configure guacamole.properties for MySQL
 
     There are additional properties required by the MySQL JDBC driver

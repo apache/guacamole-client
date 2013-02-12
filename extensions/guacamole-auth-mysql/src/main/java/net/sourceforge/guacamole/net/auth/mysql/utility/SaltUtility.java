@@ -35,8 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import net.sourceforge.guacamole.GuacamoleException;
-
 /**
  *
  * @author James Muehlner
@@ -46,5 +44,5 @@ public interface SaltUtility {
      * Generates a new String that can be used as a password salt.
      * @return a new salt for password encryption.
      */
-    public String generateSalt();
+    public byte[] generateSalt();
 }

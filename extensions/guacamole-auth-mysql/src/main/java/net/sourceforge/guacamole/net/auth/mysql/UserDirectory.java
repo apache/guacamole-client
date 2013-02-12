@@ -12,7 +12,7 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.UserMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 
 /**
  * A MySQL based implementation of the User Directory.

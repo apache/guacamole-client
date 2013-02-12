@@ -43,8 +43,9 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.UserMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.guacamole.UserExample;
+import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -55,7 +56,7 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
  */
 public class MySQLUser implements User {
 
-    private net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User user;
+    private UserWithBLOBs user;
     
     @Inject
     UserMapper userDao;
@@ -69,7 +70,7 @@ public class MySQLUser implements User {
     Set<Permission> permissions;
     
     MySQLUser() {
-        user = new net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User();
+        user = new UserWithBLOBs();
         permissions = new HashSet<Permission>();
     }
     
@@ -81,7 +82,7 @@ public class MySQLUser implements User {
     void init (Credentials credentials) throws GuacamoleException {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
-        List<net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User> users = userDao.selectByExample(userExample);
+        List<UserWithBLOBs> users = userDao.selectByExampleWithBLOBs(userExample);
         if(users.size() > 1)  // the unique constraint on the table should prevent this
             throw new GuacamoleException("Multiple users found with the same username: " + credentials.getUsername());
         if(users.isEmpty())
@@ -97,7 +98,7 @@ public class MySQLUser implements User {
         this.setUsername(user.getUsername());
     }
     
-    public net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User getUser() {
+    public UserWithBLOBs getUser() {
         return user;
     }
     
@@ -122,7 +123,7 @@ public class MySQLUser implements User {
 
     @Override
     public void setPassword(String password) {
-        String salt = saltUtility.generateSalt();
+        byte[] salt = saltUtility.generateSalt();
         user.setPassword_salt(salt);
         byte[] hash = passwordUtility.createPasswordHash(password, salt);
         user.setPassword_hash(hash);

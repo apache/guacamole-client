@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import javax.xml.bind.DatatypeConverter;
 import net.sourceforge.guacamole.net.auth.Credentials;
 
 /**
@@ -49,7 +50,7 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtility {
 
     @Override
-    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, String dbSalt) {
+    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
         Preconditions.checkNotNull(credentials);
         Preconditions.checkNotNull(dbPasswordHash);
         Preconditions.checkNotNull(dbUsername);
@@ -59,7 +60,7 @@ public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtilit
     }
 
     @Override
-    public byte[] createPasswordHash(String password, String salt) {
+    public byte[] createPasswordHash(String password, byte[] salt) {
         Preconditions.checkNotNull(password);
         Preconditions.checkNotNull(salt);
         try {
@@ -67,7 +68,7 @@ public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtilit
 
             StringBuilder builder = new StringBuilder();
             builder.append(password);
-            builder.append(salt);
+            builder.append(DatatypeConverter.printHexBinary(salt));
             md.update(builder.toString().getBytes("UTF-8"));
             return md.digest();
         } catch (UnsupportedEncodingException ex) { // should not happen
