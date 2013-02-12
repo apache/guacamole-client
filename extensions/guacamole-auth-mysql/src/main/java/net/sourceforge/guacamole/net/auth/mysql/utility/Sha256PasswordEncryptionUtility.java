@@ -33,46 +33,47 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import com.google.inject.Inject;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
+import com.google.common.base.Preconditions;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Provides a SHA-256 based implementation of the password encryption functionality.
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
-    
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-    
-    @Inject
-    private MySQLUser user;
-    
-    void init(Credentials credentials) throws GuacamoleException {
-        user.init(credentials);
+public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtility {
+
+    @Override
+    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, String dbSalt) {
+        Preconditions.checkNotNull(credentials);
+        Preconditions.checkNotNull(dbPasswordHash);
+        Preconditions.checkNotNull(dbUsername);
+        Preconditions.checkNotNull(dbSalt);
+        byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
+        return Arrays.equals(passwordBytes, dbPasswordHash);
     }
 
     @Override
-    public User self() {
-        return user;
-    }
+    public byte[] createPasswordHash(String password, String salt) {
+        Preconditions.checkNotNull(password);
+        Preconditions.checkNotNull(salt);
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
 
-    @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+            StringBuilder builder = new StringBuilder();
+            builder.append(password);
+            builder.append(salt);
+            md.update(builder.toString().getBytes("UTF-8"));
+            return md.digest();
+        } catch (UnsupportedEncodingException ex) { // should not happen
+            throw new RuntimeException(ex);
+        } catch (NoSuchAlgorithmException ex) { // should not happen
+            throw new RuntimeException(ex);
+        }
     }
-
-    @Override
-    public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
 }

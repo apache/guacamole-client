@@ -33,46 +33,32 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import com.google.inject.Inject;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
+public interface PasswordEncryptionUtility {
     
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
+    /**
+     * Checks if the provided Credentials are correct, compared with what the values from the database.
+     * @param credentials
+     * @param dbPasswordHash
+     * @param dbUsername
+     * @param dbSalt
+     * @return true if the provided credentials match what's in the database for that user.
+     */
+    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, String dbSalt);
     
-    @Inject
-    private MySQLUser user;
-    
-    void init(Credentials credentials) throws GuacamoleException {
-        user.init(credentials);
-    }
-
-    @Override
-    public User self() {
-        return user;
-    }
-
-    @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
+    /**
+     * Creates a password hash based on the provided username, password, and salt.
+     * @param username
+     * @param password
+     * @param salt
+     * @return the generated password hash.
+     */
+    public byte[] createPasswordHash(String password, String salt);
 }

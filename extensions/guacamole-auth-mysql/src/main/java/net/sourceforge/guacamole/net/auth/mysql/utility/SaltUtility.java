@@ -33,46 +33,18 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
-    
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-    
-    @Inject
-    private MySQLUser user;
-    
-    void init(Credentials credentials) throws GuacamoleException {
-        user.init(credentials);
-    }
-
-    @Override
-    public User self() {
-        return user;
-    }
-
-    @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
+public interface SaltUtility {
+    /**
+     * Generates a new String that can be used as a password salt.
+     * @return a new salt for password encryption.
+     */
+    public String generateSalt();
 }

@@ -52,6 +52,10 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.SystemPermissionMa
 import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.SecureRandomSaltUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.Sha256PasswordEncryptionUtility;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -105,6 +109,9 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     addMapperClass(UserMapper.class);
                     addMapperClass(UserPermissionMapper.class);
                     bind(MySQLUserContext.class);
+                    bind(MySQLUser.class);
+                    bind(SaltUtility.class).to(SecureRandomSaltUtility.class);
+                    bind(PasswordEncryptionUtility.class).to(Sha256PasswordEncryptionUtility.class);
                 }
             }
         );

@@ -93,7 +93,18 @@
             <artifactId>mybatis-guice</artifactId>
             <version>3.2</version>
         </dependency>
-
+        
+        <dependency>
+            <groupId>com.google.collections</groupId>
+            <artifactId>google-collections</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.guacamole</groupId>
+            <artifactId>guacamole-auth-mysql</artifactId>
+            <version>0.8.0</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <repositories>

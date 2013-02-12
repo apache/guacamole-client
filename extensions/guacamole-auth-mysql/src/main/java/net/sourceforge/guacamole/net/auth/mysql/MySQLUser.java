@@ -35,65 +35,116 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import com.google.inject.Inject;
+import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.User;
+import net.sourceforge.guacamole.net.auth.mysql.dao.guacamole.UserMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.guacamole.UserExample;
+import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
 /**
- *
+ * A MySQL based implementation of the User object.
  * @author James Muehlner
  */
 public class MySQLUser implements User {
 
-    private String username;
-    private String userID;
-    private String salt;
+    private net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User user;
     
-    MySQLUser(Credentials credentials) {
-        //TODO: load the user from the DB if the credentials are correct,
-        // otherwise, throw some kind of exception
+    @Inject
+    UserMapper userDao;
+    
+    @Inject
+    PasswordEncryptionUtility passwordUtility;
+    
+    @Inject
+    SaltUtility saltUtility;
+    
+    Set<Permission> permissions;
+    
+    MySQLUser() {
+        user = new net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User();
+        permissions = new HashSet<Permission>();
+    }
+    
+    /**
+     * Create the user, throwing an exception if the credentials do not match what's in the database.
+     * @param credentials
+     * @throws GuacamoleException 
+     */
+    void init (Credentials credentials) throws GuacamoleException {
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
+        List<net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User> users = userDao.selectByExample(userExample);
+        if(users.size() > 1)  // the unique constraint on the table should prevent this
+            throw new GuacamoleException("Multiple users found with the same username: " + credentials.getUsername());
+        if(users.isEmpty())
+            throw new GuacamoleException("No user found with the supplied credentials");
+        user = users.get(0);
+        // check password
+        if(!passwordUtility.checkCredentials(credentials, user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
+            throw new GuacamoleException("No user found with the supplied credentials");
+    }
+    
+    void init (User user) {
+        this.setPassword(user.getPassword());
+        this.setUsername(user.getUsername());
+    }
+    
+    public net.sourceforge.guacamole.net.auth.mysql.model.guacamole.User getUser() {
+        return user;
     }
     
     @Override
     public String getUsername() {
-        return username;
+        return user.getUsername();
     }
 
     @Override
     public void setUsername(String username) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        user.setUsername(username);
     }
 
     @Override
     public String getPassword() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            return new String(user.getPassword_hash(), "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex); // should not happen
+        }
     }
 
     @Override
     public void setPassword(String password) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        String salt = saltUtility.generateSalt();
+        user.setPassword_salt(salt);
+        byte[] hash = passwordUtility.createPasswordHash(password, salt);
+        user.setPassword_hash(hash);
     }
 
     @Override
     public Set<Permission> getPermissions() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return permissions;
     }
 
     @Override
     public boolean hasPermission(Permission permission) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return permissions.contains(permission);
     }
 
     @Override
     public void addPermission(Permission permission) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        permissions.add(permission);
     }
 
     @Override
     public void removePermission(Permission permission) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        permissions.remove(permission);
     }
-    
 }
