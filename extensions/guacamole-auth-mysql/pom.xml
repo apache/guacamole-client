@@ -100,14 +100,6 @@
             <artifactId>google-collections</artifactId>
             <version>1.0</version>
         </dependency>
-        
-        <!-- Guacamole -->
-        <dependency>
-            <groupId>net.sourceforge.guacamole</groupId>
-            <artifactId>guacamole-auth-mysql</artifactId>
-            <version>0.8.0</version>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
     <repositories>
