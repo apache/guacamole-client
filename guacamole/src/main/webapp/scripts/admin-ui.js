@@ -532,7 +532,8 @@ GuacAdmin.reset = function() {
             };
 
             // If readable connections exist, list them
-            if (GuacAdmin.hasEntry(permissions.read_connection)) {
+            var selected_connections = {};
+            if (GuacAdmin.hasEntry(permissions.administer_connection)) {
 
                 // Add fields for per-connection checkboxes
                 var connections_header = GuacUI.createChildElement(sections, "dt");
@@ -541,13 +542,28 @@ GuacAdmin.reset = function() {
                     GuacUI.createChildElement(sections, "dd"),
                     "div", "list");
 
-                for (var conn in permissions.read_connection) {
+                for (var conn in permissions.administer_connection) {
 
                     var connection       = GuacUI.createChildElement(connections, "div", "connection");
                     var connection_field = GuacUI.createChildElement(connection, "input");
                     var connection_name  = GuacUI.createChildElement(connection, "span", "name");
 
                     connection_field.setAttribute("type", "checkbox");
+                    connection_field.setAttribute("value", conn);
+
+                    // Check checkbox if connection readable by selected user
+                    if (conn in user_perms.read_connection) {
+                        selected_connections[conn] = true;
+                        connection_field.checked = true;
+                    }
+
+                    // Update selected connections when changed
+                    connection_field.onclick = connection_field.onchange = function() {
+                        if (this.checked)
+                            selected_connections[this.value] = true;
+                        else if (selected_connections[this.value])
+                            delete selected_connections[this.value];
+                    };
 
                     connection_name.textContent = conn;
 
@@ -586,10 +602,7 @@ GuacAdmin.reset = function() {
                         password = null;
 
                     // Set user permissions
-                    user_perms.read_connection = {};
-                    var connections = undefined; /* STUB (selected connections) */
-                    for (var i=0; i<connections.length; i++)
-                        user_perms.read_connection[connections[i]] = true;
+                    user_perms.read_connection = selected_connections;
 
                     // Save user
                     GuacamoleService.Users.update(

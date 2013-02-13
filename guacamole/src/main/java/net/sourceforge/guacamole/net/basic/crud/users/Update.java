@@ -161,7 +161,8 @@ public class Update extends AuthenticatingHttpServlet {
                     context.getUserDirectory();
 
             // Get user data, setting password if given
-            User user = directory.get(username);
+            User user = new DummyUser();
+            user.setUsername(username);
             if (password != null)
                 user.setPassword(password);
             
