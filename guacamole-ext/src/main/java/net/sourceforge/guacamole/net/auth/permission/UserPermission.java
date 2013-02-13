@@ -106,7 +106,7 @@ public class UserPermission implements ObjectPermission<String> {
         // If null identifier, equality depends on whether other identifier
         // is null
         if (identifier == null)
-            return other.identifier != null;
+            return other.identifier == null;
 
         // Otherwise, equality depends entirely on identifier
         return identifier.equals(other.identifier);
