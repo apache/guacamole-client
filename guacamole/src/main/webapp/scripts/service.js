@@ -554,3 +554,55 @@ GuacamoleService.Permissions = {
 
 };
 
+/**
+ * Collection of service functions which deal with protocols. Each function
+ * makes an explicit HTTP query to the server, and parses the response.
+ */
+GuacamoleService.Protocols = {
+
+     /**
+      * Returns an object describing the available protocols and all
+      * corresponding parameters, as well as hints regarding expected datatype
+      * and allowed/default values.
+      * 
+      * Note that this function is a stub returning a simple object until the
+      * corresponding server-side component is created.
+      *
+      * @param {String} parameters Any parameters which should be passed to the
+      *                            server for the sake of authentication
+      *                            (optional).
+      * @return {Object} An object describing all available protocols.
+      */   
+    "list" : function(parameters) {
+
+        // FIXME: STUB
+        return {
+
+            "vnc" : {
+
+                /* Display title */
+                "title" : "VNC",
+                
+                /* All available parameters */
+                "parameters" : {
+
+                    "hostname" : {
+                        "title" : "Hostname",
+                        "type"  : "text"
+                    },
+                    
+                    "port" : {
+                        "title" : "Port",
+                        "type"  : "text",
+                        "value" : "5900"
+                    }
+                    
+                }
+
+            }
+
+        };
+
+    }
+
+};

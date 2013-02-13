@@ -47,6 +47,23 @@ GuacUI.createChildElement = function(parent, tagname, classname) {
 };
 
 /**
+ * Creates a new row within the given table having a single header cell
+ * with the given title, and a single value cell. The value cell is returned.
+ */
+GuacUI.createTabulatedContainer = function(table, title) {
+
+    // Create elements
+    var row    = GuacUI.createChildElement(table, "tr");
+    var header = GuacUI.createChildElement(row, "th");
+    var cell   = GuacUI.createChildElement(row, "td");
+
+    // Set title, return cell
+    header.textContent = title;
+    return cell;
+
+};
+
+/**
  * Adds the given CSS class to the given element.
  */
 GuacUI.addClass = function(element, classname) {

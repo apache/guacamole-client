@@ -387,6 +387,9 @@ GuacAdmin.reset = function() {
     // Get permissions
     var permissions = GuacamoleService.Permissions.list();
 
+    // Get protocols
+    var protocols = GuacamoleService.Protocols.list();
+
     // Connection management
     if (permissions.create_connection
         || GuacAdmin.hasEntry(permissions.update_connection)
@@ -462,10 +465,12 @@ GuacAdmin.reset = function() {
     GuacAdmin.lists.user_list.innerHTML = "";
     for (name in permissions.read_user) {(function(name){
 
+        // Create user list item
         var item = new GuacAdmin.ListItem("user", name);
         var item_element = item.getElement();
         GuacAdmin.lists.user_list.appendChild(item_element);
 
+        // When clicked, build and display property form
         item_element.onclick = function() {
 
             // Ignore clicks if any item is selected
@@ -475,87 +480,104 @@ GuacAdmin.reset = function() {
             // Get user permissions
             var user_perms = GuacamoleService.Permissions.list(name);
 
-            // Load buttons
-            var buttons = [new GuacAdmin.Button("Save"),
-                           new GuacAdmin.Button("Cancel")];
+            // Create form base elements
+            var form_element = GuacUI.createElement("div", "form");
+            var field_table  = GuacUI.createChildElement(form_element, "table", "fields");
+            var button_div = GuacUI.createChildElement(form_element, "div", "object-buttons");
 
-            if (name in permissions.remove_user)
-                buttons.push(new GuacAdmin.Button("Delete"));
-
-            // User property form.
-            var user_properties = new GuacAdmin.Form(
-
-                /* Fields */
-                [new GuacAdmin.Field.PASSWORD("Password:", [],
-                     ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
-
-                 new GuacAdmin.Field.PASSWORD("Re-enter Password:", [],
-                     ["f12a1930-7195-11e2-bcfd-0800200c9a66"]),
-                
-                 new GuacAdmin.Field.LIST("Connections:",
-                     Object.keys(permissions.administer_connection),
-                     Object.keys(user_perms.read_connection))],
-
-                /* Buttons */
-                buttons
-
-            );
+            // Deselect
+            function deselect() {
+                GuacUI.removeClass(GuacAdmin.lists.user_list, "disabled");
+                GuacUI.removeClass(item_element, "selected");
+                item_element.removeChild(form_element);
+                selected_user = null;
+            }
 
             // Select
-            GuacUI.addClass(GuacAdmin.lists.user_list, "disabled");
-            GuacUI.addClass(item_element, "selected");
+            function select() {
+                GuacUI.addClass(GuacAdmin.lists.user_list, "disabled");
+                GuacUI.addClass(item_element, "selected");
+                item_element.appendChild(form_element);
+            }
 
-            // Handle buttons
-            user_properties.onaction = function(title, fields) {
+            // Add password field
+            var password_field = GuacUI.createChildElement(
+                    GuacUI.createTabulatedContainer(field_table, "Password:"),
+                    "input");
+            password_field.setAttribute("type",  "password");
+            password_field.setAttribute("value", "password");
                 
-                try {
+            // Add password re-entry field
+            var reenter_password_field = GuacUI.createChildElement(
+                    GuacUI.createTabulatedContainer(field_table, "Re-enter Password:"),
+                    "input");
+            reenter_password_field.setAttribute("type",  "password");
+            reenter_password_field.setAttribute("value", "password");
 
-                    if (title == "Save") {
+            // Add save button
+            var save_button = GuacUI.createChildElement(button_div, "button");
+            save_button.textContent = "Save";
+            save_button.onclick = function(e) {
 
-                        // Get passwords
-                        var password = fields[0][0];
-                        var reentered_password = fields[1][0];
+                e.stopPropagation();
 
-                        // Check that passwords match
-                        if (password != reentered_password)
-                            throw new Error("Passwords do not match.");
+                // Get passwords
+                var password = undefined;           /* STUB */
+                var reentered_password = undefined; /* STUB */
 
-                        // Do not update password if it's just the
-                        // not-changed token
-                        if (password == "f12a1930-7195-11e2-bcfd-0800200c9a66")
-                            password = null;
+                // Check that passwords match
+                if (password != reentered_password)
+                    throw new Error("Passwords do not match.");
 
-                        // Set user permissions
-                        user_perms.read_connection = {};
-                        var connections = fields[2];
-                        for (var i=0; i<connections.length; i++)
-                            user_perms.read_connection[connections[i]] = true;
+                // Do not update password if it's just the
+                // not-changed token
+                if (password == "f12a1930-7195-11e2-bcfd-0800200c9a66")
+                    password = null;
 
-                        // Save user
-                        GuacamoleService.Users.update(
-                            selected_user, password, user_perms);
-                        GuacAdmin.reset();
+                // Set user permissions
+                user_perms.read_connection = {};
+                var connections = undefined; /* STUB (selected connections) */
+                for (var i=0; i<connections.length; i++)
+                    user_perms.read_connection[connections[i]] = true;
 
-                    }
-                    else if (title == "Delete") {
-                        GuacamoleService.Users.remove(selected_user);
-                        GuacAdmin.reset();
-                    }
+                // Save user
+                GuacamoleService.Users.update(
+                    selected_user, password, user_perms);
+                deselect();
+                GuacAdmin.reset();
 
-                    // Deselect
-                    GuacUI.removeClass(GuacAdmin.lists.user_list, "disabled");
-                    GuacUI.removeClass(item_element, "selected");
-                    item_element.removeChild(user_properties.getElement());
-                    selected_user = null;
-
-                }
-                catch (e) {
-                    alert(e.message);
-                }
-                    
             };
 
-            item_element.appendChild(user_properties.getElement());
+            // Add cancel button
+            var cancel_button = GuacUI.createChildElement(button_div, "button");
+            cancel_button.textContent = "Cancel";
+            cancel_button.onclick = function(e) {
+                e.stopPropagation();
+                deselect();
+            };
+
+            // Add delete button if permission available
+            if (name in permissions.remove_user) {
+                
+                // Create button
+                var delete_button = GuacUI.createChildElement(button_div, "button");
+                delete_button.textContent = "Delete";
+                
+                // Remove selected user when clicked
+                delete_button.onclick = function(e) {
+
+                    e.stopPropagation();
+
+                    GuacamoleService.Users.remove(selected_user);
+                    deselect();
+                    GuacAdmin.reset();
+
+                };
+
+            }
+
+            // Select item
+            select();
 
         };
 

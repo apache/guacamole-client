@@ -38,6 +38,7 @@ input[type=text], input[type=password] {
     -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
     width: 100%;
+    padding: 0.25em;
 }
 
 button {
@@ -220,7 +221,7 @@ div.section {
 
     position: absolute;
     display: inline-block;
-    vertical-align: top;
+    vertical-align: middle;
     z-index: 1;
 
     border: 1px solid rgba(0, 0, 0, 0.5);
@@ -240,7 +241,7 @@ div.section {
 .form .fields th {
     font-weight: normal;
     font-size: 0.8em;
-    vertical-align: top;
+    vertical-align: middle;
     text-align: left;
 }
 
@@ -273,6 +274,10 @@ div.section {
     padding-top: 0.5em;
     margin-top: 0.5em;
 
+}
+
+.form input {
+    width: auto;
 }
 
 /*
