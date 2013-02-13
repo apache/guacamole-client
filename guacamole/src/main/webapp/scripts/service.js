@@ -561,7 +561,7 @@ GuacamoleService.Permissions = {
 GuacamoleService.Protocols = {
 
      /**
-      * Returns an object describing the available protocols and all
+      * Returns an array containing all available protocols and all
       * corresponding parameters, as well as hints regarding expected datatype
       * and allowed/default values.
       * 
@@ -571,37 +571,36 @@ GuacamoleService.Protocols = {
       * @param {String} parameters Any parameters which should be passed to the
       *                            server for the sake of authentication
       *                            (optional).
-      * @return {Object} An object describing all available protocols.
+      * @return {Array} An array containing all available protocols.
       */   
     "list" : function(parameters) {
 
         // FIXME: STUB
-        return {
+        return [{
 
-            "vnc" : {
+            /* Unique name */
+            "name"  : "vnc",
 
-                /* Display title */
-                "title" : "VNC",
+            /* Display title */
+            "title" : "VNC",
+            
+            /* All available parameters */
+            "parameters" : {
+
+                "hostname" : {
+                    "title" : "Hostname",
+                    "type"  : "text"
+                },
                 
-                /* All available parameters */
-                "parameters" : {
-
-                    "hostname" : {
-                        "title" : "Hostname",
-                        "type"  : "text"
-                    },
-                    
-                    "port" : {
-                        "title" : "Port",
-                        "type"  : "text",
-                        "value" : "5900"
-                    }
-                    
+                "port" : {
+                    "title" : "Port",
+                    "type"  : "text",
+                    "value" : "5900"
                 }
-
+                
             }
 
-        };
+        }];
 
     }
 
