@@ -35,37 +35,35 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
+import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.UserPermission;
+
 /**
- * Constants relevant to the guacamole-auth-mysql project.
+ * A set of constants that useful for the MySQL-based authentication provider.
  * @author James Muehlner
  */
-public interface MySQLConstants {
+public final class MySQLConstants {
     
-    //*********** Permission Strings ***********
-    // operations
-    public static final String CREATE = "CREATE";
-    public static final String READ = "READ";
-    public static final String WRITE = "WRITE";
-    public static final String DELETE = "DELETE";
-    public static final String ADMINISTER = "ADMINISTER";
+    /**
+     * This class should not be instantiated.
+     */
+    private MySQLConstants() {}
     
-    // used to separate operations from objects
-    public static final String SEPARATOR = "_";
+    // Permission constants
+    public static final String USER_READ = UserPermission.Type.READ.name();
+    public static final String USER_UPDATE = UserPermission.Type.UPDATE.name();
+    public static final String USER_DELETE = UserPermission.Type.DELETE.name();
+    public static final String USER_ADMINISTER = UserPermission.Type.ADMINISTER.name();
+    public static final String USER_CREATE = UserDirectoryPermission.Type.CREATE.name();
     
-    //object types
-    public static final String USER = "USER";
-    public static final String CONNECTION = "CONNECTION";
+    public static final String CONNECTION_READ = ConnectionPermission.Type.READ.name();
+    public static final String CONNECTION_UPDATE = ConnectionPermission.Type.UPDATE.name();
+    public static final String CONNECTION_DELETE = ConnectionPermission.Type.DELETE.name();
+    public static final String CONNECTION_ADMINISTER = ConnectionPermission.Type.ADMINISTER.name();
+    public static final String CONNECTION_CREATE = ConnectionDirectoryPermission.Type.CREATE.name();
     
-    //combinations
-    public static final String CREATE_USER = CREATE + SEPARATOR + USER;
-    public static final String READ_USER = READ + SEPARATOR + USER;
-    public static final String WRITE_USER = WRITE + SEPARATOR + USER;
-    public static final String DELETE_USER = DELETE + SEPARATOR + USER;
-    public static final String ADMINISTER_USER = ADMINISTER + SEPARATOR + USER;
-    
-    public static final String CREATE_CONNECTION = CREATE + SEPARATOR + CONNECTION;
-    public static final String READ_CONNECTION = READ + SEPARATOR + CONNECTION;
-    public static final String WRITE_CONNECTION = WRITE + SEPARATOR + CONNECTION;
-    public static final String DELETE_CONNECTION = DELETE + SEPARATOR + CONNECTION;
-    public static final String ADMINISTER_CONNECTION = ADMINISTER + SEPARATOR + CONNECTION;
+    public static final String SYSTEM_USER_CREATE = "USER_CREATE";
+    public static final String SYSTEM_CONNECTION_CREATE = "CONNECTION_CREATE";
 }

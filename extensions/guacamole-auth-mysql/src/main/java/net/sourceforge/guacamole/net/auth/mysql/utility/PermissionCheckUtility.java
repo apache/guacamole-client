@@ -97,35 +97,35 @@ public class PermissionCheckUtility {
     Provider<MySQLConnection> mySQLConnectionProvider;
     
     public boolean checkUserReadAccess(int userID, int affectedUserID) {
-        return checkUserAccess(userID, affectedUserID, MySQLConstants.READ_USER);
+        return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_READ);
     }
     
-    public boolean checkUserWriteAccess(int userID, int affectedUserID) {
-        return checkUserAccess(userID, affectedUserID, MySQLConstants.WRITE_USER);
+    public boolean checkUserUpdateAccess(int userID, int affectedUserID) {
+        return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_UPDATE);
     }
     
     public boolean checkUserDeleteAccess(int userID, int affectedUserID) {
-        return checkUserAccess(userID, affectedUserID, MySQLConstants.DELETE_USER);
+        return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_DELETE);
     }
     
     public boolean checkUserAdministerAccess(int userID, int affectedUserID) {
-        return checkUserAccess(userID, affectedUserID, MySQLConstants.ADMINISTER_USER);
+        return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_ADMINISTER);
     }
     
     public boolean checkUserReadAccess(int userID, String affectedUsername) {
-        return checkUserAccess(userID, affectedUsername, MySQLConstants.READ_USER);
+        return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_READ);
     }
     
-    public boolean checkUserWriteAccess(int userID, String affectedUsername) {
-        return checkUserAccess(userID, affectedUsername, MySQLConstants.WRITE_USER);
+    public boolean checkUserUpdateAccess(int userID, String affectedUsername) {
+        return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_UPDATE);
     }
     
     public boolean checkUserDeleteAccess(int userID, String affectedUsername) {
-        return checkUserAccess(userID, affectedUsername, MySQLConstants.DELETE_USER);
+        return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_DELETE);
     }
     
     public boolean checkUserAdministerAccess(int userID, String affectedUsername) {
-        return checkUserAccess(userID, affectedUsername, MySQLConstants.ADMINISTER_USER);
+        return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_ADMINISTER);
     }
     
     /**
@@ -163,7 +163,7 @@ public class PermissionCheckUtility {
      * @return the list of all users this user has administer access to
      */
     public List<MySQLUser> getAdministerableUsers(int userID) {
-        return getUsers(userID, MySQLConstants.ADMINISTER_USER);
+        return getUsers(userID, MySQLConstants.USER_ADMINISTER);
     }
     
     /**
@@ -172,7 +172,7 @@ public class PermissionCheckUtility {
      * @return the list of all users this user has delete access to
      */
     public List<MySQLUser> getDeletableUsers(int userID) {
-        return getUsers(userID, MySQLConstants.DELETE_USER);
+        return getUsers(userID, MySQLConstants.USER_DELETE);
     }
     
     /**
@@ -180,8 +180,8 @@ public class PermissionCheckUtility {
      * @param userID
      * @return the list of all users this user has write access to
      */
-    public List<MySQLUser> getWriteableleUsers(int userID) {
-        return getUsers(userID, MySQLConstants.WRITE_USER);
+    public List<MySQLUser> getUpdateableUsers(int userID) {
+        return getUsers(userID, MySQLConstants.USER_UPDATE);
     }
     
     /**
@@ -190,7 +190,7 @@ public class PermissionCheckUtility {
      * @return the list of all users this user read has access to
      */
     public List<MySQLUser> getReadableUsers(int userID) {
-        return getUsers(userID, MySQLConstants.READ_USER);
+        return getUsers(userID, MySQLConstants.USER_READ);
     }
     
     /**
@@ -234,35 +234,35 @@ public class PermissionCheckUtility {
     }
     
     public boolean checkConnectionReadAccess(int userID, int affectedConnectionID) {
-        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.READ_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_READ);
     }
     
-    public boolean checkConnectionWriteAccess(int userID, int affectedConnectionID) {
-        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.WRITE_CONNECTION);
+    public boolean checkConnectionUpdateAccess(int userID, int affectedConnectionID) {
+        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_UPDATE);
     }
     
     public boolean checkConnectionDeleteAccess(int userID, int affectedConnectionID) {
-        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.DELETE_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_DELETE);
     }
     
     public boolean checkConnectionAdministerAccess(int userID, int affectedConnectionID) {
-        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.ADMINISTER_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
     public boolean checkConnectionReadAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.READ_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_READ);
     }
     
-    public boolean checkConnectionWriteAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.WRITE_CONNECTION);
+    public boolean checkConnectionUpdateAccess(int userID, String affectedConnectionname) {
+        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_UPDATE);
     }
     
     public boolean checkConnectionDeleteAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.DELETE_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_DELETE);
     }
     
     public boolean checkConnectionAdministerAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.ADMINISTER_CONNECTION);
+        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
     /**
@@ -300,7 +300,7 @@ public class PermissionCheckUtility {
      * @return the list of all connections this connection has administer access to
      */
     public List<MySQLConnection> getAdministerableConnections(int userID) {
-        return getConnections(userID, MySQLConstants.ADMINISTER_CONNECTION);
+        return getConnections(userID, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
     /**
@@ -309,7 +309,7 @@ public class PermissionCheckUtility {
      * @return the list of all connections this connection has delete access to
      */
     public List<MySQLConnection> getDeletableConnections(int userID) {
-        return getConnections(userID, MySQLConstants.DELETE_CONNECTION);
+        return getConnections(userID, MySQLConstants.CONNECTION_DELETE);
     }
     
     /**
@@ -317,8 +317,8 @@ public class PermissionCheckUtility {
      * @param connectionID
      * @return the list of all connections this connection has write access to
      */
-    public List<MySQLConnection> getWriteableleConnections(int userID) {
-        return getConnections(userID, MySQLConstants.WRITE_CONNECTION);
+    public List<MySQLConnection> getUpdateableConnections(int userID) {
+        return getConnections(userID, MySQLConstants.CONNECTION_UPDATE);
     }
     
     /**
@@ -327,7 +327,7 @@ public class PermissionCheckUtility {
      * @return the list of all connections this connection read has access to
      */
     public List<MySQLConnection> getReadableConnections(int userID) {
-        return getConnections(userID, MySQLConstants.READ_CONNECTION);
+        return getConnections(userID, MySQLConstants.CONNECTION_READ);
     }
     
     /**
@@ -376,7 +376,7 @@ public class PermissionCheckUtility {
      * @return 
      */
     public boolean checkCreateUserPermission(int userID) {
-        return checkSystemPermission(userID, MySQLConstants.CREATE_USER);
+        return checkSystemPermission(userID, MySQLConstants.SYSTEM_USER_CREATE);
     }
     
     /**
@@ -385,7 +385,7 @@ public class PermissionCheckUtility {
      * @return 
      */
     public boolean checkCreateConnectionPermission(int userID) {
-        return checkSystemPermission(userID, MySQLConstants.CREATE_CONNECTION);
+        return checkSystemPermission(userID, MySQLConstants.SYSTEM_CONNECTION_CREATE);
     }
     
     /**
@@ -434,7 +434,7 @@ public class PermissionCheckUtility {
     /**
      * Get all permissions a given user has.
      * @param userID
-     * @return 
+     * @return all permissions a user has. 
      */
     public Set<Permission> getAllPermissions(int userID) {
         Set<Permission> allPermissions = new HashSet<Permission>();
@@ -497,9 +497,9 @@ public class PermissionCheckUtility {
         List<SystemPermissionKey> systemPermissions = systemPermissionDAO.selectByExample(systemPermissionExample);
         for(SystemPermissionKey systemPermission : systemPermissions) {
             SystemPermission newPermission = null;
-            if(systemPermission.getPermission().equals(MySQLConstants.CREATE_USER))
+            if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
                 newPermission = new UserDirectoryPermission(UserDirectoryPermission.Type.CREATE);
-            else if(systemPermission.getPermission().equals(MySQLConstants.CREATE_CONNECTION))
+            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
                 newPermission = new ConnectionDirectoryPermission(ConnectionDirectoryPermission.Type.CREATE);
             
             if(newPermission != null)

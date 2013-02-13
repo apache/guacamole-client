@@ -42,7 +42,7 @@ CREATE TABLE `guacamole_connection_parameter` (
 CREATE TABLE `guacamole_connection_permission` (
   `user_id` int(11) NOT NULL,
   `connection_id` int(11) NOT NULL,
-  `permission` enum('READ','WRITE','DELETE','ADMINISTER') NOT NULL,
+  `permission` enum('READ','UPDATE','DELETE','ADMINISTER') NOT NULL,
   PRIMARY KEY (`user_id`,`connection_id`,`permission`),
   CONSTRAINT `guacamole_connection_permission_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `guacamole_connection` (`connection_id`),
   CONSTRAINT `guacamole_connection_permission_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `guacamole_user` (`user_id`)
@@ -66,7 +66,7 @@ CREATE TABLE `guacamole_system_permission` (
 CREATE TABLE `guacamole_user_permission` (
   `user_id` int(11) NOT NULL,
   `affected_user_id` int(11) NOT NULL,
-  `permission` enum('READ','WRITE','DELETE','ADMINISTER') NOT NULL,
+  `permission` enum('READ','UPDATE','DELETE','ADMINISTER') NOT NULL,
   PRIMARY KEY (`user_id`,`affected_user_id`,`permission`),
   CONSTRAINT `guacamole_user_permission_ibfk_1` FOREIGN KEY (`affected_user_id`) REFERENCES `guacamole_user` (`user_id`),
   CONSTRAINT `guacamole_user_permission_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `guacamole_user` (`user_id`)
