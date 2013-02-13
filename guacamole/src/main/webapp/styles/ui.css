@@ -350,3 +350,9 @@ body:not(.add-connections) #connection-add-form {
 body:not(.add-users) #user-add-form {
     display: none;
 }
+
+div#logout-panel {
+    padding: 0.45em;
+    text-align: right;
+    float: right;
+}
