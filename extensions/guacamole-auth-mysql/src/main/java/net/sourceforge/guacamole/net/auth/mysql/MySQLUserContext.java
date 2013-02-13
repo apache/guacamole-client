@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  * @author James Muehlner
  */
 public class MySQLUserContext implements UserContext {
@@ -56,8 +56,11 @@ public class MySQLUserContext implements UserContext {
     @Inject
     private MySQLUser user;
     
+    @Inject UserDirectory userDirectory;
+    
     void init(Credentials credentials) throws GuacamoleException {
         user.init(credentials);
+        userDirectory.init(user);
     }
 
     @Override
@@ -67,7 +70,7 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return userDirectory;
     }
 
     @Override

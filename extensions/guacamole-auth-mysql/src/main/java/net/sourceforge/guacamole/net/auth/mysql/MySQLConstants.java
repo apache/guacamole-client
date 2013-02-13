@@ -33,22 +33,39 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
-
-import java.security.SecureRandom;
+package net.sourceforge.guacamole.net.auth.mysql;
 
 /**
- * Generates password salts via the SecureRandom utility.
+ * Constants relevant to the guacamole-auth-mysql project.
  * @author James Muehlner
  */
-public class SecureRandomSaltUtility implements SaltUtility {
+public interface MySQLConstants {
     
-    SecureRandom secureRandom = new SecureRandom();
+    //*********** Permission Strings ***********
+    // operations
+    public static final String CREATE = "CREATE";
+    public static final String READ = "READ";
+    public static final String WRITE = "WRITE";
+    public static final String DELETE = "DELETE";
+    public static final String ADMINISTER = "ADMINISTER";
     
-    @Override
-    public byte[] generateSalt() {
-        byte[] salt = new byte[32];
-        secureRandom.nextBytes(salt);
-        return salt;
-    }
+    // used to separate operations from objects
+    public static final String SEPARATOR = "_";
+    
+    //object types
+    public static final String USER = "USER";
+    public static final String CONNECTION = "CONNECTION";
+    
+    //combinations
+    public static final String CREATE_USER = CREATE + SEPARATOR + USER;
+    public static final String READ_USER = READ + SEPARATOR + USER;
+    public static final String WRITE_USER = WRITE + SEPARATOR + USER;
+    public static final String DELETE_USER = DELETE + SEPARATOR + USER;
+    public static final String ADMINISTER_USER = ADMINISTER + SEPARATOR + USER;
+    
+    public static final String CREATE_CONNECTION = CREATE + SEPARATOR + CONNECTION;
+    public static final String READ_CONNECTION = READ + SEPARATOR + CONNECTION;
+    public static final String WRITE_CONNECTION = WRITE + SEPARATOR + CONNECTION;
+    public static final String DELETE_CONNECTION = DELETE + SEPARATOR + CONNECTION;
+    public static final String ADMINISTER_CONNECTION = ADMINISTER + SEPARATOR + CONNECTION;
 }

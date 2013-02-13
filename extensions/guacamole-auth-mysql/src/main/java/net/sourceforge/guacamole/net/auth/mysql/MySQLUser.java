@@ -47,6 +47,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
@@ -59,7 +60,7 @@ public class MySQLUser implements User {
     private UserWithBLOBs user;
     
     @Inject
-    UserMapper userDao;
+    UserMapper userDAO;
     
     @Inject
     PasswordEncryptionUtility passwordUtility;
@@ -67,8 +68,14 @@ public class MySQLUser implements User {
     @Inject
     SaltUtility saltUtility;
     
+    @Inject
+    PermissionCheckUtility permissionCheckUtility;
+    
     Set<Permission> permissions;
     
+    /**
+     * Create a default, empty user.
+     */
     MySQLUser() {
         user = new UserWithBLOBs();
         permissions = new HashSet<Permission>();
@@ -82,7 +89,7 @@ public class MySQLUser implements User {
     void init (Credentials credentials) throws GuacamoleException {
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
-        List<UserWithBLOBs> users = userDao.selectByExampleWithBLOBs(userExample);
+        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(userExample);
         if(users.size() > 1)  // the unique constraint on the table should prevent this
             throw new GuacamoleException("Multiple users found with the same username: " + credentials.getUsername());
         if(users.isEmpty())
@@ -91,13 +98,60 @@ public class MySQLUser implements User {
         // check password
         if(!passwordUtility.checkCredentials(credentials, user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
             throw new GuacamoleException("No user found with the supplied credentials");
+        
+        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
     }
     
-    void init (User user) {
+    /**
+     * Create a new user from the provided information. This represents a user that has not yet been inserted.
+     * @param user
+     * @throws GuacamoleException 
+     */
+    public void initNew (User user) throws GuacamoleException {
         this.setPassword(user.getPassword());
         this.setUsername(user.getUsername());
+        this.permissions = user.getPermissions();
     }
     
+    /**
+     * Loads a user by username.
+     * @param userName
+     * @throws GuacamoleException 
+     */
+    public void initExisting (String username) throws GuacamoleException {
+        UserExample example = new UserExample();
+        example.createCriteria().andUsernameEqualTo(username);
+        List<UserWithBLOBs> userList = userDAO.selectByExampleWithBLOBs(example);
+        if(userList.size() > 1) // this should never happen; the unique constraint should prevent it
+            throw new GuacamoleException("Multiple users found with username '" + username + "'.");
+        if(userList.size() == 0)
+            throw new GuacamoleException("No user found with username '" + username + "'.");
+        
+        this.user = userList.get(0);
+        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
+    }
+    
+    /**
+     * Initialize from a database record.
+     * @param user 
+     */
+    public void init(UserWithBLOBs user) {
+        this.user = user;
+        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
+    }
+    
+    /**
+     * Get the user id.
+     * @return 
+     */
+    public int getUserID() {
+        return user.getUser_id();
+    }
+    
+    /**
+     * Return the database record held by this object.
+     * @return 
+     */
     public UserWithBLOBs getUser() {
         return user;
     }
