@@ -41,7 +41,7 @@ import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 
 /**
- * A set of constants that useful for the MySQL-based authentication provider.
+ * A set of constants that are useful for the MySQL-based authentication provider.
  * @author James Muehlner
  */
 public final class MySQLConstants {
