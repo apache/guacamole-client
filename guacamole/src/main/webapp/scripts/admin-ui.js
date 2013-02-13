@@ -514,6 +514,12 @@ GuacAdmin.reset = function() {
             reenter_password_field.setAttribute("type",  "password");
             reenter_password_field.setAttribute("value", "password");
 
+            // Update password if changed
+            var password_modified = false;
+            password_field.onchange = function() {
+                password_modified = true;
+            };
+
             // Add save button
             var save_button = GuacUI.createChildElement(button_div, "button");
             save_button.textContent = "Save";
@@ -521,30 +527,42 @@ GuacAdmin.reset = function() {
 
                 e.stopPropagation();
 
-                // Get passwords
-                var password = undefined;           /* STUB */
-                var reentered_password = undefined; /* STUB */
+                try {
 
-                // Check that passwords match
-                if (password != reentered_password)
-                    throw new Error("Passwords do not match.");
+                    // If password modified, use password given
+                    var password;
+                    if (password_modified) {
 
-                // Do not update password if it's just the
-                // not-changed token
-                if (password == "f12a1930-7195-11e2-bcfd-0800200c9a66")
-                    password = null;
+                        // Get passwords
+                        password = password_field.value;
+                        var reentered_password = reenter_password_field.value;
 
-                // Set user permissions
-                user_perms.read_connection = {};
-                var connections = undefined; /* STUB (selected connections) */
-                for (var i=0; i<connections.length; i++)
-                    user_perms.read_connection[connections[i]] = true;
+                        // Check that passwords match
+                        if (password != reentered_password)
+                            throw new Error("Passwords do not match.");
 
-                // Save user
-                GuacamoleService.Users.update(
-                    selected_user, password, user_perms);
-                deselect();
-                GuacAdmin.reset();
+                    }
+
+                    // Otherwise, do not change password
+                    else
+                        password = null;
+
+                    // Set user permissions
+                    user_perms.read_connection = {};
+                    var connections = undefined; /* STUB (selected connections) */
+                    for (var i=0; i<connections.length; i++)
+                        user_perms.read_connection[connections[i]] = true;
+
+                    // Save user
+                    GuacamoleService.Users.update(
+                        selected_user, password, user_perms);
+                    deselect();
+                    GuacAdmin.reset();
+
+                }
+                catch (e) {
+                    alert(e.message);
+                }
 
             };
 
