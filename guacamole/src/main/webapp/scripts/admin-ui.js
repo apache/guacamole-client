@@ -482,8 +482,18 @@ GuacAdmin.reset = function() {
 
             // Create form base elements
             var form_element = GuacUI.createElement("div", "form");
-            var field_table  = GuacUI.createChildElement(form_element, "table", "fields");
-            var button_div = GuacUI.createChildElement(form_element, "div", "object-buttons");
+            var user_header = GuacUI.createChildElement(form_element, "h2");
+            var sections = GuacUI.createChildElement(
+                GuacUI.createChildElement(form_element, "div", "settings section"),
+                "dl");
+
+            var field_header = GuacUI.createChildElement(sections, "dt");
+            var field_table  = GuacUI.createChildElement(
+                GuacUI.createChildElement(sections, "dd"),
+                "table", "fields section");
+
+            user_header.textContent = name;
+            field_header.textContent = "Properties:";
 
             // Deselect
             function deselect() {
@@ -520,6 +530,33 @@ GuacAdmin.reset = function() {
             reenter_password_field.onchange = function() {
                 password_modified = true;
             };
+
+            // If readable connections exist, list them
+            if (GuacAdmin.hasEntry(permissions.read_connection)) {
+
+                // Add fields for per-connection checkboxes
+                var connections_header = GuacUI.createChildElement(sections, "dt");
+                connections_header.textContent = "Connections:";
+                var connections = GuacUI.createChildElement(
+                    GuacUI.createChildElement(sections, "dd"),
+                    "div", "list");
+
+                for (var conn in permissions.read_connection) {
+
+                    var connection       = GuacUI.createChildElement(connections, "div", "connection");
+                    var connection_field = GuacUI.createChildElement(connection, "input");
+                    var connection_name  = GuacUI.createChildElement(connection, "span", "name");
+
+                    connection_field.setAttribute("type", "checkbox");
+
+                    connection_name.textContent = conn;
+
+                }
+
+            }
+
+            // Add buttons
+            var button_div = GuacUI.createChildElement(form_element, "div", "object-buttons");
 
             // Add save button
             var save_button = GuacUI.createChildElement(button_div, "button");

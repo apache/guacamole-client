@@ -129,7 +129,7 @@ h2 {
 
     border-top: 1px solid #AAA;
     border-bottom: 1px solid #AAA;
-    background: #DDD;
+    background: rgba(0, 0, 0, 0.07);
     
 }
 
@@ -225,8 +225,8 @@ div.section {
     z-index: 1;
 
     border: 1px solid rgba(0, 0, 0, 0.5);
-    background: #DDD;
-    padding: 0.5em;
+    background: #E7E7E7;
+    padding: 0;
     margin: 0.25em;
 
     -moz-border-radius: 0.2em;
@@ -240,9 +240,17 @@ div.section {
 
 .form .fields th {
     font-weight: normal;
-    font-size: 0.8em;
     vertical-align: middle;
     text-align: left;
+}
+
+.form h2 {
+    border-top: none;
+}
+
+.form h3 {
+    font-size: 1em;
+    margin-bottom: 0.25em;
 }
 
 .form {
@@ -253,26 +261,13 @@ div.section {
     -webkit-animation-duration: 0.125s;
 }
 
-.form .list {
-
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-
-    padding: 0.5em;
-
-}
-
 .object-buttons {
 
     text-align: right;
-    font-size: 0.8em;
 
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding-top: 0.5em;
-    margin-top: 0.5em;
+    margin: 0.5em;
 
 }
 
@@ -313,11 +308,13 @@ div.section {
  * Settings formatting
  */
 
+.form dt,
 .settings dt {
     border-bottom: 1px dotted #AAA;
     padding-bottom: 0.25em;
 }
 
+.form dd,
 .settings dd {
     margin: 1.5em;
     margin-left: 2.5em;
