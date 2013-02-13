@@ -516,7 +516,8 @@ GuacAdmin.reset = function() {
 
             // Update password if changed
             var password_modified = false;
-            password_field.onchange = function() {
+            password_field.onchange =
+            reenter_password_field.onchange = function() {
                 password_modified = true;
             };
 
