@@ -169,7 +169,41 @@ GuacAdmin.Field.CHECKBOX = function(value) {
 
 };
 
-GuacAdmin.Field._HTML_INPUT.prototype = new GuacAdmin.Field();
+GuacAdmin.Field.CHECKBOX.prototype = new GuacAdmin.Field();
+
+/**
+ * Enumerated field type.
+ * 
+ * @augments GuacAdmin.Field
+ */
+GuacAdmin.Field.ENUM = function(values) {
+
+    // Call parent constructor
+    GuacAdmin.Field.apply(this);
+
+    // Create backing element
+    var element = GuacUI.createElement("select");
+    for (var name in values) {
+        var option = GuacUI.createChildElement(element, "option");
+        option.textContent = values[name];
+        option.value = name;
+    }
+
+    this.getValue = function() {
+        return element.value;
+    };
+
+    this.getElement = function() {
+        return element;
+    };
+
+    this.setValue = function(value) {
+        element.value = value;
+    };
+
+};
+
+GuacAdmin.Field.ENUM.prototype = new GuacAdmin.Field();
 
 
 /**
@@ -537,6 +571,10 @@ GuacAdmin.addConnection = function(connection) {
 
                     case "boolean":
                         field = new GuacAdmin.Field.CHECKBOX(parameter.value);
+                        break;
+
+                    case "enum":
+                        field = new GuacAdmin.Field.ENUM(parameter.options);
                         break;
 
                     default:
