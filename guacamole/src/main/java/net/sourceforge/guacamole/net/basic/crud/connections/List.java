@@ -37,6 +37,7 @@ import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all authorized
@@ -178,9 +179,9 @@ public class List extends AuthenticatingHttpServlet {
 
                     xml.writeAttribute("update", "yes");
 
-                    // FIXME: Read available parameters, parameter title, type, etc. from XML
                     // As update permission is present, also list parameters
-                    for (String name : new String[]{"hostname", "port"}) {
+                    GuacamoleConfiguration config = connection.getConfiguration();
+                    for (String name : config.getParameterNames()) {
 
                         String value = connection.getConfiguration().getParameter(name);
                         xml.writeStartElement("param");
