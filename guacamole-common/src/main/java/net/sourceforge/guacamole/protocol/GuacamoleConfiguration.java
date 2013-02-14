@@ -38,8 +38,10 @@ package net.sourceforge.guacamole.protocol;
  * ***** END LICENSE BLOCK ***** */
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * All information necessary to complete the initial protocol handshake of a
@@ -88,6 +90,26 @@ public class GuacamoleConfiguration implements Serializable {
      */
     public void setParameter(String name, String value) {
         parameters.put(name, value);
+    }
+
+    /**
+     * Removes the value set for the parameter with the given name.
+     * 
+     * @param name The name of the parameter to remove the value of.
+     */
+    public void unsetParameter(String name) {
+        parameters.remove(name);
+    }
+    
+    /**
+     * Returns a set of all currently defined parameter names. Each name
+     * corresponds to a parameter that has a value set on this
+     * GuacamoleConfiguration via setParameter().
+     * 
+     * @return A set of all currently defined parameter names.
+     */
+    public Set<String> getParameterNames() {
+        return Collections.unmodifiableSet(parameters.keySet());
     }
 
 }
