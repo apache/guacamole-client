@@ -627,10 +627,9 @@ GuacamoleService.Protocols = {
                 },
 
                 "read-only" : {
-                    "title"     : "Read-only",
-                    "type"      : "boolean",
-                    "checked"   : "true",
-                    "unchecked" : ""
+                    "title" : "Read-only",
+                    "type"  : "boolean",
+                    "value" : "true"
                 }
                 
             }
@@ -655,8 +654,18 @@ GuacamoleService.Protocols = {
                     "title" : "Port",
                     "type"  : "text",
                     "value" : "3389"
-                }
+                },
 
+                "username" : {
+                    "title" : "Username",
+                    "type"  : "text"
+                },
+ 
+                "password" : {
+                    "title" : "Password",
+                    "type"  : "password"
+                }
+ 
             }
 
         }];
