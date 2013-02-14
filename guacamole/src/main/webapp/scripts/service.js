@@ -143,10 +143,28 @@ GuacamoleService.Connections = {
 
         var connectionElements = xhr.responseXML.getElementsByTagName("connection");
         for (var i=0; i<connectionElements.length; i++) {
-            connections.push(new GuacamoleService.Connection(
-                connectionElements[i].getAttribute("protocol"),
-                connectionElements[i].getAttribute("id")
-            ));
+
+            // Create connection for each connection element
+            var connectionElement = connectionElements[i];
+            var connection = new GuacamoleService.Connection(
+                connectionElement.getAttribute("protocol"),
+                connectionElement.getAttribute("id")
+            )
+
+            // Add parameter values for each pameter received
+            var paramElements = connectionElement.getElementsByTagName("param");
+            for (var j=0; j<paramElements.length; j++) {
+
+                var paramElement = paramElements[j];
+                var name = paramElement.getAttribute("name");
+
+                connection.parameters[name] = paramElement.textContent;
+
+            }
+
+            // Add connection
+            connections.push(connection);
+            
         }
 
         return connections;

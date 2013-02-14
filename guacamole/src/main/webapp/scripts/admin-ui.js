@@ -592,7 +592,143 @@ GuacAdmin.addConnection = function(connection) {
         if (GuacAdmin.selected_connection) return;
         else GuacAdmin.selected_connection = connection.id;
 
-        /* STUB */
+        // Create form base elements
+        var form_element = GuacUI.createElement("div", "form");
+        var connection_header = GuacUI.createChildElement(form_element, "h2");
+        connection_header.textContent = connection.id;
+
+        var sections = GuacUI.createChildElement(
+            GuacUI.createChildElement(form_element, "div", "settings section"),
+            "dl");
+
+        // Parameter header
+        var protocol_header = GuacUI.createChildElement(sections, "dt")
+        protocol_header.textContent = "Protocol:";
+        
+        var protocol_field = GuacUI.createChildElement(protocol_header, "select");
+
+        // Associative set of protocols
+        var available_protocols = {};
+
+        // Add protocols
+        for (var i=0; i<GuacAdmin.cached_protocols.length; i++) {
+
+            // Get protocol and store in associative set
+            var protocol = GuacAdmin.cached_protocols[i];
+            available_protocols[protocol.name] = protocol;
+
+            // List protocol in select
+            var protocol_title = GuacUI.createChildElement(protocol_field, "option");
+            protocol_title.textContent = protocol.title;
+            protocol_title.value = protocol.name;
+
+        }
+
+        // Parameter section
+        var field_table  = GuacUI.createChildElement(
+            GuacUI.createChildElement(sections, "dd"),
+            "table", "fields section");
+
+        // Deselect
+        function deselect() {
+            GuacUI.removeClass(GuacAdmin.lists.connection_list, "disabled");
+            GuacUI.removeClass(item_element, "selected");
+            item_element.removeChild(form_element);
+            GuacAdmin.selected_connection = null;
+        }
+
+        // Select
+        function select() {
+            GuacUI.addClass(GuacAdmin.lists.connection_list, "disabled");
+            GuacUI.addClass(item_element, "selected");
+            item_element.appendChild(form_element);
+        }
+
+        // Display fields for the given protocol name 
+        function setFields(protocol_name) {
+
+            // Clear fields
+            field_table.innerHTML = "";
+
+            // Get protocol
+            var protocol = available_protocols[protocol_name];
+
+            // For each parameter
+            for (var name in protocol.parameters) {
+
+                // Get parameter
+                var parameter = protocol.parameters[name];
+
+                // Create corresponding field
+                var field = GuacUI.createChildElement(
+                        GuacUI.createTabulatedContainer(field_table, parameter.title + ":"),
+                        "input");
+
+                field.setAttribute("type", "text");
+                field.value = connection.parameters[name];
+
+                // FIXME: Handle field types
+
+            }
+
+        }
+
+        // Set initially selected protocol
+        protocol_field.value = connection.protocol;
+        setFields(connection.protocol);
+
+        // Add buttons
+        var button_div = GuacUI.createChildElement(form_element, "div", "object-buttons");
+
+        // Add save button
+        var save_button = GuacUI.createChildElement(button_div, "button");
+        save_button.textContent = "Save";
+        save_button.onclick = function(e) {
+
+            e.stopPropagation();
+
+            try {
+
+                deselect();
+                GuacAdmin.reset();
+
+            }
+            catch (e) {
+                alert(e.message);
+            }
+
+        };
+
+        // Add cancel button
+        var cancel_button = GuacUI.createChildElement(button_div, "button");
+        cancel_button.textContent = "Cancel";
+        cancel_button.onclick = function(e) {
+            e.stopPropagation();
+            deselect();
+        };
+
+        // Add delete button if permission available
+        if (connection.id in GuacAdmin.cached_permissions.remove_connection) {
+            
+            // Create button
+            var delete_button = GuacUI.createChildElement(button_div, "button");
+            delete_button.textContent = "Delete";
+            
+            // Remove selected connection when clicked
+            delete_button.onclick = function(e) {
+
+                e.stopPropagation();
+
+                GuacamoleService.Connections.remove(GuacAdmin.selected_connection);
+                deselect();
+                GuacAdmin.reset();
+
+            };
+
+        }
+
+        // Select item
+        select();
 
     };
 
