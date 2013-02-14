@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.sourceforge.guacamole.net.auth.mysql.GuacamolePermissionException;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
@@ -96,34 +97,170 @@ public class PermissionCheckUtility {
     @Inject
     Provider<MySQLConnection> mySQLConnectionProvider;
     
+    /**
+     * Verifies that the user has read access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUserID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserReadAccess(int userID, int affectedUserID) throws GuacamolePermissionException {
+        if(!checkUserReadAccess(userID, affectedUserID))
+            throw new GuacamolePermissionException("User " + userID + " does not have read access to user " + affectedUserID);
+    }
+    
+    /**
+     * Verifies that the user has update access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUserID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserUpdateAccess(int userID, int affectedUserID) throws GuacamolePermissionException {
+        if(!checkUserUpdateAccess(userID, affectedUserID))
+            throw new GuacamolePermissionException("User " + userID + " does not have update access to user " + affectedUserID);
+    }
+    
+    /**
+     * Verifies that the user has delete access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUserID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserDeleteAccess(int userID, int affectedUserID) throws GuacamolePermissionException {
+        if(!checkUserDeleteAccess(userID, affectedUserID))
+            throw new GuacamolePermissionException("User " + userID + " does not have delete access to user " + affectedUserID);
+    }
+    
+    /**
+     * Verifies that the user has administer access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUserID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserAdministerAccess(int userID, int affectedUserID) throws GuacamolePermissionException {
+        if(!checkUserAdministerAccess(userID, affectedUserID))
+            throw new GuacamolePermissionException("User " + userID + " does not have administer access to user " + affectedUserID);
+    }
+    
+    /**
+     * Verifies that the user has read access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUsername
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserReadAccess(int userID, String affectedUsername) throws GuacamolePermissionException {
+        if(!checkUserReadAccess(userID, affectedUsername))
+            throw new GuacamolePermissionException("User " + userID + " does not have read access to user '" + affectedUsername + "'");
+    }
+    
+    /**
+     * Verifies that the user has update access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUsername
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserUpdateAccess(int userID, String affectedUsername) throws GuacamolePermissionException {
+        if(!checkUserUpdateAccess(userID, affectedUsername))
+            throw new GuacamolePermissionException("User " + userID + " does not have update access to user '" + affectedUsername + "'");
+    }
+    
+    /**
+     * Verifies that the user has delete access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUsername
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserDeleteAccess(int userID, String affectedUsername) throws GuacamolePermissionException {
+        if(!checkUserDeleteAccess(userID, affectedUsername))
+            throw new GuacamolePermissionException("User " + userID + " does not have delete access to user '" + affectedUsername + "'");
+    }
+    
+    /**
+     * Verifies that the user has administer access to the given user. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedUsername
+     * @throws GuacamolePermissionException
+     */
+    public void verifyUserAdministerAccess(int userID, String affectedUsername) throws GuacamolePermissionException {
+        if(!checkUserAdministerAccess(userID, affectedUsername))
+            throw new GuacamolePermissionException("User " + userID + " does not have administer access to user '" + affectedUsername + "'");
+    }
+    
+    /**
+     * Checks if the user has read access to the given user.
+     * @param userID
+     * @param affectedUserID
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserReadAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_READ);
     }
     
+    /**
+     * Checks if the user has update access to the given user.
+     * @param userID
+     * @param affectedUserID
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserUpdateAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_UPDATE);
     }
     
+    /**
+     * Checks if the user has delete access to the given user.
+     * @param userID
+     * @param affectedUserID
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserDeleteAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_DELETE);
     }
     
+    /**
+     * Checks if the user has administer access to the given user.
+     * @param userID
+     * @param affectedUserID
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserAdministerAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_ADMINISTER);
     }
     
+    /**
+     * Checks if the user has read access to the given user.
+     * @param userID
+     * @param affectedUsername
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserReadAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_READ);
     }
     
+    /**
+     * Checks if the user has update access to the given user.
+     * @param userID
+     * @param affectedUsername
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserUpdateAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_UPDATE);
     }
     
+    /**
+     * Checks if the user has delete access to the given user.
+     * @param userID
+     * @param affectedUsername
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserDeleteAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_DELETE);
     }
     
+    /**
+     * Checks if the user has administer access to the given user.
+     * @param userID
+     * @param affectedUsername
+     * @return true if the user has access to this user.
+     */
     public boolean checkUserAdministerAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_ADMINISTER);
     }
@@ -233,36 +370,172 @@ public class PermissionCheckUtility {
         return userIDs;
     }
     
+    /**
+     * Verifies that the user has read access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionReadAccess(int userID, int affectedConnectionID) throws GuacamolePermissionException {
+        if(!checkConnectionReadAccess(userID, affectedConnectionID))
+            throw new GuacamolePermissionException("User " + userID + " does not have read access to connection " + affectedConnectionID);
+    }
+    
+    /**
+     * Verifies that the user has update access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionUpdateAccess(int userID, int affectedConnectionID) throws GuacamolePermissionException {
+        if(!checkConnectionUpdateAccess(userID, affectedConnectionID))
+            throw new GuacamolePermissionException("User " + userID + " does not have update access to connection " + affectedConnectionID);
+    }
+    
+    /**
+     * Verifies that the user has delete access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionDeleteAccess(int userID, int affectedConnectionID) throws GuacamolePermissionException {
+        if(!checkConnectionDeleteAccess(userID, affectedConnectionID))
+            throw new GuacamolePermissionException("User " + userID + " does not have delete access to connection " + affectedConnectionID);
+    }
+    
+    /**
+     * Verifies that the user has administer access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionID
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionAdministerAccess(int userID, int affectedConnectionID) throws GuacamolePermissionException {
+        if(!checkConnectionAdministerAccess(userID, affectedConnectionID))
+            throw new GuacamolePermissionException("User " + userID + " does not have administer access to connection " + affectedConnectionID);
+    }
+    
+    /**
+     * Verifies that the user has read access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionName
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionReadAccess(int userID, String affectedConnectionName) throws GuacamolePermissionException {
+        if(!checkConnectionReadAccess(userID, affectedConnectionName))
+            throw new GuacamolePermissionException("User " + userID + " does not have read access to connection '" + affectedConnectionName + "'");
+    }
+    
+    /**
+     * Verifies that the user has update access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionName
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionUpdateAccess(int userID, String affectedConnectionName) throws GuacamolePermissionException {
+        if(!checkConnectionUpdateAccess(userID, affectedConnectionName))
+            throw new GuacamolePermissionException("User " + userID + " does not have update access to connection '" + affectedConnectionName + "'");
+    }
+    
+    /**
+     * Verifies that the user has delete access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionName
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionDeleteAccess(int userID, String affectedConnectionName) throws GuacamolePermissionException {
+        if(!checkConnectionDeleteAccess(userID, affectedConnectionName))
+            throw new GuacamolePermissionException("User " + userID + " does not have delete access to connection '" + affectedConnectionName + "'");
+    }
+    
+    /**
+     * Verifies that the user has administer access to the given connection. If not, throws a GuacamolePermissionException.
+     * @param userID
+     * @param affectedConnectionName
+     * @throws GuacamolePermissionException
+     */
+    public void verifyConnectionAdministerAccess(int userID, String affectedConnectionName) throws GuacamolePermissionException {
+        if(!checkConnectionAdministerAccess(userID, affectedConnectionName))
+            throw new GuacamolePermissionException("User " + userID + " does not have administer access to connection '" + affectedConnectionName + "'");
+    }
+    
+    /**
+     * Checks if the user has read access to the given connection.
+     * @param userID
+     * @param affectedConnectionID
+     * @return true if the user has access to this connection.
+     */
     public boolean checkConnectionReadAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_READ);
     }
     
+    /**
+     * Checks if the user has update access to the given connection.
+     * @param userID
+     * @param affectedConnectionID
+     * @return true if the user has access to this connection.
+     */
     public boolean checkConnectionUpdateAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_UPDATE);
     }
     
+    /**
+     * Checks if the user has delete access to the given connection.
+     * @param userID
+     * @param affectedConnectionID
+     * @return true if the user has access to this connection.
+     */
     public boolean checkConnectionDeleteAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_DELETE);
     }
     
+    /**
+     * Checks if the user has administer access to the given connection.
+     * @param userID
+     * @param affectedConnectionID
+     * @return true if the user has access to this connection.
+     */
     public boolean checkConnectionAdministerAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
-    public boolean checkConnectionReadAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_READ);
+    /**
+     * Checks if the user has read access to the given connection.
+     * @param userID
+     * @param affectedConnectionName
+     * @return true if the user has access to this connection.
+     */
+    public boolean checkConnectionReadAccess(int userID, String affectedConnectionName) {
+        return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_READ);
     }
     
-    public boolean checkConnectionUpdateAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_UPDATE);
+    /**
+     * Checks if the user has update access to the given connection.
+     * @param userID
+     * @param affectedConnectionName
+     * @return true if the user has access to this connection.
+     */
+    public boolean checkConnectionUpdateAccess(int userID, String affectedConnectionName) {
+        return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_UPDATE);
     }
     
+    /**
+     * Checks if the user has delete access to the given connection.
+     * @param userID
+     * @param affectedConnectionID
+     * @return true if the user has access to this connection.
+     */
     public boolean checkConnectionDeleteAccess(int userID, String affectedConnectionname) {
         return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_DELETE);
     }
     
-    public boolean checkConnectionAdministerAccess(int userID, String affectedConnectionname) {
-        return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_ADMINISTER);
+    /**
+     * Checks if the user has administer access to the given connection.
+     * @param userID
+     * @param affectedConnectionName
+     * @return true if the user has access to this connection.
+     */
+    public boolean checkConnectionAdministerAccess(int userID, String affectedConnectionName) {
+        return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
     /**
@@ -368,6 +641,16 @@ public class PermissionCheckUtility {
             connectionIDs.add(permission.getConnection_id());
         
         return connectionIDs;
+    }
+    
+    public void verifyCreateUserPermission(int userID) throws GuacamolePermissionException {
+        if(!checkCreateUserPermission(userID))
+            throw new GuacamolePermissionException("User " + userID + " does not have permission to create users.");
+    }
+    
+    public void verifyCreateConnectionPermission(int userID) throws GuacamolePermissionException {
+        if(!checkCreateConnectionPermission(userID))
+            throw new GuacamolePermissionException("User " + userID + " does not have permission to create connections.");
     }
     
     /**

@@ -147,6 +147,7 @@ public class UserDirectory implements Directory<String, User> {
     @Transactional
     @Override
     public User get(String identifier) throws GuacamoleException {
+        permissionCheckUtility.verifyUserReadAccess(this.user.getUserID(), identifier);
         return getExistingMySQLUser(identifier);
     }
 
@@ -164,7 +165,10 @@ public class UserDirectory implements Directory<String, User> {
     @Override
     @Transactional
     public void add(User object) throws GuacamoleException {
+        permissionCheckUtility.verifyCreateUserPermission(this.user.getUserID());
         Preconditions.checkNotNull(object);
+        permissionCheckUtility.verifyUserUpdateAccess(user.getUserID(), object.getUsername());
+        
         //create user in database
         MySQLUser mySQLUser = getNewMySQLUser(object);
         userDAO.insert(mySQLUser.getUser());
@@ -356,6 +360,7 @@ public class UserDirectory implements Directory<String, User> {
     @Override
     @Transactional
     public void update(User object) throws GuacamoleException {
+        permissionCheckUtility.verifyUserUpdateAccess(this.user.getUserID(), object.getUsername());
         //update the user in the database
         MySQLUser mySQLUser = getExistingMySQLUser(object);
         userDAO.updateByPrimaryKey(mySQLUser.getUser());
@@ -367,6 +372,7 @@ public class UserDirectory implements Directory<String, User> {
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
+        permissionCheckUtility.verifyUserDeleteAccess(this.user.getUserID(), identifier);
         
         MySQLUser mySQLUser = getExistingMySQLUser(identifier);
         
