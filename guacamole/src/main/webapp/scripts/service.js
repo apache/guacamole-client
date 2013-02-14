@@ -614,8 +614,49 @@ GuacamoleService.Protocols = {
                     "title" : "Port",
                     "type"  : "text",
                     "value" : "5900"
+                },
+
+                "color-depth" : {
+                    "title"   : "Color depth",
+                    "type"    : "enum",
+                    "options" : {
+                        "8" : "256 colors",
+                        "16": "High color (16-bit)",
+                        "24": "True color (24-bit)"
+                    }
+                },
+
+                "read-only" : {
+                    "title"     : "Read-only",
+                    "type"      : "boolean",
+                    "checked"   : "true",
+                    "unchecked" : ""
                 }
                 
+            }
+
+        }, {
+
+            /* Unique name */
+            "name"  : "rdp",
+
+            /* Display title */
+            "title" : "RDP",
+            
+            /* All available parameters */
+            "parameters" : {
+
+                "hostname" : {
+                    "title" : "Hostname",
+                    "type"  : "text"
+                },
+                
+                "port" : {
+                    "title" : "Port",
+                    "type"  : "text",
+                    "value" : "3389"
+                }
+
             }
 
         }];
