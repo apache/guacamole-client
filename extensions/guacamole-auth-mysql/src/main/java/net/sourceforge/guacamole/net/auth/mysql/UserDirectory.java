@@ -428,40 +428,18 @@ public class UserDirectory implements Directory<String, User> {
     }
     
     /**
-     * Delete all permissions associated with the provided user.
+     * Delete all permissions associated with the provided user. This is only used when deleting a user.
      * @param user 
      */
     private void deleteAllPermissions(MySQLUser user) throws GuacamolePermissionException {
-        // Get the list of all the users and connections that the user performing the user save action has.
-        // Need to make sure the user saving this user has permission to administrate all the objects in the permission list.
-        Set<Integer> administerableUsers = permissionCheckUtility.getAdministerableUserIDs(this.user.getUserID());
-        Set<Integer> administerableConnections = permissionCheckUtility.getAdministerableConnectionIDs(this.user.getUserID());
-        
         //delete all user permissions
         UserPermissionExample userPermissionExample = new UserPermissionExample();
         userPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID());
-        List<UserPermissionKey> permissionsToDelete = userPermissionDAO.selectByExample(userPermissionExample);
-        
-        // verify that the user actually has permission to administrate every one of these users
-        for(UserPermissionKey permissionToDelete : permissionsToDelete) {
-            if(!administerableUsers.contains(permissionToDelete.getAffected_user_id()))
-                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate user " + permissionToDelete.getAffected_user_id());
-        }
-        
         userPermissionDAO.deleteByExample(userPermissionExample);
         
         //delete all connection permissions
         ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
         connectionPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID());
-        
-        //make sure the user has permission to administrate each of these connections
-        List<ConnectionPermissionKey> connectionPermissionsToDelete = connectionPermissionDAO.selectByExample(connectionPermissionExample);
-        
-        for(ConnectionPermissionKey connectionPermissionToDelete : connectionPermissionsToDelete) {
-            if(!administerableConnections.contains(connectionPermissionToDelete.getConnection_id()))
-                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate connection " + connectionPermissionToDelete.getConnection_id());
-        }
-        
         connectionPermissionDAO.deleteByExample(connectionPermissionExample);
         
         //delete all system permissions
