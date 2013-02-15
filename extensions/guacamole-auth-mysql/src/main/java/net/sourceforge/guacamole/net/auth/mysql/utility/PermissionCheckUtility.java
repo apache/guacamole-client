@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.utility;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
@@ -295,11 +296,47 @@ public class PermissionCheckUtility {
     }
     
     /**
+     * Find the list of all user IDs a user has permission to administer.
+     * @param userID
+     * @return the list of all user IDs this user has administer access to
+     */
+    public Set<Integer> getAdministerableUserIDs(int userID) {
+        return getUserIDs(userID, MySQLConstants.USER_ADMINISTER);
+    }
+    
+    /**
+     * Find the list of all user IDs a user has permission to delete.
+     * @param userID
+     * @return the list of all user IDs this user has delete access to
+     */
+    public Set<Integer> getDeletableUserIDs(int userID) {
+        return getUserIDs(userID, MySQLConstants.USER_DELETE);
+    }
+    
+    /**
+     * Find the list of all user IDs a user has permission to write.
+     * @param userID
+     * @return the list of all user IDs this user has write access to
+     */
+    public Set<Integer> getUpdateableUserIDs(int userID) {
+        return getUserIDs(userID, MySQLConstants.USER_UPDATE);
+    }
+    
+    /**
+     * Find the list of all user IDs a user has permission to read.
+     * @param userID
+     * @return the list of all user IDs this user has read access to
+     */
+    public Set<Integer> getReadableUserIDs(int userID) {
+        return getUserIDs(userID, MySQLConstants.USER_READ);
+    }
+    
+    /**
      * Find the list of all users a user has permission to administer.
      * @param userID
      * @return the list of all users this user has administer access to
      */
-    public List<MySQLUser> getAdministerableUsers(int userID) {
+    public Set<MySQLUser> getAdministerableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_ADMINISTER);
     }
     
@@ -308,7 +345,7 @@ public class PermissionCheckUtility {
      * @param userID
      * @return the list of all users this user has delete access to
      */
-    public List<MySQLUser> getDeletableUsers(int userID) {
+    public Set<MySQLUser> getDeletableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_DELETE);
     }
     
@@ -317,7 +354,7 @@ public class PermissionCheckUtility {
      * @param userID
      * @return the list of all users this user has write access to
      */
-    public List<MySQLUser> getUpdateableUsers(int userID) {
+    public Set<MySQLUser> getUpdateableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_UPDATE);
     }
     
@@ -326,7 +363,7 @@ public class PermissionCheckUtility {
      * @param userID
      * @return the list of all users this user read has access to
      */
-    public List<MySQLUser> getReadableUsers(int userID) {
+    public Set<MySQLUser> getReadableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_READ);
     }
     
@@ -337,12 +374,12 @@ public class PermissionCheckUtility {
      * @param permissionType
      * @return the list of all users this user has access to
      */
-    private List<MySQLUser> getUsers(int userID, String permissionType) {
-        List<Integer> affectedUserIDs = getUserIDs(userID, permissionType);
+    private Set<MySQLUser> getUsers(int userID, String permissionType) {
+        Set<Integer> affectedUserIDs = getUserIDs(userID, permissionType);
         UserExample example = new UserExample();
-        example.createCriteria().andUser_idIn(affectedUserIDs);
+        example.createCriteria().andUser_idIn(Lists.newArrayList(affectedUserIDs));
         List<UserWithBLOBs> userDBOjects = userDAO.selectByExampleWithBLOBs(example);
-        List<MySQLUser> affectedUsers = new ArrayList<MySQLUser>();
+        Set<MySQLUser> affectedUsers = new HashSet<MySQLUser>();
         for(UserWithBLOBs affectedUser : userDBOjects) {
             MySQLUser mySQLUser = mySQLUserProvider.get();
             mySQLUser.init(affectedUser);
@@ -359,8 +396,8 @@ public class PermissionCheckUtility {
      * @param permissionType
      * @return the list of all user IDs this user has access to
      */
-    private List<Integer> getUserIDs(int userID, String permissionType) {
-        List<Integer> userIDs = new ArrayList<Integer>();
+    private Set<Integer> getUserIDs(int userID, String permissionType) {
+        Set<Integer> userIDs = new HashSet<Integer>();
         UserPermissionExample example = new UserPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
         List<UserPermissionKey> userPermissions = userPermissionDAO.selectByExample(example);
@@ -568,38 +605,74 @@ public class PermissionCheckUtility {
     }
     
     /**
-     * Find the list of all connections a user has permission to administer.
-     * @param connectionID
-     * @return the list of all connections this connection has administer access to
+     * Find the list of all connection IDs a user has permission to administer.
+     * @param userID
+     * @return the list of all connection IDs this user has administer access to
      */
-    public List<MySQLConnection> getAdministerableConnections(int userID) {
+    public Set<Integer> getAdministerableConnectionIDs(int userID) {
+        return getConnectionIDs(userID, MySQLConstants.CONNECTION_ADMINISTER);
+    }
+    
+    /**
+     * Find the list of all connection IDs a user has permission to delete.
+     * @param userID
+     * @return the list of all connection IDs this user has delete access to
+     */
+    public Set<Integer> getDeletableConnectionIDs(int userID) {
+        return getConnectionIDs(userID, MySQLConstants.CONNECTION_DELETE);
+    }
+    
+    /**
+     * Find the list of all connection IDs a user has permission to write.
+     * @param userID
+     * @return the list of all connection IDs this user has write access to
+     */
+    public Set<Integer> getUpdateableConnectionIDs(int userID) {
+        return getConnectionIDs(userID, MySQLConstants.CONNECTION_UPDATE);
+    }
+    
+    /**
+     * Find the list of all connection IDs a user has permission to read.
+     * @param userID
+     * @return the list of all connection IDs this user has ready access to
+     */
+    public Set<Integer> getReadableConnectionIDs(int userID) {
+        return getConnectionIDs(userID, MySQLConstants.CONNECTION_READ);
+    }
+    
+    /**
+     * Find the list of all connections a user has permission to administer.
+     * @param userID
+     * @return the list of all connections this user has administer access to
+     */
+    public Set<MySQLConnection> getAdministerableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_ADMINISTER);
     }
     
     /**
      * Find the list of all connections a user has permission to delete.
-     * @param connectionID
-     * @return the list of all connections this connection has delete access to
+     * @param userID
+     * @return the list of all connections this user has delete access to
      */
-    public List<MySQLConnection> getDeletableConnections(int userID) {
+    public Set<MySQLConnection> getDeletableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_DELETE);
     }
     
     /**
      * Find the list of all connections a user has permission to write.
-     * @param connectionID
-     * @return the list of all connections this connection has write access to
+     * @param userID
+     * @return the list of all connections this user has write access to
      */
-    public List<MySQLConnection> getUpdateableConnections(int userID) {
+    public Set<MySQLConnection> getUpdateableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_UPDATE);
     }
     
     /**
      * Find the list of all connections a user has permission to read.
-     * @param connectionID
-     * @return the list of all connections this connection read has access to
+     * @param userID
+     * @return the list of all connections this user has read access to
      */
-    public List<MySQLConnection> getReadableConnections(int userID) {
+    public Set<MySQLConnection> getReadableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_READ);
     }
     
@@ -610,12 +683,12 @@ public class PermissionCheckUtility {
      * @param permissionType
      * @return the list of all connections this user has access to
      */
-    private List<MySQLConnection> getConnections(int userID, String permissionType) {
-        List<Integer> affectedConnectionIDs = getConnectionIDs(userID, permissionType);
+    private Set<MySQLConnection> getConnections(int userID, String permissionType) {
+        Set<Integer> affectedConnectionIDs = getConnectionIDs(userID, permissionType);
         ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idIn(affectedConnectionIDs);
+        example.createCriteria().andConnection_idIn(Lists.newArrayList(affectedConnectionIDs));
         List<Connection> connectionDBOjects = connectionDAO.selectByExample(example);
-        List<MySQLConnection> affectedConnections = new ArrayList<MySQLConnection>();
+        Set<MySQLConnection> affectedConnections = new HashSet<MySQLConnection>();
         for(Connection affectedConnection : connectionDBOjects) {
             MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
             mySQLConnection.init(affectedConnection);
@@ -632,8 +705,8 @@ public class PermissionCheckUtility {
      * @param permissionType
      * @return the list of all connection IDs this user has access to
      */
-    private List<Integer> getConnectionIDs(int userID, String permissionType) {
-        List<Integer> connectionIDs = new ArrayList<Integer>();
+    private Set<Integer> getConnectionIDs(int userID, String permissionType) {
+        Set<Integer> connectionIDs = new HashSet<Integer>();
         ConnectionPermissionExample example = new ConnectionPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
         List<ConnectionPermissionKey> connectionPermissions = connectionPermissionDAO.selectByExample(example);

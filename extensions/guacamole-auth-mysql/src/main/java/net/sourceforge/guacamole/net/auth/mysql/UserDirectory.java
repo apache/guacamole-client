@@ -155,7 +155,7 @@ public class UserDirectory implements Directory<String, User> {
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
         Set<String> userNameSet = new HashSet<String>();
-        List<MySQLUser> users = permissionCheckUtility.getReadableUsers(user.getUserID());
+        Set<MySQLUser> users = permissionCheckUtility.getReadableUsers(user.getUserID());
         for(MySQLUser mySQLUser : users) {
             userNameSet.add(mySQLUser.getUsername());
         }
@@ -189,6 +189,11 @@ public class UserDirectory implements Directory<String, User> {
         List<ConnectionPermission> connectionPermissions = new ArrayList<ConnectionPermission>();
         List<SystemPermission> systemPermissions = new ArrayList<SystemPermission>();
         
+        // Get the list of all the users and connections that the user performing the user save action has.
+        // Need to make sure the user saving this user has permission to administrate all the objects in the permission list.
+        Set<Integer> administerableUsers = permissionCheckUtility.getAdministerableUserIDs(this.user.getUserID());
+        Set<Integer> administerableConnections = permissionCheckUtility.getAdministerableConnectionIDs(this.user.getUserID());
+        
         for(Permission permission : user.getPermissions()) {
             if(permission instanceof UserPermission)
                 userPermissions.add((UserPermission)permission);
@@ -198,8 +203,8 @@ public class UserDirectory implements Directory<String, User> {
                 systemPermissions.add((SystemPermission)permission);
         }
         
-        updateUserPermissions(userPermissions, user);
-        updateConnectionPermissions(connectionPermissions, user);
+        updateUserPermissions(userPermissions, user, administerableUsers);
+        updateConnectionPermissions(connectionPermissions, user, administerableConnections);
         updateSystemPermissions(systemPermissions, user);
     }
     
@@ -208,7 +213,7 @@ public class UserDirectory implements Directory<String, User> {
      * @param permissions
      * @param user 
      */
-    private void updateUserPermissions(Iterable<UserPermission> permissions, MySQLUser user) throws GuacamoleException {
+    private void updateUserPermissions(Iterable<UserPermission> permissions, MySQLUser user, Set<Integer> administerableUsers) throws GuacamoleException {
         
         List<String> usernames = new ArrayList<String>();
         for(UserPermission permission : permissions) {
@@ -239,6 +244,14 @@ public class UserDirectory implements Directory<String, User> {
         // delete any permissions that are not in the provided list
         userPermissionExample.clear();
         userPermissionExample.createCriteria().andAffected_user_idNotIn(userIDs);
+        List<UserPermissionKey> permissionsToDelete = userPermissionDAO.selectByExample(userPermissionExample);
+        
+        // verify that the user actually has permission to administrate every one of these users
+        for(UserPermissionKey permissionToDelete : permissionsToDelete) {
+            if(!administerableUsers.contains(permissionToDelete.getAffected_user_id()))
+                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate user " + permissionToDelete.getAffected_user_id());
+        }
+        
         userPermissionDAO.deleteByExample(userPermissionExample);
         
         // finally, insert the new permissions
@@ -250,6 +263,11 @@ public class UserDirectory implements Directory<String, User> {
             // the permission for this user already exists, we don't need to create it again
             if(existingUserIDs.contains(dbAffectedUser.getUser_id()))
                 continue;
+            
+            
+            // verify that the user actually has permission to administrate every one of these users
+            if(!administerableUsers.contains(dbAffectedUser.getUser_id()))
+                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate user " + dbAffectedUser.getUser_id());
             
             UserPermissionKey newPermission = new UserPermissionKey();
             newPermission.setAffected_user_id(dbAffectedUser.getUser_id());
@@ -264,7 +282,7 @@ public class UserDirectory implements Directory<String, User> {
      * @param permissions
      * @param user 
      */
-    private void updateConnectionPermissions(Iterable<ConnectionPermission> permissions, MySQLUser user) throws GuacamoleException {
+    private void updateConnectionPermissions(Iterable<ConnectionPermission> permissions, MySQLUser user, Set<Integer> administerableConnections) throws GuacamoleException {
         
         List<String> connectionnames = new ArrayList<String>();
         for(ConnectionPermission permission : permissions) {
@@ -295,6 +313,15 @@ public class UserDirectory implements Directory<String, User> {
         // delete any permissions that are not in the provided list
         connectionPermissionExample.clear();
         connectionPermissionExample.createCriteria().andConnection_idNotIn(connectionIDs);
+        
+        //make sure the user has permission to administrate each of these connections
+        List<ConnectionPermissionKey> connectionPermissionsToDelete = connectionPermissionDAO.selectByExample(connectionPermissionExample);
+        
+        for(ConnectionPermissionKey connectionPermissionToDelete : connectionPermissionsToDelete) {
+            if(!administerableConnections.contains(connectionPermissionToDelete.getConnection_id()))
+                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate connection " + connectionPermissionToDelete.getConnection_id());
+        }
+        
         connectionPermissionDAO.deleteByExample(connectionPermissionExample);
         
         // finally, insert the new permissions
@@ -306,6 +333,10 @@ public class UserDirectory implements Directory<String, User> {
             // the permission for this connection already exists, we don't need to create it again
             if(existingConnectionIDs.contains(dbConnection.getConnection_id()))
                 continue;
+            
+            if(!administerableConnections.contains(dbConnection.getConnection_id()))
+                throw new GuacamolePermissionException("User '" + this.user.getUsername() + "' does not have permission to administrate connection " + dbConnection.getConnection_id());
+        
             
             ConnectionPermissionKey newPermission = new ConnectionPermissionKey();
             newPermission.setConnection_id(dbConnection.getConnection_id());

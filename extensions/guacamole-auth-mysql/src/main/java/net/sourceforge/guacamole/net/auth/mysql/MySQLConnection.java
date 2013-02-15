@@ -30,7 +30,23 @@ public class MySQLConnection implements Connection {
      */
     MySQLConnection() {
         connection = new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
-    } 
+    }
+    
+    /**
+     * Get the ID of the underlying connection record.
+     * @return the ID of the underlying connection
+     */
+    public int getConnectionID() {
+        return connection.getConnection_id();
+    }
+    
+    /**
+     * Get the underlying connection database record.
+     * @return the underlying connection record.
+     */
+    public net.sourceforge.guacamole.net.auth.mysql.model.Connection getConnection() {
+        return connection;
+    }
     
     /**
      * Load an existing connection by name.
@@ -82,4 +98,10 @@ public class MySQLConnection implements Connection {
         throw new UnsupportedOperationException("Not supported yet.");
     }
     
+    @Override
+    public boolean equals(Object other) {
+        if(!(other instanceof MySQLConnection))
+            return false;
+        return ((MySQLConnection)other).getConnectionID() == this.getConnectionID();
+    }
 }

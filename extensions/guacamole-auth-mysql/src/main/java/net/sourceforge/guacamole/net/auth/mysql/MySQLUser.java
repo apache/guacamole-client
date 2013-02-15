@@ -202,4 +202,11 @@ public class MySQLUser implements User {
     public void removePermission(Permission permission) throws GuacamoleException {
         permissions.remove(permission);
     }
+    
+    @Override
+    public boolean equals(Object other) {
+        if(!(other instanceof MySQLUser))
+            return false;
+        return ((MySQLUser)other).getUserID() == this.getUserID();
+    }
 }
