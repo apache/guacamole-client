@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
@@ -99,4 +100,20 @@ public interface Connection {
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException;
     
+    /**
+     * Returns a list of ConnectionRecords representing the usage history
+     * of this Connection, including any active users. ConnectionRecords
+     * in this list will be sorted in descending order of end time (active
+     * connections are first), and then in descending order of start time
+     * (newer connections are first).
+     * 
+     * @return A list of ConnectionRecrods representing the usage history
+     *         of this Connection.
+     * 
+     * @throws GuacamoleException If an error occurs while reading the history
+     *                            of this connection, or if permission is
+     *                            denied.
+     */
+    public List<ConnectionRecord> getHistory() throws GuacamoleException;
+            
 }
