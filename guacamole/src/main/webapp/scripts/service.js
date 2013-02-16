@@ -46,6 +46,58 @@ GuacamoleService.Connection = function(protocol, id) {
      */
     this.parameters = {};
 
+    /**
+     * An array of GuacamoleService.Connection.Record listing the usage
+     * history of this connection.
+     */
+    this.history = [];
+
+};
+
+/**
+ * Creates a new GuacamoleService.Connection.Record describing a single
+ * session for the given username and having the given start/end times.
+ * 
+ * @constructor
+ * @param {String} username The username of the user who used the connection.
+ * @param {Number} start The time that the connection began (in UNIX epoch
+ *                       milliseconds).
+ * @param {Number} end The time that the connection ended (in UNIX epoch
+ *                     milliseconds). This parameter is optional.
+ */
+GuacamoleService.Connection.Record = function(username, start, end) {
+    
+    /**
+     * The username of the user associated with this record.
+     * @type String
+     */
+    this.username = username;
+    
+    /**
+     * The time the corresponding connection began.
+     * @type Date
+     */
+    this.start = new Date(start);
+
+    /**
+     * The time the corresponding connection terminated (if any).
+     * @type Date
+     */
+    this.end = null;
+
+    /**
+     * The duration of this connection, in seconds. This value is only
+     * defined if the end time is available.
+     * @type Number
+     */
+    this.duration = null;
+
+    // If end time given, intialize end time
+    if (end) {
+        this.end = new Date(end);
+        this.duration = (end - start) / 1000;
+    }
+    
 };
 
 /**
@@ -151,14 +203,40 @@ GuacamoleService.Connections = {
                 connectionElement.getAttribute("id")
             )
 
+            var j;
+
             // Add parameter values for each pameter received
             var paramElements = connectionElement.getElementsByTagName("param");
-            for (var j=0; j<paramElements.length; j++) {
+            for (j=0; j<paramElements.length; j++) {
 
                 var paramElement = paramElements[j];
                 var name = paramElement.getAttribute("name");
 
                 connection.parameters[name] = paramElement.textContent;
+
+            }
+
+            // Parse history, if available
+            var historyElements = connectionElement.getElementsByTagName("history");
+            if (historyElements.length == 1) {
+
+                // For each record in history
+                var history = historyElements[0];
+                var recordElements = history.getElementsByTagName("record");
+                for (j=0; j<recordElements.length; j++) {
+
+                    // Get record
+                    var recordElement = recordElements[j];
+                    var record = new GuacamoleService.Connection.Record(
+                        recordElement.textContent,
+                        parseInt(recordElement.getAttribute("start")),
+                        parseInt(recordElement.getAttribute("end"))
+                    );
+
+                    // Append to connection history
+                    connection.history.push(record);
+
+                }
 
             }
 
