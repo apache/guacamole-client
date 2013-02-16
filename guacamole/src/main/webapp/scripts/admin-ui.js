@@ -755,20 +755,20 @@ GuacAdmin.reset = function() {
     }
 
     /*
-     * Add readable users and connections.
+     * Add readable users.
      */
 
-    var i;
-
     GuacAdmin.lists.user_list.innerHTML = "";
-    var readable_users = Object.keys(GuacAdmin.cached_permissions.read_user).sort();
-    for (i=0; i<readable_users.length; i++)
-        GuacAdmin.addUser(readable_users[i])
+    for (var name in GuacAdmin.cached_permissions.read_user)
+        GuacAdmin.addUser(name)
+
+    /*
+     * Add readable connections.
+     */
 
     GuacAdmin.lists.connection_list.innerHTML = "";
-    var readable_connections = Object.keys(GuacAdmin.cached_permissions.read_connection).sort();
-    for (i=0; i<readable_connections.length; i++)
-        GuacAdmin.addConnection(readable_connections[i]);
+    for (var i=0; i<GuacAdmin.cached_connections.length; i++)
+        GuacAdmin.addConnection(GuacAdmin.cached_connections[i]);
 
 };
 
