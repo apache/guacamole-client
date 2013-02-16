@@ -1,9 +1,11 @@
 
 package net.sourceforge.guacamole.net.basic.crud.connections;
 
+import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnection;
+import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -21,6 +23,11 @@ public class DummyConnection extends AbstractConnection {
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
         throw new UnsupportedOperationException("Connection unsuppported in DummyConnection.");
+    }
+
+    @Override
+    public List<ConnectionRecord> getHistory() throws GuacamoleException {
+        throw new UnsupportedOperationException("History unsuppported in DummyConnection.");
     }
 
 }
