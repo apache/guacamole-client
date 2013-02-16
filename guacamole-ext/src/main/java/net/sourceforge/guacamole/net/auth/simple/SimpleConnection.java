@@ -37,10 +37,13 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.Collections;
+import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnection;
+import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
@@ -99,6 +102,11 @@ public class SimpleConnection extends AbstractConnection {
                 config, info
         );
         
+    }
+
+    @Override
+    public List<ConnectionRecord> getHistory() throws GuacamoleException {
+        return Collections.EMPTY_LIST;
     }
 
 }
