@@ -28,6 +28,7 @@ import javax.xml.stream.XMLStreamWriter;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -186,8 +187,6 @@ public class List extends AuthenticatingHttpServlet {
                         String value = connection.getConfiguration().getParameter(name);
                         xml.writeStartElement("param");
                         xml.writeAttribute("name", name);
-                        xml.writeAttribute("title", name);
-                        xml.writeAttribute("type", "text");
 
                         if (value != null)
                             xml.writeCharacters(value);
@@ -196,6 +195,27 @@ public class List extends AuthenticatingHttpServlet {
                     }
 
                 }
+
+                // Write history
+                xml.writeStartElement("history");
+                for (ConnectionRecord record : connection.getHistory()) {
+                    xml.writeStartElement("record");
+
+                    // Start date
+                    xml.writeAttribute("start",
+                        Long.toString(record.getStartDate().getTime()));
+
+                    // End date
+                    if (record.getEndDate() != null)
+                        xml.writeAttribute("end",
+                            Long.toString(record.getEndDate().getTime()));
+                    
+                    // User involved
+                    xml.writeCharacters(record.getUser().getUsername());
+
+                    xml.writeEndElement();
+                }
+                xml.writeEndElement();
 
                 xml.writeEndElement();
 
