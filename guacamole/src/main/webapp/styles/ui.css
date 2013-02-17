@@ -363,3 +363,9 @@ div#logout-panel {
     text-align: right;
     float: right;
 }
+
+.history th,
+.history td {
+    padding-left: 1em;
+    padding-right: 1em;
+}

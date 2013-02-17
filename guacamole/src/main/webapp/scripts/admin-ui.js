@@ -281,6 +281,51 @@ GuacAdmin.hasEntry = function(object) {
 };
 
 /**
+ * Given a Date, returns a formatted String.
+ * 
+ * @param {Date} date The date tor format.
+ * @return {String} A formatted String.
+ */
+GuacAdmin.formatDate = function(date) {
+
+    var month = date.getMonth() + 1;
+    var day   = date.getDate();
+    var year  = date.getFullYear();
+
+    var hour   = date.getHours();
+    var minute = date.getMinutes();
+    var second = date.getSeconds();
+
+    return      ("00" +  month).slice(-2)
+        + "/" + ("00" +    day).slice(-2)
+        + "/" + year
+        + " " + ("00" +   hour).slice(-2)
+        + ":" + ("00" + minute).slice(-2)
+        + ":" + ("00" + second).slice(-2);
+
+};
+
+/**
+ * Given a number of seconds, returns a String representing that length
+ * of time in a human-readable format.
+ * 
+ * @param {Number} seconds The number of seconds.
+ * @return {String} A human-readable description of the duration specified.
+ */
+GuacAdmin.formatSeconds = function(seconds) {
+
+    function round(value) {
+        return Math.round(value * 10) / 10;
+    }
+
+    if (seconds < 60)    return round(seconds)        + " seconds";
+    if (seconds < 3600)  return round(seconds / 60)   + " minutes";
+    if (seconds < 86400) return round(seconds / 3600) + " hours";
+    return round(seconds / 86400) + " days";
+
+};
+
+/**
  * Adds the user with the given name to the displayed user list.
  */
 GuacAdmin.addUser = function(name) {
@@ -487,6 +532,8 @@ GuacAdmin.addConnection = function(connection) {
         if (GuacAdmin.selected_connection) return;
         else GuacAdmin.selected_connection = connection.id;
 
+        var i;
+
         // Create form base elements
         var form_element = GuacUI.createElement("div", "form");
         var connection_header = GuacUI.createChildElement(form_element, "h2");
@@ -509,7 +556,7 @@ GuacAdmin.addConnection = function(connection) {
         var fields = {};
 
         // Add protocols
-        for (var i=0; i<GuacAdmin.cached_protocols.length; i++) {
+        for (i=0; i<GuacAdmin.cached_protocols.length; i++) {
 
             // Get protocol and store in associative set
             var protocol = GuacAdmin.cached_protocols[i];
@@ -526,6 +573,58 @@ GuacAdmin.addConnection = function(connection) {
         var field_table  = GuacUI.createChildElement(
             GuacUI.createChildElement(sections, "dd"),
             "table", "fields section");
+
+        // History header
+        var history_header = GuacUI.createChildElement(sections, "dt")
+        history_header.textContent = "Usage History:";
+
+        // If history present, display as table
+        if (connection.history.length > 0) {
+
+            // History section
+            var history_table  = GuacUI.createChildElement(
+                GuacUI.createChildElement(sections, "dd"),
+                "table", "history section");
+
+            var history_table_header = GuacUI.createChildElement(
+                history_table, "tr");
+
+            GuacUI.createChildElement(history_table_header, "th").textContent =
+                "Username";
+
+            GuacUI.createChildElement(history_table_header, "th").textContent =
+                "Start Time";
+
+            GuacUI.createChildElement(history_table_header, "th").textContent =
+                "Duration";
+
+            // Add history
+            for (i=0; i<connection.history.length; i++) {
+
+                // Get record
+                var record = connection.history[i];
+
+                // Create record elements
+                var row = GuacUI.createChildElement(history_table, "tr");
+                var user = GuacUI.createChildElement(row, "td", "username");
+                var start = GuacUI.createChildElement(row, "td", "start");
+                var duration = GuacUI.createChildElement(row, "td", "duration");
+
+                // Display record
+                user.textContent = record.username;
+                start.textContent = GuacAdmin.formatDate(record.start);
+                if (record.duration)
+                    duration.textContent = GuacAdmin.formatSeconds(record.duration);
+                else
+                    duration.textContent = "Active now";
+
+            }
+
+        }
+        else
+            GuacUI.createChildElement(
+                GuacUI.createChildElement(sections, "dd"), "p").textContent =
+                    "This connection has not yet been used.";
 
         // Deselect
         function deselect() {
