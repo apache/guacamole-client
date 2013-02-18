@@ -22,23 +22,23 @@
  */
 var GuacAdmin = {
 
-    "lists" : {
-        "connection_list" :  document.getElementById("connection-list"),
-        "user_list"       :  document.getElementById("user-list")
+    "containers" : {
+        "connection_list"         : document.getElementById("connection-list"),
+        "user_list"               : document.getElementById("user-list"),
+        "user_list_buttons"       : document.getElementById("user-list-buttons"),
+        "connection_list_buttons" : document.getElementById("connection-list-buttons")
     },
 
-    "user_list_buttons" :  document.getElementById("user-list-buttons"),
-
     "buttons" : {
-        "back"           :  document.getElementById("back"),
-        "logout"         :  document.getElementById("logout"),
-        "add_connection" :  document.getElementById("add-connection"),
-        "add_user"       :  document.getElementById("add-user")
+        "back"           : document.getElementById("back"),
+        "logout"         : document.getElementById("logout"),
+        "add_connection" : document.getElementById("add-connection"),
+        "add_user"       : document.getElementById("add-user")
     },
 
     "fields" : {
-        "connection_id" :  document.getElementById("connection-id"),
-        "username"      :  document.getElementById("username")
+        "connection_id" : document.getElementById("connection-id"),
+        "username"      : document.getElementById("username")
     },
 
     "cached_permissions" : null,
@@ -530,7 +530,7 @@ GuacAdmin.addUser = function(name) {
 
         // Deselect
         function deselect() {
-            GuacUI.removeClass(GuacAdmin.lists.user_list, "disabled");
+            GuacUI.removeClass(GuacAdmin.containers.user_list, "disabled");
             GuacUI.removeClass(item_element, "selected");
             item_element.removeChild(form_element);
             GuacAdmin.selected_user = null;
@@ -538,7 +538,7 @@ GuacAdmin.addUser = function(name) {
 
         // Select
         function select() {
-            GuacUI.addClass(GuacAdmin.lists.user_list, "disabled");
+            GuacUI.addClass(GuacAdmin.containers.user_list, "disabled");
             GuacUI.addClass(item_element, "selected");
             item_element.appendChild(form_element);
         }
@@ -686,13 +686,18 @@ GuacAdmin.addUser = function(name) {
 };
 
 /**
+ * Currently-defined pager for connections, if any.
+ */
+GuacAdmin.connectionPager = null;
+
+/**
  * Adds the given connection to the displayed connection list.
  */
 GuacAdmin.addConnection = function(connection) {
 
     var item = new GuacAdmin.ListItem("connection", connection.id);
     var item_element = item.getElement();
-    GuacAdmin.lists.connection_list.appendChild(item_element);
+    GuacAdmin.connectionPager.addElement(item_element);
 
     item_element.onclick = function() {
 
@@ -796,7 +801,7 @@ GuacAdmin.addConnection = function(connection) {
 
         // Deselect
         function deselect() {
-            GuacUI.removeClass(GuacAdmin.lists.connection_list, "disabled");
+            GuacUI.removeClass(GuacAdmin.containers.connection_list, "disabled");
             GuacUI.removeClass(item_element, "selected");
             item_element.removeChild(form_element);
             GuacAdmin.selected_connection = null;
@@ -804,7 +809,7 @@ GuacAdmin.addConnection = function(connection) {
 
         // Select
         function select() {
-            GuacUI.addClass(GuacAdmin.lists.connection_list, "disabled");
+            GuacUI.addClass(GuacAdmin.containers.connection_list, "disabled");
             GuacUI.addClass(item_element, "selected");
             item_element.appendChild(form_element);
         }
@@ -1031,17 +1036,17 @@ GuacAdmin.reset = function() {
         user_previous_page = GuacAdmin.userPager.current_page;
 
     // Add new pager
-    GuacAdmin.lists.user_list.innerHTML = "";
-    GuacAdmin.userPager = new GuacAdmin.Pager(GuacAdmin.lists.user_list);
+    GuacAdmin.containers.user_list.innerHTML = "";
+    GuacAdmin.userPager = new GuacAdmin.Pager(GuacAdmin.containers.user_list);
 
     // Add users to pager
     for (var name in GuacAdmin.cached_permissions.read_user)
         GuacAdmin.addUser(name)
 
     // If more than one page, add navigation buttons
-    GuacAdmin.user_list_buttons.innerHTML = "";
+    GuacAdmin.containers.user_list_buttons.innerHTML = "";
     if (GuacAdmin.userPager.last_page != 0)
-        GuacAdmin.user_list_buttons.appendChild(GuacAdmin.userPager.getElement());
+        GuacAdmin.containers.user_list_buttons.appendChild(GuacAdmin.userPager.getElement());
 
     // Set starting page
     GuacAdmin.userPager.setPage(Math.min(GuacAdmin.userPager.last_page,
@@ -1051,9 +1056,28 @@ GuacAdmin.reset = function() {
      * Add readable connections.
      */
 
-    GuacAdmin.lists.connection_list.innerHTML = "";
+    // Get previous page, if any
+    var connection_previous_page = 0;
+    if (GuacAdmin.connectionPager)
+        connection_previous_page = GuacAdmin.connectionPager.current_page;
+
+    // Add new pager
+    GuacAdmin.containers.connection_list.innerHTML = "";
+    GuacAdmin.connectionPager = new GuacAdmin.Pager(GuacAdmin.containers.connection_list);
+
+    // Add connections to pager
     for (var i=0; i<GuacAdmin.cached_connections.length; i++)
         GuacAdmin.addConnection(GuacAdmin.cached_connections[i]);
+
+    // If more than one page, add navigation buttons
+    GuacAdmin.containers.connection_list_buttons.innerHTML = "";
+    if (GuacAdmin.connectionPager.last_page != 0)
+        GuacAdmin.containers.connection_list_buttons.appendChild(
+            GuacAdmin.connectionPager.getElement());
+
+    // Set starting page
+    GuacAdmin.connectionPager.setPage(Math.min(GuacAdmin.connectionPager.last_page,
+            connection_previous_page));
 
 };
 
