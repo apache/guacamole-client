@@ -287,7 +287,7 @@ GuacAdmin.Pager = function(container) {
     /**
      * The number of pages to generate a window for.
      */
-    this.window_size = 5;
+    this.window_size = 11;
 
     /**
      * The current page, where 0 is the first page.

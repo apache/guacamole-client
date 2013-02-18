@@ -416,6 +416,7 @@ div#logout-panel {
     background-image: url('../images/action-icons/guac-last-page.png');
 }
 
-#user-list-buttons {
+#user-list-buttons,
+#connection-list-buttons {
     text-align: center;
 }
