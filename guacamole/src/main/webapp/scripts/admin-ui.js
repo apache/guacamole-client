@@ -27,6 +27,8 @@ var GuacAdmin = {
         "user_list"       :  document.getElementById("user-list")
     },
 
+    "user_list_buttons" :  document.getElementById("user-list-buttons"),
+
     "buttons" : {
         "back"           :  document.getElementById("back"),
         "logout"         :  document.getElementById("logout"),
@@ -351,13 +353,21 @@ GuacAdmin.Pager = function(container) {
         // Add page jumps
         for (i=window_start; i<=window_end; i++) {
 
+            // Create clickable element containing page number
             var jump = GuacUI.createChildElement(element, "div", "set-page");
             jump.textContent = i+1;
-            (function(page_number) {
-                jump.onclick = function() {
-                    guac_pager.setPage(page_number);
-                };
-            })(i);
+            
+            // Mark current page
+            if (i == guac_pager.current_page)
+                GuacUI.addClass(jump, "current");
+
+            // If not current, add click event
+            else
+                (function(page_number) {
+                    jump.onclick = function() {
+                        guac_pager.setPage(page_number);
+                    };
+                })(i);
 
         }
 
@@ -479,6 +489,11 @@ GuacAdmin.formatSeconds = function(seconds) {
 };
 
 /**
+ * Currently-defined pager for users, if any.
+ */
+GuacAdmin.userPager = null;
+
+/**
  * Adds the user with the given name to the displayed user list.
  */
 GuacAdmin.addUser = function(name) {
@@ -486,7 +501,7 @@ GuacAdmin.addUser = function(name) {
     // Create user list item
     var item = new GuacAdmin.ListItem("user", name);
     var item_element = item.getElement();
-    GuacAdmin.lists.user_list.appendChild(item_element);
+    GuacAdmin.userPager.addElement(item_element);
 
     // When clicked, build and display property form
     item_element.onclick = function() {
@@ -1010,9 +1025,27 @@ GuacAdmin.reset = function() {
      * Add readable users.
      */
 
+    // Get previous page, if any
+    var user_previous_page = 0;
+    if (GuacAdmin.userPager)
+        user_previous_page = GuacAdmin.userPager.current_page;
+
+    // Add new pager
     GuacAdmin.lists.user_list.innerHTML = "";
+    GuacAdmin.userPager = new GuacAdmin.Pager(GuacAdmin.lists.user_list);
+
+    // Add users to pager
     for (var name in GuacAdmin.cached_permissions.read_user)
         GuacAdmin.addUser(name)
+
+    // If more than one page, add navigation buttons
+    GuacAdmin.user_list_buttons.innerHTML = "";
+    if (GuacAdmin.userPager.last_page != 0)
+        GuacAdmin.user_list_buttons.appendChild(GuacAdmin.userPager.getElement());
+
+    // Set starting page
+    GuacAdmin.userPager.setPage(Math.min(GuacAdmin.userPager.last_page,
+            user_previous_page));
 
     /*
      * Add readable connections.

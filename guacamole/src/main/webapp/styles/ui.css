@@ -394,6 +394,12 @@ div#logout-panel {
     padding: 0.25em;
 }
 
+.set-page.current {
+    cursor: auto;
+    text-decoration: none;
+    font-weight: bold;
+}
+
 .icon.first-page {
     background-image: url('../images/action-icons/guac-first-page.png');
 }
@@ -408,4 +414,8 @@ div#logout-panel {
 
 .icon.last-page {
     background-image: url('../images/action-icons/guac-last-page.png');
+}
+
+#user-list-buttons {
+    text-align: center;
 }
