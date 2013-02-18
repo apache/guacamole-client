@@ -962,6 +962,11 @@ GuacAdmin.reset = function() {
     GuacAdmin.cached_protocols   = GuacamoleService.Protocols.list();
     GuacAdmin.cached_connections = GuacamoleService.Connections.list();
 
+    // Sort connections by ID
+    GuacAdmin.cached_connections.sort(function(a, b) {
+        return a.id.localeCompare(b.id);
+    });
+
     // Connection management
     if (GuacAdmin.cached_permissions.create_connection
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.update_connection)
@@ -1026,6 +1031,8 @@ GuacAdmin.reset = function() {
 
     }
 
+    var i;
+
     /*
      * Add readable users.
      */
@@ -1040,8 +1047,9 @@ GuacAdmin.reset = function() {
     GuacAdmin.userPager = new GuacAdmin.Pager(GuacAdmin.containers.user_list);
 
     // Add users to pager
-    for (var name in GuacAdmin.cached_permissions.read_user)
-        GuacAdmin.addUser(name)
+    var usernames = Object.keys(GuacAdmin.cached_permissions.read_user).sort();
+    for (i=0; i<usernames.length; i++)
+        GuacAdmin.addUser(usernames[i]);
 
     // If more than one page, add navigation buttons
     GuacAdmin.containers.user_list_buttons.innerHTML = "";
@@ -1066,7 +1074,7 @@ GuacAdmin.reset = function() {
     GuacAdmin.connectionPager = new GuacAdmin.Pager(GuacAdmin.containers.connection_list);
 
     // Add connections to pager
-    for (var i=0; i<GuacAdmin.cached_connections.length; i++)
+    for (i=0; i<GuacAdmin.cached_connections.length; i++)
         GuacAdmin.addConnection(GuacAdmin.cached_connections[i]);
 
     // If more than one page, add navigation buttons
