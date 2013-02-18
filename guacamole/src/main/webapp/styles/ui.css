@@ -369,3 +369,43 @@ div#logout-panel {
     padding-left: 1em;
     padding-right: 1em;
 }
+
+.first-page,
+.prev-page,
+.set-page,
+.next-page,
+.last-page {
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.first-page.disabled,
+.prev-page.disabled,
+.set-page.disabled,
+.next-page.disabled,
+.last-page.disabled {
+    cursor: auto;
+    opacity: 0.25;
+}
+
+.set-page {
+    text-decoration: underline;
+    display: inline-block;
+    padding: 0.25em;
+}
+
+.icon.first-page {
+    background-image: url('../images/action-icons/guac-first-page.png');
+}
+
+.icon.prev-page {
+    background-image: url('../images/action-icons/guac-prev-page.png');
+}
+
+.icon.next-page {
+    background-image: url('../images/action-icons/guac-next-page.png');
+}
+
+.icon.last-page {
+    background-image: url('../images/action-icons/guac-last-page.png');
+}

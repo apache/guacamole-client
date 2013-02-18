@@ -255,6 +255,159 @@ GuacAdmin.ListItem = function(type, title) {
 
 };
 
+/**
+ * A paging component. Elements can be added via the addElement() function,
+ * and will only be shown if they are on the current page, set via setPage().
+ * 
+ * Beware that all elements will be added to the given container element, and
+ * all children of the container element will be removed when the page is
+ * changed.
+ */
+GuacAdmin.Pager = function(container) {
+
+    var guac_pager = this;
+
+    /**
+     * A container for all pager control buttons.
+     */
+    var element = GuacUI.createElement("div", "pager");
+
+    /**
+     * All displayable elements.
+     */
+    var elements = [];
+
+    /**
+     * The number of elements to display per page.
+     */
+    this.page_capacity = 10;
+
+    /**
+     * The number of pages to generate a window for.
+     */
+    this.window_size = 5;
+
+    /**
+     * The current page, where 0 is the first page.
+     */
+    this.current_page = 0;
+
+    /**
+     * The last existing page.
+     */
+    this.last_page = 0;
+
+    function update_display() {
+
+        var i;
+
+        // Calculate first and last elements of page (where the last element
+        // is actually the first element of the next page)
+        var first_element = guac_pager.current_page * guac_pager.page_capacity;
+        var last_element  = Math.min(elements.length,
+                first_element + guac_pager.page_capacity);
+
+        // Clear contents, add elements
+        container.innerHTML = "";
+        for (i=first_element; i < last_element; i++)
+            container.appendChild(elements[i]);
+
+        // Update buttons
+        element.innerHTML = "";
+
+        // Create first and prev buttons
+        var first = GuacUI.createChildElement(element, "div", "first-page icon");
+        var prev = GuacUI.createChildElement(element, "div", "prev-page icon");
+
+        // Handle prev/first
+        if (guac_pager.current_page > 0) {
+            first.onclick = function() {
+                guac_pager.setPage(0);
+            };
+
+            prev.onclick = function() {
+                guac_pager.setPage(guac_pager.current_page - 1);
+            };
+        }
+        else {
+            GuacUI.addClass(first, "disabled");
+            GuacUI.addClass(prev, "disabled");
+        }
+
+        // Calculate page jump window start/end
+        var window_start = guac_pager.current_page - (guac_pager.window_size - 1) / 2;
+        var window_end = window_start + guac_pager.window_size - 1;
+
+        // Shift window as necessary
+        if (window_start < 0) {
+            window_end = Math.min(guac_pager.last_page, window_end - window_start);
+            window_start = 0;
+        }
+        else if (window_end > guac_pager.last_page) {
+            window_start = Math.max(0, window_start - window_end + guac_pager.last_page);
+            window_end = guac_pager.last_page;
+        }
+        
+        // Add page jumps
+        for (i=window_start; i<=window_end; i++) {
+
+            var jump = GuacUI.createChildElement(element, "div", "set-page");
+            jump.textContent = i+1;
+            (function(page_number) {
+                jump.onclick = function() {
+                    guac_pager.setPage(page_number);
+                };
+            })(i);
+
+        }
+
+        // Create next and last buttons
+        var next = GuacUI.createChildElement(element, "div", "next-page icon");
+        var last = GuacUI.createChildElement(element, "div", "last-page icon");
+
+        // Handle next/last
+        if (guac_pager.current_page < guac_pager.last_page) {
+            next.onclick = function() {
+                guac_pager.setPage(guac_pager.current_page + 1);
+            };
+            
+            last.onclick = function() {
+                guac_pager.setPage(guac_pager.last_page);
+            };
+        }
+        else {
+            GuacUI.addClass(next, "disabled");
+            GuacUI.addClass(last, "disabled");
+        }
+
+    }
+
+    /**
+     * Adds the given element to the set of displayable elements.
+     */
+    this.addElement = function(element) {
+        elements.push(element);
+        guac_pager.last_page = Math.max(0,
+            Math.floor((elements.length - 1) / guac_pager.page_capacity));
+    };
+
+    /**
+     * Sets the current page, where 0 is the first page.
+     */
+    this.setPage = function(number) {
+        guac_pager.current_page = number;
+        update_display();
+    };
+
+    /**
+     * Returns the element representing the buttons of this pager.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+};
+
 /*
  * Set handler for logout
  */
