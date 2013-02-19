@@ -433,3 +433,8 @@ div#logout-panel {
     text-align: center;
     margin: 1em;
 }
+
+.list-pager-buttons {
+    text-align: center;
+    margin: 1em;
+}

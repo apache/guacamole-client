@@ -410,13 +410,28 @@ GuacAdmin.addUser = function(name) {
             // Add fields for per-connection checkboxes
             var connections_header = GuacUI.createChildElement(sections, "dt");
             connections_header.textContent = "Connections:";
+
+            var connections_section = GuacUI.createChildElement(sections, "dd");
+
+            // Actual paged connections list
             var connections = GuacUI.createChildElement(
-                GuacUI.createChildElement(sections, "dd"),
-                "div", "list");
+                connections_section, "div", "list");
 
-            for (var conn in GuacAdmin.cached_permissions.administer_connection) {
+            // Button div
+            var connections_buttons = GuacUI.createChildElement(
+                connections_section, "div", "list-pager-buttons");
 
-                var connection       = GuacUI.createChildElement(connections, "div", "connection");
+            // Create pager which populates list
+            var connections_pager = new GuacUI.Pager(connections);
+
+            // Add connections to pager
+            var available_connections =
+                Object.keys(GuacAdmin.cached_permissions.administer_connection).sort();
+            for (var i=0; i<available_connections.length; i++) {
+
+                var conn = available_connections[i];
+
+                var connection       = GuacUI.createElement("div", "connection");
                 var connection_field = GuacUI.createChildElement(connection, "input");
                 var connection_name  = GuacUI.createChildElement(connection, "span", "name");
 
@@ -438,8 +453,16 @@ GuacAdmin.addUser = function(name) {
                 };
 
                 connection_name.textContent = conn;
+                connections_pager.addElement(connection);
 
             }
+
+            // If more than one page, show buttons
+            if (connections_pager.last_page != 0)
+                connections_buttons.appendChild(connections_pager.getElement());
+
+            // Start at page 0
+            connections_pager.setPage(0);
 
         }
 
