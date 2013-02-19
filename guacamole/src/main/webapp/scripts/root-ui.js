@@ -26,7 +26,8 @@ var GuacamoleRootUI = {
     "sections": {
         "login_form"         : document.getElementById("login-form"),
         "recent_connections" : document.getElementById("recent-connections"),
-        "all_connections"  : document.getElementById("all-connections")
+        "all_connections"    : document.getElementById("all-connections"),
+        "all_connections_buttons" : document.getElementById("all-connections-buttons")
     },
 
     "messages": {
@@ -144,6 +145,9 @@ GuacamoleRootUI.reset = function() {
     try {
         connections = GuacamoleService.Connections.list(parameters);
 
+        // Sort connections by ID
+        connections.sort(GuacamoleService.Connections.comparator);
+
         // Show admin elements if admin permissions available
         var permissions = GuacamoleService.Permissions.list();
         if (permissions.create_connection
@@ -169,6 +173,10 @@ GuacamoleRootUI.reset = function() {
 
     }
 
+    // Create pager for connections
+    var connection_pager = new GuacUI.Pager(GuacamoleRootUI.sections.all_connections);
+    connection_pager.page_capacity = 20;
+
     // Add connection icons
     for (var i=0; i<connections.length; i++) {
 
@@ -183,10 +191,18 @@ GuacamoleRootUI.reset = function() {
             GuacamoleRootUI.addRecentConnection(connection);
 
         // Add connection to connection list
-        GuacamoleRootUI.sections.all_connections.appendChild(
+        connection_pager.addElement(
             new GuacUI.Connection(connections[i]).getElement());
 
     }
+
+    // Add buttons if more than one page
+    if (connection_pager.last_page != 0)
+        GuacamoleRootUI.sections.all_connections_buttons.appendChild(
+            connection_pager.getElement());
+
+    // Start at page 0
+    connection_pager.setPage(0);
 
     // If connections could be retrieved, display list
     GuacamoleRootUI.views.login.style.display = "none";

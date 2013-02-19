@@ -388,16 +388,28 @@ div#logout-panel {
     opacity: 0.25;
 }
 
-.set-page {
-    text-decoration: underline;
+.set-page,
+.more-pages {
     display: inline-block;
     padding: 0.25em;
+    text-align: center;
+    min-width: 1.25em;
+}
+
+.set-page {
+    text-decoration: underline;
 }
 
 .set-page.current {
     cursor: auto;
     text-decoration: none;
     font-weight: bold;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
 }
 
 .icon.first-page {
@@ -419,4 +431,5 @@ div#logout-panel {
 #user-list-buttons,
 #connection-list-buttons {
     text-align: center;
+    margin: 1em;
 }

@@ -242,8 +242,14 @@ div#recent-connections,
 div#clipboardDiv,
 div#settings,
 div#all-connections {
-    margin: 0;
-    padding: 1em;
+    margin: 1em;
+    padding: 0;
+}
+
+#all-connections-buttons {
+    text-align: center;
+    margin: 1em;
+    padding: 0;
 }
 
 div#recent-connections {

@@ -165,6 +165,13 @@ GuacamoleService.PermissionSet = function() {
  */
 GuacamoleService.Connections = {
 
+    /**
+     * Comparator which compares two GuacamoleService.Connection objects.
+     */
+    "comparator" : function(a, b) {
+        return a.id.localeCompare(b.id);
+    },
+
      /**
       * Returns an array of Connections for which the current user has access.
       * 
