@@ -91,7 +91,6 @@ public class MySQLConnection implements Connection {
      * @param connection 
      */
     public void initNew(Connection connection) {
-        configuration = connection.getConfiguration();
         this.connection.setConnection_name(connection.getIdentifier());
         this.configuration = connection.getConfiguration();
     }
@@ -150,7 +149,19 @@ public class MySQLConnection implements Connection {
     public boolean equals(Object other) {
         if(!(other instanceof MySQLConnection))
             return false;
-        return ((MySQLConnection)other).getConnectionID() == this.getConnectionID();
+        boolean idsAreEqual = ((MySQLConnection)other).getConnectionID() == this.getConnectionID();
+        // they are both new, check if they have the same name
+        if(idsAreEqual && this.getConnectionID() == 0)
+            return this.getIdentifier().equals(((MySQLConnection)other).getIdentifier());
+        return idsAreEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 73 * hash + getConnectionID();
+        hash = 73 * hash + getIdentifier().hashCode();
+        return hash;
     }
     
     @Override

@@ -207,6 +207,18 @@ public class MySQLUser implements User {
     public boolean equals(Object other) {
         if(!(other instanceof MySQLUser))
             return false;
-        return ((MySQLUser)other).getUserID() == this.getUserID();
+        boolean idsAreEqual = ((MySQLUser)other).getUserID() == this.getUserID();
+        // they are both new, check if they have the same name
+        if(idsAreEqual && this.getUserID() == 0)
+            return this.getUsername().equals(((MySQLUser)other).getUsername());
+        return idsAreEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 73 * hash + getUserID();
+        hash = 73 * hash + getUsername().hashCode();
+        return hash;
     }
 }
