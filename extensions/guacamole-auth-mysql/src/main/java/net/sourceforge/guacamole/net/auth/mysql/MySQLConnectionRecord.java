@@ -36,51 +36,67 @@
 package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
-import net.sourceforge.guacamole.GuacamoleException;
+import java.util.Date;
 import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
+import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
 
 /**
- * The MySQL representation of a UserContext.
+ *
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
-    
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-    
-    @Inject
-    private MySQLUser user;
-    
-    @Inject
-    private UserDirectory userDirectory;
+public class MySQLConnectionRecord implements ConnectionRecord {
+
+    /**
+     * The database record that this ConnectionRecord represents.
+     */
+    private ConnectionHistory connectionHistory;
     
     @Inject
-    private ConnectionDirectory connectionDirectory;
+    UserMapper userDAO;
     
-    void init(Credentials credentials) throws GuacamoleException {
-        user.init(credentials);
-        userDirectory.init(user);
-        connectionDirectory.init(user);
+    @Inject
+    ConnectionMapper connectionDAO;
+    
+    @Inject
+    ProviderUtility providerUtility;
+    
+    /**
+     * Initialize this MySQLConnectionRecord with the database record it represents.
+     * @param connectionHistory 
+     */
+    public void init(ConnectionHistory connectionHistory) {
+        this.connectionHistory = connectionHistory;
+    }
+    
+    @Override
+    public Date getStartDate() {
+        return connectionHistory.getStart_date();
     }
 
     @Override
-    public User self() {
-        return user;
+    public Date getEndDate() {
+        return connectionHistory.getEnd_date();
     }
 
     @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        return userDirectory;
+    public User getUser() {
+        return providerUtility.getExistingMySQLUser(connectionHistory.getUser_id());
     }
 
     @Override
-    public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
-        return connectionDirectory;
+    public Connection getConnection() {
+        return providerUtility.getExistingMySQLConnection(connectionHistory.getConnection_id());
+    }
+
+    @Override
+    public boolean isActive() {
+        // if the end date hasn't been stored yet, the connection is still open.
+        return connectionHistory.getEnd_date() == null;
     }
     
 }

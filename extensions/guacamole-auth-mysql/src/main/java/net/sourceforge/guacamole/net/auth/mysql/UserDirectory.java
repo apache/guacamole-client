@@ -37,7 +37,6 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,6 +60,7 @@ import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
+import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -100,7 +100,7 @@ public class UserDirectory implements Directory<String, User> {
     PermissionCheckUtility permissionCheckUtility;
     
     @Inject
-    Provider<MySQLUser> mySQLUserProvider;
+    ProviderUtility providerUtility;
     
     /**
      * Set the user for this directory.
@@ -110,45 +110,11 @@ public class UserDirectory implements Directory<String, User> {
         this.user = user;
     }
     
-    /**
-     * Create a new user based on the provided object.
-     * @param user
-     * @return
-     * @throws GuacamoleException 
-     */
-    private MySQLUser getNewMySQLUser(User user) throws GuacamoleException {
-        MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.initNew(user);
-        return mySQLUser;
-    }
-    
-    /**
-     * Get the user based on the username of the provided object.
-     * @param user
-     * @return
-     * @throws GuacamoleException 
-     */
-    private MySQLUser getExistingMySQLUser(User user) throws GuacamoleException {
-        return getExistingMySQLUser(user.getUsername());
-    }
-    
-    /**
-     * Get the user based on the username of the provided object.
-     * @param user
-     * @return
-     * @throws GuacamoleException 
-     */
-    private MySQLUser getExistingMySQLUser(String name) throws GuacamoleException {
-        MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.initExisting(name);
-        return mySQLUser;
-    }
-    
     @Transactional
     @Override
     public User get(String identifier) throws GuacamoleException {
         permissionCheckUtility.verifyUserReadAccess(this.user.getUserID(), identifier);
-        return getExistingMySQLUser(identifier);
+        return providerUtility.getExistingMySQLUser(identifier);
     }
 
     @Transactional
@@ -167,10 +133,9 @@ public class UserDirectory implements Directory<String, User> {
     public void add(User object) throws GuacamoleException {
         permissionCheckUtility.verifyCreateUserPermission(this.user.getUserID());
         Preconditions.checkNotNull(object);
-        permissionCheckUtility.verifyUserUpdateAccess(user.getUserID(), object.getUsername());
         
         //create user in database
-        MySQLUser mySQLUser = getNewMySQLUser(object);
+        MySQLUser mySQLUser = providerUtility.getNewMySQLUser(object);
         userDAO.insert(mySQLUser.getUser());
         
         //create permissions in database
@@ -406,7 +371,7 @@ public class UserDirectory implements Directory<String, User> {
     public void update(User object) throws GuacamoleException {
         permissionCheckUtility.verifyUserUpdateAccess(this.user.getUserID(), object.getUsername());
         //update the user in the database
-        MySQLUser mySQLUser = getExistingMySQLUser(object);
+        MySQLUser mySQLUser = providerUtility.getExistingMySQLUser(object);
         userDAO.updateByPrimaryKey(mySQLUser.getUser());
         
         //update permissions in database
@@ -418,7 +383,7 @@ public class UserDirectory implements Directory<String, User> {
     public void remove(String identifier) throws GuacamoleException {
         permissionCheckUtility.verifyUserDeleteAccess(this.user.getUserID(), identifier);
         
-        MySQLUser mySQLUser = getExistingMySQLUser(identifier);
+        MySQLUser mySQLUser = providerUtility.getExistingMySQLUser(identifier);
         
         //delete all the user permissions in the database
         deleteAllPermissions(mySQLUser);

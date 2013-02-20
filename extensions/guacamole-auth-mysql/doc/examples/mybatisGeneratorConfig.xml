@@ -63,6 +63,11 @@
       <property name="useActualColumnNames" value="true"/>
     </table>
 
+    <!-- Set catalog to the name of the database that contains the guacamole authentication tables. -->
+    <table catalog="guacamole" tableName="guacamole_connection_history" domainObjectName="ConnectionHistory" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
   </context>
 </generatorConfiguration>
 

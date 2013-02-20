@@ -124,7 +124,7 @@ public class MySQLUser implements User {
         List<UserWithBLOBs> userList = userDAO.selectByExampleWithBLOBs(example);
         if(userList.size() > 1) // this should never happen; the unique constraint should prevent it
             throw new GuacamoleException("Multiple users found with username '" + username + "'.");
-        if(userList.size() == 0)
+        if(userList.isEmpty())
             throw new GuacamoleException("No user found with username '" + username + "'.");
         
         this.user = userList.get(0);
