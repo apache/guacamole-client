@@ -114,6 +114,6 @@ public interface Connection {
      *                            of this connection, or if permission is
      *                            denied.
      */
-    public List<ConnectionRecord> getHistory() throws GuacamoleException;
+    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
             
 }
