@@ -39,6 +39,7 @@ package net.sourceforge.guacamole.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Deque;
 import java.util.LinkedList;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleServerException;
@@ -210,7 +211,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         int elementStart = 0;
 
         // Build list of elements
-        LinkedList<String> elements = new LinkedList<String>();
+        Deque<String> elements = new LinkedList<String>();
         while (elementStart < instructionBuffer.length) {
 
             // Find end of length

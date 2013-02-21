@@ -39,7 +39,6 @@ package net.sourceforge.guacamole.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * An abstract representation of Guacamole client information, including all

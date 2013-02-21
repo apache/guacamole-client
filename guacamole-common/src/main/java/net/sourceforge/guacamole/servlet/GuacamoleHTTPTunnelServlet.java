@@ -36,13 +36,22 @@ package net.sourceforge.guacamole.servlet;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import net.sourceforge.guacamole.*;
+import net.sourceforge.guacamole.GuacamoleClientException;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleResourceNotFoundException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
