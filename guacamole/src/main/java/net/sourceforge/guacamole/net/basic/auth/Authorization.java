@@ -1,12 +1,5 @@
 package net.sourceforge.guacamole.net.basic.auth;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
-import java.util.TreeMap;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -24,6 +17,13 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  *  You should have received a copy of the GNU Affero General Public License
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+import java.util.TreeMap;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Mapping of username/password pair to configuration set. In addition to basic
@@ -100,7 +100,7 @@ public class Authorization {
         // Convert each byte into a pair of hex digits
         for (byte b : bytes) {
             hex.append(HEX_CHARS[(b & 0xF0) >> 4])
-               .append(HEX_CHARS[(b & 0x0F)     ]);
+               .append(HEX_CHARS[ b & 0x0F      ]);
         }
 
         // Return the string produced

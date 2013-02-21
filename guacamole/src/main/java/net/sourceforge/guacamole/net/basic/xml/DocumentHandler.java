@@ -18,6 +18,7 @@ package net.sourceforge.guacamole.net.basic.xml;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.Deque;
 import java.util.LinkedList;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -49,7 +50,7 @@ public class DocumentHandler extends DefaultHandler {
      * parsed at that level of the document, where the current element is
      * last in the stack, and the root element is first.
      */
-    private LinkedList<DocumentHandlerState> stack =
+    private Deque<DocumentHandlerState> stack =
             new LinkedList<DocumentHandlerState>();
 
     /**
