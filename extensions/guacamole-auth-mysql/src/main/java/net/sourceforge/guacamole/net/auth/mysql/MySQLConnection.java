@@ -136,7 +136,7 @@ public class MySQLConnection implements Connection {
     }
 
     @Override
-    public void setConfiguration(GuacamoleConfiguration config) throws GuacamoleException {
+    public void setConfiguration(GuacamoleConfiguration config) {
         this.configuration = config;
     }
 
