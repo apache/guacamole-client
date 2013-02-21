@@ -46,22 +46,22 @@ public class Update extends AuthenticatingHttpServlet {
      * String given for directory creation permission.
      */
     private static final String CREATE_PERMISSION = "create";
-    
+
     /**
      * Prefix given before an object identifier for read permission.
      */
     private static final String READ_PREFIX   = "read:";
-    
+
     /**
      * Prefix given before an object identifier for delete permission.
      */
     private static final String DELETE_PREFIX = "delete:";
-    
+
     /**
      * Prefix given before an object identifier for update permission.
      */
     private static final String UPDATE_PREFIX = "update:";
-    
+
     /**
      * Prefix given before an object identifier for administration permission.
      */
@@ -69,7 +69,7 @@ public class Update extends AuthenticatingHttpServlet {
 
     /**
      * Given a permission string, returns the corresponding user permission.
-     * 
+     *
      * @param str The permission string to parse.
      * @return The parsed user permission.
      * @throws GuacamoleException If the given string could not be parsed.
@@ -80,18 +80,18 @@ public class Update extends AuthenticatingHttpServlet {
         // Create permission
         if (str.equals(CREATE_PERMISSION))
             return new UserDirectoryPermission(SystemPermission.Type.CREATE);
-        
+
         // Read
         if (str.startsWith(READ_PREFIX))
             return new UserPermission(ObjectPermission.Type.READ,
                     str.substring(READ_PREFIX.length()));
-        
-        // Update 
+
+        // Update
         if (str.startsWith(UPDATE_PREFIX))
             return new UserPermission(ObjectPermission.Type.UPDATE,
                     str.substring(UPDATE_PREFIX.length()));
 
-        // Delete 
+        // Delete
         if (str.startsWith(DELETE_PREFIX))
             return new UserPermission(ObjectPermission.Type.DELETE,
                     str.substring(DELETE_PREFIX.length()));
@@ -100,15 +100,15 @@ public class Update extends AuthenticatingHttpServlet {
         if (str.startsWith(ADMIN_PREFIX))
             return new UserPermission(ObjectPermission.Type.ADMINISTER,
                     str.substring(ADMIN_PREFIX.length()));
-        
+
         throw new GuacamoleException("Invalid permission string.");
-        
+
     }
 
     /**
      * Given a permission string, returns the corresponding connection
      * permission.
-     * 
+     *
      * @param str The permission string to parse.
      * @return The parsed connection permission.
      * @throws GuacamoleException If the given string could not be parsed.
@@ -119,18 +119,18 @@ public class Update extends AuthenticatingHttpServlet {
         // Create permission
         if (str.equals(CREATE_PERMISSION))
             return new ConnectionDirectoryPermission(SystemPermission.Type.CREATE);
-        
+
         // Read
         if (str.startsWith(READ_PREFIX))
             return new ConnectionPermission(ObjectPermission.Type.READ,
                     str.substring(READ_PREFIX.length()));
-        
-        // Update 
+
+        // Update
         if (str.startsWith(UPDATE_PREFIX))
             return new ConnectionPermission(ObjectPermission.Type.UPDATE,
                     str.substring(UPDATE_PREFIX.length()));
 
-        // Delete 
+        // Delete
         if (str.startsWith(DELETE_PREFIX))
             return new ConnectionPermission(ObjectPermission.Type.DELETE,
                     str.substring(DELETE_PREFIX.length()));
@@ -139,11 +139,11 @@ public class Update extends AuthenticatingHttpServlet {
         if (str.startsWith(ADMIN_PREFIX))
             return new ConnectionPermission(ObjectPermission.Type.ADMINISTER,
                     str.substring(ADMIN_PREFIX.length()));
-        
+
         throw new GuacamoleException("Invalid permission string.");
-        
+
     }
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -153,7 +153,7 @@ public class Update extends AuthenticatingHttpServlet {
         // Create user as specified
         String username = request.getParameter("name");
         String password = request.getParameter("password");
-        
+
         try {
 
             // Attempt to get user directory
@@ -165,7 +165,7 @@ public class Update extends AuthenticatingHttpServlet {
             user.setUsername(username);
             if (password != null)
                 user.setPassword(password);
-            
+
             // Set user permissions
             String[] user_permission = request.getParameterValues("user");
             if (user_permission != null) {
@@ -179,15 +179,15 @@ public class Update extends AuthenticatingHttpServlet {
                 for (String str : connection_permission)
                     user.addPermission(parseConnectionPermission(str));
             }
-            
+
             // Update user
             directory.update(user);
-            
+
         }
         catch (GuacamoleException e) {
             throw new ServletException("Unable to update user.", e);
         }
- 
+
     }
 
 }

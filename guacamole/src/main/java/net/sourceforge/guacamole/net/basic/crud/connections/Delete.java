@@ -43,21 +43,21 @@ public class Delete extends AuthenticatingHttpServlet {
 
         // Get ID
         String identifier = request.getParameter("id");
-        
+
         try {
 
             // Attempt to get connection directory
             Directory<String, Connection> directory =
                     context.getConnectionDirectory();
-           
+
             // Remove connection
             directory.remove(identifier);
- 
+
         }
         catch (GuacamoleException e) {
             throw new ServletException("Unable to remove connection.", e);
         }
-        
+
     }
 
 }

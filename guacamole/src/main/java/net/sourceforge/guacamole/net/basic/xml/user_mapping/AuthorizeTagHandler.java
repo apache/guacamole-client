@@ -26,8 +26,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "authorize" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class AuthorizeTagHandler implements TagHandler {
 
@@ -43,11 +43,11 @@ public class AuthorizeTagHandler implements TagHandler {
      * tags occur outside a "connection" tag.
      */
     private GuacamoleConfiguration default_config = null;
-    
+
     /**
      * Creates a new handler for an "authorize" tag having the given
      * attributes.
-     * 
+     *
      * @param attributes The attributes of the "authorize" tag.
      * @throws SAXException If the attributes given are not valid.
      */
@@ -73,9 +73,9 @@ public class AuthorizeTagHandler implements TagHandler {
             else
                 throw new SAXException(
                         "Invalid encoding: '" + encoding + "'");
-            
+
         }
-        
+
     }
 
     @Override
@@ -90,7 +90,7 @@ public class AuthorizeTagHandler implements TagHandler {
             // Store configuration stub
             GuacamoleConfiguration config_stub = tagHandler.asGuacamoleConfiguration();
             authorization.addConfiguration(tagHandler.getName(), config_stub);
-            
+
             return tagHandler;
         }
 
@@ -119,7 +119,7 @@ public class AuthorizeTagHandler implements TagHandler {
         }
 
         return null;
-        
+
     }
 
     @Override
@@ -132,12 +132,12 @@ public class AuthorizeTagHandler implements TagHandler {
      * handler. This Authorization is guaranteed to at least have the username,
      * password, and encoding available. Any associated configurations will be
      * added dynamically as the authorize tag is parsed.
-     * 
+     *
      * @return An Authorization backed by the data of this authorize tag
      *         handler.
      */
     public Authorization asAuthorization() {
         return authorization;
     }
-    
+
 }

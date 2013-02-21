@@ -24,14 +24,14 @@ import org.xml.sax.SAXException;
 /**
  * A simple element-level event handler for events triggered by the
  * SAX-driven DocumentHandler parser.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public interface TagHandler {
 
     /**
      * Called when a child element of the current element is parsed.
-     * 
+     *
      * @param localName The local name of the child element seen.
      * @param attributes The attributes of the child element seen.
      * @return The TagHandler which should handle all element-level events
@@ -42,16 +42,16 @@ public interface TagHandler {
      */
     public TagHandler childElement(String localName, Attributes attributes)
             throws SAXException;
-   
+
     /**
      * Called when this element, and all child elements, have been fully parsed,
      * and the entire text content of this element (if any) is available.
-     * 
+     *
      * @param textContent The full text content of this element, if any.
      * @throws SAXException If the text content received is not valid for any
      *                      reason, or the child elements parsed are not
      *                      correct.
      */
     public void complete(String textContent) throws SAXException;
-    
+
 }

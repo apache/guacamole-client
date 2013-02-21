@@ -177,12 +177,12 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             // Get connection directory
             Directory<String, Connection> directory = context.getConnectionDirectory();
-                
+
             // If no credentials in session, not authorized
             if (credentials == null)
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
-            // Get authorized connection 
+            // Get authorized connection
             Connection connection = directory.get(id);
             if (connection == null) {
                 logger.warn("Connection id={} not found.", id);
@@ -193,7 +193,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             // Get client information
             GuacamoleClientInformation info = new GuacamoleClientInformation();
-           
+
             // Set width if provided
             String width  = request.getParameter("width");
             if (width != null)
@@ -203,12 +203,12 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             String height = request.getParameter("height");
             if (height != null)
                 info.setOptimalScreenHeight(Integer.parseInt(height));
-           
+
             // Add audio mimetypes
             String[] audio_mimetypes = request.getParameterValues("audio");
             if (audio_mimetypes != null)
                 info.getAudioMimetypes().addAll(Arrays.asList(audio_mimetypes));
-            
+
             // Add video mimetypes
             String[] video_mimetypes = request.getParameterValues("video");
             if (video_mimetypes != null)

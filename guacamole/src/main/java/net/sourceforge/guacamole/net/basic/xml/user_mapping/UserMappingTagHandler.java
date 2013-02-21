@@ -26,8 +26,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "user-mapping" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class UserMappingTagHandler implements TagHandler {
 
@@ -35,13 +35,13 @@ public class UserMappingTagHandler implements TagHandler {
      * The UserMapping which will contain all data parsed by this tag handler.
      */
     private UserMapping user_mapping = new UserMapping();
-    
+
     @Override
     public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
 
         // Start parsing of authorize tags, add to list of all authorizations
         if (localName.equals("authorize")) {
-           
+
             // Get tag handler for authorize tag
             AuthorizeTagHandler tagHandler =
                     new AuthorizeTagHandler(attributes);
@@ -49,13 +49,13 @@ public class UserMappingTagHandler implements TagHandler {
             // Store authorization stub in map of authorizations
             Authorization auth_stub = tagHandler.asAuthorization();
             user_mapping.addAuthorization(auth_stub);
-            
+
             return tagHandler;
-            
+
         }
 
         return null;
-        
+
     }
 
     @Override
@@ -70,12 +70,12 @@ public class UserMappingTagHandler implements TagHandler {
      * in the object returned by this function even after this function has
      * returned, once the data corresponding to those authorizations or
      * configurations has been parsed.
-     * 
+     *
      * @return A user mapping containing all authorizations and configurations
      *         parsed so far.
      */
     public UserMapping asUserMapping() {
         return user_mapping;
     }
-    
+
 }

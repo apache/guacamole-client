@@ -81,7 +81,7 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
      * the XML file specified by the "basic-user-mapping" property in
      * guacamole.properties. If the XML file has been modified or has not yet
      * been read, this function may reread the file.
-     * 
+     *
      * @return A UserMapping containing all authorization data within the
      *         user mapping XML file.
      * @throws GuacamoleException If the user mapping property is missing or
@@ -106,7 +106,7 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
                 // Get handler for root element
                 UserMappingTagHandler userMappingHandler =
                         new UserMappingTagHandler();
-                
+
                 // Set up document handler
                 DocumentHandler contentHandler = new DocumentHandler(
                         "user-mapping", userMappingHandler);

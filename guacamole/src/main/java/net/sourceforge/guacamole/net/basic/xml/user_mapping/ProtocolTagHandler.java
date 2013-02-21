@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "protocol" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class ProtocolTagHandler implements TagHandler {
 
@@ -35,11 +35,11 @@ public class ProtocolTagHandler implements TagHandler {
      * the tag handled by this tag handler.
      */
     private GuacamoleConfiguration config;
-    
+
     /**
      * Creates a new handler for a "protocol" tag having the given
      * attributes.
-     * 
+     *
      * @param config The GuacamoleConfiguration to update with the data parsed
      *               from the "protocol" tag.
      * @throws SAXException If the attributes given are not valid.
@@ -57,5 +57,5 @@ public class ProtocolTagHandler implements TagHandler {
     public void complete(String textContent) throws SAXException {
         config.setProtocol(textContent);
     }
-   
+
 }

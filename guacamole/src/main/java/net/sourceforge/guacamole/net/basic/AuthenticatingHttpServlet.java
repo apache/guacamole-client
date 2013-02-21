@@ -290,12 +290,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * Function called after the credentials given in the request (if any)
      * are authenticated. If the current session is not associated with
      * valid credentials, this function will not be called.
-     * 
+     *
      * @param context The current UserContext.
      * @param request The HttpServletRequest being serviced.
      * @param response An HttpServletResponse which controls the HTTP response
      *                 of this servlet.
-     * 
+     *
      * @throws ServletException If an error occurs that interferes with the
      *                          normal operation of this servlet.
      * @throws IOException If an error occurs that prevents this servlet from

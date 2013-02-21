@@ -41,22 +41,22 @@ public class Delete extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
 
-        // Get username 
+        // Get username
         String username = request.getParameter("name");
-        
+
         try {
 
             // Attempt to get user directory
             Directory<String, User> directory = context.getUserDirectory();
-           
-            // Remove user 
+
+            // Remove user
             directory.remove(username);
- 
+
         }
         catch (GuacamoleException e) {
             throw new ServletException("Unable to remove user.", e);
         }
-        
+
     }
 
 }

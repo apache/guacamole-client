@@ -52,11 +52,11 @@ public class List extends AuthenticatingHttpServlet {
      * Checks whether the given user has permission to perform the given
      * system operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
-     * 
+     *
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @return true if permission is granted, false otherwise.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasConfigPermission(User user, SystemPermission.Type type)
@@ -81,13 +81,13 @@ public class List extends AuthenticatingHttpServlet {
      * Checks whether the given user has permission to perform the given
      * object operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
-     * 
+     *
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @param identifier The identifier of the connection the operation
      *                   would be performed upon.
      * @return true if permission is granted, false otherwise.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasConfigPermission(User user, ObjectPermission.Type type,
@@ -110,7 +110,7 @@ public class List extends AuthenticatingHttpServlet {
         }
 
     }
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -123,7 +123,7 @@ public class List extends AuthenticatingHttpServlet {
         // Write XML content type
         response.setHeader("Content-Type", "text/xml");
 
-        // Attempt to get connections 
+        // Attempt to get connections
         Directory<String, Connection> directory;
         try {
 
@@ -134,28 +134,28 @@ public class List extends AuthenticatingHttpServlet {
         catch (GuacamoleException e) {
             throw new ServletException("Unable to retrieve connections.", e);
         }
-       
+
         // Write actual XML
         try {
 
-            // Get self 
+            // Get self
             User self = context.self();
-            
+
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
 
             // Begin document
             xml.writeStartDocument();
             xml.writeStartElement("connections");
-            
+
             // Save connection create permission attribute
             if (hasConfigPermission(self, SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
-            
+
             // For each entry, write corresponding connection element
             for (String identifier : directory.getIdentifiers()) {
 
-                // Get connection 
+                // Get connection
                 Connection connection = directory.get(identifier);
 
                 // Write connection
@@ -168,12 +168,12 @@ public class List extends AuthenticatingHttpServlet {
                 if (hasConfigPermission(self, ObjectPermission.Type.ADMINISTER,
                         identifier))
                     xml.writeAttribute("admin", "yes");
-                
+
                 // Save delete permission attribute
                 if (hasConfigPermission(self, ObjectPermission.Type.DELETE,
                         identifier))
                     xml.writeAttribute("delete", "yes");
-                
+
                 // Save update permission attribute, include parameters
                 if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
                         identifier)) {
@@ -209,7 +209,7 @@ public class List extends AuthenticatingHttpServlet {
                     if (record.getEndDate() != null)
                         xml.writeAttribute("end",
                             Long.toString(record.getEndDate().getTime()));
-                    
+
                     // User involved
                     xml.writeCharacters(record.getUser().getUsername());
 

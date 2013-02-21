@@ -49,11 +49,11 @@ public class List extends AuthenticatingHttpServlet {
      * Checks whether the given user has permission to perform the given
      * system operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
-     * 
+     *
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @return true if permission is granted, false otherwise.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasUserPermission(User user, SystemPermission.Type type)
@@ -77,13 +77,13 @@ public class List extends AuthenticatingHttpServlet {
      * Checks whether the given user has permission to perform the given
      * object operation. Security exceptions are handled appropriately - only
      * non-security exceptions pass through.
-     * 
+     *
      * @param user The user whose permissions should be verified.
      * @param type The type of operation to check for permission for.
      * @param identifier The identifier of the user the operation would be
      *                   performed upon.
      * @return true if permission is granted, false otherwise.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while checking permissions.
      */
     private boolean hasUserPermission(User user, ObjectPermission.Type type,
@@ -103,7 +103,7 @@ public class List extends AuthenticatingHttpServlet {
         }
 
     }
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -121,7 +121,7 @@ public class List extends AuthenticatingHttpServlet {
 
             // Get user directory
             Directory<String, User> directory = context.getUserDirectory();
-            
+
             // Get users
             Set<String> users = directory.getIdentifiers();
 
@@ -134,18 +134,18 @@ public class List extends AuthenticatingHttpServlet {
             // Begin document
             xml.writeStartDocument();
             xml.writeStartElement("users");
-            
+
             // Save user create permission attribute
             if (hasUserPermission(self, SystemPermission.Type.CREATE))
                 xml.writeAttribute("create", "yes");
-            
+
             // For each entry, write corresponding user element
             for (String username : users) {
 
                 // Get user
                 User user = directory.get(username);
-                
-                // Write user 
+
+                // Write user
                 xml.writeEmptyElement("user");
                 xml.writeAttribute("name", user.getUsername());
 
@@ -153,17 +153,17 @@ public class List extends AuthenticatingHttpServlet {
                 if (hasUserPermission(self, ObjectPermission.Type.UPDATE,
                         user.getUsername()))
                     xml.writeAttribute("update", "yes");
-                
+
                 // Save admin permission attribute
                 if (hasUserPermission(self, ObjectPermission.Type.ADMINISTER,
                         user.getUsername()))
                     xml.writeAttribute("admin", "yes");
-                
+
                 // Save delete permission attribute
                 if (hasUserPermission(self, ObjectPermission.Type.DELETE,
                         user.getUsername()))
                     xml.writeAttribute("delete", "yes");
-                
+
             }
 
             // End document

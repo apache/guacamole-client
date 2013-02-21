@@ -42,7 +42,7 @@ public class Create extends AuthenticatingHttpServlet {
      * specific parameter meant for the configuration.
      */
     public static final String PARAMETER_PREFIX = "_";
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -52,7 +52,7 @@ public class Create extends AuthenticatingHttpServlet {
         // Get ID and protocol
         String identifier = request.getParameter("id");
         String protocol = request.getParameter("protocol");
-        
+
         try {
 
             // Attempt to get connection directory
@@ -74,22 +74,22 @@ public class Create extends AuthenticatingHttpServlet {
                     config.setParameter(
                         param.substring(PARAMETER_PREFIX.length()),
                         request.getParameter(param));
-                
+
             }
-            
+
             // Create connection skeleton
             Connection connection = new DummyConnection();
             connection.setIdentifier(identifier);
             connection.setConfiguration(config);
-            
+
             // Add connection
             directory.add(connection);
-            
+
         }
         catch (GuacamoleException e) {
             throw new ServletException("Unable to create connection.", e);
         }
-        
+
     }
 
 }

@@ -44,7 +44,7 @@ public class Create extends AuthenticatingHttpServlet {
 
         // Create user as specified
         String username = request.getParameter("name");
-        
+
         try {
 
             // Attempt to get user directory
@@ -55,16 +55,16 @@ public class Create extends AuthenticatingHttpServlet {
             User user = new DummyUser();
             user.setUsername(username);
             user.setPassword(UUID.randomUUID().toString());
-            
+
             // Add user
             directory.add(user);
-            
+
         }
         catch (GuacamoleException e) {
             throw new ServletException("Unable to create user.", e);
         }
- 
-        
+
+
     }
 
 }

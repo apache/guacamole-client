@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "param" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class ParamTagHandler implements TagHandler {
 
@@ -35,16 +35,16 @@ public class ParamTagHandler implements TagHandler {
      * the tag handled by this tag handler.
      */
     private GuacamoleConfiguration config;
-    
+
     /**
      * The name of the parameter.
      */
     private String name;
-    
+
     /**
      * Creates a new handler for an "param" tag having the given
      * attributes.
-     * 
+     *
      * @param config The GuacamoleConfiguration to update with the data parsed
      *               from the "protocol" tag.
      * @param attributes The attributes of the "param" tag.
@@ -67,5 +67,5 @@ public class ParamTagHandler implements TagHandler {
     public void complete(String textContent) throws SAXException {
         config.setParameter(name, textContent);
     }
-   
+
 }

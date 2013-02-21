@@ -15,7 +15,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
  * semantics that would otherwise be present because of the authentication
  * provider. It is up to the authentication provider to create a new
  * Connection based on the information contained herein.
- * 
+ *
  * @author Michael Jumper
  */
 public class DummyConnection extends AbstractConnection {

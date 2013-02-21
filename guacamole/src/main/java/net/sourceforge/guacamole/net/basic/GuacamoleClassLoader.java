@@ -84,7 +84,7 @@ public class GuacamoleClassLoader extends ClassLoader {
     /**
      * Creates a new GuacamoleClassLoader which reads classes from the given
      * directory.
-     * 
+     *
      * @param libDirectory The directory to load classes from.
      * @throws GuacamoleException If the file given is not a director, or if
      *                            an error occurs while constructing the URL

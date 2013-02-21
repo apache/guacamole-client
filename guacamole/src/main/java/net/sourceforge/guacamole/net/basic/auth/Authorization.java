@@ -29,7 +29,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * Mapping of username/password pair to configuration set. In addition to basic
  * storage of the username, password, and configurations, this class also
  * provides password validation functions.
- * 
+ *
  * @author Mike Jumper
  */
 public class Authorization {
@@ -83,7 +83,7 @@ public class Authorization {
 
     /**
      * Produces a String containing the bytes provided in hexadecimal notation.
-     * 
+     *
      * @param bytes The bytes to convert into hex.
      * @return A String containing the hex representation of the given bytes.
      */
@@ -110,7 +110,7 @@ public class Authorization {
 
     /**
      * Returns the username associated with this authorization.
-     * 
+     *
      * @return The username associated with this authorization.
      */
     public String getUsername() {
@@ -119,7 +119,7 @@ public class Authorization {
 
     /**
      * Sets the username associated with this authorization.
-     * 
+     *
      * @param username The username to associate with this authorization.
      */
     public void setUsername(String username) {
@@ -129,7 +129,7 @@ public class Authorization {
     /**
      * Returns the password associated with this authorization, which may be
      * encoded or hashed.
-     * 
+     *
      * @return The password associated with this authorization.
      */
     public String getPassword() {
@@ -140,7 +140,7 @@ public class Authorization {
      * Sets the password associated with this authorization, which must be
      * encoded using the encoding specified with setEncoding(). By default,
      * passwords are plain text.
-     * 
+     *
      * @param password Sets the password associated with this authorization.
      */
     public void setPassword(String password) {
@@ -149,7 +149,7 @@ public class Authorization {
 
     /**
      * Returns the encoding used to hash the password, if any.
-     * 
+     *
      * @return The encoding used to hash the password.
      */
     public Encoding getEncoding() {
@@ -159,7 +159,7 @@ public class Authorization {
     /**
      * Sets the encoding which will be used to hash the password or when
      * comparing a given password for validation.
-     * 
+     *
      * @param encoding The encoding to use for password hashing.
      */
     public void setEncoding(Encoding encoding) {
@@ -170,7 +170,7 @@ public class Authorization {
      * Returns whether a given username/password pair is authorized based on
      * the stored username and password. The password given must be plain text.
      * It will be hashed as necessary to perform the validation.
-     * 
+     *
      * @param username The username to validate.
      * @param password The password to validate.
      * @return true if the username/password pair given is authorized, false
@@ -217,7 +217,7 @@ public class Authorization {
     /**
      * Returns the GuacamoleConfiguration having the given name and associated
      * with the username/password pair stored within this authorization.
-     * 
+     *
      * @param name The name of the GuacamoleConfiguration to return.
      * @return The GuacamoleConfiguration having the given name, or null if no
      *         such GuacamoleConfiguration exists.
@@ -229,19 +229,19 @@ public class Authorization {
     /**
      * Adds the given GuacamoleConfiguration to the set of stored configurations
      * under the given name.
-     * 
+     *
      * @param name The name to associate this GuacamoleConfiguration with.
      * @param config The GuacamoleConfiguration to store.
      */
     public void addConfiguration(String name, GuacamoleConfiguration config) {
         configs.put(name, config);
     }
-    
+
     /**
      * Returns a Map of all stored GuacamoleConfigurations associated with the
      * username/password pair stored within this authorization, indexed by
      * configuration name.
-     * 
+     *
      * @return A Map of all stored GuacamoleConfigurations.
      */
     public Map<String, GuacamoleConfiguration> getConfigurations() {

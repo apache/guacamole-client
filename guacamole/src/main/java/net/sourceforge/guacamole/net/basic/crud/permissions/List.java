@@ -46,24 +46,24 @@ import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
  * @author Michael Jumper
  */
 public class List extends AuthenticatingHttpServlet {
-    
+
     /**
      * Returns the XML attribute value representation of the given
      * SystemPermission.Type.
-     * 
+     *
      * @param type The SystemPermission.Type to translate into a String.
      * @return The XML attribute value representation of the given
      *         SystemPermission.Type.
-     * 
+     *
      * @throws GuacamoleException If the type given is not implemented.
      */
-    private String toString(SystemPermission.Type type) 
+    private String toString(SystemPermission.Type type)
         throws GuacamoleException {
 
         switch (type) {
             case CREATE: return "create";
         }
-    
+
         throw new GuacamoleException("Unknown permission type: " + type);
 
     }
@@ -71,14 +71,14 @@ public class List extends AuthenticatingHttpServlet {
     /**
      * Returns the XML attribute value representation of the given
      * ObjectPermission.Type.
-     * 
+     *
      * @param type The ObjectPermission.Type to translate into a String.
      * @return The XML attribute value representation of the given
      *         ObjectPermission.Type.
-     * 
+     *
      * @throws GuacamoleException If the type given is not implemented.
      */
-    private String toString(ObjectPermission.Type type) 
+    private String toString(ObjectPermission.Type type)
         throws GuacamoleException {
 
         switch (type) {
@@ -91,7 +91,7 @@ public class List extends AuthenticatingHttpServlet {
         throw new GuacamoleException("Unknown permission type: " + type);
 
     }
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -105,14 +105,14 @@ public class List extends AuthenticatingHttpServlet {
         try {
 
             User user;
-            
+
             // Get username
             String username = request.getParameter("user");
             if (username != null) {
 
                 // Get user directory
                 Directory<String, User> users = context.getUserDirectory();
-                
+
                 // Get specific user
                 user = users.get(username);
                 if (user == null)
@@ -121,10 +121,10 @@ public class List extends AuthenticatingHttpServlet {
             }
             else
                 user = context.self();
-            
+
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
-            
+
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
 
@@ -132,7 +132,7 @@ public class List extends AuthenticatingHttpServlet {
             xml.writeStartDocument();
             xml.writeStartElement("permissions");
             xml.writeAttribute("user", user.getUsername());
-            
+
             // For each entry, write corresponding user element
             for (Permission permission : user.getPermissions()) {
 
@@ -142,8 +142,8 @@ public class List extends AuthenticatingHttpServlet {
                     // Get permission
                     ConnectionDirectoryPermission cdp =
                             (ConnectionDirectoryPermission) permission;
-                    
-                    // Write permission 
+
+                    // Write permission
                     xml.writeEmptyElement("connections");
                     xml.writeAttribute("type", toString(cdp.getType()));
 
@@ -155,8 +155,8 @@ public class List extends AuthenticatingHttpServlet {
                     // Get permission
                     ConnectionPermission cp =
                             (ConnectionPermission) permission;
-                    
-                    // Write permission 
+
+                    // Write permission
                     xml.writeEmptyElement("connection");
                     xml.writeAttribute("type", toString(cp.getType()));
                     xml.writeAttribute("name", cp.getObjectIdentifier());
@@ -169,8 +169,8 @@ public class List extends AuthenticatingHttpServlet {
                     // Get permission
                     UserDirectoryPermission udp =
                             (UserDirectoryPermission) permission;
-                    
-                    // Write permission 
+
+                    // Write permission
                     xml.writeEmptyElement("users");
                     xml.writeAttribute("type", toString(udp.getType()));
 
@@ -181,8 +181,8 @@ public class List extends AuthenticatingHttpServlet {
 
                     // Get permission
                     UserPermission up = (UserPermission) permission;
-                    
-                    // Write permission 
+
+                    // Write permission
                     xml.writeEmptyElement("user");
                     xml.writeAttribute("type", toString(up.getType()));
                     xml.writeAttribute("name", up.getObjectIdentifier());

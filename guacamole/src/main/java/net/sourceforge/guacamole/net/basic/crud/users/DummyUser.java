@@ -22,7 +22,7 @@ public class DummyUser extends AbstractUser {
      * Set of all available permissions.
      */
     private Set<Permission> permissions = new HashSet<Permission>();
-    
+
     @Override
     public Set<Permission> getPermissions() throws GuacamoleException {
         return permissions;

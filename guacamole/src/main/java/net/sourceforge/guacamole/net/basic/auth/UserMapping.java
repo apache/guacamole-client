@@ -24,7 +24,7 @@ import java.util.Map;
 
 /**
  * Mapping of all usernames to corresponding authorizations.
- * 
+ *
  * @author Mike Jumper
  */
 public class UserMapping {
@@ -34,10 +34,10 @@ public class UserMapping {
      */
     private Map<String, Authorization> authorizations =
             new HashMap<String, Authorization>();
-   
+
     /**
      * Adds the given authorization to the user mapping.
-     * 
+     *
      * @param authorization The authorization to add to the user mapping.
      */
     public void addAuthorization(Authorization authorization) {
@@ -47,7 +47,7 @@ public class UserMapping {
     /**
      * Returns the authorization corresponding to the user having the given
      * username, if any.
-     * 
+     *
      * @param username The username to find the authorization for.
      * @return The authorization corresponding to the user having the given
      *         username, or null if no such authorization exists.
@@ -55,5 +55,5 @@ public class UserMapping {
     public Authorization getAuthorization(String username) {
         return authorizations.get(username);
     }
-    
+
 }
