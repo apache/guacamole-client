@@ -63,12 +63,31 @@ import org.slf4j.LoggerFactory;
  */
 public class InetGuacamoleSocket implements GuacamoleSocket {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(InetGuacamoleSocket.class);
 
+    /**
+     * The GuacamoleReader this socket should read from.
+     */
     private GuacamoleReader reader;
+
+    /**
+     * The GuacamoleWriter this socket should write to.
+     */
     private GuacamoleWriter writer;
 
+    /**
+     * The number of milliseconds to wait for data on the TCP socket before
+     * timing out.
+     */
     private static final int SOCKET_TIMEOUT = 15000;
+
+    /**
+     * The TCP socket that the GuacamoleReader and GuacamoleWriter exposed
+     * by this class should affect.
+     */
     private Socket sock;
 
     /**

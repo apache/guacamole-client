@@ -57,6 +57,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(GuacamoleHTTPTunnelServlet.class);
 
     /**

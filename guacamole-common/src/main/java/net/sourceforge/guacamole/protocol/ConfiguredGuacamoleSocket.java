@@ -58,7 +58,15 @@ import net.sourceforge.guacamole.net.GuacamoleSocket;
  */
 public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
+    /**
+     * The wrapped socket.
+     */
     private GuacamoleSocket socket;
+
+    /**
+     * The configuration to use when performing the Guacamole protocol
+     * handshake.
+     */
     private GuacamoleConfiguration config;
 
     /**

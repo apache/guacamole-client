@@ -1,10 +1,6 @@
 
 package net.sourceforge.guacamole.protocol;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -41,6 +37,10 @@ import java.util.List;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * An abstract representation of a Guacamole instruction, as defined by the
  * Guacamole protocol.
@@ -63,7 +63,7 @@ public class GuacamoleInstruction {
      * Creates a new GuacamoleInstruction having the given Operation and
      * list of arguments values.
      *
-     * @param operation The opcode of the instruction to create.
+     * @param opcode The opcode of the instruction to create.
      * @param args The list of argument values to provide in the new
      *             instruction if any.
      */

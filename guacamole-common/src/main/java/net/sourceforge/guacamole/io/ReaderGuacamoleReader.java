@@ -67,9 +67,22 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         this.input = input;
     }
 
+    /**
+     * The location within the received data buffer that parsing should begin
+     * when more data is read.
+     */
     private int parseStart;
 
+    /**
+     * The buffer holding all received, unparsed data.
+     */
     private char[] buffer = new char[20480];
+
+    /**
+     * The number of characters currently used within the data buffer. All
+     * other characters within the buffer are free space available for
+     * future reads.
+     */
     private int usedLength = 0;
 
     @Override

@@ -53,8 +53,14 @@ import org.slf4j.LoggerFactory;
  */
 public class GuacamoleSession {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
+    /**
+     * Map of all currently attached tunnels, indexed by tunnel UUID.
+     */
     private ConcurrentMap<String, GuacamoleTunnel> tunnels;
 
     /**

@@ -51,10 +51,27 @@ import net.sourceforge.guacamole.io.GuacamoleWriter;
  */
 public class GuacamoleTunnel {
 
+    /**
+     * The UUID associated with this tunnel. Every tunnel must have a
+     * corresponding UUID such that tunnel read/write requests can be
+     * directed to the proper tunnel.
+     */
     private UUID uuid;
+
+    /**
+     * The GuacamoleSocket that tunnel should use for communication on
+     * behalf of the connecting user.
+     */
     private GuacamoleSocket socket;
 
+    /**
+     * Lock acquired when a read operation is in progress.
+     */
     private ReentrantLock readerLock;
+
+    /**
+     * Lock acquired when a write operation is in progress.
+     */
     private ReentrantLock writerLock;
 
     /**

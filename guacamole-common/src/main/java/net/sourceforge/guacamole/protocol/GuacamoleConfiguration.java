@@ -51,9 +51,19 @@ import java.util.Set;
  */
 public class GuacamoleConfiguration implements Serializable {
 
+    /**
+     * Identifier unique to this version of GuacamoleConfiguration.
+     */
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The name of the protocol associated with this configuration.
+     */
     private String protocol;
+
+    /**
+     * Map of all associated parameter values, indexed by parameter name.
+     */
     private Map<String, String> parameters = new HashMap<String, String>();
 
     /**
