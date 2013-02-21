@@ -164,7 +164,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     try {
                         // Ensure buggy browsers do not cache response
                         response.setHeader("Cache-Control", "no-cache");
-                        
+
                         // Send UUID to client
                         response.getWriter().print(tunnel.getUUID().toString());
                     }
@@ -403,12 +403,12 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 // Buffer
                 int length;
                 char[] buffer = new char[8192];
-                
+
                 // Transfer data using buffer
                 while (tunnel.isOpen() &&
                         (length = input.read(buffer, 0, buffer.length)) != -1)
                     writer.write(buffer, 0, length);
-                
+
             }
 
             // Close input stream in all cases

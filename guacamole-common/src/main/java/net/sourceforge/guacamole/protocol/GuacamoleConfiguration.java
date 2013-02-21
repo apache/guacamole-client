@@ -104,18 +104,18 @@ public class GuacamoleConfiguration implements Serializable {
 
     /**
      * Removes the value set for the parameter with the given name.
-     * 
+     *
      * @param name The name of the parameter to remove the value of.
      */
     public void unsetParameter(String name) {
         parameters.remove(name);
     }
-    
+
     /**
      * Returns a set of all currently defined parameter names. Each name
      * corresponds to a parameter that has a value set on this
      * GuacamoleConfiguration via setParameter().
-     * 
+     *
      * @return A set of all currently defined parameter names.
      */
     public Set<String> getParameterNames() {

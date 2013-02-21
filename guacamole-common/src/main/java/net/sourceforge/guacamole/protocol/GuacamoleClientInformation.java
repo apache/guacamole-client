@@ -58,12 +58,12 @@ public class GuacamoleClientInformation {
      * The optimal screen height requested by the client, in pixels.
      */
     private int optimalScreenHeight = 768;
-  
+
     /**
      * The list of audio mimetypes reported by the client to be supported.
      */
     private List<String> audioMimetypes = new ArrayList<String>();
-  
+
     /**
      * The list of audio mimetypes reported by the client to be supported.
      */
@@ -105,7 +105,7 @@ public class GuacamoleClientInformation {
      * Returns the list of audio mimetypes supported by the client. To add or
      * removed supported mimetypes, the list returned by this function can be
      * modified.
-     * 
+     *
      * @return The set of audio mimetypes supported by the client.
      */
     public List<String> getAudioMimetypes() {
@@ -116,7 +116,7 @@ public class GuacamoleClientInformation {
      * Returns the list of video mimetypes supported by the client. To add or
      * removed supported mimetypes, the list returned by this function can be
      * modified.
-     * 
+     *
      * @return The set of video mimetypes supported by the client.
      */
     public List<String> getVideoMimetypes() {

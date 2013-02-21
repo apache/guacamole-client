@@ -117,12 +117,12 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Wait for server args
         GuacamoleInstruction instruction;
         do {
-            
+
             // Read instruction, fail if end-of-stream
             instruction = reader.readInstruction();
             if (instruction == null)
                 throw new GuacamoleServerException("End of stream during initial handshake.");
-            
+
         } while (!instruction.getOpcode().equals("args"));
 
         // Build args list off provided names and config
@@ -144,7 +144,7 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
 
         }
 
-        // Send size 
+        // Send size
         writer.writeInstruction(
             new GuacamoleInstruction(
                 "size",
