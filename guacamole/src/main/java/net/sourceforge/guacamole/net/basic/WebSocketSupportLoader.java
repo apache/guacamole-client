@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
  */
 public class WebSocketSupportLoader implements ServletContextListener {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
 
     @Override

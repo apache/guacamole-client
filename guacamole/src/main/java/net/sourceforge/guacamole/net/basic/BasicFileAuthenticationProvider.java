@@ -51,6 +51,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvider {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
 
     /**

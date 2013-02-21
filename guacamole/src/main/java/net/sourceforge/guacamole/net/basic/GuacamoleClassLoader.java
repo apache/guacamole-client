@@ -41,9 +41,20 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
  */
 public class GuacamoleClassLoader extends ClassLoader {
 
+    /**
+     * Class loader which will load classes from the classpath specified
+     * in guacamole.properties.
+     */
     private URLClassLoader classLoader = null;
 
+    /**
+     * Any exception that occurs while the class loader is being instantiated.
+     */
     private static GuacamoleException exception = null;
+
+    /**
+     * Singleton instance of the GuacamoleClassLoader.
+     */
     private static GuacamoleClassLoader instance = null;
 
     static {
@@ -70,6 +81,15 @@ public class GuacamoleClassLoader extends ClassLoader {
 
     }
 
+    /**
+     * Creates a new GuacamoleClassLoader which reads classes from the given
+     * directory.
+     * 
+     * @param libDirectory The directory to load classes from.
+     * @throws GuacamoleException If the file given is not a director, or if
+     *                            an error occurs while constructing the URL
+     *                            for the backing classloader.
+     */
     private GuacamoleClassLoader(File libDirectory) throws GuacamoleException {
 
         // If no directory provided, just direct requests to parent classloader

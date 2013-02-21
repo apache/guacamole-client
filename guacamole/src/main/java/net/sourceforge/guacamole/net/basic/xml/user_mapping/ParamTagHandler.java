@@ -37,7 +37,7 @@ public class ParamTagHandler implements TagHandler {
     private GuacamoleConfiguration config;
     
     /**
-     * The name of the parameter
+     * The name of the parameter.
      */
     private String name;
     

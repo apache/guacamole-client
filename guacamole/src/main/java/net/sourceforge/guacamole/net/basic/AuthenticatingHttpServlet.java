@@ -58,6 +58,9 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
 
     /**

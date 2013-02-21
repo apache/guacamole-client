@@ -51,6 +51,9 @@ import org.slf4j.LoggerFactory;
  */
 public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
 
     @Override
@@ -71,6 +74,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that connected the tunnel.
+     * @param tunnel The tunnel being connected.
      * @return true if all listeners are allowing the tunnel to connect,
      *         or if there are no listeners, and false if any listener is
      *         canceling the connection. Note that once one listener cancels,
@@ -109,6 +113,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      * @param listeners A collection of all listeners that should be notified.
      * @param credentials The credentials associated with the authentication
      *                    request that closed the tunnel.
+     * @param tunnel The tunnel being closed.
      * @return true if all listeners are allowing the tunnel to close,
      *         or if there are no listeners, and false if any listener is
      *         canceling the close. Note that once one listener cancels,

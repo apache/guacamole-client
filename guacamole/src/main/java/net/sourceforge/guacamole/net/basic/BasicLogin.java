@@ -33,6 +33,9 @@ import org.slf4j.LoggerFactory;
  */
 public class BasicLogin extends AuthenticatingHttpServlet {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(BasicLogin.class);
 
     @Override
