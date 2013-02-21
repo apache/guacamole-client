@@ -82,8 +82,7 @@ public interface Connection {
      * @param config The GuacamoleConfiguration to associate with this
      *               Connection.
      */
-    public void setConfiguration(GuacamoleConfiguration config)
-            throws GuacamoleException;
+    public void setConfiguration(GuacamoleConfiguration config);
 
     /**
      * Establishes a connection to guacd using the GuacamoleConfiguration
