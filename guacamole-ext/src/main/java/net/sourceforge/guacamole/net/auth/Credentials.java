@@ -52,6 +52,9 @@ import javax.servlet.http.HttpSession;
  */
 public class Credentials implements Serializable {
 
+    /**
+     * Unique identifier associated with this specific version of Credentials.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

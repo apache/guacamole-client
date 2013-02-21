@@ -58,6 +58,9 @@ import net.sourceforge.guacamole.GuacamoleServerException;
  */
 public class GuacamoleProperties {
 
+    /**
+     * GuacamoleProperties is a utility class and cannot be instantiated.
+     */
     private GuacamoleProperties() {}
 
     /**
@@ -81,7 +84,16 @@ public class GuacamoleProperties {
 
     };
 
+    /**
+     * All properties read from guacamole.properties when this class was first
+     * used.
+     */
     private static final Properties properties;
+
+    /**
+     * Any error encountered when reading guacamole.properties was last
+     * attempted.
+     */
     private static GuacamoleException exception;
 
     static {

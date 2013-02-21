@@ -95,9 +95,7 @@ public interface Directory<IdentifierType, ObjectType> {
     
     /**
      * Updates the stored object with the data contained in the given object.
-     * The object to update is identified using the identifier given.
      * 
-     * @param identifier The identifier of the object to update.
      * @param object The object which will supply the data for the update.
      * 
      * @throws GuacamoleException If an error occurs while updating the object,

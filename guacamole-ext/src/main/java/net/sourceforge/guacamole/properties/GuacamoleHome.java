@@ -46,6 +46,9 @@ import java.io.File;
  */
 public class GuacamoleHome {
 
+    /**
+     * GuacamoleHome is a utility class and cannot be instantiated.
+     */
     private GuacamoleHome() {}
     
     /**
