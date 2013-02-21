@@ -52,7 +52,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely basic Connection implementation.
- * 
+ *
  * @author Michael Jumper
  */
 public class SimpleConnection extends AbstractConnection {
@@ -61,17 +61,17 @@ public class SimpleConnection extends AbstractConnection {
      * Backing configuration, containing all sensitive information.
      */
     private GuacamoleConfiguration config;
-    
+
     /**
      * Creates a completely uninitialized SimpleConnection.
      */
     public SimpleConnection() {
     }
-    
+
     /**
      * Creates a new SimpleConnection having the given identifier and
      * GuacamoleConfiguration.
-     * 
+     *
      * @param identifier The identifier to associated with this connection.
      * @param config The configuration describing how to connect to this
      *               connection.
@@ -95,13 +95,13 @@ public class SimpleConnection extends AbstractConnection {
         // Get guacd connection parameters
         String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
         int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
-        
+
         // Return connected socket
         return new ConfiguredGuacamoleSocket(
                 new InetGuacamoleSocket(hostname, port),
                 config, info
         );
-        
+
     }
 
     @Override

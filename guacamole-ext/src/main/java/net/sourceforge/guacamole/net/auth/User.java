@@ -44,21 +44,21 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
 
 /**
  * A user of the Guacamole web application.
- * 
- * @author Michael Jumper 
+ *
+ * @author Michael Jumper
  */
 public interface User {
 
     /**
      * Returns the name of this user, which must be unique across all users.
-     * 
+     *
      * @return The name of this user.
      */
     public String getUsername();
 
     /**
      * Sets the name of this user, which must be unique across all users.
-     * 
+     *
      * @param username  The name of this user.
      */
     public void setUsername(String username);
@@ -66,7 +66,7 @@ public interface User {
     /**
      * Returns this user's password. Note that the password returned may be
      * hashed or completely arbitrary.
-     * 
+     *
      * @return A String which may (or may not) be the user's password.
      */
     public String getPassword();
@@ -75,39 +75,39 @@ public interface User {
      * Sets this user's password. Note that while this function is guaranteed
      * to change the password of this User object, there is no guarantee that
      * getPassword() will return the value given to setPassword().
-     * 
+     *
      * @param password The password to set.
      */
     public void setPassword(String password);
 
     /**
      * Lists all permissions given to this user.
-     * 
+     *
      * @return A Set of all permissions granted to this user.
-     * 
+     *
      * @throws GuacamoleException  If an error occurs while retrieving
      *                             permissions, or if reading all permissions
      *                             is not allowed.
      */
     Set<Permission> getPermissions() throws GuacamoleException;
-    
+
     /**
      * Tests whether this user has the specified permission.
-     * 
+     *
      * @param permission The permission to check.
      * @return true if the permission is granted to this user, false otherwise.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while checking permissions,
      *                            or if permissions cannot be checked due to
      *                            lack of permissions to do so.
      */
     boolean hasPermission(Permission permission) throws GuacamoleException;
-    
+
     /**
      * Adds the specified permission to this user.
-     * 
+     *
      * @param permission The permission to add.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while adding the
      *                            permission. or if permission to add
      *                            permissions is denied.
@@ -116,9 +116,9 @@ public interface User {
 
     /**
      * Removes the specified permission from this specified user.
-     * 
+     *
      * @param permission The permission to remove.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while removing the
      *                            permission. or if permission to remove
      *                            permissions is denied.

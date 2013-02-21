@@ -40,7 +40,7 @@ package net.sourceforge.guacamole.net.auth.permission;
 
 /**
  * A permission which controls access to a UserDirectory.
- * 
+ *
  * @author Michael Jumper
  */
 public class UserDirectoryPermission implements SystemPermission {
@@ -52,13 +52,13 @@ public class UserDirectoryPermission implements SystemPermission {
 
     /**
      * Creates a new UserDirectoryPermission with the given type.
-     * 
+     *
      * @param type The type of operation controlled by this permission.
      */
     public UserDirectoryPermission(Type type) {
         this.type = type;
     }
-    
+
     @Override
     public Type getType() {
         return type;

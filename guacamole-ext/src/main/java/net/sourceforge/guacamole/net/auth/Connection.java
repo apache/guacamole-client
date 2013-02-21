@@ -49,7 +49,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * human-readable identifier, and abstracts the connection process. The
  * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
  * to protect sensitive configuration information.
- * 
+ *
  * @author Michael Jumper
  */
 public interface Connection {
@@ -62,7 +62,7 @@ public interface Connection {
 
     /**
      * Sets the identifier assigned to this Connection.
-     * 
+     *
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
@@ -71,14 +71,14 @@ public interface Connection {
      * Returns the GuacamoleConfiguration associated with this Connection. Note
      * that because configurations may contain sensitive information, some data
      * in this configuration may be omitted or tokenized.
-     * 
+     *
      * @return The GuacamoleConfiguration associated with this Connection.
      */
     public GuacamoleConfiguration getConfiguration();
 
     /**
      * Sets the GuacamoleConfiguration associated with this Connection.
-     * 
+     *
      * @param config The GuacamoleConfiguration to associate with this
      *               Connection.
      */
@@ -92,27 +92,27 @@ public interface Connection {
      *
      * @param info Information associated with the connecting client.
      * @return A fully-established GuacamoleSocket.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while connecting to guacd,
      *                            or if permission to connect is denied.
      */
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException;
-    
+
     /**
      * Returns a list of ConnectionRecords representing the usage history
      * of this Connection, including any active users. ConnectionRecords
      * in this list will be sorted in descending order of end time (active
      * connections are first), and then in descending order of start time
      * (newer connections are first).
-     * 
+     *
      * @return A list of ConnectionRecrods representing the usage history
      *         of this Connection.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while reading the history
      *                            of this connection, or if permission is
      *                            denied.
      */
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
-            
+
 }

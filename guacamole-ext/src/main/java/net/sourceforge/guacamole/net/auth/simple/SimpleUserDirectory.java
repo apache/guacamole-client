@@ -48,7 +48,7 @@ import net.sourceforge.guacamole.net.auth.User;
 /**
  * An extremely simple read-only implementation of a Directory of Users which
  * provides access to a single pre-defined User.
- * 
+ *
  * @author Michael Jumper
  */
 public class SimpleUserDirectory implements Directory<String, User> {
@@ -61,7 +61,7 @@ public class SimpleUserDirectory implements Directory<String, User> {
     /**
      * Creates a new SimpleUserDirectory which provides access to the single
      * user provided.
-     * 
+     *
      * @param user The user to provide access to.
      */
     public SimpleUserDirectory(User user) {

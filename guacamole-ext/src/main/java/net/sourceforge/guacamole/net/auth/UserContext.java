@@ -42,7 +42,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 /**
  * The context of an active user. The functions of this class enforce all
  * permissions and act only within the rights of the associated user.
- * 
+ *
  * @author Michael Jumper
  */
 public interface UserContext {
@@ -50,7 +50,7 @@ public interface UserContext {
     /**
      * Returns the User whose access rights control the operations of this
      * UserContext.
-     * 
+     *
      * @return The User whose access rights control the operations of this
      *         UserContext.
      */
@@ -60,26 +60,26 @@ public interface UserContext {
      * Retrieves a Directory which can be used to view and manipulate other
      * users, but only as allowed by the permissions given to the user of this
      * UserContext.
-     * 
+     *
      * @return A Directory whose operations are bound by the restrictions
      *         of this UserContext.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
      */
     Directory<String, User> getUserDirectory() throws GuacamoleException;
- 
+
     /**
      * Retrieves a Directory which can be used to view and manipulate
      * connections and their configurations, but only as allowed by the
      * permissions given to the user of this UserContext.
-     * 
+     *
      * @return A Directory whose operations are bound by the restrictions
      *         of this UserContext.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
-     */   
+     */
     Directory<String, Connection> getConnectionDirectory()
             throws GuacamoleException;
 

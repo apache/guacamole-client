@@ -41,7 +41,7 @@ package net.sourceforge.guacamole.net.auth.permission;
 /**
  * A permission which affects a specific object, rather than the system as a
  * whole.
- * 
+ *
  * @author Michael Jumper
  * @param <T> The type of identifier used by the object this permission affects.
  */
@@ -78,10 +78,10 @@ public interface ObjectPermission<T> extends Permission<ObjectPermission.Type> {
     /**
      * Returns the identifier of the specific object affected by this
      * permission.
-     * 
+     *
      * @return The identifier of the specific object affected by this
      *         permission.
      */
     public T getObjectIdentifier();
-    
+
 }

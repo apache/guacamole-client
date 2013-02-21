@@ -51,7 +51,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely basic User implementation.
- * 
+ *
  * @author Michael Jumper
  */
 public class SimpleUser extends AbstractUser {
@@ -60,16 +60,16 @@ public class SimpleUser extends AbstractUser {
      * The set of all permissions available to this user.
      */
     private Set<Permission> permissions = new HashSet<Permission>();
-    
+
     /**
      * Creates a completely uninitialized SimpleUser.
      */
     public SimpleUser() {
     }
-    
+
     /**
      * Creates a new SimpleUser having the given username.
-     * 
+     *
      * @param username The username to assign to this SimpleUser.
      * @param configs All configurations this user has read access to.
      */
@@ -90,9 +90,9 @@ public class SimpleUser extends AbstractUser {
 
             // Add to set
             permissions.add(permission);
-            
+
         }
-        
+
     }
 
     @Override
@@ -114,5 +114,5 @@ public class SimpleUser extends AbstractUser {
     public void removePermission(Permission permission) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
-    
+
 }

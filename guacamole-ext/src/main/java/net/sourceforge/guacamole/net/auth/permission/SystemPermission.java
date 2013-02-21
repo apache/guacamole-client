@@ -41,7 +41,7 @@ package net.sourceforge.guacamole.net.auth.permission;
 /**
  * A permission which affects the system as a whole, rather than an individual
  * object.
- * 
+ *
  * @author Michael Jumper
  */
 public interface SystemPermission extends Permission<SystemPermission.Type> {
@@ -56,7 +56,7 @@ public interface SystemPermission extends Permission<SystemPermission.Type> {
          * Create system-level objects.
          */
         CREATE
-        
+
     }
 
 }

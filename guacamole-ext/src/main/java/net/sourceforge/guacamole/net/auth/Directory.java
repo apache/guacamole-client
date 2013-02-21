@@ -46,7 +46,7 @@ import net.sourceforge.guacamole.GuacamoleException;
  * Directory are not necessarily returned to the use as references to
  * the stored objects, thus updating an object requires calling an update
  * function.
- * 
+ *
  * @author Michael Jumper
  * @param <IdentifierType> The type of identifier used to identify objects
  *                         stored within this Directory.
@@ -60,18 +60,18 @@ public interface Directory<IdentifierType, ObjectType> {
      * the Directory. To update an object stored within an
      * Directory such that future calls to get() will return the updated
      * object, you must call update() on the object after modification.
-     * 
+     *
      * @param identifier The identifier to use when locating the object to
      *                   return.
      * @return The object having the given identifier, or null if no such object
      *         exists.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while retrieving the
      *                            object, or if permission for retrieving the
      *                            object is denied.
      */
     ObjectType get(IdentifierType identifier) throws GuacamoleException;
-    
+
     /**
      * Returns a Set containing all identifiers for all objects within this
      * Directory.
@@ -84,34 +84,34 @@ public interface Directory<IdentifierType, ObjectType> {
 
     /**
      * Adds the given object to the overall set.
-     * 
+     *
      * @param object The object to add.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while adding the object , or
      *                            if adding the object is not allowed.
      */
     void add(ObjectType object)
             throws GuacamoleException;
-    
+
     /**
      * Updates the stored object with the data contained in the given object.
-     * 
+     *
      * @param object The object which will supply the data for the update.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while updating the object,
      *                            or if updating the object is not allowed.
      */
     void update(ObjectType object)
             throws GuacamoleException;
-    
+
     /**
      * Removes the object with the given identifier from the overall set.
-     * 
+     *
      * @param identifier The identifier of the object to remove.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while removing the object,
      *                            or if removing object is not allowed.
      */
     void remove(IdentifierType identifier) throws GuacamoleException;
- 
+
 }

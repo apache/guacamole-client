@@ -49,7 +49,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * An extremely simple UserContext implementation which provides access to
  * a defined and restricted set of GuacamoleConfigurations. Access to
  * querying or modifying either users or permissions is denied.
- * 
+ *
  * @author Michael Jumper
  */
 public class SimpleUserContext implements UserContext {
@@ -59,7 +59,7 @@ public class SimpleUserContext implements UserContext {
      * accessible within this UserContext.
      */
     private final User self;
-    
+
     /**
      * The Directory with access only to those Connections that the User
      * associated with this UserContext has access to.
@@ -71,13 +71,13 @@ public class SimpleUserContext implements UserContext {
      * UserContext.
      */
     private final Directory<String, User> userDirectory;
-    
+
     /**
      * Creates a new SimpleUserContext which provides access to only those
      * configurations within the given Map. The User given must be the user
      * that owns this UserContext, and the Map given must contain only
      * GuacamoleConfigurations that the given User has read access to.
-     * 
+     *
      * @param self The owner of this UserContext.
      * @param configs A Map of all configurations for which the user associated
      *                with this UserContext has read access.
@@ -89,11 +89,11 @@ public class SimpleUserContext implements UserContext {
 
         this.connectionDirectory =
                 new SimpleConnectionDirectory(configs);
-        
+
         this.userDirectory = new SimpleUserDirectory(self);
-        
+
     }
-    
+
     @Override
     public User self() {
         return self;

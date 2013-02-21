@@ -43,7 +43,7 @@ package net.sourceforge.guacamole.net.auth.permission;
  * GuacamoleConfiguration. Note that this permission only refers to the
  * GuacamoleConfiguration by its identifier. The actual GuacamoleConfiguration
  * is not stored within.
- * 
+ *
  * @author Michael Jumper
  */
 public class ConnectionPermission
@@ -64,13 +64,13 @@ public class ConnectionPermission
      * Creates a new ConnectionPermission having the given type
      * and identifier. The identifier must be the unique identifier assigned
      * to the GuacamoleConfiguration by the AuthenticationProvider in use.
-     * 
+     *
      * @param type The type of operation affected by this permission.
      * @param identifier The identifier of the GuacamoleConfiguration associated
      *                   with the operation affected by this permission.
      */
     public ConnectionPermission(Type type, String identifier) {
-        
+
         this.identifier = identifier;
         this.type = type;
 

@@ -42,21 +42,21 @@ import java.util.Date;
 /**
  * A logging record describing when a user started and ended usage of a
  * particular connection.
- * 
+ *
  * @author Michael Jumper
  */
 public interface ConnectionRecord {
 
     /**
      * Returns the date and time the connection began.
-     * 
+     *
      * @return The date and time the connection began.
      */
     public Date getStartDate();
 
     /**
      * Returns the date and time the connection ended, if applicable.
-     * 
+     *
      * @return The date and time the connection ended, or null if the
      *         connection is still running or if the end time is unknown.
      */
@@ -65,14 +65,14 @@ public interface ConnectionRecord {
     /**
      * Returns the user who used or is using the connection at the times
      * given by this connection record.
-     * 
+     *
      * @return The user who used or is using the associated connection.
      */
     public User getUser();
 
     /**
      * Returns the connection associated with this record.
-     * 
+     *
      * @return The connection associated with this record.
      */
     public Connection getConnection();
@@ -80,10 +80,10 @@ public interface ConnectionRecord {
     /**
      * Returns whether the connection associated with this record is still
      * active.
-     * 
+     *
      * @return true if the connection associated with this record is still
      *         active, false otherwise.
      */
     public boolean isActive();
-    
+
 }

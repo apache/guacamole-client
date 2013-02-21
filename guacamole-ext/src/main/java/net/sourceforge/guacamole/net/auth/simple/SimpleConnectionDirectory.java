@@ -52,10 +52,10 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * An extremely simple read-only implementation of a Directory of
  * GuacamoleConfigurations which provides access to a pre-defined Map of
  * GuacamoleConfigurations.
- * 
+ *
  * @author Michael Jumper
  */
-public class SimpleConnectionDirectory 
+public class SimpleConnectionDirectory
     implements Directory<String, Connection> {
 
     /**
@@ -67,7 +67,7 @@ public class SimpleConnectionDirectory
     /**
      * Creates a new SimpleConnectionDirectory which provides
      * access to the configurations contained within the given Map.
-     * 
+     *
      * @param configs The Map of GuacamoleConfigurations to provide access to.
      */
     public SimpleConnectionDirectory(
@@ -77,9 +77,9 @@ public class SimpleConnectionDirectory
         for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet())
             connections.put(entry.getKey(),
                     new SimpleConnection(entry.getKey(), entry.getValue()));
-        
+
     }
-    
+
     @Override
     public Connection get(String identifier)
             throws GuacamoleException {

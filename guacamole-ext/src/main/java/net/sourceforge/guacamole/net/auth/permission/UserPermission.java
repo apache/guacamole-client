@@ -41,7 +41,7 @@ package net.sourceforge.guacamole.net.auth.permission;
 /**
  * A permission which controls operations that directly affect a specific
  * User.
- * 
+ *
  * @author Michael Jumper
  */
 public class UserPermission implements ObjectPermission<String> {
@@ -60,7 +60,7 @@ public class UserPermission implements ObjectPermission<String> {
     /**
      * Creates a new UserPermission having the given type and identifier. The
      * identifier must be the user's username.
-     * 
+     *
      * @param type The type of operation affected by this permission.
      * @param identifier The username of the User associated with the operation
      *                   affected by this permission.

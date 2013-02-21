@@ -41,7 +41,7 @@ import java.io.File;
 
 /**
  * Abstract representation of the Guacamole configuration directory.
- * 
+ *
  * @author Michael Jumper
  */
 public class GuacamoleHome {
@@ -50,13 +50,13 @@ public class GuacamoleHome {
      * GuacamoleHome is a utility class and cannot be instantiated.
      */
     private GuacamoleHome() {}
-    
+
     /**
      * Returns the Guacamole home directory by checking, in order:
      * the guacamole.home system property, the GUACAMOLE_HOME environment
      * variable, and finally the .guacamole directory in the home directory of
      * the user running the servlet container.
-     * 
+     *
      * @return The File representing the Guacamole home directory, which may
      *         or may not exist, and may turn out to not be a directory.
      */
@@ -64,7 +64,7 @@ public class GuacamoleHome {
 
         // Attempt to find Guacamole home
         File guacHome;
-        
+
         // Use system property by default
         String desiredDir = System.getProperty("guacamole.home");
 

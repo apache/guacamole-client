@@ -52,13 +52,13 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * implementation intended to be easily extended. It is useful for simple
  * authentication situations where access to web-based administration and
  * complex users and permissions are not required.
- * 
+ *
  * The interface provided by SimpleAuthenticationProvider is similar to that of
  * the AuthenticationProvider interface of older Guacamole releases.
  *
  * @author Michael Jumper
  */
-public abstract class SimpleAuthenticationProvider 
+public abstract class SimpleAuthenticationProvider
     implements AuthenticationProvider {
 
     /**
@@ -84,17 +84,17 @@ public abstract class SimpleAuthenticationProvider
         // Get configurations
         Map<String, GuacamoleConfiguration> configs =
                 getAuthorizedConfigurations(credentials);
-        
+
         // Return as unauthorized if not authorized to retrieve configs
         if (configs == null)
             return null;
-        
+
         // Build new user from credentials
         User user = new SimpleUser(credentials.getUsername(), configs);
-        
+
         // Return user context restricted to authorized configs
         return new SimpleUserContext(user, configs);
-        
+
     }
 
 }

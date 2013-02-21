@@ -41,8 +41,8 @@ package net.sourceforge.guacamole.net.auth;
 /**
  * Basic implementation of a Guacamole user which uses the username to
  * determine equality. Username comparison is case-sensitive.
- * 
- * @author Michael Jumper 
+ *
+ * @author Michael Jumper
  */
 public abstract class AbstractUser implements User {
 
@@ -50,7 +50,7 @@ public abstract class AbstractUser implements User {
      * The name of this user.
      */
     private String username;
-    
+
     /**
      * This user's password. Note that while this provides a means for the
      * password to be set, the data stored in this String is not necessarily
@@ -94,7 +94,7 @@ public abstract class AbstractUser implements User {
         // Get username
         String objUsername = ((AbstractUser) obj).username;
 
-        // If null, equal only if this username is null 
+        // If null, equal only if this username is null
         if (objUsername == null) return username == null;
 
         // Otherwise, equal only if strings are identical

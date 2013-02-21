@@ -51,15 +51,15 @@ public interface AuthenticationProvider {
 
     /**
      * Returns the UserContext of the user authorized by the given credentials.
-     * 
+     *
      * @param credentials The credentials to use to retrieve the environment.
      * @return The UserContext of the user authorized by the given credentials,
      *         or null if the credentials are not authorized.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while creating the
      *                            UserContext.
      */
     UserContext getUserContext(Credentials credentials)
             throws GuacamoleException;
-   
+
 }

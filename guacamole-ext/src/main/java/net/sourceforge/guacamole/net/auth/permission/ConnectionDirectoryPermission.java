@@ -40,7 +40,7 @@ package net.sourceforge.guacamole.net.auth.permission;
 
 /**
  * A permission which controls access to a GuacamoleConfigurationDirectory.
- * 
+ *
  * @author Michael Jumper
  */
 public class ConnectionDirectoryPermission
@@ -54,13 +54,13 @@ public class ConnectionDirectoryPermission
     /**
      * Creates a new ConnectionDirectoryPermission with the given
      * type.
-     * 
+     *
      * @param type The type of operation controlled by this permission.
      */
     public ConnectionDirectoryPermission(Type type) {
         this.type = type;
     }
-    
+
     @Override
     public Type getType() {
         return type;
