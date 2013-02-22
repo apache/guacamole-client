@@ -41,48 +41,48 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Provides functions for translating between GuacamoleConfiguration objects 
+ * Provides functions for translating between GuacamoleConfiguration objects
  * and a collection of ConnectionParameter database records.
  * @author James Muehlner
  */
 public class ConfigurationTranslationUtility {
-    
+
     /**
      * Get a GuacamoleConfiguration based on the provided protocol and parameters.
      * @param protocol the protocol used (VNC, RDP, etc)
      * @param parameters the parameter database records to translate
-     * @return 
+     * @return
      */
     public GuacamoleConfiguration getConfiguration(String protocol, Iterable<ConnectionParameter> parameters) {
         GuacamoleConfiguration configuration = new GuacamoleConfiguration();
         configuration.setProtocol(protocol);
-        
+
         for(ConnectionParameter parameter : parameters) {
             configuration.setParameter(parameter.getParameter_name(), parameter.getParameter_value());
         }
-        
+
         return configuration;
     }
-    
+
     /**
      * Creates a list of ConnectionParameter database records based on the provided connectionID and GuacamoleConfiguration.
      * @param connectionID the ID of the connection that these parameters are for
      * @param configuration the configuration to pull the parameter values from
-     * @return 
+     * @return
      */
     public List<ConnectionParameter> getConnectionParameters(int connectionID, GuacamoleConfiguration configuration) {
         List<ConnectionParameter> connectionParameters = new ArrayList<ConnectionParameter>();
-        
+
         for(String parameterName : configuration.getParameterNames()) {
             ConnectionParameter connectionParameter = new ConnectionParameter();
             String parameterValue = configuration.getParameter(parameterName);
             connectionParameter.setConnection_id(connectionID);
             connectionParameter.setParameter_name(parameterName);
             connectionParameter.setParameter_value(parameterValue);
-            
+
             connectionParameters.add(connectionParameter);
         }
-        
+
         return connectionParameters;
     }
 }

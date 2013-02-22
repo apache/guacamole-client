@@ -63,59 +63,59 @@ import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 public class ProviderUtility {
     @Inject
     UserMapper userDAO;
-    
+
     @Inject
     ConnectionMapper connectionDAO;
-    
+
     @Inject
     ConnectionHistoryMapper connectionHistoryDAO;
-    
+
     @Inject
     Provider<MySQLUser> mySQLUserProvider;
-    
+
     @Inject
     Provider<MySQLConnection> mySQLConnectionProvider;
-    
+
     @Inject
     Provider<MySQLConnectionRecord> mySQLConnectionRecordProvider;
-    
+
     @Inject
     Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
-    
+
     /**
      * Create a new user based on the provided object.
      * @param user
      * @return the new MySQLUser object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLUser getNewMySQLUser(User user) throws GuacamoleException {
         MySQLUser mySQLUser = mySQLUserProvider.get();
         mySQLUser.initNew(user);
         return mySQLUser;
     }
-    
+
     /**
      * Get the user based on the username of the provided object.
      * @param user
      * @return the new MySQLUser object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLUser getExistingMySQLUser(User user) throws GuacamoleException {
         return getExistingMySQLUser(user.getUsername());
     }
-    
+
     /**
      * Get the user based on the username of the provided object.
      * @param name
      * @return the new MySQLUser object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLUser getExistingMySQLUser(String name) throws GuacamoleException {
         MySQLUser mySQLUser = mySQLUserProvider.get();
         mySQLUser.initExisting(name);
         return mySQLUser;
     }
-    
+
     /**
      * Get an existing MySQLUser from a user database record.
      * @param user
@@ -126,7 +126,7 @@ public class ProviderUtility {
         mySQLUser.init(user);
         return mySQLUser;
     }
-    
+
     /**
      * Get an existing MySQLUser from a user ID.
      * @param id
@@ -140,42 +140,42 @@ public class ProviderUtility {
             return null;
         return getExistingMySQLUser(users.get(0));
     }
-        
-    
+
+
     /**
      * Create a new connection based on the provided object.
      * @param connection
      * @return the new Connection object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLConnection getNewMySQLConnection(Connection connection) throws GuacamoleException {
         MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
         mySQLConnection.initNew(connection);
         return mySQLConnection;
     }
-    
+
     /**
      * Get the connection based on the connection name of the provided object.
      * @param connection
      * @return the new Connection object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLConnection getExistingMySQLConnection(Connection connection) throws GuacamoleException {
         return getExistingMySQLConnection(connection.getIdentifier());
     }
-    
+
     /**
      * Get the connection based on the connection name of the provided object.
      * @param name
      * @return the new Connection object.
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public MySQLConnection getExistingMySQLConnection(String name) throws GuacamoleException {
         MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
         mySQLConnection.initExisting(name);
         return mySQLConnection;
     }
-    
+
     /**
      * Get an existing MySQLConnection from a connection database record.
      * @param connection
@@ -186,7 +186,7 @@ public class ProviderUtility {
         mySQLConnection.init(connection);
         return mySQLConnection;
     }
-    
+
     /**
      * Get an existing MySQLConnection from a connection ID.
      * @param id
@@ -200,7 +200,7 @@ public class ProviderUtility {
             return null;
         return getExistingMySQLConnection(connections.get(0));
     }
-    
+
     /**
      * Gets a list of existing MySQLConnectionRecord from the database. These represent
      * the history records of the connection.
@@ -219,7 +219,7 @@ public class ProviderUtility {
         }
         return connectionRecords;
     }
-    
+
     /**
      * Create a MySQLConnectionRecord object around a single ConnectionHistory database record.
      * @param history
@@ -230,12 +230,12 @@ public class ProviderUtility {
         record.init(history);
         return record;
     }
-    
+
     /**
      * Create a MySQLGuacamoleSocket using the provided ConfiguredGuacamoleSocket and connection ID.
      * @param socket
      * @param connectionID
-     * @return 
+     * @return
      */
     public MySQLGuacamoleSocket getMySQLGuacamoleSocket(ConfiguredGuacamoleSocket socket, int connectionID) {
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();

@@ -45,25 +45,25 @@ import net.sourceforge.guacamole.net.auth.permission.UserPermission;
  * @author James Muehlner
  */
 public final class MySQLConstants {
-    
+
     /**
      * This class should not be instantiated.
      */
     private MySQLConstants() {}
-    
+
     // Permission constants
     public static final String USER_READ = UserPermission.Type.READ.name();
     public static final String USER_UPDATE = UserPermission.Type.UPDATE.name();
     public static final String USER_DELETE = UserPermission.Type.DELETE.name();
     public static final String USER_ADMINISTER = UserPermission.Type.ADMINISTER.name();
     public static final String USER_CREATE = UserDirectoryPermission.Type.CREATE.name();
-    
+
     public static final String CONNECTION_READ = ConnectionPermission.Type.READ.name();
     public static final String CONNECTION_UPDATE = ConnectionPermission.Type.UPDATE.name();
     public static final String CONNECTION_DELETE = ConnectionPermission.Type.DELETE.name();
     public static final String CONNECTION_ADMINISTER = ConnectionPermission.Type.ADMINISTER.name();
     public static final String CONNECTION_CREATE = ConnectionDirectoryPermission.Type.CREATE.name();
-    
+
     public static final String SYSTEM_USER_CREATE = "USER_CREATE";
     public static final String SYSTEM_CONNECTION_CREATE = "CONNECTION_CREATE";
 }

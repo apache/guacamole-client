@@ -42,9 +42,9 @@ import java.security.SecureRandom;
  * @author James Muehlner
  */
 public class SecureRandomSaltUtility implements SaltUtility {
-    
+
     SecureRandom secureRandom = new SecureRandom();
-    
+
     @Override
     public byte[] generateSalt() {
         byte[] salt = new byte[32];

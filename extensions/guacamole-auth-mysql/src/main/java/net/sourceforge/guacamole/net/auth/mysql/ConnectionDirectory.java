@@ -224,7 +224,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
         connectionParameterExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
         connectionParameterDAO.deleteByExample(connectionParameterExample);
-        
+
         // delete all permissions that refer to this connection
         ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
         connectionPermissionExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());

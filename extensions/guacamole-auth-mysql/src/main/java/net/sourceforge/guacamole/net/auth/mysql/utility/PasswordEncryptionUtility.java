@@ -42,7 +42,7 @@ import net.sourceforge.guacamole.net.auth.Credentials;
  * @author James Muehlner
  */
 public interface PasswordEncryptionUtility {
-    
+
     /**
      * Checks if the provided Credentials are correct, compared with what the values from the database.
      * @param credentials
@@ -52,7 +52,7 @@ public interface PasswordEncryptionUtility {
      * @return true if the provided credentials match what's in the database for that user.
      */
     public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt);
-    
+
     /**
      * Creates a password hash based on the provided username, password, and salt.
      * @param username
