@@ -158,6 +158,33 @@ public class GuacamoleProperties {
 
     /**
      * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any. If no value is found, the
+     * provided default value is returned.
+     *
+     * @param <Type> The type that the given property is parsed into.
+     * @param property The property to read from guacamole.properties.
+     * @param defaultValue The value to return if no value was given in
+     *                     guacamole.properties.
+     * @return The parsed value of the property as read from
+     *         guacamole.properties, or the provided default value if no value
+     *         was found.
+     * @throws GuacamoleException If an error occurs while parsing the value
+     *                            for the given property in
+     *                            guacamole.properties.
+     */
+    public static <Type> Type getProperty(GuacamoleProperty<Type> property,
+            Type defaultValue) throws GuacamoleException {
+
+        Type value = getProperty(property);
+        if (value == null)
+            return defaultValue;
+
+        return value;
+
+    }
+
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
      * property in guacamole.properties. An exception is thrown if the value
      * is not provided.
      *
