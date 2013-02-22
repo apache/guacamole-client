@@ -74,5 +74,5 @@ public class GuacamolePermissionException extends GuacamoleException {
         super(cause);
     }
 
-    
+
 }

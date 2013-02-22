@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.properties;
 
+import net.sourceforge.guacamole.properties.BooleanGuacamoleProperty;
 import net.sourceforge.guacamole.properties.IntegerGuacamoleProperty;
 import net.sourceforge.guacamole.properties.StringGuacamoleProperty;
 
@@ -43,12 +44,12 @@ import net.sourceforge.guacamole.properties.StringGuacamoleProperty;
  * @author James Muehlner
  */
 public class MySQLGuacamoleProperties {
-    
+
     /**
      * This class should not be instantiated.
      */
     private MySQLGuacamoleProperties() {}
-    
+
     /**
      * The URL of the MySQL server hosting the guacamole authentication tables.
      */
@@ -58,7 +59,7 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-hostname"; }
 
     };
-    
+
     /**
      * The port of the MySQL server hosting the guacamole authentication tables.
      */
@@ -68,7 +69,7 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-port"; }
 
     };
-    
+
     /**
      * The name of the MySQL database containing the guacamole authentication tables.
      */
@@ -78,7 +79,7 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-database"; }
 
     };
-    
+
     /**
      * The username used to authenticate to the MySQL database containing the guacamole authentication tables.
      */
@@ -88,7 +89,7 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-username"; }
 
     };
-    
+
     /**
      * The password used to authenticate to the MySQL database containing the guacamole authentication tables.
      */
@@ -96,6 +97,16 @@ public class MySQLGuacamoleProperties {
 
         @Override
         public String getName() { return "mysql-password"; }
+
+    };
+
+    /**
+     * Whether or not multiple users accessing the same connection at the same time should be disallowed.
+     */
+    public static final BooleanGuacamoleProperty MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-disallow-simultaneous-connections"; }
 
     };
 }

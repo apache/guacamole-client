@@ -52,6 +52,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.net.auth.mysql.utility.ConfigurationTranslationUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
@@ -73,18 +74,21 @@ import org.slf4j.LoggerFactory;
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
     private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-    
+
+    private ActiveConnectionSet activeConnectionSet = new ActiveConnectionSet();
+
     private Injector injector;
-    
+
     @Override
     public UserContext getUserContext(Credentials credentials) throws GuacamoleException {
         MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
         context.init(credentials);
         return context;
     }
-    
+
     public MySQLAuthenticationProvider() throws GuacamoleException {
         final Properties myBatisProperties = new Properties();
+        //set the mysql properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
         myBatisProperties.setProperty("JDBC.host", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME));
         myBatisProperties.setProperty("JDBC.port", String.valueOf(GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PORT)));
@@ -93,6 +97,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         myBatisProperties.setProperty("JDBC.password", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
 
+        // Set up Guice injector.
         injector = Guice.createInjector(
             JdbcHelper.MySQL,
             new Module() {
@@ -117,6 +122,8 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(PasswordEncryptionUtility.class).to(Sha256PasswordEncryptionUtility.class);
                     bind(PermissionCheckUtility.class);
                     bind(ProviderUtility.class);
+                    bind(ConfigurationTranslationUtility.class);
+                    bind(ActiveConnectionSet.class).toInstance(activeConnectionSet);
                 }
             }
         );

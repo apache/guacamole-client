@@ -44,6 +44,7 @@ import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionRecord;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
@@ -53,9 +54,10 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistoryExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
+import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 
 /**
- * Provides convenient provider methods for MySQLUser, MySQLConnection, and MySQLConnctionRecord objects.
+ * Provides convenient provider methods for MySQL specific implementations.
  * @author James Muehlner
  */
 public class ProviderUtility {
@@ -76,6 +78,9 @@ public class ProviderUtility {
     
     @Inject
     Provider<MySQLConnectionRecord> mySQLConnectionRecordProvider;
+    
+    @Inject
+    Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
     
     /**
      * Create a new user based on the provided object.
@@ -205,6 +210,8 @@ public class ProviderUtility {
     public List<MySQLConnectionRecord> getExistingMySQLConnectionRecords(Integer connectionID) {
         ConnectionHistoryExample example = new ConnectionHistoryExample();
         example.createCriteria().andConnection_idEqualTo(connectionID);
+        // we want to return the newest records first
+        example.setOrderByClause("start_date DESC");
         List<ConnectionHistory> connectionHistories = connectionHistoryDAO.selectByExample(example);
         List<MySQLConnectionRecord> connectionRecords = new ArrayList<MySQLConnectionRecord>();
         for(ConnectionHistory history : connectionHistories) {
@@ -222,5 +229,17 @@ public class ProviderUtility {
         MySQLConnectionRecord record = mySQLConnectionRecordProvider.get();
         record.init(history);
         return record;
+    }
+    
+    /**
+     * Create a MySQLGuacamoleSocket using the provided ConfiguredGuacamoleSocket and connection ID.
+     * @param socket
+     * @param connectionID
+     * @return 
+     */
+    public MySQLGuacamoleSocket getMySQLGuacamoleSocket(ConfiguredGuacamoleSocket socket, int connectionID) {
+        MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();
+        mySQLGuacamoleSocket.init(socket, connectionID);
+        return mySQLGuacamoleSocket;
     }
 }

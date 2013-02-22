@@ -55,24 +55,24 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      * The database record that this ConnectionRecord represents.
      */
     private ConnectionHistory connectionHistory;
-    
+
     @Inject
     UserMapper userDAO;
-    
+
     @Inject
     ConnectionMapper connectionDAO;
-    
+
     @Inject
     ProviderUtility providerUtility;
-    
+
     /**
      * Initialize this MySQLConnectionRecord with the database record it represents.
-     * @param connectionHistory 
+     * @param connectionHistory
      */
     public void init(ConnectionHistory connectionHistory) {
         this.connectionHistory = connectionHistory;
     }
-    
+
     @Override
     public Date getStartDate() {
         return connectionHistory.getStart_date();
@@ -98,5 +98,5 @@ public class MySQLConnectionRecord implements ConnectionRecord {
         // if the end date hasn't been stored yet, the connection is still open.
         return connectionHistory.getEnd_date() == null;
     }
-    
+
 }

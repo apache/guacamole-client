@@ -50,18 +50,18 @@ import org.slf4j.LoggerFactory;
  * @author James Muehlner
  */
 public class MySQLUserContext implements UserContext {
-    
+
     private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-    
+
     @Inject
     private MySQLUser user;
-    
+
     @Inject
     private UserDirectory userDirectory;
-    
+
     @Inject
     private ConnectionDirectory connectionDirectory;
-    
+
     void init(Credentials credentials) throws GuacamoleException {
         user.init(credentials);
         userDirectory.init(user);
@@ -82,5 +82,5 @@ public class MySQLUserContext implements UserContext {
     public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
         return connectionDirectory;
     }
-    
+
 }

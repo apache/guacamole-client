@@ -76,28 +76,28 @@ import net.sourceforge.guacamole.net.auth.permission.UserPermission;
  * @author James Muehlner
  */
 public class PermissionCheckUtility {
-    
+
     @Inject
     UserMapper userDAO;
-    
+
     @Inject
     ConnectionMapper connectionDAO;
-    
+
     @Inject
     UserPermissionMapper userPermissionDAO;
-    
+
     @Inject
     ConnectionPermissionMapper connectionPermissionDAO;
-    
+
     @Inject
     SystemPermissionMapper systemPermissionDAO;
-    
+
     @Inject
     Provider<MySQLUser> mySQLUserProvider;
-    
+
     @Inject
     Provider<MySQLConnection> mySQLConnectionProvider;
-    
+
     /**
      * Verifies that the user has read access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -108,7 +108,7 @@ public class PermissionCheckUtility {
         if(!checkUserReadAccess(userID, affectedUserID))
             throw new GuacamolePermissionException("User " + userID + " does not have read access to user " + affectedUserID);
     }
-    
+
     /**
      * Verifies that the user has update access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -119,7 +119,7 @@ public class PermissionCheckUtility {
         if(!checkUserUpdateAccess(userID, affectedUserID))
             throw new GuacamolePermissionException("User " + userID + " does not have update access to user " + affectedUserID);
     }
-    
+
     /**
      * Verifies that the user has delete access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -130,7 +130,7 @@ public class PermissionCheckUtility {
         if(!checkUserDeleteAccess(userID, affectedUserID))
             throw new GuacamolePermissionException("User " + userID + " does not have delete access to user " + affectedUserID);
     }
-    
+
     /**
      * Verifies that the user has administer access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -141,7 +141,7 @@ public class PermissionCheckUtility {
         if(!checkUserAdministerAccess(userID, affectedUserID))
             throw new GuacamolePermissionException("User " + userID + " does not have administer access to user " + affectedUserID);
     }
-    
+
     /**
      * Verifies that the user has read access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -152,7 +152,7 @@ public class PermissionCheckUtility {
         if(!checkUserReadAccess(userID, affectedUsername))
             throw new GuacamolePermissionException("User " + userID + " does not have read access to user '" + affectedUsername + "'");
     }
-    
+
     /**
      * Verifies that the user has update access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -163,7 +163,7 @@ public class PermissionCheckUtility {
         if(!checkUserUpdateAccess(userID, affectedUsername))
             throw new GuacamolePermissionException("User " + userID + " does not have update access to user '" + affectedUsername + "'");
     }
-    
+
     /**
      * Verifies that the user has delete access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -174,7 +174,7 @@ public class PermissionCheckUtility {
         if(!checkUserDeleteAccess(userID, affectedUsername))
             throw new GuacamolePermissionException("User " + userID + " does not have delete access to user '" + affectedUsername + "'");
     }
-    
+
     /**
      * Verifies that the user has administer access to the given user. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -185,7 +185,7 @@ public class PermissionCheckUtility {
         if(!checkUserAdministerAccess(userID, affectedUsername))
             throw new GuacamolePermissionException("User " + userID + " does not have administer access to user '" + affectedUsername + "'");
     }
-    
+
     /**
      * Checks if the user has read access to the given user.
      * @param userID
@@ -195,7 +195,7 @@ public class PermissionCheckUtility {
     public boolean checkUserReadAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_READ);
     }
-    
+
     /**
      * Checks if the user has update access to the given user.
      * @param userID
@@ -205,7 +205,7 @@ public class PermissionCheckUtility {
     public boolean checkUserUpdateAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_UPDATE);
     }
-    
+
     /**
      * Checks if the user has delete access to the given user.
      * @param userID
@@ -215,7 +215,7 @@ public class PermissionCheckUtility {
     public boolean checkUserDeleteAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_DELETE);
     }
-    
+
     /**
      * Checks if the user has administer access to the given user.
      * @param userID
@@ -225,7 +225,7 @@ public class PermissionCheckUtility {
     public boolean checkUserAdministerAccess(int userID, int affectedUserID) {
         return checkUserAccess(userID, affectedUserID, MySQLConstants.USER_ADMINISTER);
     }
-    
+
     /**
      * Checks if the user has read access to the given user.
      * @param userID
@@ -235,7 +235,7 @@ public class PermissionCheckUtility {
     public boolean checkUserReadAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_READ);
     }
-    
+
     /**
      * Checks if the user has update access to the given user.
      * @param userID
@@ -245,7 +245,7 @@ public class PermissionCheckUtility {
     public boolean checkUserUpdateAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_UPDATE);
     }
-    
+
     /**
      * Checks if the user has delete access to the given user.
      * @param userID
@@ -255,7 +255,7 @@ public class PermissionCheckUtility {
     public boolean checkUserDeleteAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_DELETE);
     }
-    
+
     /**
      * Checks if the user has administer access to the given user.
      * @param userID
@@ -265,28 +265,28 @@ public class PermissionCheckUtility {
     public boolean checkUserAdministerAccess(int userID, String affectedUsername) {
         return checkUserAccess(userID, affectedUsername, MySQLConstants.USER_ADMINISTER);
     }
-    
+
     /**
      * Check if the user has the selected type of access to the affected user.
      * @param userID
      * @param affectedUsername
      * @param permissionType
-     * @return 
+     * @return
      */
     private boolean checkUserAccess(int userID, String affectedUsername, String permissionType) {
         User affectedUser = getUser(affectedUsername);
         if(affectedUser != null)
             return checkUserAccess(userID, affectedUser.getUser_id(), permissionType);
-        
+
         return false;
     }
-    
+
     /**
      * Check if the user has the selected type of access to the affected user.
      * @param userID
      * @param affectedUserID
      * @param permissionType
-     * @return 
+     * @return
      */
     private boolean checkUserAccess(int userID, Integer affectedUserID, String permissionType) {
         UserPermissionExample example = new UserPermissionExample();
@@ -294,7 +294,7 @@ public class PermissionCheckUtility {
         int count = userPermissionDAO.countByExample(example);
         return count > 0;
     }
-    
+
     /**
      * Find the list of all user IDs a user has permission to administer.
      * @param userID
@@ -303,7 +303,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getAdministerableUserIDs(int userID) {
         return getUserIDs(userID, MySQLConstants.USER_ADMINISTER);
     }
-    
+
     /**
      * Find the list of all user IDs a user has permission to delete.
      * @param userID
@@ -312,7 +312,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getDeletableUserIDs(int userID) {
         return getUserIDs(userID, MySQLConstants.USER_DELETE);
     }
-    
+
     /**
      * Find the list of all user IDs a user has permission to write.
      * @param userID
@@ -321,7 +321,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getUpdateableUserIDs(int userID) {
         return getUserIDs(userID, MySQLConstants.USER_UPDATE);
     }
-    
+
     /**
      * Find the list of all user IDs a user has permission to read.
      * @param userID
@@ -330,7 +330,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getReadableUserIDs(int userID) {
         return getUserIDs(userID, MySQLConstants.USER_READ);
     }
-    
+
     /**
      * Find the list of all users a user has permission to administer.
      * @param userID
@@ -339,7 +339,7 @@ public class PermissionCheckUtility {
     public Set<MySQLUser> getAdministerableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_ADMINISTER);
     }
-    
+
     /**
      * Find the list of all users a user has permission to delete.
      * @param userID
@@ -348,7 +348,7 @@ public class PermissionCheckUtility {
     public Set<MySQLUser> getDeletableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_DELETE);
     }
-    
+
     /**
      * Find the list of all users a user has permission to write.
      * @param userID
@@ -357,7 +357,7 @@ public class PermissionCheckUtility {
     public Set<MySQLUser> getUpdateableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_UPDATE);
     }
-    
+
     /**
      * Find the list of all users a user has permission to read.
      * @param userID
@@ -366,7 +366,7 @@ public class PermissionCheckUtility {
     public Set<MySQLUser> getReadableUsers(int userID) {
         return getUsers(userID, MySQLConstants.USER_READ);
     }
-    
+
     /**
      * Find the list of all users a user has permission to.
      * The access type is defined by permissionType.
@@ -385,10 +385,10 @@ public class PermissionCheckUtility {
             mySQLUser.init(affectedUser);
             affectedUsers.add(mySQLUser);
         }
-        
+
         return affectedUsers;
     }
-    
+
     /**
      * Find the list of the IDs of all users a user has permission to.
      * The access type is defined by permissionType.
@@ -403,10 +403,10 @@ public class PermissionCheckUtility {
         List<UserPermissionKey> userPermissions = userPermissionDAO.selectByExample(example);
         for(UserPermissionKey permission : userPermissions)
             userIDs.add(permission.getAffected_user_id());
-        
+
         return userIDs;
     }
-    
+
     /**
      * Verifies that the user has read access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -417,7 +417,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionReadAccess(userID, affectedConnectionID))
             throw new GuacamolePermissionException("User " + userID + " does not have read access to connection " + affectedConnectionID);
     }
-    
+
     /**
      * Verifies that the user has update access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -428,7 +428,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionUpdateAccess(userID, affectedConnectionID))
             throw new GuacamolePermissionException("User " + userID + " does not have update access to connection " + affectedConnectionID);
     }
-    
+
     /**
      * Verifies that the user has delete access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -439,7 +439,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionDeleteAccess(userID, affectedConnectionID))
             throw new GuacamolePermissionException("User " + userID + " does not have delete access to connection " + affectedConnectionID);
     }
-    
+
     /**
      * Verifies that the user has administer access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -450,7 +450,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionAdministerAccess(userID, affectedConnectionID))
             throw new GuacamolePermissionException("User " + userID + " does not have administer access to connection " + affectedConnectionID);
     }
-    
+
     /**
      * Verifies that the user has read access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -461,7 +461,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionReadAccess(userID, affectedConnectionName))
             throw new GuacamolePermissionException("User " + userID + " does not have read access to connection '" + affectedConnectionName + "'");
     }
-    
+
     /**
      * Verifies that the user has update access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -472,7 +472,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionUpdateAccess(userID, affectedConnectionName))
             throw new GuacamolePermissionException("User " + userID + " does not have update access to connection '" + affectedConnectionName + "'");
     }
-    
+
     /**
      * Verifies that the user has delete access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -483,7 +483,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionDeleteAccess(userID, affectedConnectionName))
             throw new GuacamolePermissionException("User " + userID + " does not have delete access to connection '" + affectedConnectionName + "'");
     }
-    
+
     /**
      * Verifies that the user has administer access to the given connection. If not, throws a GuacamolePermissionException.
      * @param userID
@@ -494,7 +494,7 @@ public class PermissionCheckUtility {
         if(!checkConnectionAdministerAccess(userID, affectedConnectionName))
             throw new GuacamolePermissionException("User " + userID + " does not have administer access to connection '" + affectedConnectionName + "'");
     }
-    
+
     /**
      * Checks if the user has read access to the given connection.
      * @param userID
@@ -504,7 +504,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionReadAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_READ);
     }
-    
+
     /**
      * Checks if the user has update access to the given connection.
      * @param userID
@@ -514,7 +514,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionUpdateAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_UPDATE);
     }
-    
+
     /**
      * Checks if the user has delete access to the given connection.
      * @param userID
@@ -524,7 +524,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionDeleteAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_DELETE);
     }
-    
+
     /**
      * Checks if the user has administer access to the given connection.
      * @param userID
@@ -534,7 +534,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionAdministerAccess(int userID, int affectedConnectionID) {
         return checkConnectionAccess(userID, affectedConnectionID, MySQLConstants.CONNECTION_ADMINISTER);
     }
-    
+
     /**
      * Checks if the user has read access to the given connection.
      * @param userID
@@ -544,7 +544,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionReadAccess(int userID, String affectedConnectionName) {
         return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_READ);
     }
-    
+
     /**
      * Checks if the user has update access to the given connection.
      * @param userID
@@ -554,7 +554,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionUpdateAccess(int userID, String affectedConnectionName) {
         return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_UPDATE);
     }
-    
+
     /**
      * Checks if the user has delete access to the given connection.
      * @param userID
@@ -564,7 +564,7 @@ public class PermissionCheckUtility {
     public boolean checkConnectionDeleteAccess(int userID, String affectedConnectionname) {
         return checkConnectionAccess(userID, affectedConnectionname, MySQLConstants.CONNECTION_DELETE);
     }
-    
+
     /**
      * Checks if the user has administer access to the given connection.
      * @param userID
@@ -574,28 +574,28 @@ public class PermissionCheckUtility {
     public boolean checkConnectionAdministerAccess(int userID, String affectedConnectionName) {
         return checkConnectionAccess(userID, affectedConnectionName, MySQLConstants.CONNECTION_ADMINISTER);
     }
-    
+
     /**
      * Check if the user has the selected type of access to the affected connection.
      * @param connectionID
      * @param affectedConnectionname
      * @param permissionType
-     * @return 
+     * @return
      */
     private boolean checkConnectionAccess(int userID, String affectedConnectionName, String permissionType) {
         Connection connection = getConnection(affectedConnectionName);
         if(connection != null)
             return checkConnectionAccess(userID, connection.getConnection_id(), permissionType);
-        
+
         return false;
     }
-    
+
     /**
      * Check if the user has the selected type of access to the affected connection.
      * @param connectionID
      * @param affectedConnectionID
      * @param permissionType
-     * @return 
+     * @return
      */
     private boolean checkConnectionAccess(int userID, Integer affectedConnectionID, String permissionType) {
         ConnectionPermissionExample example = new ConnectionPermissionExample();
@@ -603,7 +603,7 @@ public class PermissionCheckUtility {
         int count = connectionPermissionDAO.countByExample(example);
         return count > 0;
     }
-    
+
     /**
      * Find the list of all connection IDs a user has permission to administer.
      * @param userID
@@ -612,7 +612,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getAdministerableConnectionIDs(int userID) {
         return getConnectionIDs(userID, MySQLConstants.CONNECTION_ADMINISTER);
     }
-    
+
     /**
      * Find the list of all connection IDs a user has permission to delete.
      * @param userID
@@ -621,7 +621,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getDeletableConnectionIDs(int userID) {
         return getConnectionIDs(userID, MySQLConstants.CONNECTION_DELETE);
     }
-    
+
     /**
      * Find the list of all connection IDs a user has permission to write.
      * @param userID
@@ -630,7 +630,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getUpdateableConnectionIDs(int userID) {
         return getConnectionIDs(userID, MySQLConstants.CONNECTION_UPDATE);
     }
-    
+
     /**
      * Find the list of all connection IDs a user has permission to read.
      * @param userID
@@ -639,7 +639,7 @@ public class PermissionCheckUtility {
     public Set<Integer> getReadableConnectionIDs(int userID) {
         return getConnectionIDs(userID, MySQLConstants.CONNECTION_READ);
     }
-    
+
     /**
      * Find the list of all connections a user has permission to administer.
      * @param userID
@@ -648,7 +648,7 @@ public class PermissionCheckUtility {
     public Set<MySQLConnection> getAdministerableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_ADMINISTER);
     }
-    
+
     /**
      * Find the list of all connections a user has permission to delete.
      * @param userID
@@ -657,7 +657,7 @@ public class PermissionCheckUtility {
     public Set<MySQLConnection> getDeletableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_DELETE);
     }
-    
+
     /**
      * Find the list of all connections a user has permission to write.
      * @param userID
@@ -666,7 +666,7 @@ public class PermissionCheckUtility {
     public Set<MySQLConnection> getUpdateableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_UPDATE);
     }
-    
+
     /**
      * Find the list of all connections a user has permission to read.
      * @param userID
@@ -675,7 +675,7 @@ public class PermissionCheckUtility {
     public Set<MySQLConnection> getReadableConnections(int userID) {
         return getConnections(userID, MySQLConstants.CONNECTION_READ);
     }
-    
+
     /**
      * Find the list of all connections a user has permission to.
      * The access type is defined by permissionType.
@@ -694,10 +694,10 @@ public class PermissionCheckUtility {
             mySQLConnection.init(affectedConnection);
             affectedConnections.add(mySQLConnection);
         }
-        
+
         return affectedConnections;
     }
-    
+
     /**
      * Find the list of the IDs of all connections a user has permission to.
      * The access type is defined by permissionType.
@@ -712,43 +712,43 @@ public class PermissionCheckUtility {
         List<ConnectionPermissionKey> connectionPermissions = connectionPermissionDAO.selectByExample(example);
         for(ConnectionPermissionKey permission : connectionPermissions)
             connectionIDs.add(permission.getConnection_id());
-        
+
         return connectionIDs;
     }
-    
+
     public void verifyCreateUserPermission(int userID) throws GuacamolePermissionException {
         if(!checkCreateUserPermission(userID))
             throw new GuacamolePermissionException("User " + userID + " does not have permission to create users.");
     }
-    
+
     public void verifyCreateConnectionPermission(int userID) throws GuacamolePermissionException {
         if(!checkCreateConnectionPermission(userID))
             throw new GuacamolePermissionException("User " + userID + " does not have permission to create connections.");
     }
-    
+
     /**
      * Check if the user has the permission to create users.
      * @param userID
-     * @return 
+     * @return
      */
     public boolean checkCreateUserPermission(int userID) {
         return checkSystemPermission(userID, MySQLConstants.SYSTEM_USER_CREATE);
     }
-    
+
     /**
      * Check if the user has the permission to create connections.
      * @param userID
-     * @return 
+     * @return
      */
     public boolean checkCreateConnectionPermission(int userID) {
         return checkSystemPermission(userID, MySQLConstants.SYSTEM_CONNECTION_CREATE);
     }
-    
+
     /**
      * Check if the user has the selected system permission.
      * @param userID
-     * @param systemPermissionType 
-     * @return 
+     * @param systemPermissionType
+     * @return
      */
     private boolean checkSystemPermission(int userID, String systemPermissionType) {
         SystemPermissionExample example = new SystemPermissionExample();
@@ -756,11 +756,11 @@ public class PermissionCheckUtility {
         int count = systemPermissionDAO.countByExample(example);
         return count > 0;
     }
-    
+
     /**
      * Get a connection object by name.
      * @param name
-     * @return 
+     * @return
      */
     private Connection getConnection(String name) {
         ConnectionExample example = new ConnectionExample();
@@ -768,14 +768,14 @@ public class PermissionCheckUtility {
         List<Connection> connections = connectionDAO.selectByExample(example);
         if(connections.isEmpty())
             return null;
-        
+
         return connections.get(0);
     }
-    
+
     /**
      * Get a user object by username.
      * @param userName
-     * @return 
+     * @return
      */
     private User getUser(String username) {
         UserExample example = new UserExample();
@@ -783,18 +783,18 @@ public class PermissionCheckUtility {
         List<User> users = userDAO.selectByExample(example);
         if(users.isEmpty())
             return null;
-        
+
         return users.get(0);
     }
-    
+
     /**
      * Get all permissions a given user has.
      * @param userID
-     * @return all permissions a user has. 
+     * @return all permissions a user has.
      */
     public Set<Permission> getAllPermissions(int userID) {
         Set<Permission> allPermissions = new HashSet<Permission>();
-        
+
         // first, user permissions
         UserPermissionExample userPermissionExample = new UserPermissionExample();
         userPermissionExample.createCriteria().andUser_idEqualTo(userID);
@@ -803,7 +803,7 @@ public class PermissionCheckUtility {
         for(UserPermissionKey userPermission : userPermissions) {
             affectedUserIDs.add(userPermission.getAffected_user_id());
         }
-        
+
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUser_idIn(affectedUserIDs);
         List<User> users = userDAO.selectByExample(userExample);
@@ -811,7 +811,7 @@ public class PermissionCheckUtility {
         for(User user : users) {
             userMap.put(user.getUser_id(), user);
         }
-        
+
         for(UserPermissionKey userPermission : userPermissions) {
             User affectedUser = userMap.get(userPermission.getAffected_user_id());
             UserPermission newPermission = new UserPermission(
@@ -820,7 +820,7 @@ public class PermissionCheckUtility {
             );
             allPermissions.add(newPermission);
         }
-        
+
         //secondly, connection permissions
         ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
         connectionPermissionExample.createCriteria().andUser_idEqualTo(userID);
@@ -829,7 +829,7 @@ public class PermissionCheckUtility {
         for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
             affectedConnectionIDs.add(connectionPermission.getConnection_id());
         }
-        
+
         ConnectionExample connectionExample = new ConnectionExample();
         connectionExample.createCriteria().andConnection_idIn(affectedConnectionIDs);
         List<Connection> connections = connectionDAO.selectByExample(connectionExample);
@@ -837,7 +837,7 @@ public class PermissionCheckUtility {
         for(Connection connection : connections) {
             connectionMap.put(connection.getConnection_id(), connection);
         }
-        
+
         for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
             Connection affectedConnection = connectionMap.get(connectionPermission.getConnection_id());
             ConnectionPermission newPermission = new ConnectionPermission(
@@ -846,7 +846,7 @@ public class PermissionCheckUtility {
             );
             allPermissions.add(newPermission);
         }
-        
+
         //and finally, system permissions
         SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
         systemPermissionExample.createCriteria().andUser_idEqualTo(userID);
@@ -857,11 +857,11 @@ public class PermissionCheckUtility {
                 newPermission = new UserDirectoryPermission(UserDirectoryPermission.Type.CREATE);
             else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
                 newPermission = new ConnectionDirectoryPermission(ConnectionDirectoryPermission.Type.CREATE);
-            
+
             if(newPermission != null)
                 allPermissions.add(newPermission);
         }
-        
+
         return allPermissions;
     }
 }

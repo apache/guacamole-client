@@ -39,11 +39,19 @@ import com.google.inject.Inject;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
+import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.net.auth.mysql.utility.ConfigurationTranslationUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -52,24 +60,34 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * @author James Muehlner
  */
 public class MySQLConnection implements Connection {
-    
+
     @Inject
     ConnectionMapper connectionDAO;
-    
+
+    @Inject
+    ConnectionParameterMapper connectionParameterDAO;
+
     @Inject
     ProviderUtility providerUtility;
-    
+
+    @Inject
+    ActiveConnectionSet activeConnectionSet;
+
+    @Inject
+    ConfigurationTranslationUtility configurationTranslationUtility;
+
     private net.sourceforge.guacamole.net.auth.mysql.model.Connection connection;
-    
+
     private GuacamoleConfiguration configuration;
-    
+
     /**
      * Create a default, empty connection.
      */
     MySQLConnection() {
         connection = new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
+        configuration = new GuacamoleConfiguration();
     }
-    
+
     /**
      * Get the ID of the underlying connection record.
      * @return the ID of the underlying connection
@@ -77,7 +95,7 @@ public class MySQLConnection implements Connection {
     public int getConnectionID() {
         return connection.getConnection_id();
     }
-    
+
     /**
      * Get the underlying connection database record.
      * @return the underlying connection record.
@@ -85,19 +103,31 @@ public class MySQLConnection implements Connection {
     public net.sourceforge.guacamole.net.auth.mysql.model.Connection getConnection() {
         return connection;
     }
-    
+
     /**
      * Create a new MySQLConnection from this new connection. This is a connection that has not yet been inserted.
-     * @param connection 
+     * @param connection
      */
     public void initNew(Connection connection) {
         this.connection.setConnection_name(connection.getIdentifier());
         this.configuration = connection.getConfiguration();
     }
-    
+
+    /**
+     * Initializes the GuacamoleConfiguration based on the ConnectionParameter values in the database.
+     */
+    private void initConfiguration() {
+        ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
+        connectionParameterExample.createCriteria().andConnection_idEqualTo(connection.getConnection_id());
+
+        List<ConnectionParameter> connectionParameters = connectionParameterDAO.selectByExample(connectionParameterExample);
+
+        configuration = configurationTranslationUtility.getConfiguration(connection.getProtocol(), connectionParameters);
+    }
+
     /**
      * Load an existing connection by name.
-     * @param connectionName 
+     * @param connectionName
      */
     public void initExisting(String connectionName) throws GuacamoleException {
         ConnectionExample example = new ConnectionExample();
@@ -108,16 +138,19 @@ public class MySQLConnection implements Connection {
             throw new GuacamoleException("Multiple connections found named '" + connectionName + "'.");
         else if(connections.isEmpty())
             throw new GuacamoleException("No connection found named '" + connectionName + "'.");
-        
+
         connection = connections.get(0);
+
+        initConfiguration();
     }
-    
+
     /**
-     * Initialize from a database record.
-     * @param connection 
+     * Initialize from a database record. This also initializes the configuration values.
+     * @param connection
      */
     public void init(net.sourceforge.guacamole.net.auth.mysql.model.Connection connection) {
         this.connection = connection;
+        initConfiguration();
     }
 
     @Override
@@ -138,13 +171,30 @@ public class MySQLConnection implements Connection {
     @Override
     public void setConfiguration(GuacamoleConfiguration config) {
         this.configuration = config;
+
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // If the current connection is active, and multiple simultaneous connections are not allowed.
+        if(GuacamoleProperties.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
+                && activeConnectionSet.contains(getConnectionID()))
+            throw new GuacamoleException("Cannot connect. This connection is in use.");
+
+        String host = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
+        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
+
+        InetGuacamoleSocket inetSocket = new InetGuacamoleSocket(host, port);
+        ConfiguredGuacamoleSocket configuredSocket = new ConfiguredGuacamoleSocket(inetSocket, configuration);
+
+        MySQLGuacamoleSocket mySQLSocket = providerUtility.getMySQLGuacamoleSocket(configuredSocket, getConnectionID());
+
+        // mark this connection as active
+        activeConnectionSet.add(getConnectionID());
+
+        return mySQLSocket;
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if(!(other instanceof MySQLConnection))
@@ -163,7 +213,7 @@ public class MySQLConnection implements Connection {
         hash = 73 * hash + getIdentifier().hashCode();
         return hash;
     }
-    
+
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
         return providerUtility.getExistingMySQLConnectionRecords(connection.getConnection_id());

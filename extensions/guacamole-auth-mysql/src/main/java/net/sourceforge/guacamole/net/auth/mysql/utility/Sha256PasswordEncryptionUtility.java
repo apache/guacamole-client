@@ -35,7 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.utility;
 
-import com.google.common.base.Preconditions;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -51,18 +50,12 @@ public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtilit
 
     @Override
     public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
-        Preconditions.checkNotNull(credentials);
-        Preconditions.checkNotNull(dbPasswordHash);
-        Preconditions.checkNotNull(dbUsername);
-        Preconditions.checkNotNull(dbSalt);
         byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
         return Arrays.equals(passwordBytes, dbPasswordHash);
     }
 
     @Override
     public byte[] createPasswordHash(String password, byte[] salt) {
-        Preconditions.checkNotNull(password);
-        Preconditions.checkNotNull(salt);
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
 

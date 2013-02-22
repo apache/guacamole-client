@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +51,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
@@ -68,30 +69,30 @@ public class ConnectionDirectory implements Directory<String, Connection>{
      * Access is based on his/her permission settings.
      */
     private MySQLUser user;
-    
+
     @Inject
     PermissionCheckUtility permissionCheckUtility;
-    
+
     @Inject
     ProviderUtility providerUtility;
-    
+
     @Inject
     ConnectionMapper connectionDAO;
-    
+
     @Inject
     ConnectionPermissionMapper connectionPermissionDAO;
-    
+
     @Inject
     ConnectionParameterMapper connectionParameterDAO;
-    
+
     /**
      * Set the user for this directory.
-     * @param user 
+     * @param user
      */
     void init(MySQLUser user) {
         this.user = user;
     }
-    
+
     @Transactional
     @Override
     public Connection get(String identifier) throws GuacamoleException {
@@ -113,14 +114,13 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void add(Connection object) throws GuacamoleException {
-        Preconditions.checkNotNull(object);
         permissionCheckUtility.verifyCreateConnectionPermission(this.user.getUserID());
-        
+
         MySQLConnection mySQLConnection = providerUtility.getNewMySQLConnection(object);
         connectionDAO.insert(mySQLConnection.getConnection());
-        
+
         updateConfigurationValues(mySQLConnection);
-        
+
         //finally, give the current user full access to the newly created connection.
         ConnectionPermissionKey newConnectionPermission = new ConnectionPermissionKey();
         newConnectionPermission.setUser_id(this.user.getUserID());
@@ -134,39 +134,104 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         newConnectionPermission.setPermission(MySQLConstants.USER_ADMINISTER);
         connectionPermissionDAO.insert(newConnectionPermission);
     }
-    
+
     /**
      * Saves the values of the configuration to the database
-     * @param connection 
+     * @param connection
      */
     private void updateConfigurationValues(MySQLConnection mySQLConnection) {
         GuacamoleConfiguration configuration = mySQLConnection.getConfiguration();
         Map<String, String> existingConfiguration = new HashMap<String, String>();
         ConnectionParameterExample example = new ConnectionParameterExample();
+        example.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
         List<ConnectionParameter> connectionParameters = connectionParameterDAO.selectByExample(example);
         for(ConnectionParameter parameter : connectionParameters)
             existingConfiguration.put(parameter.getParameter_name(), parameter.getParameter_value());
-        
+
         List<ConnectionParameter> parametersToInsert = new ArrayList<ConnectionParameter>();
         List<ConnectionParameter> parametersToUpdate = new ArrayList<ConnectionParameter>();
-        
+
         Set<String> parameterNames = configuration.getParameterNames();
-        
+
         for(String parameterName : parameterNames) {
-            
+            String parameterValue = configuration.getParameter(parameterName);
+            if(existingConfiguration.containsKey(parameterName)) {
+                String existingValue = existingConfiguration.get(parameterName);
+                // the value is different; we'll have to update this one in the database
+                if(!parameterValue.equals(existingValue)) {
+                    ConnectionParameter parameterToUpdate = new ConnectionParameter();
+                    parameterToUpdate.setConnection_id(mySQLConnection.getConnectionID());
+                    parameterToUpdate.setParameter_name(parameterName);
+                    parameterToUpdate.setParameter_value(parameterValue);
+                    parametersToUpdate.add(parameterToUpdate);
+                }
+            } else {
+                // the value is new, we need to insert it
+                ConnectionParameter parameterToInsert = new ConnectionParameter();
+                parameterToInsert.setConnection_id(mySQLConnection.getConnectionID());
+                parameterToInsert.setParameter_name(parameterName);
+                parameterToInsert.setParameter_value(parameterValue);
+                parametersToInsert.add(parameterToInsert);
+            }
+        }
+
+        // First, delete all parameters that are not in the new configuration.
+        example.clear();
+        example.createCriteria().
+            andConnection_idEqualTo(mySQLConnection.getConnectionID()).
+            andParameter_nameNotIn(Lists.newArrayList(existingConfiguration.keySet()));
+
+        //Second, update all the parameters that need to be modified.
+        for(ConnectionParameter parameter : parametersToUpdate) {
+            example.clear();
+            example.createCriteria().
+                andConnection_idEqualTo(mySQLConnection.getConnectionID()).
+                andParameter_nameEqualTo(parameter.getParameter_name());
+
+            connectionParameterDAO.updateByExample(parameter, example);
+        }
+
+        //Finally, insert any new parameters.
+        for(ConnectionParameter parameter : parametersToInsert) {
+            example.clear();
+            example.createCriteria().
+                andConnection_idEqualTo(mySQLConnection.getConnectionID()).
+                andParameter_nameEqualTo(parameter.getParameter_name());
+
+            connectionParameterDAO.insert(parameter);
         }
     }
 
     @Transactional
     @Override
     public void update(Connection object) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        permissionCheckUtility.verifyConnectionUpdateAccess(this.user.getUserID(), object.getIdentifier());
+
+        MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(object);
+        connectionDAO.updateByPrimaryKey(mySQLConnection.getConnection());
+
+        updateConfigurationValues(mySQLConnection);
     }
 
     @Transactional
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        permissionCheckUtility.verifyConnectionDeleteAccess(this.user.getUserID(), identifier);
+
+        MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(identifier);
+
+        // delete all configuration values
+        ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
+        connectionParameterExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
+        connectionParameterDAO.deleteByExample(connectionParameterExample);
+        
+        // delete all permissions that refer to this connection
+        ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
+        connectionPermissionExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
+        connectionPermissionDAO.deleteByExample(connectionPermissionExample);
+
+        // delete the connection itself
+        connectionDAO.deleteByPrimaryKey(mySQLConnection.getConnectionID());
     }
-    
+
 }

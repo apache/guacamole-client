@@ -58,21 +58,21 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
 public class MySQLUser implements User {
 
     private UserWithBLOBs user;
-    
+
     @Inject
     UserMapper userDAO;
-    
+
     @Inject
     PasswordEncryptionUtility passwordUtility;
-    
+
     @Inject
     SaltUtility saltUtility;
-    
+
     @Inject
     PermissionCheckUtility permissionCheckUtility;
-    
+
     Set<Permission> permissions;
-    
+
     /**
      * Create a default, empty user.
      */
@@ -80,11 +80,11 @@ public class MySQLUser implements User {
         user = new UserWithBLOBs();
         permissions = new HashSet<Permission>();
     }
-    
+
     /**
      * Create the user, throwing an exception if the credentials do not match what's in the database.
      * @param credentials
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     void init (Credentials credentials) throws GuacamoleException {
         UserExample userExample = new UserExample();
@@ -98,25 +98,25 @@ public class MySQLUser implements User {
         // check password
         if(!passwordUtility.checkCredentials(credentials, user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
             throw new GuacamoleException("No user found with the supplied credentials");
-        
+
         this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
     }
-    
+
     /**
      * Create a new user from the provided information. This represents a user that has not yet been inserted.
      * @param user
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public void initNew (User user) throws GuacamoleException {
         this.setPassword(user.getPassword());
         this.setUsername(user.getUsername());
         this.permissions = user.getPermissions();
     }
-    
+
     /**
      * Loads a user by username.
      * @param userName
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      */
     public void initExisting (String username) throws GuacamoleException {
         UserExample example = new UserExample();
@@ -126,36 +126,36 @@ public class MySQLUser implements User {
             throw new GuacamoleException("Multiple users found with username '" + username + "'.");
         if(userList.isEmpty())
             throw new GuacamoleException("No user found with username '" + username + "'.");
-        
+
         this.user = userList.get(0);
         this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
     }
-    
+
     /**
      * Initialize from a database record.
-     * @param user 
+     * @param user
      */
     public void init(UserWithBLOBs user) {
         this.user = user;
         this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
     }
-    
+
     /**
      * Get the user id.
-     * @return 
+     * @return
      */
     public int getUserID() {
         return user.getUser_id();
     }
-    
+
     /**
      * Return the database record held by this object.
-     * @return 
+     * @return
      */
     public UserWithBLOBs getUser() {
         return user;
     }
-    
+
     @Override
     public String getUsername() {
         return user.getUsername();
@@ -202,7 +202,7 @@ public class MySQLUser implements User {
     public void removePermission(Permission permission) throws GuacamoleException {
         permissions.remove(permission);
     }
-    
+
     @Override
     public boolean equals(Object other) {
         if(!(other instanceof MySQLUser))
