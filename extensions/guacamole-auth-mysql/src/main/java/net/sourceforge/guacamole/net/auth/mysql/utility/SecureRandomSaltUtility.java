@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql.utility;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,17 +36,19 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
 
 import java.security.SecureRandom;
 
 /**
- * Generates password salts via the SecureRandom utility.
+ * Generates password salts via SecureRandom.
  * @author James Muehlner
  */
 public class SecureRandomSaltUtility implements SaltUtility {
 
-    SecureRandom secureRandom = new SecureRandom();
+    /**
+     * Instance of SecureRandom for generating the salt.
+     */
+    private SecureRandom secureRandom = new SecureRandom();
 
     @Override
     public byte[] generateSalt() {
@@ -51,4 +56,5 @@ public class SecureRandomSaltUtility implements SaltUtility {
         secureRandom.nextBytes(salt);
         return salt;
     }
+
 }
