@@ -130,7 +130,9 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
     /**
      * Set the user for this directory.
-     * @param user
+     *
+     * @param user The user whose permissions define the visibility of other
+     *             users in this directory.
      */
     void init(MySQLUser user) {
         this.user = user;
@@ -150,7 +152,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get set of all readable users
         Set<MySQLUser> users = permissionCheckUtility.getReadableUsers(user.getUserID());
-        
+
         // Build set of usernames of readable users
         Set<String> userNameSet = new HashSet<String>();
         for (MySQLUser mySQLUser : users)
@@ -202,7 +204,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * Update all the permissions for a given user to be only those specified in the user object.
      * Delete any permissions not in the list, and create any in the list that do not exist
      * in the database.
-     * 
+     *
      * @param user The user whose permissions should be updated.
      * @throws GuacamoleException If an error occurs while updating the
      *                            permissions of the given user.
@@ -213,7 +215,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         List<UserPermission> userPermissions = new ArrayList<UserPermission>();
         List<ConnectionPermission> connectionPermissions = new ArrayList<ConnectionPermission>();
         List<SystemPermission> systemPermissions = new ArrayList<SystemPermission>();
-        
+
         for (Permission permission : user.getPermissions()) {
 
             if (permission instanceof UserPermission)
@@ -231,12 +233,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         updateUserPermissions(userPermissions, user);
         updateConnectionPermissions(connectionPermissions, user);
         updateSystemPermissions(systemPermissions, user);
-        
+
     }
 
     /**
      * Update all the permissions having to do with users for a given user.
-     * 
+     *
      * @param permissions The permissions the given user should have when
      *                    this operation completes.
      * @param user The user to change the permissions of.
@@ -334,7 +336,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     /**
      * Update all the permissions having to do with connections for a given
      * user.
-     * 
+     *
      * @param permissions The permissions the user should have after this
      *                    operation completes.
      * @param user The user to assign or remove permissions from.
@@ -432,7 +434,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * the given list not already granted to the user will be inserted, and all
      * permissions not in the list but already granted to the user will be
      * deleted.
-     * 
+     *
      * @param permissions The system permissions that the given user should
      *                    have.
      * @param user The user whose permissions should be updated.
@@ -526,7 +528,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     /**
      * Delete all permissions associated with the provided user. This is only
      * used when deleting a user.
-     * 
+     *
      * @param user The user to delete all permissions of.
      */
     private void deleteAllPermissions(MySQLUser user) {

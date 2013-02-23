@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,15 +36,14 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import java.util.HashSet;
-import java.util.Set;
 
 /**
- * Represents the set of currently active Connections. Whenever a socket is opened,
- * the connection ID should be added to this set, and whenever a socket is closed,
- * the connection ID should be removed from this set.
- * @author dagger10k
+ * Represents the set of currently active Connections. Whenever a socket is
+ * opened, the connection ID should be added to this set, and whenever a socket
+ * is closed, the connection ID should be removed from this set.
+ *
+ * @author James Muehlner
  */
-public class ActiveConnectionSet extends HashSet<Integer> implements Set<Integer> {}
+public class ActiveConnectionSet extends HashSet<Integer> {}

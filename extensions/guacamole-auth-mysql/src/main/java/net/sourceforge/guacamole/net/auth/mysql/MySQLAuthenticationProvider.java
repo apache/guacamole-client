@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Binder;
 import com.google.inject.Guice;
@@ -63,20 +65,24 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
  * functionality.
+ *
  * @author James Muehlner
  */
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-
+    /**
+     * Set of all active connections.
+     */
     private ActiveConnectionSet activeConnectionSet = new ActiveConnectionSet();
 
+    /**
+     * Injector which will manage the object graph of this authentication
+     * provider.
+     */
     private Injector injector;
 
     @Override
@@ -86,9 +92,19 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         return context;
     }
 
+    /**
+     * Creates a new MySQLAuthenticationProvider that reads and writes
+     * authentication data to a MySQL database defined by properties in
+     * guacamole.properties.
+     *
+     * @throws GuacamoleException If a required property is missing, or
+     *                            an error occurs while parsing a property.
+     */
     public MySQLAuthenticationProvider() throws GuacamoleException {
+
         final Properties myBatisProperties = new Properties();
-        //set the mysql properties for MyBatis.
+
+        // Set the mysql properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
         myBatisProperties.setProperty("JDBC.host", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME));
         myBatisProperties.setProperty("JDBC.port", String.valueOf(GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PORT)));
@@ -100,21 +116,30 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         // Set up Guice injector.
         injector = Guice.createInjector(
             JdbcHelper.MySQL,
+
             new Module() {
                 @Override
                 public void configure(Binder binder) {
                     Names.bindProperties(binder, myBatisProperties);
                 }
-            },new MyBatisModule() {
+            },
+
+            new MyBatisModule() {
                 @Override
                 protected void initialize() {
+
+                    // Datasource
                     bindDataSourceProviderType(PooledDataSourceProvider.class);
+
+                    // Add MyBatis mappers
                     addMapperClass(ConnectionMapper.class);
                     addMapperClass(ConnectionParameterMapper.class);
                     addMapperClass(ConnectionPermissionMapper.class);
                     addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
                     addMapperClass(UserPermissionMapper.class);
+
+                    // Bind interfaces
                     bind(MySQLUserContext.class);
                     bind(UserDirectory.class);
                     bind(MySQLUser.class);
@@ -124,8 +149,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(ProviderUtility.class);
                     bind(ConfigurationTranslationUtility.class);
                     bind(ActiveConnectionSet.class).toInstance(activeConnectionSet);
+
                 }
-            }
+            } // end of mybatis module
+
         );
-    }
+    } // end of constructor
+
 }

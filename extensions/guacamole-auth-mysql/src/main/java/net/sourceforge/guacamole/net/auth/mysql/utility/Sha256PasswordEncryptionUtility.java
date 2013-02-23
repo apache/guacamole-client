@@ -57,7 +57,7 @@ public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtilit
         // If usernames don't match, don't bother comparing passwords, just fail
         if (!dbUsername.equals(credentials.getUsername()))
             return false;
-        
+
         // Compare bytes of password in credentials against hashed password
         byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
         return Arrays.equals(passwordBytes, dbPasswordHash);
@@ -73,7 +73,7 @@ public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtilit
             StringBuilder builder = new StringBuilder();
             builder.append(password);
             builder.append(DatatypeConverter.printHexBinary(salt));
-            
+
             // Hash UTF-8 bytes of salted password
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(builder.toString().getBytes("UTF-8"));
