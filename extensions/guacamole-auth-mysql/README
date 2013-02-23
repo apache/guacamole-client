@@ -79,6 +79,11 @@ guacamole.properties such that the authentication provider is available.
     mysql-username:           user
     mysql-password:           pass
 
+    Optionally, the authentication provider can be configured
+    not to allow multiple users to use the same connection
+    at the same time:
+
+    mysql-disallow-simultaneous-connections: true
 
 ------------------------------------------------------------
  Generating MyBatis ORM mappings
