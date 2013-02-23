@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql.utility;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -49,25 +51,45 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 public class Sha256PasswordEncryptionUtility implements PasswordEncryptionUtility {
 
     @Override
-    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
+    public boolean checkCredentials(Credentials credentials,
+        byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
+
+        // If usernames don't match, don't bother comparing passwords, just fail
+        if (!dbUsername.equals(credentials.getUsername()))
+            return false;
+        
+        // Compare bytes of password in credentials against hashed password
         byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
         return Arrays.equals(passwordBytes, dbPasswordHash);
+
     }
 
     @Override
     public byte[] createPasswordHash(String password, byte[] salt) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
 
+        try {
+
+            // Build salted password
             StringBuilder builder = new StringBuilder();
             builder.append(password);
             builder.append(DatatypeConverter.printHexBinary(salt));
+            
+            // Hash UTF-8 bytes of salted password
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(builder.toString().getBytes("UTF-8"));
             return md.digest();
-        } catch (UnsupportedEncodingException ex) { // should not happen
-            throw new RuntimeException(ex);
-        } catch (NoSuchAlgorithmException ex) { // should not happen
+
+        }
+
+        // Should not happen
+        catch (UnsupportedEncodingException ex) {
             throw new RuntimeException(ex);
         }
+
+        // Should not happen
+        catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
 }
