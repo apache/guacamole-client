@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql.utility;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,39 +50,59 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public class ConfigurationTranslationUtility {
 
     /**
-     * Get a GuacamoleConfiguration based on the provided protocol and parameters.
-     * @param protocol the protocol used (VNC, RDP, etc)
-     * @param parameters the parameter database records to translate
-     * @return
+     * Get a GuacamoleConfiguration based on the provided protocol and
+     * parameters.
+     *
+     * @param protocol The protocol used (VNC, RDP, etc)
+     * @param parameters The parameter database records to translate
+     * @return A new GuacamoleConfiguration based on the given protocol and
+     *         parameters.
      */
-    public GuacamoleConfiguration getConfiguration(String protocol, Iterable<ConnectionParameter> parameters) {
+    public GuacamoleConfiguration getConfiguration(String protocol,
+            Iterable<ConnectionParameter> parameters) {
+
+        // Create new configuration, set protocol
         GuacamoleConfiguration configuration = new GuacamoleConfiguration();
         configuration.setProtocol(protocol);
 
-        for(ConnectionParameter parameter : parameters) {
+        // Copy parameters from given parameters
+        for(ConnectionParameter parameter : parameters)
             configuration.setParameter(parameter.getParameter_name(), parameter.getParameter_value());
-        }
 
         return configuration;
     }
 
     /**
-     * Creates a list of ConnectionParameter database records based on the provided connectionID and GuacamoleConfiguration.
-     * @param connectionID the ID of the connection that these parameters are for
-     * @param configuration the configuration to pull the parameter values from
-     * @return
+     * Creates a list of ConnectionParameter database records based on the
+     * provided connectionID and GuacamoleConfiguration.
+     *
+     * @param connectionID The ID of the connection that these parameters are
+     *                     for.
+     * @param configuration The configuration to pull the parameter values from.
+     * @return A list of ConnectionParameter database records.
      */
-    public List<ConnectionParameter> getConnectionParameters(int connectionID, GuacamoleConfiguration configuration) {
-        List<ConnectionParameter> connectionParameters = new ArrayList<ConnectionParameter>();
+    public List<ConnectionParameter> getConnectionParameters(int connectionID,
+            GuacamoleConfiguration configuration) {
 
-        for(String parameterName : configuration.getParameterNames()) {
-            ConnectionParameter connectionParameter = new ConnectionParameter();
+        List<ConnectionParameter> connectionParameters =
+                new ArrayList<ConnectionParameter>();
+
+        // Each connection parameter in the given configuration, create
+        // a corresponding database record
+        for (String parameterName : configuration.getParameterNames()) {
+
+            // Get value of parameter
             String parameterValue = configuration.getParameter(parameterName);
+
+            // Create corresponding ConnectionParameter
+            ConnectionParameter connectionParameter = new ConnectionParameter();
             connectionParameter.setConnection_id(connectionID);
             connectionParameter.setParameter_name(parameterName);
             connectionParameter.setParameter_value(parameterValue);
 
+            // Add parameter to list
             connectionParameters.add(connectionParameter);
+
         }
 
         return connectionParameters;

@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import java.util.Date;
@@ -46,6 +48,7 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
 
 /**
+ * A ConnectionRecord which is based on data stored in MySQL.
  *
  * @author James Muehlner
  */
@@ -56,18 +59,30 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      */
     private ConnectionHistory connectionHistory;
 
+    /**
+     * DAO for accessing users.
+     */
     @Inject
     UserMapper userDAO;
 
+    /**
+     * DAO for accessing connections.
+     */
     @Inject
     ConnectionMapper connectionDAO;
 
+    /**
+     * Service for creating and retrieving objects.
+     */
     @Inject
     ProviderUtility providerUtility;
 
     /**
-     * Initialize this MySQLConnectionRecord with the database record it represents.
-     * @param connectionHistory
+     * Initialize this MySQLConnectionRecord with the database record it
+     * represents.
+     *
+     * @param connectionHistory The ConnectionHistory entry from the database
+     *                          corresponding to this connection record.
      */
     public void init(ConnectionHistory connectionHistory) {
         this.connectionHistory = connectionHistory;
@@ -95,7 +110,7 @@ public class MySQLConnectionRecord implements ConnectionRecord {
 
     @Override
     public boolean isActive() {
-        // if the end date hasn't been stored yet, the connection is still open.
+        // If the end date hasn't been stored yet, the connection is still open.
         return connectionHistory.getEnd_date() == null;
     }
 
