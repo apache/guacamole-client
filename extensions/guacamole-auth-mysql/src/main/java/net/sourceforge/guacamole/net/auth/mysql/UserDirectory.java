@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
@@ -288,7 +289,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Verify that the user actually has permission to administrate every one of these users
         for (UserPermissionKey permissionToDelete : permissionsToDelete) {
             if (!administerableUsers.contains(permissionToDelete.getAffected_user_id()))
-                throw new GuacamolePermissionException(
+                throw new GuacamoleSecurityException(
                       "User '" + this.user.getUsername()
                     + "' does not have permission to administrate user "
                     + permissionToDelete.getAffected_user_id());
@@ -315,7 +316,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             // Verify that the user actually has permission to administrate
             // every one of these users
             if (!administerableUsers.contains(dbAffectedUser.getUser_id()))
-                throw new GuacamolePermissionException(
+                throw new GuacamoleSecurityException(
                       "User '" + this.user.getUsername()
                     + "' does not have permission to administrate user "
                     + dbAffectedUser.getUser_id());
@@ -385,7 +386,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // corresponding to the permissions we are about to delete
         for (ConnectionPermissionKey connectionPermissionToDelete : connectionPermissionsToDelete) {
             if (!administerableConnections.contains(connectionPermissionToDelete.getConnection_id()))
-                throw new GuacamolePermissionException(
+                throw new GuacamoleSecurityException(
                     "User '" + this.user.getUsername() +
                     "' does not have permission to administrate connection "
                     + connectionPermissionToDelete.getConnection_id());
@@ -410,7 +411,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             // Throw exception if permission to administer this connection
             // is not granted
             if (!administerableConnections.contains(dbConnection.getConnection_id()))
-                throw new GuacamolePermissionException(
+                throw new GuacamoleSecurityException(
                       "User '" + this.user.getUsername()
                     + "' does not have permission to administrate connection "
                     + dbConnection.getConnection_id());
