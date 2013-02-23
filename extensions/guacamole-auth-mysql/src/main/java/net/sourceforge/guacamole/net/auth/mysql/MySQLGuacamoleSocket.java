@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,14 +36,12 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.io.GuacamoleReader;
 import net.sourceforge.guacamole.io.GuacamoleWriter;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 
 /**
  * A MySQL specific wrapper around a ConfiguredGuacamoleSocket.
@@ -48,17 +49,31 @@ import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
  */
 public class MySQLGuacamoleSocket implements GuacamoleSocket {
 
+    /**
+     * Injected ActiveConnectionSet which will contain all active connections.
+     */
     @Inject
     ActiveConnectionSet activeConnectionSet;
 
-    private ConfiguredGuacamoleSocket socket;
+    /**
+     * The wrapped socket.
+     */
+    private GuacamoleSocket socket;
+
+    /**
+     * The ID associated with the connection associated with the wrapped
+     * socket.
+     */
     private int connectionID;
 
     /**
-     * Initialize this MySQLGuacamoleSocket with the provided ConfiguredGuacamoleSocket.
-     * @param socket the ConfiguredGuacamoleSocket to wrap.
+     * Initialize this MySQLGuacamoleSocket with the provided GuacamoleSocket.
+     * 
+     * @param socket The ConfiguredGuacamoleSocket to wrap.
+     * @param connectionID The ID of the connection associated with the given
+     *                     socket.
      */
-    public void init(ConfiguredGuacamoleSocket socket, int connectionID) {
+    public void init(GuacamoleSocket socket, int connectionID) {
         this.socket = socket;
         this.connectionID = connectionID;
     }
@@ -75,9 +90,13 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
 
     @Override
     public void close() throws GuacamoleException {
+
+        // Close socket
         socket.close();
-        //mark this connection as inactive
+
+        // Mark this connection as inactive
         activeConnectionSet.remove(connectionID);
+
     }
 
     @Override
