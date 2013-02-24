@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -42,8 +44,6 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The MySQL representation of a UserContext.
@@ -51,17 +51,35 @@ import org.slf4j.LoggerFactory;
  */
 public class MySQLUserContext implements UserContext {
 
-    private Logger logger = LoggerFactory.getLogger(MySQLUserContext.class);
-
+    /**
+     * The user owning this context. The permissions of this user dictate
+     * the access given via the user and connection directories.
+     */
     @Inject
     private MySQLUser user;
 
+    /**
+     * User directory restricted by the permissions of the user associated
+     * with this context.
+     */
     @Inject
     private UserDirectory userDirectory;
 
+    /**
+     * Connection directory restricted by the permissions of the user associated
+     * with this context.
+     */
     @Inject
     private ConnectionDirectory connectionDirectory;
 
+    /**
+     * Initializes the user and directories associated with this context.
+     *
+     * @param credentials The credentials of the user owning this context.
+     * @throws GuacamoleException If the credentials given are not valid,
+     *                            or an error occurs while initializing the
+     *                            directories.
+     */
     void init(Credentials credentials) throws GuacamoleException {
         user.init(credentials);
         userDirectory.init(user);

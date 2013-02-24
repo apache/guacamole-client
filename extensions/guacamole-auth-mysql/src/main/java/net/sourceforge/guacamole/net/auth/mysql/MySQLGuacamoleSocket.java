@@ -68,7 +68,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
 
     /**
      * Initialize this MySQLGuacamoleSocket with the provided GuacamoleSocket.
-     * 
+     *
      * @param socket The ConfiguredGuacamoleSocket to wrap.
      * @param connectionID The ID of the connection associated with the given
      *                     socket.
