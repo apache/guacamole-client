@@ -39,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -684,18 +685,30 @@ public class PermissionCheckUtility {
      * @return the list of all connections this user has access to
      */
     private Set<MySQLConnection> getConnections(int userID, String permissionType) {
+
+        // If connections available, query them
         Set<Integer> affectedConnectionIDs = getConnectionIDs(userID, permissionType);
-        ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idIn(Lists.newArrayList(affectedConnectionIDs));
-        List<Connection> connectionDBOjects = connectionDAO.selectByExample(example);
-        Set<MySQLConnection> affectedConnections = new HashSet<MySQLConnection>();
-        for(Connection affectedConnection : connectionDBOjects) {
-            MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-            mySQLConnection.init(affectedConnection);
-            affectedConnections.add(mySQLConnection);
+        if (!affectedConnectionIDs.isEmpty()) {
+
+            // Query available connections
+            ConnectionExample example = new ConnectionExample();
+            example.createCriteria().andConnection_idIn(Lists.newArrayList(affectedConnectionIDs));
+            List<Connection> connectionDBOjects = connectionDAO.selectByExample(example);
+
+            // Add connections to final set
+            Set<MySQLConnection> affectedConnections = new HashSet<MySQLConnection>();
+            for(Connection affectedConnection : connectionDBOjects) {
+                MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
+                mySQLConnection.init(affectedConnection);
+                affectedConnections.add(mySQLConnection);
+            }
+
+            return affectedConnections;
         }
 
-        return affectedConnections;
+        // Otherwise, no connections available
+        return Collections.EMPTY_SET;
+        
     }
 
     /**
@@ -795,62 +808,79 @@ public class PermissionCheckUtility {
     public Set<Permission> getAllPermissions(int userID) {
         Set<Permission> allPermissions = new HashSet<Permission>();
 
-        // first, user permissions
+        // First, user permissions
         UserPermissionExample userPermissionExample = new UserPermissionExample();
         userPermissionExample.createCriteria().andUser_idEqualTo(userID);
-        List<UserPermissionKey> userPermissions = userPermissionDAO.selectByExample(userPermissionExample);
-        List<Integer> affectedUserIDs = new ArrayList<Integer>();
-        for(UserPermissionKey userPermission : userPermissions) {
-            affectedUserIDs.add(userPermission.getAffected_user_id());
+        List<UserPermissionKey> userPermissions =
+                userPermissionDAO.selectByExample(userPermissionExample);
+
+        // If user permissions present, add permissions
+        if (!userPermissions.isEmpty()) {
+
+            // Get list of affected user IDs
+            List<Integer> affectedUserIDs = new ArrayList<Integer>();
+            for(UserPermissionKey userPermission : userPermissions)
+                affectedUserIDs.add(userPermission.getAffected_user_id());
+
+            // Query all affected users, store in map indexed by user ID
+            UserExample userExample = new UserExample();
+            userExample.createCriteria().andUser_idIn(affectedUserIDs);
+            List<User> users = userDAO.selectByExample(userExample);
+            Map<Integer, User> userMap = new HashMap<Integer, User>();
+            for(User user : users)
+                userMap.put(user.getUser_id(), user);
+
+            // Add user permissions
+            for(UserPermissionKey userPermission : userPermissions) {
+                User affectedUser = userMap.get(userPermission.getAffected_user_id());
+                UserPermission newPermission = new UserPermission(
+                    UserPermission.Type.valueOf(userPermission.getPermission()),
+                    affectedUser.getUsername()
+                );
+                allPermissions.add(newPermission);
+            }
+
         }
 
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUser_idIn(affectedUserIDs);
-        List<User> users = userDAO.selectByExample(userExample);
-        Map<Integer, User> userMap = new HashMap<Integer, User>();
-        for(User user : users) {
-            userMap.put(user.getUser_id(), user);
-        }
-
-        for(UserPermissionKey userPermission : userPermissions) {
-            User affectedUser = userMap.get(userPermission.getAffected_user_id());
-            UserPermission newPermission = new UserPermission(
-                UserPermission.Type.valueOf(userPermission.getPermission()),
-                affectedUser.getUsername()
-            );
-            allPermissions.add(newPermission);
-        }
-
-        //secondly, connection permissions
+        // Secondly, connection permissions
         ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
         connectionPermissionExample.createCriteria().andUser_idEqualTo(userID);
-        List<ConnectionPermissionKey> connectionPermissions = connectionPermissionDAO.selectByExample(connectionPermissionExample);
-        List<Integer> affectedConnectionIDs = new ArrayList<Integer>();
-        for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
-            affectedConnectionIDs.add(connectionPermission.getConnection_id());
+        List<ConnectionPermissionKey> connectionPermissions =
+                connectionPermissionDAO.selectByExample(connectionPermissionExample);
+
+        // If connection permissions present, add permissions 
+        if (!connectionPermissions.isEmpty()) {
+
+            // Get list of affected connection IDs
+            List<Integer> affectedConnectionIDs = new ArrayList<Integer>();
+            for(ConnectionPermissionKey connectionPermission : connectionPermissions)
+                affectedConnectionIDs.add(connectionPermission.getConnection_id());
+
+            // Query connections, store in map indexed by connection ID
+            ConnectionExample connectionExample = new ConnectionExample();
+            connectionExample.createCriteria().andConnection_idIn(affectedConnectionIDs);
+            List<Connection> connections = connectionDAO.selectByExample(connectionExample);
+            Map<Integer, Connection> connectionMap = new HashMap<Integer, Connection>();
+            for(Connection connection : connections)
+                connectionMap.put(connection.getConnection_id(), connection);
+
+            // Add connection permissions
+            for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
+                Connection affectedConnection = connectionMap.get(connectionPermission.getConnection_id());
+                ConnectionPermission newPermission = new ConnectionPermission(
+                    ConnectionPermission.Type.valueOf(connectionPermission.getPermission()),
+                    affectedConnection.getConnection_name()
+                );
+                allPermissions.add(newPermission);
+            }
+
         }
 
-        ConnectionExample connectionExample = new ConnectionExample();
-        connectionExample.createCriteria().andConnection_idIn(affectedConnectionIDs);
-        List<Connection> connections = connectionDAO.selectByExample(connectionExample);
-        Map<Integer, Connection> connectionMap = new HashMap<Integer, Connection>();
-        for(Connection connection : connections) {
-            connectionMap.put(connection.getConnection_id(), connection);
-        }
-
-        for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
-            Connection affectedConnection = connectionMap.get(connectionPermission.getConnection_id());
-            ConnectionPermission newPermission = new ConnectionPermission(
-                ConnectionPermission.Type.valueOf(connectionPermission.getPermission()),
-                affectedConnection.getConnection_name()
-            );
-            allPermissions.add(newPermission);
-        }
-
-        //and finally, system permissions
+        // And finally, system permissions
         SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
         systemPermissionExample.createCriteria().andUser_idEqualTo(userID);
-        List<SystemPermissionKey> systemPermissions = systemPermissionDAO.selectByExample(systemPermissionExample);
+        List<SystemPermissionKey> systemPermissions =
+                systemPermissionDAO.selectByExample(systemPermissionExample);
         for(SystemPermissionKey systemPermission : systemPermissions) {
             SystemPermission newPermission = null;
             if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
