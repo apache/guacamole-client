@@ -22,7 +22,9 @@
     </javaModelGenerator>
 
     <!-- Set targetProject to the desired location for the generated xml mapping files. -->
-    <sqlMapGenerator targetPackage="net.sourceforge.guacamole.net.auth.mysql.xml"  targetProject="/path/to/target/folder">
+    <!-- NOTE: These XML mapping files will need to be in the same package as the generated DAO -->
+    <!-- java source files, but in the /resources folder, not the /src folder. -->
+    <sqlMapGenerator targetPackage="net.sourceforge.guacamole.net.auth.mysql.dao"  targetProject="/path/to/target/folder">
       <property name="enableSubPackages" value="true" />
     </sqlMapGenerator>
 
