@@ -47,6 +47,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
@@ -62,6 +63,7 @@ import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.SecureRandomSaltUtility;
 import net.sourceforge.guacamole.net.auth.mysql.utility.Sha256PasswordEncryptionUtility;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
@@ -131,7 +133,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     // Datasource
                     bindDataSourceProviderType(PooledDataSourceProvider.class);
 
+                    // Transaction factory
+                    bindTransactionFactoryType(JdbcTransactionFactory.class);
+
                     // Add MyBatis mappers
+                    addMapperClass(ConnectionHistoryMapper.class);
                     addMapperClass(ConnectionMapper.class);
                     addMapperClass(ConnectionParameterMapper.class);
                     addMapperClass(ConnectionPermissionMapper.class);
