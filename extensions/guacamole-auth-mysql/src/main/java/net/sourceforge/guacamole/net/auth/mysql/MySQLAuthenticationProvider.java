@@ -89,6 +89,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public UserContext getUserContext(Credentials credentials) throws GuacamoleException {
+
+        // No null users in database
+        if (credentials.getUsername() == null)
+            return null;
+
         MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
         context.init(credentials);
         return context;

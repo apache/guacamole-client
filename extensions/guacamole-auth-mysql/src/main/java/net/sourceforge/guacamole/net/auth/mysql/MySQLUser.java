@@ -86,20 +86,34 @@ public class MySQLUser implements User {
      * @param credentials
      * @throws GuacamoleException
      */
-    void init (Credentials credentials) throws GuacamoleException {
+    void init(Credentials credentials) throws GuacamoleException {
+
+        // Query user
         UserExample userExample = new UserExample();
         userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
         List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(userExample);
-        if(users.size() > 1)  // the unique constraint on the table should prevent this
-            throw new GuacamoleException("Multiple users found with the same username: " + credentials.getUsername());
-        if(users.isEmpty())
-            throw new GuacamoleException("No user found with the supplied credentials");
-        user = users.get(0);
-        // check password
-        if(!passwordUtility.checkCredentials(credentials, user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
+
+        // The unique constraint on the table should prevent this.
+        if (users.size() > 1)
+            throw new GuacamoleException(
+                "Multiple users found with the same username: "
+                + credentials.getUsername());
+
+        // Check that a user was found
+        if (users.isEmpty())
             throw new GuacamoleException("No user found with the supplied credentials");
 
+        // Get first (and only) user
+        user = users.get(0);
+
+        // Check password
+        if (!passwordUtility.checkCredentials(credentials,
+                user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
+            throw new GuacamoleException("No user found with the supplied credentials");
+
+        // Init permissions
         this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
+
     }
 
     /**
