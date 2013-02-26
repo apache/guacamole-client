@@ -47,7 +47,7 @@ public interface PasswordEncryptionService {
      * Checks whether the provided, unhashed password matches the given
      * hash/salt pair.
      *
-     * @param credentials The credentials to validate.
+     * @param password The unhashed password to validate.
      * @param hashedPassword The hashed password to compare the given password
      *                       against.
      * @param salt The salt used when the hashed password given was created.
