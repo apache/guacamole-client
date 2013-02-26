@@ -703,7 +703,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         systemPermissionDAO.deleteByExample(systemPermissionExample);
 
         // Delete all permissions that refer to this user
-        userPermissionExample.createCriteria();
+        userPermissionExample.clear();
         userPermissionExample.createCriteria().andAffected_user_idEqualTo(user.getUserID());
         userPermissionDAO.deleteByExample(userPermissionExample);
 
