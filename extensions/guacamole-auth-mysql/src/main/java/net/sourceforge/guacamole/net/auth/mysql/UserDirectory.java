@@ -469,7 +469,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             ConnectionPermissionKey newPermission = new ConnectionPermissionKey();
             newPermission.setConnection_id(dbConnection.getConnection_id());
             newPermission.setPermission(permission.getType().name());
-            newPermission.setConnection_id(user_id);
+            newPermission.setUser_id(user_id);
             connectionPermissionDAO.insert(newPermission);
         }
     }
@@ -684,8 +684,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         userDAO.updateByPrimaryKeySelective(mySQLUser.toUserWithBLOBs());
 
         // Update permissions in database
-        createPermissions(0 /* STUB */, mySQLUser.getNewPermissions());
-        removePermissions(0 /* STUB */, mySQLUser.getRemovedPermissions());
+        createPermissions(mySQLUser.getUserID(), mySQLUser.getNewPermissions());
+        removePermissions(mySQLUser.getUserID(), mySQLUser.getRemovedPermissions());
 
         // The appropriate permissions have been inserted and deleted, so
         // reset the new and removed permission sets.
