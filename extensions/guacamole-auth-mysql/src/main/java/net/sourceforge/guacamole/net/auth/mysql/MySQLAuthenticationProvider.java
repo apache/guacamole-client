@@ -55,13 +55,13 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ConfigurationTranslationUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.SecureRandomSaltUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.Sha256PasswordEncryptionUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConfigurationTranslationService;
+import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
+import net.sourceforge.guacamole.net.auth.mysql.service.Sha256PasswordEncryptionService;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
@@ -154,11 +154,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(MySQLUserContext.class);
                     bind(UserDirectory.class);
                     bind(MySQLUser.class);
-                    bind(SaltUtility.class).to(SecureRandomSaltUtility.class);
-                    bind(PasswordEncryptionUtility.class).to(Sha256PasswordEncryptionUtility.class);
-                    bind(PermissionCheckUtility.class);
-                    bind(ProviderUtility.class);
-                    bind(ConfigurationTranslationUtility.class);
+                    bind(SaltService.class).to(SecureRandomSaltService.class);
+                    bind(PasswordEncryptionService.class).to(Sha256PasswordEncryptionService.class);
+                    bind(PermissionCheckService.class);
+                    bind(ProviderService.class);
+                    bind(ConfigurationTranslationService.class);
                     bind(ActiveConnectionSet.class).toInstance(activeConnectionSet);
 
                 }

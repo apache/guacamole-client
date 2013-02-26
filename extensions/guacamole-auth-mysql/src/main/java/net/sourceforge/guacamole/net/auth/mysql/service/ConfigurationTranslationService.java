@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.auth.mysql.utility;
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -47,7 +47,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * and a collection of ConnectionParameter database records.
  * @author James Muehlner
  */
-public class ConfigurationTranslationUtility {
+public class ConfigurationTranslationService {
 
     /**
      * Get a GuacamoleConfiguration based on the provided protocol and

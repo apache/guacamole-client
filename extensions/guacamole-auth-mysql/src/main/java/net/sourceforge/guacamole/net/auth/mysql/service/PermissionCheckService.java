@@ -33,7 +33,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -72,10 +72,10 @@ import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 
 /**
- * A utility to retrieve information about what objects a user has permission to.
+ * A service to retrieve information about what objects a user has permission to.
  * @author James Muehlner
  */
-public class PermissionCheckUtility {
+public class PermissionCheckService {
 
     @Inject
     UserMapper userDAO;

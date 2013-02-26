@@ -45,7 +45,7 @@ import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 
 /**
  * A ConnectionRecord which is based on data stored in MySQL.
@@ -75,7 +75,7 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      * Service for creating and retrieving objects.
      */
     @Inject
-    ProviderUtility providerUtility;
+    ProviderService providerUtility;
 
     /**
      * Initialize this MySQLConnectionRecord with the database record it

@@ -33,7 +33,7 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -60,7 +60,7 @@ import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
  * Provides convenient provider methods for MySQL specific implementations.
  * @author James Muehlner
  */
-public class ProviderUtility {
+public class ProviderService {
     @Inject
     UserMapper userDAO;
 

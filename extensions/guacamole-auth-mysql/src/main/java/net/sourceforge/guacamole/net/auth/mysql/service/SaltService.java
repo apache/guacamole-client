@@ -33,13 +33,13 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 /**
- *
+ * A service to generate password salts.
  * @author James Muehlner
  */
-public interface SaltUtility {
+public interface SaltService {
     /**
      * Generates a new String that can be used as a password salt.
      * @return a new salt for password encryption.

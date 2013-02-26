@@ -63,8 +63,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.User;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -119,14 +119,14 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * Utility class for checking various permissions, which will be injected.
      */
     @Inject
-    PermissionCheckUtility permissionCheckUtility;
+    PermissionCheckService permissionCheckUtility;
 
     /**
      * Utility class that provides convenient access to object creation and
      * retrieval functions.
      */
     @Inject
-    ProviderUtility providerUtility;
+    ProviderService providerUtility;
 
     /**
      * Set the user for this directory.

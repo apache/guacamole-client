@@ -48,8 +48,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ConfigurationTranslationUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConfigurationTranslationService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
@@ -68,13 +68,13 @@ public class MySQLConnection implements Connection {
     ConnectionParameterMapper connectionParameterDAO;
 
     @Inject
-    ProviderUtility providerUtility;
+    ProviderService providerUtility;
 
     @Inject
     ActiveConnectionSet activeConnectionSet;
 
     @Inject
-    ConfigurationTranslationUtility configurationTranslationUtility;
+    ConfigurationTranslationService configurationTranslationUtility;
 
     private net.sourceforge.guacamole.net.auth.mysql.model.Connection connection;
 

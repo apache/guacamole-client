@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql.service;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,32 +36,60 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.utility;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
+import javax.xml.bind.DatatypeConverter;
 import net.sourceforge.guacamole.net.auth.Credentials;
 
 /**
- *
+ * Provides a SHA-256 based implementation of the password encryption functionality.
  * @author James Muehlner
  */
-public interface PasswordEncryptionUtility {
+public class Sha256PasswordEncryptionService implements PasswordEncryptionService {
 
-    /**
-     * Checks if the provided Credentials are correct, compared with what the values from the database.
-     * @param credentials
-     * @param dbPasswordHash
-     * @param dbUsername
-     * @param dbSalt
-     * @return true if the provided credentials match what's in the database for that user.
-     */
-    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt);
+    @Override
+    public boolean checkCredentials(Credentials credentials,
+        byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
 
-    /**
-     * Creates a password hash based on the provided username, password, and salt.
-     * @param username
-     * @param password
-     * @param salt
-     * @return the generated password hash.
-     */
-    public byte[] createPasswordHash(String password, byte[] salt);
+        // If usernames don't match, don't bother comparing passwords, just fail
+        if (!dbUsername.equals(credentials.getUsername()))
+            return false;
+
+        // Compare bytes of password in credentials against hashed password
+        byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
+        return Arrays.equals(passwordBytes, dbPasswordHash);
+
+    }
+
+    @Override
+    public byte[] createPasswordHash(String password, byte[] salt) {
+
+        try {
+
+            // Build salted password
+            StringBuilder builder = new StringBuilder();
+            builder.append(password);
+            builder.append(DatatypeConverter.printHexBinary(salt));
+
+            // Hash UTF-8 bytes of salted password
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(builder.toString().getBytes("UTF-8"));
+            return md.digest();
+
+        }
+
+        // Should not happen
+        catch (UnsupportedEncodingException ex) {
+            throw new RuntimeException(ex);
+        }
+
+        // Should not happen
+        catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        }
+
+    }
 }

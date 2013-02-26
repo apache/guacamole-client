@@ -53,8 +53,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.ProviderUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -71,10 +71,10 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private MySQLUser user;
 
     @Inject
-    PermissionCheckUtility permissionCheckUtility;
+    PermissionCheckService permissionCheckUtility;
 
     @Inject
-    ProviderUtility providerUtility;
+    ProviderService providerUtility;
 
     @Inject
     ConnectionMapper connectionDAO;

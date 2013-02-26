@@ -46,9 +46,9 @@ import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PasswordEncryptionUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.PermissionCheckUtility;
-import net.sourceforge.guacamole.net.auth.mysql.utility.SaltUtility;
+import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
 /**
@@ -63,13 +63,13 @@ public class MySQLUser implements User {
     UserMapper userDAO;
 
     @Inject
-    PasswordEncryptionUtility passwordUtility;
+    PasswordEncryptionService passwordUtility;
 
     @Inject
-    SaltUtility saltUtility;
+    SaltService saltUtility;
 
     @Inject
-    PermissionCheckUtility permissionCheckUtility;
+    PermissionCheckService permissionCheckUtility;
 
     Set<Permission> permissions;
 
