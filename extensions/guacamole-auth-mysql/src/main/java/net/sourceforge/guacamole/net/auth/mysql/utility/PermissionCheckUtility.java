@@ -68,7 +68,6 @@ import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 
@@ -882,14 +881,15 @@ public class PermissionCheckUtility {
         List<SystemPermissionKey> systemPermissions =
                 systemPermissionDAO.selectByExample(systemPermissionExample);
         for(SystemPermissionKey systemPermission : systemPermissions) {
-            SystemPermission newPermission = null;
-            if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
-                newPermission = new UserDirectoryPermission(UserDirectoryPermission.Type.CREATE);
-            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
-                newPermission = new ConnectionDirectoryPermission(ConnectionDirectoryPermission.Type.CREATE);
 
-            if(newPermission != null)
-                allPermissions.add(newPermission);
+            // User creation permission
+            if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
+                allPermissions.add(new UserDirectoryPermission(UserDirectoryPermission.Type.CREATE));
+
+            // System creation permission
+            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
+                allPermissions.add(new ConnectionDirectoryPermission(ConnectionDirectoryPermission.Type.CREATE));
+
         }
 
         return allPermissions;

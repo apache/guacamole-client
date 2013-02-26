@@ -35,10 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 
 /**
  * A set of constants that are useful for the MySQL-based authentication provider.
@@ -51,19 +48,61 @@ public final class MySQLConstants {
      */
     private MySQLConstants() {}
 
-    // Permission constants
-    public static final String USER_READ = UserPermission.Type.READ.name();
-    public static final String USER_UPDATE = UserPermission.Type.UPDATE.name();
-    public static final String USER_DELETE = UserPermission.Type.DELETE.name();
-    public static final String USER_ADMINISTER = UserPermission.Type.ADMINISTER.name();
-    public static final String USER_CREATE = UserDirectoryPermission.Type.CREATE.name();
+    /**
+     * The string stored in the database to represent READ access to a user.
+     */
+    public static final String USER_READ = "READ";
 
-    public static final String CONNECTION_READ = ConnectionPermission.Type.READ.name();
-    public static final String CONNECTION_UPDATE = ConnectionPermission.Type.UPDATE.name();
-    public static final String CONNECTION_DELETE = ConnectionPermission.Type.DELETE.name();
-    public static final String CONNECTION_ADMINISTER = ConnectionPermission.Type.ADMINISTER.name();
-    public static final String CONNECTION_CREATE = ConnectionDirectoryPermission.Type.CREATE.name();
+    /**
+     * The string stored in the database to represent UPDATE access to a user.
+     */
+    public static final String USER_UPDATE = "UPDATE";
 
-    public static final String SYSTEM_USER_CREATE = "USER_CREATE";
-    public static final String SYSTEM_CONNECTION_CREATE = "CONNECTION_CREATE";
+    /**
+     * The string stored in the database to represent DELETE access to a user.
+     */
+    public static final String USER_DELETE = "DELETE";
+
+    /**
+     * The string stored in the database to represent ADMINISTER access to a
+     * user.
+     */
+    public static final String USER_ADMINISTER = "ADMINISTER";
+
+    /**
+     * The string stored in the database to represent READ access to a
+     * connection.
+     */
+    public static final String CONNECTION_READ = "READ";
+
+    /**
+     * The string stored in the database to represent UPDATE access to a
+     * connection.
+     */
+    public static final String CONNECTION_UPDATE = "UPDATE";
+
+    /**
+     * The string stored in the database to represent DELETE access to a
+     * connection.
+     */
+    public static final String CONNECTION_DELETE = "DELETE";
+
+    /**
+     * The string stored in the database to represent ADMINISTER access to a
+     * connection.
+     */
+    public static final String CONNECTION_ADMINISTER = "ADMINISTER";
+
+    /**
+     * The string stored in the database to represent permission to create
+     * users.
+     */
+    public static final String SYSTEM_USER_CREATE = "CREATE_USER";
+
+    /**
+     * The string stored in the database to represent permission to create
+     * connections.
+     */
+    public static final String SYSTEM_CONNECTION_CREATE = "CREATE_CONNECTION";
+
 }

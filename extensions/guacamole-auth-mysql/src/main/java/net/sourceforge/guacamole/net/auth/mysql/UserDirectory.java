@@ -447,15 +447,38 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         for (SystemPermission permission : permissions) {
 
             // Connection directory permission
-            String operation = permission.getType().name();
-            if (permission instanceof ConnectionDirectoryPermission)
-                systemPermissionTypes.add(operation + "_CONNECTION");
+            if (permission instanceof ConnectionDirectoryPermission) {
+                switch (permission.getType()) {
+
+                    // Create permission
+                    case CREATE:
+                        systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
+                        break;
+
+                    // Fail if unexpected type encountered
+                    default:
+                        assert false : "Unsupported type: " + permission.getType();
+
+                }
+            }
 
             // User directory permission
-            else if (permission instanceof UserDirectoryPermission)
-                systemPermissionTypes.add(operation + "_USER");
+            else if (permission instanceof UserDirectoryPermission) {
+                switch (permission.getType()) {
 
-        }
+                    // Create permission
+                    case CREATE:
+                        systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
+                        break;
+
+                    // Fail if unexpected type encountered
+                    default:
+                        assert false : "Unsupported type: " + permission.getType();
+
+                }
+            }
+
+        } // end for each system permission
 
         // Delete all system permissions not in the list
         SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
@@ -467,9 +490,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         systemPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID()).andPermissionIn(systemPermissionTypes);
         List<SystemPermissionKey> existingPermissions = systemPermissionDAO.selectByExample(systemPermissionExample);
         Set<String> existingPermissionTypes = new HashSet<String>();
-        for (SystemPermissionKey existingPermission : existingPermissions) {
+        for (SystemPermissionKey existingPermission : existingPermissions)
             existingPermissionTypes.add(existingPermission.getPermission());
-        }
 
         // Finally, insert any NEW system permissions for this user
         for (String systemPermissionType : systemPermissionTypes) {
