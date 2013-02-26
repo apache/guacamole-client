@@ -2,3 +2,8 @@ insert into guacamole_user values(1, 'guacadmin', x'AE97B20D5B24B2F18BE7921E3C0C
 
 insert into guacamole_system_permission values(1, 'CREATE_CONNECTION');
 insert into guacamole_system_permission values(1, 'CREATE_USER');
+
+insert into guacamole_user_permission values(1, 1, 'READ');
+insert into guacamole_user_permission values(1, 1, 'UPDATE');
+insert into guacamole_user_permission values(1, 1, 'DELETE');
+insert into guacamole_user_permission values(1, 1, 'ADMINISTER');
