@@ -147,6 +147,9 @@
       )
     values (#{connection_id,jdbcType=INTEGER}, #{connection_name,jdbcType=VARCHAR}, #{protocol,jdbcType=VARCHAR}
       )
+    <selectKey keyProperty="connection_id" resultType="int" order="AFTER">
+      select last_insert_id();
+    </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.Connection">
     <!--
