@@ -75,23 +75,23 @@ public class MySQLUser implements User {
     /**
      * The set of current permissions a user has.
      */
-    Set<Permission> permissions;
+    private Set<Permission> permissions;
     
     /**
      * Any newly added permissions that have yet to be committed.
      */
-    Set<Permission> newPermissions;
+    private Set<Permission> newPermissions = new HashSet<Permission>();
     
     /**
      * Any newly deleted permissions that have yet to be deleted.
      */
-    Set<Permission> removedPermissions;
+    private Set<Permission> removedPermissions = new HashSet<Permission>();
     
     /**
      * Get the current set of permissions this user has.
      * @return the current set of permissions.
      */
-    Set<Permission> getCurrentPermissions() {
+    public Set<Permission> getCurrentPermissions() {
         return permissions;
     }
     
@@ -99,7 +99,7 @@ public class MySQLUser implements User {
      * Get any new permissions that have yet to be inserted.
      * @return the new set of permissions.
      */
-    Set<Permission> getNewPermissions() {
+    public Set<Permission> getNewPermissions() {
         return newPermissions;
     }
     
@@ -107,7 +107,7 @@ public class MySQLUser implements User {
      * Get any permissions that have not yet been deleted.
      * @return the permissions that need to be deleted.
      */
-    Set<Permission> getRemovedPermissions() {
+    public Set<Permission> getRemovedPermissions() {
         return removedPermissions;
     }
     
@@ -115,7 +115,7 @@ public class MySQLUser implements User {
      * Reset the new and removed permission sets after they are
      * no longer needed.
      */
-    void resetPermissions() {
+    public void resetPermissions() {
         newPermissions.clear();
         removedPermissions.clear();
     }
@@ -258,12 +258,14 @@ public class MySQLUser implements User {
     public void addPermission(Permission permission) throws GuacamoleException {
         permissions.add(permission);
         newPermissions.add(permission);
+        removedPermissions.remove(permission);
     }
 
     @Override
     public void removePermission(Permission permission) throws GuacamoleException {
         permissions.remove(permission);
-        removedPermissions.remove(permission);
+        newPermissions.remove(permission);
+        removedPermissions.add(permission);
     }
 
     @Override
