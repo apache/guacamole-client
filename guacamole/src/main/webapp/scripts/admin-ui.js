@@ -352,6 +352,10 @@ GuacAdmin.addUser = function(name) {
         // Get user permissions
         var user_perms = GuacamoleService.Permissions.list(name);
 
+        // Permission deltas
+        var added_perms   = new GuacamoleService.PermissionSet();
+        var removed_perms = new GuacamoleService.PermissionSet();
+
         // Create form base elements
         var form_element = GuacUI.createElement("div", "form");
         var user_header = GuacUI.createChildElement(form_element, "h2");
@@ -404,7 +408,6 @@ GuacAdmin.addUser = function(name) {
         };
 
         // If readable connections exist, list them
-        var selected_connections = {};
         if (GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)) {
 
             // Add fields for per-connection checkboxes
@@ -439,17 +442,27 @@ GuacAdmin.addUser = function(name) {
                 connection_field.setAttribute("value", conn);
 
                 // Check checkbox if connection readable by selected user
-                if (conn in user_perms.read_connection) {
-                    selected_connections[conn] = true;
+                if (conn in user_perms.read_connection)
                     connection_field.checked = true;
-                }
 
                 // Update selected connections when changed
                 connection_field.onclick = connection_field.onchange = function() {
-                    if (this.checked)
-                        selected_connections[this.value] = true;
-                    else if (selected_connections[this.value])
-                        delete selected_connections[this.value];
+
+                    // Update permission deltas for ADDED permission
+                    if (this.checked) {
+                        added_perms.read_connection[this.value] = true;
+                        if (removed_perms.read_connection[this.value])
+                            delete removed_perms.read_connection[this.value];
+                        
+                    }
+
+                    // Update permission deltas for REMOVED permission
+                    else {
+                        removed_perms.read_connection[this.value] = true;
+                        if (added_perms.read_connection[this.value])
+                            delete added_perms.read_connection[this.value];
+                    }
+
                 };
 
                 connection_name.textContent = conn;
@@ -496,12 +509,9 @@ GuacAdmin.addUser = function(name) {
                 else
                     password = null;
 
-                // Set user permissions
-                user_perms.read_connection = selected_connections;
-
                 // Save user
                 GuacamoleService.Users.update(
-                    GuacAdmin.selected_user, password, user_perms);
+                    GuacAdmin.selected_user, password, added_perms, removed_perms);
                 deselect();
                 GuacAdmin.reset();
 

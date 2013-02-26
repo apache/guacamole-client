@@ -397,13 +397,14 @@ GuacamoleService.Users = {
      * 
      * @param {String} username The username of the user to create.
      * @param {String} password The password to assign to the user (optional).
-     * @param {GuacamoleService.PermissionSet} permissions The permissions to
-     *                                                     assign.
+     * @param {GuacamoleService.PermissionSet} permissions_added All permissions that were added.
+     * @param {GuacamoleService.PermissionSet} permissions_removed All permissions that were removed.
      * @param {String} parameters Any parameters which should be passed to the
      *                            server for the sake of authentication
      *                            (optional).
      */
-    "update" : function(username, password, permissions, parameters) {
+    "update" : function(username, password, permissions_added,
+        permissions_removed, parameters) {
 
         // Construct request URL
         var users_url = "users/update";
@@ -413,31 +414,55 @@ GuacamoleService.Users = {
         var data = "name=" + encodeURIComponent(username);
         if (password) data += "&password=" + encodeURIComponent(password);
 
-        // Creation permissions
-        if (permissions.create_user)       data += "&user=create";
-        if (permissions.create_connection) data += "&connection=create";
-
         var name;
 
+        // Creation permissions
+        if (permissions_added.create_user)       data += "&%2Buser=create";
+        if (permissions_added.create_connection) data += "&%2Bconnection=create";
+
         // User permissions 
-        for (name in permissions.read_user)
-            data += "&user=read:"  + encodeURIComponent(name);
-        for (name in permissions.administer_user)
-            data += "&user=admin:" + encodeURIComponent(name);
-        for (name in permissions.update_user)
-            data += "&user=update:" + encodeURIComponent(name);
-        for (name in permissions.remove_user)
-            data += "&user=delete:" + encodeURIComponent(name);
+        for (name in permissions_added.read_user)
+            data += "&%2Buser=read:"  + encodeURIComponent(name);
+        for (name in permissions_added.administer_user)
+            data += "&%2Buser=admin:" + encodeURIComponent(name);
+        for (name in permissions_added.update_user)
+            data += "&%2Buser=update:" + encodeURIComponent(name);
+        for (name in permissions_added.remove_user)
+            data += "&%2Buser=delete:" + encodeURIComponent(name);
 
         // Connection permissions 
-        for (name in permissions.read_connection)
-            data += "&connection=read:" + encodeURIComponent(name);
-        for (name in permissions.administer_connection)
-            data += "&connection=admin:" + encodeURIComponent(name);
-        for (name in permissions.update_connection)
-            data += "&connection=update:" + encodeURIComponent(name);
-        for (name in permissions.remove_connection)
-            data += "&connection=delete:" + encodeURIComponent(name);
+        for (name in permissions_added.read_connection)
+            data += "&%2Bconnection=read:" + encodeURIComponent(name);
+        for (name in permissions_added.administer_connection)
+            data += "&%2Bconnection=admin:" + encodeURIComponent(name);
+        for (name in permissions_added.update_connection)
+            data += "&%2Bconnection=update:" + encodeURIComponent(name);
+        for (name in permissions_added.remove_connection)
+            data += "&%2Bconnection=delete:" + encodeURIComponent(name);
+
+        // Creation permissions
+        if (permissions_removed.create_user)       data += "&-user=create";
+        if (permissions_removed.create_connection) data += "&-connection=create";
+
+        // User permissions 
+        for (name in permissions_removed.read_user)
+            data += "&-user=read:"  + encodeURIComponent(name);
+        for (name in permissions_removed.administer_user)
+            data += "&-user=admin:" + encodeURIComponent(name);
+        for (name in permissions_removed.update_user)
+            data += "&-user=update:" + encodeURIComponent(name);
+        for (name in permissions_removed.remove_user)
+            data += "&-user=delete:" + encodeURIComponent(name);
+
+        // Connection permissions 
+        for (name in permissions_removed.read_connection)
+            data += "&-connection=read:" + encodeURIComponent(name);
+        for (name in permissions_removed.administer_connection)
+            data += "&-connection=admin:" + encodeURIComponent(name);
+        for (name in permissions_removed.update_connection)
+            data += "&-connection=update:" + encodeURIComponent(name);
+        for (name in permissions_removed.remove_connection)
+            data += "&-connection=delete:" + encodeURIComponent(name);
 
         // Update user
         var xhr = new XMLHttpRequest();

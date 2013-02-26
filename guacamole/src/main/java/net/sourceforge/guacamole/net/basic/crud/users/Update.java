@@ -167,17 +167,31 @@ public class Update extends AuthenticatingHttpServlet {
                 user.setPassword(password);
 
             // Set user permissions
-            String[] user_permission = request.getParameterValues("user");
-            if (user_permission != null) {
-                for (String str : user_permission)
+            String[] add_user_permission = request.getParameterValues("+user");
+            if (add_user_permission != null) {
+                for (String str : add_user_permission)
                     user.addPermission(parseUserPermission(str));
             }
 
             // Set connection permissions
-            String[] connection_permission = request.getParameterValues("connection");
-            if (connection_permission != null) {
-                for (String str : connection_permission)
+            String[] add_connection_permission = request.getParameterValues("+connection");
+            if (add_connection_permission != null) {
+                for (String str : add_connection_permission)
                     user.addPermission(parseConnectionPermission(str));
+            }
+
+            // Set user permissions
+            String[] remove_user_permission = request.getParameterValues("-user");
+            if (remove_user_permission != null) {
+                for (String str : remove_user_permission)
+                    user.removePermission(parseUserPermission(str));
+            }
+
+            // Set connection permissions
+            String[] remove_connection_permission = request.getParameterValues("-connection");
+            if (remove_connection_permission != null) {
+                for (String str : remove_connection_permission)
+                    user.removePermission(parseConnectionPermission(str));
             }
 
             // Update user
