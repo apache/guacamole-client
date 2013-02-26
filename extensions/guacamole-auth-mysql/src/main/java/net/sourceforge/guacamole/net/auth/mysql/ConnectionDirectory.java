@@ -87,7 +87,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
     /**
      * Set the user for this directory.
-     * 
+     *
      * @param user_id The ID of the user owning this connection directory.
      */
     public void init(int user_id) {

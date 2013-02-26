@@ -384,7 +384,7 @@ public class PermissionCheckService {
         // If no affected users at all, return empty set
         if (affectedUserIDs.isEmpty())
             return Collections.EMPTY_SET;
-        
+
         // Query corresponding user data for each retrieved ID
         UserExample example = new UserExample();
         example.createCriteria().andUser_idIn(Lists.newArrayList(affectedUserIDs));
@@ -720,7 +720,7 @@ public class PermissionCheckService {
 
         // Otherwise, no connections available
         return Collections.EMPTY_SET;
-        
+
     }
 
     /**
@@ -860,7 +860,7 @@ public class PermissionCheckService {
         List<ConnectionPermissionKey> connectionPermissions =
                 connectionPermissionDAO.selectByExample(connectionPermissionExample);
 
-        // If connection permissions present, add permissions 
+        // If connection permissions present, add permissions
         if (!connectionPermissions.isEmpty()) {
 
             // Get list of affected connection IDs

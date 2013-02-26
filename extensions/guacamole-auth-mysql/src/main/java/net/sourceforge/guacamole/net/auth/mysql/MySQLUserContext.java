@@ -76,7 +76,7 @@ public class MySQLUserContext implements UserContext {
      */
     @Inject
     private ProviderService providerService;
-    
+
     /**
      * Initializes the user and directories associated with this context.
      *

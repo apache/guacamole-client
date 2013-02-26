@@ -131,7 +131,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      */
     @Inject
     private ProviderService providerUtility;
-    
+
     /**
      * Service for encrypting passwords.
      */
@@ -197,7 +197,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             user.setPassword_hash(
                 passwordUtility.createPasswordHash(object.getPassword(), salt));
         }
-        
+
         userDAO.insert(user);
 
         // Create permissions of new user in database
@@ -227,11 +227,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     }
 
     /**
-     * Update all the permissions for a given user to be only those specified in the user object.
-     * Delete any permissions not in the list, and create any in the list that do not exist
-     * in the database.
+     * Add the given permissions to the given user.
      *
-     * @param user The user whose permissions should be updated.
+     * @param user_id The ID of the user whose permissions should be updated.
+     * @param permissions The permissions to add.
      * @throws GuacamoleException If an error occurs while updating the
      *                            permissions of the given user.
      */
@@ -255,15 +254,25 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         }
 
         // Create the new permissions
-        createUserPermissions(newUserPermissions, user_id);
-        createConnectionPermissions(newConnectionPermissions, user_id);
-        createSystemPermissions(newSystemPermissions, user_id);
+        createUserPermissions(user_id, newUserPermissions);
+        createConnectionPermissions(user_id, newConnectionPermissions);
+        createSystemPermissions(user_id, newSystemPermissions);
 
     }
 
 
-    private void removePermissions(int user_id, Set<Permission> permissions) throws GuacamoleException {
-        
+
+    /**
+     * Remove the given permissions from the given user.
+     *
+     * @param user_id The ID of the user whose permissions should be updated.
+     * @param permissions The permissions to remove.
+     * @throws GuacamoleException If an error occurs while updating the
+     *                            permissions of the given user.
+     */
+    private void removePermissions(int user_id, Set<Permission> permissions)
+            throws GuacamoleException {
+
         // Partition given permissions by permission type
         List<UserPermission> removedUserPermissions = new ArrayList<UserPermission>();
         List<ConnectionPermission> removedConnectionPermissions = new ArrayList<ConnectionPermission>();
@@ -280,27 +289,27 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             else if (permission instanceof SystemPermission)
                 removedSystemPermissions.add((SystemPermission) permission);
         }
-        
+
         // Delete the removed permissions.
-        deleteUserPermissions(removedUserPermissions, user_id);
-        deleteConnectionPermissions(removedConnectionPermissions, user_id);
-        deleteSystemPermissions(removedSystemPermissions, user_id);
-        
+        deleteUserPermissions(user_id, removedUserPermissions);
+        deleteConnectionPermissions(user_id, removedConnectionPermissions);
+        deleteSystemPermissions(user_id, removedSystemPermissions);
+
     }
 
     /**
-     * Create any new permissions having to do with users for a given user.
+     * Create the given user permissions for the given user.
      *
+     * @param user_id The ID of the user to change the permissions of.
      * @param permissions The new permissions the given user should have when
      *                    this operation completes.
-     * @param user_id The ID of the user to change the permissions of.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is denied.
      */
-    private void createUserPermissions(Collection<UserPermission> permissions,
-            int user_id)
+    private void createUserPermissions(int user_id,
+            Collection<UserPermission> permissions)
             throws GuacamoleException {
-        
+
         if(permissions.isEmpty())
             return;
 
@@ -323,7 +332,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         for (User dbUser : dbUsers) {
             dbUserMap.put(dbUser.getUsername(), dbUser);
         }
-        
+
         for (UserPermission permission : permissions) {
 
             // Get user
@@ -353,16 +362,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     /**
      * Delete permissions having to do with users for a given user.
      *
+     * @param user_id The ID of the user to change the permissions of.
      * @param permissions The permissions the given user should no longer have
      *                    when this operation completes.
-     * @param user_id The ID of the user to change the permissions of.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is denied.
      */
-    private void deleteUserPermissions(Collection<UserPermission> permissions,
-            int user_id)
+    private void deleteUserPermissions(int user_id,
+            Collection<UserPermission> permissions)
             throws GuacamoleException {
-        
+
         if(permissions.isEmpty())
             return;
 
@@ -387,7 +396,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             dbUserMap.put(dbUser.getUsername(), dbUser);
             userIDs.add(dbUser.getUser_id());
         }
-        
+
         // Verify we have permission to delete each user permission.
         for (UserPermission permission : permissions) {
 
@@ -406,7 +415,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                     + " does not have permission to administrate user "
                     + dbAffectedUser.getUser_id());
         }
-        
+
         if(!userIDs.isEmpty()) {
             UserPermissionExample userPermissionExample = new UserPermissionExample();
             userPermissionExample.createCriteria().andUser_idEqualTo(user_id)
@@ -419,16 +428,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * Create any new permissions having to do with connections for a given
      * user.
      *
+     * @param user_id The ID of the user to assign or remove permissions from.
      * @param permissions The new permissions the user should have after this
      *                    operation completes.
-     * @param user_id The ID of the user to assign or remove permissions from.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is deniedD
      */
-    private void createConnectionPermissions(
-            Collection<ConnectionPermission> permissions, int user_id)
+    private void createConnectionPermissions(int user_id,
+            Collection<ConnectionPermission> permissions)
             throws GuacamoleException {
-        
+
         if(permissions.isEmpty())
             return;
 
@@ -483,16 +492,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     /**
      * Delete permissions having to do with connections for a given user.
      *
+     * @param user_id The ID of the user to change the permissions of.
      * @param permissions The permissions the given user should no longer have
      *                    when this operation completes.
-     * @param user_id The ID of the user to change the permissions of.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is denied.
      */
-    private void deleteConnectionPermissions(Collection<ConnectionPermission> permissions,
-            int user_id)
+    private void deleteConnectionPermissions(int user_id,
+            Collection<ConnectionPermission> permissions)
             throws GuacamoleException {
-        
+
         if(permissions.isEmpty())
             return;
 
@@ -517,7 +526,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             dbConnectionMap.put(dbConnection.getConnection_name(), dbConnection);
             connectionIDs.add(dbConnection.getConnection_id());
         }
-        
+
         // Verify we have permission to delete each connection permission.
         for (ConnectionPermission permission : permissions) {
 
@@ -536,7 +545,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                     + " does not have permission to administrate connection "
                     + dbConnection.getConnection_id());
         }
-        
+
         if(!connectionIDs.isEmpty()) {
             ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
             connectionPermissionExample.createCriteria().andUser_idEqualTo(user_id)
@@ -549,16 +558,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * Create any new system permissions for a given user. All permissions in
      * the given list will be inserted.
      *
+     * @param user_id The ID of the user whose permissions should be updated.
      * @param permissions The new system permissions that the given user should
      *                    have when this operation completes.
-     * @param user_id The ID of the user whose permissions should be updated.
      */
-    private void createSystemPermissions(Collection<SystemPermission> permissions,
-            int user_id) {
+    private void createSystemPermissions(int user_id,
+            Collection<SystemPermission> permissions) {
 
         if(permissions.isEmpty())
             return;
-        
+
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions) {
@@ -609,18 +618,18 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         }
 
     }
-    
+
     /**
      * Delete system permissions for a given user. All permissions in
      * the given list will be removed from the user.
      *
+     * @param user_id The ID of the user whose permissions should be updated.
      * @param permissions The permissions the given user should no longer have
      *                    when this operation completes.
-     * @param user_id The ID of the user whose permissions should be updated.
      */
-    private void deleteSystemPermissions(Collection<SystemPermission> permissions,
-            int user_id) {
-        
+    private void deleteSystemPermissions(int user_id,
+            Collection<SystemPermission> permissions) {
+
         if(permissions.isEmpty())
             return;
 
@@ -680,7 +689,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // permissions.
         if (!(object instanceof MySQLUser))
             throw new GuacamoleException("User not from database.");
-        
+
         // Validate permission to update this user is granted
         permissionCheckUtility.verifyUserUpdateAccess(this.user_id,
                 object.getUsername());

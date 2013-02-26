@@ -58,7 +58,7 @@ public class MySQLUser extends AbstractUser {
      * The ID of this user in the database, if any.
      */
     private Integer userID;
-    
+
     /**
      * Service for encrypting passwords.
      */
@@ -81,26 +81,26 @@ public class MySQLUser extends AbstractUser {
      * The set of current permissions a user has.
      */
     private Set<Permission> permissions = new HashSet<Permission>();
-    
+
     /**
      * Any newly added permissions that have yet to be committed.
      */
     private Set<Permission> newPermissions = new HashSet<Permission>();
-    
+
     /**
      * Any newly deleted permissions that have yet to be deleted.
      */
     private Set<Permission> removedPermissions = new HashSet<Permission>();
-    
+
     /**
      * Creates a new, empty MySQLUser.
      */
     public MySQLUser() {
     }
-    
+
     /**
      * Initializes a new MySQLUser having the given username.
-     * 
+     *
      * @param name The name to assign to this MySQLUser.
      */
     public void init(String name) {
@@ -110,7 +110,7 @@ public class MySQLUser extends AbstractUser {
     /**
      * Initializes a new MySQLUser, copying all data from the given user
      * object.
-     * 
+     *
      * @param user The user object to copy.
      * @throws GuacamoleException If an error occurs while reading the user
      *                            data in the given object.
@@ -124,7 +124,7 @@ public class MySQLUser extends AbstractUser {
     /**
      * Initializes a new MySQLUser initialized from the given data from the
      * database.
-     * 
+     *
      * @param user The user object, as retrieved from the database.
      */
     public void init(UserWithBLOBs user) {
@@ -134,7 +134,7 @@ public class MySQLUser extends AbstractUser {
         permissions.addAll(
                 permissionCheckUtility.getAllPermissions(user.getUser_id()));
     }
-    
+
     /**
      * Get the current set of permissions this user has.
      * @return the current set of permissions.
@@ -142,7 +142,7 @@ public class MySQLUser extends AbstractUser {
     public Set<Permission> getCurrentPermissions() {
         return permissions;
     }
-    
+
     /**
      * Get any new permissions that have yet to be inserted.
      * @return the new set of permissions.
@@ -150,7 +150,7 @@ public class MySQLUser extends AbstractUser {
     public Set<Permission> getNewPermissions() {
         return newPermissions;
     }
-    
+
     /**
      * Get any permissions that have not yet been deleted.
      * @return the permissions that need to be deleted.
@@ -158,7 +158,7 @@ public class MySQLUser extends AbstractUser {
     public Set<Permission> getRemovedPermissions() {
         return removedPermissions;
     }
-    
+
     /**
      * Reset the new and removed permission sets after they are
      * no longer needed.
@@ -170,7 +170,7 @@ public class MySQLUser extends AbstractUser {
 
     /**
      * Returns the ID of this user in the database, if it exists.
-     * 
+     *
      * @return The ID of this user in the database, or null if this user
      *         was not retrieved from the database.
      */
@@ -180,7 +180,7 @@ public class MySQLUser extends AbstractUser {
 
     /**
      * Sets the ID of this user to the given value.
-     * 
+     *
      * @param userID The ID to assign to this user.
      */
     public void setUserID(Integer userID) {
@@ -216,7 +216,7 @@ public class MySQLUser extends AbstractUser {
      * into the database. Beware that this object does not have associated
      * permissions. The permissions of this MySQLUser must be dealt with
      * separately.
-     * 
+     *
      * @return A new UserWithBLOBs containing all associated data of this
      *         MySQLUser.
      */
@@ -236,7 +236,7 @@ public class MySQLUser extends AbstractUser {
         }
 
         return user;
-        
+
     }
 
 }
