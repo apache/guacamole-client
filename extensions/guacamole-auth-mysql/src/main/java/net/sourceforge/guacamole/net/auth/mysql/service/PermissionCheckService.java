@@ -78,25 +78,25 @@ import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 public class PermissionCheckService {
 
     @Inject
-    UserMapper userDAO;
+    private UserMapper userDAO;
 
     @Inject
-    ConnectionMapper connectionDAO;
+    private ConnectionMapper connectionDAO;
 
     @Inject
-    UserPermissionMapper userPermissionDAO;
+    private UserPermissionMapper userPermissionDAO;
 
     @Inject
-    ConnectionPermissionMapper connectionPermissionDAO;
+    private ConnectionPermissionMapper connectionPermissionDAO;
 
     @Inject
-    SystemPermissionMapper systemPermissionDAO;
+    private SystemPermissionMapper systemPermissionDAO;
 
     @Inject
-    Provider<MySQLUser> mySQLUserProvider;
+    private Provider<MySQLUser> mySQLUserProvider;
 
     @Inject
-    Provider<MySQLConnection> mySQLConnectionProvider;
+    private Provider<MySQLConnection> mySQLConnectionProvider;
 
     /**
      * Verifies that the user has read access to the given user. If not, throws a GuacamoleSecurityException.

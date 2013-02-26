@@ -62,19 +62,19 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public class MySQLConnection implements Connection {
 
     @Inject
-    ConnectionMapper connectionDAO;
+    private ConnectionMapper connectionDAO;
 
     @Inject
-    ConnectionParameterMapper connectionParameterDAO;
+    private ConnectionParameterMapper connectionParameterDAO;
 
     @Inject
-    ProviderService providerUtility;
+    private ProviderService providerUtility;
 
     @Inject
-    ActiveConnectionSet activeConnectionSet;
+    private ActiveConnectionSet activeConnectionSet;
 
     @Inject
-    ConfigurationTranslationService configurationTranslationUtility;
+    private ConfigurationTranslationService configurationTranslationUtility;
 
     private net.sourceforge.guacamole.net.auth.mysql.model.Connection connection;
 
@@ -83,7 +83,7 @@ public class MySQLConnection implements Connection {
     /**
      * Create a default, empty connection.
      */
-    MySQLConnection() {
+    public MySQLConnection() {
         connection = new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
         configuration = new GuacamoleConfiguration();
     }

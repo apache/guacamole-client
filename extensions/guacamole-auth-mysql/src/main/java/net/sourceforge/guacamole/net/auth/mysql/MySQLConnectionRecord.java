@@ -63,19 +63,19 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      * DAO for accessing users.
      */
     @Inject
-    UserMapper userDAO;
+    private UserMapper userDAO;
 
     /**
      * DAO for accessing connections.
      */
     @Inject
-    ConnectionMapper connectionDAO;
+    private ConnectionMapper connectionDAO;
 
     /**
      * Service for creating and retrieving objects.
      */
     @Inject
-    ProviderService providerUtility;
+    private ProviderService providerUtility;
 
     /**
      * Initialize this MySQLConnectionRecord with the database record it

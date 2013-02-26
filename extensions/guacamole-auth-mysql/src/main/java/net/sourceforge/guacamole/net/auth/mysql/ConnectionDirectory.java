@@ -71,26 +71,26 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private int user_id;
 
     @Inject
-    PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckUtility;
 
     @Inject
-    ProviderService providerUtility;
+    private ProviderService providerUtility;
 
     @Inject
-    ConnectionMapper connectionDAO;
+    private ConnectionMapper connectionDAO;
 
     @Inject
-    ConnectionPermissionMapper connectionPermissionDAO;
+    private ConnectionPermissionMapper connectionPermissionDAO;
 
     @Inject
-    ConnectionParameterMapper connectionParameterDAO;
+    private ConnectionParameterMapper connectionParameterDAO;
 
     /**
      * Set the user for this directory.
      * 
      * @param user_id The ID of the user owning this connection directory.
      */
-    void init(int user_id) {
+    public void init(int user_id) {
         this.user_id = user_id;
     }
 

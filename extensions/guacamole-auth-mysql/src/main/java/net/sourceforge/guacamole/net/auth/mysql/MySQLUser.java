@@ -59,14 +59,23 @@ public class MySQLUser extends AbstractUser {
      */
     private Integer userID;
     
+    /**
+     * Service for encrypting passwords.
+     */
     @Inject
-    PasswordEncryptionService passwordUtility;
+    private PasswordEncryptionService passwordUtility;
 
+    /**
+     * Service for generating random salts.
+     */
     @Inject
-    SaltService saltUtility;
+    private SaltService saltUtility;
 
+    /**
+     * Service for checking permissions.
+     */
     @Inject
-    PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckUtility;
 
     /**
      * The set of current permissions a user has.

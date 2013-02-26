@@ -93,50 +93,56 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * DAO for accessing users, which will be injected.
      */
     @Inject
-    UserMapper userDAO;
+    private UserMapper userDAO;
 
     /**
      * DAO for accessing connections, which will be injected.
      */
     @Inject
-    ConnectionMapper connectionDAO;
+    private ConnectionMapper connectionDAO;
 
     /**
      * DAO for accessing user permissions, which will be injected.
      */
     @Inject
-    UserPermissionMapper userPermissionDAO;
+    private UserPermissionMapper userPermissionDAO;
 
     /**
      * DAO for accessing connection permissions, which will be injected.
      */
     @Inject
-    ConnectionPermissionMapper connectionPermissionDAO;
+    private ConnectionPermissionMapper connectionPermissionDAO;
 
     /**
      * DAO for accessing system permissions, which will be injected.
      */
     @Inject
-    SystemPermissionMapper systemPermissionDAO;
+    private SystemPermissionMapper systemPermissionDAO;
 
     /**
      * Utility class for checking various permissions, which will be injected.
      */
     @Inject
-    PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckUtility;
 
     /**
      * Utility class that provides convenient access to object creation and
      * retrieval functions.
      */
     @Inject
-    ProviderService providerUtility;
+    private ProviderService providerUtility;
     
+    /**
+     * Service for encrypting passwords.
+     */
     @Inject
-    PasswordEncryptionService passwordUtility;
+    private PasswordEncryptionService passwordUtility;
 
+    /**
+     * Service for generating random salts.
+     */
     @Inject
-    SaltService saltUtility;
+    private SaltService saltUtility;
 
     /**
      * Set the user for this directory.
@@ -144,7 +150,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * @param user_id The ID of the user whose permissions define the visibility
      *                of other users in this directory.
      */
-    void init(int user_id) {
+    public void init(int user_id) {
         this.user_id = user_id;
     }
 

@@ -53,7 +53,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
      * Injected ActiveConnectionSet which will contain all active connections.
      */
     @Inject
-    ActiveConnectionSet activeConnectionSet;
+    private ActiveConnectionSet activeConnectionSet;
 
     /**
      * The wrapped socket.

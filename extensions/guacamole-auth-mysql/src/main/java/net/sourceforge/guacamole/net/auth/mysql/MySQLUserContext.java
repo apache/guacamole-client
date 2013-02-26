@@ -82,7 +82,7 @@ public class MySQLUserContext implements UserContext {
      *
      * @param user_id The ID of the user owning this context.
      */
-    void init(int user_id) {
+    public void init(int user_id) {
         this.user_id = user_id;
         userDirectory.init(user_id);
         connectionDirectory.init(user_id);
