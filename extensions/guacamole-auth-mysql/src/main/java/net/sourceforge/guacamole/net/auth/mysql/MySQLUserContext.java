@@ -40,10 +40,10 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 
 /**
  * The MySQL representation of a UserContext.
@@ -52,11 +52,10 @@ import net.sourceforge.guacamole.net.auth.UserContext;
 public class MySQLUserContext implements UserContext {
 
     /**
-     * The user owning this context. The permissions of this user dictate
-     * the access given via the user and connection directories.
+     * The ID of the user owning this context. The permissions of this user
+     * dictate the access given via the user and connection directories.
      */
-    @Inject
-    private MySQLUser user;
+    private int user_id;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -73,22 +72,25 @@ public class MySQLUserContext implements UserContext {
     private ConnectionDirectory connectionDirectory;
 
     /**
+     * Service for retrieving existing objects or creating new ones.
+     */
+    @Inject
+    private ProviderService providerService;
+    
+    /**
      * Initializes the user and directories associated with this context.
      *
-     * @param credentials The credentials of the user owning this context.
-     * @throws GuacamoleException If the credentials given are not valid,
-     *                            or an error occurs while initializing the
-     *                            directories.
+     * @param user_id The ID of the user owning this context.
      */
-    void init(Credentials credentials) throws GuacamoleException {
-        user.init(credentials);
-        userDirectory.init(user);
-        connectionDirectory.init(user);
+    void init(int user_id) {
+        this.user_id = user_id;
+        userDirectory.init(user_id);
+        connectionDirectory.init(user_id);
     }
 
     @Override
     public User self() {
-        return user;
+        return providerService.getExistingMySQLUser(user_id);
     }
 
     @Override

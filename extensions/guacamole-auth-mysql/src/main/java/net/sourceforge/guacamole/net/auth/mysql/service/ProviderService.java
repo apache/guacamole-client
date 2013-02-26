@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
@@ -90,7 +91,7 @@ public class ProviderService {
      */
     public MySQLUser getNewMySQLUser(User user) throws GuacamoleException {
         MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.initNew(user);
+        mySQLUser.init(user);
         return mySQLUser;
     }
 
@@ -111,9 +112,19 @@ public class ProviderService {
      * @throws GuacamoleException
      */
     public MySQLUser getExistingMySQLUser(String name) throws GuacamoleException {
-        MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.initExisting(name);
-        return mySQLUser;
+
+        // Query user by ID
+        UserExample example = new UserExample();
+        example.createCriteria().andUsernameEqualTo(name);
+        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
+
+        // If no user found, return null
+        if(users.isEmpty())
+            return null;
+
+        // Otherwise, return found user
+        return getExistingMySQLUser(users.get(0));
+
     }
 
     /**
@@ -133,12 +144,19 @@ public class ProviderService {
      * @return the existing MySQLUser object if found, null if not.
      */
     public MySQLUser getExistingMySQLUser(Integer id) {
+
+        // Query user by ID
         UserExample example = new UserExample();
         example.createCriteria().andUser_idEqualTo(id);
         List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
+
+        // If no user found, return null
         if(users.isEmpty())
             return null;
+
+        // Otherwise, return found user
         return getExistingMySQLUser(users.get(0));
+
     }
 
 

@@ -374,11 +374,23 @@ public class PermissionCheckService {
      * @param permissionType
      * @return the list of all users this user has access to
      */
+    @Deprecated /* FIXME: Totally useless (we only ever need usernames, and querying ALL USER DATA will take ages) */
     private Set<MySQLUser> getUsers(int userID, String permissionType) {
+
+        // Get all IDs of all users that the given user can perform the given
+        // operation on
         Set<Integer> affectedUserIDs = getUserIDs(userID, permissionType);
+
+        // If no affected users at all, return empty set
+        if (affectedUserIDs.isEmpty())
+            return Collections.EMPTY_SET;
+        
+        // Query corresponding user data for each retrieved ID
         UserExample example = new UserExample();
         example.createCriteria().andUser_idIn(Lists.newArrayList(affectedUserIDs));
         List<UserWithBLOBs> userDBOjects = userDAO.selectByExampleWithBLOBs(example);
+
+        // Build set of MySQLUsers from retrieved user data
         Set<MySQLUser> affectedUsers = new HashSet<MySQLUser>();
         for(UserWithBLOBs affectedUser : userDBOjects) {
             MySQLUser mySQLUser = mySQLUserProvider.get();
@@ -387,6 +399,7 @@ public class PermissionCheckService {
         }
 
         return affectedUsers;
+
     }
 
     /**

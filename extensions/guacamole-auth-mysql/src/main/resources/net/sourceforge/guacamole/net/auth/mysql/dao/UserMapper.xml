@@ -186,6 +186,9 @@
       password_salt)
     values (#{user_id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password_hash,jdbcType=BINARY}, 
       #{password_salt,jdbcType=BINARY})
+    <selectKey keyProperty="user_id" resultType="int" order="AFTER">
+      select last_insert_id();
+    </selectKey>
   </insert>
   <insert id="insertSelective" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs">
     <!--

@@ -42,6 +42,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
+import java.util.List;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
@@ -54,6 +55,8 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConfigurationTranslationService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
@@ -94,9 +97,39 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         if (credentials.getUsername() == null)
             return null;
 
+        // Get user DAO
+        UserMapper userDAO = injector.getInstance(UserMapper.class);
+
+        // Query user
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
+        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(userExample);
+
+        // The unique constraint on the table should prevent this.
+        if (users.size() > 1)
+            throw new GuacamoleException(
+                "Multiple users found with the same username: "
+                + credentials.getUsername());
+
+        // Check that a user was found
+        if (users.isEmpty())
+            throw new GuacamoleException("No user found with the supplied credentials");
+
+        // Get first (and only) user
+        UserWithBLOBs user = users.get(0);
+
+        // Get password service
+        PasswordEncryptionService passwordService = injector.getInstance(PasswordEncryptionService.class);
+
+        // Check password, if invalid return null
+        if (!passwordService.checkCredentials(credentials,
+                user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
+            return null;
+
         MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
-        context.init(credentials);
+        context.init(user.getUser_id());
         return context;
+
     }
 
     /**

@@ -65,10 +65,10 @@ import org.mybatis.guice.transactional.Transactional;
 public class ConnectionDirectory implements Directory<String, Connection>{
 
     /**
-     * The user who this connection directory belongs to.
+     * The ID of the user who this connection directory belongs to.
      * Access is based on his/her permission settings.
      */
-    private MySQLUser user;
+    private int user_id;
 
     @Inject
     PermissionCheckService permissionCheckUtility;
@@ -87,16 +87,17 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
     /**
      * Set the user for this directory.
-     * @param user
+     * 
+     * @param user_id The ID of the user owning this connection directory.
      */
-    void init(MySQLUser user) {
-        this.user = user;
+    void init(int user_id) {
+        this.user_id = user_id;
     }
 
     @Transactional
     @Override
     public Connection get(String identifier) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionReadAccess(this.user.getUserID(), identifier);
+        permissionCheckUtility.verifyConnectionReadAccess(this.user_id, identifier);
         return providerUtility.getExistingMySQLConnection(identifier);
     }
 
@@ -104,7 +105,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
         Set<String> connectionNameSet = new HashSet<String>();
-        Set<MySQLConnection> connections = permissionCheckUtility.getReadableConnections(this.user.getUserID());
+        Set<MySQLConnection> connections = permissionCheckUtility.getReadableConnections(this.user_id);
         for(MySQLConnection mySQLConnection : connections) {
             connectionNameSet.add(mySQLConnection.getIdentifier());
         }
@@ -114,7 +115,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void add(Connection object) throws GuacamoleException {
-        permissionCheckUtility.verifyCreateConnectionPermission(this.user.getUserID());
+        permissionCheckUtility.verifyCreateConnectionPermission(this.user_id);
 
         MySQLConnection mySQLConnection = providerUtility.getNewMySQLConnection(object);
         connectionDAO.insert(mySQLConnection.getConnection());
@@ -123,7 +124,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         //finally, give the current user full access to the newly created connection.
         ConnectionPermissionKey newConnectionPermission = new ConnectionPermissionKey();
-        newConnectionPermission.setUser_id(this.user.getUserID());
+        newConnectionPermission.setUser_id(this.user_id);
         newConnectionPermission.setConnection_id(mySQLConnection.getConnectionID());
         newConnectionPermission.setPermission(MySQLConstants.USER_READ);
         connectionPermissionDAO.insert(newConnectionPermission);
@@ -205,7 +206,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void update(Connection object) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionUpdateAccess(this.user.getUserID(), object.getIdentifier());
+        permissionCheckUtility.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
 
         MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(object);
         connectionDAO.updateByPrimaryKey(mySQLConnection.getConnection());
@@ -216,7 +217,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionDeleteAccess(this.user.getUserID(), identifier);
+        permissionCheckUtility.verifyConnectionDeleteAccess(this.user_id, identifier);
 
         MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(identifier);
 

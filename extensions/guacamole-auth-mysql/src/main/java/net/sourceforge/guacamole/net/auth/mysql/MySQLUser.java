@@ -36,16 +36,12 @@
 package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
-import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.AbstractUser;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
@@ -56,13 +52,13 @@ import net.sourceforge.guacamole.net.auth.permission.Permission;
  * A MySQL based implementation of the User object.
  * @author James Muehlner
  */
-public class MySQLUser implements User {
+public class MySQLUser extends AbstractUser {
 
-    private UserWithBLOBs user;
-
-    @Inject
-    UserMapper userDAO;
-
+    /**
+     * The ID of this user in the database, if any.
+     */
+    private Integer userID;
+    
     @Inject
     PasswordEncryptionService passwordUtility;
 
@@ -75,7 +71,7 @@ public class MySQLUser implements User {
     /**
      * The set of current permissions a user has.
      */
-    private Set<Permission> permissions;
+    private Set<Permission> permissions = new HashSet<Permission>();
     
     /**
      * Any newly added permissions that have yet to be committed.
@@ -86,6 +82,49 @@ public class MySQLUser implements User {
      * Any newly deleted permissions that have yet to be deleted.
      */
     private Set<Permission> removedPermissions = new HashSet<Permission>();
+    
+    /**
+     * Creates a new, empty MySQLUser.
+     */
+    public MySQLUser() {
+    }
+    
+    /**
+     * Initializes a new MySQLUser having the given username.
+     * 
+     * @param name The name to assign to this MySQLUser.
+     */
+    public void init(String name) {
+        setUsername(name);
+    }
+
+    /**
+     * Initializes a new MySQLUser, copying all data from the given user
+     * object.
+     * 
+     * @param user The user object to copy.
+     * @throws GuacamoleException If an error occurs while reading the user
+     *                            data in the given object.
+     */
+    public void init(User user) throws GuacamoleException {
+        setUsername(user.getUsername());
+        setPassword(user.getPassword());
+        permissions.addAll(user.getPermissions());
+    }
+
+    /**
+     * Initializes a new MySQLUser initialized from the given data from the
+     * database.
+     * 
+     * @param user The user object, as retrieved from the database.
+     */
+    public void init(UserWithBLOBs user) {
+        this.userID = user.getUser_id();
+        setUsername(user.getUsername());
+
+        permissions.addAll(
+                permissionCheckUtility.getAllPermissions(user.getUser_id()));
+    }
     
     /**
      * Get the current set of permissions this user has.
@@ -121,127 +160,22 @@ public class MySQLUser implements User {
     }
 
     /**
-     * Create a default, empty user.
+     * Returns the ID of this user in the database, if it exists.
+     * 
+     * @return The ID of this user in the database, or null if this user
+     *         was not retrieved from the database.
      */
-    MySQLUser() {
-        user = new UserWithBLOBs();
-        permissions = new HashSet<Permission>();
+    public Integer getUserID() {
+        return userID;
     }
 
     /**
-     * Create the user, throwing an exception if the credentials do not match what's in the database.
-     * @param credentials
-     * @throws GuacamoleException
+     * Sets the ID of this user to the given value.
+     * 
+     * @param userID The ID to assign to this user.
      */
-    void init(Credentials credentials) throws GuacamoleException {
-
-        // Query user
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(userExample);
-
-        // The unique constraint on the table should prevent this.
-        if (users.size() > 1)
-            throw new GuacamoleException(
-                "Multiple users found with the same username: "
-                + credentials.getUsername());
-
-        // Check that a user was found
-        if (users.isEmpty())
-            throw new GuacamoleException("No user found with the supplied credentials");
-
-        // Get first (and only) user
-        user = users.get(0);
-
-        // Check password
-        if (!passwordUtility.checkCredentials(credentials,
-                user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
-            throw new GuacamoleException("No user found with the supplied credentials");
-
-        // Init permissions
-        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
-
-    }
-
-    /**
-     * Create a new user from the provided information. This represents a user that has not yet been inserted.
-     * @param user
-     * @throws GuacamoleException
-     */
-    public void initNew (User user) throws GuacamoleException {
-        this.setPassword(user.getPassword());
-        this.setUsername(user.getUsername());
-        this.permissions = user.getPermissions();
-    }
-
-    /**
-     * Loads a user by username.
-     * @param userName
-     * @throws GuacamoleException
-     */
-    public void initExisting (String username) throws GuacamoleException {
-        UserExample example = new UserExample();
-        example.createCriteria().andUsernameEqualTo(username);
-        List<UserWithBLOBs> userList = userDAO.selectByExampleWithBLOBs(example);
-        if(userList.size() > 1) // this should never happen; the unique constraint should prevent it
-            throw new GuacamoleException("Multiple users found with username '" + username + "'.");
-        if(userList.isEmpty())
-            throw new GuacamoleException("No user found with username '" + username + "'.");
-
-        this.user = userList.get(0);
-        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
-    }
-
-    /**
-     * Initialize from a database record.
-     * @param user
-     */
-    public void init(UserWithBLOBs user) {
-        this.user = user;
-        this.permissions = permissionCheckUtility.getAllPermissions(user.getUser_id());
-    }
-
-    /**
-     * Get the user id.
-     * @return
-     */
-    public int getUserID() {
-        return user.getUser_id();
-    }
-
-    /**
-     * Return the database record held by this object.
-     * @return
-     */
-    public UserWithBLOBs getUser() {
-        return user;
-    }
-
-    @Override
-    public String getUsername() {
-        return user.getUsername();
-    }
-
-    @Override
-    public void setUsername(String username) {
-        user.setUsername(username);
-    }
-
-    @Override
-    public String getPassword() {
-        try {
-            return new String(user.getPassword_hash(), "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex); // should not happen
-        }
-    }
-
-    @Override
-    public void setPassword(String password) {
-        byte[] salt = saltUtility.generateSalt();
-        user.setPassword_salt(salt);
-        byte[] hash = passwordUtility.createPasswordHash(password, salt);
-        user.setPassword_hash(hash);
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 
     @Override
@@ -268,22 +202,32 @@ public class MySQLUser implements User {
         removedPermissions.add(permission);
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if(!(other instanceof MySQLUser))
-            return false;
-        boolean idsAreEqual = ((MySQLUser)other).getUserID() == this.getUserID();
-        // they are both new, check if they have the same name
-        if(idsAreEqual && this.getUserID() == 0)
-            return this.getUsername().equals(((MySQLUser)other).getUsername());
-        return idsAreEqual;
+    /**
+     * Converts this MySQLUser into an object that can be inserted/updated
+     * into the database. Beware that this object does not have associated
+     * permissions. The permissions of this MySQLUser must be dealt with
+     * separately.
+     * 
+     * @return A new UserWithBLOBs containing all associated data of this
+     *         MySQLUser.
+     */
+    public UserWithBLOBs toUserWithBLOBs() {
+
+        // Create new user
+        UserWithBLOBs user = new UserWithBLOBs();
+        user.setUser_id(userID);
+        user.setUsername(getUsername());
+
+        // Set password if specified
+        if (getPassword() != null) {
+            byte[] salt = saltUtility.generateSalt();
+            user.setPassword_salt(salt);
+            user.setPassword_hash(
+                passwordUtility.createPasswordHash(getPassword(), salt));
+        }
+
+        return user;
+        
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 73 * hash + getUserID();
-        hash = 73 * hash + getUsername().hashCode();
-        return hash;
-    }
 }
