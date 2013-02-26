@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,9 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
-
-import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 
 /**
  * A set of constants that are useful for the MySQL-based authentication provider.
