@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -212,42 +213,131 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private void updatePermissions(MySQLUser user) throws GuacamoleException {
 
         // Partition given permissions by permission type
-        List<UserPermission> userPermissions = new ArrayList<UserPermission>();
-        List<ConnectionPermission> connectionPermissions = new ArrayList<ConnectionPermission>();
-        List<SystemPermission> systemPermissions = new ArrayList<SystemPermission>();
+        List<UserPermission> newUserPermissions = new ArrayList<UserPermission>();
+        List<ConnectionPermission> newConnectionPermissions = new ArrayList<ConnectionPermission>();
+        List<SystemPermission> newSystemPermissions = new ArrayList<SystemPermission>();
 
-        for (Permission permission : user.getPermissions()) {
+        for (Permission permission : user.getNewPermissions()) {
 
             if (permission instanceof UserPermission)
-                userPermissions.add((UserPermission) permission);
+                newUserPermissions.add((UserPermission) permission);
 
             else if (permission instanceof ConnectionPermission)
-                connectionPermissions.add((ConnectionPermission) permission);
+                newConnectionPermissions.add((ConnectionPermission) permission);
 
             else if (permission instanceof SystemPermission)
-                systemPermissions.add((SystemPermission) permission);
-
+                newSystemPermissions.add((SystemPermission) permission);
         }
+        
+        // Partition given permissions by permission type
+        List<UserPermission> removedUserPermissions = new ArrayList<UserPermission>();
+        List<ConnectionPermission> removedConnectionPermissions = new ArrayList<ConnectionPermission>();
+        List<SystemPermission> removedSystemPermissions = new ArrayList<SystemPermission>();
 
-        // Update each type of permission appropriately
-        updateUserPermissions(userPermissions, user);
-        updateConnectionPermissions(connectionPermissions, user);
-        updateSystemPermissions(systemPermissions, user);
+        for (Permission permission : user.getRemovedPermissions()) {
 
+            if (permission instanceof UserPermission)
+                removedUserPermissions.add((UserPermission) permission);
+
+            else if (permission instanceof ConnectionPermission)
+                removedConnectionPermissions.add((ConnectionPermission) permission);
+
+            else if (permission instanceof SystemPermission)
+                removedSystemPermissions.add((SystemPermission) permission);
+        }
+        
+        // Create the new permissions
+        createUserPermissions(newUserPermissions, user);
+        createConnectionPermissions(newConnectionPermissions, user);
+        createSystemPermissions(newSystemPermissions, user);
+        
+        // Delete the removed permissions.
+        deleteUserPermissions(removedUserPermissions, user);
+        deleteConnectionPermissions(removedConnectionPermissions, user);
+        deleteSystemPermissions(removedSystemPermissions, user);
+        
+        // The appropriate permissions have been inserted and deleted, so
+        // reset the new and removed permission sets.
+        user.resetPermissions();
     }
 
     /**
-     * Update all the permissions having to do with users for a given user.
+     * Create any new permissions having to do with users for a given user.
      *
-     * @param permissions The permissions the given user should have when
+     * @param permissions The new permissions the given user should have when
      *                    this operation completes.
      * @param user The user to change the permissions of.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is denied.
      */
-    private void updateUserPermissions(Iterable<UserPermission> permissions,
+    private void createUserPermissions(Collection<UserPermission> permissions,
             MySQLUser user)
             throws GuacamoleException {
+        
+        if(permissions.isEmpty())
+            return;
+
+        // Get set of administerable users
+        Set<Integer> administerableUsers =
+                permissionCheckUtility.getAdministerableUserIDs(this.user.getUserID());
+
+        // Get list of usernames for all given user permissions.
+        List<String> usernames = new ArrayList<String>();
+        for (UserPermission permission : permissions)
+            usernames.add(permission.getObjectIdentifier());
+
+        // Find all the users by username
+        UserExample userExample = new UserExample();
+        userExample.createCriteria().andUsernameIn(usernames);
+        List<User> dbUsers = userDAO.selectByExample(userExample);
+
+        // Build map of found users, indexed by username
+        Map<String, User> dbUserMap = new HashMap<String, User>();
+        for (User dbUser : dbUsers) {
+            dbUserMap.put(dbUser.getUsername(), dbUser);
+        }
+        
+        for (UserPermission permission : permissions) {
+
+            // Get user
+            User dbAffectedUser = dbUserMap.get(permission.getObjectIdentifier());
+            if (dbAffectedUser == null)
+                throw new GuacamoleException(
+                          "User '" + permission.getObjectIdentifier()
+                        + "' not found.");
+
+            // Verify that the user actually has permission to administrate
+            // every one of these users
+            if (!administerableUsers.contains(dbAffectedUser.getUser_id()))
+                throw new GuacamoleSecurityException(
+                      "User '" + this.user.getUsername()
+                    + "' does not have permission to administrate user "
+                    + dbAffectedUser.getUser_id());
+
+            // Create new permission
+            UserPermissionKey newPermission = new UserPermissionKey();
+            newPermission.setAffected_user_id(dbAffectedUser.getUser_id());
+            newPermission.setPermission(permission.getType().name());
+            newPermission.setUser_id(user.getUserID());
+            userPermissionDAO.insert(newPermission);
+         }
+    }
+
+    /**
+     * Delete permissions having to do with users for a given user.
+     *
+     * @param permissions The permissions the given user should no longer have
+     *                    when this operation completes.
+     * @param user The user to change the permissions of.
+     * @throws GuacamoleException If permission to alter the access permissions
+     *                            of affected objects is denied.
+     */
+    private void deleteUserPermissions(Collection<UserPermission> permissions,
+            MySQLUser user)
+            throws GuacamoleException {
+        
+        if(permissions.isEmpty())
+            return;
 
         // Get set of administerable users
         Set<Integer> administerableUsers =
@@ -270,36 +360,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             dbUserMap.put(dbUser.getUsername(), dbUser);
             userIDs.add(dbUser.getUser_id());
         }
-
-        // Find any user permissions that may already exist
-        UserPermissionExample userPermissionExample = new UserPermissionExample();
-        userPermissionExample.createCriteria().andAffected_user_idIn(userIDs);
-        List<UserPermissionKey> existingPermissions =
-                userPermissionDAO.selectByExample(userPermissionExample);
-
-        // Build list of currently-present permissions
-        Set<Integer> existingUserIDs = new HashSet<Integer>();
-        for (UserPermissionKey userPermission : existingPermissions)
-            existingUserIDs.add(userPermission.getAffected_user_id());
-
-        // Delete any permissions that are not in the provided list
-        userPermissionExample.clear();
-        userPermissionExample.createCriteria().andAffected_user_idNotIn(userIDs);
-        List<UserPermissionKey> permissionsToDelete =
-                userPermissionDAO.selectByExample(userPermissionExample);
-
-        // Verify that the user actually has permission to administrate every one of these users
-        for (UserPermissionKey permissionToDelete : permissionsToDelete) {
-            if (!administerableUsers.contains(permissionToDelete.getAffected_user_id()))
-                throw new GuacamoleSecurityException(
-                      "User '" + this.user.getUsername()
-                    + "' does not have permission to administrate user "
-                    + permissionToDelete.getAffected_user_id());
-        }
-
-        userPermissionDAO.deleteByExample(userPermissionExample);
-
-        // Finally, insert the new permissions
+        
+        // Verify we have permission to delete each user permission.
         for (UserPermission permission : permissions) {
 
             // Get user
@@ -309,12 +371,6 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                           "User '" + permission.getObjectIdentifier()
                         + "' not found.");
 
-            // If the permission for this user already exists, we don't need to
-            // create it again
-            if (existingUserIDs.contains(dbAffectedUser.getUser_id()))
-                continue;
-
-
             // Verify that the user actually has permission to administrate
             // every one of these users
             if (!administerableUsers.contains(dbAffectedUser.getUser_id()))
@@ -322,30 +378,32 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                       "User '" + this.user.getUsername()
                     + "' does not have permission to administrate user "
                     + dbAffectedUser.getUser_id());
-
-            // Create new permission
-            UserPermissionKey newPermission = new UserPermissionKey();
-            newPermission.setAffected_user_id(dbAffectedUser.getUser_id());
-            newPermission.setPermission(permission.getType().name());
-            newPermission.setUser_id(user.getUserID());
-            userPermissionDAO.insert(newPermission);
-
+        }
+        
+        if(!userIDs.isEmpty()) {
+            UserPermissionExample userPermissionExample = new UserPermissionExample();
+            userPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID())
+                    .andAffected_user_idIn(userIDs);
+            userPermissionDAO.deleteByExample(userPermissionExample);
         }
     }
 
     /**
-     * Update all the permissions having to do with connections for a given
+     * Create any new permissions having to do with connections for a given
      * user.
      *
-     * @param permissions The permissions the user should have after this
+     * @param permissions The new permissions the user should have after this
      *                    operation completes.
      * @param user The user to assign or remove permissions from.
      * @throws GuacamoleException If permission to alter the access permissions
      *                            of affected objects is deniedD
      */
-    private void updateConnectionPermissions(
-            Iterable<ConnectionPermission> permissions, MySQLUser user)
+    private void createConnectionPermissions(
+            Collection<ConnectionPermission> permissions, MySQLUser user)
             throws GuacamoleException {
+        
+        if(permissions.isEmpty())
+            return;
 
         // Get adminsterable connection identifiers
         Set<Integer> administerableConnections =
@@ -360,41 +418,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         ConnectionExample connectionExample = new ConnectionExample();
         connectionExample.createCriteria().andConnection_nameIn(connectionNames);
         List<Connection> dbConnections = connectionDAO.selectByExample(connectionExample);
-        List<Integer> connectionIDs = new ArrayList<Integer>();
 
         // Build map of found connections, indexed by name
         Map<String, Connection> dbConnectionMap = new HashMap<String, Connection>();
         for (Connection dbConnection : dbConnections) {
             dbConnectionMap.put(dbConnection.getConnection_name(), dbConnection);
-            connectionIDs.add(dbConnection.getConnection_id());
         }
-
-        // Find any connection permissions that may already exist
-        ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
-        connectionPermissionExample.createCriteria().andConnection_idIn(connectionIDs);
-        List<ConnectionPermissionKey> existingPermissions =
-                connectionPermissionDAO.selectByExample(connectionPermissionExample);
-        Set<Integer> existingConnectionIDs = new HashSet<Integer>();
-        for (ConnectionPermissionKey connectionPermission : existingPermissions)
-            existingConnectionIDs.add(connectionPermission.getConnection_id());
-
-        // Delete any permissions that are not in the provided list
-        connectionPermissionExample.clear();
-        connectionPermissionExample.createCriteria().andConnection_idNotIn(connectionIDs);
-        List<ConnectionPermissionKey> connectionPermissionsToDelete =
-                connectionPermissionDAO.selectByExample(connectionPermissionExample);
-
-        // Make sure the user has permission to administrate each of these connections
-        // corresponding to the permissions we are about to delete
-        for (ConnectionPermissionKey connectionPermissionToDelete : connectionPermissionsToDelete) {
-            if (!administerableConnections.contains(connectionPermissionToDelete.getConnection_id()))
-                throw new GuacamoleSecurityException(
-                    "User '" + this.user.getUsername() +
-                    "' does not have permission to administrate connection "
-                    + connectionPermissionToDelete.getConnection_id());
-        }
-
-        connectionPermissionDAO.deleteByExample(connectionPermissionExample);
 
         // Finally, insert the new permissions
         for (ConnectionPermission permission : permissions) {
@@ -405,10 +434,6 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                 throw new GuacamoleException(
                     "Connection '" + permission.getObjectIdentifier()
                     + "' not found.");
-
-            // If the permission for this connection already exists, we don't need to create it again
-            if (existingConnectionIDs.contains(dbConnection.getConnection_id()))
-                continue;
 
             // Throw exception if permission to administer this connection
             // is not granted
@@ -425,22 +450,150 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             newPermission.setPermission(permission.getType().name());
             newPermission.setConnection_id(user.getUserID());
             connectionPermissionDAO.insert(newPermission);
-
         }
     }
 
     /**
-     * Update all system permissions for a given user. All permissions in
-     * the given list not already granted to the user will be inserted, and all
-     * permissions not in the list but already granted to the user will be
-     * deleted.
+     * Delete permissions having to do with connections for a given user.
      *
-     * @param permissions The system permissions that the given user should
-     *                    have.
+     * @param permissions The permissions the given user should no longer have
+     *                    when this operation completes.
+     * @param user The user to change the permissions of.
+     * @throws GuacamoleException If permission to alter the access permissions
+     *                            of affected objects is denied.
+     */
+    private void deleteConnectionPermissions(Collection<ConnectionPermission> permissions,
+            MySQLUser user)
+            throws GuacamoleException {
+        
+        if(permissions.isEmpty())
+            return;
+
+        // Get set of administerable users
+        Set<Integer> administerableConnections =
+                permissionCheckUtility.getAdministerableConnectionIDs(this.user.getUserID());
+
+        // Get list of identifiers for all given user permissions.
+        List<String> identifiers = new ArrayList<String>();
+        for (ConnectionPermission permission : permissions)
+            identifiers.add(permission.getObjectIdentifier());
+
+        // Find all the connections by identifiers
+        ConnectionExample connectionExample = new ConnectionExample();
+        connectionExample.createCriteria().andConnection_nameIn(identifiers);
+        List<Connection> dbConnections = connectionDAO.selectByExample(connectionExample);
+        List<Integer> connectionIDs = new ArrayList<Integer>();
+
+        // Build map of found connections, indexed by identifier
+        Map<String, Connection> dbConnectionMap = new HashMap<String, Connection>();
+        for (Connection dbConnection : dbConnections) {
+            dbConnectionMap.put(dbConnection.getConnection_name(), dbConnection);
+            connectionIDs.add(dbConnection.getConnection_id());
+        }
+        
+        // Verify we have permission to delete each connection permission.
+        for (ConnectionPermission permission : permissions) {
+
+            // Get user
+            Connection dbConnection = dbConnectionMap.get(permission.getObjectIdentifier());
+            if (dbConnection == null)
+                throw new GuacamoleException(
+                          "User '" + permission.getObjectIdentifier()
+                        + "' not found.");
+
+            // Verify that the user actually has permission to administrate
+            // every one of these connections
+            if (!administerableConnections.contains(dbConnection.getConnection_id()))
+                throw new GuacamoleSecurityException(
+                      "User '" + this.user.getUsername()
+                    + "' does not have permission to administrate connection "
+                    + dbConnection.getConnection_id());
+        }
+        
+        if(!connectionIDs.isEmpty()) {
+            ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
+            connectionPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID())
+                    .andConnection_idIn(connectionIDs);
+            connectionPermissionDAO.deleteByExample(connectionPermissionExample);
+        }
+    }
+
+    /**
+     * Create any new system permissions for a given user. All permissions in
+     * the given list will be inserted.
+     *
+     * @param permissions The new system permissions that the given user should
+     *                    have when this operation completes.
      * @param user The user whose permissions should be updated.
      */
-    private void updateSystemPermissions(Iterable<SystemPermission> permissions,
+    private void createSystemPermissions(Collection<SystemPermission> permissions,
             MySQLUser user) {
+
+        if(permissions.isEmpty())
+            return;
+        
+        // Build list of requested system permissions
+        List<String> systemPermissionTypes = new ArrayList<String>();
+        for (SystemPermission permission : permissions) {
+
+            // Connection directory permission
+            if (permission instanceof ConnectionDirectoryPermission) {
+                switch (permission.getType()) {
+
+                    // Create permission
+                    case CREATE:
+                        systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
+                        break;
+
+                    // Fail if unexpected type encountered
+                    default:
+                        assert false : "Unsupported type: " + permission.getType();
+
+                }
+            }
+
+            // User directory permission
+            else if (permission instanceof UserDirectoryPermission) {
+                switch (permission.getType()) {
+
+                    // Create permission
+                    case CREATE:
+                        systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
+                        break;
+
+                    // Fail if unexpected type encountered
+                    default:
+                        assert false : "Unsupported type: " + permission.getType();
+
+                }
+            }
+
+        } // end for each system permission
+
+        // Finally, insert any NEW system permissions for this user
+        for (String systemPermissionType : systemPermissionTypes) {
+
+            // Insert permission
+            SystemPermissionKey newSystemPermission = new SystemPermissionKey();
+            newSystemPermission.setUser_id(user.getUserID());
+            newSystemPermission.setPermission(systemPermissionType);
+            systemPermissionDAO.insert(newSystemPermission);
+
+        }
+
+    }/**
+     * Delete system permissions for a given user. All permissions in
+     * the given list will be removed from the user.
+     *
+     * @param permissions The permissions the given user should no longer have
+     *                    when this operation completes.
+     * @param user The user whose permissions should be updated.
+     */
+    private void deleteSystemPermissions(Collection<SystemPermission> permissions,
+            MySQLUser user) {
+        
+        if(permissions.isEmpty())
+            return;
 
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
@@ -480,34 +633,13 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         } // end for each system permission
 
-        // Delete all system permissions not in the list
-        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-        systemPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID()).andPermissionNotIn(systemPermissionTypes);
-        systemPermissionDAO.deleteByExample(systemPermissionExample);
-
-        // Find all existing system permissions
-        systemPermissionExample.clear();
-        systemPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID()).andPermissionIn(systemPermissionTypes);
-        List<SystemPermissionKey> existingPermissions = systemPermissionDAO.selectByExample(systemPermissionExample);
-        Set<String> existingPermissionTypes = new HashSet<String>();
-        for (SystemPermissionKey existingPermission : existingPermissions)
-            existingPermissionTypes.add(existingPermission.getPermission());
-
-        // Finally, insert any NEW system permissions for this user
-        for (String systemPermissionType : systemPermissionTypes) {
-
-            // Do not insert the permission if it already exists
-            if (existingPermissionTypes.contains(systemPermissionType))
-                continue;
-
-            // Insert permission
-            SystemPermissionKey newSystemPermission = new SystemPermissionKey();
-            newSystemPermission.setUser_id(user.getUserID());
-            newSystemPermission.setPermission(systemPermissionType);
-            systemPermissionDAO.insert(newSystemPermission);
-
+        // Finally, delete the requested system permissions for this user
+        if(!systemPermissionTypes.isEmpty()) {
+            SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
+            systemPermissionExample.createCriteria().andUser_idEqualTo(user.getUserID())
+                    .andPermissionIn(systemPermissionTypes);
+            systemPermissionDAO.deleteByExample(systemPermissionExample);
         }
-
     }
 
     @Override

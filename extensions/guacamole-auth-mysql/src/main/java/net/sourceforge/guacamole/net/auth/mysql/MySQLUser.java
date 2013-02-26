@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +72,53 @@ public class MySQLUser implements User {
     @Inject
     PermissionCheckService permissionCheckUtility;
 
+    /**
+     * The set of current permissions a user has.
+     */
     Set<Permission> permissions;
+    
+    /**
+     * Any newly added permissions that have yet to be committed.
+     */
+    Set<Permission> newPermissions;
+    
+    /**
+     * Any newly deleted permissions that have yet to be deleted.
+     */
+    Set<Permission> removedPermissions;
+    
+    /**
+     * Get the current set of permissions this user has.
+     * @return the current set of permissions.
+     */
+    Set<Permission> getCurrentPermissions() {
+        return permissions;
+    }
+    
+    /**
+     * Get any new permissions that have yet to be inserted.
+     * @return the new set of permissions.
+     */
+    Set<Permission> getNewPermissions() {
+        return newPermissions;
+    }
+    
+    /**
+     * Get any permissions that have not yet been deleted.
+     * @return the permissions that need to be deleted.
+     */
+    Set<Permission> getRemovedPermissions() {
+        return removedPermissions;
+    }
+    
+    /**
+     * Reset the new and removed permission sets after they are
+     * no longer needed.
+     */
+    void resetPermissions() {
+        newPermissions.clear();
+        removedPermissions.clear();
+    }
 
     /**
      * Create a default, empty user.
@@ -199,7 +246,7 @@ public class MySQLUser implements User {
 
     @Override
     public Set<Permission> getPermissions() throws GuacamoleException {
-        return permissions;
+        return Collections.unmodifiableSet(permissions);
     }
 
     @Override
@@ -210,11 +257,13 @@ public class MySQLUser implements User {
     @Override
     public void addPermission(Permission permission) throws GuacamoleException {
         permissions.add(permission);
+        newPermissions.add(permission);
     }
 
     @Override
     public void removePermission(Permission permission) throws GuacamoleException {
         permissions.remove(permission);
+        removedPermissions.remove(permission);
     }
 
     @Override
