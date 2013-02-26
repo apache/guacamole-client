@@ -42,7 +42,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import javax.xml.bind.DatatypeConverter;
-import net.sourceforge.guacamole.net.auth.Credentials;
 
 /**
  * Provides a SHA-256 based implementation of the password encryption functionality.
@@ -51,16 +50,12 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 public class Sha256PasswordEncryptionService implements PasswordEncryptionService {
 
     @Override
-    public boolean checkCredentials(Credentials credentials,
-        byte[] dbPasswordHash, String dbUsername, byte[] dbSalt) {
-
-        // If usernames don't match, don't bother comparing passwords, just fail
-        if (!dbUsername.equals(credentials.getUsername()))
-            return false;
+    public boolean checkPassword(String password, byte[] hashedPassword,
+        byte[] salt) {
 
         // Compare bytes of password in credentials against hashed password
-        byte[] passwordBytes = createPasswordHash(credentials.getPassword(), dbSalt);
-        return Arrays.equals(passwordBytes, dbPasswordHash);
+        byte[] passwordBytes = createPasswordHash(password, salt);
+        return Arrays.equals(passwordBytes, hashedPassword);
 
     }
 

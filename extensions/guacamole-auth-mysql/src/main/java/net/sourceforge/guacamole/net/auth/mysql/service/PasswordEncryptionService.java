@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql.service;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,9 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql.service;
-
-import net.sourceforge.guacamole.net.auth.Credentials;
 
 /**
  * A service to perform password encryption and checking.
@@ -44,21 +44,26 @@ import net.sourceforge.guacamole.net.auth.Credentials;
 public interface PasswordEncryptionService {
 
     /**
-     * Checks if the provided Credentials are correct, compared with what the values from the database.
-     * @param credentials
-     * @param dbPasswordHash
-     * @param dbUsername
-     * @param dbSalt
-     * @return true if the provided credentials match what's in the database for that user.
+     * Checks whether the provided, unhashed password matches the given
+     * hash/salt pair.
+     *
+     * @param credentials The credentials to validate.
+     * @param hashedPassword The hashed password to compare the given password
+     *                       against.
+     * @param salt The salt used when the hashed password given was created.
+     * @return true if the provided credentials match the values given, false
+     *         otherwise.
      */
-    public boolean checkCredentials(Credentials credentials, byte[] dbPasswordHash, String dbUsername, byte[] dbSalt);
+    public boolean checkPassword(String password, byte[] hashedPassword,
+            byte[] salt);
 
     /**
-     * Creates a password hash based on the provided username, password, and salt.
-     * @param username
-     * @param password
-     * @param salt
-     * @return the generated password hash.
+     * Creates a password hash based on the provided username, password, and
+     * salt.
+     *
+     * @param password The password to hash.
+     * @param salt The salt to use when hashing the password.
+     * @return The generated password hash.
      */
     public byte[] createPasswordHash(String password, byte[] salt);
 }

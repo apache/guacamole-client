@@ -119,11 +119,12 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         UserWithBLOBs user = users.get(0);
 
         // Get password service
-        PasswordEncryptionService passwordService = injector.getInstance(PasswordEncryptionService.class);
+        PasswordEncryptionService passwordService =
+                injector.getInstance(PasswordEncryptionService.class);
 
         // Check password, if invalid return null
-        if (!passwordService.checkCredentials(credentials,
-                user.getPassword_hash(), user.getUsername(), user.getPassword_salt()))
+        if (!passwordService.checkPassword(credentials.getPassword(),
+                user.getPassword_hash(), user.getPassword_salt()))
             return null;
 
         MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
