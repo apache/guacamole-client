@@ -77,4 +77,28 @@ public abstract class AbstractConnection implements Connection {
         this.configuration = configuration;
     }
 
+    @Override
+    public int hashCode() {
+        if (identifier == null) return 0;
+        return identifier.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        // Not equal if null or not a User
+        if (obj == null) return false;
+        if (!(obj instanceof AbstractConnection)) return false;
+
+        // Get identifier
+        String objIdentifier = ((AbstractConnection) obj).identifier;
+
+        // If null, equal only if this identifier is null
+        if (objIdentifier == null) return identifier == null;
+
+        // Otherwise, equal only if strings are identical
+        return objIdentifier.equals(identifier);
+
+    }
+
 }
