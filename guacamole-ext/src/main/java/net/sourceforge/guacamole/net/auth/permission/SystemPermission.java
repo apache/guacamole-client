@@ -37,14 +37,13 @@ package net.sourceforge.guacamole.net.auth.permission;
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 /**
  * A permission which affects the system as a whole, rather than an individual
  * object.
  *
  * @author Michael Jumper
  */
-public interface SystemPermission extends Permission<SystemPermission.Type> {
+public class SystemPermission implements Permission<SystemPermission.Type> {
 
     /**
      * Specific types of system-level permissions. Each permission type is
@@ -53,10 +52,64 @@ public interface SystemPermission extends Permission<SystemPermission.Type> {
     public enum Type {
 
         /**
-         * Create system-level objects.
+         * Create users.
          */
-        CREATE
+        CREATE_USER,
+
+        /**
+         * Create connections.
+         */
+        CREATE_CONNECTION,
+
+        /**
+         * Administer the system in general, including adding permissions
+         * which affect the system (like user creation, connection creation,
+         * and system administration).
+         */
+        ADMINISTER
 
     }
+
+    /**
+     * The type of operation affected by this permission.
+     */
+    private Type type;
+
+    /**
+     * Creates a new SystemPermission with the given
+     * type.
+     *
+     * @param type The type of operation controlled by this permission.
+     */
+    public SystemPermission(Type type) {
+        this.type = type;
+    }
+
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    @Override
+    public int hashCode() {
+        return type.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+
+        // Not equal if null or wrong type
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        final SystemPermission other = (SystemPermission) obj;
+
+        // Compare types
+        if (type != other.type)
+            return false;
+
+        return true;
+    }
+
 
 }
