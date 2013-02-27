@@ -63,19 +63,19 @@ public class MySQLUser extends AbstractUser {
      * Service for encrypting passwords.
      */
     @Inject
-    private PasswordEncryptionService passwordUtility;
+    private PasswordEncryptionService passwordService;
 
     /**
      * Service for generating random salts.
      */
     @Inject
-    private SaltService saltUtility;
+    private SaltService saltService;
 
     /**
      * Service for checking permissions.
      */
     @Inject
-    private PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckService;
 
     /**
      * The set of current permissions a user has.
@@ -132,7 +132,7 @@ public class MySQLUser extends AbstractUser {
         setUsername(user.getUsername());
 
         permissions.addAll(
-                permissionCheckUtility.getAllPermissions(user.getUser_id()));
+                permissionCheckService.getAllPermissions(user.getUser_id()));
     }
 
     /**
@@ -229,10 +229,10 @@ public class MySQLUser extends AbstractUser {
 
         // Set password if specified
         if (getPassword() != null) {
-            byte[] salt = saltUtility.generateSalt();
+            byte[] salt = saltService.generateSalt();
             user.setPassword_salt(salt);
             user.setPassword_hash(
-                passwordUtility.createPasswordHash(getPassword(), salt));
+                passwordService.createPasswordHash(getPassword(), salt));
         }
 
         return user;

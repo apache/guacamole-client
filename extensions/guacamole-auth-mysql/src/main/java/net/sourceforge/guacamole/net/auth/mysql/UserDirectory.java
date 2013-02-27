@@ -120,29 +120,29 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private SystemPermissionMapper systemPermissionDAO;
 
     /**
-     * Utility class for checking various permissions, which will be injected.
+     * Service for checking various permissions, which will be injected.
      */
     @Inject
-    private PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckService;
 
     /**
-     * Utility class that provides convenient access to object creation and
+     * Service providing convenient access to object creation and
      * retrieval functions.
      */
     @Inject
-    private ProviderService providerUtility;
+    private ProviderService providerService;
 
     /**
      * Service for encrypting passwords.
      */
     @Inject
-    private PasswordEncryptionService passwordUtility;
+    private PasswordEncryptionService passwordService;
 
     /**
      * Service for generating random salts.
      */
     @Inject
-    private SaltService saltUtility;
+    private SaltService saltService;
 
     /**
      * Set the user for this directory.
@@ -158,8 +158,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     @Override
     public net.sourceforge.guacamole.net.auth.User get(String identifier)
             throws GuacamoleException {
-        permissionCheckUtility.verifyUserReadAccess(this.user_id, identifier);
-        return providerUtility.getExistingMySQLUser(identifier);
+        permissionCheckService.verifyUserReadAccess(this.user_id, identifier);
+        return providerService.getExistingMySQLUser(identifier);
     }
 
     @Transactional
@@ -167,7 +167,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     public Set<String> getIdentifiers() throws GuacamoleException {
 
         // Get set of all readable users
-        Set<MySQLUser> users = permissionCheckUtility.getReadableUsers(this.user_id);
+        Set<MySQLUser> users = permissionCheckService.getReadableUsers(this.user_id);
 
         // Build set of usernames of readable users
         Set<String> userNameSet = new HashSet<String>();
@@ -183,7 +183,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             throws GuacamoleException {
 
         // Verify current user has permission to create users
-        permissionCheckUtility.verifyCreateUserPermission(this.user_id);
+        permissionCheckService.verifyCreateUserPermission(this.user_id);
         Preconditions.checkNotNull(object);
 
         // Create user in database
@@ -192,10 +192,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Set password if specified
         if (object.getPassword() != null) {
-            byte[] salt = saltUtility.generateSalt();
+            byte[] salt = saltService.generateSalt();
             user.setPassword_salt(salt);
             user.setPassword_hash(
-                passwordUtility.createPasswordHash(object.getPassword(), salt));
+                passwordService.createPasswordHash(object.getPassword(), salt));
         }
 
         userDAO.insert(user);
@@ -315,7 +315,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get set of administerable users
         Set<Integer> administerableUsers =
-                permissionCheckUtility.getAdministerableUserIDs(this.user_id);
+                permissionCheckService.getAdministerableUserIDs(this.user_id);
 
         // Get list of usernames for all given user permissions.
         List<String> usernames = new ArrayList<String>();
@@ -377,7 +377,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get set of administerable users
         Set<Integer> administerableUsers =
-                permissionCheckUtility.getAdministerableUserIDs(this.user_id);
+                permissionCheckService.getAdministerableUserIDs(this.user_id);
 
         // Get list of usernames for all given user permissions.
         List<String> usernames = new ArrayList<String>();
@@ -443,7 +443,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get adminsterable connection identifiers
         Set<Integer> administerableConnections =
-                permissionCheckUtility.getAdministerableConnectionIDs(this.user_id);
+                permissionCheckService.getAdministerableConnectionIDs(this.user_id);
 
         // Build list of affected connection names from the permissions given
         List<String> connectionNames = new ArrayList<String>();
@@ -507,7 +507,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get set of administerable users
         Set<Integer> administerableConnections =
-                permissionCheckUtility.getAdministerableConnectionIDs(this.user_id);
+                permissionCheckService.getAdministerableConnectionIDs(this.user_id);
 
         // Get list of identifiers for all given user permissions.
         List<String> identifiers = new ArrayList<String>();
@@ -691,7 +691,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             throw new GuacamoleException("User not from database.");
 
         // Validate permission to update this user is granted
-        permissionCheckUtility.verifyUserUpdateAccess(this.user_id,
+        permissionCheckService.verifyUserUpdateAccess(this.user_id,
                 object.getUsername());
 
         // Update the user in the database
@@ -713,11 +713,11 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     public void remove(String identifier) throws GuacamoleException {
 
         // Validate current user has permission to remove the specified user
-        permissionCheckUtility.verifyUserDeleteAccess(this.user_id,
+        permissionCheckService.verifyUserDeleteAccess(this.user_id,
                 identifier);
 
         // Get specified user
-        MySQLUser mySQLUser = providerUtility.getExistingMySQLUser(identifier);
+        MySQLUser mySQLUser = providerService.getExistingMySQLUser(identifier);
 
         // Delete all the user permissions in the database
         deleteAllPermissions(mySQLUser.getUserID());

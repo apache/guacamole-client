@@ -75,7 +75,7 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      * Service for creating and retrieving objects.
      */
     @Inject
-    private ProviderService providerUtility;
+    private ProviderService providerService;
 
     /**
      * Initialize this MySQLConnectionRecord with the database record it
@@ -100,12 +100,12 @@ public class MySQLConnectionRecord implements ConnectionRecord {
 
     @Override
     public User getUser() {
-        return providerUtility.getExistingMySQLUser(connectionHistory.getUser_id());
+        return providerService.getExistingMySQLUser(connectionHistory.getUser_id());
     }
 
     @Override
     public Connection getConnection() {
-        return providerUtility.getExistingMySQLConnection(connectionHistory.getConnection_id());
+        return providerService.getExistingMySQLConnection(connectionHistory.getConnection_id());
     }
 
     @Override

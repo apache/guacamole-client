@@ -71,10 +71,10 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private int user_id;
 
     @Inject
-    private PermissionCheckService permissionCheckUtility;
+    private PermissionCheckService permissionCheckService;
 
     @Inject
-    private ProviderService providerUtility;
+    private ProviderService providerService;
 
     @Inject
     private ConnectionMapper connectionDAO;
@@ -97,15 +97,15 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public Connection get(String identifier) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionReadAccess(this.user_id, identifier);
-        return providerUtility.getExistingMySQLConnection(identifier);
+        permissionCheckService.verifyConnectionReadAccess(this.user_id, identifier);
+        return providerService.getExistingMySQLConnection(identifier);
     }
 
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
         Set<String> connectionNameSet = new HashSet<String>();
-        Set<MySQLConnection> connections = permissionCheckUtility.getReadableConnections(this.user_id);
+        Set<MySQLConnection> connections = permissionCheckService.getReadableConnections(this.user_id);
         for(MySQLConnection mySQLConnection : connections) {
             connectionNameSet.add(mySQLConnection.getIdentifier());
         }
@@ -115,9 +115,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void add(Connection object) throws GuacamoleException {
-        permissionCheckUtility.verifyCreateConnectionPermission(this.user_id);
+        permissionCheckService.verifyCreateConnectionPermission(this.user_id);
 
-        MySQLConnection mySQLConnection = providerUtility.getNewMySQLConnection(object);
+        MySQLConnection mySQLConnection = providerService.getNewMySQLConnection(object);
         connectionDAO.insert(mySQLConnection.getConnection());
 
         updateConfigurationValues(mySQLConnection);
@@ -206,9 +206,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void update(Connection object) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
+        permissionCheckService.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
 
-        MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(object);
+        MySQLConnection mySQLConnection = providerService.getExistingMySQLConnection(object);
         connectionDAO.updateByPrimaryKey(mySQLConnection.getConnection());
 
         updateConfigurationValues(mySQLConnection);
@@ -217,9 +217,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        permissionCheckUtility.verifyConnectionDeleteAccess(this.user_id, identifier);
+        permissionCheckService.verifyConnectionDeleteAccess(this.user_id, identifier);
 
-        MySQLConnection mySQLConnection = providerUtility.getExistingMySQLConnection(identifier);
+        MySQLConnection mySQLConnection = providerService.getExistingMySQLConnection(identifier);
 
         // delete all configuration values
         ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();

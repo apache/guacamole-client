@@ -68,13 +68,13 @@ public class MySQLConnection implements Connection {
     private ConnectionParameterMapper connectionParameterDAO;
 
     @Inject
-    private ProviderService providerUtility;
+    private ProviderService providerService;
 
     @Inject
     private ActiveConnectionSet activeConnectionSet;
 
     @Inject
-    private ConfigurationTranslationService configurationTranslationUtility;
+    private ConfigurationTranslationService configurationTranslationService;
 
     private net.sourceforge.guacamole.net.auth.mysql.model.Connection connection;
 
@@ -122,7 +122,7 @@ public class MySQLConnection implements Connection {
 
         List<ConnectionParameter> connectionParameters = connectionParameterDAO.selectByExample(connectionParameterExample);
 
-        configuration = configurationTranslationUtility.getConfiguration(connection.getProtocol(), connectionParameters);
+        configuration = configurationTranslationService.getConfiguration(connection.getProtocol(), connectionParameters);
     }
 
     /**
@@ -187,7 +187,7 @@ public class MySQLConnection implements Connection {
         InetGuacamoleSocket inetSocket = new InetGuacamoleSocket(host, port);
         ConfiguredGuacamoleSocket configuredSocket = new ConfiguredGuacamoleSocket(inetSocket, configuration);
 
-        MySQLGuacamoleSocket mySQLSocket = providerUtility.getMySQLGuacamoleSocket(configuredSocket, getConnectionID());
+        MySQLGuacamoleSocket mySQLSocket = providerService.getMySQLGuacamoleSocket(configuredSocket, getConnectionID());
 
         // mark this connection as active
         activeConnectionSet.add(getConnectionID());
@@ -216,6 +216,6 @@ public class MySQLConnection implements Connection {
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return providerUtility.getExistingMySQLConnectionRecords(connection.getConnection_id());
+        return providerService.getExistingMySQLConnectionRecords(connection.getConnection_id());
     }
 }
