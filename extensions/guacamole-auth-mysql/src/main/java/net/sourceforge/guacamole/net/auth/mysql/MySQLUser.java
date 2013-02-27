@@ -35,7 +35,6 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,9 +42,6 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AbstractUser;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
-import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
-import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
 /**
@@ -58,24 +54,6 @@ public class MySQLUser extends AbstractUser {
      * The ID of this user in the database, if any.
      */
     private Integer userID;
-
-    /**
-     * Service for encrypting passwords.
-     */
-    @Inject
-    private PasswordEncryptionService passwordService;
-
-    /**
-     * Service for generating random salts.
-     */
-    @Inject
-    private SaltService saltService;
-
-    /**
-     * Service for checking permissions.
-     */
-    @Inject
-    private PermissionCheckService permissionCheckService;
 
     /**
      * The set of current permissions a user has.
@@ -104,7 +82,7 @@ public class MySQLUser extends AbstractUser {
      * @param name The name to assign to this MySQLUser.
      */
     public void init(String name) {
-        setUsername(name);
+        init(null, name, null, Collections.EMPTY_SET);
     }
 
     /**
@@ -116,23 +94,25 @@ public class MySQLUser extends AbstractUser {
      *                            data in the given object.
      */
     public void init(User user) throws GuacamoleException {
-        setUsername(user.getUsername());
-        setPassword(user.getPassword());
-        permissions.addAll(user.getPermissions());
+        init(null, user.getUsername(), user.getPassword(), user.getPermissions());
     }
 
     /**
      * Initializes a new MySQLUser initialized from the given data from the
      * database.
      *
-     * @param user The user object, as retrieved from the database.
+     * @param userID The ID of the user in the database, if any.
+     * @param username The username of this user.
+     * @param password The password to assign to this user.
+     * @param permissions The permissions to assign to this user, as
+     *                    retrieved from the database.
      */
-    public void init(UserWithBLOBs user) {
-        this.userID = user.getUser_id();
-        setUsername(user.getUsername());
-
-        permissions.addAll(
-                permissionCheckService.getAllPermissions(user.getUser_id()));
+    public void init(Integer userID, String username, String password,
+            Set<Permission> permissions) {
+        this.userID = userID;
+        setUsername(username);
+        setPassword(password);
+        permissions.addAll(permissions);
     }
 
     /**
@@ -209,34 +189,6 @@ public class MySQLUser extends AbstractUser {
         permissions.remove(permission);
         newPermissions.remove(permission);
         removedPermissions.add(permission);
-    }
-
-    /**
-     * Converts this MySQLUser into an object that can be inserted/updated
-     * into the database. Beware that this object does not have associated
-     * permissions. The permissions of this MySQLUser must be dealt with
-     * separately.
-     *
-     * @return A new UserWithBLOBs containing all associated data of this
-     *         MySQLUser.
-     */
-    public UserWithBLOBs toUserWithBLOBs() {
-
-        // Create new user
-        UserWithBLOBs user = new UserWithBLOBs();
-        user.setUser_id(userID);
-        user.setUsername(getUsername());
-
-        // Set password if specified
-        if (getPassword() != null) {
-            byte[] salt = saltService.generateSalt();
-            user.setPassword_salt(salt);
-            user.setPassword_hash(
-                passwordService.createPasswordHash(getPassword(), salt));
-        }
-
-        return user;
-
     }
 
 }

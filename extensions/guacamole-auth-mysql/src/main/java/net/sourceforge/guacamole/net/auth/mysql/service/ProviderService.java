@@ -38,7 +38,6 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
@@ -82,6 +81,12 @@ public class ProviderService {
 
     @Inject
     Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
+
+    /**
+     * Service for checking permissions.
+     */
+    @Inject
+    private PermissionCheckService permissionCheckService;
 
     /**
      * Create a new user based on the provided object.
@@ -134,7 +139,12 @@ public class ProviderService {
      */
     public MySQLUser getExistingMySQLUser(UserWithBLOBs user) {
         MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.init(user);
+        mySQLUser.init(
+            user.getUser_id(),
+            user.getUsername(),
+            permissionCheckService.getAllPermissions(user.getUser_id())
+        );
+
         return mySQLUser;
     }
 

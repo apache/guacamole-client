@@ -694,9 +694,22 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         permissionCheckService.verifyUserUpdateAccess(this.user_id,
                 object.getUsername());
 
-        // Update the user in the database
+        // Build database user from non-database structure
         MySQLUser mySQLUser = (MySQLUser) object;
-        userDAO.updateByPrimaryKeySelective(mySQLUser.toUserWithBLOBs());
+        UserWithBLOBs user = new UserWithBLOBs();
+        user.setUser_id(mySQLUser.getUserID());
+        user.setUsername(mySQLUser.getUsername());
+
+        // Set password if specified
+        if (mySQLUser.getPassword() != null) {
+            byte[] salt = saltService.generateSalt();
+            user.setPassword_salt(salt);
+            user.setPassword_hash(
+                passwordService.createPasswordHash(mySQLUser.getPassword(), salt));
+        }
+
+        // Update the user in the database
+        userDAO.updateByPrimaryKeySelective(user);
 
         // Update permissions in database
         createPermissions(mySQLUser.getUserID(), mySQLUser.getNewPermissions());

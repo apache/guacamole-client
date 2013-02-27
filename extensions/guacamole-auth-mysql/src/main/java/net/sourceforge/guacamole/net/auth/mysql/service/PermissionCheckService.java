@@ -394,7 +394,7 @@ public class PermissionCheckService {
         Set<MySQLUser> affectedUsers = new HashSet<MySQLUser>();
         for(UserWithBLOBs affectedUser : userDBOjects) {
             MySQLUser mySQLUser = mySQLUserProvider.get();
-            mySQLUser.init(affectedUser);
+            mySQLUser.init(affectedUser.getUsername());
             affectedUsers.add(mySQLUser);
         }
 
