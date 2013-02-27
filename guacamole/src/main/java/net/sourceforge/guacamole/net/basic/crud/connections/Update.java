@@ -78,8 +78,7 @@ public class Update extends AuthenticatingHttpServlet {
             }
 
             // Create connection skeleton
-            Connection connection = new DummyConnection();
-            connection.setIdentifier(identifier);
+            Connection connection = directory.get(identifier);
             connection.setConfiguration(config);
 
             // Update connection
