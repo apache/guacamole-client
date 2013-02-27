@@ -57,7 +57,7 @@ import org.mybatis.guice.transactional.Transactional;
 
 /**
  * A MySQL-based implementation of the connection directory.
- * 
+ *
  * @author James Muehlner
  */
 public class ConnectionDirectory implements Directory<String, Connection>{
@@ -171,7 +171,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     /**
      * Inserts all parameter values from the given configuration into the
      * database, associating them with the connection having the givenID.
-     * 
+     *
      * @param connection_id The ID of the connection to associate all
      *                      parameters with.
      * @param config The GuacamoleConfiguration to read parameters from.
@@ -219,7 +219,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         ConnectionParameterExample parameterExample = new ConnectionParameterExample();
         parameterExample.createCriteria().andConnection_idEqualTo(connection.getConnection_id());
         connectionParameterDAO.deleteByExample(parameterExample);
-        
+
         // Add connection parameters
         createConfigurationValues(connection.getConnection_id(),
                 object.getConfiguration());

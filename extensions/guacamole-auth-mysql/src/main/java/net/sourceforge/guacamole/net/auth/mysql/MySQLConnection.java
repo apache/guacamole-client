@@ -68,9 +68,15 @@ public class MySQLConnection extends AbstractConnection {
      */
     private List<ConnectionRecord> history = new ArrayList<ConnectionRecord>();
 
+    /**
+     * Service for creating and retrieving objects.
+     */
     @Inject
     private ProviderService providerService;
 
+    /**
+     * Set of all currently active connections.
+     */
     @Inject
     private ActiveConnectionSet activeConnectionSet;
 
