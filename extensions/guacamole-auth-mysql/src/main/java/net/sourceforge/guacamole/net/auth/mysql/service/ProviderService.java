@@ -142,6 +142,7 @@ public class ProviderService {
         mySQLUser.init(
             user.getUser_id(),
             user.getUsername(),
+            null,
             permissionCheckService.getAllPermissions(user.getUser_id())
         );
 
