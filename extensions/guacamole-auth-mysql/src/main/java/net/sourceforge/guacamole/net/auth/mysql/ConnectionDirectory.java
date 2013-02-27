@@ -199,12 +199,15 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public void update(Connection object) throws GuacamoleException {
 
+        // If connection not actually from this auth provider, we can't handle
+        // the update
+        if (!(object instanceof MySQLConnection))
+            throw new GuacamoleException("Connection not from database.");
+
         // Verify permission to update
         permissionCheckService.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
 
-        // TODO: Rely on update() to be given MySQLConnection
-        MySQLConnection mySQLConnection =
-                providerService.getExistingMySQLConnection(object);
+        MySQLConnection mySQLConnection = (MySQLConnection) object;
 
         // Create database object for insert
         net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
