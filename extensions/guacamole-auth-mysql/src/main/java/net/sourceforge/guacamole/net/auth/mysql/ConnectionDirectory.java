@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,15 +36,9 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
@@ -59,7 +56,8 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- *
+ * A MySQL-based implementation of the connection directory.
+ * 
  * @author James Muehlner
  */
 public class ConnectionDirectory implements Directory<String, Connection>{
@@ -70,18 +68,33 @@ public class ConnectionDirectory implements Directory<String, Connection>{
      */
     private int user_id;
 
+    /**
+     * Service for checking permissions.
+     */
     @Inject
     private PermissionCheckService permissionCheckService;
 
+    /**
+     * Service for creating and retrieving objects.
+     */
     @Inject
     private ProviderService providerService;
 
+    /**
+     * Service for manipulating connections in the database.
+     */
     @Inject
     private ConnectionMapper connectionDAO;
 
+    /**
+     * Service for manipulating connection permissions in the database.
+     */
     @Inject
     private ConnectionPermissionMapper connectionPermissionDAO;
 
+    /**
+     * Service for manipulating connection parameters in the database.
+     */
     @Inject
     private ConnectionParameterMapper connectionParameterDAO;
 
@@ -115,124 +128,126 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public void add(Connection object) throws GuacamoleException {
+
+        // Verify permission to create
         permissionCheckService.verifyCreateConnectionPermission(this.user_id);
 
-        MySQLConnection mySQLConnection = providerService.getNewMySQLConnection(object);
-        connectionDAO.insert(mySQLConnection.getConnection());
+        // Create database object for insert
+        net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
+            new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
 
-        updateConfigurationValues(mySQLConnection);
+        connection.setConnection_name(object.getIdentifier());
+        connection.setProtocol(object.getConfiguration().getProtocol());
+        connectionDAO.insert(connection);
 
-        //finally, give the current user full access to the newly created connection.
+        // Add connection parameters
+        createConfigurationValues(connection.getConnection_id(),
+                object.getConfiguration());
+
+        // Finally, give the current user full access to the newly created
+        // connection.
         ConnectionPermissionKey newConnectionPermission = new ConnectionPermissionKey();
         newConnectionPermission.setUser_id(this.user_id);
-        newConnectionPermission.setConnection_id(mySQLConnection.getConnectionID());
-        newConnectionPermission.setPermission(MySQLConstants.USER_READ);
+        newConnectionPermission.setConnection_id(connection.getConnection_id());
+
+        // Read permission
+        newConnectionPermission.setPermission(MySQLConstants.CONNECTION_READ);
         connectionPermissionDAO.insert(newConnectionPermission);
-        newConnectionPermission.setPermission(MySQLConstants.USER_UPDATE);
+
+        // Update permission
+        newConnectionPermission.setPermission(MySQLConstants.CONNECTION_UPDATE);
         connectionPermissionDAO.insert(newConnectionPermission);
-        newConnectionPermission.setPermission(MySQLConstants.USER_DELETE);
+
+        // Delete permission
+        newConnectionPermission.setPermission(MySQLConstants.CONNECTION_DELETE);
         connectionPermissionDAO.insert(newConnectionPermission);
-        newConnectionPermission.setPermission(MySQLConstants.USER_ADMINISTER);
+
+        // Administer permission
+        newConnectionPermission.setPermission(MySQLConstants.CONNECTION_ADMINISTER);
         connectionPermissionDAO.insert(newConnectionPermission);
+
     }
 
     /**
-     * Saves the values of the configuration to the database
-     * @param connection
+     * Inserts all parameter values from the given configuration into the
+     * database, associating them with the connection having the givenID.
+     * 
+     * @param connection_id The ID of the connection to associate all
+     *                      parameters with.
+     * @param config The GuacamoleConfiguration to read parameters from.
      */
-    private void updateConfigurationValues(MySQLConnection mySQLConnection) {
-        GuacamoleConfiguration configuration = mySQLConnection.getConfiguration();
-        Map<String, String> existingConfiguration = new HashMap<String, String>();
-        ConnectionParameterExample example = new ConnectionParameterExample();
-        example.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
-        List<ConnectionParameter> connectionParameters = connectionParameterDAO.selectByExample(example);
-        for(ConnectionParameter parameter : connectionParameters)
-            existingConfiguration.put(parameter.getParameter_name(), parameter.getParameter_value());
+    private void createConfigurationValues(int connection_id,
+            GuacamoleConfiguration config) {
 
-        List<ConnectionParameter> parametersToInsert = new ArrayList<ConnectionParameter>();
-        List<ConnectionParameter> parametersToUpdate = new ArrayList<ConnectionParameter>();
+        // Insert new parameters for each parameter in the config
+        for (String name : config.getParameterNames()) {
 
-        Set<String> parameterNames = configuration.getParameterNames();
+            // Create a ConnectionParameter based on the current parameter
+            ConnectionParameter parameter = new ConnectionParameter();
+            parameter.setConnection_id(connection_id);
+            parameter.setParameter_name(name);
+            parameter.setParameter_value(config.getParameter(name));
 
-        for(String parameterName : parameterNames) {
-            String parameterValue = configuration.getParameter(parameterName);
-            if(existingConfiguration.containsKey(parameterName)) {
-                String existingValue = existingConfiguration.get(parameterName);
-                // the value is different; we'll have to update this one in the database
-                if(!parameterValue.equals(existingValue)) {
-                    ConnectionParameter parameterToUpdate = new ConnectionParameter();
-                    parameterToUpdate.setConnection_id(mySQLConnection.getConnectionID());
-                    parameterToUpdate.setParameter_name(parameterName);
-                    parameterToUpdate.setParameter_value(parameterValue);
-                    parametersToUpdate.add(parameterToUpdate);
-                }
-            } else {
-                // the value is new, we need to insert it
-                ConnectionParameter parameterToInsert = new ConnectionParameter();
-                parameterToInsert.setConnection_id(mySQLConnection.getConnectionID());
-                parameterToInsert.setParameter_name(parameterName);
-                parameterToInsert.setParameter_value(parameterValue);
-                parametersToInsert.add(parameterToInsert);
-            }
-        }
-
-        // First, delete all parameters that are not in the new configuration.
-        example.clear();
-        example.createCriteria().
-            andConnection_idEqualTo(mySQLConnection.getConnectionID()).
-            andParameter_nameNotIn(Lists.newArrayList(existingConfiguration.keySet()));
-
-        //Second, update all the parameters that need to be modified.
-        for(ConnectionParameter parameter : parametersToUpdate) {
-            example.clear();
-            example.createCriteria().
-                andConnection_idEqualTo(mySQLConnection.getConnectionID()).
-                andParameter_nameEqualTo(parameter.getParameter_name());
-
-            connectionParameterDAO.updateByExample(parameter, example);
-        }
-
-        //Finally, insert any new parameters.
-        for(ConnectionParameter parameter : parametersToInsert) {
-            example.clear();
-            example.createCriteria().
-                andConnection_idEqualTo(mySQLConnection.getConnectionID()).
-                andParameter_nameEqualTo(parameter.getParameter_name());
-
+            // Insert connection parameter
             connectionParameterDAO.insert(parameter);
+
         }
+
     }
 
     @Transactional
     @Override
     public void update(Connection object) throws GuacamoleException {
+
+        // Verify permission to update
         permissionCheckService.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
 
-        MySQLConnection mySQLConnection = providerService.getExistingMySQLConnection(object);
-        connectionDAO.updateByPrimaryKey(mySQLConnection.getConnection());
+        // TODO: Rely on update() to be given MySQLConnection
+        MySQLConnection mySQLConnection =
+                providerService.getExistingMySQLConnection(object);
 
-        updateConfigurationValues(mySQLConnection);
+        // Create database object for insert
+        net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
+            new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
+
+        connection.setConnection_id(mySQLConnection.getConnectionID());
+        connection.setConnection_name(object.getIdentifier());
+        connection.setProtocol(object.getConfiguration().getProtocol());
+        connectionDAO.updateByPrimaryKey(connection);
+
+        // Delete old connection parameters
+        ConnectionParameterExample parameterExample = new ConnectionParameterExample();
+        parameterExample.createCriteria().andConnection_idEqualTo(connection.getConnection_id());
+        connectionParameterDAO.deleteByExample(parameterExample);
+        
+        // Add connection parameters
+        createConfigurationValues(connection.getConnection_id(),
+                object.getConfiguration());
+
     }
 
     @Transactional
     @Override
     public void remove(String identifier) throws GuacamoleException {
+
+        // Verify permission to delete
         permissionCheckService.verifyConnectionDeleteAccess(this.user_id, identifier);
 
         MySQLConnection mySQLConnection = providerService.getExistingMySQLConnection(identifier);
 
-        // delete all configuration values
+        // Delete all configuration values
         ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
         connectionParameterExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
         connectionParameterDAO.deleteByExample(connectionParameterExample);
 
-        // delete all permissions that refer to this connection
+        // Delete all permissions that refer to this connection
         ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
         connectionPermissionExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
         connectionPermissionDAO.deleteByExample(connectionPermissionExample);
 
-        // delete the connection itself
+        // Delete the connection itself
         connectionDAO.deleteByPrimaryKey(mySQLConnection.getConnectionID());
+
     }
 
 }

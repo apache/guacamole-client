@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
@@ -48,39 +49,47 @@ import net.sourceforge.guacamole.net.auth.mysql.MySQLGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistoryExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Provides convenient provider methods for MySQL specific implementations.
  * @author James Muehlner
  */
 public class ProviderService {
-    @Inject
-    UserMapper userDAO;
 
     @Inject
-    ConnectionMapper connectionDAO;
+    private UserMapper userDAO;
 
     @Inject
-    ConnectionHistoryMapper connectionHistoryDAO;
+    private ConnectionMapper connectionDAO;
 
     @Inject
-    Provider<MySQLUser> mySQLUserProvider;
+    private ConnectionParameterMapper connectionParameterDAO;
 
     @Inject
-    Provider<MySQLConnection> mySQLConnectionProvider;
+    private ConnectionHistoryMapper connectionHistoryDAO;
 
     @Inject
-    Provider<MySQLConnectionRecord> mySQLConnectionRecordProvider;
+    private Provider<MySQLUser> mySQLUserProvider;
 
     @Inject
-    Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
+    private Provider<MySQLConnection> mySQLConnectionProvider;
+
+    @Inject
+    private Provider<MySQLConnectionRecord> mySQLConnectionRecordProvider;
+
+    @Inject
+    private Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
 
     /**
      * Service for checking permissions.
@@ -157,30 +166,15 @@ public class ProviderService {
     public MySQLUser getExistingMySQLUser(Integer id) {
 
         // Query user by ID
-        UserExample example = new UserExample();
-        example.createCriteria().andUser_idEqualTo(id);
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
+        UserWithBLOBs user = userDAO.selectByPrimaryKey(id);
 
         // If no user found, return null
-        if(users.isEmpty())
+        if(user == null)
             return null;
 
         // Otherwise, return found user
-        return getExistingMySQLUser(users.get(0));
+        return getExistingMySQLUser(user);
 
-    }
-
-
-    /**
-     * Create a new connection based on the provided object.
-     * @param connection
-     * @return the new Connection object.
-     * @throws GuacamoleException
-     */
-    public MySQLConnection getNewMySQLConnection(Connection connection) throws GuacamoleException {
-        MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-        mySQLConnection.initNew(connection);
-        return mySQLConnection;
     }
 
     /**
@@ -200,9 +194,20 @@ public class ProviderService {
      * @throws GuacamoleException
      */
     public MySQLConnection getExistingMySQLConnection(String name) throws GuacamoleException {
-        MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-        mySQLConnection.initExisting(name);
-        return mySQLConnection;
+
+        // Query connection by ID
+        ConnectionExample example = new ConnectionExample();
+        example.createCriteria().andConnection_nameEqualTo(name);
+        List<net.sourceforge.guacamole.net.auth.mysql.model.Connection> connections =
+                connectionDAO.selectByExample(example);
+
+        // If no connection found, return null
+        if(connections.isEmpty())
+            return null;
+
+        // Otherwise, return found connection
+        return getExistingMySQLConnection(connections.get(0));
+
     }
 
     /**
@@ -211,9 +216,35 @@ public class ProviderService {
      * @return the existing MySQLConnection object.
      */
     public MySQLConnection getExistingMySQLConnection(net.sourceforge.guacamole.net.auth.mysql.model.Connection connection) {
+
+        // Build configuration
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+
+        // Query parameters for configuration
+        ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
+        connectionParameterExample.createCriteria().andConnection_idEqualTo(connection.getConnection_id());
+        List<ConnectionParameter> connectionParameters =
+                connectionParameterDAO.selectByExample(connectionParameterExample);
+
+        // Set protocol
+        config.setProtocol(connection.getProtocol());
+
+        // Set all values for all parameters
+        for (ConnectionParameter parameter : connectionParameters)
+            config.setParameter(parameter.getParameter_name(),
+                    parameter.getParameter_value());
+
+        // Create new MySQLConnection from retrieved data
         MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-        mySQLConnection.init(connection);
+        mySQLConnection.init(
+            connection.getConnection_id(),
+            connection.getConnection_name(),
+            config,
+            Collections.EMPTY_LIST // TODO: Read history
+        );
+
         return mySQLConnection;
+
     }
 
     /**
@@ -222,12 +253,18 @@ public class ProviderService {
      * @return the existing MySQLConnection object if found, null if not.
      */
     public MySQLConnection getExistingMySQLConnection(Integer id) {
-        ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idEqualTo(id);
-        List<net.sourceforge.guacamole.net.auth.mysql.model.Connection> connections = connectionDAO.selectByExample(example);
-        if(connections.isEmpty())
+
+        // Query connection by ID
+        net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
+                connectionDAO.selectByPrimaryKey(id);
+
+        // If no connection found, return null
+        if(connection == null)
             return null;
-        return getExistingMySQLConnection(connections.get(0));
+
+        // Otherwise, return found connection
+        return getExistingMySQLConnection(connection);
+
     }
 
     /**

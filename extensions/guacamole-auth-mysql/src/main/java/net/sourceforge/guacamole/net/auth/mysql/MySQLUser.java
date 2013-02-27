@@ -41,7 +41,6 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AbstractUser;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 
 /**
@@ -112,7 +111,7 @@ public class MySQLUser extends AbstractUser {
         this.userID = userID;
         setUsername(username);
         setPassword(password);
-        permissions.addAll(permissions);
+        this.permissions.addAll(permissions);
     }
 
     /**

@@ -70,6 +70,7 @@ import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
+import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * A service to retrieve information about what objects a user has permission to.
@@ -696,6 +697,7 @@ public class PermissionCheckService {
      * @param permissionType
      * @return the list of all connections this user has access to
      */
+    @Deprecated /* FIXME: Totally useless (we only ever need identifiers, and querying ALL CONNECTION DATA will take ages) */
     private Set<MySQLConnection> getConnections(int userID, String permissionType) {
 
         // If connections available, query them
@@ -711,7 +713,12 @@ public class PermissionCheckService {
             Set<MySQLConnection> affectedConnections = new HashSet<MySQLConnection>();
             for(Connection affectedConnection : connectionDBOjects) {
                 MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-                mySQLConnection.init(affectedConnection);
+                mySQLConnection.init(
+                    affectedConnection.getConnection_id(),
+                    affectedConnection.getConnection_name(),
+                    new GuacamoleConfiguration(),
+                    Collections.EMPTY_LIST
+                );
                 affectedConnections.add(mySQLConnection);
             }
 
