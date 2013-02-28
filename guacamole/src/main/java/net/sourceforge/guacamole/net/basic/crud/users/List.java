@@ -31,11 +31,6 @@ import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
-import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
 /**
@@ -44,65 +39,6 @@ import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
  * @author Michael Jumper
  */
 public class List extends AuthenticatingHttpServlet {
-
-    /**
-     * Checks whether the given user has permission to perform the given
-     * system operation. Security exceptions are handled appropriately - only
-     * non-security exceptions pass through.
-     *
-     * @param user The user whose permissions should be verified.
-     * @param type The type of operation to check for permission for.
-     * @return true if permission is granted, false otherwise.
-     *
-     * @throws GuacamoleException If an error occurs while checking permissions.
-     */
-    private boolean hasUserPermission(User user, SystemPermission.Type type)
-    throws GuacamoleException {
-
-        // Build permission
-        Permission permission = new UserDirectoryPermission(type);
-
-        try {
-            // Return result of permission check, if possible
-            return user.hasPermission(permission);
-        }
-        catch (GuacamoleSecurityException e) {
-            // If cannot check due to security restrictions, no permission
-            return false;
-        }
-
-    }
-
-    /**
-     * Checks whether the given user has permission to perform the given
-     * object operation. Security exceptions are handled appropriately - only
-     * non-security exceptions pass through.
-     *
-     * @param user The user whose permissions should be verified.
-     * @param type The type of operation to check for permission for.
-     * @param identifier The identifier of the user the operation would be
-     *                   performed upon.
-     * @return true if permission is granted, false otherwise.
-     *
-     * @throws GuacamoleException If an error occurs while checking permissions.
-     */
-    private boolean hasUserPermission(User user, ObjectPermission.Type type,
-            String identifier)
-    throws GuacamoleException {
-
-        // Build permission
-        Permission permission = new UserPermission(type, identifier);
-
-        try {
-            // Return result of permission check, if possible
-            return user.hasPermission(permission);
-        }
-        catch (GuacamoleSecurityException e) {
-            // If cannot check due to security restrictions, no permission
-            return false;
-        }
-
-    }
 
     @Override
     protected void authenticatedService(
@@ -135,10 +71,6 @@ public class List extends AuthenticatingHttpServlet {
             xml.writeStartDocument();
             xml.writeStartElement("users");
 
-            // Save user create permission attribute
-            if (hasUserPermission(self, SystemPermission.Type.CREATE))
-                xml.writeAttribute("create", "yes");
-
             // For each entry, write corresponding user element
             for (String username : users) {
 
@@ -148,21 +80,6 @@ public class List extends AuthenticatingHttpServlet {
                 // Write user
                 xml.writeEmptyElement("user");
                 xml.writeAttribute("name", user.getUsername());
-
-                // Save update permission attribute
-                if (hasUserPermission(self, ObjectPermission.Type.UPDATE,
-                        user.getUsername()))
-                    xml.writeAttribute("update", "yes");
-
-                // Save admin permission attribute
-                if (hasUserPermission(self, ObjectPermission.Type.ADMINISTER,
-                        user.getUsername()))
-                    xml.writeAttribute("admin", "yes");
-
-                // Save delete permission attribute
-                if (hasUserPermission(self, ObjectPermission.Type.DELETE,
-                        user.getUsername()))
-                    xml.writeAttribute("delete", "yes");
 
             }
 

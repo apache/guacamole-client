@@ -26,12 +26,10 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
@@ -43,9 +41,19 @@ import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 public class Update extends AuthenticatingHttpServlet {
 
     /**
-     * String given for directory creation permission.
+     * String given for user creation permission.
      */
-    private static final String CREATE_PERMISSION = "create";
+    private static final String CREATE_USER_PERMISSION = "create-user";
+
+    /**
+     * String given for connection creation permission.
+     */
+    private static final String CREATE_CONNECTION_PERMISSION = "create-connection";
+
+    /**
+     * String given for system administration permission.
+     */
+    private static final String ADMIN_PERMISSION = "admin";
 
     /**
      * Prefix given before an object identifier for read permission.
@@ -68,6 +76,32 @@ public class Update extends AuthenticatingHttpServlet {
     private static final String ADMIN_PREFIX  = "admin:";
 
     /**
+     * Given a permission string, returns the corresponding system permission.
+     *
+     * @param str The permission string to parse.
+     * @return The parsed system permission.
+     * @throws GuacamoleException If the given string could not be parsed.
+     */
+    private Permission parseSystemPermission(String str)
+            throws GuacamoleException {
+
+        // Create user 
+        if (str.startsWith(CREATE_USER_PERMISSION))
+            return new SystemPermission(SystemPermission.Type.CREATE_USER);
+
+        // Create connection 
+        if (str.startsWith(CREATE_CONNECTION_PERMISSION))
+            return new SystemPermission(SystemPermission.Type.CREATE_CONNECTION);
+
+        // Administration
+        if (str.startsWith(ADMIN_PERMISSION))
+            return new SystemPermission(SystemPermission.Type.ADMINISTER);
+
+        throw new GuacamoleException("Invalid permission string.");
+
+    }
+
+    /**
      * Given a permission string, returns the corresponding user permission.
      *
      * @param str The permission string to parse.
@@ -76,10 +110,6 @@ public class Update extends AuthenticatingHttpServlet {
      */
     private Permission parseUserPermission(String str)
             throws GuacamoleException {
-
-        // Create permission
-        if (str.equals(CREATE_PERMISSION))
-            return new UserDirectoryPermission(SystemPermission.Type.CREATE);
 
         // Read
         if (str.startsWith(READ_PREFIX))
@@ -115,10 +145,6 @@ public class Update extends AuthenticatingHttpServlet {
      */
     private Permission parseConnectionPermission(String str)
             throws GuacamoleException {
-
-        // Create permission
-        if (str.equals(CREATE_PERMISSION))
-            return new ConnectionDirectoryPermission(SystemPermission.Type.CREATE);
 
         // Read
         if (str.startsWith(READ_PREFIX))
@@ -166,28 +192,50 @@ public class Update extends AuthenticatingHttpServlet {
             if (password != null)
                 user.setPassword(password);
 
-            // Set user permissions
+            /*
+             * NEW PERMISSIONS
+             */
+            
+            // Set added system permissions
+            String[] add_sys_permission = request.getParameterValues("+sys");
+            if (add_sys_permission != null) {
+                for (String str : add_sys_permission)
+                    user.addPermission(parseSystemPermission(str));
+            }
+
+            // Set added user permissions
             String[] add_user_permission = request.getParameterValues("+user");
             if (add_user_permission != null) {
                 for (String str : add_user_permission)
                     user.addPermission(parseUserPermission(str));
             }
 
-            // Set connection permissions
+            // Set added connection permissions
             String[] add_connection_permission = request.getParameterValues("+connection");
             if (add_connection_permission != null) {
                 for (String str : add_connection_permission)
                     user.addPermission(parseConnectionPermission(str));
             }
 
-            // Set user permissions
+            /*
+             * REMOVED PERMISSIONS
+             */
+            
+            // Unset removed system permissions
+            String[] remove_sys_permission = request.getParameterValues("-sys");
+            if (remove_sys_permission != null) {
+                for (String str : remove_sys_permission)
+                    user.removePermission(parseSystemPermission(str));
+            }
+
+            // Unset removed user permissions
             String[] remove_user_permission = request.getParameterValues("-user");
             if (remove_user_permission != null) {
                 for (String str : remove_user_permission)
                     user.removePermission(parseUserPermission(str));
             }
 
-            // Set connection permissions
+            // Unset removed connection permissions
             String[] remove_connection_permission = request.getParameterValues("-connection");
             if (remove_connection_permission != null) {
                 for (String str : remove_connection_permission)

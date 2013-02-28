@@ -32,11 +32,9 @@ import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -47,35 +45,6 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * @author Michael Jumper
  */
 public class List extends AuthenticatingHttpServlet {
-
-    /**
-     * Checks whether the given user has permission to perform the given
-     * system operation. Security exceptions are handled appropriately - only
-     * non-security exceptions pass through.
-     *
-     * @param user The user whose permissions should be verified.
-     * @param type The type of operation to check for permission for.
-     * @return true if permission is granted, false otherwise.
-     *
-     * @throws GuacamoleException If an error occurs while checking permissions.
-     */
-    private boolean hasConfigPermission(User user, SystemPermission.Type type)
-    throws GuacamoleException {
-
-        // Build permission
-        Permission permission =
-                new ConnectionDirectoryPermission(type);
-
-        try {
-            // Return result of permission check, if possible
-            return user.hasPermission(permission);
-        }
-        catch (GuacamoleSecurityException e) {
-            // If cannot check due to security restrictions, no permission
-            return false;
-        }
-
-    }
 
     /**
      * Checks whether the given user has permission to perform the given
@@ -148,10 +117,6 @@ public class List extends AuthenticatingHttpServlet {
             xml.writeStartDocument();
             xml.writeStartElement("connections");
 
-            // Save connection create permission attribute
-            if (hasConfigPermission(self, SystemPermission.Type.CREATE))
-                xml.writeAttribute("create", "yes");
-
             // For each entry, write corresponding connection element
             for (String identifier : directory.getIdentifiers()) {
 
@@ -164,21 +129,9 @@ public class List extends AuthenticatingHttpServlet {
                 xml.writeAttribute("protocol",
                         connection.getConfiguration().getProtocol());
 
-                // Save admin permission attribute
-                if (hasConfigPermission(self, ObjectPermission.Type.ADMINISTER,
-                        identifier))
-                    xml.writeAttribute("admin", "yes");
-
-                // Save delete permission attribute
-                if (hasConfigPermission(self, ObjectPermission.Type.DELETE,
-                        identifier))
-                    xml.writeAttribute("delete", "yes");
-
-                // Save update permission attribute, include parameters
+                // If update permission available, include parameters
                 if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
                         identifier)) {
-
-                    xml.writeAttribute("update", "yes");
 
                     // As update permission is present, also list parameters
                     GuacamoleConfiguration config = connection.getConfiguration();

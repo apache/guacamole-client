@@ -30,12 +30,10 @@ import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 
@@ -61,7 +59,9 @@ public class List extends AuthenticatingHttpServlet {
         throws GuacamoleException {
 
         switch (type) {
-            case CREATE: return "create";
+            case CREATE_USER:       return "create-user";
+            case CREATE_CONNECTION: return "create-connection";
+            case ADMINISTER:        return "admin";
         }
 
         throw new GuacamoleException("Unknown permission type: " + type);
@@ -136,16 +136,15 @@ public class List extends AuthenticatingHttpServlet {
             // For each entry, write corresponding user element
             for (Permission permission : user.getPermissions()) {
 
-                // Config directory permission
-                if (permission instanceof ConnectionDirectoryPermission) {
+                // System permission
+                if (permission instanceof SystemPermission) {
 
                     // Get permission
-                    ConnectionDirectoryPermission cdp =
-                            (ConnectionDirectoryPermission) permission;
+                    SystemPermission sp = (SystemPermission) permission;
 
                     // Write permission
-                    xml.writeEmptyElement("connections");
-                    xml.writeAttribute("type", toString(cdp.getType()));
+                    xml.writeEmptyElement("system");
+                    xml.writeAttribute("type", toString(sp.getType()));
 
                 }
 
@@ -160,19 +159,6 @@ public class List extends AuthenticatingHttpServlet {
                     xml.writeEmptyElement("connection");
                     xml.writeAttribute("type", toString(cp.getType()));
                     xml.writeAttribute("name", cp.getObjectIdentifier());
-
-                }
-
-                // User directory permission
-                else if (permission instanceof UserDirectoryPermission) {
-
-                    // Get permission
-                    UserDirectoryPermission udp =
-                            (UserDirectoryPermission) permission;
-
-                    // Write permission
-                    xml.writeEmptyElement("users");
-                    xml.writeAttribute("type", toString(udp.getType()));
 
                 }
 

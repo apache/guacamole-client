@@ -118,6 +118,11 @@ GuacamoleService.PermissionSet = function() {
     this.create_connection = false;
 
     /**
+     * Whether permission to administer the system in general is granted.
+     */
+    this.administer = false;
+
+    /**
      * Object with a property entry for each readable user.
      */
     this.read_user = {};
@@ -416,9 +421,10 @@ GuacamoleService.Users = {
 
         var name;
 
-        // Creation permissions
-        if (permissions_added.create_user)       data += "&%2Buser=create";
-        if (permissions_added.create_connection) data += "&%2Bconnection=create";
+        // System permissions
+        if (permissions_added.create_user)       data += "&%2Bsys=create-user";
+        if (permissions_added.create_connection) data += "&%2Bsys=create-connection";
+        if (permissions_added.administer)        data += "&%2Bsys=admin";
 
         // User permissions 
         for (name in permissions_added.read_user)
@@ -441,8 +447,9 @@ GuacamoleService.Users = {
             data += "&%2Bconnection=delete:" + encodeURIComponent(name);
 
         // Creation permissions
-        if (permissions_removed.create_user)       data += "&-user=create";
-        if (permissions_removed.create_connection) data += "&-connection=create";
+        if (permissions_removed.create_user)       data += "&-sys=create-user";
+        if (permissions_removed.create_connection) data += "&-sys=create-connection";
+        if (permissions_removed.administer)        data += "&-sys=admin";
 
         // User permissions 
         for (name in permissions_removed.read_user)
@@ -574,17 +581,27 @@ GuacamoleService.Permissions = {
         var i, type, name;
         var permissions = new GuacamoleService.PermissionSet();
 
-        // Read connections permissions
-        var connectionsElements = xhr.responseXML.getElementsByTagName("connections");
+        // Read system permissions
+        var connectionsElements = xhr.responseXML.getElementsByTagName("system");
         for (i=0; i<connectionsElements.length; i++) {
 
             // Get type
             type = connectionsElements[i].getAttribute("type");
             switch (type) {
 
-                // Create permission
-                case "create":
+                // Create connection permission
+                case "create-connection":
                     permissions.create_connection = true;
+                    break;
+
+                // Create user permission
+                case "create-user":
+                    permissions.create_user = true;
+                    break;
+
+                // System admin permission
+                case "admin":
+                    permissions.administer = true;
                     break;
 
             }
@@ -619,23 +636,6 @@ GuacamoleService.Permissions = {
                 // Delete permission
                 case "delete":
                     permissions.remove_connection[name] = true;
-                    break;
-
-            }
-
-        }
-
-        // Read users permissions
-        var usersElements = xhr.responseXML.getElementsByTagName("users");
-        for (i=0; i<usersElements.length; i++) {
-
-            // Get type
-            type = usersElements[i].getAttribute("type");
-            switch (type) {
-
-                // Create permission
-                case "create":
-                    permissions.create_user = true;
                     break;
 
             }
