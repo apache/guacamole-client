@@ -327,26 +327,6 @@ public class UserService {
         MySQLUser mySQLUser = retrieveUser(username);
         int user_id = mySQLUser.getUserID();
 
-        // Delete all user permissions
-        UserPermissionExample userPermissionExample = new UserPermissionExample();
-        userPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        userPermissionDAO.deleteByExample(userPermissionExample);
-
-        // Delete all connection permissions
-        ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
-        connectionPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        connectionPermissionDAO.deleteByExample(connectionPermissionExample);
-
-        // Delete all system permissions
-        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-        systemPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        systemPermissionDAO.deleteByExample(systemPermissionExample);
-
-        // Delete all permissions that refer to this user
-        userPermissionExample.clear();
-        userPermissionExample.createCriteria().andAffected_user_idEqualTo(user_id);
-        userPermissionDAO.deleteByExample(userPermissionExample);
-
         // Delete the user in the database
         userDAO.deleteByPrimaryKey(user_id);
 

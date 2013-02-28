@@ -47,7 +47,6 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
@@ -220,16 +219,6 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Get connection
         MySQLConnection mySQLConnection =
                 connectionService.retrieveConnection(identifier);
-
-        // Delete all configuration values
-        ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();
-        connectionParameterExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
-        connectionParameterDAO.deleteByExample(connectionParameterExample);
-
-        // Delete all permissions that refer to this connection
-        ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
-        connectionPermissionExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
-        connectionPermissionDAO.deleteByExample(connectionPermissionExample);
 
         // Delete the connection itself
         connectionService.deleteConnection(mySQLConnection.getConnectionID());
