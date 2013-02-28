@@ -55,7 +55,6 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.mysql.service.ConfigurationTranslationService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
@@ -167,7 +166,6 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(PermissionCheckService.class);
                     bind(ProviderService.class);
                     bind(UserService.class);
-                    bind(ConfigurationTranslationService.class);
                     bind(ActiveConnectionSet.class).toInstance(activeConnectionSet);
 
                 }
