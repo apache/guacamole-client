@@ -660,7 +660,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // its ID, and that same user will be queried AGAIN later when
         // deleted, again - to determine its ID. Perhaps we want cascading
         // deletes in the schema?
-        
+
         // Validate current user has permission to remove the specified user
         permissionCheckService.verifyUserDeleteAccess(this.user_id,
                 identifier);

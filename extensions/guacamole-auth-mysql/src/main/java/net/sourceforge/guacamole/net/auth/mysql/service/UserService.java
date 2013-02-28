@@ -114,12 +114,12 @@ public class UserService {
 
     /**
      * Create a new MySQLUser based on the provided User.
-     * 
+     *
      * @param user The User to use when populating the data of the given
      *             MySQLUser.
      * @return A new MySQLUser object, populated with the data of the given
      *         user.
-     * 
+     *
      * @throws GuacamoleException If an error occurs while reading the data
      *                            of the provided User.
      */
@@ -131,7 +131,7 @@ public class UserService {
 
     /**
      * Create a new MySQLUser based on the provided database record.
-     * 
+     *
      * @param user The database record describing the user.
      * @return A new MySQLUser object, populated with the data of the given
      *         database record.
@@ -151,12 +151,12 @@ public class UserService {
 
         // Return new user
         return mySQLUser;
-        
+
     }
 
     /**
      * Retrieves the user having the given ID from the database.
-     * 
+     *
      * @param id The ID of the user to retrieve.
      * @return The existing MySQLUser object if found, null otherwise.
      */
@@ -176,7 +176,7 @@ public class UserService {
 
     /**
      * Retrieves the users having the given IDs from the database.
-     * 
+     *
      * @param ids The IDs of the users to retrieve.
      * @return A list of existing MySQLUser objects.
      */
@@ -185,7 +185,7 @@ public class UserService {
         // If no IDs given, just return empty list
         if (ids.isEmpty())
             return Collections.EMPTY_LIST;
-        
+
         // Query users by ID
         UserExample example = new UserExample();
         example.createCriteria().andUser_idIn(ids);
@@ -203,7 +203,7 @@ public class UserService {
 
     /**
      * Retrieves the users having the given usernames from the database.
-     * 
+     *
      * @param names The usernames of the users to retrieve.
      * @return A list of existing MySQLUser objects.
      */
@@ -212,7 +212,7 @@ public class UserService {
         // If no names given, just return empty list
         if (names.isEmpty())
             return Collections.EMPTY_LIST;
-        
+
         // Query users by ID
         UserExample example = new UserExample();
         example.createCriteria().andUsernameIn(names);
@@ -230,7 +230,7 @@ public class UserService {
 
     /**
      * Retrieves the user having the given username from the database.
-     * 
+     *
      * @param name The username of the user to retrieve.
      * @return The existing MySQLUser object if found, null otherwise.
      */
@@ -253,7 +253,7 @@ public class UserService {
     /**
      * Retrieves the user corresponding to the given credentials from the
      * database.
-     * 
+     *
      * @param credentials The credentials to use when locating the user.
      * @return The existing MySQLUser object if the credentials given are
      *         valid, null otherwise.
@@ -291,7 +291,7 @@ public class UserService {
 
     /**
      * Creates a new user having the given username and password.
-     * 
+     *
      * @param username The username to assign to the new user.
      * @param password The password to assign to the new user.
      * @return A new MySQLUser containing the data of the newly created
@@ -314,9 +314,9 @@ public class UserService {
         // Create user
         userDAO.insert(user);
         return toMySQLUser(user);
-        
+
     }
-    
+
     /**
      * Deletes the user having the given username from the database
      * @param username The username of the user to delete.
@@ -355,7 +355,7 @@ public class UserService {
 
     /**
      * Updates the user in the database corresponding to the given MySQLUser.
-     * 
+     *
      * @param mySQLUser The MySQLUser to update (save) to the database. This
      *                  user must already exist.
      */

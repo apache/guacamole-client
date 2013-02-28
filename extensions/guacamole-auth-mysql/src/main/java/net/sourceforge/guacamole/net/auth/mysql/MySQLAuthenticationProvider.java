@@ -92,7 +92,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
         // Get user service
         UserService userService = injector.getInstance(UserService.class);
-        
+
         // Get user
         MySQLUser authenticatedUser = userService.retrieveUser(credentials);
         if (authenticatedUser != null) {
