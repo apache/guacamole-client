@@ -318,7 +318,7 @@ public class UserService {
     }
 
     /**
-     * Deletes the user having the given username from the database
+     * Deletes the user having the given username from the database.
      * @param username The username of the user to delete.
      */
     public void deleteUser(String username) {
