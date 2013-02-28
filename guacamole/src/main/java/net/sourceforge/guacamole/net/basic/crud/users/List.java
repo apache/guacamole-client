@@ -61,9 +61,6 @@ public class List extends AuthenticatingHttpServlet {
             // Get users
             Set<String> users = directory.getIdentifiers();
 
-            // Get self
-            User self = context.self();
-
             XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
             XMLStreamWriter xml = outputFactory.createXMLStreamWriter(response.getWriter());
 
