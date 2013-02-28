@@ -54,7 +54,7 @@ CREATE TABLE `guacamole_connection_permission` (
 
 CREATE TABLE `guacamole_system_permission` (
   `user_id` int(11) NOT NULL,
-  `permission` enum('CREATE_CONNECTION','CREATE_USER') NOT NULL,
+  `permission` enum('CREATE_CONNECTION','CREATE_USER','ADMINISTER') NOT NULL,
   PRIMARY KEY (`user_id`,`permission`),
   CONSTRAINT `guacamole_system_permission_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `guacamole_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
