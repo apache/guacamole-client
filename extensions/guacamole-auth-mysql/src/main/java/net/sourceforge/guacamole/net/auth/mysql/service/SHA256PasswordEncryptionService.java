@@ -47,7 +47,7 @@ import javax.xml.bind.DatatypeConverter;
  * Provides a SHA-256 based implementation of the password encryption functionality.
  * @author James Muehlner
  */
-public class Sha256PasswordEncryptionService implements PasswordEncryptionService {
+public class SHA256PasswordEncryptionService implements PasswordEncryptionService {
 
     @Override
     public boolean checkPassword(String password, byte[] hashedPassword,
