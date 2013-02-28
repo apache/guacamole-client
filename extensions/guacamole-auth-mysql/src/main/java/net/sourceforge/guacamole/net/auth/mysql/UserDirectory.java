@@ -69,11 +69,9 @@ import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionServic
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -572,36 +570,22 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions) {
 
-            // Connection directory permission
-            if (permission instanceof ConnectionDirectoryPermission) {
-                switch (permission.getType()) {
+            switch (permission.getType()) {
 
-                    // Create permission
-                    case CREATE:
-                        systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
-                        break;
+                // Create connection permission
+                case CREATE_CONNECTION:
+                    systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
+                    break;
 
-                    // Fail if unexpected type encountered
-                    default:
-                        assert false : "Unsupported type: " + permission.getType();
+                // Create user permission
+                case CREATE_USER:
+                    systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
+                    break;
 
-                }
-            }
+                // Fail if unexpected type encountered
+                default:
+                    assert false : "Unsupported type: " + permission.getType();
 
-            // User directory permission
-            else if (permission instanceof UserDirectoryPermission) {
-                switch (permission.getType()) {
-
-                    // Create permission
-                    case CREATE:
-                        systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
-                        break;
-
-                    // Fail if unexpected type encountered
-                    default:
-                        assert false : "Unsupported type: " + permission.getType();
-
-                }
             }
 
         } // end for each system permission
@@ -630,54 +614,39 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private void deleteSystemPermissions(int user_id,
             Collection<SystemPermission> permissions) {
 
-        if(permissions.isEmpty())
+        if (permissions.isEmpty())
             return;
 
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions) {
 
-            // Connection directory permission
-            if (permission instanceof ConnectionDirectoryPermission) {
-                switch (permission.getType()) {
+            switch (permission.getType()) {
 
-                    // Create permission
-                    case CREATE:
-                        systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
-                        break;
+                // Create connection permission
+                case CREATE_CONNECTION:
+                    systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
+                    break;
 
-                    // Fail if unexpected type encountered
-                    default:
-                        assert false : "Unsupported type: " + permission.getType();
+                // Create user permission
+                case CREATE_USER:
+                    systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
+                    break;
 
-                }
-            }
+                // Fail if unexpected type encountered
+                default:
+                    assert false : "Unsupported type: " + permission.getType();
 
-            // User directory permission
-            else if (permission instanceof UserDirectoryPermission) {
-                switch (permission.getType()) {
-
-                    // Create permission
-                    case CREATE:
-                        systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
-                        break;
-
-                    // Fail if unexpected type encountered
-                    default:
-                        assert false : "Unsupported type: " + permission.getType();
-
-                }
             }
 
         } // end for each system permission
 
         // Finally, delete the requested system permissions for this user
-        if(!systemPermissionTypes.isEmpty()) {
-            SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-            systemPermissionExample.createCriteria().andUser_idEqualTo(user_id)
-                    .andPermissionIn(systemPermissionTypes);
-            systemPermissionDAO.deleteByExample(systemPermissionExample);
-        }
+        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
+        systemPermissionExample.createCriteria().andUser_idEqualTo(user_id)
+                .andPermissionIn(systemPermissionTypes);
+        systemPermissionDAO.deleteByExample(systemPermissionExample);
+
     }
 
     @Override

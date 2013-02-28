@@ -65,10 +65,9 @@ import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionDirectoryPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.UserDirectoryPermission;
+import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -904,11 +903,11 @@ public class PermissionCheckService {
 
             // User creation permission
             if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
-                allPermissions.add(new UserDirectoryPermission(UserDirectoryPermission.Type.CREATE));
+                allPermissions.add(new SystemPermission(SystemPermission.Type.CREATE_USER));
 
             // System creation permission
             else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
-                allPermissions.add(new ConnectionDirectoryPermission(ConnectionDirectoryPermission.Type.CREATE));
+                allPermissions.add(new SystemPermission(SystemPermission.Type.CREATE_CONNECTION));
 
         }
 
