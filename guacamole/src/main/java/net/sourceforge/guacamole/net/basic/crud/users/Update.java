@@ -85,11 +85,11 @@ public class Update extends AuthenticatingHttpServlet {
     private Permission parseSystemPermission(String str)
             throws GuacamoleException {
 
-        // Create user 
+        // Create user
         if (str.startsWith(CREATE_USER_PERMISSION))
             return new SystemPermission(SystemPermission.Type.CREATE_USER);
 
-        // Create connection 
+        // Create connection
         if (str.startsWith(CREATE_CONNECTION_PERMISSION))
             return new SystemPermission(SystemPermission.Type.CREATE_CONNECTION);
 
@@ -195,7 +195,7 @@ public class Update extends AuthenticatingHttpServlet {
             /*
              * NEW PERMISSIONS
              */
-            
+
             // Set added system permissions
             String[] add_sys_permission = request.getParameterValues("+sys");
             if (add_sys_permission != null) {
@@ -220,7 +220,7 @@ public class Update extends AuthenticatingHttpServlet {
             /*
              * REMOVED PERMISSIONS
              */
-            
+
             // Unset removed system permissions
             String[] remove_sys_permission = request.getParameterValues("-sys");
             if (remove_sys_permission != null) {
