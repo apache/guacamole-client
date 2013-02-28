@@ -105,4 +105,10 @@ public final class MySQLConstants {
      */
     public static final String SYSTEM_CONNECTION_CREATE = "CREATE_CONNECTION";
 
+    /**
+     * The string stored in the database to represent permission to administer
+     * the system as a whole.
+     */
+    public static final String SYSTEM_ADMINISTER = "ADMINISTER";
+
 }

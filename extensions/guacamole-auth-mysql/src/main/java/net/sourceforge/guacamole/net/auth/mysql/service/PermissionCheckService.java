@@ -877,6 +877,10 @@ public class PermissionCheckService {
             else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
                 allPermissions.add(new SystemPermission(SystemPermission.Type.CREATE_CONNECTION));
 
+            // System administration permission
+            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_ADMINISTER))
+                allPermissions.add(new SystemPermission(SystemPermission.Type.ADMINISTER));
+
         }
 
         return allPermissions;
