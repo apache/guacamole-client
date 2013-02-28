@@ -160,7 +160,7 @@ public class UserService {
      * @param id The ID of the user to retrieve.
      * @return The existing MySQLUser object if found, null otherwise.
      */
-    public MySQLUser retrieveUser(Integer id) {
+    public MySQLUser retrieveUser(int id) {
 
         // Query user by ID
         UserWithBLOBs user = userDAO.selectByPrimaryKey(id);
