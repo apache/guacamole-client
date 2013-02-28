@@ -42,7 +42,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
-import java.util.List;
 import java.util.Properties;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
@@ -55,8 +54,6 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConfigurationTranslationService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
@@ -65,6 +62,7 @@ import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.Sha256PasswordEncryptionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.mybatis.guice.MyBatisModule;
@@ -93,43 +91,19 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
     @Override
     public UserContext getUserContext(Credentials credentials) throws GuacamoleException {
 
-        // No null users in database
-        if (credentials.getUsername() == null)
-            return null;
+        // Get user service
+        UserService userService = injector.getInstance(UserService.class);
+        
+        // Get user
+        MySQLUser authenticatedUser = userService.retrieveUser(credentials);
+        if (authenticatedUser != null) {
+            MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
+            context.init(authenticatedUser.getUserID());
+            return context;
+        }
 
-        // Get user DAO
-        UserMapper userDAO = injector.getInstance(UserMapper.class);
-
-        // Query user
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameEqualTo(credentials.getUsername());
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(userExample);
-
-        // The unique constraint on the table should prevent this.
-        if (users.size() > 1)
-            throw new GuacamoleException(
-                "Multiple users found with the same username: "
-                + credentials.getUsername());
-
-        // Check that a user was found
-        if (users.isEmpty())
-            throw new GuacamoleException("No user found with the supplied credentials");
-
-        // Get first (and only) user
-        UserWithBLOBs user = users.get(0);
-
-        // Get password service
-        PasswordEncryptionService passwordService =
-                injector.getInstance(PasswordEncryptionService.class);
-
-        // Check password, if invalid return null
-        if (!passwordService.checkPassword(credentials.getPassword(),
-                user.getPassword_hash(), user.getPassword_salt()))
-            return null;
-
-        MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
-        context.init(user.getUser_id());
-        return context;
+        // Otherwise, unauthorized
+        return null;
 
     }
 
@@ -192,6 +166,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(PasswordEncryptionService.class).to(Sha256PasswordEncryptionService.class);
                     bind(PermissionCheckService.class);
                     bind(ProviderService.class);
+                    bind(UserService.class);
                     bind(ConfigurationTranslationService.class);
                     bind(ActiveConnectionSet.class).toInstance(activeConnectionSet);
 

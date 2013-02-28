@@ -43,7 +43,7 @@ import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
+import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 
 /**
  * The MySQL representation of a UserContext.
@@ -72,10 +72,10 @@ public class MySQLUserContext implements UserContext {
     private ConnectionDirectory connectionDirectory;
 
     /**
-     * Service for retrieving existing objects or creating new ones.
+     * Service for accessing users.
      */
     @Inject
-    private ProviderService providerService;
+    private UserService userService;
 
     /**
      * Initializes the user and directories associated with this context.
@@ -90,7 +90,7 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public User self() {
-        return providerService.getExistingMySQLUser(user_id);
+        return userService.retrieveUser(user_id);
     }
 
     @Override

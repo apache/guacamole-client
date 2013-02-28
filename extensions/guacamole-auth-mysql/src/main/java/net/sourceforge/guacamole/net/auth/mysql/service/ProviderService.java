@@ -42,22 +42,17 @@ import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLGuacamoleSocket;
-import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistoryExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -66,9 +61,6 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * @author James Muehlner
  */
 public class ProviderService {
-
-    @Inject
-    private UserMapper userDAO;
 
     @Inject
     private ConnectionMapper connectionDAO;
@@ -80,9 +72,6 @@ public class ProviderService {
     private ConnectionHistoryMapper connectionHistoryDAO;
 
     @Inject
-    private Provider<MySQLUser> mySQLUserProvider;
-
-    @Inject
     private Provider<MySQLConnection> mySQLConnectionProvider;
 
     @Inject
@@ -90,92 +79,6 @@ public class ProviderService {
 
     @Inject
     private Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
-
-    /**
-     * Service for checking permissions.
-     */
-    @Inject
-    private PermissionCheckService permissionCheckService;
-
-    /**
-     * Create a new user based on the provided object.
-     * @param user
-     * @return the new MySQLUser object.
-     * @throws GuacamoleException
-     */
-    public MySQLUser getNewMySQLUser(User user) throws GuacamoleException {
-        MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.init(user);
-        return mySQLUser;
-    }
-
-    /**
-     * Get the user based on the username of the provided object.
-     * @param user
-     * @return the new MySQLUser object.
-     * @throws GuacamoleException
-     */
-    public MySQLUser getExistingMySQLUser(User user) throws GuacamoleException {
-        return getExistingMySQLUser(user.getUsername());
-    }
-
-    /**
-     * Get the user based on the username of the provided object.
-     * @param name
-     * @return the new MySQLUser object.
-     * @throws GuacamoleException
-     */
-    public MySQLUser getExistingMySQLUser(String name) throws GuacamoleException {
-
-        // Query user by ID
-        UserExample example = new UserExample();
-        example.createCriteria().andUsernameEqualTo(name);
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
-
-        // If no user found, return null
-        if(users.isEmpty())
-            return null;
-
-        // Otherwise, return found user
-        return getExistingMySQLUser(users.get(0));
-
-    }
-
-    /**
-     * Get an existing MySQLUser from a user database record.
-     * @param user
-     * @return the existing MySQLUser object.
-     */
-    public MySQLUser getExistingMySQLUser(UserWithBLOBs user) {
-        MySQLUser mySQLUser = mySQLUserProvider.get();
-        mySQLUser.init(
-            user.getUser_id(),
-            user.getUsername(),
-            null,
-            permissionCheckService.getAllPermissions(user.getUser_id())
-        );
-
-        return mySQLUser;
-    }
-
-    /**
-     * Get an existing MySQLUser from a user ID.
-     * @param id
-     * @return the existing MySQLUser object if found, null if not.
-     */
-    public MySQLUser getExistingMySQLUser(Integer id) {
-
-        // Query user by ID
-        UserWithBLOBs user = userDAO.selectByPrimaryKey(id);
-
-        // If no user found, return null
-        if(user == null)
-            return null;
-
-        // Otherwise, return found user
-        return getExistingMySQLUser(user);
-
-    }
 
     /**
      * Get the connection based on the connection name of the provided object.

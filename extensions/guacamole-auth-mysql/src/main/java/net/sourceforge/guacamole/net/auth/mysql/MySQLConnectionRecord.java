@@ -42,10 +42,9 @@ import java.util.Date;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
+import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 
 /**
  * A ConnectionRecord which is based on data stored in MySQL.
@@ -60,16 +59,10 @@ public class MySQLConnectionRecord implements ConnectionRecord {
     private ConnectionHistory connectionHistory;
 
     /**
-     * DAO for accessing users.
+     * Service for accessing users.
      */
     @Inject
-    private UserMapper userDAO;
-
-    /**
-     * DAO for accessing connections.
-     */
-    @Inject
-    private ConnectionMapper connectionDAO;
+    private UserService userService;
 
     /**
      * Service for creating and retrieving objects.
@@ -100,7 +93,9 @@ public class MySQLConnectionRecord implements ConnectionRecord {
 
     @Override
     public User getUser() {
-        return providerService.getExistingMySQLUser(connectionHistory.getUser_id());
+        // FIXME: This will be SLOW - history is queried in bulk. When listed
+        // to the user in the webapp, this will result in one query per record.
+        return userService.retrieveUser(connectionHistory.getUser_id());
     }
 
     @Override

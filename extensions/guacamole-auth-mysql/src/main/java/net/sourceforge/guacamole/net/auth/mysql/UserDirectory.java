@@ -52,7 +52,6 @@ import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
@@ -60,15 +59,12 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExampl
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.model.User;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
+import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -88,10 +84,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private int user_id;
 
     /**
-     * DAO for accessing users, which will be injected.
+     * Service for accessing users.
      */
     @Inject
-    private UserMapper userDAO;
+    private UserService userService;
 
     /**
      * DAO for accessing connections, which will be injected.
@@ -124,13 +120,6 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private PermissionCheckService permissionCheckService;
 
     /**
-     * Service providing convenient access to object creation and
-     * retrieval functions.
-     */
-    @Inject
-    private ProviderService providerService;
-
-    /**
      * Service for encrypting passwords.
      */
     @Inject
@@ -157,7 +146,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     public net.sourceforge.guacamole.net.auth.User get(String identifier)
             throws GuacamoleException {
         permissionCheckService.verifyUserReadAccess(this.user_id, identifier);
-        return providerService.getExistingMySQLUser(identifier);
+        return userService.retrieveUser(identifier);
     }
 
     @Transactional
@@ -184,27 +173,17 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         permissionCheckService.verifyCreateUserPermission(this.user_id);
         Preconditions.checkNotNull(object);
 
-        // Create user in database
-        UserWithBLOBs user = new UserWithBLOBs();
-        user.setUsername(object.getUsername());
-
-        // Set password if specified
-        if (object.getPassword() != null) {
-            byte[] salt = saltService.generateSalt();
-            user.setPassword_salt(salt);
-            user.setPassword_hash(
-                passwordService.createPasswordHash(object.getPassword(), salt));
-        }
-
-        userDAO.insert(user);
+        // Create new user
+        MySQLUser user = userService.createUser(object.getUsername(),
+                object.getPassword());
 
         // Create permissions of new user in database
-        createPermissions(user.getUser_id(), object.getPermissions());
+        createPermissions(user.getUserID(), object.getPermissions());
 
         // Give the current user full access to the newly created user.
         UserPermissionKey newUserPermission = new UserPermissionKey();
         newUserPermission.setUser_id(this.user_id);
-        newUserPermission.setAffected_user_id(user.getUser_id());
+        newUserPermission.setAffected_user_id(user.getUserID());
 
         // READ permission on new user
         newUserPermission.setPermission(MySQLConstants.USER_READ);
@@ -321,36 +300,34 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             usernames.add(permission.getObjectIdentifier());
 
         // Find all the users by username
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameIn(usernames);
-        List<User> dbUsers = userDAO.selectByExample(userExample);
+        List<MySQLUser> users = userService.retrieveUsersByUsername(usernames);
 
         // Build map of found users, indexed by username
-        Map<String, User> dbUserMap = new HashMap<String, User>();
-        for (User dbUser : dbUsers) {
-            dbUserMap.put(dbUser.getUsername(), dbUser);
-        }
+        Map<String, MySQLUser> userMap = new HashMap<String, MySQLUser>();
+        for (MySQLUser user : users)
+            userMap.put(user.getUsername(), user);
 
         for (UserPermission permission : permissions) {
 
             // Get user
-            User dbAffectedUser = dbUserMap.get(permission.getObjectIdentifier());
-            if (dbAffectedUser == null)
+            MySQLUser affectedUser =
+                    userMap.get(permission.getObjectIdentifier());
+            if (affectedUser == null)
                 throw new GuacamoleException(
                           "User '" + permission.getObjectIdentifier()
                         + "' not found.");
 
             // Verify that the user actually has permission to administrate
             // every one of these users
-            if (!administerableUsers.contains(dbAffectedUser.getUser_id()))
+            if (!administerableUsers.contains(affectedUser.getUserID()))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate user "
-                    + dbAffectedUser.getUser_id());
+                    + affectedUser.getUsername());
 
             // Create new permission
             UserPermissionKey newPermission = new UserPermissionKey();
-            newPermission.setAffected_user_id(dbAffectedUser.getUser_id());
+            newPermission.setAffected_user_id(affectedUser.getUserID());
             newPermission.setPermission(permission.getType().name());
             newPermission.setUser_id(user_id);
             userPermissionDAO.insert(newPermission);
@@ -383,35 +360,33 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             usernames.add(permission.getObjectIdentifier());
 
         // Find all the users by username
-        UserExample userExample = new UserExample();
-        userExample.createCriteria().andUsernameIn(usernames);
-        List<User> dbUsers = userDAO.selectByExample(userExample);
+        List<MySQLUser> users = userService.retrieveUsersByUsername(usernames);
         List<Integer> userIDs = new ArrayList<Integer>();
 
         // Build map of found users, indexed by username
-        Map<String, User> dbUserMap = new HashMap<String, User>();
-        for (User dbUser : dbUsers) {
-            dbUserMap.put(dbUser.getUsername(), dbUser);
-            userIDs.add(dbUser.getUser_id());
+        Map<String, MySQLUser> userMap = new HashMap<String, MySQLUser>();
+        for (MySQLUser user : users) {
+            userMap.put(user.getUsername(), user);
+            userIDs.add(user.getUserID());
         }
 
         // Verify we have permission to delete each user permission.
         for (UserPermission permission : permissions) {
 
             // Get user
-            User dbAffectedUser = dbUserMap.get(permission.getObjectIdentifier());
-            if (dbAffectedUser == null)
+            MySQLUser affectedUser = userMap.get(permission.getObjectIdentifier());
+            if (affectedUser == null)
                 throw new GuacamoleException(
                           "User '" + permission.getObjectIdentifier()
                         + "' not found.");
 
             // Verify that the user actually has permission to administrate
             // every one of these users
-            if (!administerableUsers.contains(dbAffectedUser.getUser_id()))
+            if (!administerableUsers.contains(affectedUser.getUserID()))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate user "
-                    + dbAffectedUser.getUser_id());
+                    + affectedUser.getUsername());
         }
 
         if(!userIDs.isEmpty()) {
@@ -663,22 +638,9 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         permissionCheckService.verifyUserUpdateAccess(this.user_id,
                 object.getUsername());
 
-        // Build database user from non-database structure
-        MySQLUser mySQLUser = (MySQLUser) object;
-        UserWithBLOBs user = new UserWithBLOBs();
-        user.setUser_id(mySQLUser.getUserID());
-        user.setUsername(mySQLUser.getUsername());
-
-        // Set password if specified
-        if (mySQLUser.getPassword() != null) {
-            byte[] salt = saltService.generateSalt();
-            user.setPassword_salt(salt);
-            user.setPassword_hash(
-                passwordService.createPasswordHash(mySQLUser.getPassword(), salt));
-        }
-
         // Update the user in the database
-        userDAO.updateByPrimaryKeySelective(user);
+        MySQLUser mySQLUser = (MySQLUser) object;
+        userService.updateUser(mySQLUser);
 
         // Update permissions in database
         createPermissions(mySQLUser.getUserID(), mySQLUser.getNewPermissions());
@@ -694,48 +656,17 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
 
+        // FIXME: Querying permissions here will query the user to determine
+        // its ID, and that same user will be queried AGAIN later when
+        // deleted, again - to determine its ID. Perhaps we want cascading
+        // deletes in the schema?
+        
         // Validate current user has permission to remove the specified user
         permissionCheckService.verifyUserDeleteAccess(this.user_id,
                 identifier);
 
-        // Get specified user
-        MySQLUser mySQLUser = providerService.getExistingMySQLUser(identifier);
-
-        // Delete all the user permissions in the database
-        deleteAllPermissions(mySQLUser.getUserID());
-
-        // Delete the user in the database
-        userDAO.deleteByPrimaryKey(mySQLUser.getUserID());
-
-    }
-
-    /**
-     * Delete all permissions associated with the provided user. This is only
-     * used when deleting a user.
-     *
-     * @param user_id The ID of the user to delete all permissions of.
-     */
-    private void deleteAllPermissions(int user_id) {
-
-        // Delete all user permissions
-        UserPermissionExample userPermissionExample = new UserPermissionExample();
-        userPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        userPermissionDAO.deleteByExample(userPermissionExample);
-
-        // Delete all connection permissions
-        ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
-        connectionPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        connectionPermissionDAO.deleteByExample(connectionPermissionExample);
-
-        // Delete all system permissions
-        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-        systemPermissionExample.createCriteria().andUser_idEqualTo(user_id);
-        systemPermissionDAO.deleteByExample(systemPermissionExample);
-
-        // Delete all permissions that refer to this user
-        userPermissionExample.clear();
-        userPermissionExample.createCriteria().andAffected_user_idEqualTo(user_id);
-        userPermissionDAO.deleteByExample(userPermissionExample);
+        // Delete specified user
+        userService.deleteUser(identifier);
 
     }
 

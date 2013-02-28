@@ -52,7 +52,6 @@ import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
@@ -60,11 +59,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExampl
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.model.User;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -78,7 +74,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public class PermissionCheckService {
 
     @Inject
-    private UserMapper userDAO;
+    private UserService userService;
 
     @Inject
     private ConnectionMapper connectionDAO;
@@ -274,9 +270,9 @@ public class PermissionCheckService {
      * @return
      */
     private boolean checkUserAccess(int userID, String affectedUsername, String permissionType) {
-        User affectedUser = getUser(affectedUsername);
+        MySQLUser affectedUser = userService.retrieveUser(affectedUsername);
         if(affectedUser != null)
-            return checkUserAccess(userID, affectedUser.getUser_id(), permissionType);
+            return checkUserAccess(userID, affectedUser.getUserID(), permissionType);
 
         return false;
     }
@@ -386,19 +382,8 @@ public class PermissionCheckService {
             return Collections.EMPTY_SET;
 
         // Query corresponding user data for each retrieved ID
-        UserExample example = new UserExample();
-        example.createCriteria().andUser_idIn(Lists.newArrayList(affectedUserIDs));
-        List<UserWithBLOBs> userDBOjects = userDAO.selectByExampleWithBLOBs(example);
-
-        // Build set of MySQLUsers from retrieved user data
-        Set<MySQLUser> affectedUsers = new HashSet<MySQLUser>();
-        for(UserWithBLOBs affectedUser : userDBOjects) {
-            MySQLUser mySQLUser = mySQLUserProvider.get();
-            mySQLUser.init(affectedUser.getUsername());
-            affectedUsers.add(mySQLUser);
-        }
-
-        return affectedUsers;
+        return new HashSet<MySQLUser>(userService.retrieveUsersByID(
+                Lists.newArrayList(affectedUserIDs)));
 
     }
 
@@ -804,21 +789,6 @@ public class PermissionCheckService {
     }
 
     /**
-     * Get a user object by username.
-     * @param userName
-     * @return
-     */
-    private User getUser(String username) {
-        UserExample example = new UserExample();
-        example.createCriteria().andUsernameEqualTo(username);
-        List<User> users = userDAO.selectByExample(example);
-        if(users.isEmpty())
-            return null;
-
-        return users.get(0);
-    }
-
-    /**
      * Get all permissions a given user has.
      * @param userID
      * @return all permissions a user has.
@@ -841,16 +811,14 @@ public class PermissionCheckService {
                 affectedUserIDs.add(userPermission.getAffected_user_id());
 
             // Query all affected users, store in map indexed by user ID
-            UserExample userExample = new UserExample();
-            userExample.createCriteria().andUser_idIn(affectedUserIDs);
-            List<User> users = userDAO.selectByExample(userExample);
-            Map<Integer, User> userMap = new HashMap<Integer, User>();
-            for(User user : users)
-                userMap.put(user.getUser_id(), user);
+            List<MySQLUser> users = userService.retrieveUsersByID(affectedUserIDs);
+            Map<Integer, MySQLUser> userMap = new HashMap<Integer, MySQLUser>();
+            for (MySQLUser user : users)
+                userMap.put(user.getUserID(), user);
 
             // Add user permissions
             for(UserPermissionKey userPermission : userPermissions) {
-                User affectedUser = userMap.get(userPermission.getAffected_user_id());
+                MySQLUser affectedUser = userMap.get(userPermission.getAffected_user_id());
                 UserPermission newPermission = new UserPermission(
                     UserPermission.Type.valueOf(userPermission.getPermission()),
                     affectedUser.getUsername()
