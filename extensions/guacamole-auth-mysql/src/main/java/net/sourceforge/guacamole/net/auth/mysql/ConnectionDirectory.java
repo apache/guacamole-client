@@ -50,8 +50,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -75,10 +75,10 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private PermissionCheckService permissionCheckService;
 
     /**
-     * Service for creating and retrieving objects.
+     * Service managing connections.
      */
     @Inject
-    private ProviderService providerService;
+    private ConnectionService connectionService;
 
     /**
      * Service for manipulating connections in the database.
@@ -111,7 +111,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public Connection get(String identifier) throws GuacamoleException {
         permissionCheckService.verifyConnectionReadAccess(this.user_id, identifier);
-        return providerService.getExistingMySQLConnection(identifier);
+        return connectionService.retrieveConnection(identifier);
     }
 
     @Transactional
@@ -236,7 +236,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Verify permission to delete
         permissionCheckService.verifyConnectionDeleteAccess(this.user_id, identifier);
 
-        MySQLConnection mySQLConnection = providerService.getExistingMySQLConnection(identifier);
+        // Get connection
+        MySQLConnection mySQLConnection =
+                connectionService.retrieveConnection(identifier);
 
         // Delete all configuration values
         ConnectionParameterExample connectionParameterExample = new ConnectionParameterExample();

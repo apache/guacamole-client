@@ -43,7 +43,7 @@ import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
-import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 
 /**
@@ -65,10 +65,10 @@ public class MySQLConnectionRecord implements ConnectionRecord {
     private UserService userService;
 
     /**
-     * Service for creating and retrieving objects.
+     * Service for accessing connections.
      */
     @Inject
-    private ProviderService providerService;
+    private ConnectionService connectionService;
 
     /**
      * Initialize this MySQLConnectionRecord with the database record it
@@ -100,7 +100,7 @@ public class MySQLConnectionRecord implements ConnectionRecord {
 
     @Override
     public Connection getConnection() {
-        return providerService.getExistingMySQLConnection(connectionHistory.getConnection_id());
+        return connectionService.retrieveConnection(connectionHistory.getConnection_id());
     }
 
     @Override

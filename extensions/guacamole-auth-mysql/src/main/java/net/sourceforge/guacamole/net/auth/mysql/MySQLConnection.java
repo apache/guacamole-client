@@ -1,3 +1,6 @@
+
+package net.sourceforge.guacamole.net.auth.mysql;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -33,7 +36,6 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
@@ -41,14 +43,10 @@ import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnection;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
-import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.mysql.service.ProviderService;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -69,10 +67,10 @@ public class MySQLConnection extends AbstractConnection {
     private List<ConnectionRecord> history = new ArrayList<ConnectionRecord>();
 
     /**
-     * Service for creating and retrieving objects.
+     * Service for managing connections.
      */
     @Inject
-    private ProviderService providerService;
+    private ConnectionService connectionService;
 
     /**
      * Set of all currently active connections.
@@ -135,29 +133,7 @@ public class MySQLConnection extends AbstractConnection {
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-
-        // If the current connection is active, and multiple simultaneous connections are not allowed.
-        if(GuacamoleProperties.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
-                && activeConnectionSet.contains(getConnectionID()))
-            throw new GuacamoleException("Cannot connect. This connection is in use.");
-
-        // Get guacd connection information
-        String host = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
-        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
-
-        // Get socket
-        GuacamoleSocket socket = providerService.getMySQLGuacamoleSocket(
-            new ConfiguredGuacamoleSocket(
-                    new InetGuacamoleSocket(host, port),
-                    getConfiguration()
-            ),
-            getConnectionID()
-        );
-
-        // Mark this connection as active
-        activeConnectionSet.add(getConnectionID());
-
-        return socket;
+        return connectionService.connect(this, info);
     }
 
     @Override
