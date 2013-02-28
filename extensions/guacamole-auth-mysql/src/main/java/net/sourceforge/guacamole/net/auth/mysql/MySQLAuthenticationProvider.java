@@ -60,7 +60,7 @@ import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionServic
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
-import net.sourceforge.guacamole.net.auth.mysql.service.Sha256PasswordEncryptionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SHA256PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
@@ -162,7 +162,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(UserDirectory.class);
                     bind(MySQLUser.class);
                     bind(SaltService.class).to(SecureRandomSaltService.class);
-                    bind(PasswordEncryptionService.class).to(Sha256PasswordEncryptionService.class);
+                    bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
                     bind(PermissionCheckService.class);
                     bind(ConnectionService.class);
                     bind(UserService.class);

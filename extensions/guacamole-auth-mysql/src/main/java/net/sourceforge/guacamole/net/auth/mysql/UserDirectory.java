@@ -49,18 +49,16 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
@@ -90,10 +88,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private UserService userService;
 
     /**
-     * DAO for accessing connections, which will be injected.
+     * Service for accessing connections.
      */
     @Inject
-    private ConnectionMapper connectionDAO;
+    private ConnectionService connectionService;
 
     /**
      * DAO for accessing user permissions, which will be injected.
@@ -424,38 +422,35 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             connectionNames.add(permission.getObjectIdentifier());
 
         // Find all the connections by connection name
-        ConnectionExample connectionExample = new ConnectionExample();
-        connectionExample.createCriteria().andConnection_nameIn(connectionNames);
-        List<Connection> dbConnections = connectionDAO.selectByExample(connectionExample);
+        List<MySQLConnection> connections = connectionService.retrieveConnectionsByName(connectionNames);
 
         // Build map of found connections, indexed by name
-        Map<String, Connection> dbConnectionMap = new HashMap<String, Connection>();
-        for (Connection dbConnection : dbConnections) {
-            dbConnectionMap.put(dbConnection.getConnection_name(), dbConnection);
-        }
+        Map<String, MySQLConnection> connectionMap = new HashMap<String, MySQLConnection>();
+        for (MySQLConnection connection : connections)
+            connectionMap.put(connection.getIdentifier(), connection);
 
         // Finally, insert the new permissions
         for (ConnectionPermission permission : permissions) {
 
             // Get permission
-            Connection dbConnection = dbConnectionMap.get(permission.getObjectIdentifier());
-            if (dbConnection == null)
+            MySQLConnection connection = connectionMap.get(permission.getObjectIdentifier());
+            if (connection == null)
                 throw new GuacamoleException(
                     "Connection '" + permission.getObjectIdentifier()
                     + "' not found.");
 
             // Throw exception if permission to administer this connection
             // is not granted
-            if (!administerableConnections.contains(dbConnection.getConnection_id()))
+            if (!administerableConnections.contains(connection.getConnectionID()))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
-                    + dbConnection.getConnection_id());
+                    + connection.getIdentifier());
 
 
             // Insert previously-non-existent connection permission
             ConnectionPermissionKey newPermission = new ConnectionPermissionKey();
-            newPermission.setConnection_id(dbConnection.getConnection_id());
+            newPermission.setConnection_id(connection.getConnectionID());
             newPermission.setPermission(permission.getType().name());
             newPermission.setUser_id(user_id);
             connectionPermissionDAO.insert(newPermission);
@@ -488,35 +483,33 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             identifiers.add(permission.getObjectIdentifier());
 
         // Find all the connections by identifiers
-        ConnectionExample connectionExample = new ConnectionExample();
-        connectionExample.createCriteria().andConnection_nameIn(identifiers);
-        List<Connection> dbConnections = connectionDAO.selectByExample(connectionExample);
+        List<MySQLConnection> connections = connectionService.retrieveConnectionsByName(identifiers);
         List<Integer> connectionIDs = new ArrayList<Integer>();
 
         // Build map of found connections, indexed by identifier
-        Map<String, Connection> dbConnectionMap = new HashMap<String, Connection>();
-        for (Connection dbConnection : dbConnections) {
-            dbConnectionMap.put(dbConnection.getConnection_name(), dbConnection);
-            connectionIDs.add(dbConnection.getConnection_id());
+        Map<String, MySQLConnection> connectionMap = new HashMap<String, MySQLConnection>();
+        for (MySQLConnection connection : connections) {
+            connectionMap.put(connection.getIdentifier(), connection);
+            connectionIDs.add(connection.getConnectionID());
         }
 
         // Verify we have permission to delete each connection permission.
         for (ConnectionPermission permission : permissions) {
 
             // Get user
-            Connection dbConnection = dbConnectionMap.get(permission.getObjectIdentifier());
-            if (dbConnection == null)
+            MySQLConnection connection = connectionMap.get(permission.getObjectIdentifier());
+            if (connection == null)
                 throw new GuacamoleException(
                           "User '" + permission.getObjectIdentifier()
                         + "' not found.");
 
             // Verify that the user actually has permission to administrate
             // every one of these connections
-            if (!administerableConnections.contains(dbConnection.getConnection_id()))
+            if (!administerableConnections.contains(connection.getConnectionID()))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
-                    + dbConnection.getConnection_id());
+                    + connection.getIdentifier());
         }
 
         if(!connectionIDs.isEmpty()) {

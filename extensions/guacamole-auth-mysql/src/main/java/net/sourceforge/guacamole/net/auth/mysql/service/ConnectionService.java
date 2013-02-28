@@ -163,6 +163,60 @@ public class ConnectionService {
     }
 
     /**
+     * Retrieves the connections having the given IDs from the database.
+     *
+     * @param ids The IDs of the connections to retrieve.
+     * @return A list of existing MySQLConnection objects.
+     */
+    public List<MySQLConnection> retrieveConnectionsByID(List<Integer> ids) {
+
+        // If no IDs given, just return empty list
+        if (ids.isEmpty())
+            return Collections.EMPTY_LIST;
+
+        // Query connections by ID
+        ConnectionExample example = new ConnectionExample();
+        example.createCriteria().andConnection_idIn(ids);
+        List<Connection> connections = connectionDAO.selectByExample(example);
+
+        // Convert to MySQLConnection list
+        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>(connections.size());
+        for (Connection connection : connections)
+            mySQLConnections.add(toMySQLConnection(connection));
+
+        // Return found connections
+        return mySQLConnections;
+
+    }
+
+    /**
+     * Retrieves the connections having the given names from the database.
+     *
+     * @param names The names of the connections to retrieve.
+     * @return A list of existing MySQLConnection objects.
+     */
+    public List<MySQLConnection> retrieveConnectionsByName(List<String> names) {
+
+        // If no names given, just return empty list
+        if (names.isEmpty())
+            return Collections.EMPTY_LIST;
+
+        // Query connections by ID
+        ConnectionExample example = new ConnectionExample();
+        example.createCriteria().andConnection_nameIn(names);
+        List<Connection> connections = connectionDAO.selectByExample(example);
+
+        // Convert to MySQLConnection list
+        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>(connections.size());
+        for (Connection connection : connections)
+            mySQLConnections.add(toMySQLConnection(connection));
+
+        // Return found connections
+        return mySQLConnections;
+
+    }
+
+    /**
      * Convert the given database-retrieved Connection into a MySQLConnection.
      * The parameters of the given connection will be read and added to the
      * MySQLConnection in the process.
@@ -276,5 +330,70 @@ public class ConnectionService {
         return mySQLGuacamoleSocket;
 
     }
+
+    /**
+     * Creates a new connection having the given name and protocol.
+     *
+     * @param name The name to assign to the new connection.
+     * @param protocol The protocol to assign to the new connection.
+     * @return A new MySQLConnection containing the data of the newly created
+     *         connection.
+     */
+    public MySQLConnection createConnection(String name, String protocol) {
+
+        // Initialize database connection
+        Connection connection = new Connection();
+        connection.setConnection_name(name);
+        connection.setProtocol(protocol);
+
+        // Create connection
+        connectionDAO.insert(connection);
+        return toMySQLConnection(connection);
+
+    }
+
+    /**
+     * Deletes the connection having the given name from the database.
+     * @param name The name of the connection to delete.
+     */
+    public void deleteConnection(String name) {
+
+        // Get specified connection
+        MySQLConnection mySQLConnection = retrieveConnection(name);
+        int connection_id = mySQLConnection.getConnectionID();
+
+        // Delete the connection in the database
+        deleteConnection(connection_id);
+
+    }
+
+    /**
+     * Deletes the connection having the given ID from the database.
+     * @param id The ID of the connection to delete.
+     */
+    public void deleteConnection(int id) {
+        connectionDAO.deleteByPrimaryKey(id);
+    }
+
+    /**
+     * Updates the connection in the database corresponding to the given
+     * MySQLConnection.
+     *
+     * @param mySQLConnection The MySQLConnection to update (save) to the
+     *                        database. This connection must already exist.
+     */
+    public void updateConnection(MySQLConnection mySQLConnection) {
+
+        // Populate connection
+        Connection connection = new Connection();
+        connection.setConnection_id(mySQLConnection.getConnectionID());
+        connection.setConnection_name(mySQLConnection.getIdentifier());
+        connection.setProtocol(mySQLConnection.getConfiguration().getProtocol());
+
+        // Update the connection in the database
+        connectionDAO.updateByPrimaryKeySelective(connection);
+
+    }
+
 
 }

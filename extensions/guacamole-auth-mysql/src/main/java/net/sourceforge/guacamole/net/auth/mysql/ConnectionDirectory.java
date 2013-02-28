@@ -43,7 +43,6 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
@@ -79,12 +78,6 @@ public class ConnectionDirectory implements Directory<String, Connection>{
      */
     @Inject
     private ConnectionService connectionService;
-
-    /**
-     * Service for manipulating connections in the database.
-     */
-    @Inject
-    private ConnectionMapper connectionDAO;
 
     /**
      * Service for manipulating connection permissions in the database.
@@ -132,23 +125,19 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Verify permission to create
         permissionCheckService.verifyCreateConnectionPermission(this.user_id);
 
-        // Create database object for insert
-        net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
-            new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
-
-        connection.setConnection_name(object.getIdentifier());
-        connection.setProtocol(object.getConfiguration().getProtocol());
-        connectionDAO.insert(connection);
+        // Create connection
+        MySQLConnection connection = connectionService.createConnection(
+                object.getIdentifier(), object.getConfiguration().getProtocol());
 
         // Add connection parameters
-        createConfigurationValues(connection.getConnection_id(),
+        createConfigurationValues(connection.getConnectionID(),
                 object.getConfiguration());
 
         // Finally, give the current user full access to the newly created
         // connection.
         ConnectionPermissionKey newConnectionPermission = new ConnectionPermissionKey();
         newConnectionPermission.setUser_id(this.user_id);
-        newConnectionPermission.setConnection_id(connection.getConnection_id());
+        newConnectionPermission.setConnection_id(connection.getConnectionID());
 
         // Read permission
         newConnectionPermission.setPermission(MySQLConstants.CONNECTION_READ);
@@ -208,23 +197,15 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         permissionCheckService.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
 
         MySQLConnection mySQLConnection = (MySQLConnection) object;
-
-        // Create database object for insert
-        net.sourceforge.guacamole.net.auth.mysql.model.Connection connection =
-            new net.sourceforge.guacamole.net.auth.mysql.model.Connection();
-
-        connection.setConnection_id(mySQLConnection.getConnectionID());
-        connection.setConnection_name(object.getIdentifier());
-        connection.setProtocol(object.getConfiguration().getProtocol());
-        connectionDAO.updateByPrimaryKey(connection);
+        connectionService.updateConnection(mySQLConnection);
 
         // Delete old connection parameters
         ConnectionParameterExample parameterExample = new ConnectionParameterExample();
-        parameterExample.createCriteria().andConnection_idEqualTo(connection.getConnection_id());
+        parameterExample.createCriteria().andConnection_idEqualTo(mySQLConnection.getConnectionID());
         connectionParameterDAO.deleteByExample(parameterExample);
 
         // Add connection parameters
-        createConfigurationValues(connection.getConnection_id(),
+        createConfigurationValues(mySQLConnection.getConnectionID(),
                 object.getConfiguration());
 
     }
@@ -251,7 +232,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         connectionPermissionDAO.deleteByExample(connectionPermissionExample);
 
         // Delete the connection itself
-        connectionDAO.deleteByPrimaryKey(mySQLConnection.getConnectionID());
+        connectionService.deleteConnection(mySQLConnection.getConnectionID());
 
     }
 

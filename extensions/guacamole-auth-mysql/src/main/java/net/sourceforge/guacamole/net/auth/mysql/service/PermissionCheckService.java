@@ -37,7 +37,6 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
-import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,12 +48,9 @@ import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
@@ -65,7 +61,6 @@ import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.auth.permission.UserPermission;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * A service to retrieve information about what objects a user has permission to.
@@ -73,11 +68,17 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  */
 public class PermissionCheckService {
 
+    /**
+     * Service for accessing users.
+     */
     @Inject
     private UserService userService;
 
+    /**
+     * Service for accessing connections.
+     */
     @Inject
-    private ConnectionMapper connectionDAO;
+    private ConnectionService connectionService;
 
     @Inject
     private UserPermissionMapper userPermissionDAO;
@@ -87,12 +88,6 @@ public class PermissionCheckService {
 
     @Inject
     private SystemPermissionMapper systemPermissionDAO;
-
-    @Inject
-    private Provider<MySQLUser> mySQLUserProvider;
-
-    @Inject
-    private Provider<MySQLConnection> mySQLConnectionProvider;
 
     /**
      * Verifies that the user has read access to the given user. If not, throws a GuacamoleSecurityException.
@@ -581,9 +576,9 @@ public class PermissionCheckService {
      * @return
      */
     private boolean checkConnectionAccess(int userID, String affectedConnectionName, String permissionType) {
-        Connection connection = getConnection(affectedConnectionName);
+        MySQLConnection connection = connectionService.retrieveConnection(affectedConnectionName);
         if(connection != null)
-            return checkConnectionAccess(userID, connection.getConnection_id(), permissionType);
+            return checkConnectionAccess(userID, connection.getConnectionID(), permissionType);
 
         return false;
     }
@@ -684,33 +679,9 @@ public class PermissionCheckService {
     @Deprecated /* FIXME: Totally useless (we only ever need identifiers, and querying ALL CONNECTION DATA will take ages) */
     private Set<MySQLConnection> getConnections(int userID, String permissionType) {
 
-        // If connections available, query them
         Set<Integer> affectedConnectionIDs = getConnectionIDs(userID, permissionType);
-        if (!affectedConnectionIDs.isEmpty()) {
-
-            // Query available connections
-            ConnectionExample example = new ConnectionExample();
-            example.createCriteria().andConnection_idIn(Lists.newArrayList(affectedConnectionIDs));
-            List<Connection> connectionDBOjects = connectionDAO.selectByExample(example);
-
-            // Add connections to final set
-            Set<MySQLConnection> affectedConnections = new HashSet<MySQLConnection>();
-            for(Connection affectedConnection : connectionDBOjects) {
-                MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
-                mySQLConnection.init(
-                    affectedConnection.getConnection_id(),
-                    affectedConnection.getConnection_name(),
-                    new GuacamoleConfiguration(),
-                    Collections.EMPTY_LIST
-                );
-                affectedConnections.add(mySQLConnection);
-            }
-
-            return affectedConnections;
-        }
-
-        // Otherwise, no connections available
-        return Collections.EMPTY_SET;
+        return new HashSet<MySQLConnection>(
+                connectionService.retrieveConnectionsByID(Lists.newArrayList(affectedConnectionIDs)));
 
     }
 
@@ -774,21 +745,6 @@ public class PermissionCheckService {
     }
 
     /**
-     * Get a connection object by name.
-     * @param name
-     * @return
-     */
-    private Connection getConnection(String name) {
-        ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_nameEqualTo(name);
-        List<Connection> connections = connectionDAO.selectByExample(example);
-        if(connections.isEmpty())
-            return null;
-
-        return connections.get(0);
-    }
-
-    /**
      * Get all permissions a given user has.
      * @param userID
      * @return all permissions a user has.
@@ -843,19 +799,19 @@ public class PermissionCheckService {
                 affectedConnectionIDs.add(connectionPermission.getConnection_id());
 
             // Query connections, store in map indexed by connection ID
-            ConnectionExample connectionExample = new ConnectionExample();
-            connectionExample.createCriteria().andConnection_idIn(affectedConnectionIDs);
-            List<Connection> connections = connectionDAO.selectByExample(connectionExample);
-            Map<Integer, Connection> connectionMap = new HashMap<Integer, Connection>();
-            for(Connection connection : connections)
-                connectionMap.put(connection.getConnection_id(), connection);
+            List<MySQLConnection> connections =
+                    connectionService.retrieveConnectionsByID(affectedConnectionIDs);
+            Map<Integer, MySQLConnection> connectionMap = new HashMap<Integer, MySQLConnection>();
+            for(MySQLConnection connection : connections)
+                connectionMap.put(connection.getConnectionID(), connection);
 
             // Add connection permissions
             for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
-                Connection affectedConnection = connectionMap.get(connectionPermission.getConnection_id());
+                MySQLConnection affectedConnection =
+                        connectionMap.get(connectionPermission.getConnection_id());
                 ConnectionPermission newPermission = new ConnectionPermission(
                     ConnectionPermission.Type.valueOf(connectionPermission.getPermission()),
-                    affectedConnection.getConnection_name()
+                    affectedConnection.getIdentifier()
                 );
                 allPermissions.add(newPermission);
             }
