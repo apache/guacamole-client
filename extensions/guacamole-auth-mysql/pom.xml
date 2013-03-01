@@ -48,6 +48,32 @@
                 </executions>
             </plugin>
 
+            <!-- MyBatis Generator plugin -->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <version>1.3.0</version>
+
+                <executions>
+                    <execution>
+                        <id>Generate MyBatis Artifacts</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <!-- MySQL Connector -->
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.23</version>
+                    </dependency>
+                </dependencies>
+
+            </plugin>
+
         </plugins>
     </build>
 
