@@ -41,7 +41,9 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -163,56 +165,63 @@ public class ConnectionService {
     }
 
     /**
-     * Retrieves the connections having the given IDs from the database.
+     * Retrieves a translation map of connection names to their corresponding
+     * IDs.
      *
-     * @param ids The IDs of the connections to retrieve.
-     * @return A list of existing MySQLConnection objects.
+     * @param ids The IDs of the connections to retrieve the names of.
+     * @return A map containing the names of all connections and their
+     *         corresponding IDs.
      */
-    public List<MySQLConnection> retrieveConnectionsByID(List<Integer> ids) {
+    public Map<String, Integer> translateNames(List<Integer> ids) {
 
-        // If no IDs given, just return empty list
+        // If no IDs given, just return empty map
         if (ids.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_MAP;
 
-        // Query connections by ID
+        // Map of all names onto their corresponding IDs.
+        Map<String, Integer> names = new HashMap<String, Integer>();
+
+        // Get all connections having the given IDs
         ConnectionExample example = new ConnectionExample();
         example.createCriteria().andConnection_idIn(ids);
         List<Connection> connections = connectionDAO.selectByExample(example);
 
-        // Convert to MySQLConnection list
-        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>(connections.size());
+        // Produce set of names
         for (Connection connection : connections)
-            mySQLConnections.add(toMySQLConnection(connection));
+            names.put(connection.getConnection_name(),
+                      connection.getConnection_id());
 
-        // Return found connections
-        return mySQLConnections;
+        return names;
 
     }
 
     /**
-     * Retrieves the connections having the given names from the database.
+     * Retrieves a map of all connection names for the given IDs.
      *
-     * @param names The names of the connections to retrieve.
-     * @return A list of existing MySQLConnection objects.
+     * @param ids The IDs of the connections to retrieve the names of.
+     * @return A map containing the names of all connections and their
+     *         corresponding IDs.
      */
-    public List<MySQLConnection> retrieveConnectionsByName(List<String> names) {
+    public Map<Integer, String> retrieveNames(List<Integer> ids) {
 
-        // If no names given, just return empty list
-        if (names.isEmpty())
-            return Collections.EMPTY_LIST;
+        // If no IDs given, just return empty map
+        if (ids.isEmpty())
+            return Collections.EMPTY_MAP;
 
-        // Query connections by ID
+        // Map of all names onto their corresponding IDs.
+        Map<Integer, String> names = new HashMap<Integer, String>();
+
+        // Get all connections having the given IDs
         ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_nameIn(names);
+        example.createCriteria().andConnection_idIn(ids);
         List<Connection> connections = connectionDAO.selectByExample(example);
 
-        // Convert to MySQLConnection list
-        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>(connections.size());
+        // Produce set of names
         for (Connection connection : connections)
-            mySQLConnections.add(toMySQLConnection(connection));
+            names.put(connection.getConnection_id(),
+                      connection.getConnection_name());
 
-        // Return found connections
-        return mySQLConnections;
+        return names;
 
     }
 
@@ -349,21 +358,6 @@ public class ConnectionService {
         // Create connection
         connectionDAO.insert(connection);
         return toMySQLConnection(connection);
-
-    }
-
-    /**
-     * Deletes the connection having the given name from the database.
-     * @param name The name of the connection to delete.
-     */
-    public void deleteConnection(String name) {
-
-        // Get specified connection
-        MySQLConnection mySQLConnection = retrieveConnection(name);
-        int connection_id = mySQLConnection.getConnectionID();
-
-        // Delete the connection in the database
-        deleteConnection(connection_id);
 
     }
 

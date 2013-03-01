@@ -39,9 +39,10 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.User;
@@ -143,7 +144,7 @@ public class UserService {
             user.getUser_id(),
             user.getUsername(),
             null,
-            permissionCheckService.getAllPermissions(user.getUser_id())
+            permissionCheckService.retrieveAllPermissions(user.getUser_id())
         );
 
         // Return new user
@@ -168,60 +169,6 @@ public class UserService {
 
         // Otherwise, return found user
         return toMySQLUser(user);
-
-    }
-
-    /**
-     * Retrieves the users having the given IDs from the database.
-     *
-     * @param ids The IDs of the users to retrieve.
-     * @return A list of existing MySQLUser objects.
-     */
-    public List<MySQLUser> retrieveUsersByID(List<Integer> ids) {
-
-        // If no IDs given, just return empty list
-        if (ids.isEmpty())
-            return Collections.EMPTY_LIST;
-
-        // Query users by ID
-        UserExample example = new UserExample();
-        example.createCriteria().andUser_idIn(ids);
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
-
-        // Convert to MySQLUser list
-        List<MySQLUser> mySQLUsers = new ArrayList<MySQLUser>(users.size());
-        for (UserWithBLOBs user : users)
-            mySQLUsers.add(toMySQLUser(user));
-
-        // Return found users
-        return mySQLUsers;
-
-    }
-
-    /**
-     * Retrieves the users having the given usernames from the database.
-     *
-     * @param names The usernames of the users to retrieve.
-     * @return A list of existing MySQLUser objects.
-     */
-    public List<MySQLUser> retrieveUsersByUsername(List<String> names) {
-
-        // If no names given, just return empty list
-        if (names.isEmpty())
-            return Collections.EMPTY_LIST;
-
-        // Query users by ID
-        UserExample example = new UserExample();
-        example.createCriteria().andUsernameIn(names);
-        List<UserWithBLOBs> users = userDAO.selectByExampleWithBLOBs(example);
-
-        // Convert to MySQLUser list
-        List<MySQLUser> mySQLUsers = new ArrayList<MySQLUser>(users.size());
-        for (UserWithBLOBs user : users)
-            mySQLUsers.add(toMySQLUser(user));
-
-        // Return found users
-        return mySQLUsers;
 
     }
 
@@ -287,6 +234,66 @@ public class UserService {
     }
 
     /**
+     * Retrieves a translation map of usernames to their corresponding IDs.
+     *
+     * @param ids The IDs of the users to retrieve the usernames of.
+     * @return A map containing the names of all users and their corresponding
+     *         IDs.
+     */
+    public Map<String, Integer> translateUsernames(List<Integer> ids) {
+
+        // If no IDs given, just return empty map
+        if (ids.isEmpty())
+            return Collections.EMPTY_MAP;
+
+        // Map of all names onto their corresponding IDs
+        Map<String, Integer> names = new HashMap<String, Integer>();
+
+        // Get all users having the given IDs
+        UserExample example = new UserExample();
+        example.createCriteria().andUser_idIn(ids);
+        List<net.sourceforge.guacamole.net.auth.mysql.model.User> users =
+                userDAO.selectByExample(example);
+
+        // Produce set of names
+        for (net.sourceforge.guacamole.net.auth.mysql.model.User user : users)
+            names.put(user.getUsername(), user.getUser_id());
+
+        return names;
+
+    }
+
+    /**
+     * Retrieves a map of all usernames for the given IDs.
+     *
+     * @param ids The IDs of the users to retrieve the usernames of.
+     * @return A map containing the names of all users and their corresponding
+     *         IDs.
+     */
+    public Map<Integer, String> retrieveUsernames(List<Integer> ids) {
+
+        // If no IDs given, just return empty map
+        if (ids.isEmpty())
+            return Collections.EMPTY_MAP;
+
+        // Map of all names onto their corresponding IDs
+        Map<Integer, String> names = new HashMap<Integer, String>();
+
+        // Get all users having the given IDs
+        UserExample example = new UserExample();
+        example.createCriteria().andUser_idIn(ids);
+        List<net.sourceforge.guacamole.net.auth.mysql.model.User> users =
+                userDAO.selectByExample(example);
+
+        // Produce set of names
+        for (net.sourceforge.guacamole.net.auth.mysql.model.User user : users)
+            names.put(user.getUser_id(), user.getUsername());
+
+        return names;
+
+    }
+
+    /**
      * Creates a new user having the given username and password.
      *
      * @param username The username to assign to the new user.
@@ -315,20 +322,12 @@ public class UserService {
     }
 
     /**
-     * Deletes the user having the given username from the database.
-     * @param username The username of the user to delete.
+     * Deletes the user having the given ID from the database.
+     * @param user_id The ID of the user to delete.
      */
-    public void deleteUser(String username) {
-
-        // Get specified user
-        MySQLUser mySQLUser = retrieveUser(username);
-        int user_id = mySQLUser.getUserID();
-
-        // Delete the user in the database
+    public void deleteUser(int user_id) {
         userDAO.deleteByPrimaryKey(user_id);
-
     }
-
 
     /**
      * Updates the user in the database corresponding to the given MySQLUser.

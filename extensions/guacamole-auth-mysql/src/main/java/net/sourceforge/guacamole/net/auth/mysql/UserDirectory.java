@@ -41,8 +41,6 @@ import com.google.common.base.Preconditions;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -143,23 +141,32 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     @Override
     public net.sourceforge.guacamole.net.auth.User get(String identifier)
             throws GuacamoleException {
-        permissionCheckService.verifyUserReadAccess(this.user_id, identifier);
+
+        // Get user
+        MySQLUser user = userService.retrieveUser(identifier);
+
+        // Verify access is granted
+        permissionCheckService.verifyUserAccess(this.user_id,
+                user.getUserID(),
+                MySQLConstants.USER_READ);
+
+        // Return user
         return userService.retrieveUser(identifier);
+
     }
 
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
 
-        // Get set of all readable users
-        Set<MySQLUser> users = permissionCheckService.getReadableUsers(this.user_id);
+        // List of all user IDs for which this user has read access
+        List<Integer> userIDs =
+                permissionCheckService.retrieveConnectionIDs(this.user_id,
+                MySQLConstants.USER_READ);
 
-        // Build set of usernames of readable users
-        Set<String> userNameSet = new HashSet<String>();
-        for (MySQLUser mySQLUser : users)
-            userNameSet.add(mySQLUser.getUsername());
+        // Query all associated users
+        return userService.translateUsernames(userIDs).keySet();
 
-        return userNameSet;
     }
 
     @Override
@@ -168,7 +175,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             throws GuacamoleException {
 
         // Verify current user has permission to create users
-        permissionCheckService.verifyCreateUserPermission(this.user_id);
+        permissionCheckService.verifySystemAccess(this.user_id,
+                MySQLConstants.SYSTEM_USER_CREATE);
         Preconditions.checkNotNull(object);
 
         // Create new user
@@ -285,51 +293,43 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             Collection<UserPermission> permissions)
             throws GuacamoleException {
 
+        // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
-        // Get set of administerable users
-        Set<Integer> administerableUsers =
-                permissionCheckService.getAdministerableUserIDs(this.user_id);
+        // Get list of administerable user IDs
+        List<Integer> administerableUserIDs =
+            permissionCheckService.retrieveUserIDs(this.user_id,
+                MySQLConstants.USER_ADMINISTER);
 
-        // Get list of usernames for all given user permissions.
-        List<String> usernames = new ArrayList<String>();
-        for (UserPermission permission : permissions)
-            usernames.add(permission.getObjectIdentifier());
+        // Get set of usernames corresponding to administerable users
+        Map<String, Integer> administerableUsers =
+                userService.translateUsernames(administerableUserIDs);
 
-        // Find all the users by username
-        List<MySQLUser> users = userService.retrieveUsersByUsername(usernames);
-
-        // Build map of found users, indexed by username
-        Map<String, MySQLUser> userMap = new HashMap<String, MySQLUser>();
-        for (MySQLUser user : users)
-            userMap.put(user.getUsername(), user);
-
+        // Insert all given permissions
         for (UserPermission permission : permissions) {
 
-            // Get user
-            MySQLUser affectedUser =
-                    userMap.get(permission.getObjectIdentifier());
-            if (affectedUser == null)
-                throw new GuacamoleException(
-                          "User '" + permission.getObjectIdentifier()
-                        + "' not found.");
+            // Get original ID
+            Integer affected_id =
+                    administerableUsers.get(permission.getObjectIdentifier());
 
             // Verify that the user actually has permission to administrate
             // every one of these users
-            if (!administerableUsers.contains(affectedUser.getUserID()))
+            if (affected_id == null)
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate user "
-                    + affectedUser.getUsername());
+                    + permission.getObjectIdentifier());
 
             // Create new permission
             UserPermissionKey newPermission = new UserPermissionKey();
-            newPermission.setAffected_user_id(affectedUser.getUserID());
-            newPermission.setPermission(permission.getType().name());
             newPermission.setUser_id(user_id);
+            newPermission.setPermission(MySQLConstants.getUserConstant(permission.getType()));
+            newPermission.setAffected_user_id(affected_id);
             userPermissionDAO.insert(newPermission);
+
          }
+
     }
 
     /**
@@ -345,54 +345,44 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             Collection<UserPermission> permissions)
             throws GuacamoleException {
 
+        // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
-        // Get set of administerable users
-        Set<Integer> administerableUsers =
-                permissionCheckService.getAdministerableUserIDs(this.user_id);
+        // Get list of administerable user IDs
+        List<Integer> administerableUserIDs =
+            permissionCheckService.retrieveUserIDs(this.user_id,
+                MySQLConstants.USER_ADMINISTER);
 
-        // Get list of usernames for all given user permissions.
-        List<String> usernames = new ArrayList<String>();
-        for (UserPermission permission : permissions)
-            usernames.add(permission.getObjectIdentifier());
+        // Get set of usernames corresponding to administerable users
+        Map<String, Integer> administerableUsers =
+                userService.translateUsernames(administerableUserIDs);
 
-        // Find all the users by username
-        List<MySQLUser> users = userService.retrieveUsersByUsername(usernames);
-        List<Integer> userIDs = new ArrayList<Integer>();
-
-        // Build map of found users, indexed by username
-        Map<String, MySQLUser> userMap = new HashMap<String, MySQLUser>();
-        for (MySQLUser user : users) {
-            userMap.put(user.getUsername(), user);
-            userIDs.add(user.getUserID());
-        }
-
-        // Verify we have permission to delete each user permission.
+        // Delete requested permissions
         for (UserPermission permission : permissions) {
 
-            // Get user
-            MySQLUser affectedUser = userMap.get(permission.getObjectIdentifier());
-            if (affectedUser == null)
-                throw new GuacamoleException(
-                          "User '" + permission.getObjectIdentifier()
-                        + "' not found.");
+            // Get original ID
+            Integer affected_id =
+                    administerableUsers.get(permission.getObjectIdentifier());
 
             // Verify that the user actually has permission to administrate
             // every one of these users
-            if (!administerableUsers.contains(affectedUser.getUserID()))
+            if (affected_id == null)
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate user "
-                    + affectedUser.getUsername());
+                    + permission.getObjectIdentifier());
+
+            // Delete requested permission
+            UserPermissionExample userPermissionExample = new UserPermissionExample();
+            userPermissionExample.createCriteria()
+                .andUser_idEqualTo(user_id)
+                .andPermissionEqualTo(MySQLConstants.getUserConstant(permission.getType()))
+                .andAffected_user_idEqualTo(affected_id);
+            userPermissionDAO.deleteByExample(userPermissionExample);
+
         }
 
-        if(!userIDs.isEmpty()) {
-            UserPermissionExample userPermissionExample = new UserPermissionExample();
-            userPermissionExample.createCriteria().andUser_idEqualTo(user_id)
-                    .andAffected_user_idIn(userIDs);
-            userPermissionDAO.deleteByExample(userPermissionExample);
-        }
     }
 
     /**
@@ -409,51 +399,42 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             Collection<ConnectionPermission> permissions)
             throws GuacamoleException {
 
+        // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
-        // Get adminsterable connection identifiers
-        Set<Integer> administerableConnections =
-                permissionCheckService.getAdministerableConnectionIDs(this.user_id);
+        // Get list of administerable connection IDs
+        List<Integer> administerableConnectionIDs =
+            permissionCheckService.retrieveUserIDs(this.user_id,
+                MySQLConstants.CONNECTION_ADMINISTER);
 
-        // Build list of affected connection names from the permissions given
-        List<String> connectionNames = new ArrayList<String>();
-        for (ConnectionPermission permission : permissions)
-            connectionNames.add(permission.getObjectIdentifier());
+        // Get set of names corresponding to administerable connections
+        Map<String, Integer> administerableConnections =
+                userService.translateUsernames(administerableConnectionIDs);
 
-        // Find all the connections by connection name
-        List<MySQLConnection> connections = connectionService.retrieveConnectionsByName(connectionNames);
-
-        // Build map of found connections, indexed by name
-        Map<String, MySQLConnection> connectionMap = new HashMap<String, MySQLConnection>();
-        for (MySQLConnection connection : connections)
-            connectionMap.put(connection.getIdentifier(), connection);
-
-        // Finally, insert the new permissions
+        // Insert all given permissions
         for (ConnectionPermission permission : permissions) {
 
-            // Get permission
-            MySQLConnection connection = connectionMap.get(permission.getObjectIdentifier());
-            if (connection == null)
-                throw new GuacamoleException(
-                    "Connection '" + permission.getObjectIdentifier()
-                    + "' not found.");
+            // Get original ID
+            Integer connection_id =
+                    administerableConnections.get(permission.getObjectIdentifier());
 
             // Throw exception if permission to administer this connection
             // is not granted
-            if (!administerableConnections.contains(connection.getConnectionID()))
+            if (connection_id == null)
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
-                    + connection.getIdentifier());
+                    + permission.getObjectIdentifier());
 
 
-            // Insert previously-non-existent connection permission
+            // Create new permission
             ConnectionPermissionKey newPermission = new ConnectionPermissionKey();
-            newPermission.setConnection_id(connection.getConnectionID());
-            newPermission.setPermission(permission.getType().name());
             newPermission.setUser_id(user_id);
+            newPermission.setPermission(MySQLConstants.getConnectionConstant(permission.getType()));
+            newPermission.setConnection_id(connection_id);
             connectionPermissionDAO.insert(newPermission);
+
         }
     }
 
@@ -470,54 +451,43 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             Collection<ConnectionPermission> permissions)
             throws GuacamoleException {
 
+        // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
-        // Get set of administerable users
-        Set<Integer> administerableConnections =
-                permissionCheckService.getAdministerableConnectionIDs(this.user_id);
+        // Get list of administerable connection IDs
+        List<Integer> administerableConnectionIDs =
+            permissionCheckService.retrieveUserIDs(this.user_id,
+                MySQLConstants.CONNECTION_ADMINISTER);
 
-        // Get list of identifiers for all given user permissions.
-        List<String> identifiers = new ArrayList<String>();
-        for (ConnectionPermission permission : permissions)
-            identifiers.add(permission.getObjectIdentifier());
+        // Get set of names corresponding to administerable connections
+        Map<String, Integer> administerableConnections =
+                userService.translateUsernames(administerableConnectionIDs);
 
-        // Find all the connections by identifiers
-        List<MySQLConnection> connections = connectionService.retrieveConnectionsByName(identifiers);
-        List<Integer> connectionIDs = new ArrayList<Integer>();
-
-        // Build map of found connections, indexed by identifier
-        Map<String, MySQLConnection> connectionMap = new HashMap<String, MySQLConnection>();
-        for (MySQLConnection connection : connections) {
-            connectionMap.put(connection.getIdentifier(), connection);
-            connectionIDs.add(connection.getConnectionID());
-        }
-
-        // Verify we have permission to delete each connection permission.
+        // Delete requested permissions
         for (ConnectionPermission permission : permissions) {
 
-            // Get user
-            MySQLConnection connection = connectionMap.get(permission.getObjectIdentifier());
-            if (connection == null)
-                throw new GuacamoleException(
-                          "User '" + permission.getObjectIdentifier()
-                        + "' not found.");
+            // Get original ID
+            Integer connection_id =
+                    administerableConnections.get(permission.getObjectIdentifier());
 
             // Verify that the user actually has permission to administrate
             // every one of these connections
-            if (!administerableConnections.contains(connection.getConnectionID()))
+            if (connection_id == null)
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
-                    + connection.getIdentifier());
+                    + permission.getObjectIdentifier());
+
+            ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
+            connectionPermissionExample.createCriteria()
+                .andUser_idEqualTo(user_id)
+                .andPermissionEqualTo(MySQLConstants.getConnectionConstant(permission.getType()))
+                .andConnection_idEqualTo(connection_id);
+            connectionPermissionDAO.deleteByExample(connectionPermissionExample);
+
         }
 
-        if(!connectionIDs.isEmpty()) {
-            ConnectionPermissionExample connectionPermissionExample = new ConnectionPermissionExample();
-            connectionPermissionExample.createCriteria().andUser_idEqualTo(user_id)
-                    .andConnection_idIn(connectionIDs);
-            connectionPermissionDAO.deleteByExample(connectionPermissionExample);
-        }
     }
 
     /**
@@ -538,7 +508,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions) {
 
-            switch (permission.getType()) {
+            switch (permission.getType()) { // TODO: Move this into MySQLConstants
 
                 // Create connection permission
                 case CREATE_CONNECTION:
@@ -627,12 +597,14 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         if (!(object instanceof MySQLUser))
             throw new GuacamoleException("User not from database.");
 
+        MySQLUser mySQLUser = (MySQLUser) object;
+
         // Validate permission to update this user is granted
-        permissionCheckService.verifyUserUpdateAccess(this.user_id,
-                object.getUsername());
+        permissionCheckService.verifyUserAccess(this.user_id,
+                mySQLUser.getUserID(),
+                MySQLConstants.USER_UPDATE);
 
         // Update the user in the database
-        MySQLUser mySQLUser = (MySQLUser) object;
         userService.updateUser(mySQLUser);
 
         // Update permissions in database
@@ -649,17 +621,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
 
-        // FIXME: Querying permissions here will query the user to determine
-        // its ID, and that same user will be queried AGAIN later when
-        // deleted, again - to determine its ID. Perhaps we want cascading
-        // deletes in the schema?
+        // Get user pending deletion
+        MySQLUser user = userService.retrieveUser(identifier);
 
         // Validate current user has permission to remove the specified user
-        permissionCheckService.verifyUserDeleteAccess(this.user_id,
-                identifier);
+        permissionCheckService.verifyUserAccess(this.user_id,
+                user.getUserID(),
+                MySQLConstants.USER_DELETE);
 
         // Delete specified user
-        userService.deleteUser(identifier);
+        userService.deleteUser(user.getUserID());
 
     }
 

@@ -38,7 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
@@ -102,19 +102,34 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public Connection get(String identifier) throws GuacamoleException {
-        permissionCheckService.verifyConnectionReadAccess(this.user_id, identifier);
-        return connectionService.retrieveConnection(identifier);
+
+        // Get connection
+        MySQLConnection connection =
+                connectionService.retrieveConnection(identifier);
+
+        // Verify access is granted
+        permissionCheckService.verifyConnectionAccess(
+                this.user_id,
+                connection.getConnectionID(),
+                MySQLConstants.CONNECTION_READ);
+
+        // Return connection
+        return connection;
+
     }
 
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-        Set<String> connectionNameSet = new HashSet<String>();
-        Set<MySQLConnection> connections = permissionCheckService.getReadableConnections(this.user_id);
-        for(MySQLConnection mySQLConnection : connections) {
-            connectionNameSet.add(mySQLConnection.getIdentifier());
-        }
-        return connectionNameSet;
+
+        // List of all connection IDs for which this user has read access
+        List<Integer> connectionIDs =
+                permissionCheckService.retrieveConnectionIDs(this.user_id,
+                MySQLConstants.CONNECTION_READ);
+
+        // Query all associated connections
+        return connectionService.translateNames(connectionIDs).keySet();
+
     }
 
     @Transactional
@@ -122,7 +137,8 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     public void add(Connection object) throws GuacamoleException {
 
         // Verify permission to create
-        permissionCheckService.verifyCreateConnectionPermission(this.user_id);
+        permissionCheckService.verifySystemAccess(this.user_id,
+                MySQLConstants.SYSTEM_CONNECTION_CREATE);
 
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
@@ -192,10 +208,14 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         if (!(object instanceof MySQLConnection))
             throw new GuacamoleException("Connection not from database.");
 
-        // Verify permission to update
-        permissionCheckService.verifyConnectionUpdateAccess(this.user_id, object.getIdentifier());
-
         MySQLConnection mySQLConnection = (MySQLConnection) object;
+
+        // Verify permission to update
+        permissionCheckService.verifyConnectionAccess(this.user_id,
+                mySQLConnection.getConnectionID(),
+                MySQLConstants.CONNECTION_UPDATE);
+
+        // Perform update
         connectionService.updateConnection(mySQLConnection);
 
         // Delete old connection parameters
@@ -213,12 +233,14 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public void remove(String identifier) throws GuacamoleException {
 
-        // Verify permission to delete
-        permissionCheckService.verifyConnectionDeleteAccess(this.user_id, identifier);
-
         // Get connection
         MySQLConnection mySQLConnection =
                 connectionService.retrieveConnection(identifier);
+
+        // Verify permission to delete
+        permissionCheckService.verifyConnectionAccess(this.user_id,
+                mySQLConnection.getConnectionID(),
+                MySQLConstants.CONNECTION_DELETE);
 
         // Delete the connection itself
         connectionService.deleteConnection(mySQLConnection.getConnectionID());
