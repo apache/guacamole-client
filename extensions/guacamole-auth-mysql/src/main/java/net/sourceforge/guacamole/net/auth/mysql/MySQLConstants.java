@@ -1,6 +1,9 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
+import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
+
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -110,5 +113,74 @@ public final class MySQLConstants {
      * the system as a whole.
      */
     public static final String SYSTEM_ADMINISTER = "ADMINISTER";
+
+    /**
+     * Given the type of a permission affecting a user, returns the MySQL
+     * constant representing that permission type.
+     *
+     * @param type The type of permission to look up.
+     * @return The MySQL constant corresponding to the given permission type.
+     */
+    public static String getUserConstant(ObjectPermission.Type type) {
+
+        // Convert permission type to MySQL constant
+        switch (type) {
+            case READ:       return USER_READ;
+            case UPDATE:     return USER_UPDATE;
+            case ADMINISTER: return USER_ADMINISTER;
+            case DELETE:     return USER_DELETE;
+        }
+
+        // If we get here, permission support was not properly implemented
+        throw new UnsupportedOperationException(
+            "Unsupported permission type: " + type);
+
+    }
+
+    /**
+     * Given the type of a permission affecting a connection, returns the MySQL
+     * constant representing that permission type.
+     *
+     * @param type The type of permission to look up.
+     * @return The MySQL constant corresponding to the given permission type.
+     */
+    public static String getConnectionConstant(ObjectPermission.Type type) {
+
+        // Convert permission type to MySQL constant
+        switch (type) {
+            case READ:       return CONNECTION_READ;
+            case UPDATE:     return CONNECTION_UPDATE;
+            case ADMINISTER: return CONNECTION_ADMINISTER;
+            case DELETE:     return CONNECTION_DELETE;
+        }
+
+        // If we get here, permission support was not properly implemented
+        throw new UnsupportedOperationException(
+            "Unsupported permission type: " + type);
+
+    }
+
+
+    /**
+     * Given the type of a permission affecting the system, returns the MySQL
+     * constant representing that permission type.
+     *
+     * @param type The type of permission to look up.
+     * @return The MySQL constant corresponding to the given permission type.
+     */
+    public static String getSystemConstant(SystemPermission.Type type) {
+
+        // Convert permission type to MySQL constant
+        switch (type) {
+            case CREATE_USER:       return SYSTEM_USER_CREATE;
+            case CREATE_CONNECTION: return SYSTEM_CONNECTION_CREATE;
+            case ADMINISTER:        return SYSTEM_ADMINISTER;
+        }
+
+        // If we get here, permission support was not properly implemented
+        throw new UnsupportedOperationException(
+            "Unsupported permission type: " + type);
+
+    }
 
 }
