@@ -50,10 +50,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 
 /**
