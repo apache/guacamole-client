@@ -149,5 +149,5 @@ CREATE TABLE `guacamole_connection_history` (
     FOREIGN KEY (`connection_id`)
     REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
