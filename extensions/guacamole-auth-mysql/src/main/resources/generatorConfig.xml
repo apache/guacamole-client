@@ -32,6 +32,8 @@
             domainObjectName="Connection" >
             <property name="useActualColumnNames" value="true"/>
             <property name="ignoreQualifiersAtRuntime" value="true"/>
+            <generatedKey column="connection_id" identity="true"
+                sqlStatement="SELECT LAST_INSERT_ID()"/>
         </table>
 
         <table tableName="guacamole_connection_parameter"
@@ -64,6 +66,8 @@
             domainObjectName="User" >
             <property name="useActualColumnNames" value="true"/>
             <property name="ignoreQualifiersAtRuntime" value="true"/>
+            <generatedKey column="user_id" identity="true"
+                sqlStatement="SELECT LAST_INSERT_ID()"/>
         </table>
 
         <table tableName="guacamole_user_permission"

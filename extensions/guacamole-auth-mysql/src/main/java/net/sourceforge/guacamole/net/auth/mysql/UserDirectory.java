@@ -405,12 +405,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get list of administerable connection IDs
         List<Integer> administerableConnectionIDs =
-            permissionCheckService.retrieveUserIDs(this.user_id,
+            permissionCheckService.retrieveConnectionIDs(this.user_id,
                 MySQLConstants.CONNECTION_ADMINISTER);
 
         // Get set of names corresponding to administerable connections
         Map<String, Integer> administerableConnections =
-                userService.translateUsernames(administerableConnectionIDs);
+                connectionService.translateNames(administerableConnectionIDs);
 
         // Insert all given permissions
         for (ConnectionPermission permission : permissions) {

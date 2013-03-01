@@ -290,7 +290,7 @@ public class PermissionCheckService {
             // Construct permission from data
             UserPermission permission = new UserPermission(
                 UserPermission.Type.valueOf(userPermission.getPermission()),
-                affectedUsers.get(userPermission.getUser_id())
+                affectedUsers.get(userPermission.getAffected_user_id())
             );
 
             // Add to set
@@ -327,7 +327,7 @@ public class PermissionCheckService {
             connectionIDs.add(connectionPermission.getConnection_id());
 
         // Get corresponding names
-        Map<Integer, String> affectedUsers =
+        Map<Integer, String> affectedConnections =
                 connectionService.retrieveNames(connectionIDs);
 
         // Add connection permissions
@@ -336,7 +336,7 @@ public class PermissionCheckService {
             // Construct permission from data
             ConnectionPermission permission = new ConnectionPermission(
                 ConnectionPermission.Type.valueOf(connectionPermission.getPermission()),
-                affectedUsers.get(connectionPermission.getUser_id())
+                affectedConnections.get(connectionPermission.getConnection_id())
             );
 
             // Add to set
