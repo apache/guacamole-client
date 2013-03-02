@@ -259,7 +259,7 @@ public class ConnectionService {
             connection.getConnection_id(),
             connection.getConnection_name(),
             config,
-            Collections.EMPTY_LIST // TODO: Read history
+            retrieveHistory(connection.getConnection_id())
         );
 
         return mySQLConnection;
@@ -333,6 +333,8 @@ public class ConnectionService {
         // Mark this connection as active
         activeConnectionSet.add(connection.getConnectionID());
 
+        // TODO: Actually update history...
+        
         // Return new MySQLGuacamoleSocket
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();
         mySQLGuacamoleSocket.init(socket, connection.getConnectionID());

@@ -73,12 +73,6 @@ public class MySQLConnection extends AbstractConnection {
     private ConnectionService connectionService;
 
     /**
-     * Set of all currently active connections.
-     */
-    @Inject
-    private ActiveConnectionSet activeConnectionSet;
-
-    /**
      * Create a default, empty connection.
      */
     public MySQLConnection() {

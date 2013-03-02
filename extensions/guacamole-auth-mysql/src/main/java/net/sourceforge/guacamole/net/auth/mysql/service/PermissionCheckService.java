@@ -307,8 +307,8 @@ public class PermissionCheckService {
      * given ID.
      *
      * @param userID The ID of the user to retrieve permissions of.
-     * @return A set of all user permissions granted to the user having the
-     *         given ID.
+     * @return A set of all connection permissions granted to the user having
+     *         the given ID.
      */
     public Set<ConnectionPermission> retrieveConnectionPermissions(int userID) {
 
@@ -349,6 +349,44 @@ public class PermissionCheckService {
     }
 
     /**
+     * Retrieves all system permissions granted to the user having the
+     * given ID.
+     *
+     * @param userID The ID of the user to retrieve permissions of.
+     * @return A set of all system permissions granted to the user having the
+     *         given ID.
+     */
+    public Set<SystemPermission> retrieveSystemPermissions(int userID) {
+
+        // Set of all permissions
+        Set<SystemPermission> permissions = new HashSet<SystemPermission>();
+        
+        // And finally, system permissions
+        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
+        systemPermissionExample.createCriteria().andUser_idEqualTo(userID);
+        List<SystemPermissionKey> systemPermissions =
+                systemPermissionDAO.selectByExample(systemPermissionExample);
+        for(SystemPermissionKey systemPermission : systemPermissions) {
+
+            // User creation permission
+            if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
+                permissions.add(new SystemPermission(SystemPermission.Type.CREATE_USER));
+
+            // System creation permission
+            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
+                permissions.add(new SystemPermission(SystemPermission.Type.CREATE_CONNECTION));
+
+            // System administration permission
+            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_ADMINISTER))
+                permissions.add(new SystemPermission(SystemPermission.Type.ADMINISTER));
+
+        }
+
+        return permissions;
+
+    }
+
+    /**
      * Retrieves all permissions granted to the user having the given ID.
      *
      * @param userID The ID of the user to retrieve permissions of.
@@ -366,28 +404,8 @@ public class PermissionCheckService {
         // Add connection permissions
         allPermissions.addAll(retrieveConnectionPermissions(userID));
 
-        // TODO: Move to retrieveSystemPermissions()
-
-        // And finally, system permissions
-        SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
-        systemPermissionExample.createCriteria().andUser_idEqualTo(userID);
-        List<SystemPermissionKey> systemPermissions =
-                systemPermissionDAO.selectByExample(systemPermissionExample);
-        for(SystemPermissionKey systemPermission : systemPermissions) {
-
-            // User creation permission
-            if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_USER_CREATE))
-                allPermissions.add(new SystemPermission(SystemPermission.Type.CREATE_USER));
-
-            // System creation permission
-            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_CONNECTION_CREATE))
-                allPermissions.add(new SystemPermission(SystemPermission.Type.CREATE_CONNECTION));
-
-            // System administration permission
-            else if(systemPermission.getPermission().equals(MySQLConstants.SYSTEM_ADMINISTER))
-                allPermissions.add(new SystemPermission(SystemPermission.Type.ADMINISTER));
-
-        }
+        // Add system permissions
+        allPermissions.addAll(retrieveSystemPermissions(userID));
 
         return allPermissions;
     }

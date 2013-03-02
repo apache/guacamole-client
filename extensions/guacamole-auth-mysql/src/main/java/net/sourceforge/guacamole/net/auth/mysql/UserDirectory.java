@@ -501,40 +501,17 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private void createSystemPermissions(int user_id,
             Collection<SystemPermission> permissions) {
 
+        // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
-        // Build list of requested system permissions
-        List<String> systemPermissionTypes = new ArrayList<String>();
+        // Insert all requested permissions
         for (SystemPermission permission : permissions) {
-
-            switch (permission.getType()) { // TODO: Move this into MySQLConstants
-
-                // Create connection permission
-                case CREATE_CONNECTION:
-                    systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
-                    break;
-
-                // Create user permission
-                case CREATE_USER:
-                    systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
-                    break;
-
-                // Fail if unexpected type encountered
-                default:
-                    assert false : "Unsupported type: " + permission.getType();
-
-            }
-
-        } // end for each system permission
-
-        // Finally, insert any NEW system permissions for this user
-        for (String systemPermissionType : systemPermissionTypes) {
 
             // Insert permission
             SystemPermissionKey newSystemPermission = new SystemPermissionKey();
             newSystemPermission.setUser_id(user_id);
-            newSystemPermission.setPermission(systemPermissionType);
+            newSystemPermission.setPermission(MySQLConstants.getSystemConstant(permission.getType()));
             systemPermissionDAO.insert(newSystemPermission);
 
         }
@@ -552,34 +529,16 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private void deleteSystemPermissions(int user_id,
             Collection<SystemPermission> permissions) {
 
+        // If no permissions given, stop now
         if (permissions.isEmpty())
             return;
 
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
-        for (SystemPermission permission : permissions) {
+        for (SystemPermission permission : permissions)
+            systemPermissionTypes.add(MySQLConstants.getSystemConstant(permission.getType()));
 
-            switch (permission.getType()) {
-
-                // Create connection permission
-                case CREATE_CONNECTION:
-                    systemPermissionTypes.add(MySQLConstants.SYSTEM_CONNECTION_CREATE);
-                    break;
-
-                // Create user permission
-                case CREATE_USER:
-                    systemPermissionTypes.add(MySQLConstants.SYSTEM_USER_CREATE);
-                    break;
-
-                // Fail if unexpected type encountered
-                default:
-                    assert false : "Unsupported type: " + permission.getType();
-
-            }
-
-        } // end for each system permission
-
-        // Finally, delete the requested system permissions for this user
+        // Delete the requested system permissions for this user
         SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
         systemPermissionExample.createCriteria().andUser_idEqualTo(user_id)
                 .andPermissionIn(systemPermissionTypes);
