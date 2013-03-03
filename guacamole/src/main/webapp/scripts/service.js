@@ -165,6 +165,33 @@ GuacamoleService.PermissionSet = function() {
 };
 
 /**
+ * Handles the reponse from the given XMLHttpRequest object, throwing an error
+ * with a meaningful message if the request failed.
+ * 
+ * @param {XMLHttpRequest} xhr The XMLHttpRequest to check the response of.
+ */
+GuacamoleService.handleResponse = function(xhr) {
+
+    // For HTTP Forbidden, just return permission denied
+    if (xhr.status == 403)
+        throw new Error("Permission denied.");
+
+    // Otherwise, if unsuccessful, throw error with message derived from
+    // response
+    if (xhr.status != 200) {
+
+        // Retrieve error message
+        var message =    xhr.getResponseHeader("Guacamole-Error-Message")
+                      || xhr.statusText;
+
+        // Throw error with derived message
+        throw new Error(message);
+
+    }
+
+};
+
+/**
  * Collection of service functions which deal with connections. Each function
  * makes an explicit HTTP query to the server, and parses the response.
  */
@@ -198,9 +225,8 @@ GuacamoleService.Connections = {
         xhr.open("GET", list_url, false);
         xhr.send(null);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
         // Otherwise, get list
         var connections = new Array();
@@ -289,9 +315,8 @@ GuacamoleService.Connections = {
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(data);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     },
 
@@ -323,9 +348,8 @@ GuacamoleService.Connections = {
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(data);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     },
 
@@ -348,9 +372,8 @@ GuacamoleService.Connections = {
         xhr.open("GET", connections_url, false);
         xhr.send(null);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     }
 
@@ -382,9 +405,8 @@ GuacamoleService.Users = {
         xhr.open("GET", users_url, false);
         xhr.send(null);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
         // Otherwise, get list
         var users = new Array();
@@ -477,9 +499,8 @@ GuacamoleService.Users = {
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(data);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     },
 
@@ -502,9 +523,8 @@ GuacamoleService.Users = {
         xhr.open("GET", users_url, false);
         xhr.send(null);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     },
 
@@ -527,9 +547,8 @@ GuacamoleService.Users = {
         xhr.open("GET", users_url, false);
         xhr.send(null);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
     }
 
@@ -573,9 +592,8 @@ GuacamoleService.Permissions = {
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhr.send(data);
 
-        // If fail, throw error
-        if (xhr.status != 200)
-            throw new Error(xhr.statusText);
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
 
         // Otherwise, build PermissionSet
         var i, type, name;
