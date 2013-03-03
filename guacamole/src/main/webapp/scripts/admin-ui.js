@@ -597,7 +597,7 @@ GuacAdmin.addUser = function(name) {
         if (name in GuacAdmin.cached_permissions.remove_user) {
             
             // Create button
-            var delete_button = GuacUI.createChildElement(button_div, "button");
+            var delete_button = GuacUI.createChildElement(button_div, "button", "danger");
             delete_button.textContent = "Delete";
             
             // Remove selected user when clicked
@@ -877,7 +877,7 @@ GuacAdmin.addConnection = function(connection) {
         if (connection.id in GuacAdmin.cached_permissions.remove_connection) {
             
             // Create button
-            var delete_button = GuacUI.createChildElement(button_div, "button");
+            var delete_button = GuacUI.createChildElement(button_div, "button", "danger");
             delete_button.textContent = "Delete";
             
             // Remove selected connection when clicked

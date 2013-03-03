@@ -84,11 +84,11 @@ button:active {
                 1px 1px 0.25em rgba(255, 255, 255, 0.25);
 }
 
-button.delete {
+button.danger {
     background: #A43;
 }
 
-button.delete:hover {
+button.danger:hover {
     background: #C54;
 }
 
