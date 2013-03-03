@@ -72,19 +72,19 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      */
     public MySQLConnectionRecord(Date startDate, Date endDate,
             String username) {
-        this.startDate = startDate;
-        this.endDate = endDate;
+        this.startDate = new Date(startDate.getTime());
+        this.endDate = new Date(endDate.getTime());
         this.username = username;
     }
 
     @Override
     public Date getStartDate() {
-        return startDate;
+        return new Date(startDate.getTime());
     }
 
     @Override
     public Date getEndDate() {
-        return endDate;
+        return new Date(endDate.getTime());
     }
 
     @Override
