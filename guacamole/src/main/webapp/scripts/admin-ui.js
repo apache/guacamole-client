@@ -545,9 +545,19 @@ GuacAdmin.addUser = function(name) {
                 // Delete user upon confirmation
                 if (confirm("Are you sure you want to delete the user \""
                             + name + "\"?")) {
-                    GuacamoleService.Users.remove(GuacAdmin.selected_user);
-                    deselect();
-                    GuacAdmin.reset();
+
+                    // Attempt to delete user
+                    try {
+                        GuacamoleService.Users.remove(GuacAdmin.selected_user);
+                        deselect();
+                        GuacAdmin.reset();
+                    }
+
+                    // Alert on failure
+                    catch (e) {
+                        alert(e.message);
+                    }
+
                 }
 
             };
@@ -815,9 +825,19 @@ GuacAdmin.addConnection = function(connection) {
                 // Delete connection upon confirmation
                 if (confirm("Are you sure you want to delete the connection \""
                             + connection.id + "\"?")) {
-                    GuacamoleService.Connections.remove(GuacAdmin.selected_connection);
-                    deselect();
-                    GuacAdmin.reset();
+
+                    // Attempt to delete connection
+                    try {
+                        GuacamoleService.Connections.remove(GuacAdmin.selected_connection);
+                        deselect();
+                        GuacAdmin.reset();
+                    }
+
+                    // Alert on failure
+                    catch (e) {
+                        alert(e.message);
+                    }
+
                 }
 
             };
