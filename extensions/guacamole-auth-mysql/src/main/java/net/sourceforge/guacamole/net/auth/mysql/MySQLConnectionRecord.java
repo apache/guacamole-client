@@ -51,12 +51,12 @@ public class MySQLConnectionRecord implements ConnectionRecord {
      * The start date of the ConnectionRecord.
      */
     private Date startDate;
-    
+
     /**
      * The end date of the ConnectionRecord.
      */
     private Date endDate;
-    
+
     /**
      * The name of the user that is associated with this ConnectionRecord.
      */

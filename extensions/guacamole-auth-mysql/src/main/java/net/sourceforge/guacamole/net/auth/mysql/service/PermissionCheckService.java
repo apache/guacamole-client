@@ -360,7 +360,7 @@ public class PermissionCheckService {
 
         // Set of all permissions
         Set<SystemPermission> permissions = new HashSet<SystemPermission>();
-        
+
         // And finally, system permissions
         SystemPermissionExample systemPermissionExample = new SystemPermissionExample();
         systemPermissionExample.createCriteria().andUser_idEqualTo(userID);

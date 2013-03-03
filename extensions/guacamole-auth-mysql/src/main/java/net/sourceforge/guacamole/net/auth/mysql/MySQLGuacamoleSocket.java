@@ -65,7 +65,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
      * socket.
      */
     private int connectionID;
-    
+
     /**
      * The ID of the history record associated with this instance of the
      * connection.

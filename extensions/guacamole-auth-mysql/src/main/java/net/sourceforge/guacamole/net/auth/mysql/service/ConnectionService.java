@@ -114,7 +114,7 @@ public class ConnectionService {
      */
     @Inject
     private ActiveConnectionSet activeConnectionSet;
-    
+
     /**
      * Service managing users.
      */
@@ -282,7 +282,7 @@ public class ConnectionService {
      *         connection.
      */
     public List<MySQLConnectionRecord> retrieveHistory(int connectionID) {
-        
+
         // Retrieve history records relating to given connection ID
         ConnectionHistoryExample example = new ConnectionHistoryExample();
         example.createCriteria().andConnection_idEqualTo(connectionID);
@@ -299,10 +299,10 @@ public class ConnectionService {
         for(ConnectionHistory history : connectionHistories) {
             userIDSet.add(history.getUser_id());
         }
-        
+
         // Get all the usernames for the users who are in the history
         Map<Integer, String> usernameMap = userService.retrieveUsernames(userIDSet);
-        
+
         // Create the new ConnectionRecords
         for(ConnectionHistory history : connectionHistories) {
             Date startDate = history.getStart_date();
@@ -349,7 +349,7 @@ public class ConnectionService {
 
         // Mark this connection as active
         int historyID = activeConnectionSet.openConnection(connection.getConnectionID(), userID);
-                
+
         // Return new MySQLGuacamoleSocket
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();
         mySQLGuacamoleSocket.init(socket, connection.getConnectionID(), historyID);

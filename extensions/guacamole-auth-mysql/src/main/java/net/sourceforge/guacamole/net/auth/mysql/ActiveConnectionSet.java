@@ -59,12 +59,12 @@ public class ActiveConnectionSet {
      */
     @Inject
     private ConnectionHistoryMapper connectionHistoryDAO;
-    
+
     /**
      * Set of all the connections that are currently active.
      */
     private Set<Integer> activeConnectionSet = new HashSet<Integer>();
-    
+
     /**
      * Check if a connection is currently in use.
      * @param connectionID The connection to check the status of.
@@ -73,7 +73,7 @@ public class ActiveConnectionSet {
     public boolean isActive(int connectionID) {
         return activeConnectionSet.contains(connectionID);
     }
-    
+
     /**
      * Set a connection as open.
      * @param connectionID The ID of the connection that is being opened.
@@ -81,20 +81,20 @@ public class ActiveConnectionSet {
      * @return The ID of the history record created for this open connection.
      */
     public int openConnection(int connectionID, int userID) {
-        
+
         // Create the connection history record
         ConnectionHistory connectionHistory = new ConnectionHistory();
         connectionHistory.setConnection_id(connectionID);
         connectionHistory.setUser_id(userID);
         connectionHistory.setStart_date(new Date());
         connectionHistoryDAO.insert(connectionHistory);
-        
+
         // Mark the connection as active
         activeConnectionSet.add(connectionID);
-        
+
         return connectionHistory.getHistory_id();
     }
-    
+
     /**
      * Set a connection as closed.
      * @param connectionID The ID of the connection that is being opened.
@@ -103,18 +103,18 @@ public class ActiveConnectionSet {
      */
     public void closeConnection(int connectionID, int historyID)
             throws GuacamoleException {
-        
+
         // Get the existing history record
-        ConnectionHistory connectionHistory = 
+        ConnectionHistory connectionHistory =
                 connectionHistoryDAO.selectByPrimaryKey(historyID);
-        
+
         if(connectionHistory == null)
             throw new GuacamoleException("History record not found.");
-        
+
         // Update the connection history record to mark that it is now closed
         connectionHistory.setEnd_date(new Date());
         connectionHistoryDAO.updateByPrimaryKey(connectionHistory);
-        
+
         // Remove the connection from the set of active connections.
         activeConnectionSet.remove(connectionID);
     }

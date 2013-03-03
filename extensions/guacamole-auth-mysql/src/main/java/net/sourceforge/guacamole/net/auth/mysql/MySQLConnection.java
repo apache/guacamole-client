@@ -59,7 +59,7 @@ public class MySQLConnection extends AbstractConnection {
      * The ID associated with this connection in the database.
      */
     private Integer connectionID;
-    
+
     /**
      * The ID of the user who queried or created this connection.
      */
@@ -116,7 +116,7 @@ public class MySQLConnection extends AbstractConnection {
         setConfiguration(config);
         this.history.addAll(history);
         this.userID = userID;
-        
+
     }
 
     @Override
