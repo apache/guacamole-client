@@ -37,14 +37,8 @@ package net.sourceforge.guacamole.net.auth.mysql;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import com.google.inject.Inject;
 import java.util.Date;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
-import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
-import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 
 /**
  * A ConnectionRecord which is based on data stored in MySQL.
@@ -54,59 +48,54 @@ import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 public class MySQLConnectionRecord implements ConnectionRecord {
 
     /**
-     * The database record that this ConnectionRecord represents.
+     * The start date of the ConnectionRecord.
      */
-    private ConnectionHistory connectionHistory;
+    private Date startDate;
+    
+    /**
+     * The end date of the ConnectionRecord.
+     */
+    private Date endDate;
+    
+    /**
+     * The name of the user that is associated with this ConnectionRecord.
+     */
+    private String username;
 
     /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
-     * Service for accessing connections.
-     */
-    @Inject
-    private ConnectionService connectionService;
-
-    /**
-     * Initialize this MySQLConnectionRecord with the database record it
-     * represents.
+     * Initialize this MySQLConnectionRecord with the start/end dates,
+     * and the name of the user it represents.
      *
-     * @param connectionHistory The ConnectionHistory entry from the database
-     *                          corresponding to this connection record.
+     * @param startDate The start date of the connection history.
+     * @param endDate The end date of the connection history.
+     * @param username The name of the user that used the connection.
      */
-    public void init(ConnectionHistory connectionHistory) {
-        this.connectionHistory = connectionHistory;
+    public MySQLConnectionRecord(Date startDate, Date endDate,
+            String username) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.username = username;
     }
 
     @Override
     public Date getStartDate() {
-        return connectionHistory.getStart_date();
+        return startDate;
     }
 
     @Override
     public Date getEndDate() {
-        return connectionHistory.getEnd_date();
+        return endDate;
     }
 
     @Override
-    public User getUser() {
-        // FIXME: This will be SLOW - history is queried in bulk. When listed
-        // to the user in the webapp, this will result in one query per record.
-        return userService.retrieveUser(connectionHistory.getUser_id());
-    }
-
-    @Override
-    public Connection getConnection() {
-        return connectionService.retrieveConnection(connectionHistory.getConnection_id());
+    public String getUsername() {
+        return username;
     }
 
     @Override
     public boolean isActive() {
         // If the end date hasn't been stored yet, the connection is still open.
-        return connectionHistory.getEnd_date() == null;
+        return endDate == null;
     }
 
 }

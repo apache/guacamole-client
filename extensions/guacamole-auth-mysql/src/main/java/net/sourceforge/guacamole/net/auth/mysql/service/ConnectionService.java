@@ -37,13 +37,18 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -99,12 +104,6 @@ public class ConnectionService {
     private Provider<MySQLConnection> mySQLConnectionProvider;
 
     /**
-     * Provider which creates MySQLConnectionRecords.
-     */
-    @Inject
-    private Provider<MySQLConnectionRecord> mySQLConnectionRecordProvider;
-
-    /**
      * Provider which creates MySQLGuacamoleSockets.
      */
     @Inject
@@ -115,15 +114,22 @@ public class ConnectionService {
      */
     @Inject
     private ActiveConnectionSet activeConnectionSet;
+    
+    /**
+     * Service managing users.
+     */
+    @Inject
+    private UserService userService;
 
     /**
      * Retrieves the connection having the given name from the database.
      *
      * @param name The name of the connection to return.
+     * @param userID The ID of the user who queried this connection.
      * @return The connection having the given name, or null if no such
      *         connection could be found.
      */
-    public MySQLConnection retrieveConnection(String name) {
+    public MySQLConnection retrieveConnection(String name, int userID) {
 
         // Query connection by connection identifier (name)
         ConnectionExample example = new ConnectionExample();
@@ -139,7 +145,7 @@ public class ConnectionService {
         assert connections.size() == 1 : "Multiple connections with same name.";
 
         // Otherwise, return found connection
-        return toMySQLConnection(connections.get(0));
+        return toMySQLConnection(connections.get(0), userID);
 
     }
 
@@ -147,10 +153,11 @@ public class ConnectionService {
      * Retrieves the connection having the given ID from the database.
      *
      * @param id The ID of the connection to retrieve.
+     * @param userID The ID of the user who queried this connection.
      * @return The connection having the given ID, or null if no such
      *         connection was found.
      */
-    public MySQLConnection retrieveConnection(int id) {
+    public MySQLConnection retrieveConnection(int id, int userID) {
 
         // Query connection by ID
         Connection connection = connectionDAO.selectByPrimaryKey(id);
@@ -160,8 +167,7 @@ public class ConnectionService {
             return null;
 
         // Otherwise, return found connection
-        return toMySQLConnection(connection);
-
+        return toMySQLConnection(connection, userID);
     }
 
     /**
@@ -202,7 +208,7 @@ public class ConnectionService {
      * @return A map containing the names of all connections and their
      *         corresponding IDs.
      */
-    public Map<Integer, String> retrieveNames(List<Integer> ids) {
+    public Map<Integer, String> retrieveNames(Collection<Integer> ids) {
 
         // If no IDs given, just return empty map
         if (ids.isEmpty())
@@ -213,7 +219,7 @@ public class ConnectionService {
 
         // Get all connections having the given IDs
         ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idIn(ids);
+        example.createCriteria().andConnection_idIn(Lists.newArrayList(ids));
         List<Connection> connections = connectionDAO.selectByExample(example);
 
         // Produce set of names
@@ -231,10 +237,11 @@ public class ConnectionService {
      * MySQLConnection in the process.
      *
      * @param connection The connection to convert.
+     * @param userID The user who queried this connection.
      * @return A new MySQLConnection containing all data associated with the
      *         specified connection.
      */
-    private MySQLConnection toMySQLConnection(Connection connection) {
+    private MySQLConnection toMySQLConnection(Connection connection, int userID) {
 
         // Build configuration
         GuacamoleConfiguration config = new GuacamoleConfiguration();
@@ -259,7 +266,8 @@ public class ConnectionService {
             connection.getConnection_id(),
             connection.getConnection_name(),
             config,
-            retrieveHistory(connection.getConnection_id())
+            retrieveHistory(connection.getConnection_id()),
+            userID
         );
 
         return mySQLConnection;
@@ -274,7 +282,7 @@ public class ConnectionService {
      *         connection.
      */
     public List<MySQLConnectionRecord> retrieveHistory(int connectionID) {
-
+        
         // Retrieve history records relating to given connection ID
         ConnectionHistoryExample example = new ConnectionHistoryExample();
         example.createCriteria().andConnection_idEqualTo(connectionID);
@@ -287,13 +295,21 @@ public class ConnectionService {
 
         // Convert history entries to connection records
         List<MySQLConnectionRecord> connectionRecords = new ArrayList<MySQLConnectionRecord>();
+        Set<Integer> userIDSet = new HashSet<Integer>();
         for(ConnectionHistory history : connectionHistories) {
-
-            // Create connection record from history
-            MySQLConnectionRecord record = mySQLConnectionRecordProvider.get();
-            record.init(history);
-            connectionRecords.add(record);
-
+            userIDSet.add(history.getUser_id());
+        }
+        
+        // Get all the usernames for the users who are in the history
+        Map<Integer, String> usernameMap = userService.retrieveUsernames(userIDSet);
+        
+        // Create the new ConnectionRecords
+        for(ConnectionHistory history : connectionHistories) {
+            Date startDate = history.getStart_date();
+            Date endDate = history.getEnd_date();
+            String username = usernameMap.get(history.getUser_id());
+            MySQLConnectionRecord connectionRecord = new MySQLConnectionRecord(startDate, endDate, username);
+            connectionRecords.add(connectionRecord);
         }
 
         return connectionRecords;
@@ -305,19 +321,20 @@ public class ConnectionService {
      * @param connection The connection to use when connecting the socket.
      * @param info The information to use when performing the connection
      *             handshake.
+     * @param userID The ID of the user who is connecting to the socket.
      * @return The connected socket.
      * @throws GuacamoleException If an error occurs while connecting the
      *                            socket.
      */
     public MySQLGuacamoleSocket connect(MySQLConnection connection,
-            GuacamoleClientInformation info)
+            GuacamoleClientInformation info, int userID)
         throws GuacamoleException {
 
         // If the given connection is active, and multiple simultaneous
         // connections are not allowed, disallow connection
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
-                && activeConnectionSet.contains(connection.getConnectionID()))
+                && activeConnectionSet.isActive(connection.getConnectionID()))
             throw new GuacamoleException("Cannot connect. This connection is in use.");
 
         // Get guacd connection information
@@ -331,13 +348,11 @@ public class ConnectionService {
         );
 
         // Mark this connection as active
-        activeConnectionSet.add(connection.getConnectionID());
-
-        // TODO: Actually update history...
-        
+        int historyID = activeConnectionSet.openConnection(connection.getConnectionID(), userID);
+                
         // Return new MySQLGuacamoleSocket
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();
-        mySQLGuacamoleSocket.init(socket, connection.getConnectionID());
+        mySQLGuacamoleSocket.init(socket, connection.getConnectionID(), historyID);
         return mySQLGuacamoleSocket;
 
     }
@@ -347,10 +362,11 @@ public class ConnectionService {
      *
      * @param name The name to assign to the new connection.
      * @param protocol The protocol to assign to the new connection.
+     * @param userID The ID of the user who created this connection.
      * @return A new MySQLConnection containing the data of the newly created
      *         connection.
      */
-    public MySQLConnection createConnection(String name, String protocol) {
+    public MySQLConnection createConnection(String name, String protocol, int userID) {
 
         // Initialize database connection
         Connection connection = new Connection();
@@ -359,7 +375,7 @@ public class ConnectionService {
 
         // Create connection
         connectionDAO.insert(connection);
-        return toMySQLConnection(connection);
+        return toMySQLConnection(connection, userID);
 
     }
 

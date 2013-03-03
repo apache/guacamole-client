@@ -105,7 +105,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Get connection
         MySQLConnection connection =
-                connectionService.retrieveConnection(identifier);
+                connectionService.retrieveConnection(identifier, user_id);
 
         // Verify access is granted
         permissionCheckService.verifyConnectionAccess(
@@ -142,7 +142,8 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
-                object.getIdentifier(), object.getConfiguration().getProtocol());
+                object.getIdentifier(), object.getConfiguration().getProtocol(),
+                user_id);
 
         // Add connection parameters
         createConfigurationValues(connection.getConnectionID(),
@@ -235,7 +236,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Get connection
         MySQLConnection mySQLConnection =
-                connectionService.retrieveConnection(identifier);
+                connectionService.retrieveConnection(identifier, user_id);
 
         // Verify permission to delete
         permissionCheckService.verifyConnectionAccess(this.user_id,

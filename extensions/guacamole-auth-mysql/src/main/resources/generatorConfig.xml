@@ -84,6 +84,8 @@
             domainObjectName="ConnectionHistory" >
             <property name="useActualColumnNames" value="true"/>
             <property name="ignoreQualifiersAtRuntime" value="true"/>
+            <generatedKey column="history_id" identity="true"
+                sqlStatement="SELECT LAST_INSERT_ID()"/>
         </table>
 
     </context>

@@ -44,7 +44,6 @@ import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnection;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
@@ -60,6 +59,11 @@ public class MySQLConnection extends AbstractConnection {
      * The ID associated with this connection in the database.
      */
     private Integer connectionID;
+    
+    /**
+     * The ID of the user who queried or created this connection.
+     */
+    private int userID;
 
     /**
      * History of this connection.
@@ -95,39 +99,29 @@ public class MySQLConnection extends AbstractConnection {
     }
 
     /**
-     * Initialize a new MySQLConnection from this existing connection.
-     *
-     * @param connection The connection to use when populating the identifier
-     *                   and configuration of this connection.
-     * @throws GuacamoleException If permission to read the given connection's
-     *                            history is denied.
-     */
-    public void init(Connection connection) throws GuacamoleException {
-        init(null, connection.getIdentifier(), connection.getConfiguration(), connection.getHistory());
-    }
-
-    /**
      * Initialize from explicit values.
      *
      * @param connectionID The ID of the associated database record, if any.
      * @param identifier The unique identifier associated with this connection.
      * @param config The GuacamoleConfiguration associated with this connection.
      * @param history All ConnectionRecords associated with this connection.
+     * @param userID The IID of the user who queried this connection.
      */
     public void init(Integer connectionID, String identifier,
             GuacamoleConfiguration config,
-            List<? extends ConnectionRecord> history) {
+            List<? extends ConnectionRecord> history, int userID) {
 
         this.connectionID = connectionID;
         setIdentifier(identifier);
         setConfiguration(config);
         this.history.addAll(history);
-
+        this.userID = userID;
+        
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionService.connect(this, info);
+        return connectionService.connect(this, info, userID);
     }
 
     @Override

@@ -37,7 +37,13 @@ package net.sourceforge.guacamole.net.auth.mysql;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import com.google.inject.Inject;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 
 /**
  * Represents the set of currently active Connections. Whenever a socket is
@@ -46,4 +52,70 @@ import java.util.HashSet;
  *
  * @author James Muehlner
  */
-public class ActiveConnectionSet extends HashSet<Integer> {}
+public class ActiveConnectionSet {
+
+    /**
+     * DAO for accessing connection history.
+     */
+    @Inject
+    private ConnectionHistoryMapper connectionHistoryDAO;
+    
+    /**
+     * Set of all the connections that are currently active.
+     */
+    private Set<Integer> activeConnectionSet = new HashSet<Integer>();
+    
+    /**
+     * Check if a connection is currently in use.
+     * @param connectionID The connection to check the status of.
+     * @return true if the connection is currently in use.
+     */
+    public boolean isActive(int connectionID) {
+        return activeConnectionSet.contains(connectionID);
+    }
+    
+    /**
+     * Set a connection as open.
+     * @param connectionID The ID of the connection that is being opened.
+     * @param userID The ID of the user who is opening the connection.
+     * @return The ID of the history record created for this open connection.
+     */
+    public int openConnection(int connectionID, int userID) {
+        
+        // Create the connection history record
+        ConnectionHistory connectionHistory = new ConnectionHistory();
+        connectionHistory.setConnection_id(connectionID);
+        connectionHistory.setUser_id(userID);
+        connectionHistory.setStart_date(new Date());
+        connectionHistoryDAO.insert(connectionHistory);
+        
+        // Mark the connection as active
+        activeConnectionSet.add(connectionID);
+        
+        return connectionHistory.getHistory_id();
+    }
+    
+    /**
+     * Set a connection as closed.
+     * @param connectionID The ID of the connection that is being opened.
+     * @param historyID The ID of the history record about the open connection.
+     * @throws GuacamoleException If the open connection history is not found.
+     */
+    public void closeConnection(int connectionID, int historyID)
+            throws GuacamoleException {
+        
+        // Get the existing history record
+        ConnectionHistory connectionHistory = 
+                connectionHistoryDAO.selectByPrimaryKey(historyID);
+        
+        if(connectionHistory == null)
+            throw new GuacamoleException("History record not found.");
+        
+        // Update the connection history record to mark that it is now closed
+        connectionHistory.setEnd_date(new Date());
+        connectionHistoryDAO.updateByPrimaryKey(connectionHistory);
+        
+        // Remove the connection from the set of active connections.
+        activeConnectionSet.remove(connectionID);
+    }
+}

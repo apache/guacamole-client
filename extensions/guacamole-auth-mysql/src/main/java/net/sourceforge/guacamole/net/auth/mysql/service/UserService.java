@@ -37,8 +37,10 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -270,7 +272,7 @@ public class UserService {
      * @return A map containing the names of all users and their corresponding
      *         IDs.
      */
-    public Map<Integer, String> retrieveUsernames(List<Integer> ids) {
+    public Map<Integer, String> retrieveUsernames(Collection<Integer> ids) {
 
         // If no IDs given, just return empty map
         if (ids.isEmpty())
@@ -281,7 +283,7 @@ public class UserService {
 
         // Get all users having the given IDs
         UserExample example = new UserExample();
-        example.createCriteria().andUser_idIn(ids);
+        example.createCriteria().andUser_idIn(Lists.newArrayList(ids));
         List<net.sourceforge.guacamole.net.auth.mysql.model.User> users =
                 userDAO.selectByExample(example);
 

@@ -65,6 +65,12 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
      * socket.
      */
     private int connectionID;
+    
+    /**
+     * The ID of the history record associated with this instance of the
+     * connection.
+     */
+    private int historyID;
 
     /**
      * Initialize this MySQLGuacamoleSocket with the provided GuacamoleSocket.
@@ -72,10 +78,13 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
      * @param socket The ConfiguredGuacamoleSocket to wrap.
      * @param connectionID The ID of the connection associated with the given
      *                     socket.
+     * @param historyID The ID of the history record associated with this
+     *                  instance of the connection.
      */
-    public void init(GuacamoleSocket socket, int connectionID) {
+    public void init(GuacamoleSocket socket, int connectionID, int historyID) {
         this.socket = socket;
         this.connectionID = connectionID;
+        this.historyID = historyID;
     }
 
     @Override
@@ -95,8 +104,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
         socket.close();
 
         // Mark this connection as inactive
-        activeConnectionSet.remove(connectionID);
-
+        activeConnectionSet.closeConnection(connectionID, historyID);
     }
 
     @Override
