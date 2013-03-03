@@ -63,19 +63,13 @@ public interface ConnectionRecord {
     public Date getEndDate();
 
     /**
-     * Returns the user who used or is using the connection at the times
-     * given by this connection record.
+     * Returns the name of the user who used or is using the connection at the
+     * times given by this connection record.
      *
-     * @return The user who used or is using the associated connection.
+     * @return The name of the user who used or is using the associated
+     *         connection.
      */
-    public User getUser();
-
-    /**
-     * Returns the connection associated with this record.
-     *
-     * @return The connection associated with this record.
-     */
-    public Connection getConnection();
+    public String getUsername();
 
     /**
      * Returns whether the connection associated with this record is still
