@@ -18,10 +18,9 @@ package net.sourceforge.guacamole.net.basic.crud.users;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
@@ -166,7 +165,7 @@ public class Update extends AuthenticatingHttpServlet {
             return new ConnectionPermission(ObjectPermission.Type.ADMINISTER,
                     str.substring(ADMIN_PREFIX.length()));
 
-        throw new GuacamoleException("Invalid permission string.");
+        throw new GuacamoleClientException("Invalid permission string.");
 
     }
 
@@ -174,81 +173,74 @@ public class Update extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Create user as specified
         String username = request.getParameter("name");
         String password = request.getParameter("password");
 
-        try {
+        // Attempt to get user directory
+        Directory<String, User> directory =
+                context.getUserDirectory();
 
-            // Attempt to get user directory
-            Directory<String, User> directory =
-                    context.getUserDirectory();
+        // Get user data, setting password if given
+        User user = directory.get(username);
+        user.setUsername(username);
+        if (password != null)
+            user.setPassword(password);
 
-            // Get user data, setting password if given
-            User user = directory.get(username);
-            user.setUsername(username);
-            if (password != null)
-                user.setPassword(password);
+        /*
+         * NEW PERMISSIONS
+         */
 
-            /*
-             * NEW PERMISSIONS
-             */
-
-            // Set added system permissions
-            String[] add_sys_permission = request.getParameterValues("+sys");
-            if (add_sys_permission != null) {
-                for (String str : add_sys_permission)
-                    user.addPermission(parseSystemPermission(str));
-            }
-
-            // Set added user permissions
-            String[] add_user_permission = request.getParameterValues("+user");
-            if (add_user_permission != null) {
-                for (String str : add_user_permission)
-                    user.addPermission(parseUserPermission(str));
-            }
-
-            // Set added connection permissions
-            String[] add_connection_permission = request.getParameterValues("+connection");
-            if (add_connection_permission != null) {
-                for (String str : add_connection_permission)
-                    user.addPermission(parseConnectionPermission(str));
-            }
-
-            /*
-             * REMOVED PERMISSIONS
-             */
-
-            // Unset removed system permissions
-            String[] remove_sys_permission = request.getParameterValues("-sys");
-            if (remove_sys_permission != null) {
-                for (String str : remove_sys_permission)
-                    user.removePermission(parseSystemPermission(str));
-            }
-
-            // Unset removed user permissions
-            String[] remove_user_permission = request.getParameterValues("-user");
-            if (remove_user_permission != null) {
-                for (String str : remove_user_permission)
-                    user.removePermission(parseUserPermission(str));
-            }
-
-            // Unset removed connection permissions
-            String[] remove_connection_permission = request.getParameterValues("-connection");
-            if (remove_connection_permission != null) {
-                for (String str : remove_connection_permission)
-                    user.removePermission(parseConnectionPermission(str));
-            }
-
-            // Update user
-            directory.update(user);
-
+        // Set added system permissions
+        String[] add_sys_permission = request.getParameterValues("+sys");
+        if (add_sys_permission != null) {
+            for (String str : add_sys_permission)
+                user.addPermission(parseSystemPermission(str));
         }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to update user.", e);
+
+        // Set added user permissions
+        String[] add_user_permission = request.getParameterValues("+user");
+        if (add_user_permission != null) {
+            for (String str : add_user_permission)
+                user.addPermission(parseUserPermission(str));
         }
+
+        // Set added connection permissions
+        String[] add_connection_permission = request.getParameterValues("+connection");
+        if (add_connection_permission != null) {
+            for (String str : add_connection_permission)
+                user.addPermission(parseConnectionPermission(str));
+        }
+
+        /*
+         * REMOVED PERMISSIONS
+         */
+
+        // Unset removed system permissions
+        String[] remove_sys_permission = request.getParameterValues("-sys");
+        if (remove_sys_permission != null) {
+            for (String str : remove_sys_permission)
+                user.removePermission(parseSystemPermission(str));
+        }
+
+        // Unset removed user permissions
+        String[] remove_user_permission = request.getParameterValues("-user");
+        if (remove_user_permission != null) {
+            for (String str : remove_user_permission)
+                user.removePermission(parseUserPermission(str));
+        }
+
+        // Unset removed connection permissions
+        String[] remove_connection_permission = request.getParameterValues("-connection");
+        if (remove_connection_permission != null) {
+            for (String str : remove_connection_permission)
+                user.removePermission(parseConnectionPermission(str));
+        }
+
+        // Update user
+        directory.update(user);
 
     }
 

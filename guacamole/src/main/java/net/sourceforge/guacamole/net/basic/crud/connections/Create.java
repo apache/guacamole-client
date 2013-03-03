@@ -18,9 +18,7 @@ package net.sourceforge.guacamole.net.basic.crud.connections;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
 import java.util.Enumeration;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -47,48 +45,41 @@ public class Create extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Get ID and protocol
         String identifier = request.getParameter("id");
         String protocol = request.getParameter("protocol");
 
-        try {
+        // Attempt to get connection directory
+        Directory<String, Connection> directory =
+                context.getConnectionDirectory();
 
-            // Attempt to get connection directory
-            Directory<String, Connection> directory =
-                    context.getConnectionDirectory();
+        // Create config
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        config.setProtocol(protocol);
 
-            // Create config
-            GuacamoleConfiguration config = new GuacamoleConfiguration();
-            config.setProtocol(protocol);
+        // Load parameters into config
+        Enumeration<String> params = request.getParameterNames();
+        while (params.hasMoreElements()) {
 
-            // Load parameters into config
-            Enumeration<String> params = request.getParameterNames();
-            while (params.hasMoreElements()) {
-
-                // If parameter starts with prefix, load corresponding parameter
-                // value into config
-                String param = params.nextElement();
-                if (param.startsWith(PARAMETER_PREFIX))
-                    config.setParameter(
-                        param.substring(PARAMETER_PREFIX.length()),
-                        request.getParameter(param));
-
-            }
-
-            // Create connection skeleton
-            Connection connection = new DummyConnection();
-            connection.setIdentifier(identifier);
-            connection.setConfiguration(config);
-
-            // Add connection
-            directory.add(connection);
+            // If parameter starts with prefix, load corresponding parameter
+            // value into config
+            String param = params.nextElement();
+            if (param.startsWith(PARAMETER_PREFIX))
+                config.setParameter(
+                    param.substring(PARAMETER_PREFIX.length()),
+                    request.getParameter(param));
 
         }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to create connection.", e);
-        }
+
+        // Create connection skeleton
+        Connection connection = new DummyConnection();
+        connection.setIdentifier(identifier);
+        connection.setConfiguration(config);
+
+        // Add connection
+        directory.add(connection);
 
     }
 

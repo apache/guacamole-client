@@ -18,8 +18,6 @@ package net.sourceforge.guacamole.net.basic.crud.connections;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -39,24 +37,18 @@ public class Delete extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Get ID
         String identifier = request.getParameter("id");
 
-        try {
+        // Attempt to get connection directory
+        Directory<String, Connection> directory =
+                context.getConnectionDirectory();
 
-            // Attempt to get connection directory
-            Directory<String, Connection> directory =
-                    context.getConnectionDirectory();
+        // Remove connection
+        directory.remove(identifier);
 
-            // Remove connection
-            directory.remove(identifier);
-
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to remove connection.", e);
-        }
 
     }
 

@@ -26,7 +26,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleResourceNotFoundException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -167,6 +170,40 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     }
 
     /**
+     * Sends an error on the given HTTP response with the given integer error
+     * code.
+     *
+     * @param response The HTTP response to use to send the error.
+     * @param code The HTTP status code of the error.
+     * @param message A human-readable message that can be presented to the
+     *                user.
+     * @throws ServletException If an error prevents sending of the error
+     *                          code.
+     */
+    private void sendError(HttpServletResponse response, int code,
+            String message) throws ServletException {
+
+        try {
+
+            // If response not committed, send error code
+            if (!response.isCommitted()) {
+                response.sendError(code);
+                response.addHeader("Guacamole-Error-Message", message);
+            }
+
+        }
+        catch (IOException ioe) {
+
+            // If unable to send error at all due to I/O problems,
+            // rethrow as servlet exception
+            throw new ServletException(ioe);
+
+        }
+
+    }
+
+
+    /**
      * Returns the credentials associated with the given session.
      *
      * @param session The session to retrieve credentials from.
@@ -281,8 +318,35 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
         }
 
-        // Allow servlet to run now that authentication has been validated
-        authenticatedService(context, request, response);
+        try {
+
+            // Allow servlet to run now that authentication has been validated
+            authenticatedService(context, request, response);
+
+        }
+
+        // Catch any thrown guacamole exception and attempt to pass within the
+        // HTTP response, logging each error appropriately.
+        catch (GuacamoleSecurityException e) {
+            logger.warn("Permission denied: {}", e.getMessage());
+            sendError(response, HttpServletResponse.SC_FORBIDDEN,
+                    "Permission denied.");
+        }
+        catch (GuacamoleResourceNotFoundException e) {
+            logger.debug("Resource not found: {}", e.getMessage());
+            sendError(response, HttpServletResponse.SC_NOT_FOUND,
+                    e.getMessage());
+        }
+        catch (GuacamoleClientException e) {
+            logger.warn("Error in client request: {}", e.getMessage());
+            sendError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    e.getMessage());
+        }
+        catch (GuacamoleException e) {
+            logger.error("Internal server error.", e);
+            sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                      "Internal server error.");
+        }
 
     }
 
@@ -296,14 +360,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * @param response An HttpServletResponse which controls the HTTP response
      *                 of this servlet.
      *
-     * @throws ServletException If an error occurs that interferes with the
-     *                          normal operation of this servlet.
-     * @throws IOException If an error occurs that prevents this servlet from
-     *                     communicating.
+     * @throws GuacamoleException If an error occurs that interferes with the
+     *                            normal operation of this servlet.
      */
     protected abstract void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException;
+            throws GuacamoleException;
 
 }

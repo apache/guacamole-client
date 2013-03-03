@@ -18,8 +18,6 @@ package net.sourceforge.guacamole.net.basic.crud.users;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -39,23 +37,16 @@ public class Delete extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Get username
         String username = request.getParameter("name");
 
-        try {
+        // Attempt to get user directory
+        Directory<String, User> directory = context.getUserDirectory();
 
-            // Attempt to get user directory
-            Directory<String, User> directory = context.getUserDirectory();
-
-            // Remove user
-            directory.remove(username);
-
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to remove user.", e);
-        }
+        // Remove user
+        directory.remove(username);
 
     }
 

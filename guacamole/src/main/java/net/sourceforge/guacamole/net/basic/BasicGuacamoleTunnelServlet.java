@@ -60,10 +60,23 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
-        // If authenticated, respond as tunnel
-        tunnelServlet.service(request, response);
+        try {
+
+            // If authenticated, respond as tunnel
+            tunnelServlet.service(request, response);
+        }
+
+        catch (ServletException e) {
+            logger.info("Error from tunnel (see previous log messages): {}",
+                    e.getMessage());
+        }
+
+        catch (IOException e) {
+            logger.info("I/O error from tunnel (see previous log messages): {}",
+                    e.getMessage());
+        }
 
     }
 

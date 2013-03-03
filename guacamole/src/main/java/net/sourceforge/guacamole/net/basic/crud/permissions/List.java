@@ -19,14 +19,15 @@ package net.sourceforge.guacamole.net.basic.crud.permissions;
  */
 
 import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -96,7 +97,7 @@ public class List extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
@@ -176,7 +177,8 @@ public class List extends AuthenticatingHttpServlet {
                 }
 
                 else
-                    throw new ServletException("Unsupported permission type.");
+                    throw new GuacamoleClientException(
+                            "Unsupported permission type.");
 
             }
 
@@ -186,17 +188,12 @@ public class List extends AuthenticatingHttpServlet {
 
         }
         catch (XMLStreamException e) {
-            throw new IOException("Unable to write permission list XML.", e);
+            throw new GuacamoleServerException(
+                    "Unable to write permission list XML.", e);
         }
-        catch (GuacamoleSecurityException e) {
-
-            // If cannot read permissions, return error
-            response.sendError(HttpServletResponse.SC_FORBIDDEN,
-                    "Permission denied.");
-
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to read permissions.", e);
+        catch (IOException e) {
+            throw new GuacamoleServerException(
+                    "I/O error writing permission list XML.", e);
         }
 
     }

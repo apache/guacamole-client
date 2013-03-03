@@ -18,7 +18,6 @@ package net.sourceforge.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -41,8 +40,7 @@ public class BasicLogin extends AuthenticatingHttpServlet {
     @Override
     protected void authenticatedService(
             UserContext context,
-            HttpServletRequest request, HttpServletResponse response)
-    throws IOException {
+            HttpServletRequest request, HttpServletResponse response) {
         logger.info("Login was successful.");
     }
 

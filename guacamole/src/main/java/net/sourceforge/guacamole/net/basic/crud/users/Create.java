@@ -18,9 +18,7 @@ package net.sourceforge.guacamole.net.basic.crud.users;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
 import java.util.UUID;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -40,30 +38,22 @@ public class Create extends AuthenticatingHttpServlet {
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
-    throws IOException, ServletException {
+    throws GuacamoleException {
 
         // Create user as specified
         String username = request.getParameter("name");
 
-        try {
+        // Attempt to get user directory
+        Directory<String, User> directory =
+                context.getUserDirectory();
 
-            // Attempt to get user directory
-            Directory<String, User> directory =
-                    context.getUserDirectory();
+        // Create user skeleton
+        User user = new DummyUser();
+        user.setUsername(username);
+        user.setPassword(UUID.randomUUID().toString());
 
-            // Create user skeleton
-            User user = new DummyUser();
-            user.setUsername(username);
-            user.setPassword(UUID.randomUUID().toString());
-
-            // Add user
-            directory.add(user);
-
-        }
-        catch (GuacamoleException e) {
-            throw new ServletException("Unable to create user.", e);
-        }
-
+        // Add user
+        directory.add(user);
 
     }
 
