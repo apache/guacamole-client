@@ -155,7 +155,7 @@ public class List extends AuthenticatingHttpServlet {
                             Long.toString(record.getEndDate().getTime()));
 
                     // User involved
-                    xml.writeCharacters(record.getUser().getUsername());
+                    xml.writeCharacters(record.getUsername());
 
                     xml.writeEndElement();
                 }
