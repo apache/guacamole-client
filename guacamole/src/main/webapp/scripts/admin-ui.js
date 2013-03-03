@@ -407,6 +407,69 @@ GuacAdmin.addUser = function(name) {
             password_modified = true;
         };
 
+        // If administrator, allow manipulation of admin permissions on users
+        if (GuacAdmin.cached_permissions.administer) {
+
+            var permission_header = GuacUI.createChildElement(sections, "dt");
+            var permission_table  = GuacUI.createChildElement(
+                GuacUI.createChildElement(sections, "dd"),
+                "table", "permissions section");
+
+            permission_header.textContent = "Permissions:";
+
+            // Add system administration checkbox
+            var is_admin = GuacUI.createChildElement(
+                    GuacUI.createTabulatedContainer(permission_table, "Administer system:"),
+                    "input");
+            is_admin.setAttribute("type", "checkbox");
+            is_admin.setAttribute("value", "administer");
+
+            // Check if set
+            if (user_perms.administer)
+                is_admin.checked = true;
+
+            // Add create user permission checkbox
+            var create_users = GuacUI.createChildElement(
+                    GuacUI.createTabulatedContainer(permission_table, "Create new users:"),
+                    "input");
+            create_users.setAttribute("type", "checkbox");
+            create_users.setAttribute("value",  "create_user");
+
+            // Check if set
+            if (user_perms.create_user)
+                create_users.checked = true;
+
+            // Add create connection permission checkbox
+            var create_connections = GuacUI.createChildElement(
+                    GuacUI.createTabulatedContainer(permission_table, "Create new connections:"),
+                    "input");
+            create_connections.setAttribute("type", "checkbox");
+            create_connections.setAttribute("value", "create_connection");
+
+            // Check if set
+            if (user_perms.create_connection)
+                create_connections.checked = true;
+
+            // Update system permissions when changed
+            is_admin.onclick = create_users.onclick =
+            create_connections.onclick = function() {
+
+                // Update permission deltas for ADDED permission
+                if (this.checked) {
+                    added_perms[this.value]   = true;
+                    removed_perms[this.value] = false;
+                }
+
+                // Update permission deltas for REMOVED permission
+                else {
+                    added_perms[this.value]   = false;
+                    removed_perms[this.value] = true;
+                }
+
+            }
+
+        }
+
         // If readable connections exist, list them
         if (GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)) {
 

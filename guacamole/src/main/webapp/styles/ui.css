@@ -238,7 +238,8 @@ div.section {
 
 }
 
-.form .fields th {
+.form .fields th,
+.form .permissions th {
     font-weight: normal;
     vertical-align: middle;
     text-align: left;
