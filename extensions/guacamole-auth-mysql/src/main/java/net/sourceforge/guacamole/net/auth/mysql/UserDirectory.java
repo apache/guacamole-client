@@ -517,14 +517,21 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * @param user_id The ID of the user whose permissions should be updated.
      * @param permissions The permissions the given user should no longer have
      *                    when this operation completes.
+     * @throws GuacamoleException If the permissions specified could not be
+     *                            removed due to system restrictions.
      */
     private void deleteSystemPermissions(int user_id,
-            Collection<SystemPermission> permissions) {
+            Collection<SystemPermission> permissions)
+            throws GuacamoleException {
 
         // If no permissions given, stop now
         if (permissions.isEmpty())
             return;
 
+        // Prevent self-de-adminifying
+        if (user_id == this.user_id)
+            throw new GuacamoleClientException("Removing your own administrative permissions is not allowed.");
+        
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions)
@@ -575,6 +582,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Get user pending deletion
         MySQLUser user = userService.retrieveUser(identifier);
 
+        // Prevent self-deletion
+        if (user.getUserID() == this.user_id)
+            throw new GuacamoleClientException("Deleting your own user is not allowed.");
+        
         // Validate current user has permission to remove the specified user
         permissionCheckService.verifyUserAccess(this.user_id,
                 user.getUserID(),
