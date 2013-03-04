@@ -951,7 +951,8 @@ GuacAdmin.reset = function() {
     GuacAdmin.cached_connections.sort(GuacamoleService.Connections.comparator);
 
     // Connection management
-    if (GuacAdmin.cached_permissions.create_connection
+    if (GuacAdmin.cached_permissions.administer
+        || GuacAdmin.cached_permissions.create_connection
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.update_connection)
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.remove_connection)
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection))
@@ -960,7 +961,8 @@ GuacAdmin.reset = function() {
             GuacUI.removeClass(document.body, "manage-connections");
 
     // User management
-    if (GuacAdmin.cached_permissions.create_user
+    if (GuacAdmin.cached_permissions.administer
+        || GuacAdmin.cached_permissions.create_user
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.update_user)
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.remove_user)
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_user))
@@ -969,7 +971,8 @@ GuacAdmin.reset = function() {
             GuacUI.removeClass(document.body, "manage-users");
 
     // Connection creation 
-    if (GuacAdmin.cached_permissions.create_connection) {
+    if (GuacAdmin.cached_permissions.administer
+        || GuacAdmin.cached_permissions.create_connection) {
         GuacUI.addClass(document.body, "add-connections");
 
         GuacAdmin.buttons.add_connection.onclick = function() {
@@ -993,7 +996,8 @@ GuacAdmin.reset = function() {
     }
 
     // User creation
-    if (GuacAdmin.cached_permissions.create_user) {
+    if (GuacAdmin.cached_permissions.administer
+       || GuacAdmin.cached_permissions.create_user) {
         GuacUI.addClass(document.body, "add-users");
 
         GuacAdmin.buttons.add_user.onclick = function() {
