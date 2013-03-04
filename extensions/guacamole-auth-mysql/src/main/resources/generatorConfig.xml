@@ -6,6 +6,9 @@
 <generatorConfiguration>
     <context id="guacamoleTables" targetRuntime="MyBatis3">
 
+        <!-- Allow selectByExample with RowBounds -->
+        <plugin type="org.mybatis.generator.plugins.RowBoundsPlugin"/>
+
         <!-- MySQL JDBC driver class. -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
             connectionURL="jdbc:mysql://127.0.0.1:3306"
