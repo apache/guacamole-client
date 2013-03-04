@@ -735,7 +735,7 @@ GuacAdmin.addConnection = function(connection) {
                 // Display record
                 user.textContent = record.username;
                 start.textContent = GuacAdmin.formatDate(record.start);
-                if (record.duration)
+                if (record.duration != null)
                     duration.textContent = GuacAdmin.formatSeconds(record.duration);
                 else
                     duration.textContent = "Active now";
