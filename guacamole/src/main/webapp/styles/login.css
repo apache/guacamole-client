@@ -299,6 +299,10 @@ div#recent-connections div.connection {
     color: gray;
 }
 
+.connection.in-use {
+    opacity: 0.5;
+}
+
 .connection .thumbnail {
     margin: 0.5em;
 }
