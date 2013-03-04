@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
@@ -57,9 +58,7 @@ import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
-import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -116,18 +115,6 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private PermissionCheckService permissionCheckService;
 
     /**
-     * Service for encrypting passwords.
-     */
-    @Inject
-    private PasswordEncryptionService passwordService;
-
-    /**
-     * Service for generating random salts.
-     */
-    @Inject
-    private SaltService saltService;
-
-    /**
      * Set the user for this directory.
      *
      * @param user_id The ID of the user whose permissions define the visibility
@@ -174,10 +161,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     public void add(net.sourceforge.guacamole.net.auth.User object)
             throws GuacamoleException {
 
+        if(object.getUsername().isEmpty())
+            throw new GuacamoleClientException("The username cannot be blank.");
+
         // Verify current user has permission to create users
         permissionCheckService.verifySystemAccess(this.user_id,
                 MySQLConstants.SYSTEM_USER_CREATE);
         Preconditions.checkNotNull(object);
+
+        // Verify that no user already exists with this username.
+        MySQLUser previousUser = 
+                userService.retrieveUser(object.getUsername());
+        if(previousUser != null)
+            throw new GuacamoleClientException("That username is already in use.");
 
         // Create new user
         MySQLUser user = userService.createUser(object.getUsername(),

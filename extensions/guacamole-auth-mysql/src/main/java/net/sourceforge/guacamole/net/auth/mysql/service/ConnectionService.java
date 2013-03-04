@@ -49,6 +49,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
@@ -340,7 +341,7 @@ public class ConnectionService {
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
                 && activeConnectionSet.isActive(connection.getConnectionID()))
-            throw new GuacamoleException("Cannot connect. This connection is in use.");
+            throw new GuacamoleClientException("Cannot connect. This connection is in use.");
 
         // Get guacd connection information
         String host = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
@@ -410,6 +411,40 @@ public class ConnectionService {
         // Update the connection in the database
         connectionDAO.updateByPrimaryKeySelective(connection);
 
+    }
+    
+    /**
+     * Get all the connections defined in the system.
+     * @param userID The ID of the user who is querying the connections.
+     * @return A list of all connections defined in the system.
+     */
+    public List<MySQLConnection> getAllConnections(int userID) {
+        
+        // Get all connections defined in the system.
+        List<Connection> allConnections = connectionDAO.selectByExample(new ConnectionExample());
+        
+        // Translate database records to MySQLConnections
+        List<MySQLConnection> allMySQLConnections = new ArrayList<MySQLConnection>();
+        
+        for(Connection connection : allConnections) {
+            allMySQLConnections.add(toMySQLConnection(connection, userID));
+        }
+        
+        return allMySQLConnections;
+    }
+    
+    /**
+     * Get the IDs of all the connection defined in the system.
+     * @param userID The ID of the user who is querying the connections.
+     * @return A list of IDs of all the connections defined in the system.
+     */
+    public List<Integer> getAllConnectionIDs(int userID) {
+        List<Integer> connectionIDs = new ArrayList<Integer>();
+        for(MySQLConnection connection : getAllConnections(userID)) {
+            connectionIDs.add(connection.getConnectionID());
+        }
+        
+        return connectionIDs;
     }
 
 

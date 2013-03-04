@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -354,6 +355,38 @@ public class UserService {
         // Update the user in the database
         userDAO.updateByPrimaryKeySelective(user);
 
+    }
+    
+    /**
+     * Get all the users defined in the system.
+     * @return A list of all users defined in the system.
+     */
+    public List<MySQLUser> getAllUsers() {
+        
+        // Get all users defined in the system.
+        List<UserWithBLOBs> allUsers = userDAO.selectByExampleWithBLOBs(new UserExample());
+        
+        // Translate database records to MySQLUsers
+        List<MySQLUser> allMySQLUsers = new ArrayList<MySQLUser>();
+        
+        for(UserWithBLOBs user : allUsers) {
+            allMySQLUsers.add(toMySQLUser(user));
+        }
+        
+        return allMySQLUsers;
+    }
+    
+    /**
+     * Get the IDs of all the user defined in the system.
+     * @return A list of IDs of all the users defined in the system.
+     */
+    public List<Integer> getAllUserIDs() {
+        List<Integer> userIDs = new ArrayList<Integer>();
+        for(MySQLUser user : getAllUsers()) {
+            userIDs.add(user.getUserID());
+        }
+        
+        return userIDs;
     }
 
 

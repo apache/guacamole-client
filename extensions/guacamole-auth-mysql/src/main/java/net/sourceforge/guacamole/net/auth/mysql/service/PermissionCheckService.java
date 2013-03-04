@@ -161,6 +161,10 @@ public class PermissionCheckService {
      */
     public boolean checkUserAccess(int userID, Integer affectedUserID, String permissionType) {
 
+        // A system administrator has full access to everything.
+        if(checkSystemAdministratorAccess(userID))
+            return true;
+        
         // Check existence of requested permission
         UserPermissionExample example = new UserPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andAffected_user_idEqualTo(affectedUserID).andPermissionEqualTo(permissionType);
@@ -180,6 +184,10 @@ public class PermissionCheckService {
      */
     public boolean checkConnectionAccess(int userID, Integer affectedConnectionID, String permissionType) {
 
+        // A system administrator has full access to everything.
+        if(checkSystemAdministratorAccess(userID))
+            return true;
+        
         // Check existence of requested permission
         ConnectionPermissionExample example = new ConnectionPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andConnection_idEqualTo(affectedConnectionID).andPermissionEqualTo(permissionType);
@@ -196,11 +204,31 @@ public class PermissionCheckService {
      */
     private boolean checkSystemAccess(int userID, String systemPermissionType) {
 
+        // A system administrator has full access to everything.
+        if(checkSystemAdministratorAccess(userID))
+            return true;
+        
         // Check existence of requested permission
         SystemPermissionExample example = new SystemPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(systemPermissionType);
         return systemPermissionDAO.countByExample(example) > 0;
 
+    }
+    
+
+    /**
+     * Checks whether a user has system administrator access to the system.
+     *
+     * @param userID The ID of the user to check.
+     * @return true if the system administrator access exists, false otherwise.
+     */
+    private boolean checkSystemAdministratorAccess(int userID) {
+
+        // Check existence of system administrator permission
+        SystemPermissionExample example = new SystemPermissionExample();
+        example.createCriteria().andUser_idEqualTo(userID).
+                andPermissionEqualTo(MySQLConstants.SYSTEM_ADMINISTER);
+        return systemPermissionDAO.countByExample(example) > 0;
     }
 
     /**
@@ -213,6 +241,11 @@ public class PermissionCheckService {
      */
     public List<Integer> retrieveUserIDs(int userID, String permissionType) {
 
+        // A system administrator has access to all users.
+        if(checkSystemAdministratorAccess(userID)) {
+            return userService.getAllUserIDs();
+        }
+        
         // Query all user permissions for the given user and permission type
         UserPermissionExample example = new UserPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
@@ -240,6 +273,11 @@ public class PermissionCheckService {
      */
     public List<Integer> retrieveConnectionIDs(int userID,
             String permissionType) {
+
+        // A system administrator has access to all connections.
+        if(checkSystemAdministratorAccess(userID)) {
+            return connectionService.getAllConnectionIDs(userID);
+        }
 
         // Query all connection permissions for the given user and permission type
         ConnectionPermissionExample example = new ConnectionPermissionExample();

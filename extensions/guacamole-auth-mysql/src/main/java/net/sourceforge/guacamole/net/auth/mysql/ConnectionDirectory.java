@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import com.google.inject.Inject;
 import java.util.List;
 import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Directory;
@@ -136,10 +137,19 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public void add(Connection object) throws GuacamoleException {
 
+        if(object.getIdentifier().isEmpty())
+            throw new GuacamoleClientException("The connection identifier cannot be blank.");
+        
         // Verify permission to create
         permissionCheckService.verifySystemAccess(this.user_id,
                 MySQLConstants.SYSTEM_CONNECTION_CREATE);
 
+        // Verify that no connection already exists with this identifier.
+        MySQLConnection previousConnection = 
+                connectionService.retrieveConnection(object.getIdentifier(), user_id);
+        if(previousConnection != null)
+            throw new GuacamoleClientException("That connection identifier is already in use.");
+        
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
                 object.getIdentifier(), object.getConfiguration().getProtocol(),
