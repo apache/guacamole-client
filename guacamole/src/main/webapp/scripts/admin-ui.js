@@ -471,7 +471,8 @@ GuacAdmin.addUser = function(name) {
         }
 
         // If readable connections exist, list them
-        if (GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)) {
+        if (GuacAdmin.cached_permissions.administer ||
+            GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)) {
 
             // Add fields for per-connection checkboxes
             var connections_header = GuacUI.createChildElement(sections, "dt");

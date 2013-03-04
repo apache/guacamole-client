@@ -35,6 +35,7 @@ import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
+import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -95,6 +96,10 @@ public class List extends AuthenticatingHttpServlet {
         // Get connection directory
         Directory<String, Connection> directory = context.getConnectionDirectory();
 
+        // Sys-admin permission
+        Permission systemPermission =
+                new SystemPermission(SystemPermission.Type.ADMINISTER);
+        
         // Write actual XML
         try {
 
@@ -121,7 +126,8 @@ public class List extends AuthenticatingHttpServlet {
                         connection.getConfiguration().getProtocol());
 
                 // If update permission available, include parameters
-                if (hasConfigPermission(self, ObjectPermission.Type.UPDATE,
+                if (self.hasPermission(systemPermission) ||
+                        hasConfigPermission(self, ObjectPermission.Type.UPDATE,
                         identifier)) {
 
                     // As update permission is present, also list parameters
