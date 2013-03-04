@@ -495,15 +495,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      *                    have when this operation completes.
      */
     private void createSystemPermissions(int user_id,
-            Collection<SystemPermission> permissions) {
+            Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // If no permissions given, stop now
         if(permissions.isEmpty())
             return;
 
+        // Only a system administrator can add system permissions.
+        permissionCheckService.verifySystemAccess(
+                this.user_id, SystemPermission.Type.ADMINISTER.name());
+
         // Insert all requested permissions
         for (SystemPermission permission : permissions) {
-
+            
             // Insert permission
             SystemPermissionKey newSystemPermission = new SystemPermissionKey();
             newSystemPermission.setUser_id(user_id);
