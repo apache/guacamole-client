@@ -318,13 +318,13 @@ public class PermissionCheckService {
     }
 
     /**
-     * Retrieve all existing usernames that the given user has permission to
-     * perform the given operation upon.
+     * Retrieve all existing connection names that the given user has permission
+     * to perform the given operation upon.
      *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
-     * @return A set of all usernames for which the given user has the given
-     *         permission.
+     * @return A set of all connection names for which the given user has the
+     *         given permission.
      */
     public Set<String> retrieveConnectionNames(int userID, String permissionType) {
 
@@ -334,7 +334,7 @@ public class PermissionCheckService {
 
         // List of all connection IDs for which this connection has read access
         List<Integer> connectionIDs =
-                retrieveUserIDs(userID, MySQLConstants.CONNECTION_READ);
+                retrieveConnectionIDs(userID, MySQLConstants.CONNECTION_READ);
 
         // Query all associated connections
         return connectionService.translateNames(connectionIDs).keySet();
