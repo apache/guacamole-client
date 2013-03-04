@@ -32,6 +32,11 @@ var GuacamoleService = GuacamoleService || {};
 GuacamoleService.Connection = function(protocol, id) {
 
     /**
+     * Reference to this connection.
+     */
+    var guac_connection = this;
+
+    /**
      * The protocol associated with this connection.
      */
     this.protocol = protocol;
@@ -52,6 +57,27 @@ GuacamoleService.Connection = function(protocol, id) {
      */
     this.history = [];
 
+    /**
+     * Returns the number of active users of this connection (which may be
+     * multiple instances under the same user) by walking the history records.
+     * 
+     * @return {Number} The number of active users of this connection.
+     */
+    this.currentUsage = function() {
+
+        // Number of users of this connection
+        var usage = 0;
+
+        // Walk history counting active entries
+        for (var i=0; i<guac_connection.history.length; i++) {
+            if (guac_connection.history[i].active)
+                usage++;
+        }
+
+        return usage;
+
+    };
+
 };
 
 /**
@@ -64,8 +90,9 @@ GuacamoleService.Connection = function(protocol, id) {
  *                       milliseconds).
  * @param {Number} end The time that the connection ended (in UNIX epoch
  *                     milliseconds). This parameter is optional.
+ * @param {Boolean} active Whether the connection is currently active.
  */
-GuacamoleService.Connection.Record = function(username, start, end) {
+GuacamoleService.Connection.Record = function(username, start, end, active) {
     
     /**
      * The username of the user associated with this record.
@@ -84,6 +111,11 @@ GuacamoleService.Connection.Record = function(username, start, end) {
      * @type Date
      */
     this.end = null;
+
+    /**
+     * Whether this connection is currently active.
+     */
+    this.active = active;
 
     /**
      * The duration of this connection, in seconds. This value is only
@@ -268,7 +300,8 @@ GuacamoleService.Connections = {
                     var record = new GuacamoleService.Connection.Record(
                         recordElement.textContent,
                         parseInt(recordElement.getAttribute("start")),
-                        parseInt(recordElement.getAttribute("end"))
+                        parseInt(recordElement.getAttribute("end")),
+                        recordElement.getAttribute("active") == "yes"
                     );
 
                     // Append to connection history

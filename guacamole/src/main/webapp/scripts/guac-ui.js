@@ -463,6 +463,14 @@ GuacUI.Connection = function(connection) {
     caption.appendChild(protocol);
     caption.appendChild(name);
 
+    // Add active usages (if any)
+    var active_users = connection.currentUsage();
+    if (active_users > 0) {
+        var usage = GuacUI.createChildElement(caption, "span", "usage");
+        usage.textContent = "Currently in use by " + active_users + " user(s)";
+        GuacUI.addClass(element, "in-use");
+    }
+
     // Assemble connection icon
     element.appendChild(thumbnail);
     element.appendChild(caption);

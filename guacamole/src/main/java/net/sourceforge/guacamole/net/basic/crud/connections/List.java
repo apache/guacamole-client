@@ -154,6 +154,10 @@ public class List extends AuthenticatingHttpServlet {
                         xml.writeAttribute("end",
                             Long.toString(record.getEndDate().getTime()));
 
+                    // Whether connection currently active
+                    if (record.isActive())
+                        xml.writeAttribute("active", "yes");
+
                     // User involved
                     xml.writeCharacters(record.getUsername());
 
