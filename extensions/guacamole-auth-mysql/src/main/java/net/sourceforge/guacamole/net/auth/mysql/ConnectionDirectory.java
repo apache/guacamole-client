@@ -130,7 +130,8 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Override
     public void add(Connection object) throws GuacamoleException {
 
-        if(object.getIdentifier().isEmpty())
+        String identifier = object.getIdentifier().trim();
+        if(identifier.isEmpty())
             throw new GuacamoleClientException("The connection identifier cannot be blank.");
         
         // Verify permission to create
@@ -139,13 +140,13 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Verify that no connection already exists with this identifier.
         MySQLConnection previousConnection = 
-                connectionService.retrieveConnection(object.getIdentifier(), user_id);
+                connectionService.retrieveConnection(identifier, user_id);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection identifier is already in use.");
         
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
-                object.getIdentifier(), object.getConfiguration().getProtocol(),
+                identifier, object.getConfiguration().getProtocol(),
                 user_id);
 
         // Add connection parameters

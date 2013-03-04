@@ -154,7 +154,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     public void add(net.sourceforge.guacamole.net.auth.User object)
             throws GuacamoleException {
 
-        if(object.getUsername().isEmpty())
+        String username = object.getUsername().trim();
+        if(username.isEmpty())
             throw new GuacamoleClientException("The username cannot be blank.");
 
         // Verify current user has permission to create users
@@ -163,14 +164,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         Preconditions.checkNotNull(object);
 
         // Verify that no user already exists with this username.
-        MySQLUser previousUser = 
-                userService.retrieveUser(object.getUsername());
+        MySQLUser previousUser = userService.retrieveUser(username);
         if(previousUser != null)
             throw new GuacamoleClientException("That username is already in use.");
 
         // Create new user
-        MySQLUser user = userService.createUser(object.getUsername(),
-                object.getPassword());
+        MySQLUser user = userService.createUser(username, object.getPassword());
 
         // Create permissions of new user in database
         createPermissions(user.getUserID(), object.getPermissions());
