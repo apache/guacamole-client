@@ -291,12 +291,12 @@ public class ConnectionService {
 
         // We want to return the newest records first
         example.setOrderByClause("start_date DESC");
-        
+
         // Set the maximum number of history records returned to 100
         RowBounds rowBounds = new RowBounds(0, 100);
 
         // Retrieve all connection history entries
-        List<ConnectionHistory> connectionHistories = 
+        List<ConnectionHistory> connectionHistories =
                 connectionHistoryDAO.selectByExampleWithRowbounds(example, rowBounds);
 
         // Convert history entries to connection records
@@ -412,10 +412,10 @@ public class ConnectionService {
         connectionDAO.updateByPrimaryKeySelective(connection);
 
     }
-    
+
     /**
      * Get the names of all the connections defined in the system.
-     * 
+     *
      * @return A Set of names of all the connections defined in the system.
      */
     public Set<String> getAllConnectionNames() {
@@ -428,19 +428,19 @@ public class ConnectionService {
                 connectionDAO.selectByExample(new ConnectionExample());
         for (Connection connection : connections)
             names.add(connection.getConnection_name());
-        
+
         return names;
 
     }
 
     /**
      * Get the connection IDs of all the connections defined in the system.
-     * 
+     *
      * @return A list of connection IDs of all the connections defined in the system.
      */
     public List<Integer> getAllConnectionIDs() {
 
-        // Set of all present connection IDs 
+        // Set of all present connection IDs
         List<Integer> connectionIDs = new ArrayList<Integer>();
 
         // Query all connection IDs
@@ -448,7 +448,7 @@ public class ConnectionService {
                 connectionDAO.selectByExample(new ConnectionExample());
         for (Connection connection : connections)
             connectionIDs.add(connection.getConnection_id());
-        
+
         return connectionIDs;
 
     }

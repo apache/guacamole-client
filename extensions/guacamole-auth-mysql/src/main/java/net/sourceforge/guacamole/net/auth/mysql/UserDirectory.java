@@ -485,6 +485,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      * @param user_id The ID of the user whose permissions should be updated.
      * @param permissions The new system permissions that the given user should
      *                    have when this operation completes.
+     * @throws GuacamoleException If permission to administer system permissions
+     *                            is denied.
      */
     private void createSystemPermissions(int user_id,
             Collection<SystemPermission> permissions) throws GuacamoleException {
@@ -499,7 +501,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Insert all requested permissions
         for (SystemPermission permission : permissions) {
-            
+
             // Insert permission
             SystemPermissionKey newSystemPermission = new SystemPermissionKey();
             newSystemPermission.setUser_id(user_id);
@@ -531,7 +533,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Prevent self-de-adminifying
         if (user_id == this.user_id)
             throw new GuacamoleClientException("Removing your own administrative permissions is not allowed.");
-        
+
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
         for (SystemPermission permission : permissions)
@@ -585,7 +587,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Prevent self-deletion
         if (user.getUserID() == this.user_id)
             throw new GuacamoleClientException("Deleting your own user is not allowed.");
-        
+
         // Validate current user has permission to remove the specified user
         permissionCheckService.verifyUserAccess(this.user_id,
                 user.getUserID(),

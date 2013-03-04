@@ -38,7 +38,6 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
-import java.util.List;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -133,17 +132,17 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         String identifier = object.getIdentifier().trim();
         if(identifier.isEmpty())
             throw new GuacamoleClientException("The connection identifier cannot be blank.");
-        
+
         // Verify permission to create
         permissionCheckService.verifySystemAccess(this.user_id,
                 MySQLConstants.SYSTEM_CONNECTION_CREATE);
 
         // Verify that no connection already exists with this identifier.
-        MySQLConnection previousConnection = 
+        MySQLConnection previousConnection =
                 connectionService.retrieveConnection(identifier, user_id);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection identifier is already in use.");
-        
+
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
                 identifier, object.getConfiguration().getProtocol(),

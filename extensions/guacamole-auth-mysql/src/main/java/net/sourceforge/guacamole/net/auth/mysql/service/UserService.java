@@ -337,10 +337,10 @@ public class UserService {
         userDAO.updateByPrimaryKeySelective(user);
 
     }
-    
+
     /**
      * Get the usernames of all the users defined in the system.
-     * 
+     *
      * @return A Set of usernames of all the users defined in the system.
      */
     public Set<String> getAllUsernames() {
@@ -353,19 +353,19 @@ public class UserService {
                 userDAO.selectByExample(new UserExample());
         for (User user : users)
             usernames.add(user.getUsername());
-        
+
         return usernames;
 
     }
 
     /**
      * Get the user IDs of all the users defined in the system.
-     * 
+     *
      * @return A list of user IDs of all the users defined in the system.
      */
     public List<Integer> getAllUserIDs() {
 
-        // Set of all present user IDs 
+        // Set of all present user IDs
         List<Integer> userIDs = new ArrayList<Integer>();
 
         // Query all user IDs
@@ -373,7 +373,7 @@ public class UserService {
                 userDAO.selectByExample(new UserExample());
         for (User user : users)
             userIDs.add(user.getUser_id());
-        
+
         return userIDs;
 
     }

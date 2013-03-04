@@ -164,7 +164,7 @@ public class PermissionCheckService {
         // A system administrator has full access to everything.
         if(checkSystemAdministratorAccess(userID))
             return true;
-        
+
         // Check existence of requested permission
         UserPermissionExample example = new UserPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andAffected_user_idEqualTo(affectedUserID).andPermissionEqualTo(permissionType);
@@ -187,7 +187,7 @@ public class PermissionCheckService {
         // A system administrator has full access to everything.
         if(checkSystemAdministratorAccess(userID))
             return true;
-        
+
         // Check existence of requested permission
         ConnectionPermissionExample example = new ConnectionPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andConnection_idEqualTo(affectedConnectionID).andPermissionEqualTo(permissionType);
@@ -207,14 +207,14 @@ public class PermissionCheckService {
         // A system administrator has full access to everything.
         if(checkSystemAdministratorAccess(userID))
             return true;
-        
+
         // Check existence of requested permission
         SystemPermissionExample example = new SystemPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(systemPermissionType);
         return systemPermissionDAO.countByExample(example) > 0;
 
     }
-    
+
 
     /**
      * Checks whether a user has system administrator access to the system.
@@ -244,7 +244,7 @@ public class PermissionCheckService {
         // A system administrator has access to all users.
         if(checkSystemAdministratorAccess(userID))
             return userService.getAllUserIDs();
-        
+
         // Query all user permissions for the given user and permission type
         UserPermissionExample example = new UserPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
@@ -296,7 +296,7 @@ public class PermissionCheckService {
     /**
      * Retrieve all existing usernames that the given user has permission to
      * perform the given operation upon.
-     * 
+     *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
      * @return A set of all usernames for which the given user has the given
@@ -320,7 +320,7 @@ public class PermissionCheckService {
     /**
      * Retrieve all existing usernames that the given user has permission to
      * perform the given operation upon.
-     * 
+     *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
      * @return A set of all usernames for which the given user has the given
