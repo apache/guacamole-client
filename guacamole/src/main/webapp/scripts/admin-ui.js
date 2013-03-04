@@ -704,8 +704,8 @@ GuacAdmin.addConnection = function(connection) {
         if (connection.history.length > 0) {
 
             // History section
-            var history_table  = GuacUI.createChildElement(
-                GuacUI.createChildElement(sections, "dd"),
+            var history_section = GuacUI.createChildElement(sections, "dd");
+            var history_table  = GuacUI.createChildElement(history_section,
                 "table", "history section");
 
             var history_table_header = GuacUI.createChildElement(
@@ -720,6 +720,12 @@ GuacAdmin.addConnection = function(connection) {
             GuacUI.createChildElement(history_table_header, "th").textContent =
                 "Duration";
 
+            // Paginated body of history
+            var history_buttons = GuacUI.createChildElement(history_section, "div",
+                "list-pager-buttons");
+            var history_body = GuacUI.createChildElement(history_table, "tbody");
+            var history_pager = new GuacUI.Pager(history_body);
+
             // Add history
             for (i=0; i<connection.history.length; i++) {
 
@@ -727,7 +733,7 @@ GuacAdmin.addConnection = function(connection) {
                 var record = connection.history[i];
 
                 // Create record elements
-                var row = GuacUI.createChildElement(history_table, "tr");
+                var row = GuacUI.createElement("tr");
                 var user = GuacUI.createChildElement(row, "td", "username");
                 var start = GuacUI.createChildElement(row, "td", "start");
                 var duration = GuacUI.createChildElement(row, "td", "duration");
@@ -740,7 +746,17 @@ GuacAdmin.addConnection = function(connection) {
                 else
                     duration.textContent = "Active now";
 
+                // Add record to pager
+                history_pager.addElement(row);
+
             }
+
+            // Init pager
+            history_pager.setPage(0);
+
+            // Add pager if more than one page
+            if (history_pager.last_page != 0)
+                history_buttons.appendChild(history_pager.getElement());
 
         }
         else

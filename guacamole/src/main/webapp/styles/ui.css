@@ -197,7 +197,7 @@ div.section {
     background: #DEB;
 }
 
-.list-item.selected .icon {
+.list-item.selected > .icon {
     opacity: 1.0;
 }
 
