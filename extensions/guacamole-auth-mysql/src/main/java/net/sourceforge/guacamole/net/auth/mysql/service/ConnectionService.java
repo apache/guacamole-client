@@ -414,38 +414,43 @@ public class ConnectionService {
     }
     
     /**
-     * Get all the connections defined in the system.
-     * @param userID The ID of the user who is querying the connections.
-     * @return A list of all connections defined in the system.
+     * Get the names of all the connections defined in the system.
+     * 
+     * @return A Set of names of all the connections defined in the system.
      */
-    public List<MySQLConnection> getAllConnections(int userID) {
+    public Set<String> getAllConnectionNames() {
+
+        // Set of all present connection names
+        Set<String> names = new HashSet<String>();
+
+        // Query all connection names
+        List<Connection> connections =
+                connectionDAO.selectByExample(new ConnectionExample());
+        for (Connection connection : connections)
+            names.add(connection.getConnection_name());
         
-        // Get all connections defined in the system.
-        List<Connection> allConnections = connectionDAO.selectByExample(new ConnectionExample());
-        
-        // Translate database records to MySQLConnections
-        List<MySQLConnection> allMySQLConnections = new ArrayList<MySQLConnection>();
-        
-        for(Connection connection : allConnections) {
-            allMySQLConnections.add(toMySQLConnection(connection, userID));
-        }
-        
-        return allMySQLConnections;
-    }
-    
-    /**
-     * Get the IDs of all the connection defined in the system.
-     * @param userID The ID of the user who is querying the connections.
-     * @return A list of IDs of all the connections defined in the system.
-     */
-    public List<Integer> getAllConnectionIDs(int userID) {
-        List<Integer> connectionIDs = new ArrayList<Integer>();
-        for(MySQLConnection connection : getAllConnections(userID)) {
-            connectionIDs.add(connection.getConnectionID());
-        }
-        
-        return connectionIDs;
+        return names;
+
     }
 
+    /**
+     * Get the connection IDs of all the connections defined in the system.
+     * 
+     * @return A list of connection IDs of all the connections defined in the system.
+     */
+    public List<Integer> getAllConnectionIDs() {
+
+        // Set of all present connection IDs 
+        List<Integer> connectionIDs = new ArrayList<Integer>();
+
+        // Query all connection IDs
+        List<Connection> connections =
+                connectionDAO.selectByExample(new ConnectionExample());
+        for (Connection connection : connections)
+            connectionIDs.add(connection.getConnection_id());
+        
+        return connectionIDs;
+
+    }
 
 }

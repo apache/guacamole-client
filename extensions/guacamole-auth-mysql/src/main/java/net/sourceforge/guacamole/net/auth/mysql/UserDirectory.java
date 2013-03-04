@@ -145,15 +145,8 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-
-        // List of all user IDs for which this user has read access
-        List<Integer> userIDs =
-                permissionCheckService.retrieveConnectionIDs(this.user_id,
+        return permissionCheckService.retrieveUsernames(user_id,
                 MySQLConstants.USER_READ);
-
-        // Query all associated users
-        return userService.translateUsernames(userIDs).keySet();
-
     }
 
     @Override
@@ -453,12 +446,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
         // Get list of administerable connection IDs
         List<Integer> administerableConnectionIDs =
-            permissionCheckService.retrieveUserIDs(this.user_id,
+            permissionCheckService.retrieveConnectionIDs(this.user_id,
                 MySQLConstants.CONNECTION_ADMINISTER);
 
         // Get set of names corresponding to administerable connections
         Map<String, Integer> administerableConnections =
-                userService.translateUsernames(administerableConnectionIDs);
+                connectionService.translateNames(administerableConnectionIDs);
 
         // Delete requested permissions
         for (ConnectionPermission permission : permissions) {

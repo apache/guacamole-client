@@ -122,15 +122,8 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-
-        // List of all connection IDs for which this user has read access
-        List<Integer> connectionIDs =
-                permissionCheckService.retrieveConnectionIDs(this.user_id,
+        return permissionCheckService.retrieveConnectionNames(user_id,
                 MySQLConstants.CONNECTION_READ);
-
-        // Query all associated connections
-        return connectionService.translateNames(connectionIDs).keySet();
-
     }
 
     @Transactional

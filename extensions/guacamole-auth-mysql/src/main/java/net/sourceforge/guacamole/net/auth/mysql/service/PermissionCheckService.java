@@ -242,9 +242,8 @@ public class PermissionCheckService {
     public List<Integer> retrieveUserIDs(int userID, String permissionType) {
 
         // A system administrator has access to all users.
-        if(checkSystemAdministratorAccess(userID)) {
+        if(checkSystemAdministratorAccess(userID))
             return userService.getAllUserIDs();
-        }
         
         // Query all user permissions for the given user and permission type
         UserPermissionExample example = new UserPermissionExample();
@@ -275,9 +274,8 @@ public class PermissionCheckService {
             String permissionType) {
 
         // A system administrator has access to all connections.
-        if(checkSystemAdministratorAccess(userID)) {
-            return connectionService.getAllConnectionIDs(userID);
-        }
+        if(checkSystemAdministratorAccess(userID))
+            return connectionService.getAllConnectionIDs();
 
         // Query all connection permissions for the given user and permission type
         ConnectionPermissionExample example = new ConnectionPermissionExample();
@@ -292,6 +290,54 @@ public class PermissionCheckService {
             connectionIDs.add(permission.getConnection_id());
 
         return connectionIDs;
+
+    }
+
+    /**
+     * Retrieve all existing usernames that the given user has permission to
+     * perform the given operation upon.
+     * 
+     * @param userID The user whose permissions should be checked.
+     * @param permissionType The permission to check.
+     * @return A set of all usernames for which the given user has the given
+     *         permission.
+     */
+    public Set<String> retrieveUsernames(int userID, String permissionType) {
+
+        // A system administrator has access to all users.
+        if(checkSystemAdministratorAccess(userID))
+            return userService.getAllUsernames();
+
+        // List of all user IDs for which this user has read access
+        List<Integer> userIDs =
+                retrieveUserIDs(userID, MySQLConstants.USER_READ);
+
+        // Query all associated users
+        return userService.translateUsernames(userIDs).keySet();
+
+    }
+
+    /**
+     * Retrieve all existing usernames that the given user has permission to
+     * perform the given operation upon.
+     * 
+     * @param userID The user whose permissions should be checked.
+     * @param permissionType The permission to check.
+     * @return A set of all usernames for which the given user has the given
+     *         permission.
+     */
+    public Set<String> retrieveConnectionNames(int userID, String permissionType) {
+
+        // A system administrator has access to all connections.
+        if(checkSystemAdministratorAccess(userID))
+            return connectionService.getAllConnectionNames();
+
+        // List of all connection IDs for which this connection has read access
+        List<Integer> connectionIDs =
+                retrieveUserIDs(userID, MySQLConstants.CONNECTION_READ);
+
+        // Query all associated connections
+        return connectionService.translateNames(connectionIDs).keySet();
 
     }
 

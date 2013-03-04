@@ -44,16 +44,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.User;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserWithBLOBs;
 
@@ -70,24 +69,6 @@ public class UserService {
      */
     @Inject
     private UserMapper userDAO;
-
-    /**
-     * DAO for accessing user permissions, which will be injected.
-     */
-    @Inject
-    private UserPermissionMapper userPermissionDAO;
-
-    /**
-     * DAO for accessing connection permissions, which will be injected.
-     */
-    @Inject
-    private ConnectionPermissionMapper connectionPermissionDAO;
-
-    /**
-     * DAO for accessing system permissions, which will be injected.
-     */
-    @Inject
-    private SystemPermissionMapper systemPermissionDAO;
 
     /**
      * Provider for creating users.
@@ -124,7 +105,7 @@ public class UserService {
      * @throws GuacamoleException If an error occurs while reading the data
      *                            of the provided User.
      */
-    public MySQLUser toMySQLUser(User user) throws GuacamoleException {
+    public MySQLUser toMySQLUser(net.sourceforge.guacamole.net.auth.User user) throws GuacamoleException {
         MySQLUser mySQLUser = mySQLUserProvider.get();
         mySQLUser.init(user);
         return mySQLUser;
@@ -255,11 +236,11 @@ public class UserService {
         // Get all users having the given IDs
         UserExample example = new UserExample();
         example.createCriteria().andUser_idIn(ids);
-        List<net.sourceforge.guacamole.net.auth.mysql.model.User> users =
+        List<User> users =
                 userDAO.selectByExample(example);
 
         // Produce set of names
-        for (net.sourceforge.guacamole.net.auth.mysql.model.User user : users)
+        for (User user : users)
             names.put(user.getUsername(), user.getUser_id());
 
         return names;
@@ -285,11 +266,11 @@ public class UserService {
         // Get all users having the given IDs
         UserExample example = new UserExample();
         example.createCriteria().andUser_idIn(Lists.newArrayList(ids));
-        List<net.sourceforge.guacamole.net.auth.mysql.model.User> users =
+        List<User> users =
                 userDAO.selectByExample(example);
 
         // Produce set of names
-        for (net.sourceforge.guacamole.net.auth.mysql.model.User user : users)
+        for (User user : users)
             names.put(user.getUser_id(), user.getUsername());
 
         return names;
@@ -358,36 +339,43 @@ public class UserService {
     }
     
     /**
-     * Get all the users defined in the system.
-     * @return A list of all users defined in the system.
+     * Get the usernames of all the users defined in the system.
+     * 
+     * @return A Set of usernames of all the users defined in the system.
      */
-    public List<MySQLUser> getAllUsers() {
+    public Set<String> getAllUsernames() {
+
+        // Set of all present usernames
+        Set<String> usernames = new HashSet<String>();
+
+        // Query all usernames
+        List<User> users =
+                userDAO.selectByExample(new UserExample());
+        for (User user : users)
+            usernames.add(user.getUsername());
         
-        // Get all users defined in the system.
-        List<UserWithBLOBs> allUsers = userDAO.selectByExampleWithBLOBs(new UserExample());
-        
-        // Translate database records to MySQLUsers
-        List<MySQLUser> allMySQLUsers = new ArrayList<MySQLUser>();
-        
-        for(UserWithBLOBs user : allUsers) {
-            allMySQLUsers.add(toMySQLUser(user));
-        }
-        
-        return allMySQLUsers;
-    }
-    
-    /**
-     * Get the IDs of all the user defined in the system.
-     * @return A list of IDs of all the users defined in the system.
-     */
-    public List<Integer> getAllUserIDs() {
-        List<Integer> userIDs = new ArrayList<Integer>();
-        for(MySQLUser user : getAllUsers()) {
-            userIDs.add(user.getUserID());
-        }
-        
-        return userIDs;
+        return usernames;
+
     }
 
+    /**
+     * Get the user IDs of all the users defined in the system.
+     * 
+     * @return A list of user IDs of all the users defined in the system.
+     */
+    public List<Integer> getAllUserIDs() {
+
+        // Set of all present user IDs 
+        List<Integer> userIDs = new ArrayList<Integer>();
+
+        // Query all user IDs
+        List<User> users =
+                userDAO.selectByExample(new UserExample());
+        for (User user : users)
+            userIDs.add(user.getUser_id());
+        
+        return userIDs;
+
+    }
 
 }
