@@ -316,6 +316,9 @@ GuacamoleService.Connections = {
             
         }
 
+        // Sort connections by ID
+        connections.sort(GuacamoleService.Connections.comparator);
+
         return connections;
  
     },
@@ -447,6 +450,9 @@ GuacamoleService.Users = {
         var userElements = xhr.responseXML.getElementsByTagName("user");
         for (var i=0; i<userElements.length; i++)
             users.push(userElements[i].getAttribute("name"));
+
+        // Sort by username
+        users.sort();
 
         return users;
      

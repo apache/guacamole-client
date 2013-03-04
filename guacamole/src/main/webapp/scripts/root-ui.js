@@ -145,9 +145,6 @@ GuacamoleRootUI.reset = function() {
     try {
         connections = GuacamoleService.Connections.list(parameters);
 
-        // Sort connections by ID
-        connections.sort(GuacamoleService.Connections.comparator);
-
         // Show admin elements if admin permissions available
         var permissions = GuacamoleService.Permissions.list();
         if (permissions.administer
