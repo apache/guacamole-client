@@ -7,6 +7,7 @@ insert into guacamole_user values(1, 'guacadmin',
 -- Grant this user create permissions
 insert into guacamole_system_permission values(1, 'CREATE_CONNECTION');
 insert into guacamole_system_permission values(1, 'CREATE_USER');
+insert into guacamole_system_permission values(1, 'ADMINISTER');
 
 -- Grant admin permission to read/update/administer self
 insert into guacamole_user_permission values(1, 1, 'READ');
