@@ -491,11 +491,14 @@ GuacAdmin.addUser = function(name) {
             var connections_pager = new GuacUI.Pager(connections);
 
             // Add connections to pager
-            var available_connections =
-                Object.keys(GuacAdmin.cached_permissions.administer_connection).sort();
+            var available_connections = GuacAdmin.cached_connections;
             for (var i=0; i<available_connections.length; i++) {
 
-                var conn = available_connections[i];
+                // If no admin permission, do not list connection
+                var conn = available_connections[i].id;
+                if (!GuacAdmin.cached_permissions.administer &&
+                        !(conn in GuacAdmin.cached_permissions.administer_connection))
+                    continue;
 
                 var connection       = GuacUI.createElement("div", "connection");
                 var connection_field = GuacUI.createChildElement(connection, "input");
@@ -594,7 +597,8 @@ GuacAdmin.addUser = function(name) {
         };
 
         // Add delete button if permission available
-        if (name in GuacAdmin.cached_permissions.remove_user) {
+        if (GuacAdmin.cached_permissions.administer ||
+            name in GuacAdmin.cached_permissions.remove_user) {
             
             // Create button
             var delete_button = GuacUI.createChildElement(button_div, "button", "danger");
@@ -890,7 +894,8 @@ GuacAdmin.addConnection = function(connection) {
         };
 
         // Add delete button if permission available
-        if (connection.id in GuacAdmin.cached_permissions.remove_connection) {
+        if (GuacAdmin.cached_permissions.administer ||
+            connection.id in GuacAdmin.cached_permissions.remove_connection) {
             
             // Create button
             var delete_button = GuacUI.createChildElement(button_div, "button", "danger");
@@ -1024,9 +1029,12 @@ GuacAdmin.reset = function() {
     GuacAdmin.userPager = new GuacUI.Pager(GuacAdmin.containers.user_list);
 
     // Add users to pager
-    var usernames = Object.keys(GuacAdmin.cached_permissions.read_user).sort();
-    for (i=0; i<usernames.length; i++)
-        GuacAdmin.addUser(usernames[i]);
+    var usernames = GuacamoleService.Users.list();
+    for (i=0; i<usernames.length; i++) {
+        if (GuacAdmin.cached_permissions.administer
+            || usernames[i] in GuacAdmin.cached_permissions.update_user)
+            GuacAdmin.addUser(usernames[i]);
+    }
 
     // If more than one page, add navigation buttons
     GuacAdmin.containers.user_list_buttons.innerHTML = "";
@@ -1051,8 +1059,12 @@ GuacAdmin.reset = function() {
     GuacAdmin.connectionPager = new GuacUI.Pager(GuacAdmin.containers.connection_list);
 
     // Add connections to pager
-    for (i=0; i<GuacAdmin.cached_connections.length; i++)
-        GuacAdmin.addConnection(GuacAdmin.cached_connections[i]);
+    for (i=0; i<GuacAdmin.cached_connections.length; i++) {
+        var connection = GuacAdmin.cached_connections[i];
+        if (GuacAdmin.cached_permissions.administer
+            || connection.id in GuacAdmin.cached_permissions.update_connection)
+            GuacAdmin.addConnection(connection);
+    }
 
     // If more than one page, add navigation buttons
     GuacAdmin.containers.connection_list_buttons.innerHTML = "";

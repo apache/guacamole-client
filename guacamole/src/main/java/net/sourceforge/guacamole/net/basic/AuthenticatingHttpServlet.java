@@ -187,8 +187,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
             // If response not committed, send error code
             if (!response.isCommitted()) {
-                response.sendError(code);
                 response.addHeader("Guacamole-Error-Message", message);
+                response.sendError(code);
             }
 
         }
