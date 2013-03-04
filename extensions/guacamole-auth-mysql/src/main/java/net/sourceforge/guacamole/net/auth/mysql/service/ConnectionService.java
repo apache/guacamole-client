@@ -70,6 +70,7 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.ibatis.session.RowBounds;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -289,9 +290,13 @@ public class ConnectionService {
 
         // We want to return the newest records first
         example.setOrderByClause("start_date DESC");
+        
+        // Set the maximum number of history records returned to 100
+        RowBounds rowBounds = new RowBounds(0, 100);
 
         // Retrieve all connection history entries
-        List<ConnectionHistory> connectionHistories = connectionHistoryDAO.selectByExample(example);
+        List<ConnectionHistory> connectionHistories = 
+                connectionHistoryDAO.selectByExampleWithRowbounds(example, rowBounds);
 
         // Convert history entries to connection records
         List<MySQLConnectionRecord> connectionRecords = new ArrayList<MySQLConnectionRecord>();
