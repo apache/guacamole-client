@@ -185,10 +185,10 @@ GuacAdmin.Field.ENUM = function(values) {
 
     // Create backing element
     var element = GuacUI.createElement("select");
-    for (var name in values) {
+    for (var i=0; i<values.length; i++) {
         var option = GuacUI.createChildElement(element, "option");
-        option.textContent = values[name];
-        option.value = name;
+        option.textContent = values[i].title;
+        option.value = values[i].value;
     }
 
     this.getValue = function() {
@@ -803,19 +803,20 @@ GuacAdmin.addConnection = function(connection) {
                 var field;
                 switch (parameter.type) {
 
-                    case "text":
+                    case GuacamoleService.Protocol.Parameter.TEXT:
+                    case GuacamoleService.Protocol.Parameter.NUMERIC:
                         field = new GuacAdmin.Field.TEXT();
                         break;
 
-                    case "password":
+                    case GuacamoleService.Protocol.Parameter.PASSWORD:
                         field = new GuacAdmin.Field.PASSWORD();
                         break;
 
-                    case "boolean":
+                    case GuacamoleService.Protocol.Parameter.BOOLEAN:
                         field = new GuacAdmin.Field.CHECKBOX(parameter.value);
                         break;
 
-                    case "enum":
+                    case GuacamoleService.Protocol.Parameter.ENUM:
                         field = new GuacAdmin.Field.ENUM(parameter.options);
                         break;
 

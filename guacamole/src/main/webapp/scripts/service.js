@@ -740,6 +740,107 @@ GuacamoleService.Permissions = {
 };
 
 /**
+ * Representation of a protocol supported by Guacamole, having a given name,
+ * title, and set of parameters.
+ */
+GuacamoleService.Protocol = function(name, title, parameters) {
+
+    /**
+     * The unique name associated with this protocol. This is the name that is
+     * used to identify the protocol to Guacamole.
+     */
+    this.name = name;
+
+    /**
+     * A human-readable title describing this protocol. This is what the user
+     * will use to identify the protocol.
+     */
+    this.title = title;
+
+    /**
+     * Array of all available parameters, in desired order of presentation.
+     * @type GuacamoleService.Protocol.Parameter[]
+     */
+    this.parameters = parameters || [];
+
+};
+
+/**
+ * A parameter belonging to a protocol. Each parameter has a name which
+ * identifies the parameter to the protocol, a human-readable title, and a type
+ * which dictates its presentation to the user.
+ */
+GuacamoleService.Protocol.Parameter = function(name, title, type, options) {
+
+    /**
+     * The name of this parameter.
+     */
+    this.name = name;
+
+    /**
+     * A human-readable title describing this parameter.
+     */
+    this.title = title;
+
+    /**
+     * The type of this parameter.
+     */
+    this.type = type;
+
+    /**
+     * All available options, if applicable, in desired order of presentation.
+     * @type GuacamoleService.Protocol.Parameter.Option[]
+     */
+    this.options = options || [];
+
+};
+
+/**
+ * An option for a parameter. A parameter has options if it only has a specified
+ * and enumerated legal set of values.
+ */
+GuacamoleService.Protocol.Parameter.Option = function(value, title) {
+
+    /**
+     * The value of this option. This is the value that will be assigned to the
+     * parameter if this option is chosen.
+     */
+    this.value = value;
+
+    /**
+     * The title of this option. This is the value that will be presented to the
+     * user for selection.
+     */
+    this.title = title;
+
+};
+
+/**
+ * A free-form text field.
+ */
+GuacamoleService.Protocol.Parameter.TEXT     = 0;
+
+/**
+ * A password field.
+ */
+GuacamoleService.Protocol.Parameter.PASSWORD = 1;
+
+/**
+ * A numeric field.
+ */
+GuacamoleService.Protocol.Parameter.NUMERIC  = 2;
+
+/**
+ * A boolean (checkbox) field.
+ */
+GuacamoleService.Protocol.Parameter.BOOLEAN  = 3;
+
+/**
+ * An enumerated (select) field.
+ */
+GuacamoleService.Protocol.Parameter.ENUM     = 4;
+
+/**
  * Collection of service functions which deal with protocols. Each function
  * makes an explicit HTTP query to the server, and parses the response.
  */
@@ -756,86 +857,43 @@ GuacamoleService.Protocols = {
       * @param {String} parameters Any parameters which should be passed to the
       *                            server for the sake of authentication
       *                            (optional).
-      * @return {Array} An array containing all available protocols.
+      * @return {GuacamoleService.Protocol[]} An array containing all available
+      *                                     protocols.
       */   
     "list" : function(parameters) {
 
+        var vnc = new GuacamoleService.Protocol(
+            "vnc", "VNC", [
+
+                new GuacamoleService.Protocol.Parameter(
+                    "hostname", "Hostname",
+                    GuacamoleService.Protocol.Parameter.TEXT),
+
+                new GuacamoleService.Protocol.Parameter(
+                    "port", "Port",
+                    GuacamoleService.Protocol.Parameter.NUMERIC),
+                    
+                new GuacamoleService.Protocol.Parameter(
+                    "color-depth", "Color depth",
+                    GuacamoleService.Protocol.Parameter.ENUM,
+                    [
+                        new GuacamoleService.Protocol.Parameter.Option(
+                            "8", "256 colors"),
+                        new GuacamoleService.Protocol.Parameter.Option(
+                            "16", "High color (16-bit)"),
+                        new GuacamoleService.Protocol.Parameter.Option(
+                            "24", "True color (24-bit)")
+                    ]),
+
+                new GuacamoleService.Protocol.Parameter(
+                    "read-only", "Read-only",
+                    GuacamoleService.Protocol.Parameter.BOOLEAN)
+                    
+            ]
+        );
+
         // FIXME: STUB
-        return [{
-
-            /* Unique name */
-            "name"  : "vnc",
-
-            /* Display title */
-            "title" : "VNC",
-            
-            /* All available parameters */
-            "parameters" : {
-
-                "hostname" : {
-                    "title" : "Hostname",
-                    "type"  : "text"
-                },
-                
-                "port" : {
-                    "title" : "Port",
-                    "type"  : "text",
-                    "value" : "5900"
-                },
-
-                "color-depth" : {
-                    "title"   : "Color depth",
-                    "type"    : "enum",
-                    "options" : {
-                        "8" : "256 colors",
-                        "16": "High color (16-bit)",
-                        "24": "True color (24-bit)"
-                    }
-                },
-
-                "read-only" : {
-                    "title" : "Read-only",
-                    "type"  : "boolean",
-                    "value" : "true"
-                }
-                
-            }
-
-        }, {
-
-            /* Unique name */
-            "name"  : "rdp",
-
-            /* Display title */
-            "title" : "RDP",
-            
-            /* All available parameters */
-            "parameters" : {
-
-                "hostname" : {
-                    "title" : "Hostname",
-                    "type"  : "text"
-                },
-                
-                "port" : {
-                    "title" : "Port",
-                    "type"  : "text",
-                    "value" : "3389"
-                },
-
-                "username" : {
-                    "title" : "Username",
-                    "type"  : "text"
-                },
- 
-                "password" : {
-                    "title" : "Password",
-                    "type"  : "password"
-                }
- 
-            }
-
-        }];
+        return [vnc];
 
     }
 
