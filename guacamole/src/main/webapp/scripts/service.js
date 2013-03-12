@@ -862,38 +862,103 @@ GuacamoleService.Protocols = {
       */   
     "list" : function(parameters) {
 
-        var vnc = new GuacamoleService.Protocol(
-            "vnc", "VNC", [
+        // Construct request URL
+        var list_url = "protocols";
+        if (parameters) list_url += "?" + parameters;
 
-                new GuacamoleService.Protocol.Parameter(
-                    "hostname", "Hostname",
-                    GuacamoleService.Protocol.Parameter.TEXT),
+        // Get permission list
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", list_url, false);
+        xhr.send(null);
 
-                new GuacamoleService.Protocol.Parameter(
-                    "port", "Port",
-                    GuacamoleService.Protocol.Parameter.NUMERIC),
-                    
-                new GuacamoleService.Protocol.Parameter(
-                    "color-depth", "Color depth",
-                    GuacamoleService.Protocol.Parameter.ENUM,
-                    [
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+        // Array of all protocols
+        var protocols = [];
+
+        // Parse all protocols
+        var protocolElements = xhr.responseXML.getElementsByTagName("protocol");
+        for (var i=0; i<protocolElements.length; i++) {
+
+            // Get protocol element
+            var protocolElement = protocolElements[i];
+
+            // Create corresponding protocol
+            var protocol = new GuacamoleService.Protocol(
+                protocolElement.getAttribute("name"),
+                protocolElement.getAttribute("title")
+            );
+
+            // Parse all parameters
+            var paramElements = protocolElement.getElementsByTagName("param");
+            for (var j=0; j<paramElements.length; j++) {
+
+                // Get parameter element
+                var paramElement = paramElements[j];
+
+                // Create corresponding parameter
+                var parameter = new GuacamoleService.Protocol.Parameter(
+                    paramElement.getAttribute("name"),
+                    paramElement.getAttribute("title")
+                );
+
+                // Parse type
+                switch (paramElement.getAttribute("type")) {
+
+                    // Text parameter
+                    case "text":
+                        parameter.type = GuacamoleService.Protocol.Parameter.TEXT;
+                        break;
+
+                    // Password parameter
+                    case "password":
+                        parameter.type = GuacamoleService.Protocol.Parameter.PASSWORD;
+                        break;
+
+                    // Numeric parameter
+                    case "numeric":
+                        parameter.type = GuacamoleService.Protocol.Parameter.NUMERIC;
+                        break;
+
+                    // Boolean parameter
+                    case "boolean":
+                        parameter.type = GuacamoleService.Protocol.Parameter.BOOLEAN;
+                        break;
+
+                    // Enumerated parameter
+                    case "enum":
+                        parameter.type = GuacamoleService.Protocol.Parameter.ENUM;
+                        break;
+
+                }
+
+                // Parse all options
+                var optionElements = paramElement.getElementsByTagName("option");
+                for (var k=0; k<optionElements.length; k++) {
+
+                    // Get option element
+                    var optionElement = optionElements[k];
+
+                    parameter.options.push(
                         new GuacamoleService.Protocol.Parameter.Option(
-                            "8", "256 colors"),
-                        new GuacamoleService.Protocol.Parameter.Option(
-                            "16", "High color (16-bit)"),
-                        new GuacamoleService.Protocol.Parameter.Option(
-                            "24", "True color (24-bit)")
-                    ]),
+                            optionElement.getAttribute("value"),
+                            optionElement.textContent
+                        ));
 
-                new GuacamoleService.Protocol.Parameter(
-                    "read-only", "Read-only",
-                    GuacamoleService.Protocol.Parameter.BOOLEAN)
-                    
-            ]
-        );
+                } // end for each option
 
-        // FIXME: STUB
-        return [vnc];
+                // Add parameter 
+                protocol.parameters.push(parameter);
+
+            } // end for each parameter
+
+            // Add protocol
+            protocols.push(protocol);
+
+        } // end for each protocol
+
+        return protocols;
 
     }
 

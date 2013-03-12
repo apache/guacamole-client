@@ -807,10 +807,11 @@ GuacAdmin.addConnection = function(connection) {
             var protocol = available_protocols[protocol_name];
 
             // For each parameter
-            for (var name in protocol.parameters) {
+            for (var i=0; i<protocol.parameters.length; i++) {
 
                 // Get parameter
-                var parameter = protocol.parameters[name];
+                var parameter = protocol.parameters[i];
+                var name = parameter.name;
 
                 // Create corresponding field
                 var field;
@@ -889,8 +890,7 @@ GuacAdmin.addConnection = function(connection) {
                 );
 
                 // Populate parameters
-                var protocol = available_protocols[updated_connection.protocol];
-                for (var name in protocol.parameters) {
+                for (var name in fields) {
                     var field = fields[name];
                     if (field)
                         updated_connection.parameters[name] = field.getValue();
