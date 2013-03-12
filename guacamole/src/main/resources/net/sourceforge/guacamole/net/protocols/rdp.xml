@@ -10,7 +10,7 @@
 
     <param name="width"           type="numeric"  title="Display width"/>
     <param name="height"          type="numeric"  title="Display height"/>
-    <param name="color-depth" type="text" title="Color depth">
+    <param name="color-depth"     type="enum" title="Color depth">
         <option value="8">256 color</option>
         <option value="16">Low color (16-bit)</option>
         <option value="24">True color (24-bit)</option>
