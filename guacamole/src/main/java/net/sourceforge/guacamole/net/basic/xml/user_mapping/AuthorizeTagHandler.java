@@ -44,14 +44,8 @@ public class AuthorizeTagHandler implements TagHandler {
      */
     private GuacamoleConfiguration default_config = null;
 
-    /**
-     * Creates a new handler for an "authorize" tag having the given
-     * attributes.
-     *
-     * @param attributes The attributes of the "authorize" tag.
-     * @throws SAXException If the attributes given are not valid.
-     */
-    public AuthorizeTagHandler(Attributes attributes) throws SAXException {
+    @Override
+    public void init(Attributes attributes) throws SAXException {
 
         // Init username and password
         authorization.setUsername(attributes.getValue("username"));
@@ -79,13 +73,13 @@ public class AuthorizeTagHandler implements TagHandler {
     }
 
     @Override
-    public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
+    public TagHandler childElement(String localName) throws SAXException {
 
         // "connection" tag
         if (localName.equals("connection")) {
 
             // Get tag handler for connection tag
-            ConnectionTagHandler tagHandler = new ConnectionTagHandler(attributes);
+            ConnectionTagHandler tagHandler = new ConnectionTagHandler();
 
             // Store configuration stub
             GuacamoleConfiguration config_stub = tagHandler.asGuacamoleConfiguration();
@@ -103,7 +97,7 @@ public class AuthorizeTagHandler implements TagHandler {
                 authorization.addConfiguration("DEFAULT", default_config);
             }
 
-            return new ParamTagHandler(default_config, attributes);
+            return new ParamTagHandler(default_config);
         }
 
         // "protocol" tag

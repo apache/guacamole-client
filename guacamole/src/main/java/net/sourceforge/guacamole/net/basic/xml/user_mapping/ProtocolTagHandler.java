@@ -49,7 +49,12 @@ public class ProtocolTagHandler implements TagHandler {
     }
 
     @Override
-    public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
+    public void init(Attributes attributes) throws SAXException {
+        // Do nothing
+    }
+
+    @Override
+    public TagHandler childElement(String localName) throws SAXException {
         throw new SAXException("The 'protocol' tag can contain no elements.");
     }
 

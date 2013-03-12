@@ -104,13 +104,16 @@ public class DocumentHandler extends DefaultHandler {
         // Otherwise, get handler from parent
         else {
             TagHandler parent_handler = current.getTagHandler();
-            handler = parent_handler.childElement(localName, attributes);
+            handler = parent_handler.childElement(localName);
         }
 
         // If no handler returned, the element was not expected
         if (handler == null)
             throw new SAXException("Unexpected element: '" + localName + "'");
 
+        // Initialize handler
+        handler.init(attributes);
+        
         // Append new element state to stack
         stack.addLast(new DocumentHandlerState(handler));
 

@@ -40,22 +40,16 @@ public class ConnectionTagHandler implements TagHandler {
      */
     private String name;
 
-    /**
-     * Creates a new handler for an "connection" tag having the given
-     * attributes.
-     *
-     * @param attributes The attributes of the "connection" tag.
-     * @throws SAXException If the attributes given are not valid.
-     */
-    public ConnectionTagHandler(Attributes attributes) throws SAXException {
+    @Override
+    public void init(Attributes attributes) throws SAXException {
         name = attributes.getValue("name");
     }
 
     @Override
-    public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
+    public TagHandler childElement(String localName) throws SAXException {
 
         if (localName.equals("param"))
-            return new ParamTagHandler(config, attributes);
+            return new ParamTagHandler(config);
 
         if (localName.equals("protocol"))
             return new ProtocolTagHandler(config);

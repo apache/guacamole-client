@@ -47,19 +47,18 @@ public class ParamTagHandler implements TagHandler {
      *
      * @param config The GuacamoleConfiguration to update with the data parsed
      *               from the "protocol" tag.
-     * @param attributes The attributes of the "param" tag.
-     * @throws SAXException If the attributes given are not valid.
      */
-    public ParamTagHandler(GuacamoleConfiguration config,
-            Attributes attributes) throws SAXException {
-
+    public ParamTagHandler(GuacamoleConfiguration config) {
         this.config = config;
-        this.name = attributes.getValue("name");
-
     }
 
     @Override
-    public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
+    public void init(Attributes attributes) throws SAXException {
+        this.name = attributes.getValue("name");
+    }
+
+    @Override
+    public TagHandler childElement(String localName) throws SAXException {
         throw new SAXException("The 'param' tag can contain no elements.");
     }
 

@@ -37,14 +37,18 @@ public class UserMappingTagHandler implements TagHandler {
     private UserMapping user_mapping = new UserMapping();
 
     @Override
-    public TagHandler childElement(String localName, Attributes attributes) throws SAXException {
+    public void init(Attributes attributes) throws SAXException {
+        // Do nothing
+    }
+
+    @Override
+    public TagHandler childElement(String localName) throws SAXException {
 
         // Start parsing of authorize tags, add to list of all authorizations
         if (localName.equals("authorize")) {
 
             // Get tag handler for authorize tag
-            AuthorizeTagHandler tagHandler =
-                    new AuthorizeTagHandler(attributes);
+            AuthorizeTagHandler tagHandler = new AuthorizeTagHandler();
 
             // Store authorization stub in map of authorizations
             Authorization auth_stub = tagHandler.asAuthorization();
