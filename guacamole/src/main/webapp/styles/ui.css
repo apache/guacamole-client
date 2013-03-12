@@ -23,7 +23,7 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
-input[type=checkbox], input[type=text], textarea {
+input[type=checkbox], input[type=number], input[type=text], textarea {
     -webkit-tap-highlight-color: rgba(128,192,128,0.5);
 }
 
@@ -31,7 +31,7 @@ input[type=submit], button {
     -webkit-appearance: none;
 }
 
-input[type=text], input[type=password] {
+input[type=text], input[type=number], input[type=password] {
     border: 1px solid #777;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
