@@ -1,0 +1,24 @@
+<protocol name="rdp" title="RDP">
+
+    <param name="hostname"        type="text"     title="Hostname"/>
+    <param name="port"            type="numeric"  title="Port"/>
+
+    <param name="username"        type="text"     title="Username"/>
+    <param name="password"        type="password" title="Password"/>
+    <param name="domain"          type="text"     title="Domain"/>
+    <param name="initial-program" type="text"     title="Initial program"/>
+
+    <param name="width"           type="numeric"  title="Display width"/>
+    <param name="height"          type="numeric"  title="Display height"/>
+    <param name="color-depth" type="text" title="Color depth">
+        <option value="8">256 color</option>
+        <option value="16">Low color (16-bit)</option>
+        <option value="24">True color (24-bit)</option>
+        <option value="32">True color (32-bit)</option>
+    </param>
+
+    <param name="console"       type="boolean" title="Administrator console"/>
+    <param name="console-audio" type="boolean" title="Support audio in console"/>
+    <param name="disable-audio" type="boolean" title="Disable audio"/>
+
+</protocol>

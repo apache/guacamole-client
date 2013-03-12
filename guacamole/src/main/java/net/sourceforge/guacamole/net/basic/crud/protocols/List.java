@@ -21,6 +21,8 @@ package net.sourceforge.guacamole.net.basic.crud.protocols;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.XMLOutputFactory;
@@ -48,6 +50,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 public class List extends AuthenticatingHttpServlet {
 
+    /**
+     * Array of all known protocol names.
+     */
+    private static final String[] KNOWN_PROTOCOLS = new String[]{
+        "vnc", "rdp", "ssh"};
+    
     /**
      * Parses the given XML file, returning the parsed ProtocolInfo.
      * 
@@ -180,9 +188,33 @@ public class List extends AuthenticatingHttpServlet {
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
 
+        // Map of all available protocols
+        Map<String, ProtocolInfo> protocols = new HashMap<String, ProtocolInfo>();
+
+        // Read protocols
+        
+        /* STUB */
+        
+        // If known protocols are not already defined, read from classpath
+        for (String protocol : KNOWN_PROTOCOLS) {
+
+            // If protocol not defined yet, attempt to load from classpath
+            if (!protocols.containsKey(protocol)) {
+
+                InputStream stream = List.class.getResourceAsStream(
+                        "/net/sourceforge/guacamole/net/protocols/"
+                        + protocol + ".xml");
+
+                // Parse XML if available
+                if (stream != null)
+                    protocols.put(protocol, getProtocol(stream));
+
+            }
+
+        }
+       
         // Write actual XML
         try {
-
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
 
@@ -193,15 +225,9 @@ public class List extends AuthenticatingHttpServlet {
             xml.writeStartDocument();
             xml.writeStartElement("protocols");
 
-            // Read from classpath
-            InputStream stream = List.class.getResourceAsStream(
-                    "/net/sourceforge/guacamole/net/protocols/vnc.xml");
-            if (stream == null)
-                throw new IOException("Could not read VNC XML.");
-
-            // Parse and write protocol
-            ProtocolInfo protocol = getProtocol(stream);
-            writeProtocol(xml, protocol);
+            // Write all protocols
+            for (ProtocolInfo protocol : protocols.values())
+                writeProtocol(xml, protocol);
            
             // End document
             xml.writeEndElement();
