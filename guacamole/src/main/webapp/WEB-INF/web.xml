@@ -154,6 +154,17 @@
         <url-pattern>/permissions</url-pattern>
     </servlet-mapping>
 
+    <!-- Protocol List Servlet -->
+    <servlet>
+        <description>Protocol list servlet.</description>
+        <servlet-name>Protocols</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.protocols.List</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Protocols</servlet-name>
+        <url-pattern>/protocols</url-pattern>
+    </servlet-mapping>
+
     <!-- Guacamole Tunnel Servlet -->
     <servlet>
         <description>Tunnel servlet.</description>

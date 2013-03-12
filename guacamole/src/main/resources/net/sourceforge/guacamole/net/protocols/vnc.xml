@@ -1,0 +1,13 @@
+<protocol name="vnc" title="VNC">
+
+    <param name="hostname"    type="text"    title="Hostname"/>
+    <param name="port"        type="numeric" title="Port"/>
+    <param name="read-only"   type="boolean" title="Read-only"/>
+    <param name="color-depth" type="text"    title="Color depth">
+        <option value="8">256 color</option>
+        <option value="16">Low color (16-bit)</option>
+        <option value="24">True color (24-bit)</option>
+        <option value="32">True color (32-bit)</option>
+    </param>
+
+</protocol>
