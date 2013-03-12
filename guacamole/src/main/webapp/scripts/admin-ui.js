@@ -136,6 +136,19 @@ GuacAdmin.Field.PASSWORD = function() {
 
 GuacAdmin.Field.PASSWORD.prototype = new GuacAdmin.Field._HTML_INPUT();
 
+
+/**
+ * A basic numeric field, leveraging the new HTML5 field types.
+ * 
+ * @augments GuacAdmin.Field._HTML_INPUT
+ */
+GuacAdmin.Field.NUMERIC = function() {
+    GuacAdmin.Field._HTML_INPUT.apply(this, ["number"]);
+};
+
+GuacAdmin.Field.NUMERIC.prototype = new GuacAdmin.Field._HTML_INPUT();
+
+
 /**
  * Simple checkbox.
  * 
@@ -803,19 +816,27 @@ GuacAdmin.addConnection = function(connection) {
                 var field;
                 switch (parameter.type) {
 
+                    // Text field
                     case GuacamoleService.Protocol.Parameter.TEXT:
-                    case GuacamoleService.Protocol.Parameter.NUMERIC:
                         field = new GuacAdmin.Field.TEXT();
                         break;
 
+                    // Password field
                     case GuacamoleService.Protocol.Parameter.PASSWORD:
                         field = new GuacAdmin.Field.PASSWORD();
                         break;
 
+                    // Numeric field
+                    case GuacamoleService.Protocol.Parameter.NUMERIC:
+                        field = new GuacAdmin.Field.NUMERIC();
+                        break;
+
+                    // Checkbox
                     case GuacamoleService.Protocol.Parameter.BOOLEAN:
                         field = new GuacAdmin.Field.CHECKBOX(parameter.value);
                         break;
 
+                    // Select field
                     case GuacamoleService.Protocol.Parameter.ENUM:
                         field = new GuacAdmin.Field.ENUM(parameter.options);
                         break;
