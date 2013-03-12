@@ -19,6 +19,9 @@ package net.sourceforge.guacamole.net.basic.crud.protocols;
  */
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -37,6 +40,9 @@ import net.sourceforge.guacamole.net.basic.ProtocolParameter;
 import net.sourceforge.guacamole.net.basic.ProtocolParameterOption;
 import net.sourceforge.guacamole.net.basic.xml.DocumentHandler;
 import net.sourceforge.guacamole.net.basic.xml.protocol.ProtocolTagHandler;
+import net.sourceforge.guacamole.properties.GuacamoleHome;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -49,6 +55,11 @@ import org.xml.sax.helpers.XMLReaderFactory;
  * @author Michael Jumper
  */
 public class List extends AuthenticatingHttpServlet {
+
+    /**
+     * Logger for this class.
+     */
+    private Logger logger = LoggerFactory.getLogger(List.class);
 
     /**
      * Array of all known protocol names.
@@ -191,10 +202,47 @@ public class List extends AuthenticatingHttpServlet {
         // Map of all available protocols
         Map<String, ProtocolInfo> protocols = new HashMap<String, ProtocolInfo>();
 
-        // Read protocols
-        
-        /* STUB */
-        
+        // Get protcols directory
+        File protocol_directory = new File(GuacamoleHome.getDirectory(),
+                "protocols");
+
+        // Read protocols from directory if it exists
+        if (protocol_directory.isDirectory()) {
+
+            // Get all XML files
+            File[] files = protocol_directory.listFiles(
+                new FilenameFilter() {
+
+                    @Override
+                    public boolean accept(File file, String string) {
+                        return string.endsWith(".xml");
+                    }
+
+                }
+            );
+
+            // Load each protocol from each file
+            for (File file : files) {
+
+                try {
+
+                    // Parse protocol
+                    FileInputStream stream = new FileInputStream(file);
+                    ProtocolInfo protocol = getProtocol(stream);
+                    stream.close();
+
+                    // Store protocol
+                    protocols.put(protocol.getName(), protocol);
+
+                }
+                catch (IOException e) {
+                    logger.error("Unable to read protocol XML.", e);
+                }
+
+            }
+            
+        }
+
         // If known protocols are not already defined, read from classpath
         for (String protocol : KNOWN_PROTOCOLS) {
 
