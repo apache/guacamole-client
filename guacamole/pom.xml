@@ -134,6 +134,29 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Jetty servlet API (websocket)  -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-websocket</artifactId>
+            <version>8.1.1.v20120215</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Tomcat servlet API (websocket)  -->
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-catalina</artifactId>
+            <version>7.0.37</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-coyote</artifactId>
+            <version>7.0.37</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

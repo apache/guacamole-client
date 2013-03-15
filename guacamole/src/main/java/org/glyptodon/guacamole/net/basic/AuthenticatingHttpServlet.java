@@ -70,12 +70,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     /**
      * The session attribute holding the current UserContext.
      */
-    private static final String CONTEXT_ATTRIBUTE = "GUAC_CONTEXT";
+    public static final String CONTEXT_ATTRIBUTE = "GUAC_CONTEXT";
 
     /**
      * The session attribute holding the credentials authorizing this session.
      */
-    private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
+    public static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
 
     /**
      * The AuthenticationProvider to use to authenticate all requests.
