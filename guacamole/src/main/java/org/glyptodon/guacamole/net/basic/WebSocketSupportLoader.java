@@ -25,6 +25,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +38,17 @@ import org.slf4j.LoggerFactory;
  * Note that because Guacamole depends on the Servlet 2.5 API, and 3.0 may
  * not be available or needed if WebSocket is not desired, the 3.0 API is
  * detected and invoked dynamically via reflection.
+ * 
+ * Tests have shown that while WebSocket is negligibly more responsive than
+ * Guacamole's native HTTP tunnel, downstream performance is not yet a match.
+ * This may be because browser WebSocket implementations are not optimized for
+ * throughput, or it may be because servlet container WebSocket implementations
+ * are in their infancy, or it may be that OUR WebSocket-backed tunnel
+ * implementations are not efficient. Because of this, WebSocket support is
+ * disabled by default. To enable it, add the following property to
+ * your guacamole.properties:
+ * 
+ *     enable-websocket: true
  *
  * @author Michael Jumper
  */
@@ -46,6 +59,16 @@ public class WebSocketSupportLoader implements ServletContextListener {
      */
     private Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
 
+    private static final BooleanGuacamoleProperty ENABLE_WEBSOCKET =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "enable-websocket";
+        }
+
+    };
+    
     /**
      * Classname of the Jetty-specific WebSocket tunnel implementation.
      */
@@ -108,10 +131,10 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
         // If no such servlet class, WebSocket support not present
         catch (ClassNotFoundException e) {
-            logger.info("WebSocket support not found.", e);
+            logger.info("WebSocket support not found.");
         }
         catch (NoClassDefFoundError e) {
-            logger.info("WebSocket support not found.", e);
+            logger.info("WebSocket support not found.");
         }
 
         // Log all GuacamoleExceptions
@@ -131,6 +154,19 @@ public class WebSocketSupportLoader implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
+        try {
+
+            // Stop if WebSocket not explicitly enabled.
+            if (!GuacamoleProperties.getProperty(ENABLE_WEBSOCKET, false)) {
+                logger.info("WebSocket support not enabled.");
+                return;
+            }
+
+        }
+        catch (GuacamoleException e) {
+            logger.error("Error parsing enable-websocket property.", e);
+        }
+        
         // Try to load websocket support for Jetty
         logger.info("Attempting to load Jetty-specific WebSocket support...");
         if (loadWebSocketTunnel(sce.getServletContext(), JETTY_WEBSOCKET))
