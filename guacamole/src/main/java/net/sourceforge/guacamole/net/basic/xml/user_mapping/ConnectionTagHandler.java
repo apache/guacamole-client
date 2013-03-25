@@ -18,6 +18,7 @@ package net.sourceforge.guacamole.net.basic.xml.user_mapping;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import net.sourceforge.guacamole.net.basic.auth.Authorization;
 import net.sourceforge.guacamole.net.basic.xml.TagHandler;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.xml.sax.Attributes;
@@ -40,9 +41,26 @@ public class ConnectionTagHandler implements TagHandler {
      */
     private String name;
 
+    /**
+     * The Authorization this connection belongs to.
+     */
+    private Authorization parent;
+    
+    /**
+     * Creates a new ConnectionTagHandler that parses a Connection owned by
+     * the given Authorization.
+     * 
+     * @param parent The Authorization that will own this Connection once
+     *               parsed.
+     */
+    public ConnectionTagHandler(Authorization parent) {
+        this.parent = parent;
+    }
+    
     @Override
     public void init(Attributes attributes) throws SAXException {
         name = attributes.getValue("name");
+        parent.addConfiguration(name, this.asGuacamoleConfiguration());
     }
 
     @Override

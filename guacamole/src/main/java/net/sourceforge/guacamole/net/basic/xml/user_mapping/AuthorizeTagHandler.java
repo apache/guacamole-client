@@ -19,6 +19,7 @@ package net.sourceforge.guacamole.net.basic.xml.user_mapping;
  */
 
 import net.sourceforge.guacamole.net.basic.auth.Authorization;
+import net.sourceforge.guacamole.net.basic.auth.UserMapping;
 import net.sourceforge.guacamole.net.basic.xml.TagHandler;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.xml.sax.Attributes;
@@ -44,6 +45,22 @@ public class AuthorizeTagHandler implements TagHandler {
      */
     private GuacamoleConfiguration default_config = null;
 
+    /**
+     * The UserMapping this authorization belongs to.
+     */
+    private UserMapping parent;
+    
+    /**
+     * Creates a new AuthorizeTagHandler that parses an Authorization owned
+     * by the given UserMapping.
+     * 
+     * @param parent The UserMapping that owns the Authorization this handler
+     *               will parse.
+     */
+    public AuthorizeTagHandler(UserMapping parent) {
+        this.parent = parent;
+    }
+    
     @Override
     public void init(Attributes attributes) throws SAXException {
 
@@ -70,23 +87,16 @@ public class AuthorizeTagHandler implements TagHandler {
 
         }
 
+        parent.addAuthorization(this.asAuthorization());
+        
     }
 
     @Override
     public TagHandler childElement(String localName) throws SAXException {
 
         // "connection" tag
-        if (localName.equals("connection")) {
-
-            // Get tag handler for connection tag
-            ConnectionTagHandler tagHandler = new ConnectionTagHandler();
-
-            // Store configuration stub
-            GuacamoleConfiguration config_stub = tagHandler.asGuacamoleConfiguration();
-            authorization.addConfiguration(tagHandler.getName(), config_stub);
-
-            return tagHandler;
-        }
+        if (localName.equals("connection"))
+            return new ConnectionTagHandler(authorization);
 
         // "param" tag
         if (localName.equals("param")) {
