@@ -18,7 +18,6 @@ package net.sourceforge.guacamole.net.basic.xml.user_mapping;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import net.sourceforge.guacamole.net.basic.auth.Authorization;
 import net.sourceforge.guacamole.net.basic.auth.UserMapping;
 import net.sourceforge.guacamole.net.basic.xml.TagHandler;
 import org.xml.sax.Attributes;
@@ -45,18 +44,8 @@ public class UserMappingTagHandler implements TagHandler {
     public TagHandler childElement(String localName) throws SAXException {
 
         // Start parsing of authorize tags, add to list of all authorizations
-        if (localName.equals("authorize")) {
-
-            // Get tag handler for authorize tag
-            AuthorizeTagHandler tagHandler = new AuthorizeTagHandler();
-
-            // Store authorization stub in map of authorizations
-            Authorization auth_stub = tagHandler.asAuthorization();
-            user_mapping.addAuthorization(auth_stub);
-
-            return tagHandler;
-
-        }
+        if (localName.equals("authorize"))
+            return new AuthorizeTagHandler(user_mapping);
 
         return null;
 
