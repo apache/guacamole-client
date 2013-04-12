@@ -158,6 +158,7 @@ public class List extends AuthenticatingHttpServlet {
                 // Boolean parameter
                 case BOOLEAN:
                     xml.writeAttribute("type", "boolean");
+                    xml.writeAttribute("value", param.getValue());
                     break;
 
                 // Enumerated parameter

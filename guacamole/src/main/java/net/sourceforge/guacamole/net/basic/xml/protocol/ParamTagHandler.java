@@ -40,6 +40,7 @@ public class ParamTagHandler implements TagHandler {
 
         protocolParameter.setName(attributes.getValue("name"));
         protocolParameter.setTitle(attributes.getValue("title"));
+        protocolParameter.setValue(attributes.getValue("value"));
 
         // Parse type
         String type = attributes.getValue("type");

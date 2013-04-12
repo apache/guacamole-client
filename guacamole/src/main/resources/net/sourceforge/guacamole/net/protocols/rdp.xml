@@ -17,8 +17,8 @@
         <option value="32">True color (32-bit)</option>
     </param>
 
-    <param name="console"       type="boolean" title="Administrator console"/>
-    <param name="console-audio" type="boolean" title="Support audio in console"/>
-    <param name="disable-audio" type="boolean" title="Disable audio"/>
+    <param name="console"       type="boolean" title="Administrator console"    value="true"/>
+    <param name="console-audio" type="boolean" title="Support audio in console" value="true"/>
+    <param name="disable-audio" type="boolean" title="Disable audio"            value="true"/>
 
 </protocol>

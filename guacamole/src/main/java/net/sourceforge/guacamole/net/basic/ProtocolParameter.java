@@ -75,7 +75,12 @@ public class ProtocolParameter {
      * The type of this field.
      */
     private Type type;
-
+    
+    /**
+     * The value of this parameter, for boolean parameters.
+     */
+    private String value;
+    
     /**
      * A collection of all associated parameter options.
      */
@@ -117,6 +122,24 @@ public class ProtocolParameter {
      */
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    /**
+     * Returns the value associated with this protocol parameter.
+     * @return The value associated with this protocol parameter.
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the value associated with this protocol parameter. The value must
+     * be a human-readable string which describes accurately this parameter.
+     * 
+     * @param value A human-readable string describing this parameter.
+     */
+    public void setValue(String value) {
+        this.value = value;
     }
 
     /**

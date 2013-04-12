@@ -767,10 +767,11 @@ GuacamoleService.Protocol = function(name, title, parameters) {
 
 /**
  * A parameter belonging to a protocol. Each parameter has a name which
- * identifies the parameter to the protocol, a human-readable title, and a type
- * which dictates its presentation to the user.
+ * identifies the parameter to the protocol, a human-readable title, 
+ * a value for boolean parameters, and a type which dictates 
+ * its presentation to the user.
  */
-GuacamoleService.Protocol.Parameter = function(name, title, type, options) {
+GuacamoleService.Protocol.Parameter = function(name, title, type, value, options) {
 
     /**
      * The name of this parameter.
@@ -786,6 +787,11 @@ GuacamoleService.Protocol.Parameter = function(name, title, type, options) {
      * The type of this parameter.
      */
     this.type = type;
+
+    /**
+     * The value of this parameter.
+     */
+    this.value = value;
 
     /**
      * All available options, if applicable, in desired order of presentation.
@@ -924,6 +930,7 @@ GuacamoleService.Protocols = {
                     // Boolean parameter
                     case "boolean":
                         parameter.type = GuacamoleService.Protocol.Parameter.BOOLEAN;
+                        parameter.value = paramElement.getAttribute("value");
                         break;
 
                     // Enumerated parameter
