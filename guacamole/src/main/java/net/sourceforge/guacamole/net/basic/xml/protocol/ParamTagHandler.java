@@ -62,8 +62,13 @@ public class ParamTagHandler implements TagHandler {
             protocolParameter.setType(ProtocolParameter.Type.ENUM);
 
         // Boolean field
-        else if ("boolean".equals(type))
+        else if ("boolean".equals(type)) {
             protocolParameter.setType(ProtocolParameter.Type.BOOLEAN);
+            
+            if(protocolParameter.getValue() == null)
+                throw new SAXException
+                        ("A value is required for the boolean parameter type.");
+        }
 
         // Otherwise, fail with unrecognized type
         else
