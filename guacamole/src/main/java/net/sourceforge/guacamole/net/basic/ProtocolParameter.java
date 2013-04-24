@@ -24,7 +24,7 @@ import java.util.Collection;
 
 /**
  * Represents a parameter of a protocol.
- * 
+ *
  * @author Michael Jumper
  */
 public class ProtocolParameter {
@@ -60,7 +60,7 @@ public class ProtocolParameter {
          */
         ENUM
     }
-    
+
     /**
      * The unique name that identifies this parameter to the protocol plugin.
      */
@@ -75,18 +75,18 @@ public class ProtocolParameter {
      * The type of this field.
      */
     private Type type;
-    
+
     /**
      * The value of this parameter, for boolean parameters.
      */
     private String value;
-    
+
     /**
      * A collection of all associated parameter options.
      */
     private Collection<ProtocolParameterOption> options =
             new ArrayList<ProtocolParameterOption>();
-    
+
     /**
      * Returns the name associated with this protocol parameter.
      * @return The name associated with this protocol parameter.
@@ -99,7 +99,7 @@ public class ProtocolParameter {
      * Sets the name associated with this protocol parameter. This name must
      * uniquely identify this parameter among the others accepted by the
      * corresponding protocol.
-     * 
+     *
      * @param name The name to assign to this protocol parameter.
      */
     public void setName(String name) {
@@ -117,7 +117,7 @@ public class ProtocolParameter {
     /**
      * Sets the title associated with this protocol parameter. The title must
      * be a human-readable string which describes accurately this parameter.
-     * 
+     *
      * @param title A human-readable string describing this parameter.
      */
     public void setTitle(String title) {
@@ -135,7 +135,7 @@ public class ProtocolParameter {
     /**
      * Sets the value associated with this protocol parameter. The value must
      * be a human-readable string which describes accurately this parameter.
-     * 
+     *
      * @param value A human-readable string describing this parameter.
      */
     public void setValue(String value) {
@@ -161,7 +161,7 @@ public class ProtocolParameter {
     /**
      * Returns a mutable collection of protocol parameter options. Changes to
      * this collection directly affect the available options.
-     * 
+     *
      * @return A mutable collection of parameter options.
      */
     public Collection<ProtocolParameterOption> getOptions() {

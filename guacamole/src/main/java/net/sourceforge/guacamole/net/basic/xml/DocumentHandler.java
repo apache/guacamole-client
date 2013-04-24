@@ -113,7 +113,7 @@ public class DocumentHandler extends DefaultHandler {
 
         // Initialize handler
         handler.init(attributes);
-        
+
         // Append new element state to stack
         stack.addLast(new DocumentHandlerState(handler));
 

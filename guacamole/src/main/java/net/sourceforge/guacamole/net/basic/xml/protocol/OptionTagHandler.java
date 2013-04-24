@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "option" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class OptionTagHandler implements TagHandler {
 
@@ -34,12 +34,12 @@ public class OptionTagHandler implements TagHandler {
      * The option backing this option tag.
      */
     private ProtocolParameterOption option = new ProtocolParameterOption();
-    
+
     @Override
     public void init(Attributes attributes) throws SAXException {
         option.setValue(attributes.getValue("value"));
     }
-   
+
     @Override
     public TagHandler childElement(String localName) throws SAXException {
         throw new SAXException("The 'param' tag can contain no elements.");
@@ -57,5 +57,5 @@ public class OptionTagHandler implements TagHandler {
     public ProtocolParameterOption asProtocolParameterOption() {
         return option;
     }
-    
+
 }

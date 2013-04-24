@@ -21,7 +21,7 @@ package net.sourceforge.guacamole.net.basic;
 
 /**
  * Describes an available legal value for an enumerated protocol parameter.
- * 
+ *
  * @author Michael Jumper
  */
 public class ProtocolParameterOption {
@@ -31,16 +31,16 @@ public class ProtocolParameterOption {
      * chosen.
      */
     private String value;
-   
+
     /**
      * A human-readable title describing the effect of the value.
      */
     private String title;
 
     /**
-     * Returns the value that will be sent to the client plugin if this option 
+     * Returns the value that will be sent to the client plugin if this option
      * is chosen.
-     * 
+     *
      * @return The value that will be sent if this option is chosen.
      */
     public String getValue() {
@@ -50,7 +50,7 @@ public class ProtocolParameterOption {
     /**
      * Sets the value that will be sent to the client plugin if this option is
      * chosen.
-     * 
+     *
      * @param value The value to send if this option is chosen.
      */
     public void setValue(String value) {
@@ -72,5 +72,5 @@ public class ProtocolParameterOption {
     public void setTitle(String title) {
         this.title = title;
     }
-    
+
 }

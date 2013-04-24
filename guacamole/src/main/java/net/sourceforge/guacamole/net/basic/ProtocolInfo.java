@@ -26,7 +26,7 @@ import java.util.Collection;
  * Describes a protocol and all parameters associated with it, as required by
  * a protocol plugin for guacd. This class allows known parameters for a
  * protocol to be exposed to the user as friendly fields.
- * 
+ *
  * @author Michael Jumper
  */
 public class ProtocolInfo {
@@ -46,10 +46,10 @@ public class ProtocolInfo {
      */
     private Collection<ProtocolParameter> parameters =
             new ArrayList<ProtocolParameter>();
-    
+
     /**
      * Returns the human-readable title associated with this protocol.
-     * 
+     *
      * @return The human-readable title associated with this protocol.
      */
     public String getTitle() {
@@ -58,7 +58,7 @@ public class ProtocolInfo {
 
     /**
      * Sets the human-readable title associated with this protocol.
-     * 
+     *
      * @param title The human-readable title to associate with this protocol.
      */
     public void setTitle(String title) {
@@ -68,7 +68,7 @@ public class ProtocolInfo {
     /**
      * Returns the unique name of this protocol. The protocol name is the
      * value required by the corresponding protocol plugin for guacd.
-     * 
+     *
      * @return The unique name of this protocol.
      */
     public String getName() {
@@ -78,7 +78,7 @@ public class ProtocolInfo {
     /**
      * Sets the unique name of this protocol. The protocol name is the value
      * required by the corresponding protocol plugin for guacd.
-     * 
+     *
      * @param name The unique name of this protocol.
      */
     public void setName(String name) {
@@ -89,7 +89,7 @@ public class ProtocolInfo {
      * Returns a mutable collection of the protocol parameters associated with
      * this protocol. Changes to this collection affect the parameters exposed
      * to the user.
-     * 
+     *
      * @return A mutable collection of protocol parameters.
      */
     public Collection<ProtocolParameter> getParameters() {

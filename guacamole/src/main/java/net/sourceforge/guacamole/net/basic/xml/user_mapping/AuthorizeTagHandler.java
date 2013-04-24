@@ -49,18 +49,18 @@ public class AuthorizeTagHandler implements TagHandler {
      * The UserMapping this authorization belongs to.
      */
     private UserMapping parent;
-    
+
     /**
      * Creates a new AuthorizeTagHandler that parses an Authorization owned
      * by the given UserMapping.
-     * 
+     *
      * @param parent The UserMapping that owns the Authorization this handler
      *               will parse.
      */
     public AuthorizeTagHandler(UserMapping parent) {
         this.parent = parent;
     }
-    
+
     @Override
     public void init(Attributes attributes) throws SAXException {
 
@@ -88,7 +88,7 @@ public class AuthorizeTagHandler implements TagHandler {
         }
 
         parent.addAuthorization(this.asAuthorization());
-        
+
     }
 
     @Override

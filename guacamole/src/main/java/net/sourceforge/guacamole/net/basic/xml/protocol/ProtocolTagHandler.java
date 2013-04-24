@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "protocol" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class ProtocolTagHandler implements TagHandler {
 
@@ -35,30 +35,30 @@ public class ProtocolTagHandler implements TagHandler {
      * handler.
      */
     private ProtocolInfo info = new ProtocolInfo();
-    
+
     @Override
     public void init(Attributes attributes) throws SAXException {
         info.setName(attributes.getValue("name"));
         info.setTitle(attributes.getValue("title"));
     }
-    
+
     @Override
     public TagHandler childElement(String localName) throws SAXException {
 
-        // Start parsing of param tags, add to list of all parameters 
+        // Start parsing of param tags, add to list of all parameters
         if (localName.equals("param")) {
-           
+
             // Get tag handler for param tag
             ParamTagHandler tagHandler = new ParamTagHandler();
 
             // Store stub in parameters collection
             info.getParameters().add(tagHandler.asProtocolParameter());
             return tagHandler;
-            
+
         }
 
         return null;
-        
+
     }
 
     @Override

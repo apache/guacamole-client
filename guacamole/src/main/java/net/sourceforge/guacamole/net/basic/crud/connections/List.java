@@ -99,7 +99,7 @@ public class List extends AuthenticatingHttpServlet {
         // Sys-admin permission
         Permission systemPermission =
                 new SystemPermission(SystemPermission.Type.ADMINISTER);
-        
+
         // Write actual XML
         try {
 

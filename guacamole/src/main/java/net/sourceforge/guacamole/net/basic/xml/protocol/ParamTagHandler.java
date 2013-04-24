@@ -25,8 +25,8 @@ import org.xml.sax.SAXException;
 
 /**
  * TagHandler for the "param" element.
- * 
- * @author Mike Jumper 
+ *
+ * @author Mike Jumper
  */
 public class ParamTagHandler implements TagHandler {
 
@@ -34,7 +34,7 @@ public class ParamTagHandler implements TagHandler {
      * The ProtocolParameter backing this tag handler.
      */
     private ProtocolParameter protocolParameter = new ProtocolParameter();
-    
+
     @Override
     public void init(Attributes attributes) throws SAXException {
 
@@ -64,7 +64,7 @@ public class ParamTagHandler implements TagHandler {
         // Boolean field
         else if ("boolean".equals(type)) {
             protocolParameter.setType(ProtocolParameter.Type.BOOLEAN);
-            
+
             if(protocolParameter.getValue() == null)
                 throw new SAXException
                         ("A value is required for the boolean parameter type.");
@@ -73,15 +73,15 @@ public class ParamTagHandler implements TagHandler {
         // Otherwise, fail with unrecognized type
         else
             throw new SAXException("Invalid parameter type: " + type);
-        
+
     }
-    
+
     @Override
     public TagHandler childElement(String localName) throws SAXException {
 
-        // Start parsing of option tags 
+        // Start parsing of option tags
         if (localName.equals("option")) {
-           
+
             // Get tag handler for option tag
             OptionTagHandler tagHandler = new OptionTagHandler();
 
@@ -89,7 +89,7 @@ public class ParamTagHandler implements TagHandler {
             protocolParameter.getOptions().add(
                 tagHandler.asProtocolParameterOption());
             return tagHandler;
-            
+
         }
 
         return null;

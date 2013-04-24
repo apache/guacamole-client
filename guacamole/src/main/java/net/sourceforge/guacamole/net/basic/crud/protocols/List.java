@@ -66,10 +66,10 @@ public class List extends AuthenticatingHttpServlet {
      */
     private static final String[] KNOWN_PROTOCOLS = new String[]{
         "vnc", "rdp", "ssh"};
-    
+
     /**
      * Parses the given XML file, returning the parsed ProtocolInfo.
-     * 
+     *
      * @param input An input stream containing XML describing the parameters
      *              associated with a protocol supported by Guacamole.
      * @return A new ProtocolInfo object which contains the parameters described
@@ -115,7 +115,7 @@ public class List extends AuthenticatingHttpServlet {
     /**
      * Given an XML stream and a fully-populated ProtocolInfo object, writes
      * out the corresponding protocol XML describing all available parameters.
-     * 
+     *
      * @param xml The XMLStreamWriter to use to write the XML.
      * @param protocol The ProtocolInfo object to read parameters and protocol
      *                 information from.
@@ -124,7 +124,7 @@ public class List extends AuthenticatingHttpServlet {
     private void writeProtocol(XMLStreamWriter xml, ProtocolInfo protocol)
             throws XMLStreamException {
 
-        // Write protocol 
+        // Write protocol
         xml.writeStartElement("protocol");
         xml.writeAttribute("name", protocol.getName());
         xml.writeAttribute("title", protocol.getTitle());
@@ -170,9 +170,9 @@ public class List extends AuthenticatingHttpServlet {
                 default:
                     throw new UnsupportedOperationException(
                         "Parameter type not supported: " + param.getType());
-                    
+
             }
-            
+
             // Write options
             for (ProtocolParameterOption option : param.getOptions()) {
                 xml.writeStartElement("option");
@@ -183,14 +183,14 @@ public class List extends AuthenticatingHttpServlet {
 
             // End parameter
             xml.writeEndElement();
-            
+
         }
-        
-        // End protocol 
+
+        // End protocol
         xml.writeEndElement();
 
     }
-    
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -241,7 +241,7 @@ public class List extends AuthenticatingHttpServlet {
                 }
 
             }
-            
+
         }
 
         // If known protocols are not already defined, read from classpath
@@ -261,7 +261,7 @@ public class List extends AuthenticatingHttpServlet {
             }
 
         }
-       
+
         // Write actual XML
         try {
             // Write XML content type
@@ -277,7 +277,7 @@ public class List extends AuthenticatingHttpServlet {
             // Write all protocols
             for (ProtocolInfo protocol : protocols.values())
                 writeProtocol(xml, protocol);
-           
+
             // End document
             xml.writeEndElement();
             xml.writeEndDocument();

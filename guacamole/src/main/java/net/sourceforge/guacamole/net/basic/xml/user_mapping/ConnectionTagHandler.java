@@ -45,18 +45,18 @@ public class ConnectionTagHandler implements TagHandler {
      * The Authorization this connection belongs to.
      */
     private Authorization parent;
-    
+
     /**
      * Creates a new ConnectionTagHandler that parses a Connection owned by
      * the given Authorization.
-     * 
+     *
      * @param parent The Authorization that will own this Connection once
      *               parsed.
      */
     public ConnectionTagHandler(Authorization parent) {
         this.parent = parent;
     }
-    
+
     @Override
     public void init(Attributes attributes) throws SAXException {
         name = attributes.getValue("name");

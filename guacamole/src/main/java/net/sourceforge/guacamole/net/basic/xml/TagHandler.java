@@ -45,13 +45,13 @@ public interface TagHandler {
     /**
      * Called when the element corresponding to this TagHandler is first seen,
      * just after an instance is created.
-     * 
+     *
      * @param attributes The attributes of the element seen.
      * @throws SAXException If an error prevents a the TagHandler from being
      *                      from being initialized.
      */
     public void init(Attributes attributes) throws SAXException;
-    
+
     /**
      * Called when this element, and all child elements, have been fully parsed,
      * and the entire text content of this element (if any) is available.
