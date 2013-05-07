@@ -81,43 +81,43 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var unshiftedKeysym = {
-        8:   0xFF08, // backspace
-        9:   0xFF09, // tab
-        13:  0xFF0D, // enter
-        16:  0xFFE1, // shift
-        17:  0xFFE3, // ctrl
-        18:  0xFFE9, // alt
-        19:  0xFF13, // pause/break
-        20:  0xFFE5, // caps lock
-        27:  0xFF1B, // escape
-        32:  0x0020, // space
-        33:  0xFF55, // page up
-        34:  0xFF56, // page down
-        35:  0xFF57, // end
-        36:  0xFF50, // home
-        37:  0xFF51, // left arrow
-        38:  0xFF52, // up arrow
-        39:  0xFF53, // right arrow
-        40:  0xFF54, // down arrow
-        45:  0xFF63, // insert
-        46:  0xFFFF, // delete
-        91:  0xFFEB, // left window key (super_l)
-        92:  0xFF67, // right window key (menu key?)
-        93:  null,   // select key
-        112: 0xFFBE, // f1
-        113: 0xFFBF, // f2
-        114: 0xFFC0, // f3
-        115: 0xFFC1, // f4
-        116: 0xFFC2, // f5
-        117: 0xFFC3, // f6
-        118: 0xFFC4, // f7
-        119: 0xFFC5, // f8
-        120: 0xFFC6, // f9
-        121: 0xFFC7, // f10
-        122: 0xFFC8, // f11
-        123: 0xFFC9, // f12
-        144: 0xFF7F, // num lock
-        145: 0xFF14  // scroll lock
+        8:   [0xFF08], // backspace
+        9:   [0xFF09], // tab
+        13:  [0xFF0D], // enter
+        16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
+        17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
+        18:  [0xFFE9, 0xFFE9, 0xFFEA], // alt
+        19:  [0xFF13], // pause/break
+        20:  [0xFFE5], // caps lock
+        27:  [0xFF1B], // escape
+        32:  [0x0020], // space
+        33:  [0xFF55], // page up
+        34:  [0xFF56], // page down
+        35:  [0xFF57], // end
+        36:  [0xFF50], // home
+        37:  [0xFF51], // left arrow
+        38:  [0xFF52], // up arrow
+        39:  [0xFF53], // right arrow
+        40:  [0xFF54], // down arrow
+        45:  [0xFF63], // insert
+        46:  [0xFFFF], // delete
+        91:  [0xFFEB], // left window key (super_l)
+        92:  [0xFF67], // right window key (menu key?)
+        93:  null,     // select key
+        112: [0xFFBE], // f1
+        113: [0xFFBF], // f2
+        114: [0xFFC0], // f3
+        115: [0xFFC1], // f4
+        116: [0xFFC2], // f5
+        117: [0xFFC3], // f6
+        118: [0xFFC4], // f7
+        119: [0xFFC5], // f8
+        120: [0xFFC6], // f9
+        121: [0xFFC7], // f10
+        122: [0xFFC8], // f11
+        123: [0xFFC9], // f12
+        144: [0xFF7F], // num lock
+        145: [0xFF14]  // scroll lock
     };
 
     /**
@@ -126,80 +126,80 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var keyidentifier_keysym = {
-        "AllCandidates": 0xFF3D,
-        "Alphanumeric": 0xFF30,
-        "Alt": 0xFFE9,
-        "Attn": 0xFD0E,
-        "AltGraph": 0xFFEA,
-        "CapsLock": 0xFFE5,
-        "Clear": 0xFF0B,
-        "Convert": 0xFF21,
-        "Copy": 0xFD15,
-        "Crsel": 0xFD1C,
-        "CodeInput": 0xFF37,
-        "Control": 0xFFE3,
-        "Down": 0xFF54,
-        "End": 0xFF57,
-        "Enter": 0xFF0D,
-        "EraseEof": 0xFD06,
-        "Execute": 0xFF62,
-        "Exsel": 0xFD1D,
-        "F1": 0xFFBE,
-        "F2": 0xFFBF,
-        "F3": 0xFFC0,
-        "F4": 0xFFC1,
-        "F5": 0xFFC2,
-        "F6": 0xFFC3,
-        "F7": 0xFFC4,
-        "F8": 0xFFC5,
-        "F9": 0xFFC6,
-        "F10": 0xFFC7,
-        "F11": 0xFFC8,
-        "F12": 0xFFC9,
-        "F13": 0xFFCA,
-        "F14": 0xFFCB,
-        "F15": 0xFFCC,
-        "F16": 0xFFCD,
-        "F17": 0xFFCE,
-        "F18": 0xFFCF,
-        "F19": 0xFFD0,
-        "F20": 0xFFD1,
-        "F21": 0xFFD2,
-        "F22": 0xFFD3,
-        "F23": 0xFFD4,
-        "F24": 0xFFD5,
-        "Find": 0xFF68,
+        "AllCandidates": [0xFF3D],
+        "Alphanumeric": [0xFF30],
+        "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
+        "Attn": [0xFD0E],
+        "AltGraph": [0xFFEA],
+        "CapsLock": [0xFFE5],
+        "Clear": [0xFF0B],
+        "Convert": [0xFF21],
+        "Copy": [0xFD15],
+        "Crsel": [0xFD1C],
+        "CodeInput": [0xFF37],
+        "Control": [0xFFE3, 0xFFE3, 0xFFE4],
+        "Down": [0xFF54],
+        "End": [0xFF57],
+        "Enter": [0xFF0D],
+        "EraseEof": [0xFD06],
+        "Execute": [0xFF62],
+        "Exsel": [0xFD1D],
+        "F1": [0xFFBE],
+        "F2": [0xFFBF],
+        "F3": [0xFFC0],
+        "F4": [0xFFC1],
+        "F5": [0xFFC2],
+        "F6": [0xFFC3],
+        "F7": [0xFFC4],
+        "F8": [0xFFC5],
+        "F9": [0xFFC6],
+        "F10": [0xFFC7],
+        "F11": [0xFFC8],
+        "F12": [0xFFC9],
+        "F13": [0xFFCA],
+        "F14": [0xFFCB],
+        "F15": [0xFFCC],
+        "F16": [0xFFCD],
+        "F17": [0xFFCE],
+        "F18": [0xFFCF],
+        "F19": [0xFFD0],
+        "F20": [0xFFD1],
+        "F21": [0xFFD2],
+        "F22": [0xFFD3],
+        "F23": [0xFFD4],
+        "F24": [0xFFD5],
+        "Find": [0xFF68],
         "FullWidth": null,
         "HalfWidth": null,
-        "HangulMode": 0xFF31,
-        "HanjaMode": 0xFF34,
-        "Help": 0xFF6A,
-        "Hiragana": 0xFF25,
-        "Home": 0xFF50,
-        "Insert": 0xFF63,
-        "JapaneseHiragana": 0xFF25,
-        "JapaneseKatakana": 0xFF26,
-        "JapaneseRomaji": 0xFF24,
-        "JunjaMode": 0xFF38,
-        "KanaMode": 0xFF2D,
-        "KanjiMode": 0xFF21,
-        "Katakana": 0xFF26,
-        "Left": 0xFF51,
-        "Meta": 0xFFE7,
-        "NumLock": 0xFF7F,
-        "PageDown": 0xFF55,
-        "PageUp": 0xFF56,
-        "Pause": 0xFF13,
-        "PreviousCandidate": 0xFF3E,
-        "PrintScreen": 0xFD1D,
-        "Right": 0xFF53,
+        "HangulMode": [0xFF31],
+        "HanjaMode": [0xFF34],
+        "Help": [0xFF6A],
+        "Hiragana": [0xFF25],
+        "Home": [0xFF50],
+        "Insert": [0xFF63],
+        "JapaneseHiragana": [0xFF25],
+        "JapaneseKatakana": [0xFF26],
+        "JapaneseRomaji": [0xFF24],
+        "JunjaMode": [0xFF38],
+        "KanaMode": [0xFF2D],
+        "KanjiMode": [0xFF21],
+        "Katakana": [0xFF26],
+        "Left": [0xFF51],
+        "Meta": [0xFFE7],
+        "NumLock": [0xFF7F],
+        "PageDown": [0xFF55],
+        "PageUp": [0xFF56],
+        "Pause": [0xFF13],
+        "PreviousCandidate": [0xFF3E],
+        "PrintScreen": [0xFD1D],
+        "Right": [0xFF53],
         "RomanCharacters": null,
-        "Scroll": 0xFF14,
-        "Select": 0xFF60,
-        "Shift": 0xFFE1,
-        "Up": 0xFF52,
-        "Undo": 0xFF65,
-        "Win": 0xFFEB
+        "Scroll": [0xFF14],
+        "Select": [0xFF60],
+        "Shift": [0xFFE1, 0xFFE1, 0xFFE2],
+        "Up": [0xFF52],
+        "Undo": [0xFF65],
+        "Win": [0xFFEB]
     };
 
     /**
@@ -210,7 +210,7 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var shiftedKeysym = {
-        18:  0xFFE7  // alt
+        18:  [0xFFE7, 0xFFE7, 0xFFEA]  // alt
     };
 
     /**
@@ -218,9 +218,12 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var no_repeat = {
-        0xFFE1: true,
-        0xFFE3: true,
-        0xFFE9: true
+        0xFFE1: true, // Left shift
+        0xFFE2: true, // Right shift
+        0xFFE3: true, // Left ctrl 
+        0xFFE4: true, // Right ctrl 
+        0xFFE9: true, // Left alt
+        0xFFEA: true  // Right alt (or AltGr)
     };
 
     /**
@@ -276,7 +279,22 @@ Guacamole.Keyboard = function(element) {
      */
     var key_repeat_interval = null;
 
-    function keysym_from_key_identifier(shifted, keyIdentifier) {
+    /**
+     * Given an array of keysyms indexed by location, returns the keysym
+     * for the given location, or the keysym for the standard location if
+     * undefined.
+     * 
+     * @param {Array} keysyms An array of keysyms, where the index of the
+     *                        keysym in the array is the location value.
+     * @param {Number} location The location on the keyboard corresponding to
+     *                          the key pressed, as defined at:
+     *                          http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
+     */
+    function get_keysym(keysyms, location) {
+        return keysyms[location] || keysyms[0];
+    }
+
+    function keysym_from_key_identifier(shifted, keyIdentifier, location) {
 
         var unicodePrefixLocation = keyIdentifier.indexOf("U+");
         if (unicodePrefixLocation >= 0) {
@@ -298,7 +316,7 @@ Guacamole.Keyboard = function(element) {
 
         }
 
-        return keyidentifier_keysym[keyIdentifier];
+        return get_keysym(keyidentifier_keysym[keyIdentifier], location);
 
     }
 
@@ -323,16 +341,19 @@ Guacamole.Keyboard = function(element) {
 
     }
 
-    function keysym_from_keycode(keyCode) {
+    function keysym_from_keycode(keyCode, location) {
 
-        var keysym = null;
-        if (!guac_keyboard.modifiers.shift) keysym = unshiftedKeysym[keyCode];
-        else {
-            keysym = shiftedKeysym[keyCode];
-            if (keysym == null) keysym = unshiftedKeysym[keyCode];
-        }
+        var keysyms;
 
-        return keysym;
+        // If not shifted, just return unshifted keysym
+        if (!guac_keyboard.modifiers.shift)
+            keysyms = unshiftedKeysym[keyCode];
+
+        // Otherwise, return shifted keysym, if defined
+        else
+            keysyms = shiftedKeysym[keyCode] || unshiftedKeysym[keyCode];
+
+        return get_keysym(keysyms, location);
 
     }
 
@@ -430,6 +451,9 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
 
+        // Get key location
+        var location = e.location || e.keyLocation || 0;
+
         // Ignore any unknown key events
         if (keynum == 0 && !e.keyIdentifier) {
             e.preventDefault();
@@ -443,7 +467,7 @@ Guacamole.Keyboard = function(element) {
         else if (keynum == 91) guac_keyboard.modifiers.meta  = true;
 
         // Try to get keysym from keycode
-        var keysym = keysym_from_keycode(keynum);
+        var keysym = keysym_from_keycode(keynum, location);
 
         // By default, we expect a corresponding keypress event
         var expect_keypress = true;
@@ -456,7 +480,8 @@ Guacamole.Keyboard = function(element) {
         if (e.keyIdentifier) {
 
             keysym = keysym ||
-            keysym_from_key_identifier(guac_keyboard.modifiers.shift, e.keyIdentifier);
+            keysym_from_key_identifier(guac_keyboard.modifiers.shift,
+                e.keyIdentifier, location);
 
             // Prevent default if non-typable character or if modifier combination
             // likely to be eaten by browser otherwise (NOTE: We must not prevent
