@@ -291,6 +291,10 @@ Guacamole.Keyboard = function(element) {
      *                          http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
      */
     function get_keysym(keysyms, location) {
+
+        if (!keysyms)
+            return null;
+
         return keysyms[location] || keysyms[0];
     }
 
