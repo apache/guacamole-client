@@ -441,6 +441,38 @@ Guacamole.Keyboard = function(element) {
 
     }
 
+    /**
+     * Given a keyboard event, updates the local modifier state and remote
+     * key state based on the modifier flags within the event. This function
+     * pays no attention to keycodes.
+     * 
+     * @param {} e The keyboard event containing the flags to update.
+     */
+    function update_modifier_state(e) {
+
+        // Release alt if implicitly released
+        if (guac_keyboard.modifiers.alt && e.altKey === false) {
+            release_key(0xFFE9); // Left alt
+            release_key(0xFFEA); // Right alt (or AltGr)
+            guac_keyboard.modifiers.alt = false;
+        }
+
+        // Release shift if implicitly released
+        if (guac_keyboard.modifiers.shift && e.shiftKey === false) {
+            release_key(0xFFE1); // Left shift
+            release_key(0xFFE2); // Right shift
+            guac_keyboard.modifiers.shift = false;
+        }
+
+        // Release ctrl if implicitly released
+        if (guac_keyboard.modifiers.ctrl && e.ctrlKey === false) {
+            release_key(0xFFE3); // Left ctrl 
+            release_key(0xFFE4); // Right ctrl 
+            guac_keyboard.modifiers.ctrl = false;
+        }
+
+    }
+
     // When key pressed
     element.addEventListener("keydown", function(e) {
 
@@ -459,6 +491,9 @@ Guacamole.Keyboard = function(element) {
             e.preventDefault();
             return;
         }
+
+        // Fix modifier states
+        update_modifier_state(e);
 
         // Ctrl/Alt/Shift/Meta
         if      (keynum == 16) guac_keyboard.modifiers.shift = true;
@@ -529,11 +564,16 @@ Guacamole.Keyboard = function(element) {
 
         var keysym = keysym_from_charcode(keynum);
 
+        // Fix modifier states
+        update_modifier_state(e);
+
         // If event identified as a typable character, and we're holding Ctrl+Alt,
         // assume Ctrl+Alt is actually AltGr, and release both.
         if (!isControlCharacter(keynum) && guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt) {
-            release_key(0xFFE3);
-            release_key(0xFFE9);
+            release_key(0xFFE3); // Left ctrl
+            release_key(0xFFE4); // Right ctrl
+            release_key(0xFFE9); // Left alt
+            release_key(0xFFEA); // Right alt
         }
 
         // Send press + release if keysym known
@@ -556,6 +596,9 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
+        // Fix modifier states
+        update_modifier_state(e);
+
         // Ctrl/Alt/Shift/Meta
         if      (keynum == 16) guac_keyboard.modifiers.shift = false;
         else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
@@ -570,14 +613,6 @@ Guacamole.Keyboard = function(element) {
         // Clear character record
         keydownChar[keynum] = null;
 
-    }, true);
-
-    // When focus is lost, clear modifiers.
-    element.addEventListener("blur", function() {
-        guac_keyboard.modifiers.alt   = false;
-        guac_keyboard.modifiers.ctrl  = false;
-        guac_keyboard.modifiers.shift = false;
-        guac_keyboard.modifiers.meta  = false;
     }, true);
 
 };
