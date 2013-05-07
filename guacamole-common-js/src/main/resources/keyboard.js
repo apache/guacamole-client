@@ -446,7 +446,7 @@ Guacamole.Keyboard = function(element) {
      * key state based on the modifier flags within the event. This function
      * pays no attention to keycodes.
      * 
-     * @param {} e The keyboard event containing the flags to update.
+     * @param {KeyboardEvent} e The keyboard event containing the flags to update.
      */
     function update_modifier_state(e) {
 
