@@ -17,6 +17,14 @@
         <option value="32">True color (32-bit)</option>
     </param>
 
+    <param name="server-layout" type="enum" title="Keyboard layout">
+        <option value="">(default)</option>
+        <option value="en-us-qwerty">US English (Qwerty)</option>
+        <option value="fr-fr-azerty">French (Azerty)</option>
+        <option value="de-de-qwertz">German (Qwertz)</option>
+        <option value="failsafe">Unicode</option>
+    </param>
+
     <param name="console"       type="boolean" title="Administrator console"    value="true"/>
     <param name="console-audio" type="boolean" title="Support audio in console" value="true"/>
     <param name="disable-audio" type="boolean" title="Disable audio"            value="true"/>
