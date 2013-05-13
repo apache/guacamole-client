@@ -555,49 +555,59 @@ Guacamole.Layer = function(width, height) {
     this.transfer = function(srcLayer, srcx, srcy, srcw, srch, x, y, transferFunction) {
         scheduleTaskSynced(srcLayer, function() {
 
+            var srcCanvas = srcLayer.getCanvas();
+
+            // If entire rectangle outside source canvas, stop
+            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+
+            // Otherwise, clip rectangle to area
+            if (srcx + srcw > srcCanvas.width)
+                srcw = srcCanvas.width - srcx;
+
+            if (srcy + srch > srcCanvas.height)
+                srch = srcCanvas.height - srcy;
+
+            // Stop if nothing to draw.
+            if (srcw == 0 || srch == 0) return;
+
             if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
-            var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0) {
+            // Get image data from src and dst
+            var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+            var dst = displayContext.getImageData(x , y, srcw, srch);
 
-                // Get image data from src and dst
-                var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
-                var dst = displayContext.getImageData(x , y, srcw, srch);
+            // Apply transfer for each pixel
+            for (var i=0; i<srcw*srch*4; i+=4) {
 
-                // Apply transfer for each pixel
-                for (var i=0; i<srcw*srch*4; i+=4) {
+                // Get source pixel environment
+                var src_pixel = new Guacamole.Layer.Pixel(
+                    src.data[i],
+                    src.data[i+1],
+                    src.data[i+2],
+                    src.data[i+3]
+                );
+                    
+                // Get destination pixel environment
+                var dst_pixel = new Guacamole.Layer.Pixel(
+                    dst.data[i],
+                    dst.data[i+1],
+                    dst.data[i+2],
+                    dst.data[i+3]
+                );
 
-                    // Get source pixel environment
-                    var src_pixel = new Guacamole.Layer.Pixel(
-                        src.data[i],
-                        src.data[i+1],
-                        src.data[i+2],
-                        src.data[i+3]
-                    );
-                        
-                    // Get destination pixel environment
-                    var dst_pixel = new Guacamole.Layer.Pixel(
-                        dst.data[i],
-                        dst.data[i+1],
-                        dst.data[i+2],
-                        dst.data[i+3]
-                    );
+                // Apply transfer function
+                transferFunction(src_pixel, dst_pixel);
 
-                    // Apply transfer function
-                    transferFunction(src_pixel, dst_pixel);
-
-                    // Save pixel data
-                    dst.data[i  ] = dst_pixel.red;
-                    dst.data[i+1] = dst_pixel.green;
-                    dst.data[i+2] = dst_pixel.blue;
-                    dst.data[i+3] = dst_pixel.alpha;
-
-                }
-
-                // Draw image data
-                displayContext.putImageData(dst, x, y);
+                // Save pixel data
+                dst.data[i  ] = dst_pixel.red;
+                dst.data[i+1] = dst_pixel.green;
+                dst.data[i+2] = dst_pixel.blue;
+                dst.data[i+3] = dst_pixel.alpha;
 
             }
+
+            // Draw image data
+            displayContext.putImageData(dst, x, y);
 
         });
     };
@@ -625,11 +635,24 @@ Guacamole.Layer = function(width, height) {
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
         scheduleTaskSynced(srcLayer, function() {
-            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
 
             var srcCanvas = srcLayer.getCanvas();
-            if (srcCanvas.width != 0 && srcCanvas.height != 0)
-                displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+
+            // If entire rectangle outside source canvas, stop
+            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+
+            // Otherwise, clip rectangle to area
+            if (srcx + srcw > srcCanvas.width)
+                srcw = srcCanvas.width - srcx;
+
+            if (srcy + srch > srcCanvas.height)
+                srch = srcCanvas.height - srcy;
+
+            // Stop if nothing to draw.
+            if (srcw == 0 || srch == 0) return;
+
+            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+            displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
         });
     };
