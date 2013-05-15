@@ -32,7 +32,7 @@ GuacUI.sessionState = new GuacamoleSessionState();
  */
 GuacUI.createElement = function(tagname, classname) {
     var new_element = document.createElement(tagname);
-    new_element.className = classname;
+    if (classname) new_element.className = classname;
     return new_element;
 };
 
