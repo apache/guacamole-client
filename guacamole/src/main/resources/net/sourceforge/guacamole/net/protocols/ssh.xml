@@ -1,0 +1,8 @@
+<protocol name="ssh" title="SSH">
+
+    <param name="hostname" title="Hostname" type="text"/>
+
+    <param name="username" title="Username" type="text"/>
+    <param name="password" title="Password" type="password"/>
+
+</protocol>
