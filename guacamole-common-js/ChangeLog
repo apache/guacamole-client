@@ -1,3 +1,8 @@
+2013-05-29 Michael Jumper <zhangmaike@users.sourceforge.net>
+
+	* Fix support for AltGr and modifiers
+	* Handle bad source rect sizes in copy
+
 2012-10-24 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Implement base audio support
