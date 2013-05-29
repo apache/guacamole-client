@@ -1,3 +1,7 @@
+2013-04-24 James Muehlner <james.muehlner@guac-dev.org>
+
+	* Fix handling of checkbox parameters (ticket #307)
+
 2013-01-09 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Rewrite parser for user-mapping.xml
