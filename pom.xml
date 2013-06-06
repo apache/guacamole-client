@@ -16,16 +16,16 @@
     <modules>
 
         <!-- Guacamole web application -->
-        <module>../guacamole</module>
+        <module>guacamole</module>
 
         <!-- Guacamole Java API -->
-        <module>../guacamole-common</module>
+        <module>guacamole-common</module>
 
         <!-- Guacamole webapp extension API -->
-        <module>../guacamole-ext</module>
+        <module>guacamole-ext</module>
 
         <!-- Guacamole JavaScript API -->
-        <module>../guacamole-common-js</module>
+        <module>guacamole-common-js</module>
 
     </modules>
 
