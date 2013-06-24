@@ -770,6 +770,25 @@ GuacUI.Client.attach = function(guac) {
     };
 
     /*
+     * Prompt to download file when file received.
+     */
+
+    guac.onblob = function(blob) {
+
+        // When complete, prompt for download
+        blob.oncomplete = function() {
+
+            var url = window.URL || window.webkitURL;
+            var a = document.createElement("a");
+            a.href = url.createObjectURL(blob.getBlob());
+            a.download = blob.name;
+            a.click();
+
+        };
+
+    };
+
+    /*
      * Do nothing when the display element is clicked on.
      */
 
