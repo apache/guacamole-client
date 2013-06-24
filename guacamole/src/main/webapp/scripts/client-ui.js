@@ -782,6 +782,7 @@ GuacUI.Client.attach = function(guac) {
             var a = document.createElement("a");
             a.href = url.createObjectURL(blob.getBlob());
             a.download = blob.name;
+            a.type = blob.mimetype;
             a.click();
 
         };
