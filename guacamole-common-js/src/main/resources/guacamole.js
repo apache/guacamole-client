@@ -180,6 +180,122 @@ Guacamole.Parser = function() {
 
 
 /**
+ * A blob abstraction used by the Guacamole client to facilitate transfer of
+ * files or other binary data.
+ * 
+ * @constructor
+ * @param {String} mimetype The mimetype of the data this blob will contain.
+ * @param {String} name An arbitrary name for this blob.
+ */
+Guacamole.Blob = function(mimetype, name) {
+
+    /**
+     * Reference to this Guacamole.Blob.
+     * @private
+     */
+    var guac_blob = this;
+
+    /**
+     * The length of this Guacamole.Blob in bytes.
+     * @private
+     */
+    var length = 0;
+
+    /**
+     * The mimetype of the data contained within this blob.
+     */
+    this.mimetype = mimetype;
+
+    /**
+     * The name of this blob. In general, this should be an appropriate
+     * filename.
+     */
+    this.name = name;
+
+    // Get blob builder
+    var blob_builder;
+    if      (window.BlobBuilder)       blob_builder = new BlobBuilder();
+    else if (window.WebKitBlobBuilder) blob_builder = new WebKitBlobBuilder();
+    else if (window.MozBlobBuilder)    blob_builder = new MozBlobBuilder();
+    else
+        blob_builder = new (function() {
+
+            var blobs = [];
+
+            this.append = function(data) {
+                blobs.push(new Blob([data], {"type": mimetype}));
+            };
+
+            this.getBlob = function() {
+                return new Blob(blobs, {"type": mimetype});
+            };
+
+        })();
+
+    /**
+     * Appends the given ArrayBuffer to this Guacamole.Blob.
+     * 
+     * @param {ArrayBuffer} buffer An ArrayBuffer containing the data to be
+     *                             appended.
+     */
+    this.append = function(buffer) {
+
+        blob_builder.append(buffer);
+        length += buffer.byteLength;
+
+        // Call handler, if present
+        if (guac_blob.ondata)
+            guac_blob.ondata(buffer.byteLength);
+
+    };
+
+    /**
+     * Closes this Guacamole.Blob such that no further data will be written.
+     */
+    this.close = function() {
+
+        // Call handler, if present
+        if (guac_blob.oncomplete)
+            guac_blob.oncomplete();
+
+        // NOTE: Currently not enforced.
+
+    };
+
+    /**
+     * Returns the current length of this Guacamole.Blob, in bytes.
+     * @return {Number} The current length of this Guacamole.Blob.
+     */
+    this.getLength = function() {
+        return length;
+    };
+
+    /**
+     * Returns the contents of this Guacamole.Blob as a Blob.
+     * @return {Blob} The contents of this Guacamole.Blob.
+     */
+    this.getBlob = function() {
+        return blob_builder.getBlob();
+    };
+
+    /**
+     * Fired once for every blob of data received.
+     * 
+     * @event
+     * @param {Number} length The number of bytes received.
+     */
+    this.ondata = null;
+
+    /**
+     * Fired once this blob is finished and no further data will be written.
+     * @event
+     */
+    this.oncomplete = null;
+
+};
+
+
+/**
  * Guacamole protocol client. Given a display element and {@link Guacamole.Tunnel},
  * automatically handles incoming and outgoing Guacamole instructions via the
  * provided tunnel, updating the display using one or more canvas elements.
@@ -286,6 +402,9 @@ Guacamole.Client = function(tunnel) {
 
     // No initial audio channels 
     var audio_channels = [];
+
+    // No initial blobs
+    var blobs = [];
 
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
@@ -455,16 +574,15 @@ Guacamole.Client = function(tunnel) {
     this.onresize = null;
 
     /**
-     * Fired when a file is received. Note that this will contain the entire
-     * data of the file.
+     * Fired when a blob is created. The blob provided to this event handler
+     * will contain its own event handlers for received data and the close
+     * event.
      * 
      * @event
-     * @param {String} name A human-readable name describing the file.
-     * @param {String} mimetype The mimetype of the file received.
-     * @param {String} data The actual entire contents of the file,
-     *                      base64-encoded.
+     * @param {Guacamole.Blob} blob A container for blob data that will receive
+     *                              data from the server.
      */
-    this.onfile = null;
+    this.onblob = null;
 
     // Layers
     function getBufferLayer(index) {
@@ -587,6 +705,26 @@ Guacamole.Client = function(tunnel) {
             var data = parameters[3];
 
             channel.play(mimetype, duration, data);
+
+        },
+
+        "blob": function(parameters) {
+
+            // Get blob
+            var blob_index = parseInt(parameters[0]);
+            var data = parameters[1];
+            var blob = blobs[blob_index];
+
+            // Convert to ArrayBuffer
+            var binary = window.atob(data);
+            var arrayBuffer = new ArrayBuffer(binary.length);
+            var bufferView = new Uint8Array(arrayBuffer);
+
+            for (var i=0; i<binary.length; i++)
+                bufferView[i] = binary.charCodeAt(i);
+
+            // Write data
+            blob.append(arrayBuffer);
 
         },
 
@@ -766,13 +904,30 @@ Guacamole.Client = function(tunnel) {
             guac_client.disconnect();
         },
 
+        "end": function(parameters) {
+
+            // Get blob
+            var blob_index = parseInt(parameters[0]);
+            var blob = blobs[blob_index];
+
+            // Close blob
+            blob.close();
+
+        },
+
         "file": function(parameters) {
-            if (guac_client.onfile)
-                guac_client.onfile(
-                    parameters[0], // Name
-                    parameters[1], // Mimetype
-                    parameters[2]  // Data
-                );
+
+            var blob_index = parseInt(parameters[0]);
+            var mimetype = parameters[1];
+            var filename = parameters[2];
+
+            // Create blob
+            var blob = blobs[blob_index] = new Guacamole.Blob(mimetype, filename);
+
+            // Call handler now that blob is created
+            if (guac_client.onblob)
+                guac_client.onblob(blob);
+
         },
 
         "identity": function(parameters) {
