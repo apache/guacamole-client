@@ -286,3 +286,58 @@ p.hint {
     box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
     
 }
+
+.download.notification {
+
+    font-size: 0.9em;
+    
+    position: fixed;
+    right: 0.5em;
+    bottom: 0.5em;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: black;
+    opacity: 0.9;
+
+    color: white;
+
+    padding: 0.5em;
+    margin: 1em;
+
+    box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
+ 
+}
+
+.download.notification div {
+    display: inline-block;
+}
+
+.download.notification .caption {
+    color: silver;
+}
+
+.download.notification .progress {
+    margin-left: 0.75em;
+    padding: 0.25em;
+    min-width: 5em;
+    border: 1px solid gray;
+    background: #444;
+    border-radius: 0.2em;
+    text-align: center;
+}
+
+.download.notification .download {
+    margin-left: 0.75em;
+    padding: 0.25em;
+    min-width: 5em;
+    border: 1px solid gray;
+    background: rgb(16, 87, 153);
+    border-radius: 0.2em;
+    text-align: center;
+}
+
+.download.notification .download a[href] {
+    color: white;
+    font-weight: bold;
+    text-decoration: none;
+}

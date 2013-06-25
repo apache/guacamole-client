@@ -690,3 +690,40 @@ GuacUI.Pager = function(container) {
 
 };
 
+
+GuacUI.Download = function(filename) {
+
+    var element = GuacUI.createElement("div", "download notification");
+    GuacUI.createChildElement(element, "div", "caption").textContent =
+        filename + " ";
+
+    var progress = GuacUI.createChildElement(element, "div", "progress");
+
+    this.updateProgress = function(text) {
+        progress.textContent = text;
+    };
+
+    this.complete = function(mimetype, url) {
+
+        element.removeChild(progress);
+        GuacUI.addClass(element, "complete");
+
+        var link = GuacUI.createChildElement(
+                    GuacUI.createChildElement(element, "div", "download"),
+                    "a");
+
+        link.href = url;
+        link.download = filename;
+        link.type = mimetype;
+        link.textContent = "Download";
+
+    };
+
+    /**
+     * Returns the element representing this notification.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+};

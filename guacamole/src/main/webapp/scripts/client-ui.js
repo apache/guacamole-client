@@ -775,16 +775,20 @@ GuacUI.Client.attach = function(guac) {
 
     guac.onblob = function(blob) {
 
+        var download = new GuacUI.Download(blob.name);
+        download.updateProgress("0");
+
+        document.body.appendChild(download.getElement());
+
+        // Update progress as data is received
+        blob.ondata = function() {
+            download.updateProgress(blob.getLength());
+        };
+
         // When complete, prompt for download
         blob.oncomplete = function() {
-
             var url = window.URL || window.webkitURL;
-            var a = document.createElement("a");
-            a.href = url.createObjectURL(blob.getBlob());
-            a.download = blob.name;
-            a.type = blob.mimetype;
-            a.click();
-
+            download.complete(blob.mimetype, url.createObjectURL(blob.getBlob()));
         };
 
     };
