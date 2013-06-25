@@ -691,6 +691,13 @@ GuacUI.Pager = function(container) {
 };
 
 
+/**
+ * Interface object which displays the progress of a download, ultimately
+ * becoming a download link once complete.
+ * 
+ * @constructor
+ * @param {String} filename The name the file will have once complete.
+ */
 GuacUI.Download = function(filename) {
 
     var element = GuacUI.createElement("div", "download notification");
@@ -699,10 +706,22 @@ GuacUI.Download = function(filename) {
 
     var progress = GuacUI.createChildElement(element, "div", "progress");
 
+    /**
+     * Updates the content of the progress indicator with the given text.
+     * 
+     * @param {String} text The text to assign to the progress indicator.
+     */
     this.updateProgress = function(text) {
         progress.textContent = text;
     };
 
+    /**
+     * Given the mimetype and URL for the final download, removes the progress
+     * indicator and replaces it with a download link for the completed file.
+     * 
+     * @param {String} mimetype The mimetype of the download.
+     * @param {String} url The URL of the download.
+     */
     this.complete = function(mimetype, url) {
 
         element.removeChild(progress);
