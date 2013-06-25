@@ -116,12 +116,12 @@ public class List extends AuthenticatingHttpServlet {
 
                 // Get specific user
                 user = users.get(username);
-                if (user == null)
-                    throw new GuacamoleSecurityException("No such user.");
-
             }
             else
                 user = context.self();
+            
+            if (user == null)
+                throw new GuacamoleSecurityException("No such user.");
 
             // Write XML content type
             response.setHeader("Content-Type", "text/xml");
