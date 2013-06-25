@@ -316,14 +316,41 @@ p.hint {
     color: silver;
 }
 
+@keyframes progress {
+    from {background-position-x: 0px;}
+    to   {background-position-x: 64px;}
+}
+
+@-webkit-keyframes progress {
+    from {background-position-x: 0px;}
+    to   {background-position-x: 64px;}
+}
+
 .download.notification .progress {
+    
     margin-left: 0.75em;
     padding: 0.25em;
     min-width: 5em;
     border: 1px solid gray;
-    background: #444;
     border-radius: 0.2em;
     text-align: center;
+
+    background: #444 url('../images/progress.png');
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+
+    animation-name: progress;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: progress;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
 }
 
 .download.notification .download {

@@ -773,16 +773,32 @@ GuacUI.Client.attach = function(guac) {
      * Prompt to download file when file received.
      */
 
+    function getSizeString(bytes) {
+
+        if (bytes > 1000000000)
+            return Math.round(bytes / 100000000)/10 + " GB";
+
+        else if (bytes > 1000000)
+            return Math.round(bytes / 100000)/10 + " MB";
+
+        else if (bytes > 1000)
+            return Math.round(bytes / 100)/10 + " KB";
+
+        else
+            return bytes + " B";
+
+    }
+
     guac.onblob = function(blob) {
 
         var download = new GuacUI.Download(blob.name);
-        download.updateProgress("0");
+        download.updateProgress(getSizeString(0));
 
         document.body.appendChild(download.getElement());
 
         // Update progress as data is received
         blob.ondata = function() {
-            download.updateProgress(blob.getLength());
+            download.updateProgress(getSizeString(blob.getLength()));
         };
 
         // When complete, prompt for download
