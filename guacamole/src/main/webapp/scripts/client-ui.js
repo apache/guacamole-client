@@ -776,13 +776,13 @@ GuacUI.Client.attach = function(guac) {
     function getSizeString(bytes) {
 
         if (bytes > 1000000000)
-            return Math.round(bytes / 100000000)/10 + " GB";
+            return (bytes / 1000000000).toFixed(1) + " GB";
 
         else if (bytes > 1000000)
-            return Math.round(bytes / 100000)/10 + " MB";
+            return (bytes / 1000000).toFixed(1) + " MB";
 
         else if (bytes > 1000)
-            return Math.round(bytes / 100)/10 + " KB";
+            return (bytes / 1000).toFixed(1) + " KB";
 
         else
             return bytes + " B";
