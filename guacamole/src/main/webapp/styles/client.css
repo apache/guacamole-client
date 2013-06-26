@@ -291,9 +291,11 @@ p.hint {
     position: fixed;
     right: 0.5em;
     bottom: 0.5em;
+    max-width: 25%;
+    min-width: 10em;
 }
 
-.download.notification {
+.notification {
 
     font-size: 0.9em;
     
@@ -305,16 +307,17 @@ p.hint {
 
     padding: 0.5em;
     margin: 1em;
+    overflow: hidden;
 
     box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
  
 }
 
-.download.notification div {
+.notification div {
     display: inline-block;
 }
 
-.download.notification .caption {
+.notification .caption {
     color: silver;
 }
 
@@ -328,14 +331,30 @@ p.hint {
     to   {background-position: 64px 0px;}
 }
 
-.download.notification .progress {
-    
+.download.notification .caption {
+    max-width: 20em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.download.notification .progress,
+.download.notification .download {
+
+    margin-top: 1em;
     margin-left: 0.75em;
     padding: 0.25em;
     min-width: 5em;
+    
     border: 1px solid gray;
     border-radius: 0.2em;
+
     text-align: center;
+    float: right;
+
+}
+
+.download.notification .progress {
 
     background: #444 url('../images/progress.png');
     background-size: 16px 16px;
@@ -356,13 +375,7 @@ p.hint {
 }
 
 .download.notification .download {
-    margin-left: 0.75em;
-    padding: 0.25em;
-    min-width: 5em;
-    border: 1px solid gray;
     background: rgb(16, 87, 153);
-    border-radius: 0.2em;
-    text-align: center;
 }
 
 .download.notification .download a[href] {
