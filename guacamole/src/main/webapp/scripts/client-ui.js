@@ -50,8 +50,9 @@ GuacUI.Client = {
 
     /* UI Components */
 
-    "viewport"    : document.getElementById("viewportClone"),
-    "display"     : document.getElementById("display"),
+    "viewport"          : document.getElementById("viewportClone"),
+    "display"           : document.getElementById("display"),
+    "notification_area" : document.getElementById("notificationArea"),
 
     /* Expected Input Rectangle */
 
@@ -794,7 +795,7 @@ GuacUI.Client.attach = function(guac) {
         var download = new GuacUI.Download(blob.name);
         download.updateProgress(getSizeString(0));
 
-        document.body.appendChild(download.getElement());
+        GuacUI.Client.notification_area.appendChild(download.getElement());
 
         // Update progress as data is received
         blob.ondata = function() {

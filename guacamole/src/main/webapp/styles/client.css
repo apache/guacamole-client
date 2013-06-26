@@ -287,14 +287,16 @@ p.hint {
     
 }
 
+#notificationArea {
+    position: fixed;
+    right: 0.5em;
+    bottom: 0.5em;
+}
+
 .download.notification {
 
     font-size: 0.9em;
     
-    position: fixed;
-    right: 0.5em;
-    bottom: 0.5em;
-
     border: 1px solid rgba(255, 255, 255, 0.25);
     background: black;
     opacity: 0.9;
@@ -317,13 +319,13 @@ p.hint {
 }
 
 @keyframes progress {
-    from {background-position-x: 0px;}
-    to   {background-position-x: 64px;}
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
 }
 
 @-webkit-keyframes progress {
-    from {background-position-x: 0px;}
-    to   {background-position-x: 64px;}
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
 }
 
 .download.notification .progress {
@@ -367,4 +369,14 @@ p.hint {
     color: white;
     font-weight: bold;
     text-decoration: none;
+}
+
+#preload {
+    visibility: hidden;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
 }
