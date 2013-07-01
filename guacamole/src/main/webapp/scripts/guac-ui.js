@@ -750,25 +750,19 @@ GuacUI.Download = function(filename) {
     };
 
     /**
-     * Given the mimetype and URL for the final download, removes the progress
-     * indicator and replaces it with a download link for the completed file.
-     * 
-     * @param {String} mimetype The mimetype of the download.
-     * @param {String} url The URL of the download.
+     * Removes the progress indicator and replaces it with a download button.
      */
-    this.complete = function(mimetype, url) {
+    this.complete = function() {
 
         element.removeChild(progress);
         GuacUI.addClass(element, "complete");
 
-        var link = GuacUI.createChildElement(
-                    GuacUI.createChildElement(element, "div", "download"),
-                    "a");
-
-        link.href = url;
-        link.download = filename;
-        link.type = mimetype;
-        link.textContent = "Download";
+        var download = GuacUI.createChildElement(element, "div", "download");
+        download.textContent = "Download";
+        download.onclick = function() {
+            if (guac_download.ondownload)
+                guac_download.ondownload();
+        };
 
     };
 
@@ -784,5 +778,11 @@ GuacUI.Download = function(filename) {
      * @event
      */
     this.onclose = null;
+
+    /**
+     * Called when the download button of this notification is clicked.
+     * @event
+     */
+    this.ondownload = null;
 
 };

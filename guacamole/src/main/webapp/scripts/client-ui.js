@@ -804,8 +804,13 @@ GuacUI.Client.attach = function(guac) {
 
         // When complete, prompt for download
         blob.oncomplete = function() {
-            var url = window.URL || window.webkitURL;
-            download.complete(blob.mimetype, url.createObjectURL(blob.getBlob()));
+
+            download.ondownload = function() {
+                saveAs(blob.getBlob(), blob.name);
+            };
+
+            download.complete();
+
         };
 
         // When close clicked, remove from notification area

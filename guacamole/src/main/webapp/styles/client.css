@@ -409,12 +409,6 @@ p.hint {
     cursor: pointer;
 }
 
-.download.notification .download a[href] {
-    color: white;
-    font-weight: bold;
-    text-decoration: none;
-}
-
 #preload {
     visibility: hidden;
     position: absolute;
