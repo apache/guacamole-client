@@ -14,7 +14,7 @@
         <option value="32">True color (32-bit)</option>
     </param>
 
-    <param name="dest-host" type="text"    title="Repeater Destination Host"/>
-    <param name="dest-port" type="numeric" title="Repeater Destination Port"/>
+    <param name="dest-host" type="text"    title="Repeater destination host"/>
+    <param name="dest-port" type="numeric" title="Repeater destination port"/>
 
 </protocol>
