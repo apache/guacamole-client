@@ -808,6 +808,11 @@ GuacUI.Client.attach = function(guac) {
             download.complete(blob.mimetype, url.createObjectURL(blob.getBlob()));
         };
 
+        // When close clicked, remove from notification area
+        download.onclose = function() {
+            GuacUI.Client.notification_area.removeChild(download.getElement());
+        };
+
     };
 
     /*

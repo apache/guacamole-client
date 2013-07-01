@@ -317,8 +317,38 @@ p.hint {
     display: inline-block;
 }
 
+.notification .title-bar {
+    display: block;
+    white-space: nowrap;
+    font-weight: bold;
+
+    border-bottom: 1px solid white;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.notification .title-bar * {
+    vertical-align: middle;
+}
+
 .notification .caption {
     color: silver;
+}
+
+.notification .close {
+
+    background: url('../images/action-icons/guac-close.png');
+    background-size: 10px 10px;
+    -moz-background-size: 10px 10px;
+    -webkit-background-size: 10px 10px;
+    -khtml-background-size: 10px 10px;
+
+    width: 10px;
+    height: 10px;
+
+    float: right;
+    cursor: pointer;
+
 }
 
 @keyframes progress {
@@ -332,7 +362,7 @@ p.hint {
 }
 
 .download.notification .caption {
-    max-width: 20em;
+    width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -376,6 +406,7 @@ p.hint {
 
 .download.notification .download {
     background: rgb(16, 87, 153);
+    cursor: pointer;
 }
 
 .download.notification .download a[href] {

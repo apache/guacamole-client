@@ -700,10 +700,44 @@ GuacUI.Pager = function(container) {
  */
 GuacUI.Download = function(filename) {
 
+    /**
+     * Reference to this GuacUI.Download.
+     * @private
+     */
+    var guac_download = this;
+
+    /**
+     * The outer div representing the notification.
+     * @private
+     */
     var element = GuacUI.createElement("div", "download notification");
+
+    /**
+     * Title bar describing the notification.
+     * @private
+     */
+    var title = GuacUI.createChildElement(element, "div", "title-bar");
+
+    /**
+     * Close button for removing the notification.
+     * @private
+     */
+    var close_button = GuacUI.createChildElement(title, "div", "close");
+    close_button.onclick = function() {
+        if (guac_download.onclose)
+            guac_download.onclose();
+    };
+
+    GuacUI.createChildElement(title, "div", "title").textContent =
+        "File Transfer";
+
     GuacUI.createChildElement(element, "div", "caption").textContent =
         filename + " ";
 
+    /**
+     * Progress bar and status.
+     * @private
+     */
     var progress = GuacUI.createChildElement(element, "div", "progress");
 
     /**
@@ -744,5 +778,11 @@ GuacUI.Download = function(filename) {
     this.getElement = function() {
         return element;
     };
+
+    /**
+     * Called when the close button of this notification is clicked.
+     * @event
+     */
+    this.onclose = null;
 
 };
