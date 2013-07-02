@@ -25,8 +25,9 @@
         <option value="failsafe">Unicode</option>
     </param>
 
-    <param name="console"       type="boolean" title="Administrator console"    value="true"/>
-    <param name="console-audio" type="boolean" title="Support audio in console" value="true"/>
-    <param name="disable-audio" type="boolean" title="Disable audio"            value="true"/>
+    <param name="console"         type="boolean" title="Administrator console"    value="true"/>
+    <param name="console-audio"   type="boolean" title="Support audio in console" value="true"/>
+    <param name="disable-audio"   type="boolean" title="Disable audio"            value="true"/>
+    <param name="enable-printing" type="boolean" title="Enable printing"          value="true"/>
 
 </protocol>
