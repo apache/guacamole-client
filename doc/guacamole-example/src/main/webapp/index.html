@@ -1,0 +1,98 @@
+<!DOCTYPE HTML>
+
+<!--
+    Guacamole - Clientless Remote Desktop
+    Copyright (C) 2010  Michael Jumper
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="guacamole.css"/>
+        <title>Guacamole (EXAMPLE)</title>
+    </head>
+
+    <body>
+
+        <!-- Display -->
+        <div id="display"></div>
+
+        <!-- Input abstractions -->
+        <script type="text/javascript"
+            src="guacamole-common-js/keyboard.js"></script>
+        <script type="text/javascript"
+            src="guacamole-common-js/mouse.js"></script>
+
+        <!-- Client core scripts -->
+        <script type="text/javascript"
+            src="guacamole-common-js/layer.js"></script>
+        <script type="text/javascript"
+            src="guacamole-common-js/tunnel.js"></script>
+        <script type="text/javascript"
+            src="guacamole-common-js/guacamole.js"></script>
+
+        <!-- Init -->
+        <script type="text/javascript"> /* <![CDATA[ */
+
+            // Get display div from document
+            var display = document.getElementById("display");
+
+            // Instantiate client, using an HTTP tunnel for communications.
+            var guac = new Guacamole.Client(
+                new Guacamole.HTTPTunnel("tunnel")
+            );
+
+            // Add client to display div
+            display.appendChild(guac.getDisplay());
+            
+            // Error handler
+            guac.onerror = function(error) {
+                alert(error);
+            };
+
+            // Connect
+            guac.connect();
+
+            // Disconnect on close
+            window.onunload = function() {
+                guac.disconnect();
+            }
+
+            // Mouse
+            var mouse = new Guacamole.Mouse(guac.getDisplay());
+
+            mouse.onmousedown = 
+            mouse.onmouseup   =
+            mouse.onmousemove = function(mouseState) {
+                guac.sendMouseState(mouseState);
+            };
+
+            // Keyboard
+            var keyboard = new Guacamole.Keyboard(document);
+
+            keyboard.onkeydown = function (keysym) {
+                guac.sendKeyEvent(1, keysym);
+            };
+
+            keyboard.onkeyup = function (keysym) {
+                guac.sendKeyEvent(0, keysym);
+            };
+
+        /* ]]> */ </script>
+
+    </body>
+
+</html>
