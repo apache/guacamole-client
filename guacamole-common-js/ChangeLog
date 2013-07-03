@@ -1,3 +1,7 @@
+2013-07-01 Michael Jumper <mike.jumper@guac-dev.org>
+
+	* Add support for "file", "blob", and "end" instructions
+
 2013-05-29 Michael Jumper <zhangmaike@users.sourceforge.net>
 
 	* Fix support for AltGr and modifiers

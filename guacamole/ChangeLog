@@ -1,3 +1,11 @@
+2013-07-02 Michael Jumper <mike.jumper@guac-dev.org>
+
+	* Update rdp.xml with new "enable-printing" parameter
+
+2013-06-25 Michael Jumper <mike.jumper@guac-dev.org>
+
+	* Add support for notifications and file download
+
 2013-04-24 James Muehlner <james.muehlner@guac-dev.org>
 
 	* Fix handling of checkbox parameters (ticket #307)
