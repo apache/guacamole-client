@@ -1,0 +1,67 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.deltalima.guacamole</groupId>
+    <artifactId>guacamole-noauth</artifactId>
+    <packaging>jar</packaging>
+    <version>0.8.0</version>
+    <name>guacamole-noauth</name>
+    <url>http://guacamole.sourceforge.net/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+            <!-- Written for 1.6 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <!-- SLF4J - logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jcl</artifactId>
+            <version>1.6.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Guacamole Java API -->
+        <dependency>
+            <groupId>net.sourceforge.guacamole</groupId>
+            <artifactId>guacamole-common</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+
+        <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>net.sourceforge.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <!-- Central Guacamole repository -->
+        <repository>
+            <id>guac-dev</id>
+            <url>http://guac-dev.org/repo</url>
+        </repository>
+    </repositories>
+
+</project>
