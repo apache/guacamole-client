@@ -92,6 +92,9 @@ public class List extends AuthenticatingHttpServlet {
 
         // Write XML content type
         response.setHeader("Content-Type", "text/xml");
+        
+        // Set encoding
+        response.setCharacterEncoding("UTF-8");
 
         // Get connection directory
         Directory<String, Connection> directory = context.getConnectionDirectory();

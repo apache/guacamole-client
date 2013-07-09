@@ -117,6 +117,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
     public MySQLAuthenticationProvider() throws GuacamoleException {
 
         final Properties myBatisProperties = new Properties();
+        final Properties driverProperties = new Properties();
 
         // Set the mysql properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
@@ -126,6 +127,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         myBatisProperties.setProperty("JDBC.username", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME));
         myBatisProperties.setProperty("JDBC.password", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
+        driverProperties.setProperty("characterEncoding","UTF-8");
 
         // Set up Guice injector.
         injector = Guice.createInjector(
@@ -135,6 +137,9 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                 @Override
                 public void configure(Binder binder) {
                     Names.bindProperties(binder, myBatisProperties);
+                    binder.bind(Properties.class)
+                        .annotatedWith(Names.named("JDBC.driverProperties"))
+                        .toInstance(driverProperties);
                 }
             },
 

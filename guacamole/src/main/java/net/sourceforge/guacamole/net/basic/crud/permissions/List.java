@@ -101,6 +101,9 @@ public class List extends AuthenticatingHttpServlet {
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
+        
+        // Set encoding
+        response.setCharacterEncoding("UTF-8");
 
         // Write actual XML
         try {
