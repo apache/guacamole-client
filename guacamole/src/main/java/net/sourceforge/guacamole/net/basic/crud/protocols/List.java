@@ -199,6 +199,9 @@ public class List extends AuthenticatingHttpServlet {
 
         // Do not cache
         response.setHeader("Cache-Control", "no-cache");
+        
+        // Set encoding
+        response.setCharacterEncoding("UTF-8");
 
         // Map of all available protocols
         Map<String, ProtocolInfo> protocols = new HashMap<String, ProtocolInfo>();
