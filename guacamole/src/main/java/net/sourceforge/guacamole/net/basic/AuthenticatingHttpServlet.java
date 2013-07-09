@@ -20,6 +20,7 @@ package net.sourceforge.guacamole.net.basic;
  */
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -226,6 +227,15 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
+        
+        // Set character encoding to UTF-8 if it's not already set
+        if(request.getCharacterEncoding() == null) {
+            try {
+                request.setCharacterEncoding("UTF-8");
+            } catch (UnsupportedEncodingException exception) {
+               throw new ServletException(exception);
+            }
+        }
 
         HttpSession httpSession = request.getSession(true);
 
