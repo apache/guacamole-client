@@ -182,7 +182,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
-            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
@@ -456,7 +456,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         // Start tunnel and connect synchronously
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
-        connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         connect_xmlhttprequest.send(data);
 
         // If failure, throw error
