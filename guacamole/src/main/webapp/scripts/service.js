@@ -348,7 +348,7 @@ GuacamoleService.Connections = {
         // Add user
         var xhr = new XMLHttpRequest();
         xhr.open("POST", users_url, false);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         xhr.send(data);
 
         // Handle response
@@ -381,7 +381,7 @@ GuacamoleService.Connections = {
         // Add user
         var xhr = new XMLHttpRequest();
         xhr.open("POST", users_url, false);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         xhr.send(data);
 
         // Handle response
@@ -535,7 +535,7 @@ GuacamoleService.Users = {
         // Update user
         var xhr = new XMLHttpRequest();
         xhr.open("POST", users_url, false);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         xhr.send(data);
 
         // Handle response
@@ -628,7 +628,7 @@ GuacamoleService.Permissions = {
         // Get permission list
         var xhr = new XMLHttpRequest();
         xhr.open("POST", list_url, false);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         xhr.send(data);
 
         // Handle response
