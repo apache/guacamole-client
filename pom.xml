@@ -29,4 +29,37 @@
 
     </modules>
 
+    <build>
+        <plugins>
+
+            <!-- Assembly plugin - for easy distribution -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+
+                <!-- Build project archive -->
+                <configuration>
+                    <finalName>${project.artifactId}-${project.version}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptors>
+                        <descriptor>project-assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+
+                <!-- Bind archive build to package phase -->
+                <executions>
+                    <execution>
+                        <id>make-source-archive</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>
