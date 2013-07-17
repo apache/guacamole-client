@@ -1,5 +1,6 @@
 <assembly>
     <baseDirectory>guacamole-common-js</baseDirectory>
+    <id>guacamole-common-js</id>
     <formats>
         <format>zip</format>
     </formats>
