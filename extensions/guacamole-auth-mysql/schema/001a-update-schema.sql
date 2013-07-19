@@ -39,6 +39,7 @@ CREATE TABLE `guacamole_connection_group_permission` (
   `user_id`             int(11) NOT NULL,
   `connection_group_id` int(11) NOT NULL,
   `permission`          enum('READ',
+                             'EXECUTE',
                              'UPDATE',
                              'DELETE',
                              'ADMINISTER') NOT NULL,
