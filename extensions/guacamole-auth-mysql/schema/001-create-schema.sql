@@ -1,17 +1,42 @@
 
 --
+-- Table of connection groups. Each connection group has a name.
+--
+
+CREATE TABLE `guacamole_connection_group` (
+
+  `connection_group_id`   int(11)      NOT NULL AUTO_INCREMENT,
+  `parent_group_id`       int(11),
+  `connection_group_name` varchar(128) NOT NULL,
+
+  PRIMARY KEY (`connection_group_id`),
+  UNIQUE KEY `connection_group_name` (`connection_group_name`),
+
+  CONSTRAINT `guacamole_connection_group_ibfk_1`
+    FOREIGN KEY (`parent_group_id`)
+    REFERENCES `guacamole_connection_group` (`connection_group_id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of connections. Each connection has a name, protocol, and
 -- associated set of parameters.
+-- A connection may belong to a connection group.
 --
 
 CREATE TABLE `guacamole_connection` (
 
-  `connection_id`   int(11)      NOT NULL AUTO_INCREMENT,
-  `connection_name` varchar(128) NOT NULL,
-  `protocol`        varchar(32)  NOT NULL,
-
+  `connection_id`       int(11)      NOT NULL AUTO_INCREMENT,
+  `connection_name`     varchar(128) NOT NULL,
+  `connection_group_id` int(11),
+  `protocol`            varchar(32)  NOT NULL,
+  
   PRIMARY KEY (`connection_id`),
-  UNIQUE KEY `connection_name` (`connection_name`)
+  UNIQUE KEY `connection_name` (`connection_name`),
+
+  CONSTRAINT `guacamole_connection_ibfk_1`
+    FOREIGN KEY (`connection_group_id`)
+    REFERENCES `guacamole_connection_group` (`connection_group_id`)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -78,6 +103,32 @@ CREATE TABLE `guacamole_connection_permission` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
+-- Table of connection group permissions. Each group permission grants a user
+-- specific access to a connection group.
+--
+
+CREATE TABLE `guacamole_connection_group_permission` (
+
+  `user_id`             int(11) NOT NULL,
+  `connection_group_id` int(11) NOT NULL,
+  `permission`          enum('READ',
+                             'UPDATE',
+                             'DELETE',
+                             'ADMINISTER') NOT NULL,
+
+  PRIMARY KEY (`user_id`,`connection_group_id`,`permission`),
+
+  CONSTRAINT `guacamole_connection_group_permission_ibfk_1`
+    FOREIGN KEY (`connection_group_id`)
+    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
+
+  CONSTRAINT `guacamole_connection_group_permission_ibfk_2`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
 -- Table of system permissions. Each system permission grants a user a
 -- system-level privilege of some kind.
 --
@@ -86,6 +137,7 @@ CREATE TABLE `guacamole_system_permission` (
 
   `user_id`    int(11) NOT NULL,
   `permission` enum('CREATE_CONNECTION',
+		    'CREATE_GROUP',
                     'CREATE_USER',
                     'ADMINISTER') NOT NULL,
 
