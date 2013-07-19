@@ -21,7 +21,7 @@ package net.sourceforge.guacamole.net.auth;
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,68 +37,10 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-
 
 /**
- * Basic implementation of a Guacamole connection.
+ * Represents a constituent member of a ConnectionGroup.
  *
- * @author Michael Jumper
+ * @author James Muehlner
  */
-public abstract class AbstractConnection implements Connection {
-
-    /**
-     * The unique identifier associated with this connection.
-     */
-    private String identifier;
-
-    /**
-     * The GuacamoleConfiguration associated with this connection.
-     */
-    private GuacamoleConfiguration configuration;
-
-    @Override
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    @Override
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    @Override
-    public GuacamoleConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    @Override
-    public void setConfiguration(GuacamoleConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    @Override
-    public int hashCode() {
-        if (identifier == null) return 0;
-        return identifier.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-
-        // Not equal if null or not a Connection
-        if (obj == null) return false;
-        if (!(obj instanceof AbstractConnection)) return false;
-
-        // Get identifier
-        String objIdentifier = ((AbstractConnection) obj).identifier;
-
-        // If null, equal only if this identifier is null
-        if (objIdentifier == null) return identifier == null;
-
-        // Otherwise, equal only if strings are identical
-        return objIdentifier.equals(identifier);
-
-    }
-
-}
+public interface ConnectionGroupMember {}

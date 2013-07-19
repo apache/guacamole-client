@@ -21,7 +21,7 @@ package net.sourceforge.guacamole.net.auth;
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,25 +37,18 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
-
 
 /**
- * Basic implementation of a Guacamole connection.
+ * Basic implementation of a Guacamole connection group.
  *
- * @author Michael Jumper
+ * @author James Muehlner
  */
-public abstract class AbstractConnection implements Connection {
+public abstract class AbstractConnectionGroup implements ConnectionGroup {
 
     /**
-     * The unique identifier associated with this connection.
+     * The unique identifier associated with this connection group.
      */
     private String identifier;
-
-    /**
-     * The GuacamoleConfiguration associated with this connection.
-     */
-    private GuacamoleConfiguration configuration;
 
     @Override
     public String getIdentifier() {
@@ -68,16 +61,6 @@ public abstract class AbstractConnection implements Connection {
     }
 
     @Override
-    public GuacamoleConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    @Override
-    public void setConfiguration(GuacamoleConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    @Override
     public int hashCode() {
         if (identifier == null) return 0;
         return identifier.hashCode();
@@ -86,12 +69,12 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public boolean equals(Object obj) {
 
-        // Not equal if null or not a Connection
+        // Not equal if null or not a ConnectionGroup
         if (obj == null) return false;
-        if (!(obj instanceof AbstractConnection)) return false;
+        if (!(obj instanceof AbstractConnectionGroup)) return false;
 
         // Get identifier
-        String objIdentifier = ((AbstractConnection) obj).identifier;
+        String objIdentifier = ((AbstractConnectionGroup) obj).identifier;
 
         // If null, equal only if this identifier is null
         if (objIdentifier == null) return identifier == null;

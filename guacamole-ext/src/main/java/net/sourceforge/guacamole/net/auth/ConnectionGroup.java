@@ -21,7 +21,7 @@ package net.sourceforge.guacamole.net.auth;
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,11 +37,10 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.List;
+import java.util.Collection;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 
 /**
@@ -50,45 +49,40 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
  * to protect sensitive configuration information.
  *
- * @author Michael Jumper
+ * @author James Muehlner
  */
-public interface Connection extends ConnectionGroupMember {
+public interface ConnectionGroup extends ConnectionGroupMember {
 
     /**
-     * Returns the unique identifier assigned to this Connection.
-     * @return The unique identifier assigned to this Connection.
+     * Returns the unique identifier assigned to this ConnectionGroup.
+     * @return The unique identifier assigned to this ConnectionGroup.
      */
     public String getIdentifier();
 
     /**
-     * Sets the identifier assigned to this Connection.
+     * Sets the identifier assigned to this Connection group.
      *
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
-
+    
     /**
-     * Returns the GuacamoleConfiguration associated with this Connection. Note
-     * that because configurations may contain sensitive information, some data
-     * in this configuration may be omitted or tokenized.
-     *
-     * @return The GuacamoleConfiguration associated with this Connection.
+     * Returns all members of this ConnectionGroup.
+     * @return all members of this ConnectionGroup.
      */
-    public GuacamoleConfiguration getConfiguration();
-
+    public Collection<ConnectionGroupMember> getMembers();
+    
     /**
-     * Sets the GuacamoleConfiguration associated with this Connection.
-     *
-     * @param config The GuacamoleConfiguration to associate with this
-     *               Connection.
+     * Sets the new members for this ConnectionGroup.
+     * 
+     * @param members The new members for this grouConnectionGroupp.
      */
-    public void setConfiguration(GuacamoleConfiguration config);
-
+    public void setMembers(Collection<ConnectionGroupMember> members);
+    
     /**
-     * Establishes a connection to guacd using the GuacamoleConfiguration
-     * associated with this Connection, and returns the resulting, connected
-     * GuacamoleSocket. The GuacamoleSocket will be pre-configured and will
-     * already have passed the handshake stage.
+     * Establishes a connection to guacd using a connection chosen from among
+     * the connections in this ConnectionGroup, and returns the resulting, 
+     * connected GuacamoleSocket.
      *
      * @param info Information associated with the connecting client.
      * @return A fully-established GuacamoleSocket.
@@ -98,21 +92,5 @@ public interface Connection extends ConnectionGroupMember {
      */
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException;
-
-    /**
-     * Returns a list of ConnectionRecords representing the usage history
-     * of this Connection, including any active users. ConnectionRecords
-     * in this list will be sorted in descending order of end time (active
-     * connections are first), and then in descending order of start time
-     * (newer connections are first).
-     *
-     * @return A list of ConnectionRecrods representing the usage history
-     *         of this Connection.
-     *
-     * @throws GuacamoleException If an error occurs while reading the history
-     *                            of this connection, or if permission is
-     *                            denied.
-     */
-    public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
 
 }

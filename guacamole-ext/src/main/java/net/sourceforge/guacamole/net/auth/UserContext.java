@@ -21,7 +21,7 @@ package net.sourceforge.guacamole.net.auth;
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -81,6 +81,20 @@ public interface UserContext {
      *                            Directory.
      */
     Directory<String, Connection> getConnectionDirectory()
+            throws GuacamoleException;
+
+    /**
+     * Retrieves a Directory which can be used to view and manipulate
+     * connection groups and their members, but only as allowed by the
+     * permissions given to the user of this UserContext.
+     *
+     * @return A Directory whose operations are bound by the restrictions
+     *         of this UserContext.
+     *
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Directory.
+     */
+    Directory<String, ConnectionGroup> getConnectionGroupDirectory()
             throws GuacamoleException;
 
 }
