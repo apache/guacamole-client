@@ -85,6 +85,16 @@ public class GuacamoleProperties {
     };
 
     /**
+     * Whether guacd requires SSL/TLS on connections.
+     */
+    public static final BooleanGuacamoleProperty GUACD_SSL = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "guacd-ssl"; }
+
+    };
+
+    /**
      * All properties read from guacamole.properties when this class was first
      * used.
      */

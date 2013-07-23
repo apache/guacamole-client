@@ -42,6 +42,7 @@ import java.util.List;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
+import net.sourceforge.guacamole.net.SSLGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnection;
 import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
@@ -96,10 +97,17 @@ public class SimpleConnection extends AbstractConnection {
         String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
         int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
 
+        // If guacd requires SSL, use it
+        if (GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_SSL, false))
+            return new ConfiguredGuacamoleSocket(
+                new SSLGuacamoleSocket(hostname, port),
+                config, info
+            );
+
         // Return connected socket
         return new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(hostname, port),
-                config, info
+            new InetGuacamoleSocket(hostname, port),
+            config, info
         );
 
     }

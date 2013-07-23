@@ -53,6 +53,7 @@ import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
+import net.sourceforge.guacamole.net.SSLGuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionSet;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionRecord;
@@ -348,10 +349,17 @@ public class ConnectionService {
         int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
 
         // Get socket
-        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-            new InetGuacamoleSocket(host, port),
-            connection.getConfiguration(), info
-        );
+        GuacamoleSocket socket;
+        if (GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_SSL, false))
+            socket = new ConfiguredGuacamoleSocket(
+                new SSLGuacamoleSocket(host, port),
+                connection.getConfiguration(), info
+            );
+        else
+            socket = new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket(host, port),
+                connection.getConfiguration(), info
+            );
 
         // Mark this connection as active
         int historyID = activeConnectionSet.openConnection(connection.getConnectionID(), userID);
