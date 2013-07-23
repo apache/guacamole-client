@@ -40,6 +40,7 @@ package net.sourceforge.guacamole.net.auth.simple;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -67,10 +68,22 @@ public class SimpleUserContext implements UserContext {
     private final Directory<String, Connection> connectionDirectory;
 
     /**
+     * The Directory with access only to those Connection Groups that the User
+     * associated with this UserContext has access to.
+     */
+    private final Directory<String, ConnectionGroup> connectionGroupDirectory;
+
+    /**
      * The Directory with access only to the User associated with this
      * UserContext.
      */
     private final Directory<String, User> userDirectory;
+
+    /**
+     * The ConnectionGroup with access only to those Connections that the User
+     * associated with this UserContext has access to.
+     */
+    private final ConnectionGroup connectionGroup;
 
     /**
      * Creates a new SimpleUserContext which provides access to only those
@@ -89,8 +102,13 @@ public class SimpleUserContext implements UserContext {
 
         this.connectionDirectory =
                 new SimpleConnectionDirectory(configs);
+        
+        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory();
 
         this.userDirectory = new SimpleUserDirectory(self);
+        
+        this.connectionGroup = new SimpleConnectionGroup(this.connectionDirectory,
+                this.connectionGroupDirectory);
 
     }
 
@@ -100,15 +118,14 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public Directory<String, Connection> getConnectionDirectory()
-            throws GuacamoleException {
-        return connectionDirectory;
-    }
-
-    @Override
     public Directory<String, User> getUserDirectory()
             throws GuacamoleException {
         return userDirectory;
+    }
+
+    @Override
+    public ConnectionGroup getConnectionGroup() throws GuacamoleException {
+        return connectionGroup;
     }
 
 }

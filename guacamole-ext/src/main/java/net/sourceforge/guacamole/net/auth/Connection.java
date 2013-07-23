@@ -52,7 +52,7 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public interface Connection extends ConnectionGroupMember {
+public interface Connection {
 
     /**
      * Returns the unique identifier assigned to this Connection.

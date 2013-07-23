@@ -37,21 +37,18 @@ package net.sourceforge.guacamole.net.auth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Collection;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 
 /**
- * Represents a pairing of a GuacamoleConfiguration with a unique,
- * human-readable identifier, and abstracts the connection process. The
- * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
- * to protect sensitive configuration information.
+ * Represents a connection group, which can contain both other connection groups
+ * as well as connections.
  *
  * @author James Muehlner
  */
-public interface ConnectionGroup extends ConnectionGroupMember {
+public interface ConnectionGroup {
 
     /**
      * Returns the unique identifier assigned to this ConnectionGroup.
@@ -60,24 +57,39 @@ public interface ConnectionGroup extends ConnectionGroupMember {
     public String getIdentifier();
 
     /**
-     * Sets the identifier assigned to this Connection group.
+     * Sets the identifier assigned to this ConnectionGroup.
      *
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
-    
+
     /**
-     * Returns all members of this ConnectionGroup.
-     * @return all members of this ConnectionGroup.
+     * Retrieves a Directory which can be used to view and manipulate
+     * connections and their configurations, but only as allowed by the
+     * permissions given to the user.
+     *
+     * @return A Directory whose operations are bound by the permissions of 
+     *         the user.
+     *
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Directory.
      */
-    public Collection<ConnectionGroupMember> getMembers();
-    
+    Directory<String, Connection> getConnectionDirectory()
+            throws GuacamoleException;
+
     /**
-     * Sets the new members for this ConnectionGroup.
-     * 
-     * @param members The new members for this grouConnectionGroupp.
+     * Retrieves a Directory which can be used to view and manipulate
+     * connection groups and their members, but only as allowed by the
+     * permissions given to the user.
+     *
+     * @return A Directory whose operations are bound by the permissions of
+     *         the user.
+     *
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Directory.
      */
-    public void setMembers(Collection<ConnectionGroupMember> members);
+    Directory<String, ConnectionGroup> getConnectionGroupDirectory()
+            throws GuacamoleException;
     
     /**
      * Establishes a connection to guacd using a connection chosen from among

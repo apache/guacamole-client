@@ -69,32 +69,18 @@ public interface UserContext {
      */
     Directory<String, User> getUserDirectory() throws GuacamoleException;
 
-    /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connections and their configurations, but only as allowed by the
-     * permissions given to the user of this UserContext.
-     *
-     * @return A Directory whose operations are bound by the restrictions
-     *         of this UserContext.
-     *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            Directory.
-     */
-    Directory<String, Connection> getConnectionDirectory()
-            throws GuacamoleException;
 
     /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connection groups and their members, but only as allowed by the
-     * permissions given to the user of this UserContext.
+     * Retrieves a connection group which can be used to view and manipulate
+     * connections, but only as allowed by the permissions given to the user of 
+     * this UserContext.
      *
-     * @return A Directory whose operations are bound by the restrictions
+     * @return A connection group whose operations are bound by the restrictions
      *         of this UserContext.
      *
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
      */
-    Directory<String, ConnectionGroup> getConnectionGroupDirectory()
-            throws GuacamoleException;
+    ConnectionGroup getConnectionGroup() throws GuacamoleException;
 
 }
