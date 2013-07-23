@@ -91,9 +91,9 @@ public class SSLGuacamoleSocket implements GuacamoleSocket {
     private Socket sock;
 
     /**
-     * Creates a new InetGuacamoleSocket which reads and writes instructions
+     * Creates a new SSLGuacamoleSocket which reads and writes instructions
      * to the Guacamole instruction stream of the Guacamole proxy server
-     * running at the given hostname and port.
+     * running at the given hostname and port using SSL.
      *
      * @param hostname The hostname of the Guacamole proxy server to connect to.
      * @param port The port of the Guacamole proxy server to connect to.
