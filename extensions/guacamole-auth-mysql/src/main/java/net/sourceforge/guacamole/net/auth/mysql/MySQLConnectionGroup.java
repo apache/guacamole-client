@@ -44,6 +44,7 @@ import net.sourceforge.guacamole.net.auth.AbstractConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -71,6 +72,12 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * A Directory of connection groups that have this connection group as a parent.
      */
     private Directory<String, ConnectionGroup> connectionGroupDirectory;
+
+    /**
+     * Service managing connection groups.
+     */
+    @Inject
+    private ConnectionGroupService connectionGroupService;
     
     /**
      * Service for managing connection groups.
