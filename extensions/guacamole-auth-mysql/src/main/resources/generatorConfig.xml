@@ -39,6 +39,16 @@
                 sqlStatement="SELECT LAST_INSERT_ID()"/>
         </table>
 
+        <table tableName="guacamole_connection_group"
+            catalog="${guacamole.database.catalog}"
+            schema="${guacamole.database.schema}"
+            domainObjectName="ConnectionGroup" >
+            <property name="useActualColumnNames" value="true"/>
+            <property name="ignoreQualifiersAtRuntime" value="true"/>
+            <generatedKey column="connection_group_id" identity="true"
+                sqlStatement="SELECT LAST_INSERT_ID()"/>
+        </table>
+
         <table tableName="guacamole_connection_parameter"
             catalog="${guacamole.database.catalog}"
             schema="${guacamole.database.schema}"

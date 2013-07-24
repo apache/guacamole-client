@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.simple;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -14,14 +14,14 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-auth-mysql.
+ * The Original Code is guacamole-ext.
  *
  * The Initial Developer of the Original Code is
- * James Muehlner.
+ * Michael Jumper.
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,63 +37,51 @@ package net.sourceforge.guacamole.net.auth.mysql;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.AbstractConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
+import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
+
 
 /**
- * The MySQL representation of a UserContext.
+ * An extremely simple read-only implementation of a ConnectionGroup which
+ * returns the connection and connection group directories it was constructed
+ * with. Load balancing across this connection group is not allowed.
+ * 
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
-
-    /**
-     * The ID of the user owning this context. The permissions of this user
-     * dictate the access given via the user and connection directories.
-     */
-    private int user_id;
-
-    /**
-     * User directory restricted by the permissions of the user associated
-     * with this context.
-     */
-    @Inject
-    private UserDirectory userDirectory;
-
-    /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
-     * Initializes the user and directories associated with this context.
-     *
-     * @param user_id The ID of the user owning this context.
-     */
-    public void init(int user_id) {
-        this.user_id = user_id;
-        userDirectory.init(user_id);
+public class SimpleConnectionGroup extends AbstractConnectionGroup {
+    
+    private final Directory<String, Connection> connectionDirectory;
+    private final Directory<String, ConnectionGroup> connectionGroupDirectory;
+    
+    
+    public SimpleConnectionGroup(Directory<String, Connection> connectionDirectory, 
+            Directory<String, ConnectionGroup> connectionGroupDirectory) {
+        this.connectionDirectory = connectionDirectory;
+        this.connectionGroupDirectory = connectionGroupDirectory;
+    }
+    
+    @Override
+    public Directory<String, Connection> getConnectionDirectory() 
+            throws GuacamoleException {
+        return connectionDirectory;
     }
 
     @Override
-    public User self() {
-        return userService.retrieveUser(user_id);
+    public Directory<String, ConnectionGroup> getConnectionGroupDirectory() 
+            throws GuacamoleException {
+        return connectionGroupDirectory;
     }
 
     @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        return userDirectory;
-    }
-
-    @Override
-    public ConnectionGroup getConnectionGroup() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public GuacamoleSocket connect(GuacamoleClientInformation info) 
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
 }

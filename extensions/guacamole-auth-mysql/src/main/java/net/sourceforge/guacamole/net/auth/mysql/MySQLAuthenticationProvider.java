@@ -47,6 +47,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
@@ -156,6 +157,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     // Add MyBatis mappers
                     addMapperClass(ConnectionHistoryMapper.class);
                     addMapperClass(ConnectionMapper.class);
+                    addMapperClass(ConnectionGroupMapper.class);
                     addMapperClass(ConnectionParameterMapper.class);
                     addMapperClass(ConnectionPermissionMapper.class);
                     addMapperClass(SystemPermissionMapper.class);

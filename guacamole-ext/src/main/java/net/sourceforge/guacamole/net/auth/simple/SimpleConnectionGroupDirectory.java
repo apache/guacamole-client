@@ -1,5 +1,5 @@
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.simple;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -14,14 +14,14 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-auth-mysql.
+ * The Original Code is guacamole-auth.
  *
  * The Initial Developer of the Original Code is
- * James Muehlner.
+ * Michael Jumper.
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
- * Contributor(s):
+ * Contributor(s): James Muehlner
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -37,63 +37,53 @@ package net.sourceforge.guacamole.net.auth.mysql;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
+
 
 /**
- * The MySQL representation of a UserContext.
+ * An extremely simple read-only implementation of a Directory of
+ * ConnectionGroup which provides an empty set of connection groups.
+ *
  * @author James Muehlner
  */
-public class MySQLUserContext implements UserContext {
-
+public class SimpleConnectionGroupDirectory
+    implements Directory<String, ConnectionGroup> {
+    
     /**
-     * The ID of the user owning this context. The permissions of this user
-     * dictate the access given via the user and connection directories.
-     */
-    private int user_id;
+     * Creates a new SimpleConnectionGroupDirectory */
+    public SimpleConnectionGroupDirectory() {}
 
-    /**
-     * User directory restricted by the permissions of the user associated
-     * with this context.
-     */
-    @Inject
-    private UserDirectory userDirectory;
-
-    /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
-     * Initializes the user and directories associated with this context.
-     *
-     * @param user_id The ID of the user owning this context.
-     */
-    public void init(int user_id) {
-        this.user_id = user_id;
-        userDirectory.init(user_id);
+    @Override
+    public ConnectionGroup get(String identifier)
+            throws GuacamoleException {
+        return null;
     }
 
     @Override
-    public User self() {
-        return userService.retrieveUser(user_id);
+    public Set<String> getIdentifiers() throws GuacamoleException {
+        return Collections.EMPTY_SET;
     }
 
     @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
-        return userDirectory;
+    public void add(ConnectionGroup connectionGroup)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public ConnectionGroup getConnectionGroup() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void update(ConnectionGroup connectionGroup)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void remove(String identifier) throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
 }
