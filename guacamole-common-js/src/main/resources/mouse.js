@@ -65,6 +65,22 @@ Guacamole.Mouse = function(element) {
     this.touchMouseThreshold = 3;
 
     /**
+     * The minimum amount of pixels scrolled required for a single scroll button
+     * click.
+     */
+    this.scrollThreshold = 120;
+
+    /**
+     * The number of pixels to scroll per line.
+     */
+    this.PIXELS_PER_LINE = 40;
+
+    /**
+     * The number of pixels to scroll per page.
+     */
+    this.PIXELS_PER_PAGE = 640;
+
+    /**
      * The current mouse state. The properties of this state are updated when
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
@@ -109,6 +125,13 @@ Guacamole.Mouse = function(element) {
      * @private
      */
     var ignore_mouse = 0;
+
+    /**
+     * Cumulative scroll delta amount. This value is accumulated through scroll
+     * events and results in scroll button clicks if it exceeds a certain
+     * threshold.
+     */
+    var scroll_delta = 0;
 
     function cancelEvent(e) {
         e.stopPropagation();
@@ -233,14 +256,33 @@ Guacamole.Mouse = function(element) {
     // Scroll wheel support
     function mousewheel_handler(e) {
 
-        var delta = 0;
-        if (e.detail)
-            delta = e.detail;
-        else if (e.wheelDelta)
-            delta = -event.wheelDelta;
+        // Determine approximate scroll amount (in pixels)
+        var delta = e.deltaY || -e.wheelDeltaY || -e.wheelDelta;
+
+        // If successfully retrieved scroll amount, convert to pixels if not
+        // already in pixels
+        if (delta) {
+
+            // Convert to pixels if delta was lines
+            if (e.deltaMode === 1)
+                delta = e.deltaY * guac_mouse.PIXELS_PER_LINE;
+
+            // Convert to pixels if delta was pages
+            else if (e.deltaMode === 2)
+                delta = e.deltaY * guac_mouse.PIXELS_PER_PAGE;
+
+        }
+
+        // Otherwise, assume legacy mousewheel event and line scrolling
+        else
+            delta = e.detail * guac_mouse.PIXELS_PER_LINE;
+        
+        // Update overall delta
+        scroll_delta += delta;
 
         // Up
-        if (delta < 0) {
+        while (scroll_delta <= -guac_mouse.scrollThreshold) {
+
             if (guac_mouse.onmousedown) {
                 guac_mouse.currentState.up = true;
                 guac_mouse.onmousedown(guac_mouse.currentState);
@@ -250,10 +292,14 @@ Guacamole.Mouse = function(element) {
                 guac_mouse.currentState.up = false;
                 guac_mouse.onmouseup(guac_mouse.currentState);
             }
+
+            scroll_delta += guac_mouse.scrollThreshold;
+
         }
 
         // Down
-        if (delta > 0) {
+        while (scroll_delta >= guac_mouse.scrollThreshold) {
+
             if (guac_mouse.onmousedown) {
                 guac_mouse.currentState.down = true;
                 guac_mouse.onmousedown(guac_mouse.currentState);
@@ -263,13 +309,18 @@ Guacamole.Mouse = function(element) {
                 guac_mouse.currentState.down = false;
                 guac_mouse.onmouseup(guac_mouse.currentState);
             }
+
+            scroll_delta -= guac_mouse.scrollThreshold;
+
         }
 
         cancelEvent(e);
 
     }
+
     element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
     element.addEventListener('mousewheel',     mousewheel_handler, false);
+    element.addEventListener('wheel',          mousewheel_handler, false);
 
 };
 
