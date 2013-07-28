@@ -258,7 +258,11 @@ Guacamole.Layer = function(width, height) {
         this.unblock = function() {
             if (task.blocked) {
                 task.blocked = false;
-                handlePendingTasks();
+
+                // Flush automatically if enabled
+                if (layer.autoflush || !flushComplete)
+                    layer.flush();
+
             }
         }
 
@@ -279,7 +283,7 @@ Guacamole.Layer = function(width, height) {
     function scheduleTask(handler, blocked) {
         
         // If no pending tasks, just call (if available) and exit
-        if (layer.isReady() && !blocked) {
+        if (layer.autoflush && layer.isReady() && !blocked) {
             if (handler) handler();
             return null;
         }
@@ -292,19 +296,34 @@ Guacamole.Layer = function(width, height) {
         
     }
 
+    /**
+     * Whether all previous calls to flush() have completed. If a task was
+     * waiting in the queue when flush() was called but still blocked, the
+     * queue will continue to flush outside the original flush() call until
+     * the queue is empty.
+     * 
+     * @private
+     */
+    var flushComplete = true;
+
+    /**
+     * Whether tasks are currently being actively flushed. As flush() is not
+     * reentrant, this flag prevents calls of flush() from overlapping.
+     * @private
+     */
     var tasksInProgress = false;
 
     /**
      * Run any Tasks which were pending but are now ready to run and are not
      * blocked by other Tasks.
-     * @private
      */
-    function handlePendingTasks() {
+    this.flush = function() {
 
         if (tasksInProgress)
             return;
 
         tasksInProgress = true;
+        flushComplete = false;
 
         // Draw all pending tasks.
         var task;
@@ -313,9 +332,13 @@ Guacamole.Layer = function(width, height) {
             if (task.handler) task.handler();
         }
 
+        // If all pending draws have been flushed
+        if (layer.isReady())
+            flushComplete = true;
+
         tasksInProgress = false;
 
-    }
+    };
 
     /**
      * Schedules a task within the current layer just as scheduleTast() does,
@@ -400,6 +423,16 @@ Guacamole.Layer = function(width, height) {
      * @default false
      */
     this.autosize = false;
+
+    /**
+     * Set to true to allow operations to flush automatically, instantly
+     * affecting the layer. By default, operations are buffered and only
+     * drawn when flush() is called.
+     * 
+     * @type Boolean
+     * @default false
+     */
+    this.autoflush = false;
 
     /**
      * Returns the canvas element backing this Layer.

@@ -377,6 +377,7 @@ Guacamole.Client = function(tunnel) {
     // Create cursor layer
     var cursor = new Guacamole.Client.LayerContainer(0, 0);
     cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
+    cursor.getLayer().autoflush = true;
 
     // Position cursor layer
     var cursor_element = cursor.getElement();
@@ -593,6 +594,7 @@ Guacamole.Client = function(tunnel) {
         // Create buffer if necessary
         if (buffer == null) {
             buffer = new Guacamole.Layer(0, 0);
+            buffer.autoflush = 1;
             buffer.autosize = 1;
             buffers[index] = buffer;
         }
@@ -1173,9 +1175,17 @@ Guacamole.Client = function(tunnel) {
             for (var i=0; i<layers.length; i++) {
 
                 var layer = layers[i].getLayer();
-                if (layer && !layer.isReady()) {
-                    layersToSync++;
-                    layer.sync(syncLayer);
+                if (layer) {
+
+                    // Flush layer
+                    layer.flush();
+
+                    // If still not ready, sync later
+                    if (!layer.isReady()) {
+                        layersToSync++;
+                        layer.sync(syncLayer);
+                    }
+
                 }
 
             }
