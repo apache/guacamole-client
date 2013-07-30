@@ -45,6 +45,8 @@ import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -57,6 +59,11 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * The ID associated with this connection group in the database.
      */
     private Integer connectionGroupID;
+
+    /**
+     * The ID of the parent connection group for this connection group.
+     */
+    private Integer parentID;
 
     /**
      * The ID of the user who queried or created this connection group.
@@ -74,10 +81,22 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     private Directory<String, ConnectionGroup> connectionGroupDirectory = null;
 
     /**
+     * Service managing connections.
+     */
+    @Inject
+    private ConnectionService connectionService;
+
+    /**
      * Service managing connection groups.
      */
     @Inject
     private ConnectionGroupService connectionGroupService;
+
+    /**
+     * Service for checking permissions.
+     */
+    @Inject
+    private PermissionCheckService permissionCheckService;
 
     /**
      * Create a default, empty connection group.
@@ -102,14 +121,32 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     }
 
     /**
+     * Get the ID of the parent connection group for this connection group, if any.
+     * @return The ID of the parent connection group for this connection group, if any.
+     */
+    public Integer getParentID() {
+        return parentID;
+    }
+
+    /**
+     * Sets the ID of the parent connection group for this connection group.
+     * @param connectionID The ID of the parent connection group for this connection group.
+     */
+    public void setParentID(Integer parentID) {
+        this.parentID = parentID;
+    }
+
+    /**
      * Initialize from explicit values.
      *
      * @param connectionGroupID The ID of the associated database record, if any.
+     * @param parentID The D of the parent connection group for this connection group, if any.
      * @param identifier The unique identifier associated with this connection group.
      * @param userID The IID of the user who queried this connection.
      */
-    public void init(Integer connectionGroupID, String identifier, int userID) {
+    public void init(Integer connectionGroupID, Integer parentID, String identifier, int userID) {
         this.connectionGroupID = connectionGroupID;
+        this.parentID = parentID;
         setIdentifier(identifier);
         this.userID = userID;
     }

@@ -172,6 +172,34 @@ public class ConnectionService {
         // Otherwise, return found connection
         return toMySQLConnection(connection, userID);
     }
+    
+    /**
+     * Retrieves all connections with a given parent connection group ID.
+     * 
+     * @param parentID The parent ID of the connections.
+     * @param userID The ID of the user who queried these connections.
+     * @return All connections with a given parent connection group ID.
+     */
+    public Collection<MySQLConnection> getConnectionsByParentConnectionGroup(Integer parentID, int userID) {
+        
+        // A null parentID indicates the root-level group
+        ConnectionExample example = new ConnectionExample();
+        if(parentID != null)
+            example.createCriteria().andConnection_group_idEqualTo(parentID);
+        else
+            example.createCriteria().andConnection_group_idIsNull();
+        
+        // Get all connections with the given parent ID
+        List<Connection> connections = connectionDAO.selectByExample(example);
+        
+        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>();
+        
+        for(Connection connection : connections) {
+            mySQLConnections.add(toMySQLConnection(connection, userID));
+        }
+        
+        return mySQLConnections;
+    }
 
     /**
      * Retrieves a translation map of connection names to their corresponding
@@ -267,6 +295,7 @@ public class ConnectionService {
         MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
         mySQLConnection.init(
             connection.getConnection_id(),
+            connection.getConnection_group_id(),
             connection.getConnection_name(),
             config,
             retrieveHistory(connection.getConnection_id()),
