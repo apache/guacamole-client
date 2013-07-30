@@ -43,15 +43,19 @@ import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -76,6 +80,12 @@ public class PermissionCheckService {
     private ConnectionService connectionService;
 
     /**
+     * Service for accessing connection groups.
+     */
+    @Inject
+    private ConnectionGroupService connectionGroupService;
+
+    /**
      * DAO for accessing permissions related to users.
      */
     @Inject
@@ -86,6 +96,12 @@ public class PermissionCheckService {
      */
     @Inject
     private ConnectionPermissionMapper connectionPermissionDAO;
+    
+    /**
+     * DAO for accessing permissions related to connection groups.
+     */
+    @Inject
+    private ConnectionGroupPermissionMapper connectionGroupPermissionDAO;
 
     /**
      * DAO for accessing permissions related to the system as a whole.
@@ -131,6 +147,26 @@ public class PermissionCheckService {
             throw new GuacamoleSecurityException("Permission denied.");
 
     }
+
+    /**
+     * Verifies that the user has the specified access to the given connection group.
+     * If permission is denied, a GuacamoleSecurityException is thrown.
+     *
+     * @param userID The ID of the user to check.
+     * @param affectedConnectionGroupID The connection group that would be affected by the
+     *                                  operation if permission is granted.
+     * @param permissionType The type of permission to check for.
+     * @throws GuacamoleSecurityException If the specified permission is not
+     *                                    granted.
+     */
+    public void verifyConnectionGroupAccess(int userID, int affectedConnectionGroupID, String permissionType) throws GuacamoleSecurityException {
+
+        // If permission does not exist, throw exception
+        if(!checkConnectionGroupAccess(userID, affectedConnectionGroupID, permissionType))
+            throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+    
     /**
      * Verifies that the user has the specified access to the system. If
      * permission is denied, a GuacamoleSecurityException is thrown.
@@ -192,6 +228,29 @@ public class PermissionCheckService {
         ConnectionPermissionExample example = new ConnectionPermissionExample();
         example.createCriteria().andUser_idEqualTo(userID).andConnection_idEqualTo(affectedConnectionID).andPermissionEqualTo(permissionType);
         return connectionPermissionDAO.countByExample(example) > 0;
+
+    }
+
+    /**
+     * Checks whether a user has the specified type of access to the affected
+     * connection group.
+     *
+     * @param userID The ID of the user to check.
+     * @param affectedConnectionGroupID The connection group that would be affected by the
+     *                                  operation if permission is granted.
+     * @param permissionType The type of permission to check for.
+     * @return true if the specified permission is granted, false otherwise.
+     */
+    public boolean checkConnectionGroupAccess(int userID, Integer affectedConnectionGroupID, String permissionType) {
+
+        // A system administrator has full access to everything.
+        if(checkSystemAdministratorAccess(userID))
+            return true;
+
+        // Check existence of requested permission
+        ConnectionGroupPermissionExample example = new ConnectionGroupPermissionExample();
+        example.createCriteria().andUser_idEqualTo(userID).andConnection_group_idEqualTo(affectedConnectionGroupID).andPermissionEqualTo(permissionType);
+        return connectionGroupPermissionDAO.countByExample(example) > 0;
 
     }
 
@@ -290,6 +349,38 @@ public class PermissionCheckService {
             connectionIDs.add(permission.getConnection_id());
 
         return connectionIDs;
+
+    }
+
+    /**
+     * Find the list of the IDs of all connection groups a user has permission to.
+     * The access type is defined by permissionType.
+     *
+     * @param userID The ID of the user to check.
+     * @param permissionType The type of permission to check for.
+     * @return A list of all connection group IDs this user has the specified access
+     *         to.
+     */
+    public List<Integer> retrieveConnectionGroupIDs(int userID,
+            String permissionType) {
+
+        // A system administrator has access to all connections.
+        if(checkSystemAdministratorAccess(userID))
+            return connectionGroupService.getAllConnectionGroupIDs();
+
+        // Query all connection permissions for the given user and permission type
+        ConnectionGroupPermissionExample example = new ConnectionGroupPermissionExample();
+        example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
+        example.setDistinct(true);
+        List<ConnectionGroupPermissionKey> connectionGroupPermissions =
+                connectionGroupPermissionDAO.selectByExample(example);
+
+        // Convert result into list of IDs
+        List<Integer> connectionGroupIDs = new ArrayList<Integer>(connectionGroupPermissions.size());
+        for(ConnectionGroupPermissionKey permission : connectionGroupPermissions)
+            connectionGroupIDs.add(permission.getConnection_group_id());
+
+        return connectionGroupIDs;
 
     }
 
@@ -433,6 +524,52 @@ public class PermissionCheckService {
     }
 
     /**
+     * Retrieves all connection group permissions granted to the user having the
+     * given ID.
+     *
+     * @param userID The ID of the user to retrieve permissions of.
+     * @return A set of all connection group permissions granted to the user having
+     *         the given ID.
+     */
+    public Set<ConnectionGroupPermission> retrieveConnectionGroupPermissions(int userID) {
+
+        // Set of all permissions
+        Set<ConnectionGroupPermission> permissions = new HashSet<ConnectionGroupPermission>();
+
+        // Query all connection permissions
+        ConnectionGroupPermissionExample connectionGroupPermissionExample = new ConnectionGroupPermissionExample();
+        connectionGroupPermissionExample.createCriteria().andUser_idEqualTo(userID);
+        List<ConnectionGroupPermissionKey> connectionGroupPermissions =
+                connectionGroupPermissionDAO.selectByExample(connectionGroupPermissionExample);
+
+        // Get list of affected connection IDs
+        List<Integer> connectionGroupIDs = new ArrayList<Integer>();
+        for(ConnectionGroupPermissionKey connectionGroupPermission : connectionGroupPermissions)
+            connectionGroupIDs.add(connectionGroupPermission.getConnection_group_id());
+
+        // Get corresponding names
+        Map<Integer, String> affectedConnectionGroups =
+                connectionGroupService.retrieveNames(connectionGroupIDs);
+
+        // Add connection permissions
+        for(ConnectionGroupPermissionKey connectionGroupPermission : connectionGroupPermissions) {
+
+            // Construct permission from data
+            ConnectionGroupPermission permission = new ConnectionGroupPermission(
+                ConnectionGroupPermission.Type.valueOf(connectionGroupPermission.getPermission()),
+                affectedConnectionGroups.get(connectionGroupPermission.getConnection_group_id())
+            );
+
+            // Add to set
+            permissions.add(permission);
+
+        }
+
+        return permissions;
+
+    }
+
+    /**
      * Retrieves all system permissions granted to the user having the
      * given ID.
      *
@@ -487,6 +624,9 @@ public class PermissionCheckService {
 
         // Add connection permissions
         allPermissions.addAll(retrieveConnectionPermissions(userID));
+        
+        // add connection group permissions
+        allPermissions.addAll(retrieveConnectionGroupPermissions(userID));
 
         // Add system permissions
         allPermissions.addAll(retrieveSystemPermissions(userID));

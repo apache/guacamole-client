@@ -65,6 +65,14 @@
             <property name="ignoreQualifiersAtRuntime" value="true"/>
         </table>
 
+        <table tableName="guacamole_connection_group_permission"
+            catalog="${guacamole.database.catalog}"
+            schema="${guacamole.database.schema}"
+            domainObjectName="ConnectionGroupPermission" >
+            <property name="useActualColumnNames" value="true"/>
+            <property name="ignoreQualifiersAtRuntime" value="true"/>
+        </table>
+
         <table tableName="guacamole_system_permission"
             catalog="${guacamole.database.catalog}"
             schema="${guacamole.database.schema}"

@@ -8,6 +8,9 @@ CREATE TABLE `guacamole_connection_group` (
   `connection_group_id`   int(11)      NOT NULL AUTO_INCREMENT,
   `parent_group_id`       int(11),
   `connection_group_name` varchar(128) NOT NULL,
+  `type`                  enum('ORGANIZATIONAL',
+                               'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
+
 
   PRIMARY KEY (`connection_group_id`),
   UNIQUE KEY `connection_group_name` (`connection_group_name`),
@@ -39,7 +42,6 @@ CREATE TABLE `guacamole_connection_group_permission` (
   `user_id`             int(11) NOT NULL,
   `connection_group_id` int(11) NOT NULL,
   `permission`          enum('READ',
-                             'EXECUTE',
                              'UPDATE',
                              'DELETE',
                              'ADMINISTER') NOT NULL,

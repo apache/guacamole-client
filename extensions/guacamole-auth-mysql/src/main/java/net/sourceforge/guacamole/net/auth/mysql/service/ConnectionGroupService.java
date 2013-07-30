@@ -37,11 +37,24 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -76,10 +89,82 @@ public class ConnectionGroupService {
     @Inject
     private Provider<MySQLConnectionGroup> mysqlConnectionGroupProvider;
 
-    public GuacamoleSocket connect(MySQLConnectionGroup aThis, 
+    public GuacamoleSocket connect(MySQLConnectionGroup group, 
             GuacamoleClientInformation info, int userID) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
     
+    //public Collection<MySQLConnection> getConnectionGroupConnections()
     
+    
+
+    /**
+     * Retrieves a map of all connection group names for the given IDs.
+     *
+     * @param ids The IDs of the connection groups to retrieve the names of.
+     * @return A map containing the names of all connection groups and their
+     *         corresponding IDs.
+     */
+    public Map<Integer, String> retrieveNames(Collection<Integer> ids) {
+
+        // If no IDs given, just return empty map
+        if (ids.isEmpty())
+            return Collections.EMPTY_MAP;
+
+        // Map of all names onto their corresponding IDs.
+        Map<Integer, String> names = new HashMap<Integer, String>();
+
+        // Get all connection groups having the given IDs
+        ConnectionGroupExample example = new ConnectionGroupExample();
+        example.createCriteria().andConnection_group_idIn(Lists.newArrayList(ids));
+        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
+
+        // Produce set of names
+        for (ConnectionGroup connectionGroup : connectionGroups)
+            names.put(connectionGroup.getConnection_group_id(),
+                      connectionGroup.getConnection_group_name());
+
+        return names;
+
+    }
+
+    /**
+     * Get the names of all the connection groups defined in the system.
+     *
+     * @return A Set of names of all the connection groups defined in the system.
+     */
+    public Set<String> getAllConnectionGroupNames() {
+
+        // Set of all present connection group names
+        Set<String> names = new HashSet<String>();
+
+        // Query all connection group names
+        List<ConnectionGroup> connectionGroups =
+                connectionGroupDAO.selectByExample(new ConnectionGroupExample());
+        for (ConnectionGroup connectionGroup : connectionGroups)
+            names.add(connectionGroup.getConnection_group_name());
+
+        return names;
+
+    }
+
+    /**
+     * Get the connection group IDs of all the connection groups defined in the system.
+     *
+     * @return A list of connection group IDs of all the connection groups defined in the system.
+     */
+    public List<Integer> getAllConnectionGroupIDs() {
+
+        // Set of all present connection group IDs
+        List<Integer> connectionGroupIDs = new ArrayList<Integer>();
+
+        // Query all connection IDs
+        List<ConnectionGroup> connections =
+                connectionGroupDAO.selectByExample(new ConnectionGroupExample());
+        for (ConnectionGroup connection : connections)
+            connectionGroupIDs.add(connection.getConnection_group_id());
+
+        return connectionGroupIDs;
+
+    }
 }

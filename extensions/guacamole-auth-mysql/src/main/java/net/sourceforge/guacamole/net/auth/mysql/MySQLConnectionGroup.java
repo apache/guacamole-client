@@ -66,24 +66,18 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     /**
      * A Directory of connections that have this connection group as a parent.
      */
-    private Directory<String, Connection> connectionDirectory;
+    private Directory<String, Connection> connectionDirectory = null;
     
     /**
      * A Directory of connection groups that have this connection group as a parent.
      */
-    private Directory<String, ConnectionGroup> connectionGroupDirectory;
+    private Directory<String, ConnectionGroup> connectionGroupDirectory = null;
 
     /**
      * Service managing connection groups.
      */
     @Inject
     private ConnectionGroupService connectionGroupService;
-    
-    /**
-     * Service for managing connection groups.
-     */
-    //@Inject
-    //private ConnectionGroupService connectionGroupService;
 
     /**
      * Create a default, empty connection group.
@@ -112,35 +106,38 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      *
      * @param connectionGroupID The ID of the associated database record, if any.
      * @param identifier The unique identifier associated with this connection group.
-     * @param config The GuacamoleConfiguration associated with this connection.
-     * @param history All ConnectionRecords associated with this connection.
      * @param userID The IID of the user who queried this connection.
      */
-    public void init(Integer connectionGroupID, String identifier,
-            Directory<String, Connection> connectionDirectory,
-            Directory<String, ConnectionGroup> connectionGroupDirectory, 
-            int userID) {
-
+    public void init(Integer connectionGroupID, String identifier, int userID) {
         this.connectionGroupID = connectionGroupID;
         setIdentifier(identifier);
-        this.connectionDirectory = connectionDirectory;
-        this.connectionGroupDirectory = connectionGroupDirectory;
         this.userID = userID;
-
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
         return connectionGroupService.connect(this, info, userID);
     }
-
+    
+    private void loadConnectionDirectory() {
+        
+    }
+    
     @Override
     public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
+        if(connectionDirectory == null)
+            loadConnectionDirectory();
         return connectionDirectory;
+    }
+    
+    private void loadConnectionGroupDirectory() {
+        
     }
 
     @Override
     public Directory<String, ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+        if(connectionGroupDirectory == null)
+            loadConnectionGroupDirectory();
         return connectionGroupDirectory;
     }
 
