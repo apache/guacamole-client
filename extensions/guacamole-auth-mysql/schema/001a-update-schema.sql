@@ -6,17 +6,17 @@
 CREATE TABLE `guacamole_connection_group` (
 
   `connection_group_id`   int(11)      NOT NULL AUTO_INCREMENT,
-  `parent_group_id`       int(11),
+  `parent_id`             int(11),
   `connection_group_name` varchar(128) NOT NULL,
   `type`                  enum('ORGANIZATIONAL',
                                'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
 
 
   PRIMARY KEY (`connection_group_id`),
-  UNIQUE KEY `connection_group_name` (`connection_group_name`),
+  UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
 
   CONSTRAINT `guacamole_connection_group_ibfk_1`
-    FOREIGN KEY (`parent_group_id`)
+    FOREIGN KEY (`parent_id`)
     REFERENCES `guacamole_connection_group` (`connection_group_id`)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -26,10 +26,13 @@ CREATE TABLE `guacamole_connection_group` (
 -- Changes to connection table to support grouping.
 --
 
-ALTER TABLE `guacamole_connection` ADD COLUMN `connection_group_id` int(11) AFTER `connection_name`;
+ALTER TABLE `guacamole_connection` ADD COLUMN `parent_id` int(11) AFTER `connection_name`;
+
+ALTER TABLE `guacamole_connection` DROP INDEX `connection_name_parent`;
+ALTER TABLE `guacamole_connection` ADD UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`);
 
 ALTER TABLE `guacamole_connection` ADD CONSTRAINT `guacamole_connection_ibfk_1`
-    FOREIGN KEY (`connection_group_id`)
+    FOREIGN KEY (`parent_id`)
     REFERENCES `guacamole_connection_group` (`connection_group_id`);
 
 --
