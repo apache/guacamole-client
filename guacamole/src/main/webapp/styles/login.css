@@ -279,6 +279,7 @@ div#recent-connections div.connection {
     overflow: hidden;
 }
 
+.group,
 .connection {
     cursor: pointer;
 }
@@ -287,6 +288,7 @@ div#recent-connections div.connection {
     background: #CDA;
 }
 
+.group,
 .connection .name {
     color: black;
     font-weight: normal;
