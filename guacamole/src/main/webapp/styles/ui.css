@@ -306,6 +306,30 @@ div.section {
 }
 
 /*
+ * Groups
+ */
+
+.group > .children {
+    margin-left: 13px;
+    padding-left: 6px;
+    display: none;
+}
+ 
+.group.expanded > .children {
+    display: block;
+    border-left: 1px dotted rgba(0, 0, 0, 0.25);
+}
+
+.group > .caption .icon.group {
+    opacity: 0.75;
+    background-image: url('../images/group-icons/guac-closed.png');
+}
+
+.group.expanded > .caption .icon.group {
+    background-image: url('../images/group-icons/guac-open.png');
+}
+
+/*
  * Settings formatting
  */
 
