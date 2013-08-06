@@ -52,6 +52,24 @@ GuacamoleService.Connection = function(protocol, id) {
     this.parameters = {};
 
     /**
+     * The hierarchy of groups containing this connection. The first element
+     * in this array is the highest-level group. If the connection is within
+     * the root group, this array will be empty.
+     * 
+     * @type String[]
+     */
+    this.path = id.split("/");
+
+    /**
+     * The name of this connection. This name is arbitrary and local to the
+     * group containing the connection. If the connection is in the root
+     * group, this name will be effectively equal to the ID.
+     * 
+     * @type String
+     */
+    this.name = guac_connection.path.pop();
+
+    /**
      * An array of GuacamoleService.Connection.Record listing the usage
      * history of this connection.
      */
