@@ -171,6 +171,9 @@ GuacamoleRootUI.reset = function() {
 
     }
 
+    // Associative array of all existing groups
+    var groups = {};
+
     // Create pager for connections
     var connection_pager = new GuacUI.Pager(GuacamoleRootUI.sections.all_connections);
     connection_pager.page_capacity = 20;
@@ -179,18 +182,54 @@ GuacamoleRootUI.reset = function() {
     for (var i=0; i<connections.length; i++) {
 
         // Add connection to set
-        GuacamoleRootUI.connections[connections[i].id] = connections[i];
+        var connection = connections[i];
+        GuacamoleRootUI.connections[connection.id] = connection;
 
         // Get connection element
-        var connection = new GuacUI.Connection(connections[i]);
+        var recent_connection = new GuacUI.Connection(connection);
 
         // If screenshot present, add to recent connections
-        if (connection.hasThumbnail())
-            GuacamoleRootUI.addRecentConnection(connection);
+        if (recent_connection.hasThumbnail())
+            GuacamoleRootUI.addRecentConnection(recent_connection);
 
-        // Add connection to connection list
-        connection_pager.addElement(
-            new GuacUI.Connection(connections[i]).getElement());
+        // Construct group hierarchy, creating new group components as
+        // necessary
+        var parent_group = null;
+        var path = "";
+        for (var j=0; j<connection.path.length; j++) {
+
+            // Pull name, update current path
+            var name = connection.path[j];
+            path += "/" + name;
+
+            // Pull group from path
+            var group = groups[path];
+
+            // If path not yet defined, create it
+            if (!group) {
+                
+                groups[path] = group = new GuacUI.ListGroup(name);
+
+                // Add new group to parent group, or to the list directly if
+                // no parent
+                if (parent_group)
+                    parent_group.addElement(group.getElement());
+                else
+                    connection_pager.addElement(group.getElement());
+
+            }
+
+            // Save current group as the parent of the next group/connection
+            parent_group = group;
+
+        }
+
+        // Add connection to connection list or parent group
+        var guacui_connection = new GuacUI.Connection(connection);
+        if (parent_group)
+            parent_group.addElement(guacui_connection.getElement());
+        else
+            connection_pager.addElement(guacui_connection.getElement());
 
     }
 
