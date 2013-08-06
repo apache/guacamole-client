@@ -441,7 +441,11 @@ GuacUI.Connection = function(connection) {
     var url = "client.xhtml?id=" + encodeURIComponent(connection.id);
 
     // Create link to client
-    element.onclick = function() {
+    element.addEventListener("click", function(e) {
+
+        // Prevent click from affecting parent
+        e.stopPropagation();
+        e.preventDefault();
 
         // Attempt to focus existing window
         var current = window.open(null, connection.id);
@@ -451,13 +455,14 @@ GuacUI.Connection = function(connection) {
         if (!current.GuacUI)
             window.open(url, connection.id);
 
-    };
+    }, false);
+
 
     // Add icon
     protocol.appendChild(protocol_icon);
 
     // Set name
-    name.textContent = connection.id;
+    name.textContent = connection.name;
 
     // Assemble caption
     caption.appendChild(protocol);
@@ -786,3 +791,87 @@ GuacUI.Download = function(filename) {
     this.ondownload = null;
 
 };
+
+/**
+ * A grouping component. Child elements can be added via the addElement()
+ * function. By default, groups display as collapsed.
+ */
+GuacUI.ListGroup = function(caption) {
+
+    /**
+     * Reference to this group.
+     * @private
+     */
+    var guac_group = this;
+
+    /**
+     * A container for for the list group itself.
+     */
+    var element = GuacUI.createElement("div", "group");
+
+    // Create connection display elements
+    var caption_element = GuacUI.createChildElement(element, "div",  "caption");
+    var caption_icon    = GuacUI.createChildElement(caption_element, "div",  "icon group");
+    GuacUI.createChildElement(caption_element, "span", "name").textContent = caption;
+
+    /**
+     * A container for all children of this list group.
+     */
+    var elements = GuacUI.createChildElement(element, "div", "children");
+
+    // Toggle by default
+    element.addEventListener("click", function(e) {
+
+        // Prevent click from affecting parent
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (guac_group.expanded)
+            guac_group.collapse();
+        else
+            guac_group.expand();
+
+    }, false);
+
+    /**
+     * Whether this group is expanded.
+     * 
+     * @type Boolean
+     */
+    this.expanded = false;
+
+    /**
+     * Returns the element representing this notification.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Adds an element as a child of this group.
+     * 
+     * @param {
+     */
+    this.addElement = function(element) {
+        elements.appendChild(element);
+    };
+
+    /**
+     * Expands the list group, revealing all children of the group. This
+     * functionality requires supporting CSS.
+     */
+    this.expand = function() {
+        GuacUI.addClass(element, "expanded");
+        guac_group.expanded = true;
+    };
+
+    /**
+     * Collapses the list group, hiding all children of the group. This
+     * functionality requires supporting CSS.
+     */
+    this.collapse = function() {
+        GuacUI.removeClass(element, "expanded");
+        guac_group.expanded = false;
+    };
+
+}
