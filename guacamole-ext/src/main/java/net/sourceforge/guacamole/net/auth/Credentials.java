@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -132,15 +133,15 @@ public class Credentials implements Serializable {
     }
 
     /**
-     * Returns the contents of the given parameter, if present. Unlike
+     * Returns a map of all query parameters in the request, if any. Unlike
      * getParameter() of HttpServletRequest, this function is safe to call
      * when POST data is still required (such as during tunnel requests or
      * when the UserContext is being updated).
      * 
-     * @param parameter The name of the parameter to read.
-     * @return The value of the parameter, or null if no such parameter exists.
+     * @return An unmodifiable map of all query parameters in the request,
+     *         where each key corresponds to a given parameter name.
      */
-    public String getQueryParameter(String parameter) {
+    public Map<String, String> getQueryParameters() {
 
         // Parse parameters, if not yet parsed
         if (queryParameters == null) {
@@ -197,9 +198,22 @@ public class Credentials implements Serializable {
             
         } // end if parameters cached
 
-        // Return parsed parameter, if any
-        return queryParameters.get(parameter);
+        // Return unmodifiable map of all parameters
+        return Collections.unmodifiableMap(queryParameters);
+        
+    }
 
+    /**
+     * Returns the contents of the given parameter, if present. Unlike
+     * getParameter() of HttpServletRequest, this function is safe to call
+     * when POST data is still required (such as during tunnel requests or
+     * when the UserContext is being updated).
+     * 
+     * @param parameter The name of the parameter to read.
+     * @return The value of the parameter, or null if no such parameter exists.
+     */
+    public String getQueryParameter(String parameter) {
+        return getQueryParameters().get(parameter);
     }
     
     /**
