@@ -1,6 +1,8 @@
 package net.sourceforge.guacamole.net.auth;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -55,17 +57,7 @@ public class Credentials implements Serializable {
     /**
      * Unique identifier associated with this specific version of Credentials.
      */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * An arbitrary username.
-     */
-    private String username;
-
-    /**
-     * An arbitrary password.
-     */
-    private String password;
+    private static final long serialVersionUID = 2L;
 
     /**
      * The HttpServletRequest carrying additional credentials, if any.
@@ -78,41 +70,123 @@ public class Credentials implements Serializable {
     private transient HttpSession session;
 
     /**
-     * Returns the password associated with this set of credentials.
-     * @return The password associated with this username/password pair, or
-     *         null if no password has been set.
+     * Map of query parameter names to values.
+     */
+    private Map<String, String> queryParameters = null;
+    
+    /**
+     * Returns the password provided by the user in the request. Note that
+     * this function will potentially read from the entire request body in
+     * search of the "username" parameter, and thus can interfere with tunnel
+     * usage if used at a time that the user is POSTing data to the tunnel
+     * (such as while updating the UserContext during a tunnel write).
+     *
+     * This function will prefer parameters in the query string of a request to
+     * those of the entire request body, so if it is known that the password
+     * will always be present in the query string, this function is safe to
+     * call at all times.
+     *
+     * @return The password given in the associated request, or null if no
+     *         password was provided.
      */
     public String getPassword() {
-        return password;
+
+        // Attempt to pull from GET parameters first
+        String get_password = getQueryParameter("password");
+        if (get_password != null)
+            return get_password;
+        
+        // Otherwise, resort to parameters anywhere in the request body
+        return request.getParameter("password");
+        
     }
 
     /**
-     * Sets the password associated with this set of credentials.
-     * @param password The password to associate with this username/password
-     *                 pair.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    /**
-     * Returns the username associated with this set of credentials.
-     * @return The username associated with this username/password pair, or
-     *         null if no username has been set.
+     * Returns the username provided by the user in the request. Note that
+     * this function will potentially read from the entire request body in
+     * search of the "username" parameter, and thus can interfere with tunnel
+     * usage if used at a time that the user is POSTing data to the tunnel
+     * (such as while updating the UserContext during a tunnel write).
+     * 
+     * This function will prefer parameters in the query string of a request to
+     * those of the entire request body, so if it is known that the username
+     * will always be present in the query string, this function is safe to
+     * call at all times.
+     * 
+     * @return The username given in the associated request, or null if no
+     *         username was provided.
      */
     public String getUsername() {
-        return username;
+
+        // Attempt to pull from GET parameters first
+        String get_password = getQueryParameter("username");
+        if (get_password != null)
+            return get_password;
+        
+        // Otherwise, resort to parameters anywhere in the request body
+        return request.getParameter("username");
+
     }
 
     /**
-     * Sets the username associated with this set of credentials.
-     * @param username The username to associate with this username/password
-     *                 pair.
+     * Returns the contents of the given parameter, if present. Unlike
+     * getParameter() of HttpServletRequest, this function is safe to call
+     * when POST data is still required (such as during tunnel requests or
+     * when the UserContext is being updated).
+     * 
+     * @param parameter The name of the parameter to read.
+     * @return The value of the parameter, or null if no such parameter exists.
      */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getQueryParameter(String parameter) {
 
+        // Parse parameters, if not yet parsed
+        if (queryParameters == null) {
+        
+            // If no request, then no parameters
+            if (request == null)
+                return null;
+
+            // If no query string, then no parameters
+            String query_string = request.getQueryString();
+            if (query_string == null)
+                return null;
+
+            // Get name/value pairs
+            String[] nv_pairs = query_string.split("&");
+
+            // Add each pair to hash
+            queryParameters = new HashMap<String, String>();
+            for (String nv_pair : nv_pairs) {
+
+                String name;
+                String value;
+                
+                int eq = nv_pair.indexOf('=');
+
+                // If no equals sign, parameter is blank
+                if (eq == -1) {
+                    name  = nv_pair;
+                    value = "";
+                }
+
+                // Otherwise, parse pair
+                else {
+                    name  = nv_pair.substring(0, eq);
+                    value = nv_pair.substring(eq+1);
+                }
+                
+                // Save pair to hash
+                queryParameters.put(name, value);
+                
+            }
+            
+        } // end if parameters cached
+
+        // Return parsed parameter, if any
+        return queryParameters.get(parameter);
+
+    }
+    
     /**
      * Returns the HttpServletRequest associated with this set of credentials.
      * @return The HttpServletRequest associated with this set of credentials,
