@@ -247,14 +247,22 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 SessionListenerCollection listeners = new SessionListenerCollection(httpSession);
 
                 // If no cached context, attempt to get new context
-                if (context == null)
+                if (context == null) {
+
                     context = authProvider.getUserContext(credentials);
+
+                    // Log successful authentication
+                    if (context != null)
+                        logger.info("User \"{}\" successfully authenticated from {}.",
+                                context.self().getUsername(), request.getRemoteAddr());
+                    
+                }
 
                 // Otherwise, update existing context
                 else
                     context = authProvider.updateUserContext(context, credentials);
 
-                // If no context, fail authentication, notify listeners
+                // If auth failed, notify listeners
                 if (context == null) {
                     logger.warn("Authentication attempt from {} for user \"{}\" failed.",
                             request.getRemoteAddr(), credentials.getUsername());
@@ -262,22 +270,15 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                     notifyFailed(listeners, credentials);
                 }
 
-                // Otherwise, associate (possibly updated) context with session
-                // and notify listeners
-                else {
-
-                    // Log successful authentication
-                    logger.info("User \"{}\" successfully authenticated from {}.",
-                            context.self().getUsername(), request.getRemoteAddr());
-
-                    if (!notifySuccess(listeners, context, credentials)) {
-                        logger.info("Successful authentication canceled by hook.");
-                        context = null;
-                    }
-
-                    httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
-
+                // If auth succeeded, notify and check with listeners
+                else if (!notifySuccess(listeners, context, credentials)) {
+                    logger.info("Successful authentication canceled by hook.");
+                    context = null;
                 }
+
+                // If auth still OK, associate context with session
+                else
+                    httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
 
             } // end if credentials present
 
