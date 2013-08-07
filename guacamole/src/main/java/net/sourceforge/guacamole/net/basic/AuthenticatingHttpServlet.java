@@ -200,6 +200,17 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
         return (UserContext) session.getAttribute(CONTEXT_ATTRIBUTE);
     }
 
+    /**
+     * Returns whether the request given has updated credentials. If this
+     * function returns false, the UserContext will not be updated.
+     * 
+     * @param request The request to check for credentials.
+     * @return true if the request contains credentials, false otherwise.
+     */
+    protected boolean hasNewCredentials(HttpServletRequest request) {
+        return true;
+    }
+    
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response)
     throws IOException, ServletException {
@@ -247,7 +258,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             }
 
             // Otherwise, update existing context
-            else
+            else if (hasNewCredentials(request))
                 context = authProvider.updateUserContext(context, credentials);
 
             // If no context, fail authentication, notify listeners

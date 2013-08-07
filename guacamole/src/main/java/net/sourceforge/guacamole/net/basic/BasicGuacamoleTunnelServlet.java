@@ -251,5 +251,17 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
     };
 
+    @Override
+    protected boolean hasNewCredentials(HttpServletRequest request) {
+
+        String query = request.getQueryString();
+        if (query == null)
+            return false;
+
+        // Only connections are given new credentials
+        return query.equals("connect");
+
+    }
+
 }
 
