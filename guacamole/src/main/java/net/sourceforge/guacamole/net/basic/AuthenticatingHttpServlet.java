@@ -73,11 +73,6 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private static final String CONTEXT_ATTRIBUTE = "GUAC_CONTEXT";
 
     /**
-     * The session attribute holding the credentials authorizing this session.
-     */
-    private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
-
-    /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
     private AuthenticationProvider authProvider;
@@ -127,6 +122,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      * successful.
      *
      * @param listeners A collection of all listeners that should be notified.
+     * @param context The UserContext created as a result of authentication
+     *                success.
      * @param credentials The credentials associated with the authentication
      *                    request that succeeded.
      * @return true if all listeners are allowing the authentication success,
@@ -138,11 +135,12 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      *                            error, the success is canceled, and no other
      *                            listeners will run.
      */
-    private boolean notifySuccess(Collection listeners, Credentials credentials)
-            throws GuacamoleException {
+    private boolean notifySuccess(Collection listeners, UserContext context,
+            Credentials credentials) throws GuacamoleException {
 
         // Build event for auth success
-        AuthenticationSuccessEvent event = new AuthenticationSuccessEvent(credentials);
+        AuthenticationSuccessEvent event =
+                new AuthenticationSuccessEvent(context, credentials);
 
         // Notify all listeners
         for (Object listener : listeners) {
@@ -203,17 +201,6 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     }
 
-
-    /**
-     * Returns the credentials associated with the given session.
-     *
-     * @param session The session to retrieve credentials from.
-     * @return The credentials associated with the given session.
-     */
-    protected Credentials getCredentials(HttpSession session) {
-        return (Credentials) session.getAttribute(CREDENTIALS_ATTRIBUTE);
-    }
-
     /**
      * Returns the UserContext associated with the given session.
      *
@@ -239,88 +226,89 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
         HttpSession httpSession = request.getSession(true);
 
+        SessionListenerCollection listeners;
+        try {
+            listeners = new SessionListenerCollection(httpSession);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Failed to retrieve listeners. Authentication canceled.", e);
+            failAuthentication(response);
+            return;
+        }
+
+        // Build credentials object
+        Credentials credentials = new Credentials();
+        credentials.setSession(httpSession);
+        credentials.setRequest(request);
+
         // Try to get user context from session
         UserContext context = getUserContext(httpSession);
 
-        // If no context, try to authenticate the user to get the context using
-        // this request.
+        // If no cached context, attempt to get new context
         if (context == null) {
 
-            SessionListenerCollection listeners;
-            try {
-                listeners = new SessionListenerCollection(httpSession);
-            }
-            catch (GuacamoleException e) {
-                logger.error("Failed to retrieve listeners. Authentication canceled.", e);
-                failAuthentication(response);
-                return;
-            }
-
-            // Build credentials object
-            Credentials credentials = new Credentials();
-            credentials.setSession(httpSession);
-            credentials.setRequest(request);
-
-            // Get authorized context
             try {
                 context = authProvider.getUserContext(credentials);
             }
 
-
-            /******** HANDLE FAILED AUTHENTICATION ********/
-
-            // If error retrieving context, fail authentication, notify listeners
+            // Log any authentication errors
             catch (GuacamoleException e) {
                 logger.error("Error retrieving context for user \"{}\".",
                         credentials.getUsername(), e);
-
-                notifyFailed(listeners, credentials);
-                failAuthentication(response);
-                return;
             }
 
-            // If no context, fail authentication, notify listeners
-            if (context == null) {
-                logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                        request.getRemoteAddr(), credentials.getUsername());
-
-                notifyFailed(listeners, credentials);
-                failAuthentication(response);
-                return;
-            }
-
-
-            /******** HANDLE SUCCESSFUL AUTHENTICATION ********/
-
-            try {
-
-                // Otherwise, authentication has been succesful
+            // If successful, log success and notify listeners
+            if (context != null) {
+                
+                // Log successful authentication
                 logger.info("User \"{}\" successfully authenticated from {}.",
-                        credentials.getUsername(), request.getRemoteAddr());
+                        context.self().getUsername(), request.getRemoteAddr());
 
-                // Notify of success, cancel if requested
-                if (!notifySuccess(listeners, credentials)) {
-                    logger.info("Successful authentication canceled by hook.");
-                    failAuthentication(response);
-                    return;
+                // Notify any listeners of success, cancel if requested
+                try {
+                    if (!notifySuccess(listeners, context, credentials)) {
+                        logger.info("Successful authentication canceled by hook.");
+                        context = null;
+                    }
                 }
 
-            }
-            catch (GuacamoleException e) {
-
                 // Cancel authentication success if hook throws exception
-                logger.error("Successful authentication canceled by error in hook.", e);
-                failAuthentication(response);
-                return;
+                catch (GuacamoleException e) {
+                    logger.error("Successful authentication canceled by error in hook.", e);
+                    context = null;
+                }
 
+            } // end if auth success
+
+        } // end if no cached context
+
+        // Otherwise, update existing context
+        else {
+
+            try {
+                context = authProvider.updateUserContext(context, credentials);
             }
 
-            // Associate context and credentials with session
-            httpSession.setAttribute(CONTEXT_ATTRIBUTE,     context);
-            httpSession.setAttribute(CREDENTIALS_ATTRIBUTE, credentials);
+            // If error updating context, fail authentication, notify listeners
+            catch (GuacamoleException e) {
+                logger.error("Error updating context for user \"{}\".",
+                        context.self().getUsername(), e);
+            }
 
+        } // end if cached context
 
+        // If no context, fail authentication, notify listeners
+        if (context == null) {
+            logger.warn("Authentication attempt from {} for user \"{}\" failed.",
+                    request.getRemoteAddr(), credentials.getUsername());
+
+            notifyFailed(listeners, credentials);
+            failAuthentication(response);
+            return;
         }
+
+        // Associate context and credentials with session
+        httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
 
         try {
 

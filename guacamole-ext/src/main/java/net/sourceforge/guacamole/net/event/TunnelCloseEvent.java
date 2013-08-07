@@ -1,7 +1,7 @@
 package net.sourceforge.guacamole.net.event;
 
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
-import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.UserContext;
 
 /**
  * An event which is triggered whenever a tunnel is being closed. The tunnel
@@ -11,13 +11,13 @@ import net.sourceforge.guacamole.net.auth.Credentials;
  *
  * @author Michael Jumper
  */
-public class TunnelCloseEvent implements CredentialEvent, TunnelEvent {
+public class TunnelCloseEvent implements UserEvent, TunnelEvent {
 
     /**
-     * The credentials associated with the request that is closing the
+     * The UserContext associated with the request that is connecting the
      * tunnel, if any.
      */
-    private Credentials credentials;
+    private UserContext context;
 
     /**
      * The tunnel being closed.
@@ -28,18 +28,18 @@ public class TunnelCloseEvent implements CredentialEvent, TunnelEvent {
      * Creates a new TunnelCloseEvent which represents the closing of the
      * given tunnel via a request associated with the given credentials.
      *
-     * @param credentials The credentials associated with the request
-     *                    closing the tunnel.
+     * @param context The UserContext associated with the request connecting
+     *                the tunnel.
      * @param tunnel The tunnel being closed.
      */
-    public TunnelCloseEvent(Credentials credentials, GuacamoleTunnel tunnel) {
-        this.credentials = credentials;
+    public TunnelCloseEvent(UserContext context, GuacamoleTunnel tunnel) {
+        this.context = context;
         this.tunnel = tunnel;
     }
 
     @Override
-    public Credentials getCredentials() {
-        return credentials;
+    public UserContext getUserContext() {
+        return context;
     }
 
     @Override

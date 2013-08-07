@@ -1,15 +1,25 @@
 package net.sourceforge.guacamole.net.event;
 
 import net.sourceforge.guacamole.net.auth.Credentials;
+import net.sourceforge.guacamole.net.auth.UserContext;
 
 /**
  * An event which is triggered whenever a user's credentials pass
  * authentication. The credentials that passed authentication are included
  * within this event, and can be retrieved using getCredentials().
+ * 
+ * Note that this event is only triggered when the UserContext is initially
+ * created. Any further updates to the UserContext to not trigger this event.
  *
  * @author Michael Jumper
  */
-public class AuthenticationSuccessEvent implements CredentialEvent {
+public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
+
+    /**
+     * The UserContext associated with the request that is connecting the
+     * tunnel, if any.
+     */
+    private UserContext context;
 
     /**
      * The credentials which passed authentication.
@@ -20,10 +30,18 @@ public class AuthenticationSuccessEvent implements CredentialEvent {
      * Creates a new AuthenticationSuccessEvent which represents a successful
      * authentication attempt with the given credentials.
      *
+     * @param context The UserContext created as a result of successful
+     *                authentication.
      * @param credentials The credentials which passed authentication.
      */
-    public AuthenticationSuccessEvent(Credentials credentials) {
+    public AuthenticationSuccessEvent(UserContext context, Credentials credentials) {
+        this.context = context;
         this.credentials = credentials;
+    }
+
+    @Override
+    public UserContext getUserContext() {
+        return context;
     }
 
     @Override
