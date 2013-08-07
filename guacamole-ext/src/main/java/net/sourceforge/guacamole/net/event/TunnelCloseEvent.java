@@ -5,9 +5,9 @@ import net.sourceforge.guacamole.net.auth.UserContext;
 
 /**
  * An event which is triggered whenever a tunnel is being closed. The tunnel
- * being closed can be accessed through getTunnel(), and the set of all
- * credentials available from the request which is closing the tunnel can be
- * retrieved using getCredentials().
+ * being closed can be accessed through getTunnel(), and the UserContext
+ * associated with the request which is closing the tunnel can be retrieved
+ * with getUserContext().
  *
  * @author Michael Jumper
  */

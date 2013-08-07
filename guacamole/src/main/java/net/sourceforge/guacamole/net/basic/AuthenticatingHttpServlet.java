@@ -224,32 +224,48 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
             }
         }
 
-        HttpSession httpSession = request.getSession(true);
-
-        // Retrieve username and password from parms
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-
-        // Build credentials object
-        Credentials credentials = new Credentials();
-        credentials.setSession(httpSession);
-        credentials.setRequest(request);
-        credentials.setUsername(username);
-        credentials.setPassword(password);
-
         try {
 
-            SessionListenerCollection listeners = new SessionListenerCollection(httpSession);
-
-            // If no cached context, attempt to get new context
+            // Obtain context from session
+            HttpSession httpSession = request.getSession(true);
             UserContext context = getUserContext(httpSession);
-            if (context == null) {
 
-                context = authProvider.getUserContext(credentials);
+            // If new credentials present, update/create context
+            if (hasNewCredentials(request)) {
 
-                // If successful, log success and notify listeners
-                if (context != null) {
-                    
+                // Retrieve username and password from parms
+                String username = request.getParameter("username");
+                String password = request.getParameter("password");
+
+                // Build credentials object
+                Credentials credentials = new Credentials();
+                credentials.setSession(httpSession);
+                credentials.setRequest(request);
+                credentials.setUsername(username);
+                credentials.setPassword(password);
+
+                SessionListenerCollection listeners = new SessionListenerCollection(httpSession);
+
+                // If no cached context, attempt to get new context
+                if (context == null)
+                    context = authProvider.getUserContext(credentials);
+
+                // Otherwise, update existing context
+                else
+                    context = authProvider.updateUserContext(context, credentials);
+
+                // If no context, fail authentication, notify listeners
+                if (context == null) {
+                    logger.warn("Authentication attempt from {} for user \"{}\" failed.",
+                            request.getRemoteAddr(), credentials.getUsername());
+
+                    notifyFailed(listeners, credentials);
+                }
+
+                // Otherwise, associate (possibly updated) context with session
+                // and notify listeners
+                else {
+
                     // Log successful authentication
                     logger.info("User \"{}\" successfully authenticated from {}.",
                             context.self().getUsername(), request.getRemoteAddr());
@@ -259,27 +275,15 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                         context = null;
                     }
 
-                } // end if auth success
+                    httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
 
-            }
+                }
 
-            // Otherwise, update existing context
-            else if (hasNewCredentials(request))
-                context = authProvider.updateUserContext(context, credentials);
+            } // end if credentials present
 
-            // If no context, fail authentication, notify listeners
-            if (context == null) {
-                logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                        request.getRemoteAddr(), credentials.getUsername());
-
-                notifyFailed(listeners, credentials);
-                sendError(response, HttpServletResponse.SC_FORBIDDEN,
-                    "Permission denied.");
-                return;
-            }
-
-            // Associate (possibly updated) context with session
-            httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
+            // If no context, no authorizaton present
+            if (context == null)
+                throw new GuacamoleSecurityException("Not authenticated");
 
             // Allow servlet to run now that authentication has been validated
             authenticatedService(context, request, response);

@@ -8,9 +8,6 @@ import net.sourceforge.guacamole.net.auth.UserContext;
  * authentication. The credentials that passed authentication are included
  * within this event, and can be retrieved using getCredentials().
  * 
- * Note that this event is only triggered when the UserContext is initially
- * created. Any further updates to the UserContext to not trigger this event.
- *
  * @author Michael Jumper
  */
 public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {

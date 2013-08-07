@@ -5,9 +5,10 @@ import net.sourceforge.guacamole.net.auth.UserContext;
 
 /**
  * An event which is triggered whenever a tunnel is being connected. The tunnel
- * being connected can be accessed through getTunnel(), and the set of all
- * credentials available from the request which is connecting the tunnel can be
- * retrieved using getCredentials().
+ * being connected can be accessed through getTunnel(), and the UserContext
+ * associated with the request which is connecting the tunnel can be retrieved
+ * with getUserContext().
+
  *
  * @author Michael Jumper
  */
