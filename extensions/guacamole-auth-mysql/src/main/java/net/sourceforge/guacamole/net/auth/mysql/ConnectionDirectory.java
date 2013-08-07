@@ -67,6 +67,11 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private int user_id;
 
     /**
+     * The ID of the parent connection group.
+     */
+    private Integer parentID;
+
+    /**
      * Service for checking permissions.
      */
     @Inject
@@ -91,21 +96,23 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     private ConnectionParameterMapper connectionParameterDAO;
 
     /**
-     * Set the user for this directory.
+     * Set the user and parentID for this directory.
      *
      * @param user_id The ID of the user owning this connection directory.
+     * @param parentID The ID of the parent connection group.
      */
-    public void init(int user_id) {
+    public void init(int user_id, Integer parentID) {
+        this.parentID = parentID;
         this.user_id = user_id;
     }
 
     @Transactional
     @Override
-    public Connection get(String identifier) throws GuacamoleException {
+    public Connection get(String name) throws GuacamoleException {
 
         // Get connection
         MySQLConnection connection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(name, parentID, user_id);
 
         // Verify access is granted
         permissionCheckService.verifyConnectionAccess(
@@ -121,8 +128,13 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return permissionCheckService.retrieveConnectionNames(user_id,
-                MySQLConstants.CONNECTION_READ);
+        
+        // Verify permission to use the connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+        
+        return permissionCheckService.retrieveConnectionNames(user_id, 
+                parentID, MySQLConstants.CONNECTION_READ);
     }
 
     @Transactional
@@ -132,14 +144,22 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         String identifier = object.getIdentifier().trim();
         if(identifier.isEmpty())
             throw new GuacamoleClientException("The connection identifier cannot be blank.");
-
+        
         // Verify permission to create
         permissionCheckService.verifySystemAccess(this.user_id,
                 MySQLConstants.SYSTEM_CONNECTION_CREATE);
+        
+        // Verify permission to edit the connection group
+        permissionCheckService.verifyConnectionGroupAccess(this.user_id, 
+                this.parentID, MySQLConstants.CONNECTION_GROUP_UPDATE);
+        
+        // Verify permission to use the connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify that no connection already exists with this identifier.
         MySQLConnection previousConnection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(identifier, user_id, parentID);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection identifier is already in use.");
 
@@ -198,7 +218,6 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
             // Insert connection parameter
             connectionParameterDAO.insert(parameter);
-
         }
 
     }
@@ -239,7 +258,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Get connection
         MySQLConnection mySQLConnection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(identifier, parentID, user_id);
 
         // Verify permission to delete
         permissionCheckService.verifyConnectionAccess(this.user_id,

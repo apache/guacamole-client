@@ -97,6 +97,43 @@ public final class MySQLConstants {
     public static final String CONNECTION_ADMINISTER = "ADMINISTER";
 
     /**
+     * The string stored in the database to represent READ access to a
+     * connection.
+     */
+    public static final String CONNECTION_GROUP_READ = "READ";
+
+    /**
+     * The string stored in the database to represent UPDATE access to a
+     * connection group.
+     */
+    public static final String CONNECTION_GROUP_UPDATE = "UPDATE";
+
+    /**
+     * The string stored in the database to represent DELETE access to a
+     * connection group.
+     */
+    public static final String CONNECTION_GROUP_DELETE = "DELETE";
+
+    /**
+     * The string stored in the database to represent ADMINISTER access to a
+     * connection group.
+     */
+    public static final String CONNECTION_GROUP_ADMINISTER = "ADMINISTER";
+
+    /**
+     * The string stored in the database to represent a BALANCING
+     * connection group.
+     */
+    public static final String CONNECTION_GROUP_BALANCING = "BALANCING";
+
+    /**
+     * The string stored in the database to represent an ORGANIZATIONAL
+     * connection group.
+     */
+    public static final String CONNECTION_GROUP_ORGANIZATIONAL = 
+            "ORGANIZATIONAL";
+
+    /**
      * The string stored in the database to represent permission to create
      * users.
      */
@@ -160,6 +197,28 @@ public final class MySQLConstants {
 
     }
 
+    /**
+     * Given the type of a permission affecting a connection group, 
+     * returns the MySQL constant representing that permission type.
+     *
+     * @param type The type of permission to look up.
+     * @return The MySQL constant corresponding to the given permission type.
+     */
+    public static String getConnectionGroupConstant(ObjectPermission.Type type) {
+
+        // Convert permission type to MySQL constant
+        switch (type) {
+            case READ:       return CONNECTION_GROUP_READ;
+            case UPDATE:     return CONNECTION_GROUP_UPDATE;
+            case ADMINISTER: return CONNECTION_GROUP_ADMINISTER;
+            case DELETE:     return CONNECTION_GROUP_DELETE;
+        }
+
+        // If we get here, permission support was not properly implemented
+        throw new UnsupportedOperationException(
+            "Unsupported permission type: " + type);
+
+    }
 
     /**
      * Given the type of a permission affecting the system, returns the MySQL

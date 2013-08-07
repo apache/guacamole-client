@@ -49,10 +49,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample.Criteria;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -76,32 +79,60 @@ public class ConnectionGroupService {
     private Provider<MySQLConnectionGroup> mysqlConnectionGroupProvider;
     
     
+
     /**
-     * Retrieves all connection groups with a given parent connection group ID.
-     * 
-     * @param parentID The parent ID of the connection groups.
-     * @param userID The ID of the user who queried these connection groups.
-     * @return All connection groups with a given parent connection group ID.
+     * Retrieves the connection group having the given 
+     * name from the database.
+     *
+     * @param name The name of the connection to return.
+     * @param parentID The ID of the parent connection group.
+     * @param userID The ID of the user who queried this connection group.
+     * @return The connection having the given name, or null if no such
+     *         connection group could be found.
      */
-    public Collection<MySQLConnectionGroup> getConnectionGroupsByParentConnectionGroup(Integer parentID, int userID) {
-        
-        // A null parentID indicates the root-level group
+    public MySQLConnectionGroup retrieveConnectionGroup(String name, Integer parentID,
+            int userID) {
+
+        // Create criteria
         ConnectionGroupExample example = new ConnectionGroupExample();
+        Criteria criteria = example.createCriteria().andConnection_group_nameEqualTo(name);
         if(parentID != null)
-            example.createCriteria().andParent_group_idEqualTo(parentID);
+            criteria.andParent_idEqualTo(parentID);
         else
-            example.createCriteria().andParent_group_idIsNull();
+            criteria.andParent_idIsNull();
         
-        // Get all connections with the given parent ID
-        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
-        
-        List<MySQLConnectionGroup> mySQLConnectionGroups = new ArrayList<MySQLConnectionGroup>();
-        
-        for(ConnectionGroup connectionGroup : connectionGroups) {
-            mySQLConnectionGroups.add(toMySQLConnectionGroup(connectionGroup, userID));
-        }
-        
-        return mySQLConnectionGroups;
+        // Query connection group by name and parentID
+        List<ConnectionGroup> connectionGroups =
+                connectionGroupDAO.selectByExample(example);
+
+        // If no connection group found, return null
+        if(connectionGroups.isEmpty())
+            return null;
+
+        // Otherwise, return found connection
+        return toMySQLConnectionGroup(connectionGroups.get(0), userID);
+
+    }
+    
+    /**
+     * Retrieves the connection group having the given ID from the database.
+     *
+     * @param id The ID of the connection group to retrieve.
+     * @param userID The ID of the user who queried this connection.
+     * @return The connection group having the given ID, or null if no such
+     *         connection was found.
+     */
+    public MySQLConnectionGroup retrieveConnectionGroup(int id, int userID) {
+
+        // Query connection by ID
+        ConnectionGroup connectionGroup = connectionGroupDAO.selectByPrimaryKey(id);
+
+        // If no connection found, return null
+        if(connectionGroup == null)
+            return null;
+
+        // Otherwise, return found connection
+        return toMySQLConnectionGroup(connectionGroup, userID);
     }
 
     public GuacamoleSocket connect(MySQLConnectionGroup group, 
@@ -160,6 +191,66 @@ public class ConnectionGroupService {
     }
 
     /**
+     * Retrieves a translation map of connection group names to their 
+     * corresponding IDs.
+     *
+     * @param ids The IDs of the connection groups to retrieve the names of.
+     * @return A map containing the names of all connection groups and their
+     *         corresponding IDs.
+     */
+    public Map<String, Integer> translateNames(List<Integer> ids) {
+
+        // If no IDs given, just return empty map
+        if (ids.isEmpty())
+            return Collections.EMPTY_MAP;
+
+        // Map of all names onto their corresponding IDs.
+        Map<String, Integer> names = new HashMap<String, Integer>();
+
+        // Get all connections having the given IDs
+        ConnectionGroupExample example = new ConnectionGroupExample();
+        example.createCriteria().andConnection_group_idIn(ids);
+        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
+
+        // Produce set of names
+        for (ConnectionGroup connectionGroup : connectionGroups)
+            names.put(connectionGroup.getConnection_group_name(),
+                      connectionGroup.getConnection_group_id());
+
+        return names;
+
+    }
+    
+    /**
+     * Returns a list of the IDs of all connection groups with a given parent ID.
+     * @param parentID The ID of the parent for all the queried connection groups.
+     * @return a list of the IDs of all connection groups with a given parent ID.
+     */
+    public List<Integer> getAllConnectionGroupIDs(Integer parentID) {
+        
+        // Create criteria
+        ConnectionGroupExample example = new ConnectionGroupExample();
+        Criteria criteria = example.createCriteria();
+        
+        if(parentID != null)
+            criteria.andConnection_group_idEqualTo(parentID);
+        else
+            criteria.andConnection_group_idIsNull();
+        
+        // Query the connections
+        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
+        
+        // List of IDs of connections with the given parent
+        List<Integer> connectionGroupIDs = new ArrayList<Integer>();
+        
+        for(ConnectionGroup connectionGroup : connectionGroups) {
+            connectionGroupIDs.add(connectionGroup.getConnection_group_id());
+        }
+        
+        return connectionGroupIDs;
+    }
+
+    /**
      * Convert the given database-retrieved Connection into a MySQLConnection.
      * The parameters of the given connection will be read and added to the
      * MySQLConnection in the process.
@@ -175,8 +266,10 @@ public class ConnectionGroupService {
         MySQLConnectionGroup mySQLConnectionGroup = mysqlConnectionGroupProvider.get();
         mySQLConnectionGroup.init(
             connectionGroup.getConnection_group_id(),
-            connectionGroup.getParent_group_id(),
+            connectionGroup.getParent_id(),
             connectionGroup.getConnection_group_name(),
+            Integer.toString(connectionGroup.getConnection_group_id()),
+            connectionGroup.getType(),
             userID
         );
 

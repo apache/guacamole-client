@@ -51,6 +51,19 @@ import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 public interface ConnectionGroup {
 
     /**
+     * Returns the name assigned to this ConnectionGroup.
+     * @return The name assigned to this ConnectionGroup.
+     */
+    public String getName();
+
+    /**
+     * Sets the name assigned to this ConnectionGroup.
+     *
+     * @param identifier The name to assign.
+     */
+    public void setName(String name);
+
+    /**
      * Returns the unique identifier assigned to this ConnectionGroup.
      * @return The unique identifier assigned to this ConnectionGroup.
      */
@@ -62,6 +75,19 @@ public interface ConnectionGroup {
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
+    
+    /**
+     * Sets whether this is a balancing ConnectionGroup.
+     *
+     * @param balancing whether this is a balancing ConnectionGroup.
+     */
+    public void setBalancing(boolean balancing);
+    
+    /**
+     * Returns true if this is a balancing ConnectionGroup, false otherwise.
+     * @return true if this is a balancing ConnectionGroup, false otherwise.
+     */
+    public boolean isBalancing();
 
     /**
      * Retrieves a Directory which can be used to view and manipulate

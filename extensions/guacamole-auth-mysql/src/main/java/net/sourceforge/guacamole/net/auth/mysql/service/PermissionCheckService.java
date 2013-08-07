@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
@@ -50,6 +51,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample.Criteria;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
@@ -289,6 +291,69 @@ public class PermissionCheckService {
                 andPermissionEqualTo(MySQLConstants.SYSTEM_ADMINISTER);
         return systemPermissionDAO.countByExample(example) > 0;
     }
+    
+    /**
+     * Verifies that the specified group can be used for organization 
+     * by the given user.
+     * 
+     * @param connectionGroupID The ID of the affected ConnectionGroup.
+     * @param userID The ID of the user to check.
+     * @throws GuacamoleSecurityException If the connection group 
+     *                                    cannot be used for organization.
+     */
+    public void verifyConnectionGroupUsageAccess(Integer connectionGroupID, 
+            int userID, String type) throws GuacamoleSecurityException {
+
+        // If permission does not exist, throw exception
+        if(!checkConnectionGroupUsageAccess(connectionGroupID, userID, type))
+            throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+    
+    /**
+     * Check whether a user can use connectionGroup for the given usage.
+     * @param connectionGroupID the ID of the affected connection group.
+     * @param userID The ID of the user to check.
+     * @param usage The desired usage.
+     * @return true if the user can use the connection group for the given usage.
+     */
+    private boolean checkConnectionGroupUsageAccess(
+            Integer connectionGroupID, int userID, String usage) {
+        
+        // The root level connection group can only be used for organization
+        if(connectionGroupID == null)
+            return MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL.equals(usage);
+
+        // A system administrator has full access to everything.
+        if(checkSystemAdministratorAccess(userID))
+            return true;
+        
+        // Query the connection group
+        MySQLConnectionGroup connectionGroup = connectionGroupService.
+                retrieveConnectionGroup(connectionGroupID, userID);
+        
+        // If the connection group is not found, it cannot be used.
+        if(connectionGroup == null)
+            return false;
+
+        // Verify that the desired usage matches the type.
+        return connectionGroup.getType().equals(usage);
+        
+    }
+    
+    /**
+     * 
+     * @param userID
+     * @throws GuacamoleSecurityException 
+     */
+    private void verifySystemAdministratorAccess(int userID)
+            throws GuacamoleSecurityException {
+
+        // If permission does not exist, throw exception
+        if(!checkSystemAdministratorAccess(userID))
+            throw new GuacamoleSecurityException("Permission denied.");
+    }
+
 
     /**
      * Find the list of the IDs of all users a user has permission to.
@@ -332,13 +397,61 @@ public class PermissionCheckService {
     public List<Integer> retrieveConnectionIDs(int userID,
             String permissionType) {
 
+        return retrieveConnectionIDs(userID, null, permissionType, false);
+
+    }
+
+    /**
+     * Find the list of the IDs of all connections a user has permission to.
+     * The access type is defined by permissionType.
+     *
+     * @param userID The ID of the user to check.
+     * @param parentID the parent connection group.
+     * @param permissionType The type of permission to check for.
+     * @return A list of all connection IDs this user has the specified access
+     *         to.
+     */
+    public List<Integer> retrieveConnectionIDs(int userID, Integer parentID,
+            String permissionType) {
+
+        return retrieveConnectionIDs(userID, parentID, permissionType, true);
+
+    }
+
+    /**
+     * Find the list of the IDs of all connections a user has permission to.
+     * The access type is defined by permissionType.
+     *
+     * @param userID The ID of the user to check.
+     * @param parentID the parent connection group.
+     * @param permissionType The type of permission to check for.
+     * @param checkParentID Whether the parentID should be checked or not.
+     * @return A list of all connection IDs this user has the specified access
+     *         to.
+     */
+    private List<Integer> retrieveConnectionIDs(int userID, Integer parentID,
+            String permissionType, boolean checkParentID) {
+
         // A system administrator has access to all connections.
-        if(checkSystemAdministratorAccess(userID))
-            return connectionService.getAllConnectionIDs();
+        if(checkSystemAdministratorAccess(userID)) {
+            if(checkParentID)
+                return connectionService.getAllConnectionIDs(parentID);
+            else
+                return connectionService.getAllConnectionIDs();
+        }
 
         // Query all connection permissions for the given user and permission type
         ConnectionPermissionExample example = new ConnectionPermissionExample();
-        example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
+        Criteria criteria = example.createCriteria().andUser_idEqualTo(userID)
+                .andPermissionEqualTo(permissionType);
+        
+        // Ensure that the connections are all under the parent ID, if needed
+        if(checkParentID) {
+            // Get the IDs of all connections in the connection group
+            List<Integer> allConnectionIDs = connectionService.getAllConnectionIDs(parentID);
+            criteria.andConnection_idIn(allConnectionIDs);
+        }
+                                              
         example.setDistinct(true);
         List<ConnectionPermissionKey> connectionPermissions =
                 connectionPermissionDAO.selectByExample(example);
@@ -364,13 +477,63 @@ public class PermissionCheckService {
     public List<Integer> retrieveConnectionGroupIDs(int userID,
             String permissionType) {
 
-        // A system administrator has access to all connections.
-        if(checkSystemAdministratorAccess(userID))
-            return connectionGroupService.getAllConnectionGroupIDs();
+        return retrieveConnectionGroupIDs(userID, null, permissionType, false);
+
+    }
+
+    /**
+     * Find the list of the IDs of all connection groups a user has permission to.
+     * The access type is defined by permissionType.
+     *
+     * @param userID The ID of the user to check.
+     * @param parentID the parent connection group.
+     * @param permissionType The type of permission to check for.
+     * @return A list of all connection group IDs this user has the specified access
+     *         to.
+     */
+    public List<Integer> retrieveConnectionGroupIDs(int userID, Integer parentID,
+            String permissionType) {
+
+        return retrieveConnectionGroupIDs(userID, parentID, permissionType, true);
+
+    }
+
+    /**
+     * Find the list of the IDs of all connection groups a user has permission to.
+     * The access type is defined by permissionType.
+     *
+     * @param userID The ID of the user to check.
+     * @param parentID the parent connection group.
+     * @param permissionType The type of permission to check for.
+     * @param checkParentID Whether the parentID should be checked or not.
+     * @return A list of all connection group IDs this user has the specified access
+     *         to.
+     */
+    private List<Integer> retrieveConnectionGroupIDs(int userID, Integer parentID,
+            String permissionType, boolean checkParentID) {
+
+        // A system administrator has access to all connectionGroups .
+        if(checkSystemAdministratorAccess(userID)) {
+            if(checkParentID)
+                return connectionGroupService.getAllConnectionGroupIDs(parentID);
+            else
+                return connectionGroupService.getAllConnectionGroupIDs();
+        }
 
         // Query all connection permissions for the given user and permission type
         ConnectionGroupPermissionExample example = new ConnectionGroupPermissionExample();
-        example.createCriteria().andUser_idEqualTo(userID).andPermissionEqualTo(permissionType);
+        ConnectionGroupPermissionExample.Criteria criteria = 
+                example.createCriteria().andUser_idEqualTo(userID)
+                .andPermissionEqualTo(permissionType);
+        
+        // Ensure that the connection groups are all under the parent ID, if needed
+        if(checkParentID) {
+            // Get the IDs of all connection groups in the connection group
+            List<Integer> allConnectionGroupIDs = connectionGroupService
+                    .getAllConnectionGroupIDs(parentID);
+            criteria.andConnection_group_idIn(allConnectionGroupIDs);
+        }
+                                              
         example.setDistinct(true);
         List<ConnectionGroupPermissionKey> connectionGroupPermissions =
                 connectionGroupPermissionDAO.selectByExample(example);
@@ -414,21 +577,49 @@ public class PermissionCheckService {
      *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
+     * @param parentID The parent connection group.
      * @return A set of all connection names for which the given user has the
      *         given permission.
      */
-    public Set<String> retrieveConnectionNames(int userID, String permissionType) {
+    public Set<String> retrieveConnectionNames(int userID, Integer parentID,
+            String permissionType) {
 
         // A system administrator has access to all connections.
         if(checkSystemAdministratorAccess(userID))
-            return connectionService.getAllConnectionNames();
+            return connectionService.getAllConnectionNames(parentID);
 
-        // List of all connection IDs for which this connection has read access
+        // List of all connection IDs for which this user has access
         List<Integer> connectionIDs =
-                retrieveConnectionIDs(userID, MySQLConstants.CONNECTION_READ);
+                retrieveConnectionIDs(userID, parentID, permissionType);
 
         // Query all associated connections
         return connectionService.translateNames(connectionIDs).keySet();
+
+    }
+
+    /**
+     * Retrieve all existing connection names that the given user has permission
+     * to perform the given operation upon.
+     *
+     * @param userID The user whose permissions should be checked.
+     * @param permissionType The permission to check.
+     * @param parentID The parent connection group.
+     * @return A set of all connection names for which the given user has the
+     *         given permission.
+     */
+    public Set<String> retrieveConnectionGroupNames(int userID, Integer parentID,
+            String permissionType) {
+
+        // A system administrator has access to all connections.
+        if(checkSystemAdministratorAccess(userID))
+            return connectionService.getAllConnectionNames(parentID);
+
+        // List of all connection group IDs for which this user has access
+        List<Integer> connectionGroupIDs =
+                retrieveConnectionGroupIDs(userID, parentID, permissionType);
+
+        // Query all associated connections
+        return connectionGroupService.translateNames(connectionGroupIDs).keySet();
 
     }
 

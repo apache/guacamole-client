@@ -76,7 +76,8 @@ public class SimpleConnectionDirectory
         // Create connections for each config
         for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet())
             connections.put(entry.getKey(),
-                    new SimpleConnection(entry.getKey(), entry.getValue()));
+                    new SimpleConnection(entry.getKey(), entry.getKey(), 
+                entry.getValue()));
 
     }
 

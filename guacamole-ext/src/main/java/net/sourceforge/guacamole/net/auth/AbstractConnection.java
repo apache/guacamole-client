@@ -48,6 +48,11 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public abstract class AbstractConnection implements Connection {
 
     /**
+     * The name associated with this connection.
+     */
+    private String name;
+
+    /**
      * The unique identifier associated with this connection.
      */
     private String identifier;
@@ -56,6 +61,16 @@ public abstract class AbstractConnection implements Connection {
      * The GuacamoleConfiguration associated with this connection.
      */
     private GuacamoleConfiguration configuration;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Override
     public String getIdentifier() {

@@ -55,6 +55,19 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 public interface Connection {
 
     /**
+     * Returns the name assigned to this Connection.
+     * @return The name assigned to this Connection.
+     */
+    public String getName();
+
+    /**
+     * Sets the name assigned to this Connection.
+     *
+     * @param identifier The name to assign.
+     */
+    public void setName(String name);
+
+    /**
      * Returns the unique identifier assigned to this Connection.
      * @return The unique identifier assigned to this Connection.
      */

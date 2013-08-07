@@ -46,9 +46,24 @@ package net.sourceforge.guacamole.net.auth;
 public abstract class AbstractConnectionGroup implements ConnectionGroup {
 
     /**
+     * The name associated with this connection group.
+     */
+    private String name;
+
+    /**
      * The unique identifier associated with this connection group.
      */
     private String identifier;
+    
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Override
     public String getIdentifier() {

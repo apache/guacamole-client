@@ -63,6 +63,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionExample.Criteria;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistoryExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
@@ -128,24 +129,29 @@ public class ConnectionService {
      * Retrieves the connection having the given name from the database.
      *
      * @param name The name of the connection to return.
+     * @param parentID The ID of the parent connection group.
      * @param userID The ID of the user who queried this connection.
      * @return The connection having the given name, or null if no such
      *         connection could be found.
      */
-    public MySQLConnection retrieveConnection(String name, int userID) {
+    public MySQLConnection retrieveConnection(String name, Integer parentID,
+            int userID) {
 
-        // Query connection by connection identifier (name)
+        // Create criteria
         ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_nameEqualTo(name);
+        Criteria criteria = example.createCriteria().andConnection_nameEqualTo(name);
+        if(parentID != null)
+            criteria.andParent_idEqualTo(parentID);
+        else
+            criteria.andParent_idIsNull();
+        
+        // Query connection by name and parentID
         List<Connection> connections =
                 connectionDAO.selectByExample(example);
 
         // If no connection found, return null
         if(connections.isEmpty())
             return null;
-
-        // Assert only one connection found
-        assert connections.size() == 1 : "Multiple connections with same name.";
 
         // Otherwise, return found connection
         return toMySQLConnection(connections.get(0), userID);
@@ -171,34 +177,6 @@ public class ConnectionService {
 
         // Otherwise, return found connection
         return toMySQLConnection(connection, userID);
-    }
-    
-    /**
-     * Retrieves all connections with a given parent connection group ID.
-     * 
-     * @param parentID The parent ID of the connections.
-     * @param userID The ID of the user who queried these connections.
-     * @return All connections with a given parent connection group ID.
-     */
-    public Collection<MySQLConnection> getConnectionsByParentConnectionGroup(Integer parentID, int userID) {
-        
-        // A null parentID indicates the root-level group
-        ConnectionExample example = new ConnectionExample();
-        if(parentID != null)
-            example.createCriteria().andConnection_group_idEqualTo(parentID);
-        else
-            example.createCriteria().andConnection_group_idIsNull();
-        
-        // Get all connections with the given parent ID
-        List<Connection> connections = connectionDAO.selectByExample(example);
-        
-        List<MySQLConnection> mySQLConnections = new ArrayList<MySQLConnection>();
-        
-        for(Connection connection : connections) {
-            mySQLConnections.add(toMySQLConnection(connection, userID));
-        }
-        
-        return mySQLConnections;
     }
 
     /**
@@ -261,6 +239,35 @@ public class ConnectionService {
         return names;
 
     }
+    
+    /**
+     * Returns a list of the IDs of all connections with a given parent ID.
+     * @param parentID The ID of the parent for all the queried connections.
+     * @return a list of the IDs of all connections with a given parent ID.
+     */
+    public List<Integer> getAllConnectionIDs(Integer parentID) {
+        
+        // Create criteria
+        ConnectionExample example = new ConnectionExample();
+        Criteria criteria = example.createCriteria();
+        
+        if(parentID != null)
+            criteria.andConnection_idEqualTo(parentID);
+        else
+            criteria.andConnection_idIsNull();
+        
+        // Query the connections
+        List<Connection> connections = connectionDAO.selectByExample(example);
+        
+        // List of IDs of connections with the given parent
+        List<Integer> connectionIDs = new ArrayList<Integer>();
+        
+        for(Connection connection : connections) {
+            connectionIDs.add(connection.getConnection_id());
+        }
+        
+        return connectionIDs;
+    }
 
     /**
      * Convert the given database-retrieved Connection into a MySQLConnection.
@@ -295,8 +302,9 @@ public class ConnectionService {
         MySQLConnection mySQLConnection = mySQLConnectionProvider.get();
         mySQLConnection.init(
             connection.getConnection_id(),
-            connection.getConnection_group_id(),
+            connection.getParent_id(),
             connection.getConnection_name(),
+            Integer.toString(connection.getConnection_id()),
             config,
             retrieveHistory(connection.getConnection_id()),
             userID
@@ -451,18 +459,28 @@ public class ConnectionService {
     }
 
     /**
-     * Get the names of all the connections defined in the system.
+     * Get the names of all the connections defined in the system 
+     * with a certain parentID.
      *
-     * @return A Set of names of all the connections defined in the system.
+     * @return A Set of names of all the connections defined in the system
+     * with the given parentID.
      */
-    public Set<String> getAllConnectionNames() {
+    public Set<String> getAllConnectionNames(Integer parentID) {
 
         // Set of all present connection names
         Set<String> names = new HashSet<String>();
+        
+        // Set up Criteria
+        ConnectionExample example = new ConnectionExample();
+        Criteria criteria = example.createCriteria();
+        if(parentID != null)
+            criteria.andParent_idEqualTo(parentID);
+        else
+            criteria.andParent_idIsNull();
 
-        // Query all connection names
+        // Query connection names
         List<Connection> connections =
-                connectionDAO.selectByExample(new ConnectionExample());
+                connectionDAO.selectByExample(example);
         for (Connection connection : connections)
             names.add(connection.getConnection_name());
 
@@ -471,7 +489,10 @@ public class ConnectionService {
     }
 
     /**
-     * Get the connection IDs of all the connections defined in the system.
+     * Get the connection IDs of all the connections defined in the system 
+     * with a certain parent connection group.
+     * 
+     * @param parentID The parent connection group ID.
      *
      * @return A list of connection IDs of all the connections defined in the system.
      */
@@ -480,9 +501,17 @@ public class ConnectionService {
         // Set of all present connection IDs
         List<Integer> connectionIDs = new ArrayList<Integer>();
 
-        // Query all connection IDs
+        // Create the criteria
+        ConnectionExample example = new ConnectionExample();
+        /*Criteria criteria = example.createCriteria();
+        if(parentID != null)
+            criteria.andParent_idEqualTo(parentID);
+        else
+            criteria.andParent_idIsNull();*/
+        
+        // Query the connections
         List<Connection> connections =
-                connectionDAO.selectByExample(new ConnectionExample());
+                connectionDAO.selectByExample(example);
         for (Connection connection : connections)
             connectionIDs.add(connection.getConnection_id());
 

@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.AbstractConnectionGroup;
@@ -64,6 +65,11 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * The ID of the parent connection group for this connection group.
      */
     private Integer parentID;
+    
+    /**
+     * The type of this connection group.
+     */
+    private String type;
 
     /**
      * The ID of the user who queried or created this connection group.
@@ -73,12 +79,12 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     /**
      * A Directory of connections that have this connection group as a parent.
      */
-    private Directory<String, Connection> connectionDirectory = null;
+    private ConnectionDirectory connectionDirectory = null;
     
     /**
      * A Directory of connection groups that have this connection group as a parent.
      */
-    private Directory<String, ConnectionGroup> connectionGroupDirectory = null;
+    private ConnectionGroupDirectory connectionGroupDirectory = null;
 
     /**
      * Service managing connections.
@@ -97,6 +103,16 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      */
     @Inject
     private PermissionCheckService permissionCheckService;
+    
+    /**
+     * Service for creating new ConnectionDirectory objects.
+     */
+    @Inject Provider<ConnectionDirectory> connectionDirectoryProvider;
+    
+    /**
+     * Service for creating new ConnectionGroupDirectory objects.
+     */
+    @Inject Provider<ConnectionGroupDirectory> connectionGroupDirectoryProvider;
 
     /**
      * Create a default, empty connection group.
@@ -140,42 +156,74 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * Initialize from explicit values.
      *
      * @param connectionGroupID The ID of the associated database record, if any.
-     * @param parentID The D of the parent connection group for this connection group, if any.
+     * @param parentID The ID of the parent connection group for this connection group, if any.
      * @param identifier The unique identifier associated with this connection group.
+     * @param type The type of this connection group.
      * @param userID The IID of the user who queried this connection.
      */
-    public void init(Integer connectionGroupID, Integer parentID, String identifier, int userID) {
+    public void init(Integer connectionGroupID, Integer parentID, String name, 
+            String identifier, String type, int userID) {
         this.connectionGroupID = connectionGroupID;
         this.parentID = parentID;
+        setName(name);
         setIdentifier(identifier);
+        this.type = type;
         this.userID = userID;
+        
+        connectionDirectory = connectionDirectoryProvider.get();
+        connectionDirectory.init(userID, parentID);
+        
+        connectionGroupDirectory = connectionGroupDirectoryProvider.get();
+        //connectionGroupDirectory.init(userID, parentID);
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionGroupService.connect(this, info, userID);
-    }
-    
-    private void loadConnectionDirectory() {
         
+        // Verify permission to use the connection group for balancing purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (this.connectionGroupID, this.userID, MySQLConstants.CONNECTION_GROUP_BALANCING);
+        
+        return connectionGroupService.connect(this, info, userID);
     }
     
     @Override
     public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
-        if(connectionDirectory == null)
-            loadConnectionDirectory();
         return connectionDirectory;
-    }
-    
-    private void loadConnectionGroupDirectory() {
-        
     }
 
     @Override
     public Directory<String, ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
-        if(connectionGroupDirectory == null)
-            loadConnectionGroupDirectory();
         return connectionGroupDirectory;
+    }
+    
+    /**
+     * Returns the connection group type.
+     * @return the connection group type.
+     */
+    public String getType() {
+        return type;
+    }
+    
+    /**
+     * Sets the connection group type.
+     * @param type the connection group type.
+     */
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public void setBalancing(boolean balancing) {
+        if(balancing)
+            this.type = MySQLConstants.CONNECTION_GROUP_BALANCING;
+        else
+            this.type = MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL;
+    }
+
+    @Override
+    public boolean isBalancing() {
+        return MySQLConstants.CONNECTION_GROUP_BALANCING.equals(this.type);
     }
 
 }
