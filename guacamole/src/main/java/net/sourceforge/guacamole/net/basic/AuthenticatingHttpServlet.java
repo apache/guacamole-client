@@ -226,10 +226,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
         HttpSession httpSession = request.getSession(true);
 
+        // Retrieve username and password from parms
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
+
         // Build credentials object
         Credentials credentials = new Credentials();
         credentials.setSession(httpSession);
         credentials.setRequest(request);
+        credentials.setUsername(username);
+        credentials.setPassword(password);
 
         try {
 
