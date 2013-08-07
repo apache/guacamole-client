@@ -1,6 +1,9 @@
 package net.sourceforge.guacamole.net.auth;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -153,31 +156,43 @@ public class Credentials implements Serializable {
 
             // Get name/value pairs
             String[] nv_pairs = query_string.split("&");
-
-            // Add each pair to hash
             queryParameters = new HashMap<String, String>();
-            for (String nv_pair : nv_pairs) {
 
-                String name;
-                String value;
-                
-                int eq = nv_pair.indexOf('=');
+            try {
 
-                // If no equals sign, parameter is blank
-                if (eq == -1) {
-                    name  = nv_pair;
-                    value = "";
+                // Add each pair to hash
+                for (String nv_pair : nv_pairs) {
+
+                    String name;
+                    String value;
+                    
+                    int eq = nv_pair.indexOf('=');
+
+                    // If no equals sign, parameter is blank
+                    if (eq == -1) {
+                        name  = nv_pair;
+                        value = "";
+                    }
+
+                    // Otherwise, parse pair
+                    else {
+                        name  = nv_pair.substring(0, eq);
+                        value = nv_pair.substring(eq+1);
+                    }
+                    
+                    // Decode and save pair to hash
+                    queryParameters.put(
+                        URLDecoder.decode(name,  "UTF-8"),
+                        URLDecoder.decode(value, "UTF-8")
+                    );
+                    
                 }
 
-                // Otherwise, parse pair
-                else {
-                    name  = nv_pair.substring(0, eq);
-                    value = nv_pair.substring(eq+1);
-                }
-                
-                // Save pair to hash
-                queryParameters.put(name, value);
-                
+            }
+
+            // If UTF-8 unsupported, throw fatal error
+            catch (UnsupportedEncodingException e) {
+                throw new UnsupportedOperationException("Unexpected lack of support for UTF-8", e);
             }
             
         } // end if parameters cached
