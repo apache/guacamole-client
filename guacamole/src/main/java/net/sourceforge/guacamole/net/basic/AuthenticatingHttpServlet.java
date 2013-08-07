@@ -158,17 +158,6 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     }
 
     /**
-     * Sends a predefined, generic error message to the user, along with a
-     * "403 - Forbidden" HTTP status code in the response.
-     *
-     * @param response The response to send the error within.
-     * @throws IOException If an error occurs while sending the error.
-     */
-    private void failAuthentication(HttpServletResponse response) throws IOException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    /**
      * Sends an error on the given HTTP response with the given integer error
      * code.
      *
@@ -226,91 +215,54 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
         HttpSession httpSession = request.getSession(true);
 
-        SessionListenerCollection listeners;
-        try {
-            listeners = new SessionListenerCollection(httpSession);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Failed to retrieve listeners. Authentication canceled.", e);
-            failAuthentication(response);
-            return;
-        }
-
         // Build credentials object
         Credentials credentials = new Credentials();
         credentials.setSession(httpSession);
         credentials.setRequest(request);
 
-        // Try to get user context from session
-        UserContext context = getUserContext(httpSession);
+        try {
 
-        // If no cached context, attempt to get new context
-        if (context == null) {
+            SessionListenerCollection listeners = new SessionListenerCollection(httpSession);
 
-            try {
+            // If no cached context, attempt to get new context
+            UserContext context = getUserContext(httpSession);
+            if (context == null) {
+
                 context = authProvider.getUserContext(credentials);
-            }
 
-            // Log any authentication errors
-            catch (GuacamoleException e) {
-                logger.error("Error retrieving context for user \"{}\".",
-                        credentials.getUsername(), e);
-            }
+                // If successful, log success and notify listeners
+                if (context != null) {
+                    
+                    // Log successful authentication
+                    logger.info("User \"{}\" successfully authenticated from {}.",
+                            context.self().getUsername(), request.getRemoteAddr());
 
-            // If successful, log success and notify listeners
-            if (context != null) {
-                
-                // Log successful authentication
-                logger.info("User \"{}\" successfully authenticated from {}.",
-                        context.self().getUsername(), request.getRemoteAddr());
-
-                // Notify any listeners of success, cancel if requested
-                try {
                     if (!notifySuccess(listeners, context, credentials)) {
                         logger.info("Successful authentication canceled by hook.");
                         context = null;
                     }
-                }
 
-                // Cancel authentication success if hook throws exception
-                catch (GuacamoleException e) {
-                    logger.error("Successful authentication canceled by error in hook.", e);
-                    context = null;
-                }
+                } // end if auth success
 
-            } // end if auth success
+            }
 
-        } // end if no cached context
-
-        // Otherwise, update existing context
-        else {
-
-            try {
+            // Otherwise, update existing context
+            else
                 context = authProvider.updateUserContext(context, credentials);
+
+            // If no context, fail authentication, notify listeners
+            if (context == null) {
+                logger.warn("Authentication attempt from {} for user \"{}\" failed.",
+                        request.getRemoteAddr(), credentials.getUsername());
+
+                notifyFailed(listeners, credentials);
+                sendError(response, HttpServletResponse.SC_FORBIDDEN,
+                    "Permission denied.");
+                return;
             }
 
-            // If error updating context, fail authentication, notify listeners
-            catch (GuacamoleException e) {
-                logger.error("Error updating context for user \"{}\".",
-                        context.self().getUsername(), e);
-            }
-
-        } // end if cached context
-
-        // If no context, fail authentication, notify listeners
-        if (context == null) {
-            logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                    request.getRemoteAddr(), credentials.getUsername());
-
-            notifyFailed(listeners, credentials);
-            failAuthentication(response);
-            return;
-        }
-
-        // Associate context and credentials with session
-        httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
-
-        try {
+            // Associate (possibly updated) context with session
+            httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
 
             // Allow servlet to run now that authentication has been validated
             authenticatedService(context, request, response);
