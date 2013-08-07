@@ -62,4 +62,25 @@ public interface AuthenticationProvider {
     UserContext getUserContext(Credentials credentials)
             throws GuacamoleException;
 
+    /**
+     * Returns a new or updated UserContext for the user authorized by the
+     * give credentials and having the given existing UserContext. Note that
+     * because this function will be called for all future requests after
+     * initial authentication, including tunnel requests, care must be taken
+     * to avoid using functions of HttpServletRequest which invalidate the
+     * entire request body, such as getParameter().
+     * 
+     * @param context The existing UserContext belonging to the user in
+     *                question.
+     * @param credentials The credentials to use to retrieve or update the
+     *                    environment.
+     * @return The updated UserContext, which need not be the same as the
+     *         UserContext given, or null if the user is no longer authorized.
+     *         
+     * @throws GuacamoleException If an error occurs while updating the
+     *                            UserContext.
+     */
+    UserContext updateUserContext(UserContext context, Credentials credentials)
+            throws GuacamoleException;
+    
 }

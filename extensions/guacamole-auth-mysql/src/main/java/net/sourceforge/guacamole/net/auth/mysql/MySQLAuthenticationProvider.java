@@ -179,4 +179,13 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         );
     } // end of constructor
 
+    @Override
+    public UserContext updateUserContext(UserContext context,
+        Credentials credentials) throws GuacamoleException {
+
+        // No need to update the context
+        return context;
+
+    }
+
 }
