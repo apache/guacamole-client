@@ -48,18 +48,23 @@ import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionExample;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
@@ -91,6 +96,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     private ConnectionService connectionService;
 
     /**
+     * Service for accessing connection groups.
+     */
+    @Inject
+    private ConnectionGroupService connectionGroupService;
+
+    /**
      * DAO for accessing user permissions, which will be injected.
      */
     @Inject
@@ -101,6 +112,12 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
      */
     @Inject
     private ConnectionPermissionMapper connectionPermissionDAO;
+
+    /**
+     * DAO for accessing connection group permissions, which will be injected.
+     */
+    @Inject
+    private ConnectionGroupPermissionMapper connectionGroupPermissionDAO;
 
     /**
      * DAO for accessing system permissions, which will be injected.
@@ -210,6 +227,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Partition given permissions by permission type
         List<UserPermission> newUserPermissions = new ArrayList<UserPermission>();
         List<ConnectionPermission> newConnectionPermissions = new ArrayList<ConnectionPermission>();
+        List<ConnectionGroupPermission> newConnectionGroupPermissions = new ArrayList<ConnectionGroupPermission>();
         List<SystemPermission> newSystemPermissions = new ArrayList<SystemPermission>();
 
         for (Permission permission : permissions) {
@@ -220,6 +238,9 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             else if (permission instanceof ConnectionPermission)
                 newConnectionPermissions.add((ConnectionPermission) permission);
 
+            else if (permission instanceof ConnectionGroupPermission)
+                newConnectionGroupPermissions.add((ConnectionGroupPermission) permission);
+
             else if (permission instanceof SystemPermission)
                 newSystemPermissions.add((SystemPermission) permission);
         }
@@ -227,6 +248,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Create the new permissions
         createUserPermissions(user_id, newUserPermissions);
         createConnectionPermissions(user_id, newConnectionPermissions);
+        createConnectionGroupPermissions(user_id, newConnectionGroupPermissions);
         createSystemPermissions(user_id, newSystemPermissions);
 
     }
@@ -247,6 +269,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Partition given permissions by permission type
         List<UserPermission> removedUserPermissions = new ArrayList<UserPermission>();
         List<ConnectionPermission> removedConnectionPermissions = new ArrayList<ConnectionPermission>();
+        List<ConnectionGroupPermission> removedConnectionGroupPermissions = new ArrayList<ConnectionGroupPermission>();
         List<SystemPermission> removedSystemPermissions = new ArrayList<SystemPermission>();
 
         for (Permission permission : permissions) {
@@ -257,6 +280,9 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             else if (permission instanceof ConnectionPermission)
                 removedConnectionPermissions.add((ConnectionPermission) permission);
 
+            else if (permission instanceof ConnectionGroupPermission)
+                removedConnectionGroupPermissions.add((ConnectionGroupPermission) permission);
+
             else if (permission instanceof SystemPermission)
                 removedSystemPermissions.add((SystemPermission) permission);
         }
@@ -264,6 +290,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
         // Delete the removed permissions.
         deleteUserPermissions(user_id, removedUserPermissions);
         deleteConnectionPermissions(user_id, removedConnectionPermissions);
+        deleteConnectionGroupPermissions(user_id, removedConnectionGroupPermissions);
         deleteSystemPermissions(user_id, removedSystemPermissions);
 
     }
@@ -427,6 +454,59 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     }
 
     /**
+     * Create any new permissions having to do with connection groups 
+     * for a given user.
+     *
+     * @param user_id The ID of the user to assign or remove permissions from.
+     * @param permissions The new permissions the user should have after this
+     *                    operation completes.
+     * @throws GuacamoleException If permission to alter the access permissions
+     *                            of affected objects is deniedD
+     */
+    private void createConnectionGroupPermissions(int user_id,
+            Collection<ConnectionGroupPermission> permissions)
+            throws GuacamoleException {
+
+        // If no permissions given, stop now
+        if(permissions.isEmpty())
+            return;
+
+        // Get list of administerable connection group IDs
+        List<Integer> administerableConnectionGroupIDs =
+            permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
+                MySQLConstants.CONNECTION_GROUP_ADMINISTER);
+
+        // Get set of names corresponding to administerable connection groups
+        Map<String, Integer> administerableConnectionGroups =
+                connectionGroupService.translateNames(administerableConnectionGroupIDs);
+
+        // Insert all given permissions
+        for (ConnectionGroupPermission permission : permissions) {
+
+            // Get original ID
+            Integer connection_group_id =
+                    administerableConnectionGroups.get(permission.getObjectIdentifier());
+
+            // Throw exception if permission to administer this connection group
+            // is not granted
+            if (connection_group_id == null)
+                throw new GuacamoleSecurityException(
+                      "User #" + this.user_id
+                    + " does not have permission to administrate connection group"
+                    + permission.getObjectIdentifier());
+
+
+            // Create new permission
+            ConnectionGroupPermissionKey newPermission = new ConnectionGroupPermissionKey();
+            newPermission.setUser_id(user_id);
+            newPermission.setPermission(MySQLConstants.getConnectionConstant(permission.getType()));
+            newPermission.setConnection_group_id(connection_group_id);
+            connectionGroupPermissionDAO.insert(newPermission);
+
+        }
+    }
+
+    /**
      * Delete permissions having to do with connections for a given user.
      *
      * @param user_id The ID of the user to change the permissions of.
@@ -473,6 +553,58 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
                 .andPermissionEqualTo(MySQLConstants.getConnectionConstant(permission.getType()))
                 .andConnection_idEqualTo(connection_id);
             connectionPermissionDAO.deleteByExample(connectionPermissionExample);
+
+        }
+
+    }
+
+    /**
+     * Delete permissions having to do with connection groups for a given user.
+     *
+     * @param user_id The ID of the user to change the permissions of.
+     * @param permissions The permissions the given user should no longer have
+     *                    when this operation completes.
+     * @throws GuacamoleException If permission to alter the access permissions
+     *                            of affected objects is denied.
+     */
+    private void deleteConnectionGroupPermissions(int user_id,
+            Collection<ConnectionGroupPermission> permissions)
+            throws GuacamoleException {
+
+        // If no permissions given, stop now
+        if(permissions.isEmpty())
+            return;
+
+        // Get list of administerable connection group IDs
+        List<Integer> administerableConnectionGroupIDs =
+            permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
+                MySQLConstants.CONNECTION_GROUP_ADMINISTER);
+
+        // Get set of names corresponding to administerable connection groups
+        Map<String, Integer> administerableConnectionGroups =
+                connectionGroupService.translateNames(administerableConnectionGroupIDs);
+
+        // Delete requested permissions
+        for (ConnectionGroupPermission permission : permissions) {
+
+            // Get original ID
+            Integer connection_group_id =
+                    administerableConnectionGroups.get(permission.getObjectIdentifier());
+
+            // Verify that the user actually has permission to administrate
+            // every one of these connection groups
+            if (connection_group_id == null)
+                throw new GuacamoleSecurityException(
+                      "User #" + this.user_id
+                    + " does not have permission to administrate connection group"
+                    + permission.getObjectIdentifier());
+
+            ConnectionGroupPermissionExample connectionGroupPermissionExample = new ConnectionGroupPermissionExample();
+            connectionGroupPermissionExample.createCriteria()
+                .andUser_idEqualTo(user_id)
+                .andPermissionEqualTo(MySQLConstants.getConnectionGroupConstant(permission.getType()))
+                .andConnection_group_idEqualTo(connection_group_id);
+            connectionGroupPermissionDAO.deleteByExample(connectionGroupPermissionExample);
 
         }
 
