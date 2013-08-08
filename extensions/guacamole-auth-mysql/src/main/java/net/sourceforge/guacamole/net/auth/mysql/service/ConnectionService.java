@@ -376,15 +376,18 @@ public class ConnectionService {
      * @param name The name to assign to the new connection.
      * @param protocol The protocol to assign to the new connection.
      * @param userID The ID of the user who created this connection.
+     * @param parentID The ID of the parent connection group.
      * @return A new MySQLConnection containing the data of the newly created
      *         connection.
      */
-    public MySQLConnection createConnection(String name, String protocol, int userID) {
+    public MySQLConnection createConnection(String name, String protocol,
+            int userID, Integer parentID) {
 
         // Initialize database connection
         Connection connection = new Connection();
         connection.setConnection_name(name);
         connection.setProtocol(protocol);
+        connection.setParent_id(parentID);
 
         // Create connection
         connectionDAO.insert(connection);

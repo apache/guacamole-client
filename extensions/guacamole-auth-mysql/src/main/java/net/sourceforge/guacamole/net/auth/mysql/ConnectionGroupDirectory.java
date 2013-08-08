@@ -162,7 +162,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Create connection group
         MySQLConnectionGroup connectionGroup = connectionGroupService
-                .createConnectionGroup(name, user_id);
+                .createConnectionGroup(name, user_id, parentID);
 
         // Finally, give the current user full access to the newly created
         // connection group.

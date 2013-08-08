@@ -276,11 +276,13 @@ public class ConnectionGroupService {
      * @return A new MySQLConnectionGroup containing the data of the newly created
      *         connection group.
      */
-    public MySQLConnectionGroup createConnectionGroup(String name, int userID) {
+    public MySQLConnectionGroup createConnectionGroup(String name, int userID, 
+            Integer parentID) {
 
         // Initialize database connection
         ConnectionGroup connectionGroup = new ConnectionGroup();
         connectionGroup.setConnection_group_name(name);
+        connectionGroup.setParent_id(parentID);
 
         // Create connection
         connectionGroupDAO.insert(connectionGroup);
