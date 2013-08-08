@@ -201,67 +201,6 @@ public class ConnectionService {
         // Otherwise, return found connection
         return toMySQLConnection(connection, userID);
     }
-
-    /**
-     * Retrieves a translation map of connection names to their corresponding
-     * IDs.
-     *
-     * @param ids The IDs of the connections to retrieve the names of.
-     * @return A map containing the names of all connections and their
-     *         corresponding IDs.
-     */
-    public Map<String, Integer> translateNames(List<Integer> ids) {
-
-        // If no IDs given, just return empty map
-        if (ids.isEmpty())
-            return Collections.EMPTY_MAP;
-
-        // Map of all names onto their corresponding IDs.
-        Map<String, Integer> names = new HashMap<String, Integer>();
-
-        // Get all connections having the given IDs
-        ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idIn(ids);
-        List<Connection> connections = connectionDAO.selectByExample(example);
-
-        // Produce set of names
-        for (Connection connection : connections)
-            names.put(connection.getConnection_name(),
-                      connection.getConnection_id());
-
-        return names;
-
-    }
-
-    /**
-     * Retrieves a map of all connection names for the given IDs.
-     *
-     * @param ids The IDs of the connections to retrieve the names of.
-     * @return A map containing the names of all connections and their
-     *         corresponding IDs.
-     */
-    public Map<Integer, String> retrieveNames(Collection<Integer> ids) {
-
-        // If no IDs given, just return empty map
-        if (ids.isEmpty())
-            return Collections.EMPTY_MAP;
-
-        // Map of all names onto their corresponding IDs.
-        Map<Integer, String> names = new HashMap<Integer, String>();
-
-        // Get all connections having the given IDs
-        ConnectionExample example = new ConnectionExample();
-        example.createCriteria().andConnection_idIn(Lists.newArrayList(ids));
-        List<Connection> connections = connectionDAO.selectByExample(example);
-
-        // Produce set of names
-        for (Connection connection : connections)
-            names.put(connection.getConnection_id(),
-                      connection.getConnection_name());
-
-        return names;
-
-    }
     
     /**
      * Returns a list of the IDs of all connections with a given parent ID.
@@ -483,16 +422,16 @@ public class ConnectionService {
     }
 
     /**
-     * Get the names of all the connections defined in the system 
+     * Get the identifiers of all the connections defined in the system 
      * with a certain parentID.
      *
-     * @return A Set of names of all the connections defined in the system
+     * @return A Set of identifiers of all the connections defined in the system
      * with the given parentID.
      */
-    public Set<String> getAllConnectionNames(Integer parentID) {
+    public Set<String> getAllConnectionIdentifiers(Integer parentID) {
 
-        // Set of all present connection names
-        Set<String> names = new HashSet<String>();
+        // Set of all present connection identifiers
+        Set<String> identifiers = new HashSet<String>();
         
         // Set up Criteria
         ConnectionExample example = new ConnectionExample();
@@ -502,13 +441,13 @@ public class ConnectionService {
         else
             criteria.andParent_idIsNull();
 
-        // Query connection names
+        // Query connection identifiers
         List<Connection> connections =
                 connectionDAO.selectByExample(example);
         for (Connection connection : connections)
-            names.add(connection.getConnection_name());
+            identifiers.add(String.valueOf(connection.getConnection_id()));
 
-        return names;
+        return identifiers;
 
     }
 

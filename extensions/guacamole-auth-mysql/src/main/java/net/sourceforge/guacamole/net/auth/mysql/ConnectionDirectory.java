@@ -330,6 +330,12 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Verify permission to update the to connection group
         permissionCheckService.verifyConnectionGroupAccess(this.user_id,
                 toConnectionGroupID, MySQLConstants.CONNECTION_GROUP_UPDATE);
+
+        // Verify that no connection already exists with this name.
+        MySQLConnection previousConnection =
+                connectionService.retrieveConnection(mySQLConnection.getName(), user_id, parentID);
+        if(previousConnection != null)
+            throw new GuacamoleClientException("That connection name is already in use.");
         
         // Update the connection
         mySQLConnection.setParentID(toConnectionGroupID);

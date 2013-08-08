@@ -274,12 +274,16 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         // Verify permission to update the to connection group
         permissionCheckService.verifyConnectionGroupAccess(this.user_id,
                 toConnectionGroupID, MySQLConstants.CONNECTION_GROUP_UPDATE);
+
+        // Verify that no connection already exists with this name.
+        MySQLConnectionGroup previousConnectionGroup =
+                connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), user_id, parentID);
+        if(previousConnectionGroup != null)
+            throw new GuacamoleClientException("That connection group name is already in use.");
         
         // Update the connection
         mySQLConnectionGroup.setParentID(toConnectionGroupID);
         connectionGroupService.updateConnectionGroup(mySQLConnectionGroup);
     }
-
-
 
 }

@@ -38,6 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -419,24 +420,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             return;
 
         // Get list of administerable connection IDs
-        List<Integer> administerableConnectionIDs =
+        Set<Integer> administerableConnectionIDs = Sets.<Integer>newHashSet(
             permissionCheckService.retrieveConnectionIDs(this.user_id,
-                MySQLConstants.CONNECTION_ADMINISTER);
-
-        // Get set of names corresponding to administerable connections
-        Map<String, Integer> administerableConnections =
-                connectionService.translateNames(administerableConnectionIDs);
+                MySQLConstants.CONNECTION_ADMINISTER));
 
         // Insert all given permissions
         for (ConnectionPermission permission : permissions) {
 
             // Get original ID
-            Integer connection_id =
-                    administerableConnections.get(permission.getObjectIdentifier());
+            Integer connection_id = Integer.valueOf(permission.getObjectIdentifier());
 
             // Throw exception if permission to administer this connection
             // is not granted
-            if (connection_id == null)
+            if (!administerableConnectionIDs.contains(connection_id))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
@@ -472,24 +468,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             return;
 
         // Get list of administerable connection group IDs
-        List<Integer> administerableConnectionGroupIDs =
+        Set<Integer> administerableConnectionGroupIDs = Sets.<Integer>newHashSet(
             permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
-                MySQLConstants.CONNECTION_GROUP_ADMINISTER);
-
-        // Get set of names corresponding to administerable connection groups
-        Map<String, Integer> administerableConnectionGroups =
-                connectionGroupService.translateNames(administerableConnectionGroupIDs);
+                MySQLConstants.CONNECTION_GROUP_ADMINISTER));
 
         // Insert all given permissions
         for (ConnectionGroupPermission permission : permissions) {
 
             // Get original ID
-            Integer connection_group_id =
-                    administerableConnectionGroups.get(permission.getObjectIdentifier());
+            Integer connection_group_id = Integer.valueOf(permission.getObjectIdentifier());
 
             // Throw exception if permission to administer this connection group
             // is not granted
-            if (connection_group_id == null)
+            if (!administerableConnectionGroupIDs.contains(connection_group_id))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection group"
@@ -524,24 +515,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             return;
 
         // Get list of administerable connection IDs
-        List<Integer> administerableConnectionIDs =
+        Set<Integer> administerableConnectionIDs = Sets.<Integer>newHashSet(
             permissionCheckService.retrieveConnectionIDs(this.user_id,
-                MySQLConstants.CONNECTION_ADMINISTER);
-
-        // Get set of names corresponding to administerable connections
-        Map<String, Integer> administerableConnections =
-                connectionService.translateNames(administerableConnectionIDs);
+                MySQLConstants.CONNECTION_ADMINISTER));
 
         // Delete requested permissions
         for (ConnectionPermission permission : permissions) {
 
             // Get original ID
-            Integer connection_id =
-                    administerableConnections.get(permission.getObjectIdentifier());
+            Integer connection_id = Integer.valueOf(permission.getObjectIdentifier());
 
             // Verify that the user actually has permission to administrate
             // every one of these connections
-            if (connection_id == null)
+            if (!administerableConnectionIDs.contains(connection_id))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection "
@@ -576,24 +562,19 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
             return;
 
         // Get list of administerable connection group IDs
-        List<Integer> administerableConnectionGroupIDs =
+        Set<Integer> administerableConnectionGroupIDs = Sets.<Integer>newHashSet(
             permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
-                MySQLConstants.CONNECTION_GROUP_ADMINISTER);
-
-        // Get set of names corresponding to administerable connection groups
-        Map<String, Integer> administerableConnectionGroups =
-                connectionGroupService.translateNames(administerableConnectionGroupIDs);
+                MySQLConstants.CONNECTION_GROUP_ADMINISTER));
 
         // Delete requested permissions
         for (ConnectionGroupPermission permission : permissions) {
 
             // Get original ID
-            Integer connection_group_id =
-                    administerableConnectionGroups.get(permission.getObjectIdentifier());
+            Integer connection_group_id = Integer.valueOf(permission.getObjectIdentifier());
 
             // Verify that the user actually has permission to administrate
             // every one of these connection groups
-            if (connection_group_id == null)
+            if (!administerableConnectionGroupIDs.contains(connection_group_id))
                 throw new GuacamoleSecurityException(
                       "User #" + this.user_id
                     + " does not have permission to administrate connection group"

@@ -577,7 +577,7 @@ public class PermissionCheckService {
 
         // A system administrator has access to all connections.
         if(checkSystemAdministratorAccess(userID))
-            return connectionService.getAllConnectionNames(parentID);
+            return connectionService.getAllConnectionIdentifiers(parentID);
 
         // List of all connection IDs for which this user has access
         List<Integer> connectionIDs =
@@ -607,7 +607,7 @@ public class PermissionCheckService {
 
         // A system administrator has access to all connections.
         if(checkSystemAdministratorAccess(userID))
-            return connectionService.getAllConnectionNames(parentID);
+            return connectionGroupService.getAllConnectionGroupIdentifiers(parentID);
 
         // List of all connection group IDs for which this user has access
         List<Integer> connectionGroupIDs =
@@ -686,22 +686,13 @@ public class PermissionCheckService {
         List<ConnectionPermissionKey> connectionPermissions =
                 connectionPermissionDAO.selectByExample(connectionPermissionExample);
 
-        // Get list of affected connection IDs
-        List<Integer> connectionIDs = new ArrayList<Integer>();
-        for(ConnectionPermissionKey connectionPermission : connectionPermissions)
-            connectionIDs.add(connectionPermission.getConnection_id());
-
-        // Get corresponding names
-        Map<Integer, String> affectedConnections =
-                connectionService.retrieveNames(connectionIDs);
-
         // Add connection permissions
         for(ConnectionPermissionKey connectionPermission : connectionPermissions) {
 
             // Construct permission from data
             ConnectionPermission permission = new ConnectionPermission(
                 ConnectionPermission.Type.valueOf(connectionPermission.getPermission()),
-                affectedConnections.get(connectionPermission.getConnection_id())
+                String.valueOf(connectionPermission.getConnection_id())
             );
 
             // Add to set
@@ -732,22 +723,13 @@ public class PermissionCheckService {
         List<ConnectionGroupPermissionKey> connectionGroupPermissions =
                 connectionGroupPermissionDAO.selectByExample(connectionGroupPermissionExample);
 
-        // Get list of affected connection IDs
-        List<Integer> connectionGroupIDs = new ArrayList<Integer>();
-        for(ConnectionGroupPermissionKey connectionGroupPermission : connectionGroupPermissions)
-            connectionGroupIDs.add(connectionGroupPermission.getConnection_group_id());
-
-        // Get corresponding names
-        Map<Integer, String> affectedConnectionGroups =
-                connectionGroupService.retrieveNames(connectionGroupIDs);
-
         // Add connection permissions
         for(ConnectionGroupPermissionKey connectionGroupPermission : connectionGroupPermissions) {
 
             // Construct permission from data
             ConnectionGroupPermission permission = new ConnectionGroupPermission(
                 ConnectionGroupPermission.Type.valueOf(connectionGroupPermission.getPermission()),
-                affectedConnectionGroups.get(connectionGroupPermission.getConnection_group_id())
+                String.valueOf(connectionGroupPermission.getConnection_group_id())
             );
 
             // Add to set

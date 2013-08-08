@@ -161,87 +161,6 @@ public class ConnectionGroupService {
             GuacamoleClientInformation info, int userID) {
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
-    /**
-     * Retrieves a map of all connection group names for the given IDs.
-     *
-     * @param ids The IDs of the connection groups to retrieve the names of.
-     * @return A map containing the names of all connection groups and their
-     *         corresponding IDs.
-     */
-    public Map<Integer, String> retrieveNames(Collection<Integer> ids) {
-
-        // If no IDs given, just return empty map
-        if (ids.isEmpty())
-            return Collections.EMPTY_MAP;
-
-        // Map of all names onto their corresponding IDs.
-        Map<Integer, String> names = new HashMap<Integer, String>();
-
-        // Get all connection groups having the given IDs
-        ConnectionGroupExample example = new ConnectionGroupExample();
-        example.createCriteria().andConnection_group_idIn(Lists.newArrayList(ids));
-        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
-
-        // Produce set of names
-        for (ConnectionGroup connectionGroup : connectionGroups)
-            names.put(connectionGroup.getConnection_group_id(),
-                      connectionGroup.getConnection_group_name());
-
-        return names;
-
-    }
-
-    /**
-     * Get the names of all the connection groups defined in the system.
-     *
-     * @return A Set of names of all the connection groups defined in the system.
-     */
-    public Set<String> getAllConnectionGroupNames() {
-
-        // Set of all present connection group names
-        Set<String> names = new HashSet<String>();
-
-        // Query all connection group names
-        List<ConnectionGroup> connectionGroups =
-                connectionGroupDAO.selectByExample(new ConnectionGroupExample());
-        for (ConnectionGroup connectionGroup : connectionGroups)
-            names.add(connectionGroup.getConnection_group_name());
-
-        return names;
-
-    }
-
-    /**
-     * Retrieves a translation map of connection group names to their 
-     * corresponding IDs.
-     *
-     * @param ids The IDs of the connection groups to retrieve the names of.
-     * @return A map containing the names of all connection groups and their
-     *         corresponding IDs.
-     */
-    public Map<String, Integer> translateNames(List<Integer> ids) {
-
-        // If no IDs given, just return empty map
-        if (ids.isEmpty())
-            return Collections.EMPTY_MAP;
-
-        // Map of all names onto their corresponding IDs.
-        Map<String, Integer> names = new HashMap<String, Integer>();
-
-        // Get all connections having the given IDs
-        ConnectionGroupExample example = new ConnectionGroupExample();
-        example.createCriteria().andConnection_group_idIn(ids);
-        List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);
-
-        // Produce set of names
-        for (ConnectionGroup connectionGroup : connectionGroups)
-            names.put(connectionGroup.getConnection_group_name(),
-                      connectionGroup.getConnection_group_id());
-
-        return names;
-
-    }
     
     /**
      * Returns a list of the IDs of all connection groups with a given parent ID.
@@ -270,6 +189,36 @@ public class ConnectionGroupService {
         }
         
         return connectionGroupIDs;
+    }
+
+    /**
+     * Get the identifiers of all the connection groups defined in the system 
+     * with a certain parentID.
+     *
+     * @return A Set of identifiers of all the connection groups defined 
+     * in the system with the given parentID.
+     */
+    public Set<String> getAllConnectionGroupIdentifiers(Integer parentID) {
+
+        // Set of all present connection identifiers
+        Set<String> identifiers = new HashSet<String>();
+        
+        // Set up Criteria
+        ConnectionGroupExample example = new ConnectionGroupExample();
+        Criteria criteria = example.createCriteria();
+        if(parentID != null)
+            criteria.andParent_idEqualTo(parentID);
+        else
+            criteria.andParent_idIsNull();
+
+        // Query connection identifiers
+        List<ConnectionGroup> connectionGroups =
+                connectionGroupDAO.selectByExample(example);
+        for (ConnectionGroup connectionGroup : connectionGroups)
+            identifiers.add(String.valueOf(connectionGroup.getConnection_group_id()));
+
+        return identifiers;
+
     }
 
     /**
