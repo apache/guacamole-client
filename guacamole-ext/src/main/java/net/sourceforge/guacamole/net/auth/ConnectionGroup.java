@@ -49,6 +49,10 @@ import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
  * @author James Muehlner
  */
 public interface ConnectionGroup {
+    
+    public enum Type {
+        ORGANIZATIONAL, BALANCING
+    };
 
     /**
      * Returns the name assigned to this ConnectionGroup.
@@ -77,17 +81,17 @@ public interface ConnectionGroup {
     public void setIdentifier(String identifier);
     
     /**
-     * Sets whether this is a balancing ConnectionGroup.
+     * Set the type of this ConnectionGroup.
      *
-     * @param balancing whether this is a balancing ConnectionGroup.
+     * @param type The type of this ConnectionGroup.
      */
-    public void setBalancing(boolean balancing);
+    public void setType(Type type);
     
     /**
-     * Returns true if this is a balancing ConnectionGroup, false otherwise.
-     * @return true if this is a balancing ConnectionGroup, false otherwise.
+     * Returns the type of this connection.
+     * @return the type of this connection.
      */
-    public boolean isBalancing();
+    public Type getType();
 
     /**
      * Retrieves a Directory which can be used to view and manipulate

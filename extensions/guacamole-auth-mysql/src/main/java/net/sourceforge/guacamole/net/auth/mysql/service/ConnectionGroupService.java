@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
@@ -353,7 +354,15 @@ public class ConnectionGroupService {
         connectionGroup.setConnection_group_id(mySQLConnectionGroup.getConnectionGroupID());
         connectionGroup.setParent_id(mySQLConnectionGroup.getParentID());
         connectionGroup.setConnection_group_name(mySQLConnectionGroup.getName());
-        connectionGroup.setType(mySQLConnectionGroup.getType());
+        
+        switch(mySQLConnectionGroup.getType()) {
+            case BALANCING :
+                connectionGroup.setType(MySQLConstants.CONNECTION_GROUP_BALANCING);
+                break;
+            case ORGANIZATIONAL:
+                connectionGroup.setType(MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                break;
+        }
 
         // Update the connection in the database
         connectionGroupDAO.updateByPrimaryKeySelective(connectionGroup);

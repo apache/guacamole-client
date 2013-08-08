@@ -64,11 +64,6 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * The ID of the parent connection group for this connection group.
      */
     private Integer parentID;
-    
-    /**
-     * The type of this connection group.
-     */
-    private String type;
 
     /**
      * The ID of the user who queried or created this connection group.
@@ -160,7 +155,6 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
         this.parentID = parentID;
         setName(name);
         setIdentifier(identifier);
-        this.type = type;
         this.userID = userID;
         
         connectionDirectory = connectionDirectoryProvider.get();
@@ -193,35 +187,6 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     @Override
     public Directory<String, ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
         return connectionGroupDirectory;
-    }
-    
-    /**
-     * Returns the connection group type.
-     * @return the connection group type.
-     */
-    public String getType() {
-        return type;
-    }
-    
-    /**
-     * Sets the connection group type.
-     * @param type the connection group type.
-     */
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    @Override
-    public void setBalancing(boolean balancing) {
-        if(balancing)
-            this.type = MySQLConstants.CONNECTION_GROUP_BALANCING;
-        else
-            this.type = MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL;
-    }
-
-    @Override
-    public boolean isBalancing() {
-        return MySQLConstants.CONNECTION_GROUP_BALANCING.equals(this.type);
     }
 
 }

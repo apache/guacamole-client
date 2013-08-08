@@ -64,6 +64,7 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
             Directory<String, ConnectionGroup> connectionGroupDirectory) {
         this.connectionDirectory = connectionDirectory;
         this.connectionGroupDirectory = connectionGroupDirectory;
+        this.setType(ConnectionGroup.Type.ORGANIZATIONAL);
     }
     
     @Override
@@ -82,17 +83,6 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     public GuacamoleSocket connect(GuacamoleClientInformation info) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void setBalancing(boolean balancing) {
-        // All SimpleConnectionGroups are organizational only
-    }
-
-    @Override
-    public boolean isBalancing() {
-        // All SimpleConnectionGroups are organizational only 
-        return false;
     }
 
 }

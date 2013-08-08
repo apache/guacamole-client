@@ -55,6 +55,11 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
      */
     private String identifier;
     
+    /**
+     * The type of this connection group.
+     */
+    private ConnectionGroup.Type type;
+    
     @Override
     public String getName() {
         return name;
@@ -73,6 +78,16 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
     @Override
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    @Override
+    public ConnectionGroup.Type getType() {
+        return type;
+    }
+    
+    @Override
+    public void setType(ConnectionGroup.Type type) {
+        this.type = type;
     }
 
     @Override
