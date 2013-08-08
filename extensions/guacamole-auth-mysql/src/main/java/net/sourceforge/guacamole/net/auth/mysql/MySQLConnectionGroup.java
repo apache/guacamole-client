@@ -176,6 +176,11 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
         // Verify permission to use the connection group for balancing purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
                 (this.connectionGroupID, this.userID, MySQLConstants.CONNECTION_GROUP_BALANCING);
+
+        // Verify permission to delete
+        permissionCheckService.verifyConnectionGroupAccess(this.userID,
+                this.connectionGroupID,
+                MySQLConstants.CONNECTION_GROUP_READ);
         
         return connectionGroupService.connect(this, info, userID);
     }
