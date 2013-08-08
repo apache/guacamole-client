@@ -146,7 +146,7 @@ GuacamoleRootUI.reset = function() {
         connections = GuacamoleService.Connections.list(parameters);
 
         // Show admin elements if admin permissions available
-        var permissions = GuacamoleService.Permissions.list();
+        var permissions = GuacamoleService.Permissions.list(null, parameters);
         if (permissions.administer
             || permissions.create_connection
             || permissions.create_user

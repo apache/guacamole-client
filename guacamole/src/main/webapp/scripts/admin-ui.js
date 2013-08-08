@@ -348,7 +348,7 @@ GuacAdmin.userPager = null;
 /**
  * Adds the user with the given name to the displayed user list.
  */
-GuacAdmin.addUser = function(name) {
+GuacAdmin.addUser = function(name, parameters) {
 
     // Create user list item
     var item = new GuacAdmin.ListItem("user", name);
@@ -363,7 +363,7 @@ GuacAdmin.addUser = function(name) {
         else GuacAdmin.selected_user = name;
 
         // Get user permissions
-        var user_perms = GuacamoleService.Permissions.list(name);
+        var user_perms = GuacamoleService.Permissions.list(name, parameters);
 
         // Permission deltas
         var added_perms   = new GuacamoleService.PermissionSet();
@@ -590,8 +590,7 @@ GuacAdmin.addUser = function(name) {
                     password = null;
 
                 // Save user
-                GuacamoleService.Users.update(
-                    GuacAdmin.selected_user, password, added_perms, removed_perms);
+                GuacamoleService.Users.update(GuacAdmin.selected_user, password, added_perms, removed_perms, parameters);
                 deselect();
                 GuacAdmin.reset();
 
@@ -629,7 +628,7 @@ GuacAdmin.addUser = function(name) {
 
                     // Attempt to delete user
                     try {
-                        GuacamoleService.Users.remove(GuacAdmin.selected_user);
+                        GuacamoleService.Users.remove(GuacAdmin.selected_user, parameters);
                         deselect();
                         GuacAdmin.reset();
                     }
@@ -660,7 +659,7 @@ GuacAdmin.connectionPager = null;
 /**
  * Adds the given connection to the displayed connection list.
  */
-GuacAdmin.addConnection = function(connection) {
+GuacAdmin.addConnection = function(connection, parameters) {
 
     var item = new GuacAdmin.ListItem("connection", connection.id);
     var item_element = item.getElement();
@@ -897,7 +896,7 @@ GuacAdmin.addConnection = function(connection) {
                 }
 
                 // Update connection
-                GuacamoleService.Connections.update(updated_connection);
+                GuacamoleService.Connections.update(updated_connection, parameters);
                 deselect();
                 GuacAdmin.reset();
 
@@ -935,7 +934,7 @@ GuacAdmin.addConnection = function(connection) {
 
                     // Attempt to delete connection
                     try {
-                        GuacamoleService.Connections.remove(GuacAdmin.selected_connection);
+                        GuacamoleService.Connections.remove(GuacAdmin.selected_connection, parameters);
                         deselect();
                         GuacAdmin.reset();
                     }
@@ -960,14 +959,17 @@ GuacAdmin.addConnection = function(connection) {
 
 GuacAdmin.reset = function() {
 
+    // Get parameters from query string
+    var parameters = window.location.search.substring(1);
+
     /*
      * Show admin elements if admin permissions available
      */
 
     // Query service for permissions, protocols, and connections
-    GuacAdmin.cached_permissions = GuacamoleService.Permissions.list();
-    GuacAdmin.cached_protocols   = GuacamoleService.Protocols.list();
-    GuacAdmin.cached_connections = GuacamoleService.Connections.list();
+    GuacAdmin.cached_permissions = GuacamoleService.Permissions.list(null, parameters);
+    GuacAdmin.cached_protocols   = GuacamoleService.Protocols.list(parameters);
+    GuacAdmin.cached_connections = GuacamoleService.Connections.list(parameters);
 
     // Sort connections by ID
     GuacAdmin.cached_connections.sort(GuacamoleService.Connections.comparator);
@@ -1003,7 +1005,7 @@ GuacAdmin.reset = function() {
             try {
                 var connection = new GuacamoleService.Connection(
                     GuacAdmin.cached_protocols[0].name, GuacAdmin.fields.connection_id.value);
-                GuacamoleService.Connections.create(connection);
+                GuacamoleService.Connections.create(connection, parameters);
                 GuacAdmin.fields.connection_id.value = "";
                 GuacAdmin.reset();
             }
@@ -1026,7 +1028,7 @@ GuacAdmin.reset = function() {
 
             // Attempt to create user
             try {
-                GuacamoleService.Users.create(GuacAdmin.fields.username.value);
+                GuacamoleService.Users.create(GuacAdmin.fields.username.value, parameters);
                 GuacAdmin.fields.username.value = "";
                 GuacAdmin.reset();
             }
@@ -1056,11 +1058,11 @@ GuacAdmin.reset = function() {
     GuacAdmin.userPager = new GuacUI.Pager(GuacAdmin.containers.user_list);
 
     // Add users to pager
-    var usernames = GuacamoleService.Users.list();
+    var usernames = GuacamoleService.Users.list(parameters);
     for (i=0; i<usernames.length; i++) {
         if (GuacAdmin.cached_permissions.administer
             || usernames[i] in GuacAdmin.cached_permissions.update_user)
-            GuacAdmin.addUser(usernames[i]);
+            GuacAdmin.addUser(usernames[i], parameters);
     }
 
     // If more than one page, add navigation buttons
@@ -1090,7 +1092,7 @@ GuacAdmin.reset = function() {
         var connection = GuacAdmin.cached_connections[i];
         if (GuacAdmin.cached_permissions.administer
             || connection.id in GuacAdmin.cached_permissions.update_connection)
-            GuacAdmin.addConnection(connection);
+            GuacAdmin.addConnection(connection, parameters);
     }
 
     // If more than one page, add navigation buttons
