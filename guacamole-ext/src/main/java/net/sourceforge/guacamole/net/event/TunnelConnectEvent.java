@@ -1,6 +1,7 @@
 package net.sourceforge.guacamole.net.event;
 
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
+import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.UserContext;
 
 /**
@@ -12,13 +13,19 @@ import net.sourceforge.guacamole.net.auth.UserContext;
  *
  * @author Michael Jumper
  */
-public class TunnelConnectEvent implements UserEvent, TunnelEvent {
+public class TunnelConnectEvent implements UserEvent, CredentialEvent, TunnelEvent {
 
     /**
      * The UserContext associated with the request that is connecting the
      * tunnel, if any.
      */
     private UserContext context;
+
+    /**
+     * The credentials associated with the request that is connecting the
+     * tunnel, if any.
+     */
+    private Credentials credentials;
 
     /**
      * The tunnel being connected.
@@ -31,16 +38,25 @@ public class TunnelConnectEvent implements UserEvent, TunnelEvent {
      *
      * @param context The UserContext associated with the request connecting
      *                the tunnel.
+     * @param credentials The credentials associated with the request connecting
+     *                    the tunnel.
      * @param tunnel The tunnel being connected.
      */
-    public TunnelConnectEvent(UserContext context, GuacamoleTunnel tunnel) {
+    public TunnelConnectEvent(UserContext context, Credentials credentials,
+            GuacamoleTunnel tunnel) {
         this.context = context;
+        this.credentials = credentials;
         this.tunnel = tunnel;
     }
 
     @Override
     public UserContext getUserContext() {
         return context;
+    }
+
+    @Override
+    public Credentials getCredentials() {
+        return credentials;
     }
 
     @Override

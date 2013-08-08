@@ -30,6 +30,7 @@ import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.event.SessionListenerCollection;
@@ -85,6 +86,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *
      * @param listeners A collection of all listeners that should be notified.
      * @param context The UserContext associated with the current session.
+     * @param credentials The credentials associated with the current session.
      * @param tunnel The tunnel being connected.
      * @return true if all listeners are allowing the tunnel to connect,
      *         or if there are no listeners, and false if any listener is
@@ -95,12 +97,13 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *                            error, the connect is canceled, and no other
      *                            listeners will run.
      */
-    private boolean notifyConnect(Collection listeners,
-            UserContext context, GuacamoleTunnel tunnel)
+    private boolean notifyConnect(Collection listeners, UserContext context,
+            Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
         // Build event for auth success
-        TunnelConnectEvent event = new TunnelConnectEvent(context, tunnel);
+        TunnelConnectEvent event = new TunnelConnectEvent(context,
+                credentials, tunnel);
 
         // Notify all listeners
         for (Object listener : listeners) {
@@ -123,6 +126,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *
      * @param listeners A collection of all listeners that should be notified.
      * @param context The UserContext associated with the current session.
+     * @param credentials The credentials associated with the current session.
      * @param tunnel The tunnel being closed.
      * @return true if all listeners are allowing the tunnel to close,
      *         or if there are no listeners, and false if any listener is
@@ -133,12 +137,13 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *                            error, the close is canceled, and no other
      *                            listeners will run.
      */
-    private boolean notifyClose(Collection listeners,
-            UserContext context, GuacamoleTunnel tunnel)
+    private boolean notifyClose(Collection listeners, UserContext context,
+            Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
         // Build event for auth success
-        TunnelCloseEvent event = new TunnelCloseEvent(context, tunnel);
+        TunnelCloseEvent event = new TunnelCloseEvent(context,
+                credentials, tunnel);
 
         // Notify all listeners
         for (Object listener : listeners) {
@@ -179,9 +184,14 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // Get ID of connection
             String id = request.getParameter("id");
 
+            // Get credentials
+            final Credentials credentials = getCredentials(httpSession);
+
             // Get context
             final UserContext context = getUserContext(httpSession);
-            if (context == null)
+
+            // If no context or no credentials, not logged in
+            if (context == null || credentials == null)
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
             // Get connection directory
@@ -229,7 +239,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 public void close() throws GuacamoleException {
 
                     // Only close if not canceled
-                    if (!notifyClose(listeners, context, this))
+                    if (!notifyClose(listeners, context, credentials, this))
                         throw new GuacamoleException("Tunnel close canceled by listener.");
 
                     // Close if no exception due to listener
@@ -240,7 +250,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             };
 
             // Notify listeners about connection
-            if (!notifyConnect(listeners, context, tunnel)) {
+            if (!notifyConnect(listeners, context, credentials, tunnel)) {
                 logger.info("Connection canceled by listener.");
                 return null;
             }

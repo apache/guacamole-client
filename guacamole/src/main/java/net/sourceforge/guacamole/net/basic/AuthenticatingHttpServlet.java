@@ -73,6 +73,11 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private static final String CONTEXT_ATTRIBUTE = "GUAC_CONTEXT";
 
     /**
+     * The session attribute holding the credentials authorizing this session.
+     */
+    private static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
+
+    /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
     private AuthenticationProvider authProvider;
@@ -191,6 +196,16 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     }
 
     /**
+     * Returns the credentials associated with the given session.
+     *
+     * @param session The session to retrieve credentials from.
+     * @return The credentials associated with the given session.
+     */
+    protected Credentials getCredentials(HttpSession session) {
+        return (Credentials) session.getAttribute(CREDENTIALS_ATTRIBUTE);
+    }
+
+    /**
      * Returns the UserContext associated with the given session.
      *
      * @param session The session to retrieve UserContext from.
@@ -277,8 +292,10 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 }
 
                 // If auth still OK, associate context with session
-                else
-                    httpSession.setAttribute(CONTEXT_ATTRIBUTE, context);
+                else {
+                    httpSession.setAttribute(CONTEXT_ATTRIBUTE,     context);
+                    httpSession.setAttribute(CREDENTIALS_ATTRIBUTE, credentials);
+                }
 
             } // end if credentials present
 
