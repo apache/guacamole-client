@@ -159,6 +159,29 @@ public class ConnectionService {
     }
 
     /**
+     * Retrieves the connection having the given unique identifier 
+     * from the database.
+     *
+     * @param uniqueIdentifier The unique identifier of the connection to retrieve.
+     * @param userID The ID of the user who queried this connection.
+     * @return The connection having the given unique identifier, 
+     *         or null if no such connection was found.
+     */
+    public MySQLConnection retrieveConnection(String uniqueIdentifier, int userID) {
+
+        // The unique identifier for a MySQLConnection is the database ID
+        int connectionID;
+        try {
+            connectionID = Integer.parseInt(uniqueIdentifier);
+        } catch(NumberFormatException e) {
+            // Invalid number means it can't be a DB record; not found
+            return null;
+        }
+        
+        return retrieveConnection(connectionID, userID);
+    }
+
+    /**
      * Retrieves the connection having the given ID from the database.
      *
      * @param id The ID of the connection to retrieve.
@@ -450,7 +473,8 @@ public class ConnectionService {
         // Populate connection
         Connection connection = new Connection();
         connection.setConnection_id(mySQLConnection.getConnectionID());
-        connection.setConnection_name(mySQLConnection.getIdentifier());
+        connection.setParent_id(mySQLConnection.getParentID());
+        connection.setConnection_name(mySQLConnection.getName());
         connection.setProtocol(mySQLConnection.getConfiguration().getProtocol());
 
         // Update the connection in the database
@@ -491,8 +515,6 @@ public class ConnectionService {
     /**
      * Get the connection IDs of all the connections defined in the system 
      * with a certain parent connection group.
-     * 
-     * @param parentID The parent connection group ID.
      *
      * @return A list of connection IDs of all the connections defined in the system.
      */
@@ -503,11 +525,6 @@ public class ConnectionService {
 
         // Create the criteria
         ConnectionExample example = new ConnectionExample();
-        /*Criteria criteria = example.createCriteria();
-        if(parentID != null)
-            criteria.andParent_idEqualTo(parentID);
-        else
-            criteria.andParent_idIsNull();*/
         
         // Query the connections
         List<Connection> connections =

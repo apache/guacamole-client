@@ -132,6 +132,11 @@ public final class MySQLConstants {
      */
     public static final String CONNECTION_GROUP_ORGANIZATIONAL = 
             "ORGANIZATIONAL";
+    
+    /**
+     * The identifier used to mark the root connection group.
+     */
+    public static final String CONNECTION_GROUP_ROOT_IDENTIFIER = "ROOT";
 
     /**
      * The string stored in the database to represent permission to create
@@ -144,6 +149,12 @@ public final class MySQLConstants {
      * connections.
      */
     public static final String SYSTEM_CONNECTION_CREATE = "CREATE_CONNECTION";
+
+    /**
+     * The string stored in the database to represent permission to create
+     * connection groups.
+     */
+    public static final String SYSTEM_CONNECTION_GROUP_CREATE = "CREATE_CONNECTION_GROUP";
 
     /**
      * The string stored in the database to represent permission to administer

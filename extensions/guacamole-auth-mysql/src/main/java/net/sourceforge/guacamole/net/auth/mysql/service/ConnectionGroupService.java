@@ -49,10 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.Connection;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample.Criteria;
@@ -112,6 +110,29 @@ public class ConnectionGroupService {
         // Otherwise, return found connection
         return toMySQLConnectionGroup(connectionGroups.get(0), userID);
 
+    }
+
+    /**
+     * Retrieves the connection group having the given unique identifier 
+     * from the database.
+     *
+     * @param uniqueIdentifier The unique identifier of the connection group to retrieve.
+     * @param userID The ID of the user who queried this connection group.
+     * @return The connection group having the given unique identifier, 
+     *         or null if no such connection group was found.
+     */
+    public MySQLConnectionGroup retrieveConnectionGroup(String uniqueIdentifier, int userID) {
+
+        // The unique identifier for a MySQLConnectionGroup is the database ID
+        int connectionGroupID;
+        try {
+            connectionGroupID = Integer.parseInt(uniqueIdentifier);
+        } catch(NumberFormatException e) {
+            // Invalid number means it can't be a DB record; not found
+            return null;
+        }
+        
+        return retrieveConnectionGroup(connectionGroupID, userID);
     }
     
     /**
@@ -295,5 +316,55 @@ public class ConnectionGroupService {
 
         return connectionGroupIDs;
 
+    }
+
+    /**
+     * Creates a new connection group having the given name and protocol.
+     *
+     * @param name The name to assign to the new connection group.
+     * @param userID The ID of the user who created this connection group.
+     * @return A new MySQLConnectionGroup containing the data of the newly created
+     *         connection group.
+     */
+    public MySQLConnectionGroup createConnectionGroup(String name, int userID) {
+
+        // Initialize database connection
+        ConnectionGroup connectionGroup = new ConnectionGroup();
+        connectionGroup.setConnection_group_name(name);
+
+        // Create connection
+        connectionGroupDAO.insert(connectionGroup);
+        return toMySQLConnectionGroup(connectionGroup, userID);
+
+    }
+
+    /**
+     * Updates the connection group in the database corresponding to the given
+     * MySQLConnectionGroup.
+     *
+     * @param mySQLConnectionGroup The MySQLConnectionGroup to update (save) 
+     *                             to the database. 
+     *                             This connection must already exist.
+     */
+    public void updateConnectionGroup(MySQLConnectionGroup mySQLConnectionGroup) {
+
+        // Populate connection
+        ConnectionGroup connectionGroup = new ConnectionGroup();
+        connectionGroup.setConnection_group_id(mySQLConnectionGroup.getConnectionGroupID());
+        connectionGroup.setParent_id(mySQLConnectionGroup.getParentID());
+        connectionGroup.setConnection_group_name(mySQLConnectionGroup.getName());
+        connectionGroup.setType(mySQLConnectionGroup.getType());
+
+        // Update the connection in the database
+        connectionGroupDAO.updateByPrimaryKeySelective(connectionGroup);
+
+    }
+
+    /**
+     * Deletes the connection group having the given ID from the database.
+     * @param id The ID of the connection group to delete.
+     */
+    public void deleteConnectionGroup(int id) {
+        connectionGroupDAO.deleteByPrimaryKey(id);
     }
 }

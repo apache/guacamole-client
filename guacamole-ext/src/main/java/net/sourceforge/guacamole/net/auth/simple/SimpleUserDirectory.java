@@ -100,4 +100,10 @@ public class SimpleUserDirectory implements Directory<String, User> {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
+    @Override
+    public void move(String identifier, String groupIdentifier) 
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
 }

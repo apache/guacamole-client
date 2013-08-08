@@ -41,17 +41,12 @@ import com.google.inject.Inject;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameterExample;
-import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -85,24 +80,36 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     private ConnectionGroupService connectionGroupService;
 
     /**
-     * Service for manipulating connection permissions in the database.
+     * Service for manipulating connection group permissions in the database.
      */
     @Inject
-    private ConnectionPermissionMapper connectionPermissionDAO;
+    private ConnectionGroupPermissionMapper connectionGroupPermissionDAO;
 
     /**
-     * Service for manipulating connection parameters in the database.
+     * Set the user and parentID for this directory.
+     *
+     * @param user_id The ID of the user owning this connection group directory.
+     * @param parentID The ID of the parent connection group.
      */
-    @Inject
-    private ConnectionParameterMapper connectionParameterDAO;
+    public void init(int user_id, Integer parentID) {
+        this.parentID = parentID;
+        this.user_id = user_id;
+    }
 
     @Transactional
     @Override
-    public ConnectionGroup get(String name) throws GuacamoleException {
+    public ConnectionGroup get(String identifier) throws GuacamoleException {
 
         // Get connection
         MySQLConnectionGroup connectionGroup =
-                connectionGroupService.retrieveConnectionGroup(name, parentID, user_id);
+                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+        
+        if(connectionGroup == null)
+            return null;
+        
+        // Verify permission to use the parent connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (connectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify access is granted
         permissionCheckService.verifyConnectionGroupAccess(
@@ -123,24 +130,156 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         permissionCheckService.verifyConnectionGroupUsageAccess
                 (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
         
-        return permissionCheckService.retrieveConnectionGroupNames(user_id, 
+        return permissionCheckService.retrieveConnectionGroupIdentifiers(user_id, 
                 parentID, MySQLConstants.CONNECTION_GROUP_READ);
     }
 
+    @Transactional
     @Override
     public void add(ConnectionGroup object) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        String name = object.getName().trim();
+        if(name.isEmpty())
+            throw new GuacamoleClientException("The connection group name cannot be blank.");
+        
+        // Verify permission to create
+        permissionCheckService.verifySystemAccess(this.user_id,
+                MySQLConstants.SYSTEM_CONNECTION_GROUP_CREATE);
+        
+        // Verify permission to edit the parent connection group
+        permissionCheckService.verifyConnectionGroupAccess(this.user_id, 
+                this.parentID, MySQLConstants.CONNECTION_GROUP_UPDATE);
+        
+        // Verify permission to use the parent connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+
+        // Verify that no connection already exists with this name.
+        MySQLConnectionGroup previousConnectionGroup =
+                connectionGroupService.retrieveConnectionGroup(name, user_id, parentID);
+        if(previousConnectionGroup != null)
+            throw new GuacamoleClientException("That connection group name is already in use.");
+
+        // Create connection group
+        MySQLConnectionGroup connectionGroup = connectionGroupService
+                .createConnectionGroup(name, user_id);
+
+        // Finally, give the current user full access to the newly created
+        // connection group.
+        ConnectionGroupPermissionKey newConnectionGroupPermission = new ConnectionGroupPermissionKey();
+        newConnectionGroupPermission.setUser_id(this.user_id);
+        newConnectionGroupPermission.setConnection_group_id(connectionGroup.getConnectionGroupID());
+
+        // Read permission
+        newConnectionGroupPermission.setPermission(MySQLConstants.CONNECTION_GROUP_READ);
+        connectionGroupPermissionDAO.insert(newConnectionGroupPermission);
+
+        // Update permission
+        newConnectionGroupPermission.setPermission(MySQLConstants.CONNECTION_GROUP_UPDATE);
+        connectionGroupPermissionDAO.insert(newConnectionGroupPermission);
+
+        // Delete permission
+        newConnectionGroupPermission.setPermission(MySQLConstants.CONNECTION_GROUP_DELETE);
+        connectionGroupPermissionDAO.insert(newConnectionGroupPermission);
+
+        // Administer permission
+        newConnectionGroupPermission.setPermission(MySQLConstants.CONNECTION_GROUP_ADMINISTER);
+        connectionGroupPermissionDAO.insert(newConnectionGroupPermission);
+
     }
 
+    @Transactional
     @Override
     public void update(ConnectionGroup object) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+
+        // If connection not actually from this auth provider, we can't handle
+        // the update
+        if (!(object instanceof MySQLConnectionGroup))
+            throw new GuacamoleException("Connection not from database.");
+
+        MySQLConnectionGroup mySQLConnectionGroup = (MySQLConnectionGroup) object;
+
+        // Verify permission to update
+        permissionCheckService.verifyConnectionAccess(this.user_id,
+                mySQLConnectionGroup.getConnectionGroupID(),
+                MySQLConstants.CONNECTION_UPDATE);
+
+        // Perform update
+        connectionGroupService.updateConnectionGroup(mySQLConnectionGroup);
+    }
+
+    @Transactional
+    @Override
+    public void remove(String identifier) throws GuacamoleException {
+
+        // Get connection
+        MySQLConnectionGroup mySQLConnectionGroup =
+                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+        
+        if(mySQLConnectionGroup == null)
+            throw new GuacamoleException("Connection group not found.");
+        
+        // Verify permission to use the parent connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (mySQLConnectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+
+        // Verify permission to delete
+        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+                mySQLConnectionGroup.getConnectionGroupID(),
+                MySQLConstants.CONNECTION_GROUP_DELETE);
+
+        // Delete the connection group itself
+        connectionGroupService.deleteConnectionGroup
+                (mySQLConnectionGroup.getConnectionGroupID());
+
     }
 
     @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void move(String identifier, String groupIdentifier) 
+            throws GuacamoleException {
+
+        // Get connection
+        MySQLConnectionGroup mySQLConnectionGroup =
+                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+        
+        if(mySQLConnectionGroup == null)
+            throw new GuacamoleException("Connection not found.");
+
+        // Verify permission to update the connection
+        permissionCheckService.verifyConnectionAccess(this.user_id,
+                mySQLConnectionGroup.getConnectionGroupID(),
+                MySQLConstants.CONNECTION_GROUP_UPDATE);
+        
+        // Verify permission to use the from connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (mySQLConnectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+
+        // Verify permission to update the from connection group
+        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+                mySQLConnectionGroup.getParentID(), MySQLConstants.CONNECTION_GROUP_UPDATE);
+        
+        Integer toConnectionGroupID;
+        if(groupIdentifier.equals(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER))
+            toConnectionGroupID = null;
+        try {
+            toConnectionGroupID = Integer.valueOf(groupIdentifier);
+        } catch(NumberFormatException e) {
+            throw new GuacamoleException("Invalid connection group identifier.");
+        }
+        
+        // Verify permission to use the to connection group for organizational purposes
+        permissionCheckService.verifyConnectionGroupUsageAccess
+                (toConnectionGroupID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+
+        // Verify permission to update the to connection group
+        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+                toConnectionGroupID, MySQLConstants.CONNECTION_GROUP_UPDATE);
+        
+        // Update the connection
+        mySQLConnectionGroup.setParentID(toConnectionGroupID);
+        connectionGroupService.updateConnectionGroup(mySQLConnectionGroup);
     }
+
 
 
 }

@@ -730,4 +730,10 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
 
     }
 
+    @Override
+    public void move(String identifier, String groupIdentifier) 
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
 }

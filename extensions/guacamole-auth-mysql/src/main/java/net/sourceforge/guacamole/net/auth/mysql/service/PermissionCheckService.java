@@ -245,6 +245,10 @@ public class PermissionCheckService {
      */
     public boolean checkConnectionGroupAccess(int userID, Integer affectedConnectionGroupID, String permissionType) {
 
+        // All users have implicit permission to use the root group
+        if(affectedConnectionGroupID == null)
+            return true;
+        
         // A system administrator has full access to everything.
         if(checkSystemAdministratorAccess(userID))
             return true;
@@ -339,19 +343,6 @@ public class PermissionCheckService {
         // Verify that the desired usage matches the type.
         return connectionGroup.getType().equals(usage);
         
-    }
-    
-    /**
-     * 
-     * @param userID
-     * @throws GuacamoleSecurityException 
-     */
-    private void verifySystemAdministratorAccess(int userID)
-            throws GuacamoleSecurityException {
-
-        // If permission does not exist, throw exception
-        if(!checkSystemAdministratorAccess(userID))
-            throw new GuacamoleSecurityException("Permission denied.");
     }
 
 
@@ -572,16 +563,16 @@ public class PermissionCheckService {
     }
 
     /**
-     * Retrieve all existing connection names that the given user has permission
-     * to perform the given operation upon.
+     * Retrieve all existing connection identifiers that the given user has 
+     * permission to perform the given operation upon.
      *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
      * @param parentID The parent connection group.
-     * @return A set of all connection names for which the given user has the
-     *         given permission.
+     * @return A set of all connection identifiers for which the given user 
+     *         has the given permission.
      */
-    public Set<String> retrieveConnectionNames(int userID, Integer parentID,
+    public Set<String> retrieveConnectionIdentifiers(int userID, Integer parentID,
             String permissionType) {
 
         // A system administrator has access to all connections.
@@ -591,23 +582,27 @@ public class PermissionCheckService {
         // List of all connection IDs for which this user has access
         List<Integer> connectionIDs =
                 retrieveConnectionIDs(userID, parentID, permissionType);
+        
+        // Unique Identifiers for MySQLConnections are the database IDs
+        Set<String> connectionIdentifiers = new HashSet<String>();
+        
+        for(Integer connectionID : connectionIDs)
+            connectionIdentifiers.add(Integer.toString(connectionID));
 
-        // Query all associated connections
-        return connectionService.translateNames(connectionIDs).keySet();
-
+        return connectionIdentifiers;
     }
 
     /**
-     * Retrieve all existing connection names that the given user has permission
-     * to perform the given operation upon.
+     * Retrieve all existing connection group identifiers that the given user 
+     * has permission to perform the given operation upon.
      *
      * @param userID The user whose permissions should be checked.
      * @param permissionType The permission to check.
      * @param parentID The parent connection group.
-     * @return A set of all connection names for which the given user has the
-     *         given permission.
+     * @return A set of all connection group identifiers for which the given 
+     *         user has the given permission.
      */
-    public Set<String> retrieveConnectionGroupNames(int userID, Integer parentID,
+    public Set<String> retrieveConnectionGroupIdentifiers(int userID, Integer parentID,
             String permissionType) {
 
         // A system administrator has access to all connections.
@@ -617,10 +612,14 @@ public class PermissionCheckService {
         // List of all connection group IDs for which this user has access
         List<Integer> connectionGroupIDs =
                 retrieveConnectionGroupIDs(userID, parentID, permissionType);
+        
+        // Unique Identifiers for MySQLConnectionGroups are the database IDs
+        Set<String> connectionGroupIdentifiers = new HashSet<String>();
+        
+        for(Integer connectionGroupID : connectionGroupIDs)
+            connectionGroupIdentifiers.add(Integer.toString(connectionGroupID));
 
-        // Query all associated connections
-        return connectionGroupService.translateNames(connectionGroupIDs).keySet();
-
+        return connectionGroupIdentifiers;
     }
 
     /**

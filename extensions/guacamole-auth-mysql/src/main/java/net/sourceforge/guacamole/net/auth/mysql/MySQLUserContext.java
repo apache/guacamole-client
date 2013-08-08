@@ -39,7 +39,6 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
@@ -66,6 +65,13 @@ public class MySQLUserContext implements UserContext {
     private UserDirectory userDirectory;
 
     /**
+     * User directory restricted by the permissions of the user associated
+     * with this context.
+     */
+    @Inject
+    private MySQLConnectionGroup mySQLConnectionGroup;
+
+    /**
      * Service for accessing users.
      */
     @Inject
@@ -79,6 +85,9 @@ public class MySQLUserContext implements UserContext {
     public void init(int user_id) {
         this.user_id = user_id;
         userDirectory.init(user_id);
+        mySQLConnectionGroup.init(null, null, MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+                MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+                MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL, user_id);
     }
 
     @Override
@@ -93,7 +102,7 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public ConnectionGroup getConnectionGroup() throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return mySQLConnectionGroup;
     }
 
 }
