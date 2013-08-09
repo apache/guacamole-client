@@ -48,6 +48,7 @@ import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
@@ -159,6 +160,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     addMapperClass(ConnectionHistoryMapper.class);
                     addMapperClass(ConnectionMapper.class);
                     addMapperClass(ConnectionGroupMapper.class);
+                    addMapperClass(ConnectionGroupPermissionMapper.class);
                     addMapperClass(ConnectionParameterMapper.class);
                     addMapperClass(ConnectionPermissionMapper.class);
                     addMapperClass(SystemPermissionMapper.class);

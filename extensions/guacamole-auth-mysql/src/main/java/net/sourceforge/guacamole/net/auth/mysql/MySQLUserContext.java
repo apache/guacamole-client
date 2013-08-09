@@ -63,13 +63,12 @@ public class MySQLUserContext implements UserContext {
      */
     @Inject
     private UserDirectory userDirectory;
-
+    
     /**
-     * User directory restricted by the permissions of the user associated
-     * with this context.
+     * The root connection group.
      */
     @Inject
-    private MySQLConnectionGroup mySQLConnectionGroup;
+    private MySQLConnectionGroup rootConnectionGroup;
 
     /**
      * Service for accessing users.
@@ -85,9 +84,10 @@ public class MySQLUserContext implements UserContext {
     public void init(int user_id) {
         this.user_id = user_id;
         userDirectory.init(user_id);
-        mySQLConnectionGroup.init(null, null, MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+        rootConnectionGroup.init(null, null, 
                 MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL, user_id);
+                MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+                ConnectionGroup.Type.ORGANIZATIONAL, user_id);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public ConnectionGroup getConnectionGroup() throws GuacamoleException {
-        return mySQLConnectionGroup;
+        return rootConnectionGroup;
     }
 
 }

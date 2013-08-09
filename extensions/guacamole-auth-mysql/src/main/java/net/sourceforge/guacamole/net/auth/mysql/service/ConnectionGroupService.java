@@ -283,12 +283,21 @@ public class ConnectionGroupService {
 
         // Create new MySQLConnection from retrieved data
         MySQLConnectionGroup mySQLConnectionGroup = mysqlConnectionGroupProvider.get();
+        
+        String mySqlType = connectionGroup.getType();
+        net.sourceforge.guacamole.net.auth.ConnectionGroup.Type authType;
+        
+        if(mySqlType.equals(MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL))
+            authType = net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL;
+        else
+            authType = net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.BALANCING;
+        
         mySQLConnectionGroup.init(
             connectionGroup.getConnection_group_id(),
             connectionGroup.getParent_id(),
             connectionGroup.getConnection_group_name(),
             Integer.toString(connectionGroup.getConnection_group_id()),
-            connectionGroup.getType(),
+            authType,
             userID
         );
 

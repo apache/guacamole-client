@@ -150,11 +150,12 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      * @param userID The IID of the user who queried this connection.
      */
     public void init(Integer connectionGroupID, Integer parentID, String name, 
-            String identifier, String type, int userID) {
+            String identifier, ConnectionGroup.Type type, int userID) {
         this.connectionGroupID = connectionGroupID;
         this.parentID = parentID;
         setName(name);
         setIdentifier(identifier);
+        setType(type);
         this.userID = userID;
         
         connectionDirectory = connectionDirectoryProvider.get();
