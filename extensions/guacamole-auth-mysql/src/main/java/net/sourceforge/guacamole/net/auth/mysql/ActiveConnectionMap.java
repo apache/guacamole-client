@@ -38,12 +38,9 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
@@ -62,7 +59,7 @@ public class ActiveConnectionMap {
     /**
      * Represents the count of users currently using a MySQL connection.
      */
-    public class Connection implements Comparable<Connection> {
+    public class Connection {
         
         /**
          * The ID of the MySQL connection that this Connection represents.
@@ -113,12 +110,6 @@ public class ActiveConnectionMap {
         public Connection(int connectionID) {
             this.connectionID = connectionID;
             this.currentUserCount = 0;
-        }
-
-        @Override
-        public int compareTo(Connection other) {
-            // Sort only based on current user count
-            return this.currentUserCount - other.currentUserCount;
         }
     }
 
