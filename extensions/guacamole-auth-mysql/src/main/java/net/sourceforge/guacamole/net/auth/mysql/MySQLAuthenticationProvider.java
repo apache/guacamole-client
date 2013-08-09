@@ -81,7 +81,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
     /**
      * Set of all active connections.
      */
-    private ActiveConnectionMap activeConnectionSet = new ActiveConnectionMap();
+    private ActiveConnectionMap activeConnectionMap = new ActiveConnectionMap();
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -175,7 +175,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(ConnectionService.class);
                     bind(ConnectionGroupService.class);
                     bind(UserService.class);
-                    bind(ActiveConnectionMap.class).toInstance(activeConnectionSet);
+                    bind(ActiveConnectionMap.class).toInstance(activeConnectionMap);
 
                 }
             } // end of mybatis module
