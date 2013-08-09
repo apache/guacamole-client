@@ -63,7 +63,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     private int user_id;
 
     /**
-     * The ID of the parent connection for this connection.
+     * The ID of the parent connection group.
      */
     private Integer parentID;
 
@@ -235,8 +235,13 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     }
 
     @Override
-    public void move(String identifier, String groupIdentifier) 
+    public void move(String identifier, Directory<String, ConnectionGroup> directory) 
             throws GuacamoleException {
+        
+        if(!(directory instanceof ConnectionGroupDirectory))
+            throw new GuacamoleException("Directory not from database");
+        
+        int toConnectionGroupID = ((ConnectionGroupDirectory)directory).parentID;
 
         // Get connection
         MySQLConnectionGroup mySQLConnectionGroup =
@@ -257,15 +262,6 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         // Verify permission to update the from connection group
         permissionCheckService.verifyConnectionGroupAccess(this.user_id,
                 mySQLConnectionGroup.getParentID(), MySQLConstants.CONNECTION_GROUP_UPDATE);
-        
-        Integer toConnectionGroupID;
-        if(groupIdentifier.equals(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER))
-            toConnectionGroupID = null;
-        try {
-            toConnectionGroupID = Integer.valueOf(groupIdentifier);
-        } catch(NumberFormatException e) {
-            throw new GuacamoleException("Invalid connection group identifier.");
-        }
         
         // Verify permission to use the to connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess

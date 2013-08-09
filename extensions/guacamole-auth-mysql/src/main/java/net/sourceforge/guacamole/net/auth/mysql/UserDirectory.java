@@ -49,6 +49,7 @@ import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.Directory;
+import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
@@ -76,7 +77,7 @@ import org.mybatis.guice.transactional.Transactional;
  * A MySQL based implementation of the User Directory.
  * @author James Muehlner
  */
-public class UserDirectory implements Directory<String, net.sourceforge.guacamole.net.auth.User> {
+public class UserDirectory implements Directory<String, User> {
 
     /**
      * The ID of the user who this user directory belongs to.
@@ -712,7 +713,7 @@ public class UserDirectory implements Directory<String, net.sourceforge.guacamol
     }
 
     @Override
-    public void move(String identifier, String groupIdentifier) 
+    public void move(String identifier, Directory<String, User> groupIdentifier) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

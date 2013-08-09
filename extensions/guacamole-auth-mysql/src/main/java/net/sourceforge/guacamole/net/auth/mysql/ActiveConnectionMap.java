@@ -139,7 +139,8 @@ public class ActiveConnectionMap {
      * Returns the ID of the connection with the lowest number of current
      * active users, if found.
      * 
-     * @param connectionIDs
+     * @param connectionIDs The subset of connection IDs to find the least
+     *                      used connection within.
      * 
      * @return The ID of the connection with the lowest number of current
      *         active users, if found.
@@ -149,28 +150,28 @@ public class ActiveConnectionMap {
         if(connectionIDs.isEmpty())
             return null;
         
-        List<Connection> groupConnections = 
-            new ArrayList<ActiveConnectionMap.Connection>();
+        int minUserCount = Integer.MAX_VALUE;
+        Integer minConnectionID = null;
         
         for(Integer connectionID : connectionIDs) {
             Connection connection = activeConnectionMap.get(connectionID);
             
-            // Create the Connection if it does not exist
+            /*
+             * If the connection is not found in the map, it has not been used,
+             * and therefore will be count 0.
+             */
             if(connection == null) {
-                connection = new Connection(connectionID);
-                activeConnectionMap.put(connectionID, connection);
+                minUserCount = 0;
+                minConnectionID = connectionID;
             }
-            
-            groupConnections.add(connection);
+            // If this is the least active connection
+            else if(connection.getCurrentUserCount() < minUserCount) {
+                minUserCount = connection.getCurrentUserCount();
+                minConnectionID = connection.getConnectionID();
+            }
         }
         
-        // Sort the Connections into decending order
-        Collections.sort(groupConnections);
-        
-        if(!groupConnections.isEmpty())
-            return groupConnections.get(0).getConnectionID();
-        
-        return null;
+        return minConnectionID;
     }
     
     /**

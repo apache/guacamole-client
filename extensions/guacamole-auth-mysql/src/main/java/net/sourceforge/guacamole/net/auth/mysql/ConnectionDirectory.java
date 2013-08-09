@@ -291,9 +291,14 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     }
 
     @Override
-    public void move(String identifier, String groupIdentifier) 
+    public void move(String identifier, Directory<String, Connection> directory) 
             throws GuacamoleException {
-
+        
+        if(!(directory instanceof ConnectionDirectory))
+            throw new GuacamoleException("Directory not from database");
+        
+        int toConnectionGroupID = ((ConnectionDirectory)directory).parentID;
+        
         // Get connection
         MySQLConnection mySQLConnection =
                 connectionService.retrieveConnection(identifier, user_id);
@@ -313,15 +318,6 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Verify permission to update the from connection group
         permissionCheckService.verifyConnectionGroupAccess(this.user_id,
                 mySQLConnection.getParentID(), MySQLConstants.CONNECTION_GROUP_UPDATE);
-        
-        Integer toConnectionGroupID;
-        if(groupIdentifier.equals(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER))
-            toConnectionGroupID = null;
-        try {
-            toConnectionGroupID = Integer.valueOf(groupIdentifier);
-        } catch(NumberFormatException e) {
-            throw new GuacamoleException("Invalid connection group identifier.");
-        }
         
         // Verify permission to use the to connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess

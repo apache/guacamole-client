@@ -61,7 +61,7 @@ public class MySQLConnection extends AbstractConnection {
     private Integer connectionID;
 
     /**
-     * The ID of the parent connection for this connection.
+     * The ID of the parent connection group for this connection.
      */
     private Integer parentID;
 

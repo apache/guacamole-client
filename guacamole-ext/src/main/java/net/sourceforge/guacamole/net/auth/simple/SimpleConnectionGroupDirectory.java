@@ -87,7 +87,7 @@ public class SimpleConnectionGroupDirectory
     }
 
     @Override
-    public void move(String identifier, String groupIdentifier) 
+    public void move(String identifier, Directory<String, ConnectionGroup> directory) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

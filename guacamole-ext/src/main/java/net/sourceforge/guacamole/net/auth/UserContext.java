@@ -81,6 +81,6 @@ public interface UserContext {
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
      */
-    ConnectionGroup getConnectionGroup() throws GuacamoleException;
+    ConnectionGroup getRootConnectionGroup() throws GuacamoleException;
 
 }

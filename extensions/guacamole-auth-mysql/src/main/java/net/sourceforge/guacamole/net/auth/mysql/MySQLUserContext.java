@@ -101,7 +101,7 @@ public class MySQLUserContext implements UserContext {
     }
 
     @Override
-    public ConnectionGroup getConnectionGroup() throws GuacamoleException {
+    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
         return rootConnectionGroup;
     }
 

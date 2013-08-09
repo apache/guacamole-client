@@ -124,7 +124,7 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public ConnectionGroup getConnectionGroup() throws GuacamoleException {
+    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
         return connectionGroup;
     }
 
