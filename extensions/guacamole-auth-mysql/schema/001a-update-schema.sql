@@ -28,7 +28,7 @@ CREATE TABLE `guacamole_connection_group` (
 
 ALTER TABLE `guacamole_connection` ADD COLUMN `parent_id` int(11) AFTER `connection_name`;
 
-ALTER TABLE `guacamole_connection` DROP INDEX `connection_name_parent`;
+ALTER TABLE `guacamole_connection` DROP INDEX `connection_name`;
 ALTER TABLE `guacamole_connection` ADD UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`);
 
 ALTER TABLE `guacamole_connection` ADD CONSTRAINT `guacamole_connection_ibfk_1`
