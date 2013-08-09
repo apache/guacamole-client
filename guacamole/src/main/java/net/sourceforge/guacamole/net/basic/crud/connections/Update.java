@@ -53,7 +53,7 @@ public class Update extends AuthenticatingHttpServlet {
 
         // Attempt to get connection directory
         Directory<String, Connection> directory =
-                context.getConnectionDirectory();
+                context.getRootConnectionGroup().getConnectionDirectory();
 
         // Create config
         GuacamoleConfiguration config = new GuacamoleConfiguration();

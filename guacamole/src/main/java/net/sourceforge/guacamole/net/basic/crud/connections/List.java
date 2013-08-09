@@ -97,7 +97,8 @@ public class List extends AuthenticatingHttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         // Get connection directory
-        Directory<String, Connection> directory = context.getConnectionDirectory();
+        Directory<String, Connection> directory =
+                context.getRootConnectionGroup().getConnectionDirectory();
 
         // Sys-admin permission
         Permission systemPermission =

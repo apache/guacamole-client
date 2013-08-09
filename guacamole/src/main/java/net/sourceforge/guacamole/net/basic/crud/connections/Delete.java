@@ -44,7 +44,7 @@ public class Delete extends AuthenticatingHttpServlet {
 
         // Attempt to get connection directory
         Directory<String, Connection> directory =
-                context.getConnectionDirectory();
+                context.getRootConnectionGroup().getConnectionDirectory();
 
         // Remove connection
         directory.remove(identifier);

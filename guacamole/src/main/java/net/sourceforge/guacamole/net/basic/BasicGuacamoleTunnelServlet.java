@@ -195,7 +195,8 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
             // Get connection directory
-            Directory<String, Connection> directory = context.getConnectionDirectory();
+            Directory<String, Connection> directory =
+                context.getRootConnectionGroup().getConnectionDirectory();
 
             // Get authorized connection
             Connection connection = directory.get(id);
