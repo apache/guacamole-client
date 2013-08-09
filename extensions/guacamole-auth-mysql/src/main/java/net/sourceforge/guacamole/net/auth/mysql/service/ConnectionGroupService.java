@@ -37,24 +37,25 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import net.sourceforge.guacamole.GuacamoleClientException;
+import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
+import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionMap;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample.Criteria;
+import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -64,6 +65,12 @@ import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
  * @author James Muehlner
  */
 public class ConnectionGroupService {
+    
+    /**
+     * Service for managing connections.
+     */
+    @Inject
+    private ConnectionService connectionService;
     
     /**
      * DAO for accessing connection groups.
@@ -77,6 +84,11 @@ public class ConnectionGroupService {
     @Inject
     private Provider<MySQLConnectionGroup> mysqlConnectionGroupProvider;
     
+    /**
+     * The map of all active connections.
+     */
+    @Inject
+    private ActiveConnectionMap activeConnectionMap;
     
 
     /**
@@ -157,9 +169,45 @@ public class ConnectionGroupService {
         return toMySQLConnectionGroup(connectionGroup, userID);
     }
 
+
+    /**
+     * Connect to the connection within the given group with the lowest number
+     * of currently active users.
+     *
+     * @param connection The group to load balance across.
+     * @param info The information to use when performing the connection
+     *             handshake.
+     * @param userID The ID of the user who is connecting to the socket.
+     * @return The connected socket.
+     * @throws GuacamoleException If an error occurs while connecting the
+     *                            socket.
+     */
     public GuacamoleSocket connect(MySQLConnectionGroup group, 
-            GuacamoleClientInformation info, int userID) {
-        throw new UnsupportedOperationException("Not yet implemented");
+            GuacamoleClientInformation info, int userID) throws GuacamoleException {
+        
+        // Get all connections in the group.
+        List<Integer> connectionIDs = connectionService.getAllConnectionIDs
+                (group.getConnectionGroupID());
+        
+        // Get the least used connection.
+        Integer leastUsedConnectionID = 
+                activeConnectionMap.getLeastUsedConnection(connectionIDs);
+        
+        if(leastUsedConnectionID == null)
+            throw new GuacamoleException("No connections found in group.");
+        
+        if(GuacamoleProperties.getProperty(
+                MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
+                && activeConnectionMap.isActive(leastUsedConnectionID))
+            throw new GuacamoleClientException
+                    ("Cannot connect. All connections are in use.");
+        
+        // Get the connection 
+        MySQLConnection connection = connectionService
+                .retrieveConnection(leastUsedConnectionID, userID);
+        
+        // Connect to the connection
+        return connectionService.connect(connection, info, userID);
     }
     
     /**

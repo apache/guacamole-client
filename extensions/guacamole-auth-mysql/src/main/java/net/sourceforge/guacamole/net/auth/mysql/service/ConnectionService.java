@@ -37,14 +37,10 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +50,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.net.SSLGuacamoleSocket;
-import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionSet;
+import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionMap;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLGuacamoleSocket;
@@ -114,10 +110,10 @@ public class ConnectionService {
     private Provider<MySQLGuacamoleSocket> mySQLGuacamoleSocketProvider;
 
     /**
-     * Set of all currently active connections.
+     * Map of all currently active connections.
      */
     @Inject
-    private ActiveConnectionSet activeConnectionSet;
+    private ActiveConnectionMap activeConnectionMap;
 
     /**
      * Service managing users.
@@ -340,7 +336,7 @@ public class ConnectionService {
         // connections are not allowed, disallow connection
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
-                && activeConnectionSet.isActive(connection.getConnectionID()))
+                && activeConnectionMap.isActive(connection.getConnectionID()))
             throw new GuacamoleClientException("Cannot connect. This connection is in use.");
 
         // Get guacd connection information
@@ -361,7 +357,7 @@ public class ConnectionService {
             );
 
         // Mark this connection as active
-        int historyID = activeConnectionSet.openConnection(connection.getConnectionID(), userID);
+        int historyID = activeConnectionMap.openConnection(connection.getConnectionID(), userID);
 
         // Return new MySQLGuacamoleSocket
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();

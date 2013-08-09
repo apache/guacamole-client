@@ -50,10 +50,10 @@ import net.sourceforge.guacamole.net.GuacamoleSocket;
 public class MySQLGuacamoleSocket implements GuacamoleSocket {
 
     /**
-     * Injected ActiveConnectionSet which will contain all active connections.
+     * Injected ActiveConnectionMap which will contain all active connections.
      */
     @Inject
-    private ActiveConnectionSet activeConnectionSet;
+    private ActiveConnectionMap activeConnectionSet;
 
     /**
      * The wrapped socket.
