@@ -37,8 +37,8 @@ var GuacAdmin = {
     },
 
     "fields" : {
-        "connection_id" : document.getElementById("connection-id"),
-        "username"      : document.getElementById("username")
+        "connection_name" : document.getElementById("connection-name"),
+        "username"        : document.getElementById("username")
     },
 
     "cached_permissions" : null,
@@ -661,7 +661,7 @@ GuacAdmin.connectionPager = null;
  */
 GuacAdmin.addConnection = function(connection, parameters) {
 
-    var item = new GuacAdmin.ListItem("connection", connection.id);
+    var item = new GuacAdmin.ListItem("connection", connection.name);
     var item_element = item.getElement();
     GuacAdmin.connectionPager.addElement(item_element);
 
@@ -676,7 +676,7 @@ GuacAdmin.addConnection = function(connection, parameters) {
         // Create form base elements
         var form_element = GuacUI.createElement("div", "form");
         var connection_header = GuacUI.createChildElement(form_element, "h2");
-        connection_header.textContent = connection.id;
+        connection_header.textContent = connection.name;
 
         var sections = GuacUI.createChildElement(
             GuacUI.createChildElement(form_element, "div", "settings section"),
@@ -885,7 +885,8 @@ GuacAdmin.addConnection = function(connection, parameters) {
                 // Build connection
                 var updated_connection = new GuacamoleService.Connection(
                     protocol_field.value,
-                    connection.id
+                    connection.id,
+                    connection.name
                 );
 
                 // Populate parameters
@@ -930,7 +931,7 @@ GuacAdmin.addConnection = function(connection, parameters) {
 
                 // Delete connection upon confirmation
                 if (confirm("Are you sure you want to delete the connection \""
-                            + connection.id + "\"?")) {
+                            + connection.name + "\"?")) {
 
                     // Attempt to delete connection
                     try {
@@ -1004,9 +1005,9 @@ GuacAdmin.reset = function() {
             // Try to create connection
             try {
                 var connection = new GuacamoleService.Connection(
-                    GuacAdmin.cached_protocols[0].name, GuacAdmin.fields.connection_id.value);
+                    GuacAdmin.cached_protocols[0].name, null, GuacAdmin.fields.connection_name.value);
                 GuacamoleService.Connections.create(connection, parameters);
-                GuacAdmin.fields.connection_id.value = "";
+                GuacAdmin.fields.connection_name.value = "";
                 GuacAdmin.reset();
             }
 

@@ -47,9 +47,10 @@ public class Update extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
 
-        // Get ID and protocol
+        // Get ID, name, and protocol
         String identifier = request.getParameter("id");
-        String protocol = request.getParameter("protocol");
+        String name       = request.getParameter("name");
+        String protocol   = request.getParameter("protocol");
 
         // Attempt to get connection directory
         Directory<String, Connection> directory =
@@ -75,6 +76,7 @@ public class Update extends AuthenticatingHttpServlet {
 
         // Create connection skeleton
         Connection connection = directory.get(identifier);
+        connection.setName(name);
         connection.setConfiguration(config);
 
         // Update connection

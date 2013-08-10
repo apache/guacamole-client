@@ -47,8 +47,8 @@ public class Create extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
 
-        // Get ID and protocol
-        String identifier = request.getParameter("id");
+        // Get name and protocol
+        String name     = request.getParameter("name");
         String protocol = request.getParameter("protocol");
 
         // Attempt to get connection directory
@@ -75,7 +75,7 @@ public class Create extends AuthenticatingHttpServlet {
 
         // Create connection skeleton
         Connection connection = new DummyConnection();
-        connection.setIdentifier(identifier);
+        connection.setName(name);
         connection.setConfiguration(config);
 
         // Add connection

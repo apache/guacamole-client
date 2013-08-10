@@ -126,6 +126,7 @@ public class List extends AuthenticatingHttpServlet {
                 // Write connection
                 xml.writeStartElement("connection");
                 xml.writeAttribute("id", identifier);
+                xml.writeAttribute("name", connection.getName());
                 xml.writeAttribute("protocol",
                         connection.getConfiguration().getProtocol());
 

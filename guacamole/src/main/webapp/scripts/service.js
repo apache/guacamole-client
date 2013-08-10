@@ -28,8 +28,9 @@ var GuacamoleService = GuacamoleService || {};
  * @constructor
  * @param {String} protocol The protocol used by this connection.
  * @param {String} id The ID associated with this connection.
+ * @param {String} name The human-readable name associated with this connection.
  */
-GuacamoleService.Connection = function(protocol, id) {
+GuacamoleService.Connection = function(protocol, id, name) {
 
     /**
      * Reference to this connection.
@@ -58,7 +59,7 @@ GuacamoleService.Connection = function(protocol, id) {
      * 
      * @type String[]
      */
-    this.path = id.split("/");
+    this.path = name.split("/");
 
     /**
      * The name of this connection. This name is arbitrary and local to the
@@ -251,7 +252,7 @@ GuacamoleService.Connections = {
      * Comparator which compares two GuacamoleService.Connection objects.
      */
     "comparator" : function(a, b) {
-        return a.id.localeCompare(b.id);
+        return a.name.localeCompare(b.name);
     },
 
      /**
@@ -288,7 +289,8 @@ GuacamoleService.Connections = {
             var connectionElement = connectionElements[i];
             var connection = new GuacamoleService.Connection(
                 connectionElement.getAttribute("protocol"),
-                connectionElement.getAttribute("id")
+                connectionElement.getAttribute("id"),
+                connectionElement.getAttribute("name")
             )
 
             var j;
@@ -352,7 +354,7 @@ GuacamoleService.Connections = {
     "create" : function(connection, parameters) {
 
         // Construct request URL
-        var users_url = "connections/create?id=" + encodeURIComponent(connection.id);
+        var users_url = "connections/create?name=" + encodeURIComponent(connection.name);
         if (parameters) users_url += "&" + parameters;
 
         // Init POST data
@@ -389,7 +391,9 @@ GuacamoleService.Connections = {
         if (parameters) users_url += "&" + parameters;
 
         // Init POST data
-        var data = "protocol=" + encodeURIComponent(connection.protocol);
+        var data =
+                  "name="      + encodeURIComponent(connection.name)
+                + "&protocol=" + encodeURIComponent(connection.protocol);
 
         // Add parameters
         for (var name in connection.parameters)
