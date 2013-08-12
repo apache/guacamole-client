@@ -215,7 +215,7 @@ GuacamoleRootUI.reset = function() {
             var child_group = group.groups[i];
 
             // Create display element for group
-            var list_group = new GuacUI.ListGroup(group.name);
+            var list_group = new GuacUI.ListGroup(child_group.name);
 
             // Recursively add all children to the new element
             addGroup(child_group, list_group.addElement);
