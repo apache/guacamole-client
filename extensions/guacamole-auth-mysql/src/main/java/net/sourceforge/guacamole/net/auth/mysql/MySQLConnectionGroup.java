@@ -159,10 +159,10 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
         this.userID = userID;
         
         connectionDirectory = connectionDirectoryProvider.get();
-        connectionDirectory.init(userID, parentID);
+        connectionDirectory.init(userID, connectionGroupID);
         
         connectionGroupDirectory = connectionGroupDirectoryProvider.get();
-        connectionGroupDirectory.init(userID, parentID);
+        connectionGroupDirectory.init(userID, connectionGroupID);
     }
 
     @Override
