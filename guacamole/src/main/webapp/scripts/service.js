@@ -400,7 +400,7 @@ GuacamoleService.Connections = {
 
             var id   = element.getAttribute("id");
             var name = element.getAttribute("name");
-            var type_string = element.getAttribute("name");
+            var type_string = element.getAttribute("type");
 
             // Translate type name
             var type;
