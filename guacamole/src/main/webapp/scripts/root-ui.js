@@ -26,8 +26,7 @@ var GuacamoleRootUI = {
     "sections": {
         "login_form"         : document.getElementById("login-form"),
         "recent_connections" : document.getElementById("recent-connections"),
-        "all_connections"    : document.getElementById("all-connections"),
-        "all_connections_buttons" : document.getElementById("all-connections-buttons")
+        "all_connections"    : document.getElementById("all-connections")
     },
 
     "messages": {
@@ -171,72 +170,10 @@ GuacamoleRootUI.reset = function() {
 
     }
 
-    // Create pager for connections
-    var connection_pager = new GuacUI.Pager(GuacamoleRootUI.sections.all_connections);
-    connection_pager.page_capacity = 20;
 
-    /**
-     * Adds the given group to the given display parent object. This object
-     * must have an addElement() function, which will be used for adding all
-     * child elements representing child connections and groups.
-     * 
-     * @param {GuacamoleService.ConnectionGroup} group The group to add.
-     * @param {Function} appendChild A function which, given an element, will add that
-     *                               element the the display as desired.
-     */
-    function addGroup(group, appendChild) {
-
-        var i;
-
-        // Add all contained connections
-        for (i=0; i<group.connections.length; i++) {
-
-            // Add connection to set
-            var connection = group.connections[i];
-            GuacamoleRootUI.connections[connection.id] = connection;
-
-            // Get connection element
-            var recent_connection = new GuacUI.Connection(connection);
-
-            // If screenshot present, add to recent connections
-            if (recent_connection.hasThumbnail())
-                GuacamoleRootUI.addRecentConnection(recent_connection);
-
-            // Add connection to connection list or parent group
-            var guacui_connection = new GuacUI.Connection(connection);
-            appendChild(guacui_connection.getElement());
-
-        } // end for each connection
-
-        // Add all contained groups 
-        for (i=0; i<group.groups.length; i++) {
-
-            // Add connection to set
-            var child_group = group.groups[i];
-
-            // Create display element for group
-            var list_group = new GuacUI.ListGroup(child_group.name);
-
-            // Recursively add all children to the new element
-            addGroup(child_group, list_group.addElement);
-
-            // Add element to display
-            appendChild(list_group.getElement());
-
-        } // end for each gorup
-
-    }
-
-    // Add root group directly to pager
-    addGroup(root_group, connection_pager.addElement);
-
-    // Add buttons if more than one page
-    if (connection_pager.last_page != 0)
-        GuacamoleRootUI.sections.all_connections_buttons.appendChild(
-            connection_pager.getElement());
-
-    // Start at page 0
-    connection_pager.setPage(0);
+    // Create group view
+    var group_view = new GuacUI.GroupView(root_group);
+    GuacamoleRootUI.sections.all_connections.appendChild(group_view.getElement());
 
     // If connections could be retrieved, display list
     GuacamoleRootUI.views.login.style.display = "none";

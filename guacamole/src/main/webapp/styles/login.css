@@ -246,9 +246,8 @@ div#all-connections {
     padding: 0;
 }
 
-#all-connections-buttons {
+#all-connections .list-buttons {
     text-align: center;
-    margin: 1em;
     padding: 0;
 }
 

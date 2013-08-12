@@ -875,3 +875,96 @@ GuacUI.ListGroup = function(caption) {
     };
 
 }
+
+/**
+ * Component which displays a paginated tree view of all groups and their
+ * connections.
+ * 
+ * @constructor
+ * @param {GuacamoleService.ConnectionGroup} root_group The group to display
+ *                                                      within the view.
+ */
+GuacUI.GroupView = function(root_group) {
+
+    /**
+     * Reference to this GroupView.
+     * @private
+     */
+    var group_view = this;
+
+    // Group view components
+    var element = GuacUI.createElement("div", "group-view");
+    var list = GuacUI.createChildElement(element, "div", "list");
+
+    /**
+     * Set of all connections, indexed by ID.
+     */
+    this.connections = {};
+
+    /**
+     * Returns the element representing this group view.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    // Create pager for contents 
+    var pager = new GuacUI.Pager(list);
+    pager.page_capacity = 20;
+
+    /**
+     * Adds the given group to the given display parent object. This object
+     * must have an addElement() function, which will be used for adding all
+     * child elements representing child connections and groups.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to add.
+     * @param {Function} appendChild A function which, given an element, will add that
+     *                               element the the display as desired.
+     */
+    function addGroup(group, appendChild) {
+
+        var i;
+
+        // Add all contained connections
+        for (i=0; i<group.connections.length; i++) {
+
+            // Add connection to set
+            var connection = group.connections[i];
+            group_view.connections[connection.id] = connection;
+
+            // Add connection to connection list or parent group
+            var guacui_connection = new GuacUI.Connection(connection);
+            appendChild(guacui_connection.getElement());
+
+        } // end for each connection
+
+        // Add all contained groups 
+        for (i=0; i<group.groups.length; i++) {
+
+            // Create display element for group
+            var child_group = group.groups[i];
+            var list_group = new GuacUI.ListGroup(child_group.name);
+
+            // Recursively add all children to the new element
+            addGroup(child_group, list_group.addElement);
+
+            // Add element to display
+            appendChild(list_group.getElement());
+
+        } // end for each gorup
+
+    }
+
+    // Add root group directly to pager
+    addGroup(root_group, pager.addElement);
+
+    // Add buttons if more than one page
+    if (pager.last_page !== 0) {
+        var list_buttons = GuacUI.createChildElement(element, "div", "buttons");
+        list_buttons.appendChild(pager.getElement());
+    }
+
+    // Start at page 0
+    pager.setPage(0);
+
+};
