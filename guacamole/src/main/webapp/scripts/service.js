@@ -155,6 +155,24 @@ GuacamoleService.Connection = function(protocol, id, name) {
 
     };
 
+    /**
+     * Opens this connection in a new tab/window.
+     */
+    this.open = function() {
+
+        // Get URL
+        var url = "client.xhtml?id=" + encodeURIComponent(guac_connection.id);
+
+        // Attempt to focus existing window
+        var current = window.open(null, guac_connection.id);
+
+        // If window did not already exist, set up as
+        // Guacamole client
+        if (!current.GuacUI)
+            window.open(url, guac_connection.id);
+
+    };
+
 };
 
 /**
