@@ -251,6 +251,17 @@ div.section {
     background: #CDA;
 }
 
+.choice .list-item {
+    display: inline-block;
+}
+
+.choice input[type='checkbox'] {
+    vertical-align: top;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+}
+
 .disabled .list-item:not(.selected) {
     opacity: 0.25;
 }

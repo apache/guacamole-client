@@ -1003,7 +1003,20 @@ GuacUI.GroupView = function(root_group, multiselect) {
             // Add connection to connection list or parent group
             var guacui_connection = new GuacUI.Connection(connection);
             GuacUI.addClass(guacui_connection.getElement(), "list-item");
-            appendChild(guacui_connection.getElement());
+
+            // If multiselect, add checkbox for each connection
+            if (multiselect) {
+
+                var connection_choice = GuacUI.createElement("div", "choice");
+                var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
+                connection_checkbox.setAttribute("type", "checkbox");
+                
+                connection_choice.appendChild(guacui_connection.getElement());
+                appendChild(connection_choice);
+
+            }
+            else
+                appendChild(guacui_connection.getElement());
 
             // Set onclick event
             (function(connection) {
@@ -1027,7 +1040,20 @@ GuacUI.GroupView = function(root_group, multiselect) {
 
             // Add element to display
             GuacUI.addClass(list_group.getElement(), "list-item");
-            appendChild(list_group.getElement());
+
+            // If multiselect, add checkbox for each group
+            if (multiselect) {
+
+                var group_choice = GuacUI.createElement("div", "choice");
+                var group_checkbox = GuacUI.createChildElement(group_choice, "input");
+                group_checkbox.setAttribute("type", "checkbox");
+                
+                group_choice.appendChild(list_group.getElement());
+                appendChild(group_choice);
+
+            }
+            else
+                appendChild(list_group.getElement());
 
             // Set onclick event
             (function(child_group) {
