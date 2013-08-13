@@ -903,6 +903,44 @@ GuacUI.GroupView = function(root_group, multiselect) {
     this.connections = {};
 
     /**
+     * Fired when a connection is clicked.
+     *
+     * @event
+     * @param {GuacamolService.Connection} connection The connection which was
+     *                                                clicked.
+     */
+    this.onconnectionclick = null;
+
+    /**
+     * Fired when a connection group is clicked.
+     *
+     * @event
+     * @param {GuacamolService.ConnectionGroup} group The connection group which 
+     *                                                was clicked.
+     */
+    this.ongroupclick = null;
+
+    /**
+     * Fired when a connection's selected status changes.
+     *
+     * @event
+     * @param {GuacamolService.Connection} connection The connection whose
+     *                                                status changed.
+     * @param {Boolean} selected The new status of the connection.
+     */
+    this.onconnectionchange = null;
+
+    /**
+     * Fired when a connection group's selected status changes.
+     *
+     * @event
+     * @param {GuacamolService.ConnectionGroup} group The connection group whose
+     *                                                status changed.
+     * @param {Boolean} selected The new status of the connection group.
+     */
+    this.ongroupchange = null;
+
+    /**
      * Returns the element representing this group view.
      */
     this.getElement = function() {
@@ -969,5 +1007,100 @@ GuacUI.GroupView = function(root_group, multiselect) {
 
     // Start at page 0
     pager.setPage(0);
+
+};
+
+/**
+ * Simple modal dialog providing a header, body, and footer. No other
+ * functionality is provided other than a reasonable hierarchy of divs and
+ * easy access to their corresponding elements.
+ */
+GuacUI.Dialog = function() {
+
+    /**
+     * The container of the entire dialog. Adding this element to the DOM
+     * displays the dialog, while removing this element hides the dialog.
+     * 
+     * @private
+     * @type Element
+     */
+    var element = GuacUI.createElement("div", "dialog-container");
+
+    /**
+     * The dialog itself. This element is not exposed outside this object,
+     * but rather contains the header, body, and footer sections which are
+     * exposed.
+     * 
+     * @private
+     * @type Element
+     */
+    var dialog = GuacUI.createChildElement(element, "div", "dialog");
+
+    /**
+     * The header section of the dialog. This section would normally contain
+     * the title.
+     * 
+     * @private
+     * @type Element
+     */
+    var header = GuacUI.createChildElement(dialog, "div", "header");
+
+    /**
+     * The body section of the dialog. This section would normally contain any
+     * form fields and content.
+     * 
+     * @private
+     * @type Element
+     */
+    var body = GuacUI.createChildElement(dialog, "div", "body");
+
+    /**
+     * The footer section of the dialog. This section would normally contain
+     * the buttons.
+     * 
+     * @private
+     * @type Element
+     */
+    var footer = GuacUI.createChildElement(dialog, "div", "footer");
+
+    /**
+     * Returns the header section of this dialog. This section normally
+     * contains the title of the dialog.
+     * 
+     * @return {Element} The header section of this dialog.
+     */
+    this.getHeader = function() {
+        return header;
+    };
+
+    /**
+     * Returns the body section of this dialog. This section normally contains
+     * the form fields, etc. of a dialog.
+     * 
+     * @return {Element} The body section of this dialog.
+     */
+    this.getBody = function() {
+        return body;
+    };
+
+    /**
+     * Returns the footer section of this dialog. This section is normally
+     * used to contain the buttons of the dialog.
+     * 
+     * @return {Element} The footer section of this dialog.
+     */
+    this.getFooter = function() {
+        return footer;
+    };
+
+    /**
+     * Returns the element representing this dialog. Adding this element to
+     * the DOM shows the dialog, while removing this element hides the dialog.
+     * 
+     * @return {Element} The element representing this dialog.
+     */
+    this.getElement = function() {
+        return element;
+    };
 
 };
