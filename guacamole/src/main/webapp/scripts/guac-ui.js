@@ -107,7 +107,33 @@ GuacUI.removeClass = function(element, classname) {
     } // end if no classlist support
 
 };
-   
+
+/**
+ * Opens the connection having the given ID in a new tab/window.
+ * 
+ * @param {String} id The ID of the connection to open.
+ * @param {String} parameters Any parameters that should be added to the URL,
+ *                            for sake of authentication.
+ */
+GuacUI.openConnection = function(id, parameters) {
+
+    // Get URL
+    var url = "client.xhtml?id=" + encodeURIComponent(id);
+
+    // Add parameters, if given
+    if (parameters)
+        url += "&" + parameters;
+
+    // Attempt to focus existing window
+    var current = window.open(null, id);
+
+    // If window did not already exist, set up as
+    // Guacamole client
+    if (!current.GuacUI)
+        window.open(url, id);
+
+};
+
 /**
  * Object describing the UI's level of audio support. If the user has request
  * that audio be disabled, this object will pretend that audio is not
@@ -418,55 +444,44 @@ GuacUI.DraggableComponent = function(element) {
 GuacUI.Connection = function(connection) {
 
     /**
+     * Reference to this connection.
+     * @private
+     */
+    var guac_connection = this;
+
+    /**
      * The actual connection associated with this connection UI element.
      */
     this.connection = connection;
 
-    function createElement(tagname, classname) {
-        var new_element = document.createElement(tagname);
-        new_element.className = classname;
-        return new_element;
-    }
+    /**
+     * Fired when this connection is clicked.
+     * @event
+     */
+    this.onclick = null;
 
     // Create connection display elements
-    var element       = createElement("div",  "connection");
-    var caption       = createElement("div",  "caption");
-    var protocol      = createElement("div",  "protocol");
-    var name          = createElement("span", "name");
-    var protocol_icon = createElement("div",  "icon " + connection.protocol);
-    var thumbnail     = createElement("div",  "thumbnail");
-    var thumb_img;
+    var element   = GuacUI.createElement("div",  "connection");
+    var thumbnail = GuacUI.createChildElement(element, "div",  "thumbnail");
+    var caption   = GuacUI.createChildElement(element, "div",  "caption");
+    var protocol  = GuacUI.createChildElement(caption, "div",  "protocol");
+    var name      = GuacUI.createChildElement(caption, "span", "name");
+    GuacUI.createChildElement(protocol, "div",  "icon " + connection.protocol);
 
-    // Get URL
-    var url = "client.xhtml?id=" + encodeURIComponent(connection.id);
-
-    // Create link to client
     element.addEventListener("click", function(e) {
 
         // Prevent click from affecting parent
         e.stopPropagation();
         e.preventDefault();
 
-        // Attempt to focus existing window
-        var current = window.open(null, connection.id);
-
-        // If window did not already exist, set up as
-        // Guacamole client
-        if (!current.GuacUI)
-            window.open(url, connection.id);
+        // Fire event if defined
+        if (guac_connection.onclick)
+            guac_connection.onclick();
 
     }, false);
 
-
-    // Add icon
-    protocol.appendChild(protocol_icon);
-
     // Set name
     name.textContent = connection.name;
-
-    // Assemble caption
-    caption.appendChild(protocol);
-    caption.appendChild(name);
 
     // Add active usages (if any)
     var active_users = connection.currentUsage();
@@ -476,18 +491,13 @@ GuacUI.Connection = function(connection) {
         GuacUI.addClass(element, "in-use");
     }
 
-    // Assemble connection icon
-    element.appendChild(thumbnail);
-    element.appendChild(caption);
-
     // Add screenshot if available
     var thumbnail_url = GuacamoleHistory.get(connection.id).thumbnail;
     if (thumbnail_url) {
 
         // Create thumbnail element
-        thumb_img = document.createElement("img");
+        var thumb_img = GuacUI.createChildElement(thumbnail, "img");
         thumb_img.src = thumbnail_url;
-        thumbnail.appendChild(thumb_img);
 
     }
 
@@ -819,26 +829,18 @@ GuacUI.ListGroup = function(caption) {
      */
     var elements = GuacUI.createChildElement(element, "div", "children");
 
-    // Toggle by default
-    element.addEventListener("click", function(e) {
-
-        // Prevent click from affecting parent
-        e.stopPropagation();
-        e.preventDefault();
-
-        if (guac_group.expanded)
-            guac_group.collapse();
-        else
-            guac_group.expand();
-
-    }, false);
-
     /**
      * Whether this group is expanded.
      * 
      * @type Boolean
      */
     this.expanded = false;
+
+    /**
+     * Fired when this group is clicked.
+     * @event
+     */
+    this.onclick = null;
 
     /**
      * Returns the element representing this notification.
@@ -873,6 +875,33 @@ GuacUI.ListGroup = function(caption) {
         GuacUI.removeClass(element, "expanded");
         guac_group.expanded = false;
     };
+
+    // Toggle when icon is clicked
+    caption_icon.addEventListener("click", function(e) {
+
+        // Prevent click from affecting parent
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (guac_group.expanded)
+            guac_group.collapse();
+        else
+            guac_group.expand();
+
+    }, false);
+
+    // Fire event when any other part is clicked
+    element.addEventListener("click", function(e) {
+
+        // Prevent click from affecting parent
+        e.stopPropagation();
+        e.preventDefault();
+
+        // Fire event if defined
+        if (guac_group.onclick)
+            guac_group.onclick();
+
+    }, false);
 
 }
 
@@ -976,6 +1005,14 @@ GuacUI.GroupView = function(root_group, multiselect) {
             GuacUI.addClass(guacui_connection.getElement(), "list-item");
             appendChild(guacui_connection.getElement());
 
+            // Set onclick event
+            (function(connection) {
+                guacui_connection.onclick = function() {
+                    if (group_view.onconnectionclick)
+                        group_view.onconnectionclick(connection);
+                };
+            })(connection);
+
         } // end for each connection
 
         // Add all contained groups 
@@ -991,6 +1028,14 @@ GuacUI.GroupView = function(root_group, multiselect) {
             // Add element to display
             GuacUI.addClass(list_group.getElement(), "list-item");
             appendChild(list_group.getElement());
+
+            // Set onclick event
+            (function(child_group) {
+                list_group.onclick = function() {
+                    if (group_view.ongroupclick)
+                        group_view.ongroupclick(child_group);
+                };
+            })(child_group);
 
         } // end for each gorup
 
