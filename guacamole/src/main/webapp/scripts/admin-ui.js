@@ -42,9 +42,7 @@ var GuacAdmin = {
 
     "cached_permissions" : null,
     "cached_protocols"   : null,
-    "cached_root_group"  : null,
-
-    "selected_connection" : null
+    "cached_root_group"  : null
 
 };
 
@@ -658,303 +656,283 @@ GuacAdmin.UserEditor = function(name, parameters) {
 };
 
 /**
- * Adds the given connection to the displayed connection list.
+ * Connection edit dialog which allows editing of the connection parameters.
+ * 
+ * @param {GuacamoleService.Connection} connection The connection to edit.
+ * @param {String} parameters Any parameters to add to service requests for sake
+ *                            of authentication.
  */
-GuacAdmin.addConnection = function(connection, parameters) {
+GuacAdmin.ConnectionEditor = function(connection, parameters) {
 
-    var item = new GuacAdmin.ListItem("connection", connection.name);
-    var item_element = item.getElement();
-    GuacAdmin.connectionPager.addElement(item_element);
+    /**
+     * Dialog containing the user editor.
+     */
+    var dialog = new GuacUI.Dialog();
 
-    item_element.onclick = function() {
+    var i;
 
-        // Ignore clicks if any item is selected
-        if (GuacAdmin.selected_connection) return;
-        else GuacAdmin.selected_connection = connection.id;
+    // Create form base elements
+    var connection_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
+    var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
+    connection_header.textContent = connection.name;
 
-        var i;
+    var sections = GuacUI.createChildElement(
+        GuacUI.createChildElement(form_element, "div", "settings section"),
+        "dl");
 
-        // Create form base elements
-        var form_element = GuacUI.createElement("div", "form");
-        var connection_header = GuacUI.createChildElement(form_element, "h2");
-        connection_header.textContent = connection.name;
+    // Parameter header
+    var protocol_header = GuacUI.createChildElement(sections, "dt");
+    protocol_header.textContent = "Protocol:";
+    
+    var protocol_field = GuacUI.createChildElement(protocol_header, "select");
 
-        var sections = GuacUI.createChildElement(
-            GuacUI.createChildElement(form_element, "div", "settings section"),
-            "dl");
+    // Associative set of protocols
+    var available_protocols = {};
 
-        // Parameter header
-        var protocol_header = GuacUI.createChildElement(sections, "dt")
-        protocol_header.textContent = "Protocol:";
+    // All form fields by parameter name
+    var fields = {};
+
+    // Add protocols
+    for (i=0; i<GuacAdmin.cached_protocols.length; i++) {
+
+        // Get protocol and store in associative set
+        var protocol = GuacAdmin.cached_protocols[i];
+        available_protocols[protocol.name] = protocol;
+
+        // List protocol in select
+        var protocol_title = GuacUI.createChildElement(protocol_field, "option");
+        protocol_title.textContent = protocol.title;
+        protocol_title.value = protocol.name;
+
+    }
+
+    // Parameter section
+    var field_table  = GuacUI.createChildElement(
+        GuacUI.createChildElement(sections, "dd"),
+        "table", "fields section");
+
+    // History header
+    var history_header = GuacUI.createChildElement(sections, "dt");
+    history_header.textContent = "Usage History:";
+
+    // If history present, display as table
+    if (connection.history.length > 0) {
+
+        // History section
+        var history_section = GuacUI.createChildElement(sections, "dd");
+        var history_table  = GuacUI.createChildElement(history_section,
+            "table", "history section");
+
+        var history_table_header = GuacUI.createChildElement(
+            history_table, "tr");
+
+        GuacUI.createChildElement(history_table_header, "th").textContent =
+            "Username";
+
+        GuacUI.createChildElement(history_table_header, "th").textContent =
+            "Start Time";
+
+        GuacUI.createChildElement(history_table_header, "th").textContent =
+            "Duration";
+
+        // Paginated body of history
+        var history_buttons = GuacUI.createChildElement(history_section, "div",
+            "list-pager-buttons");
+        var history_body = GuacUI.createChildElement(history_table, "tbody");
+        var history_pager = new GuacUI.Pager(history_body);
+
+        // Add history
+        for (i=0; i<connection.history.length; i++) {
+
+            // Get record
+            var record = connection.history[i];
+
+            // Create record elements
+            var row = GuacUI.createElement("tr");
+            var user = GuacUI.createChildElement(row, "td", "username");
+            var start = GuacUI.createChildElement(row, "td", "start");
+            var duration = GuacUI.createChildElement(row, "td", "duration");
+
+            // Display record
+            user.textContent = record.username;
+            start.textContent = GuacAdmin.formatDate(record.start);
+            if (record.duration !== null)
+                duration.textContent = GuacAdmin.formatSeconds(record.duration);
+            else
+                duration.textContent = "Active now";
+
+            // Add record to pager
+            history_pager.addElement(row);
+
+        }
+
+        // Init pager
+        history_pager.setPage(0);
+
+        // Add pager if more than one page
+        if (history_pager.last_page !== 0)
+            history_buttons.appendChild(history_pager.getElement());
+
+    }
+    else
+        GuacUI.createChildElement(
+            GuacUI.createChildElement(sections, "dd"), "p").textContent =
+                "This connection has not yet been used.";
+
+    // Display fields for the given protocol name 
+    function setFields(protocol_name) {
+
+        // Clear fields
+        field_table.innerHTML = "";
+
+        // Get protocol
+        var protocol = available_protocols[protocol_name];
+
+        // For each parameter
+        for (var i=0; i<protocol.parameters.length; i++) {
+
+            // Get parameter
+            var parameter = protocol.parameters[i];
+            var name = parameter.name;
+
+            // Create corresponding field
+            var field;
+            switch (parameter.type) {
+
+                // Text field
+                case GuacamoleService.Protocol.Parameter.TEXT:
+                    field = new GuacAdmin.Field.TEXT();
+                    break;
+
+                // Password field
+                case GuacamoleService.Protocol.Parameter.PASSWORD:
+                    field = new GuacAdmin.Field.PASSWORD();
+                    break;
+
+                // Numeric field
+                case GuacamoleService.Protocol.Parameter.NUMERIC:
+                    field = new GuacAdmin.Field.NUMERIC();
+                    break;
+
+                // Checkbox
+                case GuacamoleService.Protocol.Parameter.BOOLEAN:
+                    field = new GuacAdmin.Field.CHECKBOX(parameter.value);
+                    break;
+
+                // Select field
+                case GuacamoleService.Protocol.Parameter.ENUM:
+                    field = new GuacAdmin.Field.ENUM(parameter.options);
+                    break;
+
+                default:
+                    continue;
+
+            }
+
+            // Create container for field
+            var container = 
+                GuacUI.createTabulatedContainer(field_table, parameter.title + ":");
+
+            // Set initial value
+            if (connection.parameters[name])
+                field.setValue(connection.parameters[name]);
+
+            // Add field
+            container.appendChild(field.getElement());
+            fields[name] = field;
+
+        } // end foreach parameter
+
+    }
+
+    // Set initially selected protocol
+    protocol_field.value = connection.protocol;
+    setFields(connection.protocol);
+
+    protocol_field.onchange = protocol_field.onclick = function() {
+        setFields(this.value);
+    };
+
+    // Add save button
+    var save_button = GuacUI.createChildElement(dialog.getFooter(), "button");
+    save_button.textContent = "Save";
+    save_button.onclick = function(e) {
+
+        e.stopPropagation();
+
+        try {
+
+            // Build connection
+            var updated_connection = new GuacamoleService.Connection(
+                protocol_field.value,
+                connection.id,
+                connection.name
+            );
+
+            // Populate parameters
+            for (var name in fields) {
+                var field = fields[name];
+                if (field)
+                    updated_connection.parameters[name] = field.getValue();
+            }
+
+            // Update connection
+            GuacamoleService.Connections.update(updated_connection, parameters);
+            dialog.getElement().parentNode.removeChild(dialog.getElement());
+            GuacAdmin.reset();
+
+        }
+        catch (e) {
+            alert(e.message);
+        }
+
+    };
+
+    // Add cancel button
+    var cancel_button = GuacUI.createChildElement(dialog.getFooter(), "button");
+    cancel_button.textContent = "Cancel";
+    cancel_button.onclick = function(e) {
+        e.stopPropagation();
+        dialog.getElement().parentNode.removeChild(dialog.getElement());
+    };
+
+    // Add delete button if permission available
+    if (GuacAdmin.cached_permissions.administer ||
+        connection.id in GuacAdmin.cached_permissions.remove_connection) {
         
-        var protocol_field = GuacUI.createChildElement(protocol_header, "select");
-
-        // Associative set of protocols
-        var available_protocols = {};
-
-        // All form fields by parameter name
-        var fields = {};
-
-        // Add protocols
-        for (i=0; i<GuacAdmin.cached_protocols.length; i++) {
-
-            // Get protocol and store in associative set
-            var protocol = GuacAdmin.cached_protocols[i];
-            available_protocols[protocol.name] = protocol;
-
-            // List protocol in select
-            var protocol_title = GuacUI.createChildElement(protocol_field, "option");
-            protocol_title.textContent = protocol.title;
-            protocol_title.value = protocol.name;
-
-        }
-
-        // Parameter section
-        var field_table  = GuacUI.createChildElement(
-            GuacUI.createChildElement(sections, "dd"),
-            "table", "fields section");
-
-        // History header
-        var history_header = GuacUI.createChildElement(sections, "dt")
-        history_header.textContent = "Usage History:";
-
-        // If history present, display as table
-        if (connection.history.length > 0) {
-
-            // History section
-            var history_section = GuacUI.createChildElement(sections, "dd");
-            var history_table  = GuacUI.createChildElement(history_section,
-                "table", "history section");
-
-            var history_table_header = GuacUI.createChildElement(
-                history_table, "tr");
-
-            GuacUI.createChildElement(history_table_header, "th").textContent =
-                "Username";
-
-            GuacUI.createChildElement(history_table_header, "th").textContent =
-                "Start Time";
-
-            GuacUI.createChildElement(history_table_header, "th").textContent =
-                "Duration";
-
-            // Paginated body of history
-            var history_buttons = GuacUI.createChildElement(history_section, "div",
-                "list-pager-buttons");
-            var history_body = GuacUI.createChildElement(history_table, "tbody");
-            var history_pager = new GuacUI.Pager(history_body);
-
-            // Add history
-            for (i=0; i<connection.history.length; i++) {
-
-                // Get record
-                var record = connection.history[i];
-
-                // Create record elements
-                var row = GuacUI.createElement("tr");
-                var user = GuacUI.createChildElement(row, "td", "username");
-                var start = GuacUI.createChildElement(row, "td", "start");
-                var duration = GuacUI.createChildElement(row, "td", "duration");
-
-                // Display record
-                user.textContent = record.username;
-                start.textContent = GuacAdmin.formatDate(record.start);
-                if (record.duration != null)
-                    duration.textContent = GuacAdmin.formatSeconds(record.duration);
-                else
-                    duration.textContent = "Active now";
-
-                // Add record to pager
-                history_pager.addElement(row);
-
-            }
-
-            // Init pager
-            history_pager.setPage(0);
-
-            // Add pager if more than one page
-            if (history_pager.last_page != 0)
-                history_buttons.appendChild(history_pager.getElement());
-
-        }
-        else
-            GuacUI.createChildElement(
-                GuacUI.createChildElement(sections, "dd"), "p").textContent =
-                    "This connection has not yet been used.";
-
-        // Deselect
-        function deselect() {
-            GuacUI.removeClass(GuacAdmin.containers.connection_list, "disabled");
-            GuacUI.removeClass(item_element, "selected");
-            item_element.removeChild(form_element);
-            GuacAdmin.selected_connection = null;
-        }
-
-        // Select
-        function select() {
-            GuacUI.addClass(GuacAdmin.containers.connection_list, "disabled");
-            GuacUI.addClass(item_element, "selected");
-            item_element.appendChild(form_element);
-        }
-
-        // Display fields for the given protocol name 
-        function setFields(protocol_name) {
-
-            // Clear fields
-            field_table.innerHTML = "";
-
-            // Get protocol
-            var protocol = available_protocols[protocol_name];
-
-            // For each parameter
-            for (var i=0; i<protocol.parameters.length; i++) {
-
-                // Get parameter
-                var parameter = protocol.parameters[i];
-                var name = parameter.name;
-
-                // Create corresponding field
-                var field;
-                switch (parameter.type) {
-
-                    // Text field
-                    case GuacamoleService.Protocol.Parameter.TEXT:
-                        field = new GuacAdmin.Field.TEXT();
-                        break;
-
-                    // Password field
-                    case GuacamoleService.Protocol.Parameter.PASSWORD:
-                        field = new GuacAdmin.Field.PASSWORD();
-                        break;
-
-                    // Numeric field
-                    case GuacamoleService.Protocol.Parameter.NUMERIC:
-                        field = new GuacAdmin.Field.NUMERIC();
-                        break;
-
-                    // Checkbox
-                    case GuacamoleService.Protocol.Parameter.BOOLEAN:
-                        field = new GuacAdmin.Field.CHECKBOX(parameter.value);
-                        break;
-
-                    // Select field
-                    case GuacamoleService.Protocol.Parameter.ENUM:
-                        field = new GuacAdmin.Field.ENUM(parameter.options);
-                        break;
-
-                    default:
-                        continue;
-
-                }
-
-                // Create container for field
-                var container = 
-                    GuacUI.createTabulatedContainer(field_table, parameter.title + ":");
-
-                // Set initial value
-                if (connection.parameters[name])
-                    field.setValue(connection.parameters[name]);
-
-                // Add field
-                container.appendChild(field.getElement());
-                fields[name] = field;
-
-            } // end foreach parameter
-
-        }
-
-        // Set initially selected protocol
-        protocol_field.value = connection.protocol;
-        setFields(connection.protocol);
-
-        protocol_field.onchange = protocol_field.onclick = function() {
-            setFields(this.value);
-        };
-
-        // Add buttons
-        var button_div = GuacUI.createChildElement(form_element, "div", "object-buttons");
-
-        // Add save button
-        var save_button = GuacUI.createChildElement(button_div, "button");
-        save_button.textContent = "Save";
-        save_button.onclick = function(e) {
+        // Create button
+        var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
+        delete_button.textContent = "Delete";
+        
+        // Remove selected connection when clicked
+        delete_button.onclick = function(e) {
 
             e.stopPropagation();
 
-            try {
+            // Delete connection upon confirmation
+            if (confirm("Are you sure you want to delete the connection \""
+                        + connection.name + "\"?")) {
 
-                // Build connection
-                var updated_connection = new GuacamoleService.Connection(
-                    protocol_field.value,
-                    connection.id,
-                    connection.name
-                );
-
-                // Populate parameters
-                for (var name in fields) {
-                    var field = fields[name];
-                    if (field)
-                        updated_connection.parameters[name] = field.getValue();
+                // Attempt to delete connection
+                try {
+                    GuacamoleService.Connections.remove(connection.id, parameters);
+                    dialog.getElement().parentNode.removeChild(dialog.getElement());
+                    GuacAdmin.reset();
                 }
 
-                // Update connection
-                GuacamoleService.Connections.update(updated_connection, parameters);
-                deselect();
-                GuacAdmin.reset();
+                // Alert on failure
+                catch (e) {
+                    alert(e.message);
+                }
 
-            }
-            catch (e) {
-                alert(e.message);
             }
 
         };
 
-        // Add cancel button
-        var cancel_button = GuacUI.createChildElement(button_div, "button");
-        cancel_button.textContent = "Cancel";
-        cancel_button.onclick = function(e) {
-            e.stopPropagation();
-            deselect();
-        };
+    }
 
-        // Add delete button if permission available
-        if (GuacAdmin.cached_permissions.administer ||
-            connection.id in GuacAdmin.cached_permissions.remove_connection) {
-            
-            // Create button
-            var delete_button = GuacUI.createChildElement(button_div, "button", "danger");
-            delete_button.textContent = "Delete";
-            
-            // Remove selected connection when clicked
-            delete_button.onclick = function(e) {
-
-                e.stopPropagation();
-
-                // Delete connection upon confirmation
-                if (confirm("Are you sure you want to delete the connection \""
-                            + connection.name + "\"?")) {
-
-                    // Attempt to delete connection
-                    try {
-                        GuacamoleService.Connections.remove(GuacAdmin.selected_connection, parameters);
-                        deselect();
-                        GuacAdmin.reset();
-                    }
-
-                    // Alert on failure
-                    catch (e) {
-                        alert(e.message);
-                    }
-
-                }
-
-            };
-
-        }
-
-        // Select item
-        select();
-
+    this.getElement = function() {
+        return dialog.getElement();
     };
 
 };
@@ -1081,6 +1059,12 @@ GuacAdmin.reset = function() {
     GuacAdmin.containers.connection_list.innerHTML = "";
     var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, false);
     GuacAdmin.containers.connection_list.appendChild(group_view.getElement());
+
+    // Show connection editor when connections are clicked
+    group_view.onconnectionclick = function(connection) {
+        var connection_dialog = new GuacAdmin.ConnectionEditor(connection, parameters);
+        document.body.appendChild(connection_dialog.getElement());
+    };
 
 };
 
