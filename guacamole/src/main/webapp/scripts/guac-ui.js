@@ -883,8 +883,9 @@ GuacUI.ListGroup = function(caption) {
  * @constructor
  * @param {GuacamoleService.ConnectionGroup} root_group The group to display
  *                                                      within the view.
+ * @param {Boolean} multiselect Whether multiple objects are selectable.
  */
-GuacUI.GroupView = function(root_group) {
+GuacUI.GroupView = function(root_group, multiselect) {
 
     /**
      * Reference to this GroupView.
@@ -934,6 +935,7 @@ GuacUI.GroupView = function(root_group) {
 
             // Add connection to connection list or parent group
             var guacui_connection = new GuacUI.Connection(connection);
+            GuacUI.addClass(guacui_connection.getElement(), "list-item");
             appendChild(guacui_connection.getElement());
 
         } // end for each connection
@@ -949,6 +951,7 @@ GuacUI.GroupView = function(root_group) {
             addGroup(child_group, list_group.addElement);
 
             // Add element to display
+            GuacUI.addClass(list_group.getElement(), "list-item");
             appendChild(list_group.getElement());
 
         } // end for each gorup

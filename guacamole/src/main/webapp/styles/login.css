@@ -319,38 +319,12 @@ div#all-connections .connection {
     text-align: left;
 }
 
-div#all-connections .connection .thumbnail {
-    display: none;
+div#recent-connections .connection .thumbnail {
+    display: block;
 }
 
 div#all-connections .connection {
     padding: 0.1em;
-}
-
-.protocol {
-    display: inline-block;
-}
-
-.protocol .icon {
-    width: 24px;
-    height: 24px;
-    background-image: url('../images/protocol-icons/guac-plug.png');
-    background-size: 16px 16px;
-    -moz-background-size: 16px 16px;
-    -webkit-background-size: 16px 16px;
-    -khtml-background-size: 16px 16px;
-    background-repeat: no-repeat;
-    background-position: center center;
-    opacity: 0.5;
-}
-
-.protocol .icon.ssh {
-    background-image: url('../images/protocol-icons/guac-text.png');
-}
-
-.protocol .icon.vnc,
-.protocol .icon.rdp {
-    background-image: url('../images/protocol-icons/guac-monitor.png');
 }
 
 div#recent-connections .protocol {

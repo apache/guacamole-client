@@ -157,7 +157,6 @@ div.section {
 
     display: block;
     text-align: left;
-    padding: 0.1em;
     cursor: pointer;
 
     position: relative;
@@ -182,6 +181,10 @@ div.section {
     vertical-align: middle;
 }
 
+.list-item .caption {
+    padding: 0.1em;
+}
+
 .list-item .name {
     color: black;
     font-weight: normal;
@@ -201,7 +204,7 @@ div.section {
     opacity: 1.0;
 }
 
-.list-item:not(.selected):hover {
+.list-item:not(.selected) .caption:hover {
     background: #CDA;
 }
 
@@ -292,17 +295,38 @@ div.section {
     background-image: url('../images/protocol-icons/guac-plug.png');
 }
 
-.icon.connection.ssh {
-    background-image: url('../images/protocol-icons/guac-text.png');
-}
-
 .icon.connection.add {
     background-image: url('../images/action-icons/guac-monitor-add.png');
 }
 
-.icon.connection.vnc,
-.icon.connection.rdp {
+.protocol {
+    display: inline-block;
+}
+
+.protocol .icon {
+    width: 24px;
+    height: 24px;
+    background-image: url('../images/protocol-icons/guac-plug.png');
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0.5;
+}
+
+.protocol .icon.ssh {
+    background-image: url('../images/protocol-icons/guac-text.png');
+}
+
+.protocol .icon.vnc,
+.protocol .icon.rdp {
     background-image: url('../images/protocol-icons/guac-monitor.png');
+}
+
+.connection .thumbnail {
+    display: none;
 }
 
 /*
