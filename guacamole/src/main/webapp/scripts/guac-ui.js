@@ -1004,26 +1004,43 @@ GuacUI.GroupView = function(root_group, multiselect) {
             var guacui_connection = new GuacUI.Connection(connection);
             GuacUI.addClass(guacui_connection.getElement(), "list-item");
 
-            // If multiselect, add checkbox for each connection
-            if (multiselect) {
-
-                var connection_choice = GuacUI.createElement("div", "choice");
-                var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
-                connection_checkbox.setAttribute("type", "checkbox");
-                
-                connection_choice.appendChild(guacui_connection.getElement());
-                appendChild(connection_choice);
-
-            }
-            else
-                appendChild(guacui_connection.getElement());
-
-            // Set onclick event
             (function(connection) {
+
+                // If multiselect, add checkbox for each connection
+                if (multiselect) {
+
+                    var connection_choice = GuacUI.createElement("div", "choice");
+                    var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
+                    connection_checkbox.setAttribute("type", "checkbox");
+                    
+                    connection_choice.appendChild(guacui_connection.getElement());
+                    appendChild(connection_choice);
+
+                    function fire_connection_change(e) {
+
+                        // Prevent click from affecting parent
+                        e.stopPropagation();
+
+                        // Fire event if handler defined
+                        if (group_view.onconnectionchange)
+                            group_view.onconnectionchange(connection, this.checked);
+
+                    }
+
+                    // Fire change events when checkbox modified
+                    connection_checkbox.addEventListener("click",  fire_connection_change, false);
+                    connection_checkbox.addEventListener("change", fire_connection_change, false);
+
+                }
+                else
+                    appendChild(guacui_connection.getElement());
+
+                // Fire click events when connection clicked
                 guacui_connection.onclick = function() {
                     if (group_view.onconnectionclick)
                         group_view.onconnectionclick(connection);
                 };
+
             })(connection);
 
         } // end for each connection
@@ -1041,26 +1058,43 @@ GuacUI.GroupView = function(root_group, multiselect) {
             // Add element to display
             GuacUI.addClass(list_group.getElement(), "list-item");
 
-            // If multiselect, add checkbox for each group
-            if (multiselect) {
-
-                var group_choice = GuacUI.createElement("div", "choice");
-                var group_checkbox = GuacUI.createChildElement(group_choice, "input");
-                group_checkbox.setAttribute("type", "checkbox");
-                
-                group_choice.appendChild(list_group.getElement());
-                appendChild(group_choice);
-
-            }
-            else
-                appendChild(list_group.getElement());
-
-            // Set onclick event
             (function(child_group) {
+
+                // If multiselect, add checkbox for each group
+                if (multiselect) {
+
+                    var group_choice = GuacUI.createElement("div", "choice");
+                    var group_checkbox = GuacUI.createChildElement(group_choice, "input");
+                    group_checkbox.setAttribute("type", "checkbox");
+                    
+                    group_choice.appendChild(list_group.getElement());
+                    appendChild(group_choice);
+
+                    function fire_group_change(e) {
+
+                        // Prevent click from affecting parent
+                        e.stopPropagation();
+
+                        // Fire event if handler defined
+                        if (group_view.ongroupchange)
+                            group_view.ongroupchange(child_group, this.checked);
+
+                    }
+
+                    // Fire change events when checkbox modified
+                    group_checkbox.addEventListener("click",  fire_group_change, false);
+                    group_checkbox.addEventListener("change", fire_group_change, false);
+
+                }
+                else
+                    appendChild(list_group.getElement());
+
+                // Fire click events when group clicked
                 list_group.onclick = function() {
                     if (group_view.ongroupclick)
                         group_view.ongroupclick(child_group);
                 };
+
             })(child_group);
 
         } // end for each gorup
