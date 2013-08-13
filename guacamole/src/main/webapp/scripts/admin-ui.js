@@ -253,8 +253,9 @@ GuacAdmin.ListItem = function(type, title) {
 
     // Create connection display elements
     var element = GuacUI.createElement("div",  "list-item");
-    var icon    = GuacUI.createChildElement(element, "div",  "icon");
-    var name    = GuacUI.createChildElement(element, "span", "name");
+    var caption = GuacUI.createChildElement(element, "div", "caption");
+    var icon    = GuacUI.createChildElement(caption, "div",  "icon");
+    var name    = GuacUI.createChildElement(caption, "span", "name");
     GuacUI.addClass(icon, type);
 
     // Set name
