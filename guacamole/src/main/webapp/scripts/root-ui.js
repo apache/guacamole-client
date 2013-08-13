@@ -175,6 +175,22 @@ GuacamoleRootUI.reset = function() {
     var group_view = new GuacUI.GroupView(root_group);
     GuacamoleRootUI.sections.all_connections.appendChild(group_view.getElement());
 
+    // Add any connections with thumbnails
+    for (var connection_id in group_view.connections) {
+
+        // Get interface component from connection
+        var connection = group_view.connections[connection_id];
+        var guacui_connection = new GuacUI.Connection(connection);
+
+        // If thumbnail exists, add to recent connections
+        if (guacui_connection.hasThumbnail())
+            GuacamoleRootUI.addRecentConnection(guacui_connection);
+
+    }
+
+    // Save all connections for later reference
+    GuacamoleRootUI.connections = group_view.connections;
+
     // If connections could be retrieved, display list
     GuacamoleRootUI.views.login.style.display = "none";
     GuacamoleRootUI.views.connections.style.display = "";
