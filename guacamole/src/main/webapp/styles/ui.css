@@ -118,21 +118,6 @@ div#version-dialog {
     padding: 0.5em;
 }
 
-h2 {
-
-    padding: 0.5em;
-    margin: 0;
-    font-size: 1.5em;
-
-    font-weight: lighter;
-    text-shadow: 1px 1px white;
-
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
-    background: rgba(0, 0, 0, 0.07);
-    
-}
-
 h1 {
     
     margin: 0;
@@ -147,6 +132,66 @@ h1 {
 div.section {
     margin: 0;
     padding: 1em;
+}
+
+/*
+ * Dialogs
+ */
+
+.dialog-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1em;
+}
+
+.dialog {
+
+    max-width: 100%;
+    width: 8in;
+    margin-left: auto;
+    margin-right: auto;
+    max-height: 100%;
+    overflow: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: #E7E7E7;
+
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
+    
+}
+
+.dialog > * {
+    margin: 1em;
+}
+
+.dialog .header {
+
+    margin: 0;
+
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    background: rgba(0, 0, 0, 0.07);
+    
+}
+
+.dialog .header h2 {
+
+    padding: 0.5em;
+    margin: 0;
+    font-size: 1.5em;
+
+    font-weight: lighter;
+    text-shadow: 1px 1px white;
+
 }
 
 /*
@@ -220,6 +265,7 @@ div.section {
  * List element fields (editing)
  */
 
+/*
 .form {
 
     position: absolute;
@@ -240,6 +286,7 @@ div.section {
     box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
 
 }
+*/
 
 .form .fields th,
 .form .permissions th {
