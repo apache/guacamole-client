@@ -44,7 +44,6 @@ var GuacAdmin = {
     "cached_protocols"   : null,
     "cached_root_group"  : null,
 
-    "selected_user"       : null,
     "selected_connection" : null
 
 };
@@ -358,10 +357,6 @@ GuacAdmin.addUser = function(name, parameters) {
     // When clicked, build and display property form
     item_element.onclick = function() {
 
-        // Ignore clicks if any item is selected
-        if (GuacAdmin.selected_user) return;
-        else GuacAdmin.selected_user = name;
-
         // Open user editor
         var user_dialog = new GuacAdmin.UserEditor(name, parameters);
         document.body.appendChild(user_dialog.getElement());
@@ -602,8 +597,8 @@ GuacAdmin.UserEditor = function(name, parameters) {
                 password = null;
 
             // Save user
-            GuacamoleService.Users.update(GuacAdmin.selected_user, password, added_perms, removed_perms, parameters);
-            // FIXME: Hide dialog
+            GuacamoleService.Users.update(name, password, added_perms, removed_perms, parameters);
+            dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
 
         }
@@ -618,7 +613,7 @@ GuacAdmin.UserEditor = function(name, parameters) {
     cancel_button.textContent = "Cancel";
     cancel_button.onclick = function(e) {
         e.stopPropagation();
-        // FIXME: Hide dialog
+        dialog.getElement().parentNode.removeChild(dialog.getElement());
     };
 
     // Add delete button if permission available
@@ -640,8 +635,8 @@ GuacAdmin.UserEditor = function(name, parameters) {
 
                 // Attempt to delete user
                 try {
-                    GuacamoleService.Users.remove(GuacAdmin.selected_user, parameters);
-                    // FIXME: Hide dialog
+                    GuacamoleService.Users.remove(name, parameters);
+                    dialog.getElement().parentNode.removeChild(dialog.getElement());
                     GuacAdmin.reset();
                 }
 
