@@ -56,9 +56,13 @@ var GuacamoleRootUI = {
         "connections" : document.getElementById("connection-list-ui")
     },
 
-    "session_state" :  new GuacamoleSessionState()
+    "session_state" :  new GuacamoleSessionState(),
+    "parameters"    :  null
 
 };
+
+// Get parameters from query string
+GuacamoleRootUI.parameters = window.location.search.substring(1) || null;
 
 /**
  * Attempts to login the given user using the given password, throwing an
@@ -69,16 +73,14 @@ var GuacamoleRootUI = {
  */
 GuacamoleRootUI.login = function(username, password) {
 
-    // Get parameters from query string
-    var parameters = window.location.search.substring(1);
-
     // Get username and password from form
     var data =
            "username=" + encodeURIComponent(username)
         + "&password=" + encodeURIComponent(password)
 
     // Include query parameters in submission data
-    if (parameters) data += "&" + parameters;
+    if (GuacamoleRootUI.parameters)
+        data += "&" + GuacamoleRootUI.parameters;
 
     // Log in
     var xhr = new XMLHttpRequest();
@@ -118,6 +120,11 @@ GuacamoleRootUI.addRecentConnection = function(connection) {
     // Hide "No recent connections" message
     GuacamoleRootUI.messages.no_recent_connections.style.display = "none";
 
+    // Open connection when clicked
+    connection.onclick = function() {
+        GuacUI.openConnection(connection.connection.id, GuacamoleRootUI.parameters);
+    };
+
 };
 
 
@@ -130,9 +137,6 @@ GuacamoleRootUI.addRecentConnection = function(connection) {
  */
 GuacamoleRootUI.reset = function() {
 
-    // Get parameters from query string
-    var parameters = window.location.search.substring(1);
-
     function hasEntry(object) {
         for (var name in object)
             return true;
@@ -142,10 +146,10 @@ GuacamoleRootUI.reset = function() {
     // Read root group
     var root_group;
     try {
-        root_group = GuacamoleService.Connections.list(parameters);
+        root_group = GuacamoleService.Connections.list(GuacamoleRootUI.parameters);
 
         // Show admin elements if admin permissions available
-        var permissions = GuacamoleService.Permissions.list(null, parameters);
+        var permissions = GuacamoleService.Permissions.list(null, GuacamoleRootUI.parameters);
         if (permissions.administer
             || permissions.create_connection
             || permissions.create_user
@@ -187,6 +191,11 @@ GuacamoleRootUI.reset = function() {
             GuacamoleRootUI.addRecentConnection(guacui_connection);
 
     }
+
+    // Open connections when clicked
+    group_view.onconnectionclick = function(connection) {
+        GuacUI.openConnection(connection.id, GuacamoleRootUI.parameters);
+    };
 
     // Save all connections for later reference
     GuacamoleRootUI.connections = group_view.connections;
