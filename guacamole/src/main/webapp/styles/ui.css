@@ -129,6 +129,21 @@ h1 {
 
 }
 
+h2 {
+
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+    background: rgba(0, 0, 0, 0.07);
+
+    padding: 0.5em;
+    margin: 0;
+    font-size: 1.5em;
+
+    font-weight: lighter;
+    text-shadow: 1px 1px white;
+
+}
+
 div.section {
     margin: 0;
     padding: 1em;
@@ -174,24 +189,7 @@ div.section {
 }
 
 .dialog .header {
-
     margin: 0;
-
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
-    background: rgba(0, 0, 0, 0.07);
-    
-}
-
-.dialog .header h2 {
-
-    padding: 0.5em;
-    margin: 0;
-    font-size: 1.5em;
-
-    font-weight: lighter;
-    text-shadow: 1px 1px white;
-
 }
 
 /*
