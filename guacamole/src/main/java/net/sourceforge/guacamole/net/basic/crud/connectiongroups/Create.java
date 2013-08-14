@@ -33,20 +33,15 @@ import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
  */
 public class Create extends AuthenticatingHttpServlet {
 
-    /**
-     * Prefix given to a parameter name when that parameter is a protocol-
-     * specific parameter meant for the configuration.
-     */
-    public static final String PARAMETER_PREFIX = "_";
-
     @Override
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
 
-        // Get name
+        // Get name and type
         String name     = request.getParameter("name");
+        String type     = request.getParameter("type");
         
         // Get the ID of the parent connection group
         String parentID = request.getParameter("parentID");
@@ -61,6 +56,11 @@ public class Create extends AuthenticatingHttpServlet {
         // Create connection skeleton
         ConnectionGroup connectionGroup = new DummyConnectionGroup();
         connectionGroup.setName(name);
+        
+        if("balancing".equals(type))
+            connectionGroup.setType(ConnectionGroup.Type.BALANCING);
+        else if("organizational".equals(type))
+            connectionGroup.setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
         // Add connection
         directory.add(connectionGroup);
