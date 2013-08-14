@@ -17,7 +17,7 @@ CREATE TABLE `guacamole_connection_group` (
 
   CONSTRAINT `guacamole_connection_group_ibfk_1`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`)
+    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -33,7 +33,7 @@ ALTER TABLE `guacamole_connection` ADD UNIQUE KEY `connection_name_parent` (`con
 
 ALTER TABLE `guacamole_connection` ADD CONSTRAINT `guacamole_connection_ibfk_1`
     FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`);
+    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE;
 
 --
 -- Table of connection group permissions. Each group permission grants a user
