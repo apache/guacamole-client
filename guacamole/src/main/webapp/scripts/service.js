@@ -564,6 +564,104 @@ GuacamoleService.Connections = {
 };
 
 /**
+ * Collection of service functions which deal with connections groups. Each
+ * function makes an explicit HTTP query to the server, and parses the response.
+ */
+GuacamoleService.ConnectionGroups = {
+
+    /**
+     * Creates a new connection group.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to create.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "create" : function(group, parameters) {
+
+        // Construct request URL
+        var groups_url = "connectiongroups/create?name=" + encodeURIComponent(group.name);
+        if (parameters) groups_url += "&" + parameters;
+
+        // Init POST data
+        var data;
+        if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+            data = "type=organizational";
+        else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+            data = "type=balancing";
+
+        // Create group
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", groups_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.send(data);
+
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+    },
+
+    /**
+     * Updates an existing connection group.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to create.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "update" : function(group, parameters) {
+
+        // Construct request URL
+        var groups_url = "connectiongroups/update?id=" + encodeURIComponent(group.id);
+        if (parameters) groups_url += "&" + parameters;
+
+        // Init POST data
+        var data = "name=" + encodeURIComponent(group.name);
+
+        // Add type
+        if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+            data += "&type=organizational";
+        else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+            data += "&type=balancing";
+
+        // Update group
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", groups_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.send(data);
+
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+    },
+
+    /**
+     * Deletes the connection group having the given identifier.
+     * 
+     * @param {String} id The identifier of the group to delete.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "remove" : function(id, parameters) {
+
+        // Construct request URL
+        var groups_url = "connectiongroups/delete?id=" + encodeURIComponent(id);
+        if (parameters) groups_url += "&" + parameters;
+
+        // Delete group
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", groups_url, false);
+        xhr.send(null);
+
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+    }
+
+};
+
+/**
  * Collection of service functions which deal with users. Each function
  * makes an explicit HTTP query to the server, and parses the response.
  */
