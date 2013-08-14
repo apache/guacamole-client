@@ -485,9 +485,10 @@ GuacAdmin.UserEditor = function(name, parameters) {
 
     }
 
-    // If readable connections exist, list them
-    if (GuacAdmin.cached_permissions.administer ||
-        GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)) {
+    // If administrable connections/groups exist, list them
+    if (GuacAdmin.cached_permissions.administer
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection_group)) {
 
         // Add fields for per-connection checkboxes
         var connections_header = GuacUI.createChildElement(sections, "dt");
@@ -531,6 +532,19 @@ GuacAdmin.UserEditor = function(name, parameters) {
             if (!GuacAdmin.cached_permissions.administer &&
                     !(conn_id in GuacAdmin.cached_permissions.administer_connection))
                 group_view.setConnectionEnabled(conn_id, false);
+
+        }
+
+        for (var group_id in group_view.groups) {
+
+            // Pre-select connection if readable by chosen user
+            if (group_id in user_perms.read_connection_group)
+                group_view.setGroupValue(group_id, true);
+
+            // If we lack permissions to admin this connection, disable it
+            if (!GuacAdmin.cached_permissions.administer &&
+                    !(group_id in GuacAdmin.cached_permissions.administer_connection_group))
+                group_view.setGroupEnabled(group_id, false);
 
         }
 
@@ -1102,7 +1116,10 @@ GuacAdmin.reset = function() {
         || GuacAdmin.cached_permissions.create_connection
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.update_connection)
         || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.remove_connection)
-        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection))
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection)
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.update_connection_group)
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.remove_connection_group)
+        || GuacAdmin.hasEntry(GuacAdmin.cached_permissions.administer_connection_group))
             GuacUI.addClass(document.body, "manage-connections");
         else
             GuacUI.removeClass(document.body, "manage-connections");
