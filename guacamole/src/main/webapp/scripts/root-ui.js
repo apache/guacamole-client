@@ -176,7 +176,7 @@ GuacamoleRootUI.reset = function() {
 
 
     // Create group view
-    var group_view = new GuacUI.GroupView(root_group);
+    var group_view = new GuacUI.GroupView(root_group, GuacUI.GroupView.SHOW_CONNECTIONS);
     GuacamoleRootUI.sections.all_connections.appendChild(group_view.getElement());
 
     // Add any connections with thumbnails

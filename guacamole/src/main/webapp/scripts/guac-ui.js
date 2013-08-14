@@ -912,9 +912,10 @@ GuacUI.ListGroup = function(caption) {
  * @constructor
  * @param {GuacamoleService.ConnectionGroup} root_group The group to display
  *                                                      within the view.
- * @param {Boolean} multiselect Whether multiple objects are selectable.
+ * @param {Number} flags Any flags (such as MULTISELECT or SHOW_CONNECTIONS)
+ *                       for modifying the behavior of this group view.
  */
-GuacUI.GroupView = function(root_group, multiselect) {
+GuacUI.GroupView = function(root_group, flags) {
 
     /**
      * Reference to this GroupView.
@@ -925,6 +926,16 @@ GuacUI.GroupView = function(root_group, multiselect) {
     // Group view components
     var element = GuacUI.createElement("div", "group-view");
     var list = GuacUI.createChildElement(element, "div", "list");
+
+    /**
+     * Whether multiselect is enabled.
+     */
+    var multiselect = flags & GuacUI.GroupView.MULTISELECT;
+
+    /**
+     * Whether connections should be included in the view.
+     */
+    var show_connections = flags & GuacUI.GroupView.SHOW_CONNECTIONS;
 
     /**
      * Set of all group checkboxes, indexed by ID. Only applicable when
@@ -1102,59 +1113,61 @@ GuacUI.GroupView = function(root_group, multiselect) {
         group_view.groups[group.id] = group;
 
         // Add all contained connections
-        for (i=0; i<group.connections.length; i++) {
+        if (show_connections) {
+            for (i=0; i<group.connections.length; i++) {
 
-            // Add connection to set
-            var connection = group.connections[i];
-            group_view.connections[connection.id] = connection;
+                // Add connection to set
+                var connection = group.connections[i];
+                group_view.connections[connection.id] = connection;
 
-            // Add connection to connection list or parent group
-            var guacui_connection = new GuacUI.Connection(connection);
-            GuacUI.addClass(guacui_connection.getElement(), "list-item");
+                // Add connection to connection list or parent group
+                var guacui_connection = new GuacUI.Connection(connection);
+                GuacUI.addClass(guacui_connection.getElement(), "list-item");
 
-            (function(connection) {
+                (function(connection) {
 
-                // If multiselect, add checkbox for each connection
-                if (multiselect) {
+                    // If multiselect, add checkbox for each connection
+                    if (multiselect) {
 
-                    var connection_choice = GuacUI.createElement("div", "choice");
-                    var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
-                    connection_checkbox.setAttribute("type", "checkbox");
-                    
-                    connection_choice.appendChild(guacui_connection.getElement());
-                    appendChild(connection_choice);
+                        var connection_choice = GuacUI.createElement("div", "choice");
+                        var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
+                        connection_checkbox.setAttribute("type", "checkbox");
+                        
+                        connection_choice.appendChild(guacui_connection.getElement());
+                        appendChild(connection_choice);
 
-                    function fire_connection_change(e) {
+                        function fire_connection_change(e) {
 
-                        // Prevent click from affecting parent
-                        e.stopPropagation();
+                            // Prevent click from affecting parent
+                            e.stopPropagation();
 
-                        // Fire event if handler defined
-                        if (group_view.onconnectionchange)
-                            group_view.onconnectionchange(connection, this.checked);
+                            // Fire event if handler defined
+                            if (group_view.onconnectionchange)
+                                group_view.onconnectionchange(connection, this.checked);
+
+                        }
+
+                        // Fire change events when checkbox modified
+                        connection_checkbox.addEventListener("click",  fire_connection_change, false);
+                        connection_checkbox.addEventListener("change", fire_connection_change, false);
+
+                        // Add checbox to set of connection checkboxes
+                        connection_checkboxes[connection.id] = connection_checkbox;
 
                     }
+                    else
+                        appendChild(guacui_connection.getElement());
 
-                    // Fire change events when checkbox modified
-                    connection_checkbox.addEventListener("click",  fire_connection_change, false);
-                    connection_checkbox.addEventListener("change", fire_connection_change, false);
+                    // Fire click events when connection clicked
+                    guacui_connection.onclick = function() {
+                        if (group_view.onconnectionclick)
+                            group_view.onconnectionclick(connection);
+                    };
 
-                    // Add checbox to set of connection checkboxes
-                    connection_checkboxes[connection.id] = connection_checkbox;
+                })(connection);
 
-                }
-                else
-                    appendChild(guacui_connection.getElement());
-
-                // Fire click events when connection clicked
-                guacui_connection.onclick = function() {
-                    if (group_view.onconnectionclick)
-                        group_view.onconnectionclick(connection);
-                };
-
-            })(connection);
-
-        } // end for each connection
+            } // end for each connection
+        }
 
         // Add all contained groups 
         for (i=0; i<group.groups.length; i++) {
@@ -1228,6 +1241,16 @@ GuacUI.GroupView = function(root_group, multiselect) {
     pager.setPage(0);
 
 };
+
+/**
+ * When set, allows multiple groups (or connections to be selected).
+ */
+GuacUI.GroupView.MULTISELECT      = 0x1;
+
+/**
+ * When set, also displays connections within the visible groups.
+ */
+GuacUI.GroupView.SHOW_CONNECTIONS = 0x2;
 
 /**
  * Simple modal dialog providing a header, body, and footer. No other

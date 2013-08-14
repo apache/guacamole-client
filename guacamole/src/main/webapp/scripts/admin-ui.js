@@ -497,7 +497,8 @@ GuacAdmin.UserEditor = function(name, parameters) {
         var connections_section = GuacUI.createChildElement(sections, "dd");
 
         // Construct group view for all readable connections
-        var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, true);
+        var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group,
+           GuacUI.GroupView.SHOW_CONNECTIONS | GuacUI.GroupView.MULTISELECT);
         connections_section.appendChild(group_view.getElement());
 
         // Update connection permissions when changed
@@ -1231,7 +1232,7 @@ GuacAdmin.reset = function() {
 
     // Add new group view
     GuacAdmin.containers.connection_list.innerHTML = "";
-    var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, false);
+    var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, GuacUI.GroupView.SHOW_CONNECTIONS);
     GuacAdmin.containers.connection_list.appendChild(group_view.getElement());
 
     // Show connection editor when connections are clicked
