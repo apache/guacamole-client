@@ -633,6 +633,11 @@ GuacAdmin.UserEditor = function(name, parameters) {
 
     }
 
+    /**
+     * Returns the DOM Element representing this dialog.
+     * 
+     * @return {Element} The DOM Element representing this dialog.
+     */
     this.getElement = function() {
         return dialog.getElement();
     };
@@ -681,8 +686,21 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     var protocol_field = GuacUI.createChildElement(protocol_container, "select");
     name_field.setAttribute("type", "text");
 
-    // FIXME: STUB: Location field
+    var location_value = connection.parent;
     location.textContent = connection.parent.name;
+    location.onclick = function() {
+
+        // Show group selector
+        var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
+        document.body.appendChild(group_select.getElement());
+
+        // Update location when chosen
+        group_select.onselect = function(group) {
+            location_value = group;
+            location.textContent = group.name;
+        };
+
+    };
 
     // Set header
     name_field.value =
@@ -878,8 +896,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                     updated_connection.parameters[name] = field.getValue();
             }
 
-            // FIXME: For now, assume location unchanged
-            updated_connection.parent = connection.parent;
+            // Populate location
+            updated_connection.parent = location_value;
 
             // Update connection if it exists
             if (connection.id)
@@ -943,6 +961,11 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 
     }
 
+    /**
+     * Returns the DOM Element representing this dialog.
+     * 
+     * @return {Element} The DOM Element representing this dialog.
+     */
     this.getElement = function() {
         return dialog.getElement();
     };
@@ -990,8 +1013,21 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     var type_field = GuacUI.createChildElement(type_container, "select");
     name_field.setAttribute("type", "text");
 
-    // FIXME: STUB: Location field
+    var location_value = group.parent;
     location.textContent = group.parent.name;
+    location.onclick = function() {
+
+        // Show group selector
+        var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
+        document.body.appendChild(group_select.getElement());
+
+        // Update location when chosen
+        group_select.onselect = function(group) {
+            location_value = group;
+            location.textContent = group.name;
+        };
+
+    };
 
     // Set title
     name_field.value =
@@ -1033,8 +1069,8 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
                 name_field.value
             );
 
-            // FIXME: For now, assume location unchanged
-            updated_group.parent = group.parent;
+            // Populate location
+            updated_group.parent = location_value;
 
             // Update group if provided
             if (group.id)
@@ -1097,6 +1133,72 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
 
     }
 
+    /**
+     * Returns the DOM Element representing this dialog.
+     * 
+     * @return {Element} The DOM Element representing this dialog.
+     */
+    this.getElement = function() {
+        return dialog.getElement();
+    };
+
+};
+
+/**
+ * Connection group dialog which allows selection of a single group.
+ * 
+ * @param {GuacamoleService.ConnectionGroup} group The group to view.
+ */
+GuacAdmin.ConnectionGroupSelect = function(group) {
+
+    /**
+     * Reference to this group selector.
+     * @private
+     */
+    var group_select = this;
+
+    /**
+     * Dialog containing the user editor.
+     */
+    var dialog = new GuacUI.Dialog();
+
+    // Create form base elements
+    var group_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
+    var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
+
+    // Set title
+    group_header.textContent = "Select Group";
+
+    // Add section with group view
+    var group_section = GuacUI.createChildElement(form_element, "div", "settings section");
+    var view = new GuacUI.GroupView(group);
+    group_section.appendChild(view.getElement());
+
+    // Handle select
+    view.ongroupclick = function(group) {
+
+        // Fire event if defined
+        if (group_select.onselect)
+            group_select.onselect(group);
+
+        // Hide dialog
+        dialog.getElement().parentNode.removeChild(dialog.getElement());
+
+    };
+
+    /**
+     * Fired when a group is selected.
+     * 
+     * @event
+     * @param {GuacamoleService.ConnectionGroup} group The selected group.
+     */
+    this.onselect = null;
+
+    /**
+     * Returns the DOM Element representing this dialog.
+     * 
+     * @return {Element} The DOM Element representing this dialog.
+     */
     this.getElement = function() {
         return dialog.getElement();
     };
