@@ -62,6 +62,11 @@ public class SystemPermission implements Permission<SystemPermission.Type> {
         CREATE_CONNECTION,
 
         /**
+         * Create connection groups.
+         */
+        CREATE_CONNECTION_GROUP,
+
+        /**
          * Administer the system in general, including adding permissions
          * which affect the system (like user creation, connection creation,
          * and system administration).

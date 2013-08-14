@@ -242,9 +242,10 @@ public final class MySQLConstants {
 
         // Convert permission type to MySQL constant
         switch (type) {
-            case CREATE_USER:       return SYSTEM_USER_CREATE;
-            case CREATE_CONNECTION: return SYSTEM_CONNECTION_CREATE;
-            case ADMINISTER:        return SYSTEM_ADMINISTER;
+            case CREATE_USER:             return SYSTEM_USER_CREATE;
+            case CREATE_CONNECTION:       return SYSTEM_CONNECTION_CREATE;
+            case CREATE_CONNECTION_GROUP: return SYSTEM_CONNECTION_GROUP_CREATE;
+            case ADMINISTER:              return SYSTEM_ADMINISTER;
         }
 
         // If we get here, permission support was not properly implemented

@@ -63,6 +63,6 @@ CREATE TABLE `guacamole_connection_group_permission` (
 
 ALTER TABLE `guacamole_system_permission` MODIFY `permission` 
     enum('CREATE_CONNECTION',
-         'CREATE_GROUP',
+         'CREATE_CONNECTION_GROUP',
          'CREATE_USER',
          'ADMINISTER') NOT NULL;

@@ -139,7 +139,7 @@ CREATE TABLE `guacamole_system_permission` (
 
   `user_id`    int(11) NOT NULL,
   `permission` enum('CREATE_CONNECTION',
-		    'CREATE_GROUP',
+		    'CREATE_CONNECTION_GROUP',
                     'CREATE_USER',
                     'ADMINISTER') NOT NULL,
 
