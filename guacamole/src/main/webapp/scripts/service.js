@@ -535,6 +535,10 @@ GuacamoleService.Connections = {
         // Init POST data
         var data = "protocol=" + encodeURIComponent(connection.protocol);
 
+        // Add group if given
+        if (connection.parent)
+            data += "&parentID=" + encodeURIComponent(connection.parent.id);
+
         // Add parameters
         for (var name in connection.parameters)
             data += "&_" + encodeURIComponent(name)
@@ -569,6 +573,10 @@ GuacamoleService.Connections = {
         var data =
                   "name="      + encodeURIComponent(connection.name)
                 + "&protocol=" + encodeURIComponent(connection.protocol);
+
+        // Add group if given
+        if (connection.parent)
+            data += "&parentID=" + encodeURIComponent(connection.parent.id);
 
         // Add parameters
         for (var name in connection.parameters)
@@ -639,6 +647,10 @@ GuacamoleService.ConnectionGroups = {
         else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
             data = "type=balancing";
 
+        // Add parent group if given
+        if (group.parent)
+            data += "&parentID=" + encodeURIComponent(group.parent.id);
+
         // Create group
         var xhr = new XMLHttpRequest();
         xhr.open("POST", groups_url, false);
@@ -672,6 +684,10 @@ GuacamoleService.ConnectionGroups = {
             data += "&type=organizational";
         else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
             data += "&type=balancing";
+
+        // Add parent group if given
+        if (group.parent)
+            data += "&parentID=" + encodeURIComponent(group.parent.id);
 
         // Update group
         var xhr = new XMLHttpRequest();
