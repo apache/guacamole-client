@@ -1017,7 +1017,7 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
             );
 
             // Update group if provided
-            if (connection)
+            if (group)
                 GuacamoleService.ConnectionGroups.update(updated_group, parameters);
 
             // Otherwise, create
