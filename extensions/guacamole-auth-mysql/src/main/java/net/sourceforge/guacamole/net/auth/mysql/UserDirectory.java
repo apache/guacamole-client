@@ -491,7 +491,7 @@ public class UserDirectory implements Directory<String, User> {
             // Create new permission
             ConnectionGroupPermissionKey newPermission = new ConnectionGroupPermissionKey();
             newPermission.setUser_id(user_id);
-            newPermission.setPermission(MySQLConstants.getConnectionConstant(permission.getType()));
+            newPermission.setPermission(MySQLConstants.getConnectionGroupConstant(permission.getType()));
             newPermission.setConnection_group_id(connection_group_id);
             connectionGroupPermissionDAO.insert(newPermission);
 
