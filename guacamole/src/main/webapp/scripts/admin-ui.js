@@ -642,9 +642,10 @@ GuacAdmin.UserEditor = function(name, parameters) {
 /**
  * Connection edit dialog which allows editing of the connection parameters.
  * 
- * @param {GuacamoleService.Connection} connection The connection to edit, or
- *                                                 null if the connection should
- *                                                 be created.
+ * @param {GuacamoleService.Connection} connection The connection to edit. This
+ *                                                 must be a connection without
+ *                                                 an id, if the connection is
+ *                                                 to be created.
  * @param {String} parameters Any parameters to add to service requests for sake
  *                            of authentication.
  */
@@ -684,14 +685,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     location.textContent = connection.parent.name;
 
     // Set header
-    if (connection) {
-        name_field.value =
-        connection_header.textContent = connection.name;
-    }
-    else {
-        name_field.value =
-        connection_header.textContent = "New Connection";
-    }
+    name_field.value =
+    connection_header.textContent = connection.name;
 
     // Associative set of protocols
     var available_protocols = {};
@@ -723,7 +718,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     history_header.textContent = "Usage History:";
 
     // If history present, display as table
-    if (connection && connection.history.length > 0) {
+    if (connection.history.length > 0) {
 
         // History section
         var history_section = GuacUI.createChildElement(sections, "dd");
@@ -841,7 +836,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                 GuacUI.createTabulatedContainer(field_table, parameter.title + ":");
 
             // Set initial value, if available
-            if (connection && connection.parameters[name])
+            if (connection.parameters[name])
                 field.setValue(connection.parameters[name]);
 
             // Add field
@@ -853,7 +848,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     }
 
     // Set initially selected protocol
-    if (connection) protocol_field.value = connection.protocol;
+    if (connection.protocol) protocol_field.value = connection.protocol;
     setFields(protocol_field.value);
 
     protocol_field.onchange = protocol_field.onclick = function() {
@@ -872,7 +867,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             // Build connection
             var updated_connection = new GuacamoleService.Connection(
                 protocol_field.value,
-                connection && connection.id,
+                connection.id,
                 name_field.value
             );
 
@@ -883,16 +878,16 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                     updated_connection.parameters[name] = field.getValue();
             }
 
-            // Update connection if provided
-            if (connection)
+            // FIXME: For now, assume location unchanged
+            updated_connection.parent = connection.parent;
+
+            // Update connection if it exists
+            if (connection.id)
                 GuacamoleService.Connections.update(updated_connection, parameters);
 
             // Otherwise, create
-            else {
-                // FIXME: Always saving to root. Remove line below when move implemented.
-                updated_connection.parent = GuacAdmin.cached_root_group;
+            else
                 GuacamoleService.Connections.create(updated_connection, parameters);
-            }
 
             // Hide dialog and reset UI
             dialog.getElement().parentNode.removeChild(dialog.getElement());
@@ -914,8 +909,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     };
 
     // Add delete button if permission available
-    if (connection && (GuacAdmin.cached_permissions.administer ||
-        connection.id in GuacAdmin.cached_permissions.remove_connection)) {
+    if (GuacAdmin.cached_permissions.administer ||
+        connection.id in GuacAdmin.cached_permissions.remove_connection) {
         
         // Create button
         var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
@@ -957,9 +952,9 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 /**
  * Connection group edit dialog which allows editing of the group parameters.
  * 
- * @param {GuacamoleService.ConnectionGroup} group The group to edit, or null
- *                                                 if the group should be
- *                                                 created.
+ * @param {GuacamoleService.ConnectionGroup} group The group to edit. This must
+ *                                                 be a group without an ID for
+ *                                                 group creation.
  * @param {String} parameters Any parameters to add to service requests for sake
  *                            of authentication.
  */
@@ -999,14 +994,8 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     location.textContent = group.parent.name;
 
     // Set title
-    if (group) {
-        name_field.value =
-        group_header.textContent = group.name;
-    }
-    else {
-        name_field.value =
-        group_header.textContent = "New Group";
-    }
+    name_field.value =
+    group_header.textContent = group.name;
 
     // Organizational type
     var org_type = GuacUI.createChildElement(type_field, "option");
@@ -1040,20 +1029,20 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
             // Build group 
             var updated_group = new GuacamoleService.ConnectionGroup(
                 type,
-                group && group.id,
+                group.id,
                 name_field.value
             );
 
+            // FIXME: For now, assume location unchanged
+            updated_group.parent = group.parent;
+
             // Update group if provided
-            if (group)
+            if (group.id)
                 GuacamoleService.ConnectionGroups.update(updated_group, parameters);
 
             // Otherwise, create
-            else {
-                // FIXME: Always saving to root. Remove line below when move implemented.
-                updated_group.parent = GuacAdmin.cached_root_group;
+            else
                 GuacamoleService.ConnectionGroups.create(updated_group, parameters);
-            }
 
             dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
@@ -1074,8 +1063,8 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     };
 
     // Add delete button if permission available
-    if (group && (GuacAdmin.cached_permissions.administer ||
-        group.id in GuacAdmin.cached_permissions.remove_connection_group)) {
+    if (GuacAdmin.cached_permissions.administer ||
+        group.id in GuacAdmin.cached_permissions.remove_connection_group) {
         
         // Create button
         var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
@@ -1158,8 +1147,12 @@ GuacAdmin.reset = function() {
 
         GuacAdmin.buttons.add_connection.onclick = function() {
 
+            // Create stub base connection
+            var connection = new GuacamoleService.Connection(null, null, "New Connection");
+            connection.parent = GuacAdmin.cached_root_group;
+
             // Open connection creation dialog
-            var connection_dialog = new GuacAdmin.ConnectionEditor(null, parameters);
+            var connection_dialog = new GuacAdmin.ConnectionEditor(connection, parameters);
             document.body.appendChild(connection_dialog.getElement());
 
         };
@@ -1173,8 +1166,13 @@ GuacAdmin.reset = function() {
 
         GuacAdmin.buttons.add_connection_group.onclick = function() {
 
+            // Create stub base group 
+            var group = new GuacamoleService.ConnectionGroup(
+                    GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL, null, "New Group");
+            group.parent = GuacAdmin.cached_root_group;
+
             // Open group creation dialog
-            var group_dialog = new GuacAdmin.ConnectionGroupEditor(null, parameters);
+            var group_dialog = new GuacAdmin.ConnectionGroupEditor(group, parameters);
             document.body.appendChild(group_dialog.getElement());
 
         };
