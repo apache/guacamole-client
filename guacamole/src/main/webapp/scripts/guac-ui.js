@@ -927,6 +927,20 @@ GuacUI.GroupView = function(root_group, multiselect) {
     var list = GuacUI.createChildElement(element, "div", "list");
 
     /**
+     * Set of all group checkboxes, indexed by ID. Only applicable when
+     * multiselect is enabled.
+     * @private
+     */
+    var group_checkboxes = {};
+
+    /**
+     * Set of all connection checkboxes, indexed by ID. Only applicable when
+     * multiselect is enabled.
+     * @private
+     */
+    var connection_checkboxes = {};
+
+    /**
      * Set of all connections, indexed by ID.
      */
     this.connections = {};
@@ -974,6 +988,28 @@ GuacUI.GroupView = function(root_group, multiselect) {
      */
     this.getElement = function() {
         return element;
+    };
+
+    /**
+     * Sets the current value of the group with the given ID. This function
+     * only has an effect when multiselect is enabled.
+     * 
+     * @param {String} id The ID of the group to change.
+     * @param {Boolean} value Whether the group should be selected.
+     */
+    this.setGroupValue = function(id, value) {
+        group_checkboxes[id].checked = value;
+    };
+
+    /**
+     * Sets the current value of the connection with the given ID. This function
+     * only has an effect when multiselect is enabled.
+     * 
+     * @param {String} id The ID of the connection to change.
+     * @param {Boolean} value Whether the connection should be selected.
+     */
+    this.setConnectionValue = function(id, value) {
+        connection_checkboxes[id].checked = value;
     };
 
     // Create pager for contents 
@@ -1031,6 +1067,9 @@ GuacUI.GroupView = function(root_group, multiselect) {
                     connection_checkbox.addEventListener("click",  fire_connection_change, false);
                     connection_checkbox.addEventListener("change", fire_connection_change, false);
 
+                    // Add checbox to set of connection checkboxes
+                    connection_checkboxes[connection.id] = connection_checkbox;
+
                 }
                 else
                     appendChild(guacui_connection.getElement());
@@ -1084,6 +1123,9 @@ GuacUI.GroupView = function(root_group, multiselect) {
                     // Fire change events when checkbox modified
                     group_checkbox.addEventListener("click",  fire_group_change, false);
                     group_checkbox.addEventListener("change", fire_group_change, false);
+
+                    // Add checbox to set of group checkboxes
+                    group_checkboxes[child_group.id] = group_checkbox;
 
                 }
                 else
