@@ -643,7 +643,12 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     // Create form base elements
     var connection_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
     var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
-    connection_header.textContent = connection.name;
+
+    // Set header
+    if (connection)
+        connection_header.textContent = connection.name;
+    else
+        connection_header.textContent = "New Connection";
 
     var sections = GuacUI.createChildElement(
         GuacUI.createChildElement(form_element, "div", "settings section"),
@@ -685,7 +690,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     history_header.textContent = "Usage History:";
 
     // If history present, display as table
-    if (connection.history.length > 0) {
+    if (connection && connection.history.length > 0) {
 
         // History section
         var history_section = GuacUI.createChildElement(sections, "dd");
@@ -802,8 +807,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             var container = 
                 GuacUI.createTabulatedContainer(field_table, parameter.title + ":");
 
-            // Set initial value
-            if (connection.parameters[name])
+            // Set initial value, if available
+            if (connection && connection.parameters[name])
                 field.setValue(connection.parameters[name]);
 
             // Add field
@@ -815,8 +820,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     }
 
     // Set initially selected protocol
-    protocol_field.value = connection.protocol;
-    setFields(connection.protocol);
+    if (connection) protocol_field.value = connection.protocol;
+    setFields(protocol_field.value);
 
     protocol_field.onchange = protocol_field.onclick = function() {
         setFields(this.value);
@@ -834,8 +839,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             // Build connection
             var updated_connection = new GuacamoleService.Connection(
                 protocol_field.value,
-                connection.id,
-                connection.name
+                connection && connection.id,
+                connection && connection.name /* FIXME: Actually allow rename */
             );
 
             // Populate parameters
@@ -845,8 +850,15 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                     updated_connection.parameters[name] = field.getValue();
             }
 
-            // Update connection
-            GuacamoleService.Connections.update(updated_connection, parameters);
+            // Update connection if provided
+            if (connection)
+                GuacamoleService.Connections.update(updated_connection, parameters);
+
+            // Otherwise, create
+            else
+                GuacamoleService.Connections.create(updated_connection, parameters);
+
+            // Hide dialog and reset UI
             dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
 
@@ -866,8 +878,8 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     };
 
     // Add delete button if permission available
-    if (GuacAdmin.cached_permissions.administer ||
-        connection.id in GuacAdmin.cached_permissions.remove_connection) {
+    if (connection && (GuacAdmin.cached_permissions.administer ||
+        connection.id in GuacAdmin.cached_permissions.remove_connection)) {
         
         // Create button
         var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
@@ -925,7 +937,12 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     // Create form base elements
     var group_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
     var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
-    group_header.textContent = group.name;
+
+    // Set title
+    if (group)
+        group_header.textContent = group.name;
+    else
+        group_header.textContent = "New Group";
 
     var sections = GuacUI.createChildElement(
         GuacUI.createChildElement(form_element, "div", "settings section"),
@@ -968,12 +985,18 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
             // Build group 
             var updated_group = new GuacamoleService.ConnectionGroup(
                 type,
-                group.id,
-                group.name
+                group && group.id,
+                group && group.name /* FIXME: Allow renaming */
             );
 
-            // Update group
-            GuacamoleService.ConnectionGroups.update(updated_group, parameters);
+            // Update group if provided
+            if (connection)
+                GuacamoleService.ConnectionGroups.update(updated_group, parameters);
+
+            // Otherwise, create
+            else
+                GuacamoleService.ConnectionGroups.create(updated_group, parameters);
+
             dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
 
@@ -993,8 +1016,8 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     };
 
     // Add delete button if permission available
-    if (GuacAdmin.cached_permissions.administer ||
-        group.id in GuacAdmin.cached_permissions.remove_connection_group) {
+    if (group && (GuacAdmin.cached_permissions.administer ||
+        group.id in GuacAdmin.cached_permissions.remove_connection_group)) {
         
         // Create button
         var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
@@ -1074,19 +1097,9 @@ GuacAdmin.reset = function() {
 
         GuacAdmin.buttons.add_connection.onclick = function() {
 
-            // Try to create connection
-            try {
-                var connection = new GuacamoleService.Connection(
-                    GuacAdmin.cached_protocols[0].name, null, GuacAdmin.fields.connection_name.value);
-                GuacamoleService.Connections.create(connection, parameters);
-                GuacAdmin.fields.connection_name.value = "";
-                GuacAdmin.reset();
-            }
-
-            // Alert on failure
-            catch (e) {
-                alert(e.message);
-            }
+            // Open connection creation dialog
+            var connection_dialog = new GuacAdmin.ConnectionEditor(null, parameters);
+            document.body.appendChild(connection_dialog.getElement());
 
         };
 
