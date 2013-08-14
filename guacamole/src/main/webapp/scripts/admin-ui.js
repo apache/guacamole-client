@@ -882,8 +882,11 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                 GuacamoleService.Connections.update(updated_connection, parameters);
 
             // Otherwise, create
-            else
+            else {
+                // FIXME: Always saving to root. Remove line below when move implemented.
+                updated_connection.parent = GuacAdmin.cached_root_group;
                 GuacamoleService.Connections.create(updated_connection, parameters);
+            }
 
             // Hide dialog and reset UI
             dialog.getElement().parentNode.removeChild(dialog.getElement());
@@ -1035,8 +1038,11 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
                 GuacamoleService.ConnectionGroups.update(updated_group, parameters);
 
             // Otherwise, create
-            else
+            else {
+                // FIXME: Always saving to root. Remove line below when move implemented.
+                updated_group.parent = GuacAdmin.cached_root_group;
                 GuacamoleService.ConnectionGroups.create(updated_group, parameters);
+            }
 
             dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
