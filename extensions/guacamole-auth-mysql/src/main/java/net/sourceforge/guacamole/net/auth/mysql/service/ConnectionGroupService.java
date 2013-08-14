@@ -222,9 +222,9 @@ public class ConnectionGroupService {
         Criteria criteria = example.createCriteria();
         
         if(parentID != null)
-            criteria.andConnection_group_idEqualTo(parentID);
+            criteria.andParent_idEqualTo(parentID);
         else
-            criteria.andConnection_group_idIsNull();
+            criteria.andParent_idIsNull();
         
         // Query the connections
         List<ConnectionGroup> connectionGroups = connectionGroupDAO.selectByExample(example);

@@ -210,9 +210,9 @@ public class ConnectionService {
         Criteria criteria = example.createCriteria();
         
         if(parentID != null)
-            criteria.andConnection_idEqualTo(parentID);
+            criteria.andParent_idEqualTo(parentID);
         else
-            criteria.andConnection_idIsNull();
+            criteria.andParent_idIsNull();
         
         // Query the connections
         List<Connection> connections = connectionDAO.selectByExample(example);
