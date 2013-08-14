@@ -906,6 +906,133 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 
 };
 
+/**
+ * Connection group edit dialog which allows editing of the group parameters.
+ * 
+ * @param {GuacamoleService.ConnectionGroup} group The group to edit.
+ * @param {String} parameters Any parameters to add to service requests for sake
+ *                            of authentication.
+ */
+GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
+
+    /**
+     * Dialog containing the user editor.
+     */
+    var dialog = new GuacUI.Dialog();
+
+    var i;
+
+    // Create form base elements
+    var group_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
+    var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
+    group_header.textContent = group.name;
+
+    var sections = GuacUI.createChildElement(
+        GuacUI.createChildElement(form_element, "div", "settings section"),
+        "dl");
+
+    // Type parameter
+    var type_header = GuacUI.createChildElement(sections, "dt");
+    type_header.textContent = "Type:";
+    var type_field = GuacUI.createChildElement(type_header, "select");
+
+    // Organizational type
+    var org_type = GuacUI.createChildElement(type_field, "option");
+    org_type.textContent = "Organizational";
+    org_type.value = "organizational";
+
+    // Balancing type
+    var bal_type = GuacUI.createChildElement(type_field, "option");
+    bal_type.textContent = "Balancing";
+    bal_type.value = "balancing";
+
+    // Default to organizational
+    type_field.value = "organizational";
+
+    // Add save button
+    var save_button = GuacUI.createChildElement(dialog.getFooter(), "button");
+    save_button.textContent = "Save";
+    save_button.onclick = function(e) {
+
+        e.stopPropagation();
+
+        try {
+
+            // Parse type
+            var type;
+            if (type_field.value === "organizational")
+                type = GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL;
+            else if (type_field.value === "balancing")
+                type = GuacamoleService.ConnectionGroup.Type.BALANCING;
+
+            // Build group 
+            var updated_group = new GuacamoleService.ConnectionGroup(
+                type,
+                group.id,
+                group.name
+            );
+
+            // Update group
+            GuacamoleService.ConnectionGroups.update(updated_group, parameters);
+            dialog.getElement().parentNode.removeChild(dialog.getElement());
+            GuacAdmin.reset();
+
+        }
+        catch (e) {
+            alert(e.message);
+        }
+
+    };
+
+    // Add cancel button
+    var cancel_button = GuacUI.createChildElement(dialog.getFooter(), "button");
+    cancel_button.textContent = "Cancel";
+    cancel_button.onclick = function(e) {
+        e.stopPropagation();
+        dialog.getElement().parentNode.removeChild(dialog.getElement());
+    };
+
+    // Add delete button if permission available
+    if (GuacAdmin.cached_permissions.administer ||
+        group.id in GuacAdmin.cached_permissions.remove_connection_group) {
+        
+        // Create button
+        var delete_button = GuacUI.createChildElement(dialog.getFooter(), "button", "danger");
+        delete_button.textContent = "Delete";
+        
+        // Remove selected group when clicked
+        delete_button.onclick = function(e) {
+
+            e.stopPropagation();
+
+            // Delete group upon confirmation
+            if (confirm("Are you sure you want to delete the group \""
+                        + group.name + "\"?")) {
+
+                // Attempt to delete group 
+                try {
+                    GuacamoleService.ConnectionGroups.remove(group.id, parameters);
+                    dialog.getElement().parentNode.removeChild(dialog.getElement());
+                    GuacAdmin.reset();
+                }
+
+                // Alert on failure
+                catch (e) {
+                    alert(e.message);
+                }
+
+            }
+
+        };
+
+    }
+
+    this.getElement = function() {
+        return dialog.getElement();
+    };
+
+};
+
 GuacAdmin.reset = function() {
 
     // Get parameters from query string
@@ -1033,6 +1160,12 @@ GuacAdmin.reset = function() {
     group_view.onconnectionclick = function(connection) {
         var connection_dialog = new GuacAdmin.ConnectionEditor(connection, parameters);
         document.body.appendChild(connection_dialog.getElement());
+    };
+
+    // Show group editor when groups are clicked
+    group_view.ongroupclick = function(group) {
+        var group_dialog = new GuacAdmin.ConnectionGroupEditor(group, parameters);
+        document.body.appendChild(group_dialog.getElement());
     };
 
 };
