@@ -31,7 +31,7 @@ input[type=submit], button {
     -webkit-appearance: none;
 }
 
-input[type=text], input[type=number], input[type=password] {
+div.location, input[type=text], input[type=number], input[type=password] {
     border: 1px solid #777;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
@@ -39,6 +39,9 @@ input[type=text], input[type=number], input[type=password] {
     border-radius: 0.2em;
     width: 100%;
     padding: 0.25em;
+    font-size: 10pt;
+    background: white;
+    cursor: text;
 }
 
 button {
@@ -329,10 +332,6 @@ div.section {
     padding-top: 0.5em;
     margin: 0.5em;
 
-}
-
-.form input {
-    width: auto;
 }
 
 /*

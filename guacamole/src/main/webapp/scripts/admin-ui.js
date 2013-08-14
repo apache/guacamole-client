@@ -672,11 +672,16 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 
     // Header parameter containers
     var name_container     = GuacUI.createTabulatedContainer(header_table, "Name:");
+    var location_container = GuacUI.createTabulatedContainer(header_table, "Location:");
     var protocol_container = GuacUI.createTabulatedContainer(header_table, "Protocol:");
 
     var name_field     = GuacUI.createChildElement(name_container, "input");
+    var location       = GuacUI.createChildElement(location_container, "div", "location");
     var protocol_field = GuacUI.createChildElement(protocol_container, "select");
     name_field.setAttribute("type", "text");
+
+    // FIXME: STUB: Location field
+    location.textContent = connection.parent.name;
 
     // Set header
     if (connection) {
@@ -981,12 +986,17 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
         "table", "fields section");
 
     // Header parameter containers
-    var name_container = GuacUI.createTabulatedContainer(header_table, "Name:");
-    var type_container = GuacUI.createTabulatedContainer(header_table, "Type:");
+    var name_container     = GuacUI.createTabulatedContainer(header_table, "Name:");
+    var location_container = GuacUI.createTabulatedContainer(header_table, "Location:");
+    var type_container     = GuacUI.createTabulatedContainer(header_table, "Type:");
 
     var name_field = GuacUI.createChildElement(name_container, "input");
+    var location   = GuacUI.createChildElement(location_container, "div", "location");
     var type_field = GuacUI.createChildElement(type_container, "select");
     name_field.setAttribute("type", "text");
+
+    // FIXME: STUB: Location field
+    location.textContent = group.parent.name;
 
     // Set title
     if (group) {
