@@ -173,7 +173,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Verify that no connection already exists with this name.
         MySQLConnection previousConnection =
-                connectionService.retrieveConnection(name, user_id, parentID);
+                connectionService.retrieveConnection(name, parentID, user_id);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection name is already in use.");
 
@@ -329,7 +329,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Verify that no connection already exists with this name.
         MySQLConnection previousConnection =
-                connectionService.retrieveConnection(mySQLConnection.getName(), user_id, parentID);
+                connectionService.retrieveConnection(mySQLConnection.getName(), parentID, user_id);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection name is already in use.");
         

@@ -156,7 +156,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Verify that no connection already exists with this name.
         MySQLConnectionGroup previousConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(name, user_id, parentID);
+                connectionGroupService.retrieveConnectionGroup(name, parentID, user_id);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
 
@@ -273,7 +273,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Verify that no connection already exists with this name.
         MySQLConnectionGroup previousConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), user_id, parentID);
+                connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), parentID, user_id);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
         

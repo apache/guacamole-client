@@ -37,6 +37,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -161,7 +162,7 @@ public class PermissionCheckService {
      * @throws GuacamoleSecurityException If the specified permission is not
      *                                    granted.
      */
-    public void verifyConnectionGroupAccess(int userID, int affectedConnectionGroupID, String permissionType) throws GuacamoleSecurityException {
+    public void verifyConnectionGroupAccess(int userID, Integer affectedConnectionGroupID, String permissionType) throws GuacamoleSecurityException {
 
         // If permission does not exist, throw exception
         if(!checkConnectionGroupAccess(userID, affectedConnectionGroupID, permissionType))
@@ -440,6 +441,10 @@ public class PermissionCheckService {
         if(checkParentID) {
             // Get the IDs of all connections in the connection group
             List<Integer> allConnectionIDs = connectionService.getAllConnectionIDs(parentID);
+            
+            if(allConnectionIDs.isEmpty())
+                return Collections.EMPTY_LIST;
+            
             criteria.andConnection_idIn(allConnectionIDs);
         }
                                               
@@ -522,6 +527,10 @@ public class PermissionCheckService {
             // Get the IDs of all connection groups in the connection group
             List<Integer> allConnectionGroupIDs = connectionGroupService
                     .getAllConnectionGroupIDs(parentID);
+            
+            if(allConnectionGroupIDs.isEmpty())
+                return Collections.EMPTY_LIST;
+            
             criteria.andConnection_group_idIn(allConnectionGroupIDs);
         }
                                               
