@@ -495,75 +495,44 @@ GuacAdmin.UserEditor = function(name, parameters) {
 
         var connections_section = GuacUI.createChildElement(sections, "dd");
 
-        // FIXME - only list connections with admin permission
+        // Construct group view for all readable connections
         var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, true);
         connections_section.appendChild(group_view.getElement());
 
-        /*
-        // Actual paged connections list
-        var connections = GuacUI.createChildElement(
-            connections_section, "div", "list");
+        // Update connection permissions when changed
+        group_view.onconnectionchange = function(connection, selected) {
 
-        // Button div
-        var connections_buttons = GuacUI.createChildElement(
-            connections_section, "div", "list-pager-buttons");
+            var id = connection.id;
 
-        // Create pager which populates list
-        var connections_pager = new GuacUI.Pager(connections);
+            // Update permission deltas for ADDED permission
+            if (selected) {
+                added_perms.read_connection[id] = true;
+                if (removed_perms.read_connection[id])
+                    delete removed_perms.read_connection[id];
+            }
 
-        // Add connections to pager
-        var available_connections = GuacAdmin.cached_connections;
-        for (var i=0; i<available_connections.length; i++) {
+            // Update permission deltas for REMOVED permission
+            else {
+                removed_perms.read_connection[id] = true;
+                if (added_perms.read_connection[id])
+                    delete added_perms.read_connection[id];
+            }
 
-            // If no admin permission, do not list connection
-            var conn = available_connections[i].id;
+        };
+
+        // Set selectable and selected states based on current permissions
+        for (var conn_id in group_view.connections) {
+
+            // Pre-select connection if readable by chosen user
+            if (conn_id in user_perms.read_connection)
+                group_view.setConnectionValue(conn_id, true);
+
+            // If we lack permissions to admin this connection, disable it
             if (!GuacAdmin.cached_permissions.administer &&
-                    !(conn in GuacAdmin.cached_permissions.administer_connection))
-                continue;
-
-            var connection       = GuacUI.createElement("div", "connection");
-            var connection_field = GuacUI.createChildElement(connection, "input");
-            var connection_name  = GuacUI.createChildElement(connection, "span", "name");
-
-            connection_field.setAttribute("type", "checkbox");
-            connection_field.setAttribute("value", conn);
-
-            // Check checkbox if connection readable by selected user
-            if (conn in user_perms.read_connection)
-                connection_field.checked = true;
-
-            // Update selected connections when changed
-            connection_field.onclick = connection_field.onchange = function() {
-
-                // Update permission deltas for ADDED permission
-                if (this.checked) {
-                    added_perms.read_connection[this.value] = true;
-                    if (removed_perms.read_connection[this.value])
-                        delete removed_perms.read_connection[this.value];
-                    
-                }
-
-                // Update permission deltas for REMOVED permission
-                else {
-                    removed_perms.read_connection[this.value] = true;
-                    if (added_perms.read_connection[this.value])
-                        delete added_perms.read_connection[this.value];
-                }
-
-            };
-
-            connection_name.textContent = conn;
-            connections_pager.addElement(connection);
+                    !(conn_id in GuacAdmin.cached_permissions.administer_connection))
+                group_view.setConnectionEnabled(conn_id, false);
 
         }
-
-        // If more than one page, show buttons
-        if (connections_pager.last_page != 0)
-            connections_buttons.appendChild(connections_pager.getElement());
-
-        // Start at page 0
-        connections_pager.setPage(0);
-        */
 
     }
 
