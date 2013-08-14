@@ -941,6 +941,11 @@ GuacUI.GroupView = function(root_group, multiselect) {
     var connection_checkboxes = {};
 
     /**
+     * Set of all connection groups, indexed by ID.
+     */
+    this.groups = {};
+
+    /**
      * Set of all connections, indexed by ID.
      */
     this.connections = {};
@@ -1000,6 +1005,8 @@ GuacUI.GroupView = function(root_group, multiselect) {
     this.setGroupEnabled = function(id, value) {
 
         var checkbox = group_checkboxes[id];
+        if (!checkbox)
+            return;
 
         // If enabled, show checkbox, allow select
         if (value) {
@@ -1025,6 +1032,8 @@ GuacUI.GroupView = function(root_group, multiselect) {
     this.setConnectionEnabled = function(id, value) {
 
         var checkbox = connection_checkboxes[id];
+        if (!checkbox)
+            return;
 
         // If enabled, show checkbox, allow select
         if (value) {
@@ -1048,7 +1057,13 @@ GuacUI.GroupView = function(root_group, multiselect) {
      * @param {Boolean} value Whether the group should be selected.
      */
     this.setGroupValue = function(id, value) {
-        group_checkboxes[id].checked = value;
+
+        var checkbox = group_checkboxes[id];
+        if (!checkbox)
+            return;
+
+        checkbox.checked = value;
+
     };
 
     /**
@@ -1059,7 +1074,13 @@ GuacUI.GroupView = function(root_group, multiselect) {
      * @param {Boolean} value Whether the connection should be selected.
      */
     this.setConnectionValue = function(id, value) {
-        connection_checkboxes[id].checked = value;
+
+        var checkbox = connection_checkboxes[id];
+        if (!checkbox)
+            return;
+
+        checkbox.checked = value;
+
     };
 
     // Create pager for contents 
@@ -1078,6 +1099,7 @@ GuacUI.GroupView = function(root_group, multiselect) {
     function addGroup(group, appendChild) {
 
         var i;
+        group_view.groups[group.id] = group;
 
         // Add all contained connections
         for (i=0; i<group.connections.length; i++) {
