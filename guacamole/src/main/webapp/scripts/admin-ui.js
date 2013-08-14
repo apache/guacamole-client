@@ -627,7 +627,9 @@ GuacAdmin.UserEditor = function(name, parameters) {
 /**
  * Connection edit dialog which allows editing of the connection parameters.
  * 
- * @param {GuacamoleService.Connection} connection The connection to edit.
+ * @param {GuacamoleService.Connection} connection The connection to edit, or
+ *                                                 null if the connection should
+ *                                                 be created.
  * @param {String} parameters Any parameters to add to service requests for sake
  *                            of authentication.
  */
@@ -921,7 +923,9 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 /**
  * Connection group edit dialog which allows editing of the group parameters.
  * 
- * @param {GuacamoleService.ConnectionGroup} group The group to edit.
+ * @param {GuacamoleService.ConnectionGroup} group The group to edit, or null
+ *                                                 if the group should be
+ *                                                 created.
  * @param {String} parameters Any parameters to add to service requests for sake
  *                            of authentication.
  */
