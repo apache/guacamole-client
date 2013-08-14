@@ -991,6 +991,56 @@ GuacUI.GroupView = function(root_group, multiselect) {
     };
 
     /**
+     * Sets whether the group with the given ID can be selected. This function
+     * only has an effect when multiselect is enabled.
+     * 
+     * @param {String} id The ID of the group to alter.
+     * @param {Boolean} value Whether the group should be selected.
+     */
+    this.setGroupEnabled = function(id, value) {
+
+        var checkbox = group_checkboxes[id];
+
+        // If enabled, show checkbox, allow select
+        if (value) {
+            checkbox.style.visibility = "";
+            checkbox.disabled = false;
+        }
+
+        // Otherwise, hide checkbox
+        else {
+            checkbox.style.visibility = "hidden";
+            checkbox.disabled = true;
+        }
+
+    };
+
+    /**
+     * Sets whether the connection with the given ID can be selected. This
+     * function only has an effect when multiselect is enabled.
+     * 
+     * @param {String} id The ID of the connection to alter.
+     * @param {Boolean} value Whether the connection can be selected.
+     */
+    this.setConnectionEnabled = function(id, value) {
+
+        var checkbox = connection_checkboxes[id];
+
+        // If enabled, show checkbox, allow select
+        if (value) {
+            checkbox.style.visibility = "";
+            checkbox.disabled = false;
+        }
+
+        // Otherwise, hide checkbox
+        else {
+            checkbox.style.visibility = "hidden";
+            checkbox.disabled = true;
+        }
+
+    };
+
+    /**
      * Sets the current value of the group with the given ID. This function
      * only has an effect when multiselect is enabled.
      * 
