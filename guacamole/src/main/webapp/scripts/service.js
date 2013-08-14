@@ -52,6 +52,14 @@ GuacamoleService.ConnectionGroup = function(type, id, name) {
     this.name = name;
 
     /**
+     * The parent connection group of this group. If this group is the root
+     * group, this will be null.
+     * 
+     * @type GuacamoleService.ConnectionGroup
+     */
+    this.parent = null;
+
+    /**
      * All connection groups contained within this group.
      * @type GuacamoleService.ConnectionGroup[]
      */
@@ -104,6 +112,12 @@ GuacamoleService.Connection = function(protocol, id, name) {
      * Reference to this connection.
      */
     var guac_connection = this;
+
+    /**
+     * The parent connection group of this connection.
+     * @type GuacamoleService.ConnectionGroup
+     */
+    this.parent = null;
 
     /**
      * The protocol associated with this connection.
@@ -357,11 +371,13 @@ GuacamoleService.Connections = {
          * Parse the contents of the given connection element within XML,
          * returning a corresponding GuacamoleService.Connection.
          * 
-         * @param {Element} element
+         * @param {GuacamoleService.ConnectionGroup} The connection group
+         *                                           containing this connection.
+         * @param {Element} element The element being parsed.
          * @return {GuacamoleService.Connection} The connection represented by
          *                                       the element just parsed.
          */
-        function parseConnection(element) {
+        function parseConnection(parent, element) {
 
             var i;
 
@@ -370,6 +386,9 @@ GuacamoleService.Connections = {
                 element.getAttribute("id"),
                 element.getAttribute("name")
             );
+
+            // Set parent
+            connection.parent = parent;
 
             // Add parameter values for each parmeter received
             var paramElements = element.getElementsByTagName("param");
@@ -416,12 +435,14 @@ GuacamoleService.Connections = {
          * Recursively parse the contents of the given group element within XML,
          * returning a corresponding GuacamoleService.ConnectionGroup.
          * 
-         * @param {Element} element
+         * @param {GuacamoleService.ConnectionGroup} The connection group
+         *                                           containing this group.
+         * @param {Element} element The element being parsed.
          * @return {GuacamoleService.ConnectionGroup} The connection group
          *                                            represented by the element
          *                                            just parsed.
          */
-        function parseGroup(element) {
+        function parseGroup(parent, element) {
 
             var id   = element.getAttribute("id");
             var name = element.getAttribute("name");
@@ -437,6 +458,9 @@ GuacamoleService.Connections = {
             // Create corresponding group
             var group = new GuacamoleService.ConnectionGroup(type, id, name);
 
+            // Set parent
+            group.parent = parent;
+
             // For each child element
             var current = element.firstChild;
             while (current !== null) {
@@ -450,7 +474,7 @@ GuacamoleService.Connections = {
                     for (i=0; i<children.length; i++) {
                         var child = children[i];
                         if (child.localName === "connection")
-                            group.connections.push(parseConnection(child));
+                            group.connections.push(parseConnection(group, child));
                     }
                     
                 }
@@ -460,7 +484,7 @@ GuacamoleService.Connections = {
                     for (i=0; i<children.length; i++) {
                         var child = children[i];
                         if (child.localName === "group")
-                            group.groups.push(parseGroup(child));
+                            group.groups.push(parseGroup(group, child));
                     }
  
                 }
@@ -490,7 +514,7 @@ GuacamoleService.Connections = {
 
         // Handle response
         GuacamoleService.handleResponse(xhr);
-        return parseGroup(xhr.responseXML.documentElement);
+        return parseGroup(null, xhr.responseXML.documentElement);
  
     },
 
