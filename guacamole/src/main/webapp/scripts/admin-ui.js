@@ -646,21 +646,32 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
     var connection_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
     var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
 
-    // Set header
-    if (connection)
-        connection_header.textContent = connection.name;
-    else
-        connection_header.textContent = "New Connection";
-
     var sections = GuacUI.createChildElement(
         GuacUI.createChildElement(form_element, "div", "settings section"),
         "dl");
 
-    // Parameter header
-    var protocol_header = GuacUI.createChildElement(sections, "dt");
-    protocol_header.textContent = "Protocol:";
-    
-    var protocol_field = GuacUI.createChildElement(protocol_header, "select");
+    // Header section
+    var header_table  = GuacUI.createChildElement(
+        GuacUI.createChildElement(sections, "dt"),
+        "table", "fields section");
+
+    // Header parameter containers
+    var name_container     = GuacUI.createTabulatedContainer(header_table, "Name:");
+    var protocol_container = GuacUI.createTabulatedContainer(header_table, "Protocol:");
+
+    var name_field     = GuacUI.createChildElement(name_container, "input");
+    var protocol_field = GuacUI.createChildElement(protocol_container, "select");
+    name_field.setAttribute("type", "text");
+
+    // Set header
+    if (connection) {
+        name_field.value =
+        connection_header.textContent = connection.name;
+    }
+    else {
+        name_field.value =
+        connection_header.textContent = "New Connection";
+    }
 
     // Associative set of protocols
     var available_protocols = {};
@@ -842,7 +853,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             var updated_connection = new GuacamoleService.Connection(
                 protocol_field.value,
                 connection && connection.id,
-                connection && connection.name /* FIXME: Actually allow rename */
+                name_field.value
             );
 
             // Populate parameters
@@ -942,20 +953,32 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     var group_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
     var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
 
-    // Set title
-    if (group)
-        group_header.textContent = group.name;
-    else
-        group_header.textContent = "New Group";
-
     var sections = GuacUI.createChildElement(
         GuacUI.createChildElement(form_element, "div", "settings section"),
         "dl");
 
-    // Type parameter
-    var type_header = GuacUI.createChildElement(sections, "dt");
-    type_header.textContent = "Type:";
-    var type_field = GuacUI.createChildElement(type_header, "select");
+    // Header section
+    var header_table  = GuacUI.createChildElement(
+        GuacUI.createChildElement(sections, "dt"),
+        "table", "fields section");
+
+    // Header parameter containers
+    var name_container = GuacUI.createTabulatedContainer(header_table, "Name:");
+    var type_container = GuacUI.createTabulatedContainer(header_table, "Type:");
+
+    var name_field = GuacUI.createChildElement(name_container, "input");
+    var type_field = GuacUI.createChildElement(type_container, "select");
+    name_field.setAttribute("type", "text");
+
+    // Set title
+    if (group) {
+        name_field.value =
+        group_header.textContent = group.name;
+    }
+    else {
+        name_field.value =
+        group_header.textContent = "New Group";
+    }
 
     // Organizational type
     var org_type = GuacUI.createChildElement(type_field, "option");
@@ -990,7 +1013,7 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
             var updated_group = new GuacamoleService.ConnectionGroup(
                 type,
                 group && group.id,
-                group && group.name /* FIXME: Allow renaming */
+                name_field.value
             );
 
             // Update group if provided
