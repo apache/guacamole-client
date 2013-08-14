@@ -31,6 +31,7 @@ import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -60,9 +61,10 @@ public class List extends AuthenticatingHttpServlet {
         throws GuacamoleException {
 
         switch (type) {
-            case CREATE_USER:       return "create-user";
-            case CREATE_CONNECTION: return "create-connection";
-            case ADMINISTER:        return "admin";
+            case CREATE_USER:             return "create-user";
+            case CREATE_CONNECTION:       return "create-connection";
+            case CREATE_CONNECTION_GROUP: return "create-connection-group";
+            case ADMINISTER:              return "admin";
         }
 
         throw new GuacamoleException("Unknown permission type: " + type);
@@ -163,6 +165,20 @@ public class List extends AuthenticatingHttpServlet {
                     xml.writeEmptyElement("connection");
                     xml.writeAttribute("type", toString(cp.getType()));
                     xml.writeAttribute("name", cp.getObjectIdentifier());
+
+                }
+
+                // Connection group permission
+                else if (permission instanceof ConnectionGroupPermission) {
+
+                    // Get permission
+                    ConnectionGroupPermission cgp =
+                            (ConnectionGroupPermission) permission;
+
+                    // Write permission
+                    xml.writeEmptyElement("connection-group");
+                    xml.writeAttribute("type", toString(cgp.getType()));
+                    xml.writeAttribute("name", cgp.getObjectIdentifier());
 
                 }
 

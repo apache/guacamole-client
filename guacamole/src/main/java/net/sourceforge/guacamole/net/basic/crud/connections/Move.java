@@ -18,7 +18,6 @@ package net.sourceforge.guacamole.net.basic.crud.connections;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.guacamole.GuacamoleException;
@@ -26,14 +25,13 @@ import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Simple HttpServlet which handles connection creation.
+ * Simple HttpServlet which handles moving connections.
  *
  * @author Michael Jumper
  */
-public class Create extends AuthenticatingHttpServlet {
+public class Move extends AuthenticatingHttpServlet {
 
     /**
      * Prefix given to a parameter name when that parameter is a protocol-
@@ -47,45 +45,22 @@ public class Create extends AuthenticatingHttpServlet {
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
 
-        // Get name and protocol
-        String name     = request.getParameter("name");
-        String protocol = request.getParameter("protocol");
+        // Get ID
+        String identifier = request.getParameter("id");
         
-        // Get the ID of the parent connection group
-        String parentID = request.getParameter("parentID");
+        // Get the identifier of the new parent connection group
+        String parentID   = request.getParameter("parentID");
 
-        // Find the correct connection directory
-        Directory<String, Connection> directory = 
+        // Attempt to get the new parent connection directory
+        Directory<String, Connection> newParentDirectory =
                 ConnectionUtility.findConnectionDirectory(context, parentID);
-        
-        if(directory == null)
-            throw new GuacamoleException("Connection directory not found.");
 
-        // Create config
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(protocol);
+        // Attempt to get root connection directory
+        Directory<String, Connection> directory =
+                context.getRootConnectionGroup().getConnectionDirectory();
 
-        // Load parameters into config
-        Enumeration<String> params = request.getParameterNames();
-        while (params.hasMoreElements()) {
-
-            // If parameter starts with prefix, load corresponding parameter
-            // value into config
-            String param = params.nextElement();
-            if (param.startsWith(PARAMETER_PREFIX))
-                config.setParameter(
-                    param.substring(PARAMETER_PREFIX.length()),
-                    request.getParameter(param));
-
-        }
-
-        // Create connection skeleton
-        Connection connection = new DummyConnection();
-        connection.setName(name);
-        connection.setConfiguration(config);
-
-        // Add connection
-        directory.add(connection);
+        // Move connection
+        directory.move(identifier, newParentDirectory);
 
     }
 

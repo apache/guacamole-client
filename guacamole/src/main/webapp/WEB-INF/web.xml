@@ -88,6 +88,17 @@
         <url-pattern>/connections/update</url-pattern>
     </servlet-mapping>
 
+    <!-- Connection Move Servlet -->
+    <servlet>
+        <description>Connection move servlet.</description>
+        <servlet-name>ConnectionMove</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.Move</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionMove</servlet-name>
+        <url-pattern>/connections/move</url-pattern>
+    </servlet-mapping>
+
     <!-- Connection Deletion Servlet -->
     <servlet>
         <description>Connection deletion servlet.</description>
@@ -97,6 +108,61 @@
     <servlet-mapping>
         <servlet-name>ConnectionDelete</servlet-name>
         <url-pattern>/connections/delete</url-pattern>
+    </servlet-mapping>
+    
+    <!-- Connection Group Creation Servlet -->
+    <servlet>
+        <description>ConnectionGroup creation servlet.</description>
+        <servlet-name>ConnectionGroupCreate</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Create</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionGroupCreate</servlet-name>
+        <url-pattern>/connectiongroups/create</url-pattern>
+    </servlet-mapping>
+
+    <!-- Connection Group List Servlet -->
+    <servlet>
+        <description>ConnectionGroup list servlet.</description>
+        <servlet-name>ConnectionGroups</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.List</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionGroups</servlet-name>
+        <url-pattern>/connectiongroups</url-pattern>
+    </servlet-mapping>
+
+    <!-- Connection Group Update Servlet -->
+    <servlet>
+        <description>ConnectionGroup update servlet.</description>
+        <servlet-name>ConnectionGroupUpdate</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Update</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionGroupUpdate</servlet-name>
+        <url-pattern>/connectiongroups/update</url-pattern>
+    </servlet-mapping>
+
+    <!-- Connection Group Move Servlet -->
+    <servlet>
+        <description>ConnectionGroup move servlet.</description>
+        <servlet-name>ConnectionGroupMove</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Move</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionGroupMove</servlet-name>
+        <url-pattern>/connectiongroups/move</url-pattern>
+    </servlet-mapping>
+
+    <!-- Connection Group Deletion Servlet -->
+    <servlet>
+        <description>ConnectionGroup deletion servlet.</description>
+        <servlet-name>ConnectionGroupDelete</servlet-name>
+        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Delete</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ConnectionGroupDelete</servlet-name>
+        <url-pattern>/connectiongroups/delete</url-pattern>
     </servlet-mapping>
 
     <!-- User Creation Servlet -->

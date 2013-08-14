@@ -22,12 +22,12 @@ public class DummyConnection extends AbstractConnection {
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        throw new UnsupportedOperationException("Connection unsuppported in DummyConnection.");
+        throw new UnsupportedOperationException("Connection unsupported in DummyConnection.");
     }
 
     @Override
     public List<ConnectionRecord> getHistory() throws GuacamoleException {
-        throw new UnsupportedOperationException("History unsuppported in DummyConnection.");
+        throw new UnsupportedOperationException("History unsupported in DummyConnection.");
     }
 
 }
