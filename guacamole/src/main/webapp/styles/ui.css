@@ -443,6 +443,7 @@ div.section {
 }
 
 #connections #add-connection,
+#connections #add-connection-group,
 #users #add-user {
     font-size: 0.8em;
 }
@@ -457,7 +458,8 @@ body:not(.manage-users) .require-manage-users {
     display: none;
 }
 
-body:not(.add-connections) #connection-add-form,
+body:not(.add-connections) #add-connection,
+body:not(.add-connection-groups) #add-connection-group,
 body:not(.add-users) #user-add-form {
     display: none;
     display: none;

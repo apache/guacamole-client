@@ -29,14 +29,14 @@ var GuacAdmin = {
     },
 
     "buttons" : {
-        "back"           : document.getElementById("back"),
-        "logout"         : document.getElementById("logout"),
-        "add_connection" : document.getElementById("add-connection"),
-        "add_user"       : document.getElementById("add-user")
+        "back"                 : document.getElementById("back"),
+        "logout"               : document.getElementById("logout"),
+        "add_connection"       : document.getElementById("add-connection"),
+        "add_connection_group" : document.getElementById("add-connection-group"),
+        "add_user"             : document.getElementById("add-user")
     },
 
     "fields" : {
-        "connection_name" : document.getElementById("connection-name"),
         "username"        : document.getElementById("username")
     },
 
@@ -1144,6 +1144,21 @@ GuacAdmin.reset = function() {
             // Open connection creation dialog
             var connection_dialog = new GuacAdmin.ConnectionEditor(null, parameters);
             document.body.appendChild(connection_dialog.getElement());
+
+        };
+
+    }
+
+    // Connection group creation 
+    if (GuacAdmin.cached_permissions.administer
+        || GuacAdmin.cached_permissions.create_connection_group) {
+        GuacUI.addClass(document.body, "add-connection-groups");
+
+        GuacAdmin.buttons.add_connection_group.onclick = function() {
+
+            // Open group creation dialog
+            var group_dialog = new GuacAdmin.ConnectionGroupEditor(null, parameters);
+            document.body.appendChild(group_dialog.getElement());
 
         };
 
