@@ -227,6 +227,11 @@ GuacamoleService.PermissionSet = function() {
     this.create_connection = false;
 
     /**
+     * Whether permission to create connection groups is granted.
+     */
+    this.create_connection_group = false;
+
+    /**
      * Whether permission to administer the system in general is granted.
      */
     this.administer = false;
@@ -270,6 +275,26 @@ GuacamoleService.PermissionSet = function() {
      * Object with a property entry for each administerable connection.
      */
     this.administer_connection = {};
+
+    /**
+     * Object with a property entry for each readable connection group.
+     */
+    this.read_connection_group = {};
+
+    /**
+     * Object with a property entry for each updatable connection group.
+     */
+    this.update_connection_group = {};
+
+    /**
+     * Object with a property entry for each removable connection group.
+     */
+    this.remove_connection_group = {};
+
+    /**
+     * Object with a property entry for each administerable connection group.
+     */
+    this.administer_connection_group = {};
 
 };
 
@@ -729,9 +754,10 @@ GuacamoleService.Users = {
         var name;
 
         // System permissions
-        if (permissions_added.create_user)       data += "&%2Bsys=create-user";
-        if (permissions_added.create_connection) data += "&%2Bsys=create-connection";
-        if (permissions_added.administer)        data += "&%2Bsys=admin";
+        if (permissions_added.create_user)             data += "&%2Bsys=create-user";
+        if (permissions_added.create_connection)       data += "&%2Bsys=create-connection";
+        if (permissions_added.create_connection_group) data += "&%2Bsys=create-connection-group";
+        if (permissions_added.administer)              data += "&%2Bsys=admin";
 
         // User permissions 
         for (name in permissions_added.read_user)
@@ -753,10 +779,21 @@ GuacamoleService.Users = {
         for (name in permissions_added.remove_connection)
             data += "&%2Bconnection=delete:" + encodeURIComponent(name);
 
+        // Connection group permissions 
+        for (name in permissions_added.read_connection_group)
+            data += "&%2Bconnection-group=read:" + encodeURIComponent(name);
+        for (name in permissions_added.administer_connection_group)
+            data += "&%2Bconnection-group=admin:" + encodeURIComponent(name);
+        for (name in permissions_added.update_connection_group)
+            data += "&%2Bconnection-group=update:" + encodeURIComponent(name);
+        for (name in permissions_added.remove_connection_group)
+            data += "&%2Bconnection-group=delete:" + encodeURIComponent(name);
+
         // Creation permissions
-        if (permissions_removed.create_user)       data += "&-sys=create-user";
-        if (permissions_removed.create_connection) data += "&-sys=create-connection";
-        if (permissions_removed.administer)        data += "&-sys=admin";
+        if (permissions_removed.create_user)             data += "&-sys=create-user";
+        if (permissions_removed.create_connection)       data += "&-sys=create-connection";
+        if (permissions_removed.create_connection_group) data += "&-sys=create-connection-group";
+        if (permissions_removed.administer)              data += "&-sys=admin";
 
         // User permissions 
         for (name in permissions_removed.read_user)
@@ -777,6 +814,16 @@ GuacamoleService.Users = {
             data += "&-connection=update:" + encodeURIComponent(name);
         for (name in permissions_removed.remove_connection)
             data += "&-connection=delete:" + encodeURIComponent(name);
+
+        // Connection group permissions 
+        for (name in permissions_removed.read_connection_group)
+            data += "&-connection-group=read:" + encodeURIComponent(name);
+        for (name in permissions_removed.administer_connection_group)
+            data += "&-connection-group=admin:" + encodeURIComponent(name);
+        for (name in permissions_removed.update_connection_group)
+            data += "&-connection-group=update:" + encodeURIComponent(name);
+        for (name in permissions_removed.remove_connection_group)
+            data += "&-connection-group=delete:" + encodeURIComponent(name);
 
         // Update user
         var xhr = new XMLHttpRequest();
@@ -897,6 +944,11 @@ GuacamoleService.Permissions = {
                     permissions.create_connection = true;
                     break;
 
+                // Create connection group permission
+                case "create-connection-group":
+                    permissions.create_connection_group = true;
+                    break;
+
                 // Create user permission
                 case "create-user":
                     permissions.create_user = true;
@@ -939,6 +991,40 @@ GuacamoleService.Permissions = {
                 // Delete permission
                 case "delete":
                     permissions.remove_connection[name] = true;
+                    break;
+
+            }
+
+        }
+
+        // Read connection group permissions
+        var connectionGroupElements = xhr.responseXML.getElementsByTagName("connection-group");
+        for (i=0; i<connectionGroupElements.length; i++) {
+
+            // Get name and type
+            type = connectionGroupElements[i].getAttribute("type");
+            name = connectionGroupElements[i].getAttribute("name");
+
+            switch (type) {
+
+                // Read permission
+                case "read":
+                    permissions.read_connection_group[name] = true;
+                    break;
+
+                // Update permission
+                case "update":
+                    permissions.update_connection_group[name] = true;
+                    break;
+
+                // Admin permission
+                case "admin":
+                    permissions.administer_connection_group[name] = true;
+                    break;
+
+                // Delete permission
+                case "delete":
+                    permissions.remove_connection_group[name] = true;
                     break;
 
             }
