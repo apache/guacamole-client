@@ -33,12 +33,6 @@ import net.sourceforge.guacamole.net.basic.AuthenticatingHttpServlet;
  */
 public class Move extends AuthenticatingHttpServlet {
 
-    /**
-     * Prefix given to a parameter name when that parameter is a protocol-
-     * specific parameter meant for the configuration.
-     */
-    public static final String PARAMETER_PREFIX = "_";
-
     @Override
     protected void authenticatedService(
             UserContext context,
