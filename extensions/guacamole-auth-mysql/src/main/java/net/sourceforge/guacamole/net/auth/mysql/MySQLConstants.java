@@ -1,6 +1,7 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
 
@@ -228,6 +229,27 @@ public final class MySQLConstants {
         // If we get here, permission support was not properly implemented
         throw new UnsupportedOperationException(
             "Unsupported permission type: " + type);
+
+    }
+
+    /**
+     * Given the type of a connection group, returns the MySQL constant
+     * representing that type.
+     *
+     * @param type The connection group type to look up.
+     * @return The MySQL constant corresponding to the given type.
+     */
+    public static String getConnectionGroupTypeConstant(ConnectionGroup.Type type) {
+
+        // Convert permission type to MySQL constant
+        switch (type) {
+            case ORGANIZATIONAL: return CONNECTION_GROUP_ORGANIZATIONAL;
+            case BALANCING:      return CONNECTION_GROUP_BALANCING;
+        }
+
+        // If we get here, permission support was not properly implemented
+        throw new UnsupportedOperationException(
+            "Unsupported connection group type: " + type);
 
     }
 

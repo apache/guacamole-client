@@ -42,11 +42,13 @@ import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
+import net.sourceforge.guacamole.net.auth.ConnectionGroup.Type;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -142,6 +144,10 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         if(name.isEmpty())
             throw new GuacamoleClientException("The connection group name cannot be blank.");
         
+        Type type = object.getType();
+        
+        String mySQLType = MySQLConstants.getConnectionGroupTypeConstant(type);
+        
         // Verify permission to create
         permissionCheckService.verifySystemAccess(this.user_id,
                 MySQLConstants.SYSTEM_CONNECTION_GROUP_CREATE);
@@ -162,7 +168,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Create connection group
         MySQLConnectionGroup connectionGroup = connectionGroupService
-                .createConnectionGroup(name, user_id, parentID);
+                .createConnectionGroup(name, user_id, parentID, mySQLType);
 
         // Finally, give the current user full access to the newly created
         // connection group.

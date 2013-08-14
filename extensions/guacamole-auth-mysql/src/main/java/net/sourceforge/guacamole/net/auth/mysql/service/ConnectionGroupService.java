@@ -134,15 +134,19 @@ public class ConnectionGroupService {
      * @return The connection group having the given unique identifier, 
      *         or null if no such connection group was found.
      */
-    public MySQLConnectionGroup retrieveConnectionGroup(String uniqueIdentifier, int userID) {
+    public MySQLConnectionGroup retrieveConnectionGroup(String uniqueIdentifier, 
+            int userID) throws GuacamoleException {
 
         // The unique identifier for a MySQLConnectionGroup is the database ID
-        int connectionGroupID;
-        try {
-            connectionGroupID = Integer.parseInt(uniqueIdentifier);
-        } catch(NumberFormatException e) {
-            // Invalid number means it can't be a DB record; not found
-            return null;
+        Integer connectionGroupID = null;
+        
+        // Try to parse the connectionID if it's not the root group
+        if(!MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER.equals(uniqueIdentifier)) {
+            try {
+                connectionGroupID = Integer.parseInt(uniqueIdentifier);
+            } catch(NumberFormatException e) {
+                throw new GuacamoleException("Invalid connection group ID.");
+            }
         }
         
         return retrieveConnectionGroup(connectionGroupID, userID);
@@ -156,8 +160,20 @@ public class ConnectionGroupService {
      * @return The connection group having the given ID, or null if no such
      *         connection was found.
      */
-    public MySQLConnectionGroup retrieveConnectionGroup(int id, int userID) {
+    public MySQLConnectionGroup retrieveConnectionGroup(Integer id, int userID) {
 
+        // This is the root connection group, so just create it here
+        if(id == null) {
+            MySQLConnectionGroup connectionGroup = mysqlConnectionGroupProvider.get();
+            connectionGroup.init(null, null, 
+                    MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+                    MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+                    net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.BALANCING, 
+                    userID);
+            
+            return connectionGroup;
+        }
+        
         // Query connection by ID
         ConnectionGroup connectionGroup = connectionGroupDAO.selectByPrimaryKey(id);
 
@@ -330,16 +346,18 @@ public class ConnectionGroupService {
      *
      * @param name The name to assign to the new connection group.
      * @param userID The ID of the user who created this connection group.
+     * @param Type The type of the new connection group.
      * @return A new MySQLConnectionGroup containing the data of the newly created
      *         connection group.
      */
     public MySQLConnectionGroup createConnectionGroup(String name, int userID, 
-            Integer parentID) {
+            Integer parentID, String type) {
 
         // Initialize database connection
         ConnectionGroup connectionGroup = new ConnectionGroup();
         connectionGroup.setConnection_group_name(name);
         connectionGroup.setParent_id(parentID);
+        connectionGroup.setType(type);
 
         // Create connection
         connectionGroupDAO.insert(connectionGroup);
