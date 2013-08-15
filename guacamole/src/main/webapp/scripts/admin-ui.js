@@ -900,8 +900,11 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             updated_connection.parent = location_value;
 
             // Update connection if it exists
-            if (connection.id)
+            if (connection.id) {
                 GuacamoleService.Connections.update(updated_connection, parameters);
+                if (location_value.id !== connection.parent.id)
+                    GuacamoleService.Connections.move(updated_connection, location_value, parameters);
+            }
 
             // Otherwise, create
             else
@@ -1082,12 +1085,12 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
                 name_field.value
             );
 
-            // Populate location
-            updated_group.parent = location_value;
-
             // Update group if provided
-            if (group.id)
+            if (group.id) {
                 GuacamoleService.ConnectionGroups.update(updated_group, parameters);
+                if (location_value.id !== group.parent.id)
+                    GuacamoleService.ConnectionGroups.move(updated_group, location_value, parameters);
+            }
 
             // Otherwise, create
             else
