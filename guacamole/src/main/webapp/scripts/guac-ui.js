@@ -832,7 +832,7 @@ GuacUI.Download = function(filename) {
  * A grouping component. Child elements can be added via the addElement()
  * function. By default, groups display as collapsed.
  */
-GuacUI.ListGroup = function(caption, icon) {
+GuacUI.ListGroup = function(caption) {
 
     /**
      * Reference to this group.
@@ -854,7 +854,7 @@ GuacUI.ListGroup = function(caption, icon) {
     // Create connection display elements
     var caption_element = GuacUI.createChildElement(element, "div",  "caption");
     var caption_icon    = GuacUI.createChildElement(caption_element, "div",  "icon group");
-    if (icon) GuacUI.createChildElement(caption_element, "div",  "icon " + icon);
+    GuacUI.createChildElement(caption_element, "div",  "icon type");
     GuacUI.createChildElement(caption_element, "span", "name").textContent = caption;
 
     /**
@@ -1271,6 +1271,10 @@ GuacUI.GroupView = function(root_group, flags) {
         var list_group = new GuacUI.ListGroup(group.name);
         list_groups[group.id] = list_group;
         GuacUI.addClass(list_group.getElement(), "list-item");
+
+        // Mark group as balancer if appropriate
+        if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+            GuacUI.addClass(list_group.getElement(), "balancer");
 
         // Recursively add all children to the new element
         addGroupContents(group, list_group.addElement);
