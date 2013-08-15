@@ -25,6 +25,7 @@ import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -48,6 +49,11 @@ public class Update extends AuthenticatingHttpServlet {
      * String given for connection creation permission.
      */
     private static final String CREATE_CONNECTION_PERMISSION = "create-connection";
+
+    /**
+     * String given for connection group creation permission.
+     */
+    private static final String CREATE_CONNECTION_GROUP_PERMISSION = "create-connection-group";
 
     /**
      * String given for system administration permission.
@@ -169,6 +175,41 @@ public class Update extends AuthenticatingHttpServlet {
 
     }
 
+    /**
+     * Given a permission string, returns the corresponding connection group
+     * permission.
+     *
+     * @param str The permission string to parse.
+     * @return The parsed connection group permission.
+     * @throws GuacamoleException If the given string could not be parsed.
+     */
+    private Permission parseConnectionGroupPermission(String str)
+            throws GuacamoleException {
+
+        // Read
+        if (str.startsWith(READ_PREFIX))
+            return new ConnectionGroupPermission(ObjectPermission.Type.READ,
+                    str.substring(READ_PREFIX.length()));
+
+        // Update
+        if (str.startsWith(UPDATE_PREFIX))
+            return new ConnectionGroupPermission(ObjectPermission.Type.UPDATE,
+                    str.substring(UPDATE_PREFIX.length()));
+
+        // Delete
+        if (str.startsWith(DELETE_PREFIX))
+            return new ConnectionGroupPermission(ObjectPermission.Type.DELETE,
+                    str.substring(DELETE_PREFIX.length()));
+
+        // Administration
+        if (str.startsWith(ADMIN_PREFIX))
+            return new ConnectionGroupPermission(ObjectPermission.Type.ADMINISTER,
+                    str.substring(ADMIN_PREFIX.length()));
+
+        throw new GuacamoleClientException("Invalid permission string.");
+
+    }
+
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -214,6 +255,13 @@ public class Update extends AuthenticatingHttpServlet {
                 user.addPermission(parseConnectionPermission(str));
         }
 
+        // Set added connection group permissions
+        String[] add_connection_group_permission = request.getParameterValues("+connection-group");
+        if (add_connection_group_permission != null) {
+            for (String str : add_connection_group_permission)
+                user.addPermission(parseConnectionGroupPermission(str));
+        }
+
         /*
          * REMOVED PERMISSIONS
          */
@@ -237,6 +285,13 @@ public class Update extends AuthenticatingHttpServlet {
         if (remove_connection_permission != null) {
             for (String str : remove_connection_permission)
                 user.removePermission(parseConnectionPermission(str));
+        }
+
+        // Unset removed connection group permissions
+        String[] remove_connection_group_permission = request.getParameterValues("-connection-group");
+        if (remove_connection_group_permission != null) {
+            for (String str : remove_connection_group_permission)
+                user.removePermission(parseConnectionGroupPermission(str));
         }
 
         // Update user
