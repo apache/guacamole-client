@@ -964,6 +964,11 @@ GuacUI.GroupView = function(root_group, flags) {
     var show_connections = flags & GuacUI.GroupView.SHOW_CONNECTIONS;
 
     /**
+     * Whether the root group should be included in the view.
+     */
+    var show_root = flags & GuacUI.GroupView.SHOW_ROOT_GROUP;
+
+    /**
      * Set of all group checkboxes, indexed by ID. Only applicable when
      * multiselect is enabled.
      * @private
@@ -1125,137 +1130,154 @@ GuacUI.GroupView = function(root_group, flags) {
     pager.page_capacity = 20;
 
     /**
-     * Adds the given group to the given display parent object. This object
-     * must have an addElement() function, which will be used for adding all
-     * child elements representing child connections and groups.
+     * Adds the contents of the given group via the given appendChild()
+     * function, but not the given group itself.
      * 
-     * @param {GuacamoleService.ConnectionGroup} group The group to add.
-     * @param {Function} appendChild A function which, given an element, will add that
-     *                               element the the display as desired.
+     * @param {GuacamoleService.ConnectionGroup} group The group whose contents
+     *                                                 should be added.
+     * @param {Function} appendChild A function which, given an element, will
+     *                               add that element the the display as
+     *                               desired.
      */
-    function addGroup(group, appendChild) {
+    function addGroupContents(group, appendChild) {
 
         var i;
-        group_view.groups[group.id] = group;
 
         // Add all contained connections
         if (show_connections) {
-            for (i=0; i<group.connections.length; i++) {
-
-                // Add connection to set
-                var connection = group.connections[i];
-                group_view.connections[connection.id] = connection;
-
-                // Add connection to connection list or parent group
-                var guacui_connection = new GuacUI.Connection(connection);
-                GuacUI.addClass(guacui_connection.getElement(), "list-item");
-
-                (function(connection) {
-
-                    // If multiselect, add checkbox for each connection
-                    if (multiselect) {
-
-                        var connection_choice = GuacUI.createElement("div", "choice");
-                        var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
-                        connection_checkbox.setAttribute("type", "checkbox");
-                        
-                        connection_choice.appendChild(guacui_connection.getElement());
-                        appendChild(connection_choice);
-
-                        function fire_connection_change(e) {
-
-                            // Prevent click from affecting parent
-                            e.stopPropagation();
-
-                            // Fire event if handler defined
-                            if (group_view.onconnectionchange)
-                                group_view.onconnectionchange(connection, this.checked);
-
-                        }
-
-                        // Fire change events when checkbox modified
-                        connection_checkbox.addEventListener("click",  fire_connection_change, false);
-                        connection_checkbox.addEventListener("change", fire_connection_change, false);
-
-                        // Add checbox to set of connection checkboxes
-                        connection_checkboxes[connection.id] = connection_checkbox;
-
-                    }
-                    else
-                        appendChild(guacui_connection.getElement());
-
-                    // Fire click events when connection clicked
-                    guacui_connection.onclick = function() {
-                        if (group_view.onconnectionclick)
-                            group_view.onconnectionclick(connection);
-                    };
-
-                })(connection);
-
-            } // end for each connection
+            for (i=0; i<group.connections.length; i++)
+                addConnection(group.connections[i], appendChild);
         }
 
         // Add all contained groups 
-        for (i=0; i<group.groups.length; i++) {
-
-            // Create display element for group
-            var child_group = group.groups[i];
-            var list_group = new GuacUI.ListGroup(child_group.name);
-
-            // Recursively add all children to the new element
-            addGroup(child_group, list_group.addElement);
-
-            // Add element to display
-            GuacUI.addClass(list_group.getElement(), "list-item");
-
-            (function(child_group) {
-
-                // If multiselect, add checkbox for each group
-                if (multiselect) {
-
-                    var group_choice = GuacUI.createElement("div", "choice");
-                    var group_checkbox = GuacUI.createChildElement(group_choice, "input");
-                    group_checkbox.setAttribute("type", "checkbox");
-                    
-                    group_choice.appendChild(list_group.getElement());
-                    appendChild(group_choice);
-
-                    function fire_group_change(e) {
-
-                        // Prevent click from affecting parent
-                        e.stopPropagation();
-
-                        // Fire event if handler defined
-                        if (group_view.ongroupchange)
-                            group_view.ongroupchange(child_group, this.checked);
-
-                    }
-
-                    // Fire change events when checkbox modified
-                    group_checkbox.addEventListener("click",  fire_group_change, false);
-                    group_checkbox.addEventListener("change", fire_group_change, false);
-
-                    // Add checbox to set of group checkboxes
-                    group_checkboxes[child_group.id] = group_checkbox;
-
-                }
-                else
-                    appendChild(list_group.getElement());
-
-                // Fire click events when group clicked
-                list_group.onclick = function() {
-                    if (group_view.ongroupclick)
-                        group_view.ongroupclick(child_group);
-                };
-
-            })(child_group);
-
-        } // end for each gorup
+        for (i=0; i<group.groups.length; i++)
+            addGroup(group.groups[i], appendChild);
 
     }
 
-    // Add root group directly to pager
-    addGroup(root_group, pager.addElement);
+    /**
+     * Adds the given connection via the given appendChild() function.
+     * 
+     * @param {GuacamoleService.Connection} connection The connection to add.
+     * @param {Function} appendChild A function which, given an element, will
+     *                               add that element the the display as
+     *                               desired.
+     */
+    function addConnection(connection, appendChild) {
+
+        group_view.connections[connection.id] = connection;
+
+        // Add connection to connection list or parent group
+        var guacui_connection = new GuacUI.Connection(connection);
+        GuacUI.addClass(guacui_connection.getElement(), "list-item");
+
+        // If multiselect, add checkbox for each connection
+        if (multiselect) {
+
+            var connection_choice = GuacUI.createElement("div", "choice");
+            var connection_checkbox = GuacUI.createChildElement(connection_choice, "input");
+            connection_checkbox.setAttribute("type", "checkbox");
+            
+            connection_choice.appendChild(guacui_connection.getElement());
+            appendChild(connection_choice);
+
+            function fire_connection_change(e) {
+
+                // Prevent click from affecting parent
+                e.stopPropagation();
+
+                // Fire event if handler defined
+                if (group_view.onconnectionchange)
+                    group_view.onconnectionchange(connection, this.checked);
+
+            }
+
+            // Fire change events when checkbox modified
+            connection_checkbox.addEventListener("click",  fire_connection_change, false);
+            connection_checkbox.addEventListener("change", fire_connection_change, false);
+
+            // Add checbox to set of connection checkboxes
+            connection_checkboxes[connection.id] = connection_checkbox;
+
+        }
+        else
+            appendChild(guacui_connection.getElement());
+
+        // Fire click events when connection clicked
+        guacui_connection.onclick = function() {
+            if (group_view.onconnectionclick)
+                group_view.onconnectionclick(connection);
+        };
+
+    }
+
+    /**
+     * Adds the given group via the given appendChild() function.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to add.
+     * @param {Function} appendChild A function which, given an element, will
+     *                               add that element the the display as
+     *                               desired.
+     */
+    function addGroup(group, appendChild) {
+
+        // Add group to groups collection
+        group_view.groups[group.id] = group;
+
+        // Create element for group
+        var list_group = new GuacUI.ListGroup(group.name);
+        GuacUI.addClass(list_group.getElement(), "list-item");
+
+        // Recursively add all children to the new element
+        addGroupContents(group, list_group.addElement);
+
+        // If multiselect, add checkbox for each group
+        if (multiselect) {
+
+            var group_choice = GuacUI.createElement("div", "choice");
+            var group_checkbox = GuacUI.createChildElement(group_choice, "input");
+            group_checkbox.setAttribute("type", "checkbox");
+            
+            group_choice.appendChild(list_group.getElement());
+            appendChild(group_choice);
+
+            function fire_group_change(e) {
+
+                // Prevent click from affecting parent
+                e.stopPropagation();
+
+                // Fire event if handler defined
+                if (group_view.ongroupchange)
+                    group_view.ongroupchange(group, this.checked);
+
+            }
+
+            // Fire change events when checkbox modified
+            group_checkbox.addEventListener("click",  fire_group_change, false);
+            group_checkbox.addEventListener("change", fire_group_change, false);
+
+            // Add checbox to set of group checkboxes
+            group_checkboxes[group.id] = group_checkbox;
+
+        }
+        else
+            appendChild(list_group.getElement());
+
+        // Fire click events when group clicked
+        list_group.onclick = function() {
+            if (group_view.ongroupclick)
+                group_view.ongroupclick(group);
+        };
+
+    }
+
+    // If requested, include the root group as an item
+    if (show_root)
+        addGroup(root_group, pager.addElement);
+
+    // Otherwise, only add contents of root group
+    else
+        addGroupContents(root_group, pager.addElement);
 
     // Add buttons if more than one page
     if (pager.last_page !== 0) {
@@ -1271,12 +1293,17 @@ GuacUI.GroupView = function(root_group, flags) {
 /**
  * When set, allows multiple groups (or connections to be selected).
  */
-GuacUI.GroupView.MULTISELECT      = 0x1;
+GuacUI.GroupView.MULTISELECT = 0x1;
 
 /**
  * When set, also displays connections within the visible groups.
  */
 GuacUI.GroupView.SHOW_CONNECTIONS = 0x2;
+
+/**
+ * When set, also displays the root group. By default the root group is hidden.
+ */
+GuacUI.GroupView.SHOW_ROOT_GROUP = 0x4;
 
 /**
  * Simple modal dialog providing a header, body, and footer. No other

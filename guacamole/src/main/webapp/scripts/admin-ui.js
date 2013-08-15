@@ -1217,7 +1217,7 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
     var group_outside = GuacUI.createChildElement(container, "div", "overlay");
     var group_section = GuacUI.createChildElement(container, "div", "dropdown");
 
-    var view = new GuacUI.GroupView(group);
+    var view = new GuacUI.GroupView(group, GuacUI.GroupView.SHOW_ROOT_GROUP);
     group_section.appendChild(view.getElement());
 
     // Hide when clicked outside
