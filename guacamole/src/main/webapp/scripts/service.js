@@ -556,7 +556,8 @@ GuacamoleService.Connections = {
     },
 
     /**
-     * Updates an existing connection.
+     * Updates an existing connection. All properties are updated except
+     * the location of the connection, which is ignored.
      * 
      * @param {GuacamoleService.Connection} connection The connection to create.
      * @param {String} parameters Any parameters which should be passed to the
@@ -586,6 +587,36 @@ GuacamoleService.Connections = {
         // Add user
         var xhr = new XMLHttpRequest();
         xhr.open("POST", users_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.send(data);
+
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+    },
+
+    /**
+     * Updates the location of an existing connection. This does not result
+     * in any change to the connection provided as a parameter.
+     * 
+     * @param {GuacamoleService.Connection} connection The connection to create.
+     * @param {GuacamoleService.ConnectionGroup} dest The destination group.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "move" : function(connection, dest, parameters) {
+
+        // Construct request URL
+        var connection_url = "connections/move?id=" + encodeURIComponent(connection.id);
+        if (parameters) connection_url += "&" + parameters;
+
+        // Init POST data
+        var data = "parentID=" + encodeURIComponent(dest.id);
+
+        // Move connection
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", connection_url, false);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         xhr.send(data);
 
@@ -663,7 +694,8 @@ GuacamoleService.ConnectionGroups = {
     },
 
     /**
-     * Updates an existing connection group.
+     * Updates an existing connection group. All properties are updated except
+     * the location of the group, which is ignored.
      * 
      * @param {GuacamoleService.ConnectionGroup} group The group to create.
      * @param {String} parameters Any parameters which should be passed to the
@@ -685,11 +717,37 @@ GuacamoleService.ConnectionGroups = {
         else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
             data += "&type=balancing";
 
-        // Add parent group if given
-        if (group.parent)
-            data += "&parentID=" + encodeURIComponent(group.parent.id);
-
         // Update group
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", groups_url, false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
+        xhr.send(data);
+
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+
+    },
+
+    /**
+     * Sets the location of an existing connection group. This does not result
+     * in any change to the group provided as a parameter.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to create.
+     * @param {GuacamoleService.ConnectionGroup} dest The destination group.
+     * @param {String} parameters Any parameters which should be passed to the
+     *                            server for the sake of authentication
+     *                            (optional).
+     */
+    "move" : function(group, dest, parameters) {
+
+        // Construct request URL
+        var groups_url = "connectiongroups/move?id=" + encodeURIComponent(group.id);
+        if (parameters) groups_url += "&" + parameters;
+
+        // Init POST data
+        var data = "parentID=" + encodeURIComponent(dest.id);
+
+        // Move group
         var xhr = new XMLHttpRequest();
         xhr.open("POST", groups_url, false);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
