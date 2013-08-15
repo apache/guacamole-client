@@ -87,10 +87,10 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     private ConnectionGroupPermissionMapper connectionGroupPermissionDAO;
 
     /**
-     * Set the user and relativeParentID for this directory.
+     * Set the user and parentID for this directory.
      *
      * @param user_id The ID of the user owning this connection group directory.
-     * @param relativeParentID The ID of the parent connection group.
+     * @param parentID The ID of the parent connection group.
      */
     public void init(int user_id, Integer parentID) {
         this.parentID = parentID;
