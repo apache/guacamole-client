@@ -465,23 +465,37 @@ GuacAdmin.UserEditor = function(name, parameters) {
         if (user_perms.create_connection)
             create_connections.checked = true;
 
+        // Add create connection group permission checkbox
+        var create_connection_groups = GuacUI.createChildElement(
+                GuacUI.createTabulatedContainer(permission_table, "Create new connection groups:"),
+                "input");
+        create_connection_groups.setAttribute("type", "checkbox");
+        create_connection_groups.setAttribute("value", "create_connection_group");
+
+        // Check if set
+        if (user_perms.create_connection_group)
+            create_connection_groups.checked = true;
+
         // Update system permissions when changed
-        is_admin.onclick = create_users.onclick =
-        create_connections.onclick = function() {
+        is_admin.onclick =
+        create_users.onclick =
+        create_connections.onclick =
+        create_connection_groups.onclick =
+            function() {
 
-            // Update permission deltas for ADDED permission
-            if (this.checked) {
-                added_perms[this.value]   = true;
-                removed_perms[this.value] = false;
-            }
+                // Update permission deltas for ADDED permission
+                if (this.checked) {
+                    added_perms[this.value]   = true;
+                    removed_perms[this.value] = false;
+                }
 
-            // Update permission deltas for REMOVED permission
-            else {
-                added_perms[this.value]   = false;
-                removed_perms[this.value] = true;
-            }
+                // Update permission deltas for REMOVED permission
+                else {
+                    added_perms[this.value]   = false;
+                    removed_perms[this.value] = true;
+                }
 
-        }
+            };
 
     }
 
