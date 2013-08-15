@@ -347,7 +347,8 @@ public class PermissionCheckService {
             return false;
 
         // Verify that the desired usage matches the type.
-        return connectionGroup.getType().equals(usage);
+        return MySQLConstants.getConnectionGroupTypeConstant(
+                connectionGroup.getType()).equals(usage);
         
     }
 
