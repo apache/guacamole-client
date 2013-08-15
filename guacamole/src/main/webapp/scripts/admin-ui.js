@@ -727,7 +727,7 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
 
         // Show group selector
         var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
-        document.body.appendChild(group_select.getElement());
+        location_container.appendChild(group_select.getElement());
 
         // Update location when chosen
         group_select.onselect = function(group) {
@@ -1056,7 +1056,7 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
 
         // Show group selector
         var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
-        document.body.appendChild(group_select.getElement());
+        location_container.appendChild(group_select.getElement());
 
         // Update location when chosen
         group_select.onselect = function(selected_group) {
@@ -1212,22 +1212,19 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
      */
     var group_select = this;
 
-    /**
-     * Dialog containing the user editor.
-     */
-    var dialog = new GuacUI.Dialog();
-
-    // Create form base elements
-    var group_header = GuacUI.createChildElement(dialog.getHeader(), "h2");
-    var form_element = GuacUI.createChildElement(dialog.getBody(), "div", "form");
-
-    // Set title
-    group_header.textContent = "Select Group";
-
     // Add section with group view
-    var group_section = GuacUI.createChildElement(form_element, "div", "settings section");
+    var container = GuacUI.createElement("div");
+    var group_outside = GuacUI.createChildElement(container, "div", "overlay");
+    var group_section = GuacUI.createChildElement(container, "div", "dropdown");
+
     var view = new GuacUI.GroupView(group);
     group_section.appendChild(view.getElement());
+
+    // Hide when clicked outside
+    group_outside.addEventListener("click", function(e) {
+        e.stopPropagation();
+        container.parentNode.removeChild(container);
+    }, false);
 
     // Handle select
     view.ongroupclick = function(group) {
@@ -1237,7 +1234,7 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
             group_select.onselect(group);
 
         // Hide dialog
-        dialog.getElement().parentNode.removeChild(dialog.getElement());
+        container.parentNode.removeChild(container);
 
     };
 
@@ -1255,7 +1252,7 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
      * @return {Element} The DOM Element representing this dialog.
      */
     this.getElement = function() {
-        return dialog.getElement();
+        return container;
     };
 
 };
