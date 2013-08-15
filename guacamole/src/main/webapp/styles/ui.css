@@ -448,7 +448,12 @@ div.section {
 }
 
 .group.empty > .caption .icon.group {
-    visibility: hidden;
+    opacity: 0.25;
+    background-image: url('../images/group-icons/guac-open.png');
+}
+
+.group.empty.balancer > .caption .icon.group {
+    display: none;
 }
 
 /*
