@@ -438,6 +438,10 @@ div.section {
     background-image: url('../images/group-icons/guac-open.png');
 }
 
+.group.empty > .caption .icon.group {
+    visibility: hidden;
+}
+
 /*
  * Settings formatting
  */

@@ -832,7 +832,7 @@ GuacUI.Download = function(filename) {
  * A grouping component. Child elements can be added via the addElement()
  * function. By default, groups display as collapsed.
  */
-GuacUI.ListGroup = function(caption) {
+GuacUI.ListGroup = function(caption, icon) {
 
     /**
      * Reference to this group.
@@ -841,13 +841,20 @@ GuacUI.ListGroup = function(caption) {
     var guac_group = this;
 
     /**
+     * Whether this group is empty.
+     * @private
+     */
+    var empty = true;
+
+    /**
      * A container for for the list group itself.
      */
-    var element = GuacUI.createElement("div", "group");
+    var element = GuacUI.createElement("div", "group empty");
 
     // Create connection display elements
     var caption_element = GuacUI.createChildElement(element, "div",  "caption");
     var caption_icon    = GuacUI.createChildElement(caption_element, "div",  "icon group");
+    if (icon) GuacUI.createChildElement(caption_element, "div",  "icon " + icon);
     GuacUI.createChildElement(caption_element, "span", "name").textContent = caption;
 
     /**
@@ -877,11 +884,17 @@ GuacUI.ListGroup = function(caption) {
 
     /**
      * Adds an element as a child of this group.
-     * 
-     * @param {
      */
-    this.addElement = function(element) {
-        elements.appendChild(element);
+    this.addElement = function(child) {
+
+        // Mark as non-empty
+        if (empty) {
+            GuacUI.removeClass(element, "empty");
+            empty = false;
+        }
+
+        elements.appendChild(child);
+
     };
 
     /**
