@@ -536,6 +536,27 @@ GuacAdmin.UserEditor = function(name, parameters) {
 
         };
 
+        // Update group permissions when changed
+        group_view.ongroupchange = function(group, selected) {
+
+            var id = group.id;
+
+            // Update permission deltas for ADDED permission
+            if (selected) {
+                added_perms.read_connection_group[id] = true;
+                if (removed_perms.read_connection_group[id])
+                    delete removed_perms.read_connection_group[id];
+            }
+
+            // Update permission deltas for REMOVED permission
+            else {
+                removed_perms.read_connection_group[id] = true;
+                if (added_perms.read_connection_group[id])
+                    delete added_perms.read_connection_group[id];
+            }
+
+        };
+
         // Set selectable and selected states based on current permissions
         for (var conn_id in group_view.connections) {
 
@@ -1072,8 +1093,11 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     bal_type.textContent = "Balancing";
     bal_type.value = "balancing";
 
-    // Default to organizational
-    type_field.value = "organizational";
+    // Read type from group
+    if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+        type_field.value = "organizational";
+    else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+        type_field.value = "balancing";
 
     // Add save button
     var save_button = GuacUI.createChildElement(dialog.getFooter(), "button");
