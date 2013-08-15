@@ -48,7 +48,6 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMap
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -279,7 +278,8 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Verify that no connection already exists with this name.
         MySQLConnectionGroup previousConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), parentID, user_id);
+                connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), 
+                toConnectionGroupID, user_id);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
         

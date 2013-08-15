@@ -329,7 +329,8 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Verify that no connection already exists with this name.
         MySQLConnection previousConnection =
-                connectionService.retrieveConnection(mySQLConnection.getName(), parentID, user_id);
+                connectionService.retrieveConnection(mySQLConnection.getName(), 
+                toConnectionGroupID, user_id);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection name is already in use.");
         
