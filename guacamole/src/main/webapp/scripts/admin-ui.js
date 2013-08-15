@@ -896,9 +896,6 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                     updated_connection.parameters[name] = field.getValue();
             }
 
-            // Populate location
-            updated_connection.parent = location_value;
-
             // Update connection if it exists
             if (connection.id) {
                 GuacamoleService.Connections.update(updated_connection, parameters);
