@@ -575,10 +575,6 @@ GuacamoleService.Connections = {
                   "name="      + encodeURIComponent(connection.name)
                 + "&protocol=" + encodeURIComponent(connection.protocol);
 
-        // Add group if given
-        if (connection.parent)
-            data += "&parentID=" + encodeURIComponent(connection.parent.id);
-
         // Add parameters
         for (var name in connection.parameters)
             data += "&_" + encodeURIComponent(name)
