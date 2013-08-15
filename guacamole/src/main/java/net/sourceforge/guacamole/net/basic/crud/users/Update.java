@@ -98,6 +98,10 @@ public class Update extends AuthenticatingHttpServlet {
         if (str.equals(CREATE_CONNECTION_PERMISSION))
             return new SystemPermission(SystemPermission.Type.CREATE_CONNECTION);
 
+        // Create connection group
+        if (str.equals(CREATE_CONNECTION_GROUP_PERMISSION))
+            return new SystemPermission(SystemPermission.Type.CREATE_CONNECTION_GROUP);
+
         // Administration
         if (str.equals(ADMIN_PERMISSION))
             return new SystemPermission(SystemPermission.Type.ADMINISTER);
