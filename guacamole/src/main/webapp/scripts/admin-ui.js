@@ -1072,8 +1072,11 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
     bal_type.textContent = "Balancing";
     bal_type.value = "balancing";
 
-    // Default to organizational
-    type_field.value = "organizational";
+    // Read type from group
+    if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+        type_field.value = "organizational";
+    else if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+        type_field.value = "balancing";
 
     // Add save button
     var save_button = GuacUI.createChildElement(dialog.getFooter(), "button");
