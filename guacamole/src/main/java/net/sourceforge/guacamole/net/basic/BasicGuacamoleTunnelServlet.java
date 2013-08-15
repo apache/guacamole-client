@@ -25,11 +25,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import net.sourceforge.guacamole.GuacamoleClientException;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.auth.Connection;
+import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.UserContext;
@@ -56,6 +58,63 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      */
     private Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
 
+    /**
+     * All supported identifier types.
+     */
+    private static enum IdentifierType {
+
+        /**
+         * The unique identifier of a connection.
+         */
+        CONNECTION("c/"),
+
+        /**
+         * The unique identifier of a connection group.
+         */
+        CONNECTION_GROUP("g/");
+        
+        /**
+         * The prefix which precedes an identifier of this type.
+         */
+        final String PREFIX;
+        
+        /**
+         * Defines an IdentifierType having the given prefix.
+         * @param prefix The prefix which will precede any identifier of this
+         *               type, thus differentiating it from other identifier
+         *               types.
+         */
+        IdentifierType(String prefix) {
+            PREFIX = prefix;
+        }
+
+        /**
+         * Given an identifier, determines the corresponding identifier type.
+         * 
+         * @param identifier The identifier whose type should be identified.
+         * @return The identified identifier type.
+         */
+        static IdentifierType getType(String identifier) {
+
+            // If null, no known identifier
+            if (identifier == null)
+                return null;
+
+            // Connection identifiers
+            if (identifier.startsWith(CONNECTION.PREFIX))
+                return CONNECTION;
+            
+            // Connection group identifiers
+            if (identifier.startsWith(CONNECTION_GROUP.PREFIX))
+                return CONNECTION_GROUP;
+            
+            // Otherwise, unknown
+            return null;
+            
+        }
+        
+    };
+    
     @Override
     protected void authenticatedService(
             UserContext context,
@@ -183,6 +242,14 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
 
             // Get ID of connection
             String id = request.getParameter("id");
+            IdentifierType id_type = IdentifierType.getType(id);
+
+            // Do not continue if unable to determine type
+            if (id_type == null)
+                throw new GuacamoleClientException("Illegal identifier - unknown type.");
+
+            // Remove prefix
+            id = id.substring(id_type.PREFIX.length());
 
             // Get credentials
             final Credentials credentials = getCredentials(httpSession);
@@ -193,19 +260,6 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             // If no context or no credentials, not logged in
             if (context == null || credentials == null)
                 throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
-
-            // Get connection directory
-            Directory<String, Connection> directory =
-                context.getRootConnectionGroup().getConnectionDirectory();
-
-            // Get authorized connection
-            Connection connection = directory.get(id);
-            if (connection == null) {
-                logger.warn("Connection id={} not found.", id);
-                throw new GuacamoleSecurityException("Requested connection is not authorized.");
-            }
-
-            logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
 
             // Get client information
             GuacamoleClientInformation info = new GuacamoleClientInformation();
@@ -230,8 +284,55 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
             if (video_mimetypes != null)
                 info.getVideoMimetypes().addAll(Arrays.asList(video_mimetypes));
 
-            // Connect socket
-            GuacamoleSocket socket = connection.connect(info);
+            // Create connected socket from identifier
+            GuacamoleSocket socket;
+            switch (id_type) {
+
+                // Connection identifiers
+                case CONNECTION: {
+
+                    // Get connection directory
+                    Directory<String, Connection> directory =
+                        context.getRootConnectionGroup().getConnectionDirectory();
+
+                    // Get authorized connection
+                    Connection connection = directory.get(id);
+                    if (connection == null) {
+                        logger.warn("Connection id={} not found.", id);
+                        throw new GuacamoleSecurityException("Requested connection is not authorized.");
+                    }
+
+                    // Connect socket
+                    socket = connection.connect(info);
+                    logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
+                    break;
+                }
+
+                // Connection group identifiers
+                case CONNECTION_GROUP: {
+
+                    // Get connection group directory
+                    Directory<String, ConnectionGroup> directory =
+                        context.getRootConnectionGroup().getConnectionGroupDirectory();
+
+                    // Get authorized connection group
+                    ConnectionGroup group = directory.get(id);
+                    if (group == null) {
+                        logger.warn("Connection group id={} not found.", id);
+                        throw new GuacamoleSecurityException("Requested connection group is not authorized.");
+                    }
+
+                    // Connect socket
+                    socket = group.connect(info);
+                    logger.info("Successful connection from {} to group \"{}\".", request.getRemoteAddr(), id);
+                    break;
+                }
+
+                // Fail if unsupported type
+                default:
+                    throw new GuacamoleClientException("Connection not supported for provided identifier type.");
+
+            }
 
             // Associate socket with tunnel
             GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {

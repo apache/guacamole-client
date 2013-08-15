@@ -197,6 +197,15 @@ GuacamoleRootUI.reset = function() {
         GuacUI.openConnection(connection.id, GuacamoleRootUI.parameters);
     };
 
+    // Open connection groups when clicked
+    group_view.ongroupclick = function(group) {
+        
+        // Connect if balancing
+        if (group.type === GuacamoleService.ConnectionGroup.Type.BALANCING)
+            GuacUI.openConnectionGroup(group.id, GuacamoleRootUI.parameters);
+        
+    };
+
     // Save all connections for later reference
     GuacamoleRootUI.connections = group_view.connections;
 
