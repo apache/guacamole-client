@@ -87,10 +87,10 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     private ConnectionGroupPermissionMapper connectionGroupPermissionDAO;
 
     /**
-     * Set the user and parentID for this directory.
+     * Set the user and relativeParentID for this directory.
      *
      * @param user_id The ID of the user owning this connection group directory.
-     * @param parentID The ID of the parent connection group.
+     * @param relativeParentID The ID of the parent connection group.
      */
     public void init(int user_id, Integer parentID) {
         this.parentID = parentID;
@@ -243,17 +243,20 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     public void move(String identifier, Directory<String, ConnectionGroup> directory) 
             throws GuacamoleException {
         
+        if(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER.equals(identifier))
+            throw new GuacamoleException("The root connection group cannot be moved.");
+        
         if(!(directory instanceof ConnectionGroupDirectory))
             throw new GuacamoleException("Directory not from database");
         
         int toConnectionGroupID = ((ConnectionGroupDirectory)directory).parentID;
 
-        // Get connection
+        // Get connection group
         MySQLConnectionGroup mySQLConnectionGroup =
                 connectionGroupService.retrieveConnectionGroup(identifier, user_id);
         
         if(mySQLConnectionGroup == null)
-            throw new GuacamoleException("Connection not found.");
+            throw new GuacamoleException("Connection group not found.");
 
         // Verify permission to update the connection
         permissionCheckService.verifyConnectionAccess(this.user_id,
@@ -282,6 +285,18 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
                 toConnectionGroupID, user_id);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
+        
+        // Verify that moving this connectionGroup would not cause a cycle
+        Integer relativeParentID = toConnectionGroupID;
+        while(relativeParentID != null) {
+            if(relativeParentID == mySQLConnectionGroup.getConnectionGroupID())
+                throw new GuacamoleException("Connection group cycle detected.");
+            
+            MySQLConnectionGroup relativeParentGroup = connectionGroupService.
+                    retrieveConnectionGroup(relativeParentID, user_id);
+            
+            relativeParentID = relativeParentGroup.getParentID();
+        }
         
         // Update the connection
         mySQLConnectionGroup.setParentID(toConnectionGroupID);
