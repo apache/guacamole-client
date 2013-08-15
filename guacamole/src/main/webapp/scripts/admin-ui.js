@@ -1022,9 +1022,22 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
         document.body.appendChild(group_select.getElement());
 
         // Update location when chosen
-        group_select.onselect = function(group) {
-            location_value = group;
-            location.textContent = group.name;
+        group_select.onselect = function(selected_group) {
+
+            // Prevent selecting a situation that would produce a cycle
+            var current = selected_group;
+            while (current !== null) {
+                
+                if (current.id === group.id) {
+                    alert("Cannot move a group into a subgroup of itself.");
+                    return;
+                }
+                
+                current = current.parent;
+            }
+
+            location_value = selected_group;
+            location.textContent = selected_group.name;
         };
 
     };
