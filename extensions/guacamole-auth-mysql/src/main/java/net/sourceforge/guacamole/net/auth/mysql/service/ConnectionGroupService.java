@@ -168,7 +168,7 @@ public class ConnectionGroupService {
             connectionGroup.init(null, null, 
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                    net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.BALANCING, 
+                    net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL, 
                     userID);
             
             return connectionGroup;
