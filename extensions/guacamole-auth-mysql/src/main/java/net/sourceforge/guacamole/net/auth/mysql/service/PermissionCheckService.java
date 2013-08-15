@@ -333,6 +333,11 @@ public class PermissionCheckService {
         if(checkSystemAdministratorAccess(userID))
             return true;
         
+        // A connection group administrator can use the group either way.
+        if(checkConnectionGroupAccess(userID, connectionGroupID,
+                MySQLConstants.CONNECTION_GROUP_ADMINISTER))
+            return true;
+        
         // Query the connection group
         MySQLConnectionGroup connectionGroup = connectionGroupService.
                 retrieveConnectionGroup(connectionGroupID, userID);
