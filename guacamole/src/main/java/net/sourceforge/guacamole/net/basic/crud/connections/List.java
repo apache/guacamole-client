@@ -34,6 +34,7 @@ import net.sourceforge.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -123,9 +124,17 @@ public class List extends AuthenticatingHttpServlet {
 
         }
 
-        // Write contained groups and connections
-        writeConnections(self, xml, group.getConnectionDirectory());
-        writeConnectionGroups(self, xml, group.getConnectionGroupDirectory());
+        Permission group_admin_permission = new ConnectionGroupPermission(
+                ObjectPermission.Type.ADMINISTER, group.getIdentifier());
+
+        // Attempt to list contained groups and connections ONLY if the group
+        // is organizational or we have admin rights to it
+        if (group.getType() == ConnectionGroup.Type.ORGANIZATIONAL
+                || self.hasPermission(SYSTEM_PERMISSION)
+                || self.hasPermission(group_admin_permission)) {
+            writeConnections(self, xml, group.getConnectionDirectory());
+            writeConnectionGroups(self, xml, group.getConnectionGroupDirectory());
+        }
 
         // End of group
         xml.writeEndElement();
