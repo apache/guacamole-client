@@ -244,19 +244,19 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
             throws GuacamoleException {
         
         if(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER.equals(identifier))
-            throw new GuacamoleException("The root connection group cannot be moved.");
+            throw new GuacamoleClientException("The root connection group cannot be moved.");
         
         if(!(directory instanceof ConnectionGroupDirectory))
-            throw new GuacamoleException("Directory not from database");
+            throw new GuacamoleClientException("Directory not from database");
         
-        int toConnectionGroupID = ((ConnectionGroupDirectory)directory).parentID;
+        Integer toConnectionGroupID = ((ConnectionGroupDirectory)directory).parentID;
 
         // Get connection group
         MySQLConnectionGroup mySQLConnectionGroup =
                 connectionGroupService.retrieveConnectionGroup(identifier, user_id);
         
         if(mySQLConnectionGroup == null)
-            throw new GuacamoleException("Connection group not found.");
+            throw new GuacamoleClientException("Connection group not found.");
 
         // Verify permission to update the connection
         permissionCheckService.verifyConnectionAccess(this.user_id,
@@ -290,7 +290,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         Integer relativeParentID = toConnectionGroupID;
         while(relativeParentID != null) {
             if(relativeParentID == mySQLConnectionGroup.getConnectionGroupID())
-                throw new GuacamoleException("Connection group cycle detected.");
+                throw new GuacamoleClientException("Connection group cycle detected.");
             
             MySQLConnectionGroup relativeParentGroup = connectionGroupService.
                     retrieveConnectionGroup(relativeParentID, user_id);

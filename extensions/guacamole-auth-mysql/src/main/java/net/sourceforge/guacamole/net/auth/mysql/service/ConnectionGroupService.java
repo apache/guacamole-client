@@ -390,8 +390,8 @@ public class ConnectionGroupService {
                 break;
         }
 
-        // Update the connection in the database
-        connectionGroupDAO.updateByPrimaryKeySelective(connectionGroup);
+        // Update the connection group in the database
+        connectionGroupDAO.updateByPrimaryKey(connectionGroup);
 
     }
 

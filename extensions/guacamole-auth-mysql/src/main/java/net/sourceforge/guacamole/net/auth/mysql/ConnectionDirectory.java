@@ -295,16 +295,16 @@ public class ConnectionDirectory implements Directory<String, Connection>{
             throws GuacamoleException {
         
         if(!(directory instanceof ConnectionDirectory))
-            throw new GuacamoleException("Directory not from database");
+            throw new GuacamoleClientException("Directory not from database");
         
-        int toConnectionGroupID = ((ConnectionDirectory)directory).parentID;
+        Integer toConnectionGroupID = ((ConnectionDirectory)directory).parentID;
         
         // Get connection
         MySQLConnection mySQLConnection =
                 connectionService.retrieveConnection(identifier, user_id);
         
         if(mySQLConnection == null)
-            throw new GuacamoleException("Connection not found.");
+            throw new GuacamoleClientException("Connection not found.");
 
         // Verify permission to update the connection
         permissionCheckService.verifyConnectionAccess(this.user_id,

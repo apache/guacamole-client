@@ -416,7 +416,7 @@ public class ConnectionService {
         connection.setProtocol(mySQLConnection.getConfiguration().getProtocol());
 
         // Update the connection in the database
-        connectionDAO.updateByPrimaryKeySelective(connection);
+        connectionDAO.updateByPrimaryKey(connection);
 
     }
 
