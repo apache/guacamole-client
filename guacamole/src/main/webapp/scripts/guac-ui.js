@@ -1303,8 +1303,10 @@ GuacUI.GroupView = function(root_group, flags) {
     }
 
     // If requested, include the root group as an item
-    if (show_root)
+    if (show_root) {
         addGroup(root_group, pager.addElement);
+        list_groups[root_group.id].expand();
+    }
 
     // Otherwise, only add contents of root group
     else
