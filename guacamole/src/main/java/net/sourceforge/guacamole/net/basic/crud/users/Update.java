@@ -85,15 +85,15 @@ public class Update extends AuthenticatingHttpServlet {
             throws GuacamoleException {
 
         // Create user
-        if (str.startsWith(CREATE_USER_PERMISSION))
+        if (str.equals(CREATE_USER_PERMISSION))
             return new SystemPermission(SystemPermission.Type.CREATE_USER);
 
         // Create connection
-        if (str.startsWith(CREATE_CONNECTION_PERMISSION))
+        if (str.equals(CREATE_CONNECTION_PERMISSION))
             return new SystemPermission(SystemPermission.Type.CREATE_CONNECTION);
 
         // Administration
-        if (str.startsWith(ADMIN_PERMISSION))
+        if (str.equals(ADMIN_PERMISSION))
             return new SystemPermission(SystemPermission.Type.ADMINISTER);
 
         throw new GuacamoleException("Invalid permission string.");
