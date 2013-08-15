@@ -904,8 +904,10 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             }
 
             // Otherwise, create
-            else
+            else {
+                updated_connection.parent = location_value;
                 GuacamoleService.Connections.create(updated_connection, parameters);
+            }
 
             // Hide dialog and reset UI
             dialog.getElement().parentNode.removeChild(dialog.getElement());
@@ -1090,8 +1092,10 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
             }
 
             // Otherwise, create
-            else
+            else {
+                updated_group.parent = location_value;
                 GuacamoleService.ConnectionGroups.create(updated_group, parameters);
+            }
 
             dialog.getElement().parentNode.removeChild(dialog.getElement());
             GuacAdmin.reset();
