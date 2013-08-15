@@ -729,6 +729,9 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
         var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
         location_container.appendChild(group_select.getElement());
 
+        // Pre-select current value
+        group_select.select(location_value);
+
         // Update location when chosen
         group_select.onselect = function(group) {
             location_value = group;
@@ -1058,6 +1061,9 @@ GuacAdmin.ConnectionGroupEditor = function(group, parameters) {
         var group_select = new GuacAdmin.ConnectionGroupSelect(GuacAdmin.cached_root_group);
         location_container.appendChild(group_select.getElement());
 
+        // Pre-select current value
+        group_select.select(location_value);
+
         // Update location when chosen
         group_select.onselect = function(selected_group) {
 
@@ -1253,6 +1259,15 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
      */
     this.getElement = function() {
         return container;
+    };
+
+    /**
+     * Pre-selects the given group.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group to select.
+     */
+    this.select = function(group) {
+        view.expand(group);
     };
 
 };

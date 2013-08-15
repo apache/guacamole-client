@@ -215,7 +215,7 @@ div.section {
     margin-top: -1px;
 
     width: 3in;
-    max-height: 5in;
+    max-height: 2in;
     overflow: auto;
 
     border: 1px solid rgba(0, 0, 0, 0.5);

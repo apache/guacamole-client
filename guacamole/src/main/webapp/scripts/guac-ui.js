@@ -983,6 +983,12 @@ GuacUI.GroupView = function(root_group, flags) {
     var connection_checkboxes = {};
 
     /**
+     * Set of all list groups, indexed by associated group ID.
+     * @private
+     */
+    var list_groups = {};
+
+    /**
      * Set of all connection groups, indexed by ID.
      */
     this.groups = {};
@@ -1125,6 +1131,30 @@ GuacUI.GroupView = function(root_group, flags) {
 
     };
 
+    /**
+     * Expands the given group and all parent groups all the way up to root.
+     * 
+     * @param {GuacamoleService.ConnectionGroup} group The group that should
+     *                                                 be expanded.
+     */
+    this.expand = function(group) {
+
+        // Skip current group - only need to expand parents
+        group = group.parent;
+
+        // For each group all the way to root
+        while (group !== null) {
+
+            // If list group exists, expand it
+            var list_group = list_groups[group.id];
+            if (list_group)
+                list_group.expand();
+
+            group = group.parent;
+        }
+
+    }
+
     // Create pager for contents 
     var pager = new GuacUI.Pager(list);
     pager.page_capacity = 20;
@@ -1226,6 +1256,7 @@ GuacUI.GroupView = function(root_group, flags) {
 
         // Create element for group
         var list_group = new GuacUI.ListGroup(group.name);
+        list_groups[group.id] = list_group;
         GuacUI.addClass(list_group.getElement(), "list-item");
 
         // Recursively add all children to the new element
