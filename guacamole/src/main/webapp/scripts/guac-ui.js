@@ -953,8 +953,14 @@ GuacUI.ListGroup = function(caption) {
  *                                                      within the view.
  * @param {Number} flags Any flags (such as MULTISELECT or SHOW_CONNECTIONS)
  *                       for modifying the behavior of this group view.
+ * @param {Function} group_filter Function which returns true if the given
+ *                                group should be displayed and false otherwise.
+ * @param {Function} connection_filter Function which returns true if the given
+ *                                     connection should be displayed and false
+ *                                     otherwise.
  */
-GuacUI.GroupView = function(root_group, flags) {
+GuacUI.GroupView = function(root_group, flags,
+    group_filter, connection_filter) {
 
     /**
      * Reference to this GroupView.
@@ -1208,6 +1214,10 @@ GuacUI.GroupView = function(root_group, flags) {
      */
     function addConnection(connection, appendChild) {
 
+        // Do not add connection if filter says "no"
+        if (connection_filter && !connection_filter(connection))
+            return;
+
         group_view.connections[connection.id] = connection;
 
         // Add connection to connection list or parent group
@@ -1263,6 +1273,10 @@ GuacUI.GroupView = function(root_group, flags) {
      *                               desired.
      */
     function addGroup(group, appendChild) {
+
+        // Do not add group if filter says "no"
+        if (group_filter && !group_filter(group))
+            return;
 
         // Add group to groups collection
         group_view.groups[group.id] = group;
