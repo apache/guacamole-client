@@ -1223,7 +1223,19 @@ GuacAdmin.ConnectionGroupSelect = function(group) {
     var group_outside = GuacUI.createChildElement(container, "div", "overlay");
     var group_section = GuacUI.createChildElement(container, "div", "dropdown");
 
-    var view = new GuacUI.GroupView(group, GuacUI.GroupView.SHOW_ROOT_GROUP);
+    var view = new GuacUI.GroupView(group, GuacUI.GroupView.SHOW_ROOT_GROUP,
+
+        // Only show organizational groups or balancing groups we can administer
+        function(group) {
+
+            if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+                return true;
+
+            return    GuacAdmin.cached_permissions.administer
+                   || GuacAdmin.cached_permissions.administer_connection_group[group.id];
+
+        });
+
     group_section.appendChild(view.getElement());
 
     // Hide when clicked outside
@@ -1409,7 +1421,27 @@ GuacAdmin.reset = function() {
 
     // Add new group view
     GuacAdmin.containers.connection_list.innerHTML = "";
-    var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, GuacUI.GroupView.SHOW_CONNECTIONS);
+    var group_view = new GuacUI.GroupView(GuacAdmin.cached_root_group, GuacUI.GroupView.SHOW_CONNECTIONS,
+    
+        // Show all organizational groups and balancing groups we have admin
+        // for
+        function(group) {
+
+            if (group.type === GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL)
+                return true;
+
+            return    GuacAdmin.cached_permissions.administer
+                   || GuacAdmin.cached_permissions.administer_connection_group[group.id];
+
+        },
+
+        // Only show connections we can update/administer
+        function(connection) {
+            return    GuacAdmin.cached_permissions.administer
+                   || GuacAdmin.cached_permissions.update_connection[connection.id]
+                   || GuacAdmin.cached_permissions.administer_connection[connection.id];
+        });
+
     GuacAdmin.containers.connection_list.appendChild(group_view.getElement());
 
     // Show connection editor when connections are clicked
@@ -1420,8 +1452,17 @@ GuacAdmin.reset = function() {
 
     // Show group editor when groups are clicked
     group_view.ongroupclick = function(group) {
-        var group_dialog = new GuacAdmin.ConnectionGroupEditor(group, parameters);
-        document.body.appendChild(group_dialog.getElement());
+
+        // Only show group editor if we can actually update/admin this group
+        if (GuacAdmin.cached_permissions.administer
+               || GuacAdmin.cached_permissions.update_connection_group[group.id]
+               || GuacAdmin.cached_permissions.administer_connection_group[group.id]) {
+
+            var group_dialog = new GuacAdmin.ConnectionGroupEditor(group, parameters);
+            document.body.appendChild(group_dialog.getElement());
+
+       }
+
     };
 
 };
