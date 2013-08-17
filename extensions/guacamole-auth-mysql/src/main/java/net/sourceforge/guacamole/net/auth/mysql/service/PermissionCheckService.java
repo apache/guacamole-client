@@ -246,8 +246,10 @@ public class PermissionCheckService {
      */
     public boolean checkConnectionGroupAccess(int userID, Integer affectedConnectionGroupID, String permissionType) {
 
-        // All users have implicit permission to use the root group
-        if(affectedConnectionGroupID == null)
+        // All users have implicit permission to read and update the root connection group
+        if(affectedConnectionGroupID == null && 
+                MySQLConstants.CONNECTION_GROUP_READ.equals(permissionType) ||
+                MySQLConstants.CONNECTION_GROUP_UPDATE.equals(permissionType))
             return true;
         
         // A system administrator has full access to everything.
