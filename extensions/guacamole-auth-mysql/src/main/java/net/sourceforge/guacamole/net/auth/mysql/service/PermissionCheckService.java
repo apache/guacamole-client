@@ -548,6 +548,12 @@ public class PermissionCheckService {
         List<Integer> connectionGroupIDs = new ArrayList<Integer>(connectionGroupPermissions.size());
         for(ConnectionGroupPermissionKey permission : connectionGroupPermissions)
             connectionGroupIDs.add(permission.getConnection_group_id());
+        
+        // All users have implicit access to read and update the root group
+        if(MySQLConstants.CONNECTION_GROUP_READ.equals(permissionType)
+                && MySQLConstants.CONNECTION_GROUP_UPDATE.equals(permissionType)
+                && !checkParentID)
+            connectionGroupIDs.add(null);
 
         return connectionGroupIDs;
 
@@ -751,6 +757,18 @@ public class PermissionCheckService {
             permissions.add(permission);
 
         }
+        
+        // All users have implict access to read the root connection group
+        permissions.add(new ConnectionGroupPermission(
+            ConnectionGroupPermission.Type.READ,
+            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER
+        ));
+        
+        // All users have implict access to update the root connection group
+        permissions.add(new ConnectionGroupPermission(
+            ConnectionGroupPermission.Type.UPDATE,
+            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER
+        ));
 
         return permissions;
 
