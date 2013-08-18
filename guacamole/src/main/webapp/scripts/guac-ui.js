@@ -116,22 +116,7 @@ GuacUI.removeClass = function(element, classname) {
  *                            for sake of authentication.
  */
 GuacUI.openConnectionGroup = function(id, parameters) {
-
-    // Get URL
-    var url = "client.xhtml?id=g/" + encodeURIComponent(id);
-
-    // Add parameters, if given
-    if (parameters)
-        url += "&" + parameters;
-
-    // Attempt to focus existing window
-    var current = window.open(null, id);
-
-    // If window did not already exist, set up as
-    // Guacamole client
-    if (!current.GuacUI)
-        window.open(url, id);
-
+    GuacUI.openObject("g/" + id, parameters);
 };
 
 /**
@@ -142,9 +127,21 @@ GuacUI.openConnectionGroup = function(id, parameters) {
  *                            for sake of authentication.
  */
 GuacUI.openConnection = function(id, parameters) {
+    GuacUI.openObject("c/" + id, parameters);
+};
+
+/**
+ * Opens the object having the given ID in a new tab/window. The ID must
+ * include the relevant prefix.
+ * 
+ * @param {String} id The ID of the object to open, including prefix.
+ * @param {String} parameters Any parameters that should be added to the URL,
+ *                            for sake of authentication.
+ */
+GuacUI.openObject = function(id, parameters) {
 
     // Get URL
-    var url = "client.xhtml?id=c/" + encodeURIComponent(id);
+    var url = "client.xhtml?id=" + encodeURIComponent(id);
 
     // Add parameters, if given
     if (parameters)
@@ -467,7 +464,7 @@ GuacUI.DraggableComponent = function(element) {
  * A connection UI object which can be easily added to a list of connections
  * for sake of display.
  */
-GuacUI.Connection = function(connection) {
+GuacUI.ListConnection = function(connection) {
 
     /**
      * Reference to this connection.
@@ -488,7 +485,6 @@ GuacUI.Connection = function(connection) {
 
     // Create connection display elements
     var element   = GuacUI.createElement("div",  "connection");
-    var thumbnail = GuacUI.createChildElement(element, "div",  "thumbnail");
     var caption   = GuacUI.createChildElement(element, "div",  "caption");
     var protocol  = GuacUI.createChildElement(caption, "div",  "protocol");
     var name      = GuacUI.createChildElement(caption, "span", "name");
@@ -517,47 +513,11 @@ GuacUI.Connection = function(connection) {
         GuacUI.addClass(element, "in-use");
     }
 
-    // Add screenshot if available
-    var thumbnail_url = GuacamoleHistory.get(connection.id).thumbnail;
-    if (thumbnail_url) {
-
-        // Create thumbnail element
-        var thumb_img = GuacUI.createChildElement(thumbnail, "img");
-        thumb_img.src = thumbnail_url;
-
-    }
-
     /**
      * Returns the DOM element representing this connection.
      */
     this.getElement = function() {
         return element;
-    };
-
-    /**
-     * Returns whether this connection has an associated thumbnail.
-     */
-    this.hasThumbnail = function() {
-        return thumb_img && true;
-    };
-
-    /**
-     * Sets the thumbnail URL of this existing connection. Note that this will
-     * only work if the connection already had a thumbnail associated with it.
-     */
-    this.setThumbnail = function(url) {
-
-        // If no image element, create it
-        if (!thumb_img) {
-            thumb_img = document.createElement("img");
-            thumb_img.src = url;
-            thumbnail.appendChild(thumb_img);
-        }
-
-        // Otherwise, set source of existing
-        else
-            thumb_img.src = url;
-
     };
 
 };
@@ -1221,7 +1181,7 @@ GuacUI.GroupView = function(root_group, flags,
         group_view.connections[connection.id] = connection;
 
         // Add connection to connection list or parent group
-        var guacui_connection = new GuacUI.Connection(connection);
+        var guacui_connection = new GuacUI.ListConnection(connection);
         GuacUI.addClass(guacui_connection.getElement(), "list-item");
 
         // If multiselect, add checkbox for each connection
