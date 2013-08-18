@@ -17,4 +17,7 @@
     <param name="dest-host" type="text"    title="Repeater destination host"/>
     <param name="dest-port" type="numeric" title="Repeater destination port"/>
 
+    <param name="enable-audio" type="boolean" title="Enable audio" value="true"/>
+    <param name="audio-servername" type="text" title="Audio server name"/>
+
 </protocol>
