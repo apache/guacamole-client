@@ -65,6 +65,86 @@ var GuacamoleRootUI = {
 GuacamoleRootUI.parameters = window.location.search.substring(1) || null;
 
 /**
+ * A connection UI object which can be easily added to a list of connections
+ * for sake of display.
+ * 
+ * @param {String} id The ID of this object, including prefix.
+ * @param {String} name The name that should be displayed.
+ */
+GuacamoleRootUI.RecentConnection = function(id, name) {
+
+    /**
+     * The ID of this object, including prefix.
+     * @type String
+     */
+    this.id = id;
+
+    /**
+     * The displayable name of this object.
+     * @type String
+     */
+    this.name = name;
+
+    // Create connection display elements
+    var element      = GuacUI.createElement("div",  "connection");
+    var thumbnail    = GuacUI.createChildElement(element, "div",  "thumbnail");
+    var caption      = GuacUI.createChildElement(element, "div",  "caption");
+    var name_element = GuacUI.createChildElement(caption, "span", "name");
+
+    // Connect on click
+    element.addEventListener("click", function(e) {
+
+        // Prevent click from affecting parent
+        e.stopPropagation();
+        e.preventDefault();
+
+        // Open connection
+        GuacUI.openObject(id, GuacamoleRootUI.parameters);
+
+    }, false);
+
+    // Set name
+    name_element.textContent = name;
+
+    // Add screenshot if available
+    var thumbnail_url = GuacamoleHistory.get(id).thumbnail;
+    if (thumbnail_url) {
+
+        // Create thumbnail element
+        var thumb_img = GuacUI.createChildElement(thumbnail, "img");
+        thumb_img.src = thumbnail_url;
+
+    }
+
+    /**
+     * Returns the DOM element representing this connection.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Sets the thumbnail URL of this existing connection. Note that this will
+     * only work if the connection already had a thumbnail associated with it.
+     */
+    this.setThumbnail = function(url) {
+
+        // If no image element, create it
+        if (!thumb_img) {
+            thumb_img = document.createElement("img");
+            thumb_img.src = url;
+            thumbnail.appendChild(thumb_img);
+        }
+
+        // Otherwise, set source of existing
+        else
+            thumb_img.src = url;
+
+    };
+
+};
+
+/**
  * Attempts to login the given user using the given password, throwing an
  * error if the process fails.
  * 
@@ -95,22 +175,27 @@ GuacamoleRootUI.login = function(username, password) {
 };
 
 /**
- * Set of all thumbnailed connections, indexed by ID.
+ * Set of all thumbnailed connections, indexed by ID. Here, each connection
+ * is a GuacamoleRootUI.RecentConnection.
  */
-GuacamoleRootUI.thumbnailConnections = {};
+GuacamoleRootUI.recentConnections = {};
 
 /**
- * Set of all connections, indexed by ID.
+ * Set of all connections, indexed by ID. Each connection is a
+ * GuacamoleService.Connection.
  */
 GuacamoleRootUI.connections = {};
 
 /**
- * Adds the given connection to the recent connections list.
+ * Adds the given RecentConnection to the recent connections list.
  */
-GuacamoleRootUI.addRecentConnection = function(connection) {
+GuacamoleRootUI.addRecentConnection = function(id, name) {
+
+    // Create recent connection object
+    var connection = new GuacamoleRootUI.RecentConnection(id, name);
 
     // Add connection object to list of thumbnailed connections
-    GuacamoleRootUI.thumbnailConnections[connection.connection.id] =
+    GuacamoleRootUI.recentConnections[connection.id] =
         connection;
     
     // Add connection to recent list
@@ -119,11 +204,6 @@ GuacamoleRootUI.addRecentConnection = function(connection) {
 
     // Hide "No recent connections" message
     GuacamoleRootUI.messages.no_recent_connections.style.display = "none";
-
-    // Open connection when clicked
-    connection.onclick = function() {
-        GuacUI.openConnection(connection.connection.id, GuacamoleRootUI.parameters);
-    };
 
 };
 
@@ -182,13 +262,24 @@ GuacamoleRootUI.reset = function() {
     // Add any connections with thumbnails
     for (var connection_id in group_view.connections) {
 
-        // Get interface component from connection
+        // Get corresponding connection
         var connection = group_view.connections[connection_id];
-        var guacui_connection = new GuacUI.Connection(connection);
 
         // If thumbnail exists, add to recent connections
-        if (guacui_connection.hasThumbnail())
-            GuacamoleRootUI.addRecentConnection(guacui_connection);
+        if (GuacamoleHistory.get("c/" + connection_id).thumbnail)
+            GuacamoleRootUI.addRecentConnection("c/" + connection_id, connection.name);
+
+    }
+
+    // Add any groups with thumbnails
+    for (var group_id in group_view.groups) {
+
+        // Get corresponding group 
+        var group = group_view.groups[group_id];
+
+        // If thumbnail exists, add to recent connections
+        if (GuacamoleHistory.get("g/" + group_id).thumbnail)
+            GuacamoleRootUI.addRecentConnection("g/" + group_id, group.name);
 
     }
 
@@ -218,7 +309,7 @@ GuacamoleRootUI.reset = function() {
 GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
 
     // Get existing connection, if any
-    var connection = GuacamoleRootUI.thumbnailConnections[id];
+    var connection = GuacamoleRootUI.recentConnections[id];
 
     // If we are adding or updating a connection
     if (new_entry) {
@@ -231,11 +322,7 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
             if (!GuacamoleRootUI.connections[id]) return;
 
             // Create new connection
-            connection = new GuacUI.Connection(
-                GuacamoleRootUI.connections[id]
-            );
-
-            GuacamoleRootUI.addRecentConnection(connection);
+            GuacamoleRootUI.addRecentConnection(id, connection.name);
 
         }
 
@@ -250,10 +337,10 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
         GuacamoleRootUI.sections.recent_connections.removeChild(
             connection.getElement());
 
-        delete GuacamoleRootUI.thumbnailConnections[id];
+        delete GuacamoleRootUI.recentConnections[id];
 
         // Display "No recent connections" message if none left
-        if (GuacamoleRootUI.thumbnailConnections.length == 0)
+        if (GuacamoleRootUI.recentConnections.length === 0)
             GuacamoleRootUI.messages.no_recent_connections.style.display = "";
 
     }
