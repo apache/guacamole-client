@@ -145,7 +145,7 @@ public class MySQLConnection extends AbstractConnection {
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionService.connect(this, info, userID);
+        return connectionService.connect(this, info, userID, null);
     }
 
     @Override

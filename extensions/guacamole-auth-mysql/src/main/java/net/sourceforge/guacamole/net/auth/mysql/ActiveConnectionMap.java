@@ -112,6 +112,76 @@ public class ActiveConnectionMap {
             this.currentUserCount = 0;
         }
     }
+    
+    /*
+     * Represents a user connected to a connection or BALANCING connection group.
+     */
+    public class ConnectionUser {
+        /**
+         * The ID of the connection or connection group that this ConnectionUser refers to.
+         */
+        private int connectionID; 
+        
+        /**
+         * The user that this ConnectionUser refers to.
+         */
+        private int userID;
+
+        /**
+         * Returns ID of the connection or connection group that this ConnectionUser refers to.
+         * @return ID of the connection or connection group that this ConnectionUser refers to.
+         */
+        public int getConnectionGroupID() {
+            return connectionID;
+        }
+
+        /**
+         * Returns the user ID that this ConnectionUser refers to.
+         * @return the user ID that this ConnectionUser refers to.
+         */
+        public int getUserID() {
+            return userID;
+        }
+        
+        /**
+         * Create a ConnectionUser with the given connection or connection group
+         * ID and user ID.
+         * 
+         * @param connectionID The connection or connection group ID that this 
+         *                          ConnectionUser refers to.
+         * @param userID The user ID that this ConnectionUser refers to.
+         */
+        public ConnectionUser(int connectionID, int userID) {
+            this.connectionID = connectionID;
+            this.userID = userID;
+        }
+        
+        @Override
+        public boolean equals(Object other) {
+            
+            // Only another ConnectionUser can equal this ConnectionUser
+            if(!(other instanceof ConnectionUser))
+                return false;
+            
+            ConnectionUser otherConnectionGroupUser = 
+                    (ConnectionUser)other;
+            
+            /* 
+             * Two ConnectionGroupUsers are equal iff they represent the exact 
+             * same pairing of connection or connection group and user.
+             */
+            return this.connectionID == otherConnectionGroupUser.connectionID
+                    && this.userID == otherConnectionGroupUser.userID;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 23 * hash + this.connectionID;
+            hash = 23 * hash + this.userID;
+            return hash;
+        }
+    }
 
     /**
      * DAO for accessing connection history.
@@ -120,11 +190,160 @@ public class ActiveConnectionMap {
     private ConnectionHistoryMapper connectionHistoryDAO;
 
     /**
-     * Map of all the connections that are currently active the
+     * Map of all the connections that are currently active to the
      * count of current users.
      */
     private Map<Integer, Connection> activeConnectionMap =
             new HashMap<Integer, Connection>();
+
+    /**
+     * Map of all the connection group users to the count of current usages.
+     */
+    private Map<ConnectionUser, Integer> activeConnectionGroupUserMap =
+            new HashMap<ConnectionUser, Integer>();
+
+    /**
+     * Map of all the connection users to the count of current usages.
+     */
+    private Map<ConnectionUser, Integer> activeConnectionUserMap =
+            new HashMap<ConnectionUser, Integer>();
+    
+    /**
+     * Returns the number of connectionGroups opened by the given user using 
+     * the given ConnectionGroup.
+     * 
+     * @param connectionID The connection group ID that this 
+     *                          ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     * 
+     * @return The number of connections opened by the given user to the given
+     *         ConnectionGroup.
+     */
+    public int getConnectionGroupUserCount(int connectionGroupID, int userID) {
+        Integer count = activeConnectionGroupUserMap.get
+                (new ConnectionUser(connectionGroupID, userID));
+        
+        // No ConnectionUser found means this combination was never used
+        if(count == null)
+            return 0;
+        
+        return count;
+    }
+    
+    /**
+     * Checks if the given user is currently connected to the given BALANCING
+     * connection group.
+     * 
+     * @param connectionGroupID The connection group ID that this 
+     *                          ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     * 
+     * @return True if the given user is currently connected to the given 
+     *         BALANCING connection group, false otherwise.
+     */
+    public boolean isConnectionGroupUserActive(int connectionGroupID, int userID) {
+        Integer count = activeConnectionGroupUserMap.get
+                (new ConnectionUser(connectionGroupID, userID));
+        
+        // The connection group is in use if the ConnectionUser count > 0
+        return count != null && count > 0;
+    }
+    
+    /**
+     * Increment the count of the number of connections opened by the given user
+     * to the given ConnectionGroup.
+     * 
+     * @param connectionGroupID The connection group ID that this 
+     *                          ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     */
+    private void incrementConnectionGroupUserCount(int connectionGroupID, int userID) {
+        int currentCount = getConnectionGroupUserCount(connectionGroupID, userID);
+        
+        activeConnectionGroupUserMap.put
+                (new ConnectionUser(connectionGroupID, userID), currentCount + 1);
+    }
+    
+    /**
+     * Decrement the count of the number of connections opened by the given user
+     * to the given ConnectionGroup.
+     * 
+     * @param connectionGroupID The connection group ID that this 
+     *                          ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     */
+    private void decrementConnectionGroupUserCount(int connectionGroupID, int userID) {
+        int currentCount = getConnectionGroupUserCount(connectionGroupID, userID);
+        
+        activeConnectionGroupUserMap.put
+                (new ConnectionUser(connectionGroupID, userID), currentCount - 1);
+    }
+    
+    /**
+     * Returns the number of connections opened by the given user using 
+     * the given Connection.
+     * 
+     * @param connectionID The connection ID that this ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     * 
+     * @return The number of connections opened by the given user to the given
+     *         connection.
+     */
+    public int getConnectionUserCount(int connectionID, int userID) {
+        Integer count = activeConnectionUserMap.get
+                (new ConnectionUser(connectionID, userID));
+        
+        // No ConnectionUser found means this combination was never used
+        if(count == null)
+            return 0;
+        
+        return count;
+    }
+    
+    /**
+     * Checks if the given user is currently connected to the given connection.
+     * 
+     * @param connectionID The connection ID that this ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     * 
+     * @return True if the given user is currently connected to the given 
+     *         connection, false otherwise.
+     */
+    public boolean isConnectionUserActive(int connectionID, int userID) {
+        Integer count = activeConnectionUserMap.get
+                (new ConnectionUser(connectionID, userID));
+        
+        // The connection is in use if the ConnectionUser count > 0
+        return count != null && count > 0;
+    }
+    
+    /**
+     * Increment the count of the number of connections opened by the given user
+     * to the given Connection.
+     * 
+     * @param connectionID The connection ID that this ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     */
+    private void incrementConnectionUserCount(int connectionID, int userID) {
+        int currentCount = getConnectionGroupUserCount(connectionID, userID);
+        
+        activeConnectionUserMap.put
+                (new ConnectionUser(connectionID, userID), currentCount + 1);
+    }
+    
+    /**
+     * Decrement the count of the number of connections opened by the given user
+     * to the given Connection.
+     * 
+     * @param connectionID The connection ID that this ConnectionUser refers to.
+     * @param userID The user ID that this ConnectionUser refers to.
+     */
+    private void decrementConnectionUserCount(int connectionID, int userID) {
+        int currentCount = getConnectionGroupUserCount(connectionID, userID);
+        
+        activeConnectionUserMap.put
+                (new ConnectionUser(connectionID, userID), currentCount - 1);
+    }
     
     /**
      * Returns the ID of the connection with the lowest number of current
@@ -232,9 +451,11 @@ public class ActiveConnectionMap {
      * Set a connection as open.
      * @param connectionID The ID of the connection that is being opened.
      * @param userID The ID of the user who is opening the connection.
+     * @param connectionID The ID of the BALANCING connection group that is
+     *                          being connected to; null if not used.
      * @return The ID of the history record created for this open connection.
      */
-    public int openConnection(int connectionID, int userID) {
+    public int openConnection(int connectionID, int userID, Integer connectionGroupID) {
 
         // Create the connection history record
         ConnectionHistory connectionHistory = new ConnectionHistory();
@@ -245,6 +466,13 @@ public class ActiveConnectionMap {
 
         // Increment the user count
         incrementUserCount(connectionID);
+        
+        // Increment the connection user count
+        incrementConnectionUserCount(connectionID, userID);
+        
+        // If this is a connection to a BALANCING ConnectionGroup, increment the count
+        if(connectionGroupID != null)
+            incrementConnectionGroupUserCount(connectionGroupID, userID);
 
         return connectionHistory.getHistory_id();
     }
@@ -252,11 +480,14 @@ public class ActiveConnectionMap {
     /**
      * Set a connection as closed.
      * @param connectionID The ID of the connection that is being opened.
+     * @param userID The ID of the user who is opening the connection.
      * @param historyID The ID of the history record about the open connection.
+     * @param connectionID The ID of the BALANCING connection group that is
+     *                          being connected to; null if not used.
      * @throws GuacamoleException If the open connection history is not found.
      */
-    public void closeConnection(int connectionID, int historyID)
-            throws GuacamoleException {
+    public void closeConnection(int connectionID, int userID, int historyID, 
+            Integer connectionGroupID) throws GuacamoleException {
 
         // Get the existing history record
         ConnectionHistory connectionHistory =
@@ -271,5 +502,12 @@ public class ActiveConnectionMap {
 
         // Decrement the user count.
         decrementUserCount(connectionID);
+        
+        // Decrement the connection user count
+        decrementConnectionUserCount(connectionID, userID);
+        
+        // If this is a connection to a BALANCING ConnectionGroup, decrement the count
+        if(connectionGroupID != null)
+            decrementConnectionGroupUserCount(connectionGroupID, userID);
     }
 }

@@ -109,4 +109,16 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-disallow-simultaneous-connections"; }
 
     };
+
+    /**
+     * Whether or not the same user accessing the same connection or connection group at the same time should be disallowed.
+     */
+    public static final BooleanGuacamoleProperty MYSQL_DISALLOW_DUPLICATE_CONNECTIONS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-disallow-duplicate-connections"; }
+
+    };
+    
+    
 }

@@ -316,6 +316,8 @@ public class ConnectionService {
 
         return connectionRecords;
     }
+    
+    
 
     /**
      * Create a MySQLGuacamoleSocket using the provided connection.
@@ -324,12 +326,14 @@ public class ConnectionService {
      * @param info The information to use when performing the connection
      *             handshake.
      * @param userID The ID of the user who is connecting to the socket.
+     * @param connectionGroupID The ID of the balancing connection group that is
+     *                          being connected to; null if not used.
      * @return The connected socket.
      * @throws GuacamoleException If an error occurs while connecting the
      *                            socket.
      */
     public MySQLGuacamoleSocket connect(MySQLConnection connection,
-            GuacamoleClientInformation info, int userID)
+            GuacamoleClientInformation info, int userID, Integer connectionGroupID)
         throws GuacamoleException {
 
         // If the given connection is active, and multiple simultaneous
@@ -338,6 +342,12 @@ public class ConnectionService {
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
                 && activeConnectionMap.isActive(connection.getConnectionID()))
             throw new GuacamoleClientException("Cannot connect. This connection is in use.");
+        
+        if(GuacamoleProperties.getProperty(
+                MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
+                && activeConnectionMap.isConnectionUserActive(connection.getConnectionID(), userID))
+            throw new GuacamoleClientException
+                    ("Cannot connect. Connection already in use by this user.");
 
         // Get guacd connection information
         String host = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
@@ -357,11 +367,14 @@ public class ConnectionService {
             );
 
         // Mark this connection as active
-        int historyID = activeConnectionMap.openConnection(connection.getConnectionID(), userID);
+        int historyID = activeConnectionMap.openConnection(connection.getConnectionID(), 
+                userID, connectionGroupID);
 
         // Return new MySQLGuacamoleSocket
         MySQLGuacamoleSocket mySQLGuacamoleSocket = mySQLGuacamoleSocketProvider.get();
-        mySQLGuacamoleSocket.init(socket, connection.getConnectionID(), historyID);
+        mySQLGuacamoleSocket.init(socket, connection.getConnectionID(), userID, 
+                historyID, connectionGroupID);
+        
         return mySQLGuacamoleSocket;
 
     }

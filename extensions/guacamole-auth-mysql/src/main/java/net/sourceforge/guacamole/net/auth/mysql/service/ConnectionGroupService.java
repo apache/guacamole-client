@@ -218,12 +218,18 @@ public class ConnectionGroupService {
             throw new GuacamoleClientException
                     ("Cannot connect. All connections are in use.");
         
+        if(GuacamoleProperties.getProperty(
+                MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
+                && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), userID))
+            throw new GuacamoleClientException
+                    ("Cannot connect. Connection group already in use by this user.");
+        
         // Get the connection 
         MySQLConnection connection = connectionService
                 .retrieveConnection(leastUsedConnectionID, userID);
         
         // Connect to the connection
-        return connectionService.connect(connection, info, userID);
+        return connectionService.connect(connection, info, userID, group.getConnectionGroupID());
     }
     
     /**
