@@ -268,6 +268,24 @@ div.section {
     margin-left: 0.25em;
 }
 
+.list-item .usage {
+    float: right;
+    font-style: italic;
+    color: gray;
+}
+
+.list-item.in-use {
+    opacity: 0.5;
+}
+
+.choice .list-item .usage {
+    display: none;
+}
+
+.choice .list-item.in-use {
+    opacity: 1;
+}
+
 /*
  * List element styling
  */

@@ -294,16 +294,6 @@ div#recent-connections div.connection {
     padding: 0.1em;
 }
 
-.connection .usage {
-    float: right;
-    font-style: italic;
-    color: gray;
-}
-
-.connection.in-use {
-    opacity: 0.5;
-}
-
 .connection .thumbnail {
     margin: 0.5em;
 }
