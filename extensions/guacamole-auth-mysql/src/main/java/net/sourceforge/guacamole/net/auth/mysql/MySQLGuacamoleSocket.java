@@ -61,17 +61,6 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
     private GuacamoleSocket socket;
 
     /**
-     * The ID associated with the connection associated with the wrapped
-     * socket.
-     */
-    private int connectionID;
-
-    /**
-     * The ID of the user who is connecting to the socket.
-     */
-    private int userID;
-
-    /**
      * The ID of the history record associated with this instance of the
      * connection.
      */
@@ -87,9 +76,6 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
      * Initialize this MySQLGuacamoleSocket with the provided GuacamoleSocket.
      *
      * @param socket The ConfiguredGuacamoleSocket to wrap.
-     * @param connectionID The ID of the connection associated with the given
-     *                     socket.
-     * @param userID The ID of the user who is connecting to the socket.
      * @param historyID The ID of the history record associated with this
      *                  instance of the connection.
      * @param connectionGroupID The ID of the balancing connection group that is
@@ -98,8 +84,6 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
     public void init(GuacamoleSocket socket, int connectionID, int userID, 
             int historyID, Integer connectionGroupID) {
         this.socket = socket;
-        this.connectionID = connectionID;
-        this.userID = userID;
         this.historyID = historyID;
         this.connectionGroupID = connectionGroupID;
     }
@@ -121,8 +105,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
         socket.close();
 
         // Mark this connection as inactive
-        activeConnectionSet.closeConnection(connectionID, userID, 
-                historyID, connectionGroupID);
+        activeConnectionSet.closeConnection(historyID, connectionGroupID);
     }
 
     @Override

@@ -120,7 +120,7 @@ public class ActiveConnectionMap {
         /**
          * The ID of the connection or connection group that this ConnectionUser refers to.
          */
-        private int connectionID; 
+        private int identifier; 
         
         /**
          * The user that this ConnectionUser refers to.
@@ -131,8 +131,8 @@ public class ActiveConnectionMap {
          * Returns ID of the connection or connection group that this ConnectionUser refers to.
          * @return ID of the connection or connection group that this ConnectionUser refers to.
          */
-        public int getConnectionGroupID() {
-            return connectionID;
+        public int getIdentifier() {
+            return identifier;
         }
 
         /**
@@ -147,12 +147,12 @@ public class ActiveConnectionMap {
          * Create a ConnectionUser with the given connection or connection group
          * ID and user ID.
          * 
-         * @param connectionID The connection or connection group ID that this 
-         *                          ConnectionUser refers to.
+         * @param identifier The connection or connection group ID that this 
+         *                   ConnectionUser refers to.
          * @param userID The user ID that this ConnectionUser refers to.
          */
-        public ConnectionUser(int connectionID, int userID) {
-            this.connectionID = connectionID;
+        public ConnectionUser(int identifier, int userID) {
+            this.identifier = identifier;
             this.userID = userID;
         }
         
@@ -170,14 +170,14 @@ public class ActiveConnectionMap {
              * Two ConnectionGroupUsers are equal iff they represent the exact 
              * same pairing of connection or connection group and user.
              */
-            return this.connectionID == otherConnectionGroupUser.connectionID
+            return this.identifier == otherConnectionGroupUser.identifier
                     && this.userID == otherConnectionGroupUser.userID;
         }
 
         @Override
         public int hashCode() {
             int hash = 3;
-            hash = 23 * hash + this.connectionID;
+            hash = 23 * hash + this.identifier;
             hash = 23 * hash + this.userID;
             return hash;
         }
@@ -209,10 +209,10 @@ public class ActiveConnectionMap {
             new HashMap<ConnectionUser, Integer>();
     
     /**
-     * Returns the number of connectionGroups opened by the given user using 
+     * Returns the number of connections opened by the given user using 
      * the given ConnectionGroup.
      * 
-     * @param connectionID The connection group ID that this 
+     * @param connectionGroupID The connection group ID that this 
      *                          ConnectionUser refers to.
      * @param userID The user ID that this ConnectionUser refers to.
      * 
@@ -451,7 +451,7 @@ public class ActiveConnectionMap {
      * Set a connection as open.
      * @param connectionID The ID of the connection that is being opened.
      * @param userID The ID of the user who is opening the connection.
-     * @param connectionID The ID of the BALANCING connection group that is
+     * @param connectionGroupID The ID of the BALANCING connection group that is
      *                          being connected to; null if not used.
      * @return The ID of the history record created for this open connection.
      */
@@ -479,15 +479,13 @@ public class ActiveConnectionMap {
 
     /**
      * Set a connection as closed.
-     * @param connectionID The ID of the connection that is being opened.
-     * @param userID The ID of the user who is opening the connection.
      * @param historyID The ID of the history record about the open connection.
-     * @param connectionID The ID of the BALANCING connection group that is
+     * @param connectionGroupID The ID of the BALANCING connection group that is
      *                          being connected to; null if not used.
      * @throws GuacamoleException If the open connection history is not found.
      */
-    public void closeConnection(int connectionID, int userID, int historyID, 
-            Integer connectionGroupID) throws GuacamoleException {
+    public void closeConnection(int historyID, Integer connectionGroupID) 
+            throws GuacamoleException {
 
         // Get the existing history record
         ConnectionHistory connectionHistory =
@@ -495,6 +493,10 @@ public class ActiveConnectionMap {
 
         if(connectionHistory == null)
             throw new GuacamoleException("History record not found.");
+        
+        // Get the connection and user IDs
+        int connectionID = connectionHistory.getConnection_id();
+        int userID = connectionHistory.getUser_id();
 
         // Update the connection history record to mark that it is now closed
         connectionHistory.setEnd_date(new Date());
