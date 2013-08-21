@@ -350,8 +350,8 @@ public class ConnectionService {
                     ("Cannot connect. Connection already in use by this user.");
 
         // Get guacd connection information
-        String host = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
-        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
+        String host = GuacamoleProperties.getRequiredProperty(GuacamoleProperties.GUACD_HOSTNAME);
+        int port = GuacamoleProperties.getRequiredProperty(GuacamoleProperties.GUACD_PORT);
 
         // Get socket
         GuacamoleSocket socket;
