@@ -44,6 +44,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import net.sourceforge.guacamole.GuacamoleException;
+import net.sourceforge.guacamole.GuacamoleServerException;
 import net.sourceforge.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.properties.FileGuacamoleProperty;
@@ -81,41 +82,58 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *    </config>
  *  </configs>
  *
+ * @author Laurent Meunier
  */
 public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 
+    /**
+     * Logger for this class.
+     */
     private Logger logger = LoggerFactory.getLogger(NoAuthenticationProvider.class);
+
+    /**
+     * Map of all known configurations, indexed by identifier.
+     */
     private Map<String, GuacamoleConfiguration> configs;
+
+    /**
+     * The last time the configuration XML was modified, as milliseconds since
+     * UNIX epoch.
+     */
     private long configTime;
 
     /**
      * The filename of the XML file to read the user mapping from.
      */
     public static final FileGuacamoleProperty NOAUTH_CONFIG = new FileGuacamoleProperty() {
+
         @Override
         public String getName() {
             return "noauth-config";
         }
+
     };
 
+    /**
+     * Retrieves the configuration file, as defined within guacamole.properties.
+     * 
+     * @return The configuration file, as defined within guacamole.properties.
+     * @throws GuacamoleException If an error occurs while reading the
+     *                            property.
+     */
     private File getConfigurationFile() throws GuacamoleException {
-        // Get configuration file
-        return GuacamoleProperties.getProperty(NOAUTH_CONFIG);
+        return GuacamoleProperties.getRequiredProperty(NOAUTH_CONFIG);
     }
 
     public synchronized void init() throws GuacamoleException {
+
         // Get configuration file
         File configFile = getConfigurationFile();
-        if(configFile == null) {
-            throw new GuacamoleException(
-                "Missing \"noauth-config\" parameter required for NoAuthenticationProvider."
-            );
-        }
-
         logger.info("Reading configuration file: {}", configFile);
 
         // Parse document
         try {
+
             // Set up parser
             NoAuthConfigContentHandler contentHandler = new NoAuthConfigContentHandler();
 
@@ -130,21 +148,24 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
             // Init configs
             configTime = configFile.lastModified();
             configs = contentHandler.getConfigs();
+
         }
         catch (IOException e) {
-            throw new GuacamoleException("Error reading configuration file: " + e.getMessage(), e);
+            throw new GuacamoleServerException("Error reading configuration file: " + e.getMessage(), e);
         }
         catch (SAXException e) {
-            throw new GuacamoleException("Error parsing XML file: " + e.getMessage(), e);
+            throw new GuacamoleServerException("Error parsing XML file: " + e.getMessage(), e);
         }
 
     }
 
     @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
+
         // Check mapping file mod time
         File configFile = getConfigurationFile();
         if (configFile.exists() && configTime < configFile.lastModified()) {
+
             // If modified recently, gain exclusive access and recheck
             synchronized (this) {
                 if (configFile.exists() && configTime < configFile.lastModified()) {
@@ -152,17 +173,14 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
                     init(); // If still not up to date, re-init
                 }
             }
+
         }
 
         // If no mapping available, report as such
-        if (configs == null) {
-            throw new GuacamoleException("Configuration could not be read.");
-        }
-
-        // Guacamole 0.8 wants a username to be set, otherwise the
-        // authentication process will fail.
-        credentials.setUsername("Anonymous");
+        if (configs == null)
+            throw new GuacamoleServerException("Configuration could not be read.");
 
         return configs;
+
     }
 }
