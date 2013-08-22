@@ -14,10 +14,10 @@ package net.sourceforge.guacamole.net.auth.noauth;
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is guacamole-auth.
+ * The Original Code is guacamole-auth-noauth.
  *
  * The Initial Developer of the Original Code is
- * Michael Jumper.
+ * Laurent Meunier
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
