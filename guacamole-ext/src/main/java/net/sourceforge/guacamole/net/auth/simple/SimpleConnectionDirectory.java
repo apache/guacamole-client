@@ -95,18 +95,30 @@ public class SimpleConnectionDirectory
     @Override
     public void add(Connection connection)
             throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        
+        if(connections.containsKey(connection.getIdentifier()))
+            throw new GuacamoleException("Connection identifier already present.");
+        
+        connections.put(connection.getIdentifier(), connection);
     }
 
     @Override
     public void update(Connection connection)
             throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        
+        if(!connections.containsKey(connection.getIdentifier()))
+            throw new GuacamoleException("Connection not found.");
+        
+        connections.put(connection.getIdentifier(), connection);
     }
 
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+        
+        if(!connections.containsKey(identifier))
+            throw new GuacamoleException("Connection not found.");
+        
+        connections.remove(identifier);
     }
 
     @Override
