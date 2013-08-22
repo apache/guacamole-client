@@ -95,36 +95,44 @@ public class SimpleConnectionDirectory
     @Override
     public void add(Connection connection)
             throws GuacamoleException {
-        
-        if(connections.containsKey(connection.getIdentifier()))
-            throw new GuacamoleException("Connection identifier already present.");
-        
-        connections.put(connection.getIdentifier(), connection);
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
     public void update(Connection connection)
             throws GuacamoleException {
-        
-        if(!connections.containsKey(connection.getIdentifier()))
-            throw new GuacamoleException("Connection not found.");
-        
-        connections.put(connection.getIdentifier(), connection);
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        
-        if(!connections.containsKey(identifier))
-            throw new GuacamoleException("Connection not found.");
-        
-        connections.remove(identifier);
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
     public void move(String identifier, Directory<String, Connection> directory) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
+    }
+    
+    /**
+     * An internal method for modifying the Connections in this Directory.
+     * Returns the previous connection for the given identifier, if found.
+     * 
+     * @param connection The connection to add or update the Directory with.
+     * @return The previous connection for the connection identifier, if found.
+     */
+    public Connection putConnection(Connection connection) {
+        return connections.put(connection.getIdentifier(), connection);
+    }
+    
+    /**
+     * An internal method for removing a Connection from this Directory.
+     * @param identifier The identifier of the Connection to remove.
+     * @return The previous connection for the given identifier, if found.
+     */
+    public Connection removeConnection(String identifier) {
+        return connections.remove(identifier);
     }
 
 }
