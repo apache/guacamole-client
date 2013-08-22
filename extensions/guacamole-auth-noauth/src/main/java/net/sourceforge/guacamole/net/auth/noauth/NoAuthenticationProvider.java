@@ -37,8 +37,6 @@ package net.sourceforge.guacamole.net.auth.noauth;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,11 +51,9 @@ import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
-import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 
@@ -168,35 +164,5 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
         credentials.setUsername("Anonymous");
 
         return configs;
-    }
-
-    private static class NoAuthConfigContentHandler extends DefaultHandler {
-        private Map<String, GuacamoleConfiguration> configs = new HashMap<String, GuacamoleConfiguration>();
-        private String current = null;
-        private GuacamoleConfiguration currentConfig = null;
-
-        public Map<String, GuacamoleConfiguration> getConfigs() {
-            return Collections.unmodifiableMap(configs);
-        }
-
-        @Override
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if(localName.equals("config")) {
-                configs.put(current, currentConfig);
-            }
-        }
-
-        @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-            if(localName.equals("config")) {
-                current = attributes.getValue("name");
-                currentConfig = new GuacamoleConfiguration();
-                currentConfig.setProtocol(attributes.getValue("protocol"));
-                return;
-            } else if(localName.equals("param")) {
-                currentConfig.setParameter(attributes.getValue("name"),
-                                           attributes.getValue("value"));
-            }
-        }
     }
 }
