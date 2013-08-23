@@ -132,10 +132,6 @@ public class NoAuthConfigContentHandler extends DefaultHandler {
 
         }
 
-        // Fail on unexpected elements
-        else
-            throw new SAXException("Unexpected element: " + localName);
-
     }
 
 }
