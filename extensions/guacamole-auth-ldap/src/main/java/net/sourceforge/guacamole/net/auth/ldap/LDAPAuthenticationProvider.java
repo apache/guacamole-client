@@ -68,7 +68,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
      * Logger for this class.
      */
     private Logger logger = LoggerFactory.getLogger(LDAPAuthenticationProvider.class);
-    
+
     // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
     private static String escapeLDAPSearchFilter(String filter) {
         StringBuilder sb = new StringBuilder();
@@ -137,12 +137,12 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
        return sb.toString();
    }
 
-    
+
     @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
 
         try {
-         
+
             // Require username
             if (credentials.getUsername() == null) {
                 logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
@@ -155,7 +155,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
                 logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
                 return null;
             }
-            
+
             // Connect to LDAP server
             LDAPConnection ldapConnection = new LDAPConnection();
             ldapConnection.connect(
@@ -172,12 +172,12 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
             String user_base_dn = GuacamoleProperties.getRequiredProperty(
                     LDAPGuacamoleProperties.LDAP_USER_BASE_DN
             );
-            
+
             // Construct user DN
             String user_dn = 
                 escapeDN(username_attribute) + "=" + escapeDN(credentials.getUsername())
                 + "," + user_base_dn;
-           
+
             // Bind as user 
             try {
                 ldapConnection.bind(
@@ -189,7 +189,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
             catch (UnsupportedEncodingException e) {
                 throw new GuacamoleException(e);
             }
-            
+
             // Get config base DN
             String config_base_dn = GuacamoleProperties.getRequiredProperty(
                     LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
@@ -207,7 +207,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
             // Add all configs
             Map<String, GuacamoleConfiguration> configs = new TreeMap<String, GuacamoleConfiguration>();
             while (results.hasMore()) {
-                
+
                 LDAPEntry entry = results.next();
 
                 // New empty configuration
@@ -245,13 +245,13 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
                             String value = parameter.substring(equals+1);
 
                             config.setParameter(name, value);
-                            
+
                         }
-                        
+
                     }
 
                 }
-               
+
                 // Store config by CN
                 configs.put(cn.getStringValue(), config);
 
@@ -260,12 +260,12 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
             // Disconnect
             ldapConnection.disconnect();
             return configs;
-            
+
         }
         catch (LDAPException e) {
             throw new GuacamoleException(e);
         }
-        
+
 
     }
 
