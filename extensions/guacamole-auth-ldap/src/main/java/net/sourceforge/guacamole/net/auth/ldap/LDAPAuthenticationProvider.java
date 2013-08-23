@@ -52,6 +52,8 @@ import net.sourceforge.guacamole.net.auth.ldap.properties.LDAPGuacamolePropertie
 import net.sourceforge.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Allows users to be authenticated against an LDAP server. Each user may have
@@ -61,7 +63,12 @@ import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
  * @author Michael Jumper
  */
 public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
-   
+
+    /**
+     * Logger for this class.
+     */
+    private Logger logger = LoggerFactory.getLogger(LDAPAuthenticationProvider.class);
+    
     // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
     private static String escapeLDAPSearchFilter(String filter) {
         StringBuilder sb = new StringBuilder();
@@ -138,14 +145,14 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
          
             // Require username
             if (credentials.getUsername() == null) {
-                // TODO: log "LDAP authentication requires a username."
+                logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
                 return null;
             }
 
             // Require password, and do not allow anonymous binding
             if (credentials.getPassword() == null
                     || credentials.getPassword().length() == 0) {
-                // TODO: log "LDAP authentication requires a password."
+                logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
                 return null;
             }
             
