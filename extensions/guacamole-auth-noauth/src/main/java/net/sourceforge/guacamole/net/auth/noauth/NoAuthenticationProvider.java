@@ -116,7 +116,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 
     /**
      * Retrieves the configuration file, as defined within guacamole.properties.
-     * 
+     *
      * @return The configuration file, as defined within guacamole.properties.
      * @throws GuacamoleException If an error occurs while reading the
      *                            property.

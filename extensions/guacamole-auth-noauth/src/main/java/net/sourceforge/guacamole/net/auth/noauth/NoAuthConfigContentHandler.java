@@ -47,7 +47,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * XML parser for the configuration file used by the NoAuth auth provider.
- * 
+ *
  * @author Laurent Meunier
  */
 public class NoAuthConfigContentHandler extends DefaultHandler {
@@ -70,7 +70,7 @@ public class NoAuthConfigContentHandler extends DefaultHandler {
     /**
      * Returns the a map of all available configurations as parsed from the
      * XML file. This map is unmodifiable.
-     * 
+     *
      * @return A map of all available configurations.
      */
     public Map<String, GuacamoleConfiguration> getConfigs() {
@@ -85,13 +85,13 @@ public class NoAuthConfigContentHandler extends DefaultHandler {
 
             // Add to map
             configs.put(current, currentConfig);
-            
+
             // Reset state for next configuration
             currentConfig = null;
             current = null;
-            
+
         }
-        
+
     }
 
     @Override

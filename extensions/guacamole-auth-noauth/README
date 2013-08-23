@@ -51,7 +51,7 @@ guacamole.properties such that the authentication provider is available.
     contents of your settings.xml file is correct.
 
 2) Extract the .tar.gz file now present in the target/ directory, and
-   place the .jar files in the extracted lib/ subdirectory in the library 
+   place the .jar files in the extracted lib/ subdirectory in the library
    directory specified in guacamole.properties.
 
     You will likely need to do this as root.
@@ -86,8 +86,8 @@ guacamole.properties such that the authentication provider is available.
 
     When completed, this file should be placed in a common location such
     that it can be referenced from guacamole.properties, like
-    /etc/guacamole/noauth-config.xml.   
- 
+    /etc/guacamole/noauth-config.xml.
+
 4) Configure guacamole.properties
 
     An additional property is required by guacamole-auth-noauth which defines
@@ -112,6 +112,6 @@ guacamole.properties such that the authentication provider is available.
 
 Please report any bugs encountered by opening a new ticket at the Trac system
 hosted at:
-    
+
     http://guac-dev.org/trac/
 
