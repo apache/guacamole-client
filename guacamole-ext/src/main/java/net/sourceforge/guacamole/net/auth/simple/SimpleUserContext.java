@@ -37,9 +37,9 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.Collections;
 import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
 import net.sourceforge.guacamole.net.auth.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.User;
@@ -60,18 +60,6 @@ public class SimpleUserContext implements UserContext {
      * accessible within this UserContext.
      */
     private final User self;
-
-    /**
-     * The Directory with access only to those Connections that the User
-     * associated with this UserContext has access to.
-     */
-    private final Directory<String, Connection> connectionDirectory;
-
-    /**
-     * The Directory with access only to those Connection Groups that the User
-     * associated with this UserContext has access to.
-     */
-    private final Directory<String, ConnectionGroup> connectionGroupDirectory;
 
     /**
      * The Directory with access only to the User associated with this
@@ -99,16 +87,12 @@ public class SimpleUserContext implements UserContext {
             Map<String, GuacamoleConfiguration> configs) {
 
         this.self = self;
-
-        this.connectionDirectory =
-                new SimpleConnectionDirectory(configs);
-        
-        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory();
-
         this.userDirectory = new SimpleUserDirectory(self);
         
-        this.connectionGroup = new SimpleConnectionGroup(this.connectionDirectory,
-                this.connectionGroupDirectory);
+        // Add root group that contains only configurations
+        this.connectionGroup = new SimpleConnectionGroup("ROOT", "ROOT",
+                new SimpleConnectionDirectory(configs),
+                new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST));
 
     }
 

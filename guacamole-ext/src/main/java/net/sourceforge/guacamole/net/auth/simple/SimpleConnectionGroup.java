@@ -55,16 +55,47 @@ import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
  * @author James Muehlner
  */
 public class SimpleConnectionGroup extends AbstractConnectionGroup {
-    
+
+    /**
+     * Underlying connection directory, containing all connections within this
+     * group.
+     */
     private final Directory<String, Connection> connectionDirectory;
+
+    /**
+     * Underlying connection group directory, containing all connections within
+     * this group.
+     */
     private final Directory<String, ConnectionGroup> connectionGroupDirectory;
     
-    
-    public SimpleConnectionGroup(Directory<String, Connection> connectionDirectory, 
+    /**
+     * Creates a new SimpleConnectionGroup having the given name and identifier
+     * which will expose the given directories as its contents.
+     * 
+     * @param name The name to associate with this connection.
+     * @param identifier The identifier to associate with this connection.
+     * @param connectionDirectory The connection directory to expose when
+     *                            requested.
+     * @param connectionGroupDirectory The connection group directory to expose
+     *                                 when requested.
+     */
+    public SimpleConnectionGroup(String name, String identifier,
+            Directory<String, Connection> connectionDirectory, 
             Directory<String, ConnectionGroup> connectionGroupDirectory) {
+
+        // Set name
+        setName(name);
+
+        // Set identifier
+        setIdentifier(identifier);
+        
+        // Set group type
+        setType(ConnectionGroup.Type.ORGANIZATIONAL);
+
+        // Assign directories
         this.connectionDirectory = connectionDirectory;
         this.connectionGroupDirectory = connectionGroupDirectory;
-        this.setType(ConnectionGroup.Type.ORGANIZATIONAL);
+
     }
     
     @Override

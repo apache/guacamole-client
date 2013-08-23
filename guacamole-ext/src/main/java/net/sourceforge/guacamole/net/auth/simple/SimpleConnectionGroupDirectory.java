@@ -37,7 +37,9 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
-import java.util.Collections;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
@@ -47,26 +49,44 @@ import net.sourceforge.guacamole.net.auth.Directory;
 
 /**
  * An extremely simple read-only implementation of a Directory of
- * ConnectionGroup which provides an empty set of connection groups.
+ * ConnectionGroup which provides which provides access to a pre-defined
+ * Collection of ConnectionGroups.
  *
  * @author James Muehlner
  */
 public class SimpleConnectionGroupDirectory
     implements Directory<String, ConnectionGroup> {
-    
+
     /**
-     * Creates a new SimpleConnectionGroupDirectory */
-    public SimpleConnectionGroupDirectory() {}
+     * The Map of ConnectionGroups to provide access to.
+     */
+    private Map<String, ConnectionGroup> connectionGroups =
+            new HashMap<String, ConnectionGroup>();
+
+    /**
+     * Creates a new SimpleConnectionGroupDirectory which contains the given
+     * groups.
+     * 
+     * @param groups A Collection of all groups that should be present in this
+     *               connection group directory.
+     */
+    public SimpleConnectionGroupDirectory(Collection<ConnectionGroup> groups) {
+
+        // Add all given groups
+        for (ConnectionGroup group : groups)
+            connectionGroups.put(group.getIdentifier(), group);
+
+    }
 
     @Override
     public ConnectionGroup get(String identifier)
             throws GuacamoleException {
-        return null;
+        return connectionGroups.get(identifier);
     }
 
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return Collections.EMPTY_SET;
+        return connectionGroups.keySet();
     }
 
     @Override
@@ -90,6 +110,29 @@ public class SimpleConnectionGroupDirectory
     public void move(String identifier, Directory<String, ConnectionGroup> directory) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    /**
+     * An internal method for modifying the ConnectionGroups in this Directory.
+     * Returns the previous connection group for the given identifier, if found.
+     * 
+     * @param connectionGroup The connection group to add or update the
+     *                        Directory with.
+     * @return The previous connection group for the connection group
+     *         identifier, if found.
+     */
+    public ConnectionGroup putConnectionGroup(ConnectionGroup connectionGroup) {
+        return connectionGroups.put(connectionGroup.getIdentifier(), connectionGroup);
+    }
+    
+    /**
+     * An internal method for removing a ConnectionGroup from this Directory.
+     * 
+     * @param identifier The identifier of the ConnectionGroup to remove.
+     * @return The previous connection group for the given identifier, if found.
+     */
+    public ConnectionGroup removeConnectionGroup(String identifier) {
+        return connectionGroups.remove(identifier);
     }
 
 }
