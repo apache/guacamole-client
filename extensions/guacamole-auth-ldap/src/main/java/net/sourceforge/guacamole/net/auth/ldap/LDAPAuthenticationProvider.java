@@ -59,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * Allows users to be authenticated against an LDAP server. Each user may have
  * any number of authorized configurations. Authorized configurations may be
  * shared.
- * 
+ *
  * @author Michael Jumper
  */
 public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
@@ -174,16 +174,16 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
             );
 
             // Construct user DN
-            String user_dn = 
+            String user_dn =
                 escapeDN(username_attribute) + "=" + escapeDN(credentials.getUsername())
                 + "," + user_base_dn;
 
-            // Bind as user 
+            // Bind as user
             try {
                 ldapConnection.bind(
                         LDAPConnection.LDAP_V3,
                         user_dn,
-                        credentials.getPassword().getBytes("UTF-8") 
+                        credentials.getPassword().getBytes("UTF-8")
                 );
             }
             catch (UnsupportedEncodingException e) {
@@ -213,7 +213,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
                 // New empty configuration
                 GuacamoleConfiguration config = new GuacamoleConfiguration();
 
-                // Get CN 
+                // Get CN
                 LDAPAttribute cn = entry.getAttribute("cn");
                 if (cn == null)
                     throw new GuacamoleException("guacConfigGroup without cn");
