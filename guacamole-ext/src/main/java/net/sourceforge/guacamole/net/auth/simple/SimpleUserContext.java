@@ -75,25 +75,25 @@ public class SimpleUserContext implements UserContext {
 
     /**
      * Creates a new SimpleUserContext which provides access to only those
-     * configurations within the given Map. The User given must be the user
-     * that owns this UserContext, and the Map given must contain only
-     * GuacamoleConfigurations that the given User has read access to.
-     *
-     * @param self The owner of this UserContext.
+     * configurations within the given Map.
+     * 
      * @param configs A Map of all configurations for which the user associated
      *                with this UserContext has read access.
      */
-    public SimpleUserContext(User self,
-            Map<String, GuacamoleConfiguration> configs) {
+    public SimpleUserContext(Map<String, GuacamoleConfiguration> configs) {
 
-        this.self = self;
-        this.userDirectory = new SimpleUserDirectory(self);
-        
         // Add root group that contains only configurations
         this.connectionGroup = new SimpleConnectionGroup("ROOT", "ROOT",
                 new SimpleConnectionDirectory(configs),
                 new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST));
 
+        // Build new user from credentials, giving the user an arbitrary name
+        this.self = new SimpleUser("user",
+                configs, Collections.singleton(connectionGroup));
+
+        // Create user directory for new user
+        this.userDirectory = new SimpleUserDirectory(self);
+        
     }
 
     @Override

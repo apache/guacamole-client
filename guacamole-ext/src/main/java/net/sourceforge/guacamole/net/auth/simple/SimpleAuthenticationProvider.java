@@ -41,7 +41,6 @@ import java.util.Map;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.AuthenticationProvider;
 import net.sourceforge.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 
@@ -89,11 +88,8 @@ public abstract class SimpleAuthenticationProvider
         if (configs == null)
             return null;
 
-        // Build new user from credentials
-        User user = new SimpleUser(credentials.getUsername(), configs);
-
         // Return user context restricted to authorized configs
-        return new SimpleUserContext(user, configs);
+        return new SimpleUserContext(configs);
 
     }
 

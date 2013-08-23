@@ -37,12 +37,15 @@ package net.sourceforge.guacamole.net.auth.simple;
  *
  * ***** END LICENSE BLOCK ***** */
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.AbstractUser;
+import net.sourceforge.guacamole.net.auth.ConnectionGroup;
+import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
 import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
 import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
 import net.sourceforge.guacamole.net.auth.permission.Permission;
@@ -72,20 +75,36 @@ public class SimpleUser extends AbstractUser {
      *
      * @param username The username to assign to this SimpleUser.
      * @param configs All configurations this user has read access to.
+     * @param groups All groups this user has read access to.
      */
     public SimpleUser(String username,
-            Map<String, GuacamoleConfiguration> configs) {
+            Map<String, GuacamoleConfiguration> configs,
+            Collection<ConnectionGroup> groups) {
 
         // Set username
         setUsername(username);
 
-        // Add permissions
+        // Add connection permissions
         for (String identifier : configs.keySet()) {
 
             // Create permission
             Permission permission = new ConnectionPermission(
                 ObjectPermission.Type.READ,
                 identifier
+            );
+
+            // Add to set
+            permissions.add(permission);
+
+        }
+
+        // Add group permissions
+        for (ConnectionGroup group : groups) {
+
+            // Create permission
+            Permission permission = new ConnectionGroupPermission(
+                ObjectPermission.Type.READ,
+                group.getIdentifier()
             );
 
             // Add to set
