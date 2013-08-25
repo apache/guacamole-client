@@ -38,10 +38,10 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.io.GuacamoleReader;
-import net.sourceforge.guacamole.io.GuacamoleWriter;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.io.GuacamoleReader;
+import org.glyptodon.guacamole.io.GuacamoleWriter;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 
 /**
  * A MySQL specific wrapper around a ConfiguredGuacamoleSocket.

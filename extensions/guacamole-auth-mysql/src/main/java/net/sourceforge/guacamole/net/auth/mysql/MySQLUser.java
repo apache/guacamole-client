@@ -38,10 +38,10 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.AbstractUser;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AbstractUser;
+import org.glyptodon.guacamole.net.auth.User;
+import org.glyptodon.guacamole.net.auth.permission.Permission;
 
 /**
  * A MySQL based implementation of the User object.

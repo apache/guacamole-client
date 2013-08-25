@@ -48,8 +48,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.User;
@@ -105,7 +105,7 @@ public class UserService {
      * @throws GuacamoleException If an error occurs while reading the data
      *                            of the provided User.
      */
-    public MySQLUser toMySQLUser(net.sourceforge.guacamole.net.auth.User user) throws GuacamoleException {
+    public MySQLUser toMySQLUser(org.glyptodon.guacamole.net.auth.User user) throws GuacamoleException {
         MySQLUser mySQLUser = mySQLUserProvider.get();
         mySQLUser.init(user);
         return mySQLUser;

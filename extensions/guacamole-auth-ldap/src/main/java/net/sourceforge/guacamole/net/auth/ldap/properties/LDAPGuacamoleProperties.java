@@ -1,8 +1,8 @@
 
 package net.sourceforge.guacamole.net.auth.ldap.properties;
 
-import net.sourceforge.guacamole.properties.IntegerGuacamoleProperty;
-import net.sourceforge.guacamole.properties.StringGuacamoleProperty;
+import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
+import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

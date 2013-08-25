@@ -39,10 +39,10 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleClientException;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionParameter;
@@ -51,7 +51,7 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
 /**

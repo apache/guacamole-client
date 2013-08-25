@@ -42,7 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
@@ -58,11 +58,11 @@ import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserPermissionKey;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
-import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.UserPermission;
 
 /**
  * A service to retrieve information about what objects a user has permission to.

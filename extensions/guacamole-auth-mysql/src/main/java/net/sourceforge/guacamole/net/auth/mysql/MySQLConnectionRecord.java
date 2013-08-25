@@ -38,7 +38,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import java.util.Date;
-import net.sourceforge.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A ConnectionRecord which is based on data stored in MySQL.

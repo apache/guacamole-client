@@ -30,14 +30,14 @@
 
     <!-- Automatically detect and load WebSocket support -->
     <listener>
-        <listener-class>net.sourceforge.guacamole.net.basic.WebSocketSupportLoader</listener-class>
+        <listener-class>org.glyptodon.guacamole.net.basic.WebSocketSupportLoader</listener-class>
     </listener>
     
     <!-- Basic Login Servlet -->
     <servlet>
         <description>Login servlet.</description>
         <servlet-name>Login</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogin</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicLogin</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
@@ -48,7 +48,7 @@
     <servlet>
         <description>Logout servlet.</description>
         <servlet-name>Logout</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicLogout</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicLogout</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Logout</servlet-name>
@@ -59,7 +59,7 @@
     <servlet>
         <description>Connection creation servlet.</description>
         <servlet-name>ConnectionCreate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.Create</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connections.Create</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionCreate</servlet-name>
@@ -70,7 +70,7 @@
     <servlet>
         <description>Connection list servlet.</description>
         <servlet-name>Connections</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.List</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connections.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Connections</servlet-name>
@@ -81,7 +81,7 @@
     <servlet>
         <description>Connection update servlet.</description>
         <servlet-name>ConnectionUpdate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.Update</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connections.Update</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionUpdate</servlet-name>
@@ -92,7 +92,7 @@
     <servlet>
         <description>Connection move servlet.</description>
         <servlet-name>ConnectionMove</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.Move</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connections.Move</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionMove</servlet-name>
@@ -103,7 +103,7 @@
     <servlet>
         <description>Connection deletion servlet.</description>
         <servlet-name>ConnectionDelete</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connections.Delete</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connections.Delete</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionDelete</servlet-name>
@@ -114,7 +114,7 @@
     <servlet>
         <description>ConnectionGroup creation servlet.</description>
         <servlet-name>ConnectionGroupCreate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Create</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connectiongroups.Create</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionGroupCreate</servlet-name>
@@ -125,7 +125,7 @@
     <servlet>
         <description>ConnectionGroup list servlet.</description>
         <servlet-name>ConnectionGroups</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.List</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connectiongroups.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionGroups</servlet-name>
@@ -136,7 +136,7 @@
     <servlet>
         <description>ConnectionGroup update servlet.</description>
         <servlet-name>ConnectionGroupUpdate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Update</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connectiongroups.Update</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionGroupUpdate</servlet-name>
@@ -147,7 +147,7 @@
     <servlet>
         <description>ConnectionGroup move servlet.</description>
         <servlet-name>ConnectionGroupMove</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Move</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connectiongroups.Move</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionGroupMove</servlet-name>
@@ -158,7 +158,7 @@
     <servlet>
         <description>ConnectionGroup deletion servlet.</description>
         <servlet-name>ConnectionGroupDelete</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.connectiongroups.Delete</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.connectiongroups.Delete</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ConnectionGroupDelete</servlet-name>
@@ -169,7 +169,7 @@
     <servlet>
         <description>User creation servlet.</description>
         <servlet-name>UserCreate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.users.Create</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.users.Create</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserCreate</servlet-name>
@@ -180,7 +180,7 @@
     <servlet>
         <description>User list servlet.</description>
         <servlet-name>Users</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.users.List</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.users.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Users</servlet-name>
@@ -191,7 +191,7 @@
     <servlet>
         <description>User update servlet.</description>
         <servlet-name>UserUpdate</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.users.Update</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.users.Update</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserUpdate</servlet-name>
@@ -202,7 +202,7 @@
     <servlet>
         <description>User deletion servlet.</description>
         <servlet-name>UserDelete</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.users.Delete</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.users.Delete</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserDelete</servlet-name>
@@ -213,7 +213,7 @@
     <servlet>
         <description>Permission list servlet.</description>
         <servlet-name>Permissions</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.permissions.List</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.permissions.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Permissions</servlet-name>
@@ -224,7 +224,7 @@
     <servlet>
         <description>Protocol list servlet.</description>
         <servlet-name>Protocols</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.crud.protocols.List</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.crud.protocols.List</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Protocols</servlet-name>
@@ -235,7 +235,7 @@
     <servlet>
         <description>Tunnel servlet.</description>
         <servlet-name>Tunnel</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.basic.BasicGuacamoleTunnelServlet</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.basic.BasicGuacamoleTunnelServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Tunnel</servlet-name>

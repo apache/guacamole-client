@@ -46,12 +46,12 @@ import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.ldap.properties.LDAPGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.simple.SimpleAuthenticationProvider;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

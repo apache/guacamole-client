@@ -32,7 +32,7 @@
     <servlet>
         <description>Tunnel servlet.</description>
         <servlet-name>Tunnel</servlet-name>
-        <servlet-class>net.sourceforge.guacamole.net.example.DummyGuacamoleTunnelServlet</servlet-class>
+        <servlet-class>org.glyptodon.guacamole.net.example.DummyGuacamoleTunnelServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Tunnel</servlet-name>

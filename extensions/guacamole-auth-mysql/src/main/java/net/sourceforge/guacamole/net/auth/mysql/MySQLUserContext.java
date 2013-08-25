@@ -38,11 +38,11 @@ package net.sourceforge.guacamole.net.auth.mysql;
  * ***** END LICENSE BLOCK ***** */
 
 import com.google.inject.Inject;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.ConnectionGroup;
-import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
-import net.sourceforge.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.User;
+import org.glyptodon.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 
 /**

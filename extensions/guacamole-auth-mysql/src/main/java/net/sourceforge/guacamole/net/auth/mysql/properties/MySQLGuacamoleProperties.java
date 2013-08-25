@@ -35,9 +35,9 @@
  * ***** END LICENSE BLOCK ***** */
 package net.sourceforge.guacamole.net.auth.mysql.properties;
 
-import net.sourceforge.guacamole.properties.BooleanGuacamoleProperty;
-import net.sourceforge.guacamole.properties.IntegerGuacamoleProperty;
-import net.sourceforge.guacamole.properties.StringGuacamoleProperty;
+import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
+import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
+import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Properties used by the MySQL Authentication plugin.

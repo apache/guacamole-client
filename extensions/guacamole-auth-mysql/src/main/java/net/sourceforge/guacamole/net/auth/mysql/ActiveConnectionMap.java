@@ -42,7 +42,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import net.sourceforge.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
 

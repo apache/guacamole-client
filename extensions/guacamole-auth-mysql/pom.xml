@@ -2,7 +2,7 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.sourceforge.guacamole</groupId>
+    <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-mysql</artifactId>
     <packaging>jar</packaging>
     <version>0.8.2</version>
@@ -81,14 +81,14 @@
 
         <!-- Guacamole Java API -->
         <dependency>
-            <groupId>net.sourceforge.guacamole</groupId>
+            <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
             <version>0.8.0</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
         <dependency>
-            <groupId>net.sourceforge.guacamole</groupId>
+            <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
             <version>0.8.1</version>
         </dependency>
@@ -127,15 +127,5 @@
             <version>1.0</version>
         </dependency>
     </dependencies>
-
-    <repositories>
-        
-        <!-- Central Guacamole repository -->
-        <repository>
-            <id>guac-dev</id>
-            <url>http://guac-dev.org/repo</url>
-        </repository>
-        
-    </repositories>
 
 </project>

@@ -45,11 +45,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleClientException;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.GuacamoleSecurityException;
-import net.sourceforge.guacamole.net.auth.Directory;
-import net.sourceforge.guacamole.net.auth.User;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.User;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
@@ -66,11 +66,11 @@ import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionGroupPermission;
-import net.sourceforge.guacamole.net.auth.permission.ConnectionPermission;
-import net.sourceforge.guacamole.net.auth.permission.Permission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
-import net.sourceforge.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.UserPermission;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -145,7 +145,7 @@ public class UserDirectory implements Directory<String, User> {
 
     @Transactional
     @Override
-    public net.sourceforge.guacamole.net.auth.User get(String identifier)
+    public org.glyptodon.guacamole.net.auth.User get(String identifier)
             throws GuacamoleException {
 
         // Get user
@@ -170,7 +170,7 @@ public class UserDirectory implements Directory<String, User> {
 
     @Override
     @Transactional
-    public void add(net.sourceforge.guacamole.net.auth.User object)
+    public void add(org.glyptodon.guacamole.net.auth.User object)
             throws GuacamoleException {
 
         String username = object.getUsername().trim();
@@ -663,7 +663,7 @@ public class UserDirectory implements Directory<String, User> {
 
     @Override
     @Transactional
-    public void update(net.sourceforge.guacamole.net.auth.User object)
+    public void update(org.glyptodon.guacamole.net.auth.User object)
             throws GuacamoleException {
 
         // If user not actually from this auth provider, we can't handle updated

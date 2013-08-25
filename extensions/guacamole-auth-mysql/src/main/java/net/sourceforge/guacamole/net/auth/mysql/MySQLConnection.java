@@ -41,13 +41,13 @@ import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.net.auth.AbstractConnection;
-import net.sourceforge.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.auth.AbstractConnection;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
-import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
-import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * A MySQL based implementation of the Connection object.

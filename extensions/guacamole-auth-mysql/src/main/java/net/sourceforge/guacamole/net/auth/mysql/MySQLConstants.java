@@ -1,9 +1,9 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import net.sourceforge.guacamole.net.auth.ConnectionGroup;
-import net.sourceforge.guacamole.net.auth.permission.ObjectPermission;
-import net.sourceforge.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1

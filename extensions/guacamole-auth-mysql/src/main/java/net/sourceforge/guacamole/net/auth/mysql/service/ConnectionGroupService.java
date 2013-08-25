@@ -43,9 +43,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleClientException;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionMap;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
@@ -55,8 +55,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample.Criteria;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.properties.GuacamoleProperties;
-import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -168,7 +168,7 @@ public class ConnectionGroupService {
             connectionGroup.init(null, null, 
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                    net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL, 
+                    org.glyptodon.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL, 
                     userID);
             
             return connectionGroup;
@@ -307,12 +307,12 @@ public class ConnectionGroupService {
         MySQLConnectionGroup mySQLConnectionGroup = mysqlConnectionGroupProvider.get();
         
         String mySqlType = connectionGroup.getType();
-        net.sourceforge.guacamole.net.auth.ConnectionGroup.Type authType;
+        org.glyptodon.guacamole.net.auth.ConnectionGroup.Type authType;
         
         if(mySqlType.equals(MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL))
-            authType = net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL;
+            authType = org.glyptodon.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL;
         else
-            authType = net.sourceforge.guacamole.net.auth.ConnectionGroup.Type.BALANCING;
+            authType = org.glyptodon.guacamole.net.auth.ConnectionGroup.Type.BALANCING;
         
         mySQLConnectionGroup.init(
             connectionGroup.getConnection_group_id(),

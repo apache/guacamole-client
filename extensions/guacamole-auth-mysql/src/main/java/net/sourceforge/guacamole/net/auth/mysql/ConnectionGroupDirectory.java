@@ -39,11 +39,11 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import java.util.Set;
-import net.sourceforge.guacamole.GuacamoleClientException;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.auth.ConnectionGroup;
-import net.sourceforge.guacamole.net.auth.ConnectionGroup.Type;
-import net.sourceforge.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup.Type;
+import org.glyptodon.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;

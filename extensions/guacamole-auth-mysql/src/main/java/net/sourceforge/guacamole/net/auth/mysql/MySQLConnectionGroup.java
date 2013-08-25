@@ -39,15 +39,15 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import net.sourceforge.guacamole.GuacamoleException;
-import net.sourceforge.guacamole.net.GuacamoleSocket;
-import net.sourceforge.guacamole.net.auth.AbstractConnectionGroup;
-import net.sourceforge.guacamole.net.auth.Connection;
-import net.sourceforge.guacamole.net.auth.ConnectionGroup;
-import net.sourceforge.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.auth.AbstractConnectionGroup;
+import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.Directory;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
-import net.sourceforge.guacamole.protocol.GuacamoleClientInformation;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * A MySQL based implementation of the ConnectionGroup object.
