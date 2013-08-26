@@ -10,8 +10,8 @@
     <url>http://guac-dev.org/</url>
 
     <description>
-        The base Java API of the Guacamole project, providing Java support for
-        the Guacamole stack.
+        The Guacamole web application, providing authentication and an HTML5
+        remote desktop client.
     </description>
 
     <!-- All applicable licenses -->
