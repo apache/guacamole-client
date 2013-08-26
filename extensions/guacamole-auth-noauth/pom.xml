@@ -53,19 +53,6 @@
 
     <dependencies>
 
-        <!-- SLF4J - logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jcl</artifactId>
-            <version>1.6.1</version>
-            <scope>runtime</scope>
-        </dependency>
-
         <!-- Guacamole Java API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>

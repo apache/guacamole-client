@@ -42,10 +42,10 @@
             <excludes>
 
                 <!-- Do not include guacamole-common -->
-                <exclude>net.sourceforge.guacamole:guacamole-common</exclude>
+                <exclude>org.glyptodon.guacamole:guacamole-common</exclude>
 
                 <!-- Do not include guacamole-ext -->
-                <exclude>net.sourceforge.guacamole:guacamole-ext</exclude>
+                <exclude>org.glyptodon.guacamole:guacamole-ext</exclude>
 
             </excludes>
         </dependencySet>
