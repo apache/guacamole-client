@@ -9,6 +9,50 @@
     <name>guacamole-ext</name>
     <url>http://guac-dev.org/</url>
 
+    <description>
+        The Java API for extending the main Guacamole web application. This
+        is not needed for authoring a new Guacamole-based web application.
+    </description>
+
+    <!-- All applicable licenses -->
+    <licenses>
+        <license>
+            <name>Mozilla Public License Version 1.1</name>
+            <url>http://www.mozilla.org/MPL/1.1/</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GNU General Public License, version 2</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GNU Lesser General Public License, version 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- Git repository -->
+    <scm>
+        <url>https://github.com/glyptodon/guacamole-client</url>
+        <connection>scm:git:git://github.com/glyptodon/guacamole-client.git</connection>
+    </scm>
+
+    <!-- Developers -->
+    <developers>
+        <developer>
+            <id>mike.jumper</id>
+            <name>Michael Jumper</name>
+            <email>mike.jumper@guac-dev.org</email>
+        </developer>
+        <developer>
+            <id>james.muehlner</id>
+            <name>James Muehlner</name>
+            <email>james.muehlner@guac-dev.org</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

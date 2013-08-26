@@ -9,6 +9,51 @@
     <name>guacamole-common-js</name>
     <url>http://guac-dev.org/</url>
 
+    <description>
+        The base JavaScript API of the Guacamole project, providing JavaScript
+        support for the Guacamole stack, including a full client
+        implementation for the Guacamole protocol.
+    </description>
+
+    <!-- All applicable licenses -->
+    <licenses>
+        <license>
+            <name>Mozilla Public License Version 1.1</name>
+            <url>http://www.mozilla.org/MPL/1.1/</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GNU General Public License, version 2</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>GNU Lesser General Public License, version 2.1</name>
+            <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- Git repository -->
+    <scm>
+        <url>https://github.com/glyptodon/guacamole-client</url>
+        <connection>scm:git:git://github.com/glyptodon/guacamole-client.git</connection>
+    </scm>
+
+    <!-- Developers -->
+    <developers>
+        <developer>
+            <id>mike.jumper</id>
+            <name>Michael Jumper</name>
+            <email>mike.jumper@guac-dev.org</email>
+        </developer>
+        <developer>
+            <id>james.muehlner</id>
+            <name>James Muehlner</name>
+            <email>james.muehlner@guac-dev.org</email>
+        </developer>
+    </developers>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
