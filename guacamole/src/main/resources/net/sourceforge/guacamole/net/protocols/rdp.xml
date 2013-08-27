@@ -30,4 +30,15 @@
     <param name="disable-audio"   type="boolean" title="Disable audio"            value="true"/>
     <param name="enable-printing" type="boolean" title="Enable printing"          value="true"/>
 
+    <param name="security" type="enum" title="Security mode">
+        <option value="">(default)</option>
+        <option value="rdp">RDP encryption</option>
+        <option value="tls">TLS encryption</option>
+        <option value="nla">NLA (Network Level Authentication)</option>
+        <option value="any">Any</option>
+    </param>
+    
+    <param name="disable-auth" type="boolean" title="Disable authentication" value="true"/>
+    <param name="ignore-cert" type="boolean" title="Ignore server certificate" value="true"/>
+    
 </protocol>
