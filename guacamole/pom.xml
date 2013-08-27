@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.7.3</version>
+            <version>0.7.4</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
