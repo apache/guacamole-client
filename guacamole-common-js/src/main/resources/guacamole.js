@@ -222,10 +222,12 @@ Guacamole.Blob = function(mimetype, name) {
 
             var blobs = [];
 
+            /** @ignore */
             this.append = function(data) {
                 blobs.push(new Blob([data], {"type": mimetype}));
             };
 
+            /** @ignore */
             this.getBlob = function() {
                 return new Blob(blobs, {"type": mimetype});
             };

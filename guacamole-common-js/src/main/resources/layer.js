@@ -37,6 +37,7 @@
 
 /**
  * Namespace for all Guacamole JavaScript objects.
+ * @ignore
  * @namespace
  */
 var Guacamole = Guacamole || {};
@@ -557,7 +558,8 @@ Guacamole.Layer = function(width, height) {
     /**
      * Run an arbitrary function as soon as currently pending operations
      * are complete.
-     * 
+     *
+     * @function 
      * @param {function} handler The function to call once all currently
      *                           pending operations are complete.
      * @param {boolean} blocked Whether the task should start blocked.
