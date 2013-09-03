@@ -241,6 +241,20 @@
         <servlet-name>Tunnel</servlet-name>
         <url-pattern>/tunnel</url-pattern>
     </servlet-mapping>
+    
+    <filter>
+        <filter-name>guiceFilter</filter-name>
+        <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>guiceFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+    
+    <listener>
+        <listener-class>org.glyptodon.guacamole.net.basic.rest.RESTServletContextListener</listener-class>
+    </listener>
 
     <mime-mapping>
         <extension>mp3</extension>

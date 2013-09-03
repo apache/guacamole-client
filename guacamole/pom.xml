@@ -110,6 +110,34 @@
             <version>1.6.1</version>
             <scope>runtime</scope>
         </dependency>
+        
+        <!-- Guice - Dependency Injection -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <!-- Guice Servlet -->
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
+            <version>3.0</version>
+        </dependency>
+        
+        <!-- Jersey - JAX-RS Implementation -->
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <!-- Jersey - Guice extension -->
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-guice</artifactId>
+            <version>1.7</version>
+        </dependency> 
 
         <!-- Guacamole Java API -->
         <dependency>
