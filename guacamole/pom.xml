@@ -138,6 +138,20 @@
             <artifactId>jersey-guice</artifactId>
             <version>1.7</version>
         </dependency> 
+        
+        <!-- JSR-250 annotations -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>jsr250-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+        
+        <!-- Apache commons codec library -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.4</version>
+        </dependency>
 
         <!-- Guacamole Java API -->
         <dependency>

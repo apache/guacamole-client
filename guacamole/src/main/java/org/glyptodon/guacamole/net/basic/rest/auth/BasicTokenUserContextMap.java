@@ -1,4 +1,4 @@
-package org.glyptodon.guacamole.net.basic.rest;
+package org.glyptodon.guacamole.net.basic.rest.auth;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -18,27 +18,13 @@ package org.glyptodon.guacamole.net.basic.rest;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.inject.Guice;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import java.util.HashMap;
+import org.glyptodon.guacamole.net.auth.UserContext;
 
 /**
- * A ServletContextListenr to listen for initialization of the servlet context
- * in order to set up the REST services.
+ * A Basic, HashMap-based implementation of the TokenUserContextMap.
  * 
  * @author James Muehlner
  */
-public class RESTServletContextListener implements ServletContextListener {
-
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        Guice.createInjector(
-            new RESTServletModule(), 
-            new RESTModule()
-        );
-    }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {}
-    
-}
+public class BasicTokenUserContextMap extends HashMap<String, UserContext> 
+        implements TokenUserContextMap {}

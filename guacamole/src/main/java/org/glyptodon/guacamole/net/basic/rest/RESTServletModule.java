@@ -18,27 +18,25 @@ package org.glyptodon.guacamole.net.basic.rest;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.inject.Guice;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import com.google.inject.servlet.ServletModule;
+import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.glyptodon.guacamole.net.basic.rest.auth.LoginService;
+import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
 
 /**
- * A ServletContextListenr to listen for initialization of the servlet context
- * in order to set up the REST services.
+ * A Guice Module to set up the servlet mappings for the Guacamole REST API.
  * 
  * @author James Muehlner
  */
-public class RESTServletContextListener implements ServletContextListener {
-
+public class RESTServletModule extends ServletModule {
+    
     @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        Guice.createInjector(
-            new RESTServletModule(), 
-            new RESTModule()
-        );
+    protected void configureServlets() {
+
+        bind(ConnectionService.class);
+        bind(LoginService.class);
+
+        serve("*").with(GuiceContainer.class);
     }
-
-    @Override
-    public void contextDestroyed(ServletContextEvent sce) {}
     
 }
