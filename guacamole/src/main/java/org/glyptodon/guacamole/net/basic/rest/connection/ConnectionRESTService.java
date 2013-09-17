@@ -19,7 +19,6 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
  */
 
 import com.google.inject.Inject;
-import com.google.inject.servlet.RequestScoped;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
@@ -35,7 +34,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.APIError;
-import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 
 /**
  * A REST Service for handling connection CRUD operations.
@@ -47,10 +46,10 @@ import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
 public class ConnectionRESTService {
     
     /**
-     * The map of auth tokens to users for the REST endpoints.
+     * A service for authenticating users from auth tokens.
      */
     @Inject
-    private TokenUserContextMap tokenUserMap;
+    private AuthenticationService authenticationService;
     
     /**
      * A service for managing the REST endpoint Connection objects. 
@@ -60,13 +59,7 @@ public class ConnectionRESTService {
     
     @GET
     public List<Connection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) {
-        UserContext userContext = tokenUserMap.get(authToken);
-       
-        // authentication failed.
-        if(userContext == null)
-            throw new WebApplicationException(
-                Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new APIError("Permission Denied.")).build());
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
             // If the parent connection group is passed in, try to find it.
@@ -107,6 +100,6 @@ public class ConnectionRESTService {
                 Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e).build());
         }
-    }   
-    
+    }
+
 }

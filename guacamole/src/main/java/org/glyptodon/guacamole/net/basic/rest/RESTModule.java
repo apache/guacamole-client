@@ -23,6 +23,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenUserContextMap;
 import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
@@ -64,6 +65,7 @@ public class RESTModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(TokenUserContextMap.class).toInstance(new BasicTokenUserContextMap());
         bind(ConnectionService.class);
+        bind(AuthenticationService.class);
         
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
     }
