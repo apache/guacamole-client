@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 
 @Path("/api/login")
-public class LoginService {
+public class LoginRESTService {
     
     /**
      * The authentication provider used to authenticate this user.
@@ -65,7 +65,7 @@ public class LoginService {
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(LoginService.class);
+    private static final Logger logger = LoggerFactory.getLogger(LoginRESTService.class);
     
     /**
      * Authenticates a user, generates an auth token, associates that auth token
@@ -76,7 +76,6 @@ public class LoginService {
      * @return The auth token for the newly logged-in user.
      */
     @POST
-    @Path("/")
     public String login(@QueryParam("username") String username,
             @QueryParam("password") String password) {
         

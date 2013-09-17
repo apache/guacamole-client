@@ -129,14 +129,14 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>1.7</version>
+            <version>1.17.1</version>
         </dependency>
 
         <!-- Jersey - Guice extension -->
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-guice</artifactId>
-            <version>1.7</version>
+            <version>1.17.1</version>
         </dependency> 
         
         <!-- JSR-250 annotations -->
@@ -152,6 +152,13 @@
             <artifactId>commons-codec</artifactId>
             <version>1.4</version>
         </dependency>
+        
+        <!-- Jackson for JSON support -->
+	<dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.17.1</version>
+	</dependency>
 
         <!-- Guacamole Java API -->
         <dependency>

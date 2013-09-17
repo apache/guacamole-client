@@ -1,5 +1,9 @@
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.glyptodon.guacamole.GuacamoleException;
+
 /*
  *  Guacamole - Clientless Remote Desktop
  *  Copyright (C) 2010  Michael Jumper
@@ -18,48 +22,31 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import com.google.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
-
 /**
- * A REST Service for handling connection CRUD operations.
+ * A service for performing useful manipulations on REST Connections.
  * 
  * @author James Muehlner
  */
-@Path("/api/connection")
 public class ConnectionService {
     
     /**
-     * The map of auth tokens to users for the REST endpoints.
+     * Converts a list of org.glyptodon.guacamole.net.auth.Connection to
+     * Connection objects for exposure with the REST endpoints.
+     * 
+     * @param connections The org.glyptodon.guacamole.net.auth.Connection to
+     *                    convert for REST endpoint use.
+     * @return A List of Connection objects for use with the REST endpoint.
+     * @throws GuacamoleException If an error occurs while converting the 
+     *                            connections.
      */
-    @Inject
-    private TokenUserContextMap tokenUserMap;
-    
-    @Path("/")
-    @GET
-    public String getConnections(@QueryParam("token") String authToken) {
-        UserContext userContext = tokenUserMap.get(authToken);
-       
-        // authentication failed.
-        if(userContext == null)
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+    public List<Connection> convertConnectionList(List<? extends org.glyptodon.guacamole.net.auth.Connection> connections) 
+            throws GuacamoleException {
+        List<Connection> restConnections = new ArrayList<Connection>();
         
-        try {
-            //TODO: Make this work for realzies
-            return userContext.getRootConnectionGroup().getConnectionDirectory().getIdentifiers().toString();
-        } catch(GuacamoleSecurityException e) {
-            throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
-        } catch(GuacamoleException e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+        for(org.glyptodon.guacamole.net.auth.Connection connection : connections) {
+            restConnections.add(new Connection(connection));
         }
-    }   
-    
+            
+        return restConnections;
+    }
 }

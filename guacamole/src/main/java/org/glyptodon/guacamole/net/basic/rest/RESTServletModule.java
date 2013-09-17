@@ -18,10 +18,12 @@ package org.glyptodon.guacamole.net.basic.rest;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
-import org.glyptodon.guacamole.net.basic.rest.auth.LoginService;
-import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
+import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.glyptodon.guacamole.net.basic.rest.auth.LoginRESTService;
+import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 
 /**
  * A Guice Module to set up the servlet mappings for the Guacamole REST API.
@@ -32,11 +34,15 @@ public class RESTServletModule extends ServletModule {
     
     @Override
     protected void configureServlets() {
-
-        bind(ConnectionService.class);
-        bind(LoginService.class);
-
-        serve("*").with(GuiceContainer.class);
+        
+        // Set up the API endpoints
+        bind(ConnectionRESTService.class);
+        bind(LoginRESTService.class);
+        
+        // Set up the servlet and JSON mappings
+        bind(GuiceContainer.class);
+        bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
+        serve("/*").with(GuiceContainer.class);
     }
     
 }
