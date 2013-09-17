@@ -20,6 +20,7 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
@@ -28,7 +29,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  * 
  * @author James Muehlner
  */
-public class Connection {
+public class APIConnection {
 
     /**
      * The name of this connection.
@@ -51,17 +52,17 @@ public class Connection {
     private List<? extends ConnectionRecord> history;
     
     /**
-     * Create an empty Connection.
+     * Create an empty APIConnection.
      */
-    public Connection() {}
+    public APIConnection() {}
     
     /**
-     * Create a Connection from a org.glyptodon.guacamole.net.auth.Connection.
-     * @param connection The connection to create this Connection from.
+     * Create an APIConnection from a Connection record.
+     * @param connection The connection to create this APIConnection from.
      * @throws GuacamoleException If a problem is encountered while
-     *                            instantiating this new Connection.
+     *                            instantiating this new APIConnection.
      */
-    public Connection(org.glyptodon.guacamole.net.auth.Connection connection) 
+    public APIConnection(Connection connection) 
             throws GuacamoleException {
         this.name = connection.getName();
         this.identifier = connection.getIdentifier();

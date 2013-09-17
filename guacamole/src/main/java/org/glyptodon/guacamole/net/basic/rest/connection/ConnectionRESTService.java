@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -52,13 +54,23 @@ public class ConnectionRESTService {
     private AuthenticationService authenticationService;
     
     /**
-     * A service for managing the REST endpoint Connection objects. 
+     * A service for managing the REST endpoint APIConnection objects. 
      */
     @Inject
     private ConnectionService connectionService;
     
+    /**
+     * Gets a list of connections with the given ConnectionGroup parentID.
+     * If no parentID is provided, returns the connections from the root group.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param parentID The ID of the ConnectionGroup the connections
+     *                 belong to. If null, the root connection group will be used.
+     * @return The connection list.
+     */
     @GET
-    public List<Connection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) {
+    public List<APIConnection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
@@ -78,12 +90,11 @@ public class ConnectionRESTService {
                     .entity(new APIError("No ConnectionGroup found with the provided parentID."))
                     .build());
             
-            Directory<String, org.glyptodon.guacamole.net.auth.Connection> connectionDirectory = 
+            Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
             
             // Get the list of connection names
-            List<org.glyptodon.guacamole.net.auth.Connection> connections 
-                    = new ArrayList<org.glyptodon.guacamole.net.auth.Connection>();
+            List<Connection> connections = new ArrayList<Connection>();
             Iterable<String> identifiers = connectionDirectory.getIdentifiers();
             
             // Get the connection for each name
@@ -91,6 +102,47 @@ public class ConnectionRESTService {
                 connections.add(connectionDirectory.get(identifier));
             
             return connectionService.convertConnectionList(connections);
+        } catch(GuacamoleSecurityException e) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new APIError("Permission Denied.")).build());
+        } catch(GuacamoleException e) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e).build());
+        }
+    }
+    
+    /**
+     * Gets an individual connection.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param connectionID The ID of the APIConnection..
+     * @return The connection.
+     */
+    @GET
+    @Path("/{connectionID}")
+    public APIConnection getConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        try {
+            
+            // Get the connection directory
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, Connection> connectionDirectory =
+                    rootGroup.getConnectionDirectory();
+            
+            // Get the connection
+            Connection connection = connectionDirectory.get(connectionID);
+            
+            if(connection == null)
+                throw new WebApplicationException(
+                    Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new APIError("No Connection found with the provided ID."))
+                    .build());
+            
+            return new APIConnection(connection);
         } catch(GuacamoleSecurityException e) {
             throw new WebApplicationException(
                 Response.status(Response.Status.UNAUTHORIZED)

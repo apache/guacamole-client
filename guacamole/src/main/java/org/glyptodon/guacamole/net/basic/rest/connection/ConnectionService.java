@@ -30,21 +30,21 @@ import org.glyptodon.guacamole.GuacamoleException;
 public class ConnectionService {
     
     /**
-     * Converts a list of org.glyptodon.guacamole.net.auth.Connection to
-     * Connection objects for exposure with the REST endpoints.
+     * Converts a list of org.glyptodon.guacamole.net.auth.APIConnection to
+     * APIConnection objects for exposure with the REST endpoints.
      * 
-     * @param connections The org.glyptodon.guacamole.net.auth.Connection to
+     * @param connections The org.glyptodon.guacamole.net.auth.APIConnection to
      *                    convert for REST endpoint use.
-     * @return A List of Connection objects for use with the REST endpoint.
+     * @return A List of APIConnection objects for use with the REST endpoint.
      * @throws GuacamoleException If an error occurs while converting the 
      *                            connections.
      */
-    public List<Connection> convertConnectionList(List<? extends org.glyptodon.guacamole.net.auth.Connection> connections) 
+    public List<APIConnection> convertConnectionList(List<? extends org.glyptodon.guacamole.net.auth.Connection> connections) 
             throws GuacamoleException {
-        List<Connection> restConnections = new ArrayList<Connection>();
+        List<APIConnection> restConnections = new ArrayList<APIConnection>();
         
         for(org.glyptodon.guacamole.net.auth.Connection connection : connections) {
-            restConnections.add(new Connection(connection));
+            restConnections.add(new APIConnection(connection));
         }
             
         return restConnections;
