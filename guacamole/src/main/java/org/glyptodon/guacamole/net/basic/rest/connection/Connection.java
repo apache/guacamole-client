@@ -69,34 +69,66 @@ public class Connection {
         this.history = connection.getHistory();
     }
 
+    /**
+     * Get the name of this connection.
+     * @return The name of this connection.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Set the name of this connection.
+     * @param name The name of this connection.
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Get the identifier of this connection.
+     * @return The identifier of this connection.
+     */
     public String getIdentifier() {
         return identifier;
     }
-
+    
+    /**
+     * Set the identifier of this connection.
+     * @param identifier The identifier of this connection.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Get the configuration for this connection.
+     * @return The configuration for this connection.
+     */
     public GuacamoleConfiguration getConfiguration() {
         return configuration;
     }
-
+    
+    /**
+     * Set the configuration for this connection.
+     * @param configuration The configuration for this connection.
+     */
     public void setConfiguration(GuacamoleConfiguration configuration) {
         this.configuration = configuration;
     }
 
+    /**
+     * Get the history records for this connection.
+     * @return The history records for this connection.
+     */
     public List<? extends ConnectionRecord> getHistory() {
         return history;
     }
 
+    /**
+     * Set the history records for this connection.
+     * @param history The history records for this connection.
+     */
     public void setHistory(List<? extends ConnectionRecord> history) {
         this.history = history;
     }

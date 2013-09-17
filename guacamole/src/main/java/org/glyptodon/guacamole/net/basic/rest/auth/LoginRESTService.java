@@ -1,16 +1,20 @@
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
+import java.util.HashMap;
+import java.util.Map;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.rest.RESTModule;
+import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 
 @Path("/api/login")
+@Produces(MediaType.APPLICATION_JSON)
 public class LoginRESTService {
     
     /**
@@ -76,7 +81,7 @@ public class LoginRESTService {
      * @return The auth token for the newly logged-in user.
      */
     @POST
-    public String login(@QueryParam("username") String username,
+    public APIAuthToken login(@QueryParam("username") String username,
             @QueryParam("password") String password) {
         
         Credentials credentials = new Credentials();
@@ -89,18 +94,21 @@ public class LoginRESTService {
             userContext = authProvider.getUserContext(credentials);
         } catch(GuacamoleException e) {
             logger.error("Exception caught while authenticating user.", e);
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build());
         }
         
         // authentication failed.
         if(userContext == null)
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new APIError("Permission Denied.")).build());
         
         String authToken = authTokenGenerator.getToken();
         
         tokenUserMap.put(authToken, userContext);
         
-        return authToken;
+        return new APIAuthToken(authToken);
     }
     
 }

@@ -43,7 +43,7 @@ import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
  * @author James Muehlner
  */
 @Path("/api/connection")
-@RequestScoped
+@Produces(MediaType.APPLICATION_JSON)
 public class ConnectionRESTService {
     
     /**
@@ -59,14 +59,14 @@ public class ConnectionRESTService {
     private ConnectionService connectionService;
     
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public List<Connection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) {
         UserContext userContext = tokenUserMap.get(authToken);
        
         // authentication failed.
         if(userContext == null)
-            throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        
+            throw new WebApplicationException(
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new APIError("Permission Denied.")).build());
         
         try {
             // If the parent connection group is passed in, try to find it.
@@ -99,9 +99,13 @@ public class ConnectionRESTService {
             
             return connectionService.convertConnectionList(connections);
         } catch(GuacamoleSecurityException e) {
-            throw new WebApplicationException(e, Response.Status.UNAUTHORIZED);
+            throw new WebApplicationException(
+                Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new APIError("Permission Denied.")).build());
         } catch(GuacamoleException e) {
-            throw new WebApplicationException(e, Response.Status.INTERNAL_SERVER_ERROR);
+            throw new WebApplicationException(
+                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e).build());
         }
     }   
     
