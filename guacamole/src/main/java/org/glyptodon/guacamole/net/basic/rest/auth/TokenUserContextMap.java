@@ -18,7 +18,6 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.util.Map;
 import org.glyptodon.guacamole.net.auth.UserContext;
 
 /**
@@ -27,4 +26,24 @@ import org.glyptodon.guacamole.net.auth.UserContext;
  * 
  * @author James Muehlner
  */
-public interface TokenUserContextMap extends Map<String, UserContext> {}
+public interface TokenUserContextMap {
+    
+    /**
+     * Registers that a user has just logged in with the specified authToken and
+     * UserContext.
+     * 
+     * @param authToken The authentication token for the logged in user.
+     * @param userContext The UserContext for the logged in user.
+     */
+    public void put(String authToken, UserContext userContext);
+    
+    /**
+     * Get the UserContext for a logged in user. If the auth token does not
+     * represent a user who is currently logged in, returns null. 
+     * 
+     * @param authToken The authentication token for the logged in user.
+     * @return The UserContext for the given auth token, if the auth token
+     *         represents a currently logged in user, null otherwise.
+     */
+    public UserContext get(String authToken);
+}
