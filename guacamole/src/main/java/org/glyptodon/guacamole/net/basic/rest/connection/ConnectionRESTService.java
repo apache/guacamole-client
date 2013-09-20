@@ -21,14 +21,13 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -36,9 +35,10 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A REST Service for handling connection CRUD operations.
@@ -48,6 +48,11 @@ import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 @Path("/api/connection")
 @Produces(MediaType.APPLICATION_JSON)
 public class ConnectionRESTService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionRESTService.class);
     
     /**
      * A service for authenticating users from auth tokens.
@@ -105,8 +110,9 @@ public class ConnectionRESTService {
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error.");
+                    "Unexpected server error. " + e.getMessage());
         }
     }
     
@@ -115,7 +121,7 @@ public class ConnectionRESTService {
      * 
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
-     * @param connectionID The ID of the APIConnection..
+     * @param connectionID The ID of the Connection..
      * @return The connection.
      */
     @GET
@@ -140,8 +146,43 @@ public class ConnectionRESTService {
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         } catch(GuacamoleException e) {
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error.");
+            logger.error("Unexpected GuacamoleException caught while getting a connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
+                    "Unexpected server error. " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Deletes an individual connection.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param connectionID The ID of the Connection.
+     */
+    @DELETE
+    @Path("/{connectionID}")
+    public void deleteConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        try {
+            // Get the connection directory
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, Connection> connectionDirectory =
+                    rootGroup.getConnectionDirectory();
+            
+            // Make sure the connection is there before trying to delete
+            if(connectionDirectory.get(connectionID) == null)
+                throw new HTTPException(Status.BAD_REQUEST, 
+                        "No Connection found with the provided ID.");
+            
+            // Delete the connection
+            connectionDirectory.remove(connectionID);
+        } catch(GuacamoleSecurityException e) {
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+        } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while deleting a connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
+                    "Unexpected server error. " + e.getMessage());
         }
     }
 
