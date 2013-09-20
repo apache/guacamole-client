@@ -52,7 +52,7 @@ public class BasicTokenUserContextMap implements TokenUserContextMap {
     private Map<String, UserContext> userContextMap = new HashMap<String, UserContext>();
     
     /**
-     * The session timeout configuration for an API session.
+     * The session timeout configuration for an API session, in milliseconds.
      */
     private final long SESSION_TIMEOUT;
     
@@ -62,14 +62,17 @@ public class BasicTokenUserContextMap implements TokenUserContextMap {
     public BasicTokenUserContextMap() {
         
         // Set up the SESSION_TIMEOUT value, with a one hour default.
-        long sessionTimeoutValue = 3600000l;
+        long sessionTimeoutValue;
         try {
             sessionTimeoutValue = GuacamoleProperties.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 3600000l);
-        } catch (GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while reading API_SESSION_TIMEOUT property.", e);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while reading API_SESSION_TIMEOUT property. Defaulting to 1 hour.", e);
+            sessionTimeoutValue = 3600000l;
         }
         
         SESSION_TIMEOUT = sessionTimeoutValue;
+        
     }
     
     /**
