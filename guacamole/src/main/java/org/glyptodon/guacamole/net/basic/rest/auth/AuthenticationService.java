@@ -20,9 +20,9 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.rest.APIError;
+import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 
 /**
  * A service for performing authentication checks in REST endpoints.
@@ -54,9 +54,7 @@ public class AuthenticationService {
        
         // Authentication failed.
         if(userContext == null)
-            throw new WebApplicationException(
-                Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new APIError("Permission Denied.")).build());
+            throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         
         return userContext;
     }

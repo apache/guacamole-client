@@ -1,8 +1,6 @@
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -10,11 +8,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.APIError;
+import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,15 +94,13 @@ public class LoginRESTService {
             userContext = authProvider.getUserContext(credentials);
         } catch(GuacamoleException e) {
             logger.error("Exception caught while authenticating user.", e);
-            throw new WebApplicationException(
-                Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e).build());
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
+                    "Unexpected server error.");
         }
         
         // authentication failed.
         if(userContext == null)
-            throw new WebApplicationException(
-                Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new APIError("Permission Denied.")).build());
+            throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         
         String authToken = authTokenGenerator.getToken();
         

@@ -29,6 +29,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -36,6 +37,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.APIError;
+import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 
 /**
@@ -85,10 +87,8 @@ public class ConnectionRESTService {
             }
             
             if(parentConnectionGroup == null)
-                throw new WebApplicationException(
-                    Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new APIError("No ConnectionGroup found with the provided parentID."))
-                    .build());
+                throw new HTTPException(Status.BAD_REQUEST,
+                        "No ConnectionGroup found with the provided parentID.");
             
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
@@ -103,13 +103,10 @@ public class ConnectionRESTService {
             
             return connectionService.convertConnectionList(connections);
         } catch(GuacamoleSecurityException e) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new APIError("Permission Denied.")).build());
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         } catch(GuacamoleException e) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e).build());
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
+                    "Unexpected server error.");
         }
     }
     
@@ -127,7 +124,6 @@ public class ConnectionRESTService {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
-            
             // Get the connection directory
             ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
             Directory<String, Connection> connectionDirectory =
@@ -137,20 +133,15 @@ public class ConnectionRESTService {
             Connection connection = connectionDirectory.get(connectionID);
             
             if(connection == null)
-                throw new WebApplicationException(
-                    Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new APIError("No Connection found with the provided ID."))
-                    .build());
+                throw new HTTPException(Status.BAD_REQUEST, 
+                        "No Connection found with the provided ID.");
             
             return new APIConnection(connection);
         } catch(GuacamoleSecurityException e) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new APIError("Permission Denied.")).build());
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         } catch(GuacamoleException e) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e).build());
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
+                    "Unexpected server error.");
         }
     }
 

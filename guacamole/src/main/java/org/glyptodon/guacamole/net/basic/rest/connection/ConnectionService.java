@@ -3,6 +3,7 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 import java.util.ArrayList;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Connection;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -30,20 +31,19 @@ import org.glyptodon.guacamole.GuacamoleException;
 public class ConnectionService {
     
     /**
-     * Converts a list of org.glyptodon.guacamole.net.auth.APIConnection to
-     * APIConnection objects for exposure with the REST endpoints.
+     * Converts a list of Connection to a list of APIConnection objects for 
+     * exposing with the REST endpoints.
      * 
-     * @param connections The org.glyptodon.guacamole.net.auth.APIConnection to
-     *                    convert for REST endpoint use.
+     * @param connections The Connection to convert for REST endpoint use.
      * @return A List of APIConnection objects for use with the REST endpoint.
      * @throws GuacamoleException If an error occurs while converting the 
      *                            connections.
      */
-    public List<APIConnection> convertConnectionList(List<? extends org.glyptodon.guacamole.net.auth.Connection> connections) 
+    public List<APIConnection> convertConnectionList(List<? extends Connection> connections) 
             throws GuacamoleException {
         List<APIConnection> restConnections = new ArrayList<APIConnection>();
         
-        for(org.glyptodon.guacamole.net.auth.Connection connection : connections) {
+        for(Connection connection : connections) {
             restConnections.add(new APIConnection(connection));
         }
             
