@@ -61,9 +61,6 @@ public class BasicTokenUserContextMap implements TokenUserContextMap {
      */
     public BasicTokenUserContextMap() {
         
-        // Set up the authToken => userContext hashmap
-        super();
-        
         // Set up the SESSION_TIMEOUT value, with a one hour default.
         long sessionTimeoutValue = 3600000l;
         try {
