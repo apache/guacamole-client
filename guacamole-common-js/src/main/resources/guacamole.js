@@ -298,6 +298,45 @@ Guacamole.Blob = function(mimetype, name) {
 
 
 /**
+ * Abstract stream which can receive data.
+ * 
+ * @constructor
+ * @param {Guacamole.Client} client The client owning this stream.
+ * @param {Number} index The index of this stream.
+ */
+Guacamole.OutputStream = function(client, index) {
+
+    /**
+     * Reference to this stream.
+     * @private
+     */
+    var guac_stream = this;
+
+    /**
+     * The index of this stream.
+     * @type Number
+     */
+    this.index = index;
+
+    /**
+     * Writes the given base64-encoded data to this stream as a blob.
+     * 
+     * @param {String} data The base64-encoded data to send.
+     */
+    this.write = function(data) {
+        client.sendBlob(guac_stream.index, data);
+    };
+
+    /**
+     * Closes this stream.
+     */
+    this.close = function() {
+        client.endStream(guac_stream.index);
+    };
+
+};
+
+/**
  * Guacamole protocol client. Given a display element and {@link Guacamole.Tunnel},
  * automatically handles incoming and outgoing Guacamole instructions via the
  * provided tunnel, updating the display using one or more canvas elements.
@@ -578,6 +617,20 @@ Guacamole.Client = function(tunnel) {
             return;
 
         tunnel.sendMessage("end", index);
+    };
+
+    /**
+     * Opens a new file for writing, having the given index, mimetype and
+     * filename.
+     * 
+     * @param {Number} index The index of the file to write to. This index must
+     *                       be unused.
+     * @param {String} mimetype The mimetype of the file being sent.
+     * @param {String} filename The filename of the file being sent.
+     */
+    this.createFileStream = function(index, mimetype, filename) {
+        guac_client.beginFileStream(index, mimetype, filename);
+        return new Guacamole.OutputStream(guac_client, index);
     };
 
     /**

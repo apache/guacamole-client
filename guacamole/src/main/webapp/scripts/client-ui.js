@@ -1088,7 +1088,7 @@ GuacUI.Client.attach = function(guac) {
         reader.onloadend = function() {
 
             // Open file for writing
-            GuacUI.Client.attachedClient.beginFileStream(index, file.type, file.name);
+            var stream = GuacUI.Client.attachedClient.createFileStream(index, file.type, file.name);
 
             var bytes = new Uint8Array(reader.result);
             var offset = 0;
@@ -1100,14 +1100,14 @@ GuacUI.Client.attach = function(guac) {
                 var base64 = _get_base64(slice);
 
                 // "Write" packet
-                GuacUI.Client.attachedClient.sendBlob(index, base64);
+                stream.write(base64);
 
                 // Advance to next packet, or close if EOF
                 offset += 4096;
                 if (offset < bytes.length)
                     window.setTimeout(continueUpload, 500);
                 else
-                    GuacUI.Client.attachedClient.endStream(index);
+                    stream.close();
 
             };
 
