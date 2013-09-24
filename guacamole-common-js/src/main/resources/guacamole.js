@@ -1420,12 +1420,37 @@ Guacamole.Client = function(tunnel) {
 
         "video": function(parameters) {
 
-            var layer = getLayer(parseInt(parameters[0]));
-            var mimetype = parameters[1];
-            var duration = parseFloat(parameters[2]);
-            var data = parameters[3];
+            var stream_index = parseInt(parameters[0]);
 
-            layer.play(mimetype, duration, "data:" + mimetype + ";base64," + data);
+            // Create stream 
+            var stream = streams[stream_index] =
+                    new Guacamole.InputStream(mimetype);
+
+            var layer = getLayer(parseInt(parameters[1]));
+            var mimetype = parameters[2];
+            var duration = parseFloat(parameters[3]);
+
+            // Play video once closed
+            stream.onclose = function() {
+
+                // Read data from blob from stream
+                var reader = new FileReader();
+                reader.onload = function() {
+
+                    var binary = "";
+                    var bytes = new Uint8Array(reader.result);
+
+                    // Produce binary string from bytes in buffer
+                    for (var i=0; i<bytes.byteLength; i++)
+                        binary += String.fromCharCode(bytes[i]);
+
+                    // Play video
+                    layer.play(mimetype, duration, "data:" + mimetype + ";base64," + window.btoa(binary));
+
+                };
+                reader.readAsArrayBuffer(stream.getBlob());
+
+            };
 
         }
 
