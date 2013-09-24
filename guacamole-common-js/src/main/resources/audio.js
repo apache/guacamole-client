@@ -68,7 +68,7 @@ Guacamole.AudioChannel = function() {
      * @param {String} mimetype The mimetype of the data provided.
      * @param {Number} duration The duration of the data provided, in
      *                          milliseconds.
-     * @param {String} data The base64-encoded data to play.
+     * @param {Blob} data The blob data to play.
      */
     this.play = function(mimetype, duration, data) {
 
@@ -130,7 +130,7 @@ Guacamole.AudioChannel.getTimestamp = function() {
  * @constructor
  * 
  * @param {String} mimetype The mimetype of the data contained by this packet.
- * @param {String} data The base64-encoded sound data contained by this packet.
+ * @param {Blob} data The blob of sound data contained by this packet.
  */
 Guacamole.AudioChannel.Packet = function(mimetype, data) {
 
@@ -154,19 +154,15 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
             readyBuffer = buffer;
         };
 
-        // Convert to ArrayBuffer
-        var binary = window.atob(data);
-        var arrayBuffer = new ArrayBuffer(binary.length);
-        var bufferView = new Uint8Array(arrayBuffer);
-
-        for (var i=0; i<binary.length; i++)
-            bufferView[i] = binary.charCodeAt(i);
-
-        // Get context and start decoding
-        Guacamole.AudioChannel.context.decodeAudioData(
-            arrayBuffer,
-            function(buffer) { handleReady(buffer); }
-        );
+        // Read data and start decoding
+        var reader = new FileReader();
+        reader.onload = function() {
+            Guacamole.AudioChannel.context.decodeAudioData(
+                reader.result,
+                function(buffer) { handleReady(buffer); }
+            );
+        };
+        reader.readAsArrayBuffer(data);
 
         // Set up buffer source
         var source = Guacamole.AudioChannel.context.createBufferSource();
@@ -198,13 +194,44 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
 
     else {
 
-        // Build data URI
-        var data_uri = "data:" + mimetype + ";base64," + data;
-       
+        var play_on_load = false;
+
         // Create audio element to house and play the data
         var audio = new Audio();
-        audio.src = data_uri;
-      
+
+        // Read data and start decoding
+        var reader = new FileReader();
+        reader.onload = function() {
+
+            var binary = "";
+            var bytes = new Uint8Array(reader.result);
+
+            // Produce binary string from bytes in buffer
+            for (var i=0; i<bytes.byteLength; i++)
+                binary += String.fromCharCode(bytes[i]);
+
+            // Convert to data URI 
+            audio.src = "data:" + mimetype + ";base64," + window.btoa(binary);
+
+            // Play if play was attempted but packet wasn't loaded yet
+            if (play_on_load)
+                audio.play();
+
+        };
+        reader.readAsArrayBuffer(data);
+   
+        function play() {
+
+            // If audio data is ready, play now
+            if (audio.src)
+                audio.play();
+
+            // Otherwise, play when loaded
+            else
+                play_on_load = true;
+
+        }
+        
         /** @ignore */
         this.play = function(when) {
             
@@ -214,13 +241,11 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
             
             // Play now if too late
             if (delay < 0)
-                audio.play();
+                play();
 
             // Otherwise, schedule later playback
             else
-                window.setTimeout(function() {
-                    audio.play();
-                }, delay);
+                window.setTimeout(play, delay);
 
         };
 
