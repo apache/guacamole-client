@@ -296,6 +296,57 @@ Guacamole.Blob = function(mimetype, name) {
 
 };
 
+/**
+ * Integer pool which returns consistently increasing integers while integers
+ * are in use, and previously-used integers when possible.
+ * @constructor 
+ */
+Guacamole.IntegerPool = function() {
+
+    /**
+     * Reference to this integer pool.
+     */
+    var guac_pool = this;
+
+    /**
+     * Array of available integers.
+     * @type Number[]
+     */
+    var pool = [];
+
+    /**
+     * The next integer to return if no more integers remain.
+     * @type Number
+     */
+    this.next_int = 0;
+
+    /**
+     * Returns the next available integer in the pool. If possible, a previously
+     * used integer will be returned.
+     * 
+     * @return {Number} The next available integer.
+     */
+    this.next = function() {
+
+        // If free'd integers exist, return one of those
+        if (pool.length > 0)
+            return pool.shift();
+
+        // Otherwise, return a new integer
+        return guac_pool.next_int++;
+
+    };
+
+    /**
+     * Frees the given integer, allowing it to be reused.
+     * 
+     * @param {Number} integer The integer to free.
+     */
+    this.free = function(integer) {
+        pool.push(integer);
+    };
+
+};
 
 /**
  * Abstract stream which can receive data.
@@ -447,6 +498,9 @@ Guacamole.Client = function(tunnel) {
 
     // No initial blobs
     var blobs = [];
+
+    // Pool of available streams
+    var stream_indices = new Guacamole.IntegerPool();
 
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
@@ -623,14 +677,28 @@ Guacamole.Client = function(tunnel) {
      * Opens a new file for writing, having the given index, mimetype and
      * filename.
      * 
-     * @param {Number} index The index of the file to write to. This index must
-     *                       be unused.
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
      */
-    this.createFileStream = function(index, mimetype, filename) {
+    this.createFileStream = function(mimetype, filename) {
+
+        // Allocate index
+        var index = stream_indices.next();
+
+        // Create new stream
         guac_client.beginFileStream(index, mimetype, filename);
-        return new Guacamole.OutputStream(guac_client, index);
+        var stream = new Guacamole.OutputStream(guac_client, index);
+
+        // Override close() of stream to automatically free index
+        var old_close = stream.close;
+        stream.close = function() {
+            old_close();
+            stream_indices.free(index);
+        };
+
+        // Return new, overridden stream
+        return stream;
+
     };
 
     /**

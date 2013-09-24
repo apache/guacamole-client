@@ -1078,17 +1078,16 @@ GuacUI.Client.attach = function(guac) {
      * Uploads the given file to the server.
      * 
      * @private
-     * @param {Number} index The index of the stream to upload through.
      * @param {File} file The file to upload.
      */
-    function _upload_file(index, file) {
+    function _upload_file(file) {
 
         // Construct reader for file
         var reader = new FileReader();
         reader.onloadend = function() {
 
             // Open file for writing
-            var stream = GuacUI.Client.attachedClient.createFileStream(index, file.type, file.name);
+            var stream = GuacUI.Client.attachedClient.createFileStream(file.type, file.name);
 
             var bytes = new Uint8Array(reader.result);
             var offset = 0;
@@ -1132,7 +1131,7 @@ GuacUI.Client.attach = function(guac) {
         // Upload each file 
         var files = e.dataTransfer.files;
         for (var i=0; i<files.length; i++)
-            _upload_file(i, files[i]);
+            _upload_file(files[i]);
 
     }, false);
 
