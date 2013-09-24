@@ -1099,11 +1099,11 @@ GuacUI.Client.attach = function(guac) {
     }
 
     // Handle and ignore dragenter/dragover
-    document.body.addEventListener("dragenter", _ignore, false);
-    document.body.addEventListener("dragover", _ignore, false);
+    GuacUI.Client.display.addEventListener("dragenter", _ignore, false);
+    GuacUI.Client.display.addEventListener("dragover", _ignore, false);
 
     // File drop event handler
-    document.body.addEventListener("drop", function(e) {
+    GuacUI.Client.display.addEventListener("drop", function(e) {
       
         e.preventDefault();
         e.stopPropagation();
