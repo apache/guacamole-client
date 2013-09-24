@@ -868,14 +868,13 @@ Guacamole.Client = function(tunnel) {
         "audio": function(parameters) {
 
             var stream_index = parseInt(parameters[0]);
+            var channel = getAudioChannel(parseInt(parameters[1]));
+            var mimetype = parameters[2];
+            var duration = parseFloat(parameters[3]);
 
             // Create stream 
             var stream = streams[stream_index] =
                     new Guacamole.InputStream(mimetype);
-
-            var channel = getAudioChannel(parseInt(parameters[1]));
-            var mimetype = parameters[2];
-            var duration = parseFloat(parameters[3]);
 
             stream.onclose = function() {
                 channel.play(mimetype, duration, stream.getBlob());
@@ -1421,14 +1420,13 @@ Guacamole.Client = function(tunnel) {
         "video": function(parameters) {
 
             var stream_index = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var mimetype = parameters[2];
+            var duration = parseFloat(parameters[3]);
 
             // Create stream 
             var stream = streams[stream_index] =
                     new Guacamole.InputStream(mimetype);
-
-            var layer = getLayer(parseInt(parameters[1]));
-            var mimetype = parameters[2];
-            var duration = parseFloat(parameters[3]);
 
             // Play video once closed
             stream.onclose = function() {
