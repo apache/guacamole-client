@@ -1042,11 +1042,25 @@ GuacUI.Client.attach = function(guac) {
     // Stop detection if press stops
     GuacUI.Client.display.addEventListener('touchend', GuacUI.Client.stopLongPressDetect, true);
 
+    /**
+     * Ignores the given event.
+     * 
+     * @private
+     * @param {Event} e The event to ignore.
+     */
     function _ignore(e) {
         e.preventDefault();
         e.stopPropagation();
     }
 
+    /**
+     * Converts the given bytes to a base64-encoded string.
+     * 
+     * @private
+     * @param {Uint8Array} bytes A Uint8Array which contains the data to be
+     *                           encoded as base64.
+     * @return {String} The base64-encoded string.
+     */
     function _get_base64(bytes) {
 
         var data = "";
@@ -1060,6 +1074,13 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
+    /**
+     * Uploads the given file to the server.
+     * 
+     * @private
+     * @param {Number} index The index of the stream to upload through.
+     * @param {File} file The file to upload.
+     */
     function _upload_file(index, file) {
 
         // Construct reader for file
