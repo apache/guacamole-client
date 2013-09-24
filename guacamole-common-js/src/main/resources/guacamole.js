@@ -534,6 +534,53 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Opens a new file for writing, having the given index, mimetype and
+     * filename.
+     * 
+     * @param {Number} index The index of the file to write to. This index must
+     *                       be unused.
+     * @param {String} mimetype The mimetype of the file being sent.
+     * @param {String} filename The filename of the file being sent.
+     */
+    this.openFile = function(index, mimetype, filename) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        tunnel.sendMessage("file", index, mimetype, filename);
+    };
+
+    /**
+     * Given the index of a file, writes a blob of data to that file.
+     * 
+     * @param {Number} index The index of the file to write to.
+     * @param {String} data Base64-encoded data to write to the file.
+     */
+    this.sendBlob = function(index, data) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        tunnel.sendMessage("blob", index, data);
+    };
+
+    /**
+     * Marks a currently-open file as closed.
+     * 
+     * @param {Number} index The index of the file to close.
+     */
+    this.closeFile = function(index) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        tunnel.sendMessage("end", index);
+    };
+
+    /**
      * Fired whenever the state of this Guacamole.Client changes.
      * 
      * @event

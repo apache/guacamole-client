@@ -1042,5 +1042,79 @@ GuacUI.Client.attach = function(guac) {
     // Stop detection if press stops
     GuacUI.Client.display.addEventListener('touchend', GuacUI.Client.stopLongPressDetect, true);
 
+    function _ignore(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function _get_base64(buffer) {
+
+        var data = "";
+        var bytes = new Uint8Array(buffer);
+
+        // Produce binary string from bytes in buffer
+        for (var i=0; i<bytes.byteLength; i++)
+            data += String.fromCharCode(bytes[i]);
+
+        // Convert to base64
+        return window.btoa(data);
+
+    }
+
+    function _upload_file(index, file) {
+
+        // Construct reader for file
+        var reader = new FileReader();
+        reader.onloadend = function() {
+
+            // Open file for writing
+            GuacUI.Client.attachedClient.openFile(index, file.type, file.name);
+
+            var buffer = reader.result;
+            var offset = 0;
+           
+            function continueUpload() {
+
+                // Encode packet as base64
+                var slice = buffer.slice(offset, offset+4096);
+                var base64 = _get_base64(slice);
+
+                // "Write" packet
+                GuacUI.Client.attachedClient.sendBlob(index, base64);
+
+                // Advance to next packet, or close if EOF
+                offset += 4096;
+                if (offset < buffer.byteLength)
+                    window.setTimeout(continueUpload, 500);
+                else
+                    GuacUI.Client.attachedClient.closeFile(index);
+
+            };
+
+            // Start upload
+            window.setTimeout(continueUpload, 500);
+
+        };
+        reader.readAsArrayBuffer(file);
+
+    }
+
+    // Handle and ignore dragenter/dragover
+    document.body.addEventListener("dragenter", _ignore, false);
+    document.body.addEventListener("dragover", _ignore, false);
+
+    // File drop event handler
+    document.body.addEventListener("drop", function(e) {
+      
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Upload each file 
+        var files = e.dataTransfer.files;
+        for (var i=0; i<files.length; i++)
+            _upload_file(i, files[i]);
+
+    }, false);
+
 };
 
