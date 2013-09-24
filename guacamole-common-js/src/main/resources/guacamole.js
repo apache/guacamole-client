@@ -84,7 +84,7 @@ Guacamole.Parser = function() {
      * this Guacamole.Parser, executing all completed instructions at
      * the beginning of this buffer, if any.
      *
-     * @param {String} packet The instruction data to append.
+     * @param {String} packet The instruction data to receive.
      */
     this.receive = function(packet) {
 
@@ -180,23 +180,22 @@ Guacamole.Parser = function() {
 
 
 /**
- * A blob abstraction used by the Guacamole client to facilitate transfer of
- * files or other binary data.
+ * An input stream abstraction used by the Guacamole client to facilitate
+ * transfer of files or other binary data.
  * 
  * @constructor
- * @param {String} mimetype The mimetype of the data this blob will contain.
- * @param {String} name An arbitrary name for this blob.
+ * @param {String} mimetype The mimetype of the data this stream will receive.
  */
-Guacamole.Blob = function(mimetype, name) {
+Guacamole.InputStream = function(mimetype) {
 
     /**
-     * Reference to this Guacamole.Blob.
+     * Reference to this Guacamole.InputStream.
      * @private
      */
-    var guac_blob = this;
+    var guac_stream = this;
 
     /**
-     * The length of this Guacamole.Blob in bytes.
+     * The length of this Guacamole.InputStream in bytes.
      * @private
      */
     var length = 0;
@@ -205,12 +204,6 @@ Guacamole.Blob = function(mimetype, name) {
      * The mimetype of the data contained within this blob.
      */
     this.mimetype = mimetype;
-
-    /**
-     * The name of this blob. In general, this should be an appropriate
-     * filename.
-     */
-    this.name = name;
 
     // Get blob builder
     var blob_builder;
@@ -235,46 +228,48 @@ Guacamole.Blob = function(mimetype, name) {
         })();
 
     /**
-     * Appends the given ArrayBuffer to this Guacamole.Blob.
+     * Receives the given ArrayBuffer, storing its data within this
+     * Guacamole.InputStream.
      * 
      * @param {ArrayBuffer} buffer An ArrayBuffer containing the data to be
-     *                             appended.
+     *                             received.
      */
-    this.append = function(buffer) {
+    this.receive = function(buffer) {
 
         blob_builder.append(buffer);
         length += buffer.byteLength;
 
         // Call handler, if present
-        if (guac_blob.ondata)
-            guac_blob.ondata(buffer.byteLength);
+        if (guac_stream.onreceive)
+            guac_stream.onreceive(buffer.byteLength);
 
     };
 
     /**
-     * Closes this Guacamole.Blob such that no further data will be written.
+     * Closes this Guacamole.InputStream such that no further data will be
+     * written.
      */
     this.close = function() {
 
         // Call handler, if present
-        if (guac_blob.oncomplete)
-            guac_blob.oncomplete();
+        if (guac_stream.onclose)
+            guac_stream.onclose();
 
         // NOTE: Currently not enforced.
 
     };
 
     /**
-     * Returns the current length of this Guacamole.Blob, in bytes.
-     * @return {Number} The current length of this Guacamole.Blob.
+     * Returns the current length of this Guacamole.InputStream, in bytes.
+     * @return {Number} The current length of this Guacamole.InputStream.
      */
     this.getLength = function() {
         return length;
     };
 
     /**
-     * Returns the contents of this Guacamole.Blob as a Blob.
-     * @return {Blob} The contents of this Guacamole.Blob.
+     * Returns the contents of this Guacamole.InputStream as a Blob.
+     * @return {Blob} The contents of this Guacamole.InputStream.
      */
     this.getBlob = function() {
         return blob_builder.getBlob();
@@ -286,13 +281,13 @@ Guacamole.Blob = function(mimetype, name) {
      * @event
      * @param {Number} length The number of bytes received.
      */
-    this.ondata = null;
+    this.onreceive = null;
 
     /**
-     * Fired once this blob is finished and no further data will be written.
+     * Fired once this stream is finished and no further data will be written.
      * @event
      */
-    this.oncomplete = null;
+    this.onclose = null;
 
 };
 
@@ -496,8 +491,8 @@ Guacamole.Client = function(tunnel) {
     // No initial audio channels 
     var audio_channels = [];
 
-    // No initial blobs
-    var blobs = [];
+    // No initial streams 
+    var streams = [];
 
     // Pool of available streams
     var stream_indices = new Guacamole.IntegerPool();
@@ -745,15 +740,16 @@ Guacamole.Client = function(tunnel) {
     this.onresize = null;
 
     /**
-     * Fired when a blob is created. The blob provided to this event handler
-     * will contain its own event handlers for received data and the close
-     * event.
+     * Fired when a file stream is created. The stream provided to this event
+     * handler will contain its own event handlers for received data and the
+     * close event.
      * 
      * @event
-     * @param {Guacamole.Blob} blob A container for blob data that will receive
-     *                              data from the server.
+     * @param {String} filename The name of the file received.
+     * @param {Guacamole.InputStream} stream A stream that will receive
+     *                                       data from the server.
      */
-    this.onblob = null;
+    this.onfile = null;
 
     // Layers
     function getBufferLayer(index) {
@@ -871,21 +867,28 @@ Guacamole.Client = function(tunnel) {
 
         "audio": function(parameters) {
 
-            var channel = getAudioChannel(parseInt(parameters[0]));
-            var mimetype = parameters[1];
-            var duration = parseFloat(parameters[2]);
-            var data = parameters[3];
+            var stream_index = parseInt(parameters[0]);
 
-            channel.play(mimetype, duration, data);
+            // Create stream 
+            var stream = streams[stream_index] =
+                    new Guacamole.InputStream(mimetype);
+
+            var channel = getAudioChannel(parseInt(parameters[1]));
+            var mimetype = parameters[2];
+            var duration = parseFloat(parameters[3]);
+
+            stream.onclose = function() {
+                channel.play(mimetype, duration, stream.getBlob());
+            };
 
         },
 
         "blob": function(parameters) {
 
-            // Get blob
-            var blob_index = parseInt(parameters[0]);
+            // Get stream 
+            var stream_index = parseInt(parameters[0]);
             var data = parameters[1];
-            var blob = blobs[blob_index];
+            var stream = streams[stream_index];
 
             // Convert to ArrayBuffer
             var binary = window.atob(data);
@@ -896,7 +899,7 @@ Guacamole.Client = function(tunnel) {
                 bufferView[i] = binary.charCodeAt(i);
 
             // Write data
-            blob.append(arrayBuffer);
+            stream.receive(arrayBuffer);
 
         },
 
@@ -1078,27 +1081,28 @@ Guacamole.Client = function(tunnel) {
 
         "end": function(parameters) {
 
-            // Get blob
-            var blob_index = parseInt(parameters[0]);
-            var blob = blobs[blob_index];
+            // Get stream
+            var stream_index = parseInt(parameters[0]);
+            var stream = streams[stream_index];
 
-            // Close blob
-            blob.close();
+            // Close stream 
+            stream.close();
 
         },
 
         "file": function(parameters) {
 
-            var blob_index = parseInt(parameters[0]);
+            var stream_index = parseInt(parameters[0]);
             var mimetype = parameters[1];
             var filename = parameters[2];
 
-            // Create blob
-            var blob = blobs[blob_index] = new Guacamole.Blob(mimetype, filename);
+            // Create stream 
+            var stream = streams[stream_index] =
+                    new Guacamole.InputStream(mimetype);
 
-            // Call handler now that blob is created
-            if (guac_client.onblob)
-                guac_client.onblob(blob);
+            // Call handler now that file stream is created
+            if (guac_client.onfile)
+                guac_client.onfile(filename, stream);
 
         },
 
