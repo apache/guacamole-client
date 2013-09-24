@@ -1098,7 +1098,7 @@ GuacUI.Client.attach = function(guac) {
                 var slice = bytes.subarray(offset, offset+4096);
                 var base64 = _get_base64(slice);
 
-                // "Write" packet
+                // Write packet
                 stream.write(base64);
 
                 // Advance to next packet, or close if EOF
