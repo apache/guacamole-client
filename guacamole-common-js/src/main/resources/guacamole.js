@@ -542,7 +542,7 @@ Guacamole.Client = function(tunnel) {
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
      */
-    this.openFile = function(index, mimetype, filename) {
+    this.beginFileStream = function(index, mimetype, filename) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -567,11 +567,11 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
-     * Marks a currently-open file as closed.
+     * Marks a currently-open stream as complete.
      * 
-     * @param {Number} index The index of the file to close.
+     * @param {Number} index The index of the stream to end.
      */
-    this.closeFile = function(index) {
+    this.endStream = function(index) {
 
         // Do not send requests if not connected
         if (!isConnected())

@@ -1067,7 +1067,7 @@ GuacUI.Client.attach = function(guac) {
         reader.onloadend = function() {
 
             // Open file for writing
-            GuacUI.Client.attachedClient.openFile(index, file.type, file.name);
+            GuacUI.Client.attachedClient.beginFileStream(index, file.type, file.name);
 
             var bytes = new Uint8Array(reader.result);
             var offset = 0;
@@ -1086,7 +1086,7 @@ GuacUI.Client.attach = function(guac) {
                 if (offset < bytes.length)
                     window.setTimeout(continueUpload, 500);
                 else
-                    GuacUI.Client.attachedClient.closeFile(index);
+                    GuacUI.Client.attachedClient.endStream(index);
 
             };
 
