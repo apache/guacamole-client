@@ -1047,10 +1047,9 @@ GuacUI.Client.attach = function(guac) {
         e.stopPropagation();
     }
 
-    function _get_base64(buffer) {
+    function _get_base64(bytes) {
 
         var data = "";
-        var bytes = new Uint8Array(buffer);
 
         // Produce binary string from bytes in buffer
         for (var i=0; i<bytes.byteLength; i++)
@@ -1070,13 +1069,13 @@ GuacUI.Client.attach = function(guac) {
             // Open file for writing
             GuacUI.Client.attachedClient.openFile(index, file.type, file.name);
 
-            var buffer = reader.result;
+            var bytes = new Uint8Array(reader.result);
             var offset = 0;
            
             function continueUpload() {
 
                 // Encode packet as base64
-                var slice = buffer.slice(offset, offset+4096);
+                var slice = bytes.subarray(offset, offset+4096);
                 var base64 = _get_base64(slice);
 
                 // "Write" packet
@@ -1084,7 +1083,7 @@ GuacUI.Client.attach = function(guac) {
 
                 // Advance to next packet, or close if EOF
                 offset += 4096;
-                if (offset < buffer.byteLength)
+                if (offset < bytes.length)
                     window.setTimeout(continueUpload, 500);
                 else
                     GuacUI.Client.attachedClient.closeFile(index);
