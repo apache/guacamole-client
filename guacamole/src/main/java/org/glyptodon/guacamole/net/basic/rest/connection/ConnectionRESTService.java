@@ -21,6 +21,7 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -49,6 +50,7 @@ import org.slf4j.LoggerFactory;
  */
 @Path("/api/connection")
 @Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionRESTService {
 
     /**
