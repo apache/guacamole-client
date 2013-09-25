@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -126,7 +128,8 @@ public class ConnectionRESTService {
      */
     @GET
     @Path("/{connectionID}")
-    public APIConnection getConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) {
+    public APIConnection getConnection(@QueryParam("token") String authToken, 
+            @PathParam("connectionID") String connectionID) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
@@ -157,7 +160,7 @@ public class ConnectionRESTService {
      * 
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
-     * @param connectionID The ID of the Connection.
+     * @param connectionID The ID of the Connection to delete.
      */
     @DELETE
     @Path("/{connectionID}")
@@ -177,6 +180,145 @@ public class ConnectionRESTService {
             
             // Delete the connection
             connectionDirectory.remove(connectionID);
+        } catch(GuacamoleSecurityException e) {
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+        } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while deleting a connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
+                    "Unexpected server error. " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Creates a new connection and returns the identifier of the new connection.
+     * If a parentID is provided, the connection will be created in the
+     * connection group with the parentID. Otherwise, the root connection group
+     * will be used.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param parentID The ID of the ConnectionGroup the connections
+     *                 belong to. If null, the root connection group will be used.
+     * @param connection The connection to create.
+     * @return The identifier of the new connection.
+     */
+    @POST
+    public String createConnection(@QueryParam("token") String authToken, 
+            @QueryParam("parentID") String parentID, APIConnection connection) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        if(connection == null)
+            throw new HTTPException(Status.BAD_REQUEST,
+                    "A connection is required for this request.");
+        
+        try {
+            // If the parent connection group is passed in, try to find it.
+            ConnectionGroup parentConnectionGroup;
+            if(parentID == null)
+                parentConnectionGroup = userContext.getRootConnectionGroup();
+            else {
+                ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+                Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
+                parentConnectionGroup = connectionGroupDirectory.get(parentID);
+            }
+            
+            if(parentConnectionGroup == null)
+                throw new HTTPException(Status.BAD_REQUEST,
+                        "No ConnectionGroup found with the provided parentID.");
+            
+            Directory<String, Connection> connectionDirectory = 
+                    parentConnectionGroup.getConnectionDirectory();
+            
+            // Create the connection
+            connectionDirectory.add(connection);
+            
+            // Return the new connection identifier
+            return connection.getIdentifier();
+        } catch(GuacamoleSecurityException e) {
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+        } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
+                    "Unexpected server error. " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Updates a connection.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param connectionID The ID of the Connection to delete.
+     * @param connection The connection to update.
+     */
+    @POST
+    @Path("/{connectionID}")
+    public void updateConnection(@QueryParam("token") String authToken, 
+            @PathParam("connectionID") String connectionID, APIConnection connection) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        if(connection == null)
+            throw new HTTPException(Status.BAD_REQUEST,
+                    "A connection is required for this request.");
+        
+        try {
+            // Get the connection directory
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, Connection> connectionDirectory =
+                    rootGroup.getConnectionDirectory();
+            
+            // Make sure the connection is there before trying to update
+            if(connectionDirectory.get(connectionID) == null)
+                throw new HTTPException(Status.BAD_REQUEST, 
+                        "No Connection with the provided ID.");
+            
+            // Update the connection
+            connectionDirectory.update(connection);
+        } catch(GuacamoleSecurityException e) {
+                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+        } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
+                    "Unexpected server error. " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Moves an individual connection to a different connection group.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param connectionID The ID of the Connection to delete.
+     * @param parentID The ID of the ConnectionGroup the connections
+     *                 belong to. If null, the root connection group will be used.
+     */
+    @PUT
+    @Path("/{connectionID}")
+    public void moveConnection(@QueryParam("token") String authToken, 
+            @PathParam("connectionID") String connectionID, @QueryParam("parentID") String parentID) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        try {
+            // Get the connection directory
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, Connection> connectionDirectory =
+                    rootGroup.getConnectionDirectory();
+            
+            // Find the new parent connection group
+            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
+            ConnectionGroup parentConnectionGroup = connectionGroupDirectory.get(parentID);
+            
+            if(parentConnectionGroup == null)
+                throw new HTTPException(Status.BAD_REQUEST,
+                        "No ConnectionGroup found with the provided parentID.");
+            
+            // Make sure the connection is there before trying to delete
+            if(connectionDirectory.get(connectionID) == null)
+                throw new HTTPException(Status.BAD_REQUEST, 
+                        "No Connection found with the provided ID.");
+            
+            // Move the connection
+            connectionDirectory.move(connectionID, connectionDirectory);
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
         } catch(GuacamoleException e) {

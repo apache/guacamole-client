@@ -20,8 +20,10 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -29,7 +31,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  * 
  * @author James Muehlner
  */
-public class APIConnection {
+public class APIConnection implements Connection {
 
     /**
      * The name of this connection.
@@ -70,58 +72,36 @@ public class APIConnection {
         this.history = connection.getHistory();
     }
 
-    /**
-     * Get the name of this connection.
-     * @return The name of this connection.
-     */
+    @Override
     public String getName() {
         return name;
     }
 
-    /**
-     * Set the name of this connection.
-     * @param name The name of this connection.
-     */
+    @Override
     public void setName(String name) {
         this.name = name;
     }
-
-    /**
-     * Get the identifier of this connection.
-     * @return The identifier of this connection.
-     */
+    @Override
     public String getIdentifier() {
         return identifier;
     }
     
-    /**
-     * Set the identifier of this connection.
-     * @param identifier The identifier of this connection.
-     */
+    @Override
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    /**
-     * Get the configuration for this connection.
-     * @return The configuration for this connection.
-     */
+    @Override
     public GuacamoleConfiguration getConfiguration() {
         return configuration;
     }
     
-    /**
-     * Set the configuration for this connection.
-     * @param configuration The configuration for this connection.
-     */
+    @Override
     public void setConfiguration(GuacamoleConfiguration configuration) {
         this.configuration = configuration;
     }
 
-    /**
-     * Get the history records for this connection.
-     * @return The history records for this connection.
-     */
+    @Override
     public List<? extends ConnectionRecord> getHistory() {
         return history;
     }
@@ -132,6 +112,11 @@ public class APIConnection {
      */
     public void setHistory(List<? extends ConnectionRecord> history) {
         this.history = history;
+    }
+
+    @Override
+    public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
+        throw new UnsupportedOperationException("Not supported.");
     }
     
 }
