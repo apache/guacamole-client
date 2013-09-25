@@ -32,6 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -96,8 +97,7 @@ public class ConnectionRESTService {
             }
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.BAD_REQUEST,
-                        "No ConnectionGroup found with the provided parentID.");
+                throw new GuacamoleClientException("No ConnectionGroup found with the provided parentID.");
             
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
@@ -112,11 +112,12 @@ public class ConnectionRESTService {
             
             return connectionService.convertConnectionList(connections);
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
             logger.error("Unexpected GuacamoleException caught while listing connections.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error. " + e.getMessage());
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
     
@@ -144,16 +145,16 @@ public class ConnectionRESTService {
             Connection connection = connectionDirectory.get(connectionID);
             
             if(connection == null)
-                throw new HTTPException(Status.BAD_REQUEST, 
-                        "No Connection found with the provided ID.");
+                throw new GuacamoleClientException("No Connection found with the provided ID.");
             
             return new APIConnection(connection);
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while getting a connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
-                    "Unexpected server error. " + e.getMessage());
+            logger.error("Unexpected GuacamoleException caught while getting connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
     
@@ -177,17 +178,17 @@ public class ConnectionRESTService {
             
             // Make sure the connection is there before trying to delete
             if(connectionDirectory.get(connectionID) == null)
-                throw new HTTPException(Status.BAD_REQUEST, 
-                        "No Connection found with the provided ID.");
+                throw new GuacamoleClientException("No Connection found with the provided ID.");
             
             // Delete the connection
             connectionDirectory.remove(connectionID);
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while deleting a connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
-                    "Unexpected server error. " + e.getMessage());
+            logger.error("Unexpected GuacamoleException caught while deleting connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
     
@@ -209,11 +210,10 @@ public class ConnectionRESTService {
             @QueryParam("parentID") String parentID, APIConnection connection) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        if(connection == null)
-            throw new HTTPException(Status.BAD_REQUEST,
-                    "A connection is required for this request.");
-        
         try {
+            if(connection == null)
+                throw new GuacamoleClientException("A connection is required for this request.");
+            
             // If the parent connection group is passed in, try to find it.
             ConnectionGroup parentConnectionGroup;
             if(parentID == null)
@@ -225,8 +225,7 @@ public class ConnectionRESTService {
             }
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.BAD_REQUEST,
-                        "No ConnectionGroup found with the provided parentID.");
+                throw new GuacamoleClientException("No ConnectionGroup found with the provided parentID.");
             
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
@@ -237,11 +236,12 @@ public class ConnectionRESTService {
             // Return the new connection identifier
             return connection.getIdentifier();
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error. " + e.getMessage());
+            logger.error("Unexpected GuacamoleException caught while creating connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
     
@@ -259,11 +259,10 @@ public class ConnectionRESTService {
             @PathParam("connectionID") String connectionID, APIConnection connection) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        if(connection == null)
-            throw new HTTPException(Status.BAD_REQUEST,
-                    "A connection is required for this request.");
-        
         try {
+            if(connection == null)
+                throw new GuacamoleClientException("A connection is required for this request.");
+        
             // Get the connection directory
             ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
             Directory<String, Connection> connectionDirectory =
@@ -271,17 +270,17 @@ public class ConnectionRESTService {
             
             // Make sure the connection is there before trying to update
             if(connectionDirectory.get(connectionID) == null)
-                throw new HTTPException(Status.BAD_REQUEST, 
-                        "No Connection with the provided ID.");
+                throw new GuacamoleClientException("No Connection with the provided ID.");
             
             // Update the connection
             connectionDirectory.update(connection);
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error. " + e.getMessage());
+            logger.error("Unexpected GuacamoleException caught updating connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
     
@@ -311,22 +310,20 @@ public class ConnectionRESTService {
             ConnectionGroup parentConnectionGroup = connectionGroupDirectory.get(parentID);
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.BAD_REQUEST,
-                        "No ConnectionGroup found with the provided parentID.");
+                throw new GuacamoleClientException("No ConnectionGroup found with the provided parentID.");
             
             // Make sure the connection is there before trying to delete
             if(connectionDirectory.get(connectionID) == null)
-                throw new HTTPException(Status.BAD_REQUEST, 
-                        "No Connection found with the provided ID.");
+                throw new GuacamoleClientException("No Connection found with the provided ID.");
             
             // Move the connection
-            connectionDirectory.move(connectionID, connectionDirectory);
         } catch(GuacamoleSecurityException e) {
-                throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while deleting a connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR,
-                    "Unexpected server error. " + e.getMessage());
+            logger.error("Unexpected GuacamoleException caught moving connection.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
 
