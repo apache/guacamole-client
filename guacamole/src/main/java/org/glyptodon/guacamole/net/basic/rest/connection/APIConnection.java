@@ -18,20 +18,19 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
-import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * A simple connection to expose through the REST endpoints.
  * 
  * @author James Muehlner
  */
-public class APIConnection implements Connection {
+public class APIConnection {
 
     /**
      * The name of this connection.
@@ -44,14 +43,14 @@ public class APIConnection implements Connection {
     private String identifier;
     
     /**
-     * The configuration associated with this connection.
-     */
-    private GuacamoleConfiguration configuration;
-    
-    /**
      * The history records associated with this connection.
      */
     private List<? extends ConnectionRecord> history;
+
+    /**
+     * Map of all associated parameter values, indexed by parameter name.
+     */
+    private Map<String, String> parameters = new HashMap<String, String>();
     
     /**
      * Create an empty APIConnection.
@@ -68,55 +67,61 @@ public class APIConnection implements Connection {
             throws GuacamoleException {
         this.name = connection.getName();
         this.identifier = connection.getIdentifier();
-        this.configuration = connection.getConfiguration();
         this.history = connection.getHistory();
     }
 
-    @Override
+    /**
+     * Returns the name of this connection.
+     * @return The name of this connection.
+     */
     public String getName() {
         return name;
     }
 
-    @Override
+    /**
+     * Set the name of this connection.
+     * @param name The name of this connection.
+     */
     public void setName(String name) {
         this.name = name;
     }
-    @Override
+    
+    /**
+     * Returns the unique identifier for this connection.
+     * @return The unique identifier for this connection.
+     */
     public String getIdentifier() {
         return identifier;
     }
-    
-    @Override
+    /**
+     * Sets the unique identifier for this connection.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
-    @Override
-    public GuacamoleConfiguration getConfiguration() {
-        return configuration;
-    }
-    
-    @Override
-    public void setConfiguration(GuacamoleConfiguration configuration) {
-        this.configuration = configuration;
-    }
-
-    @Override
+    /**
+     * Returns the history records associated with this connection.
+     * @return The history records associated with this connection.
+     */
     public List<? extends ConnectionRecord> getHistory() {
         return history;
     }
 
     /**
-     * Set the history records for this connection.
-     * @param history The history records for this connection.
+     * Returns the parameter map for this connection.
+     * @return The parameter map for this connection.
      */
-    public void setHistory(List<? extends ConnectionRecord> history) {
-        this.history = history;
+    public Map<String, String> getParameters() {
+        return parameters;
     }
 
-    @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported.");
+    /**
+     * Sets the parameter map for this connection.
+     * @param parameters The parameter map for this connection.
+     */
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
     }
     
 }

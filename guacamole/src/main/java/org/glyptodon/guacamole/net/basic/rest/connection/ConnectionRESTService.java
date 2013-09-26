@@ -231,7 +231,7 @@ public class ConnectionRESTService {
                     parentConnectionGroup.getConnectionDirectory();
             
             // Create the connection
-            connectionDirectory.add(connection);
+            connectionDirectory.add(new APIConnectionWrapper(connection));
             
             // Return the new connection identifier
             return connection.getIdentifier();
@@ -273,7 +273,7 @@ public class ConnectionRESTService {
                 throw new GuacamoleClientException("No Connection with the provided ID.");
             
             // Update the connection
-            connectionDirectory.update(connection);
+            connectionDirectory.update(new APIConnectionWrapper(connection));
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
