@@ -751,6 +751,17 @@ Guacamole.Client = function(tunnel) {
      */
     this.onfile = null;
 
+    /**
+     * Fired whenever a sync instruction is received from the server, indicating
+     * that the server is finished processing any input from the client and
+     * has sent any results.
+     * 
+     * @event
+     * @param {Number} timestamp The timestamp associated with the sync
+     *                           instruction.
+     */
+    this.onsync = null;
+
     // Layers
     function getBufferLayer(index) {
 
@@ -1375,6 +1386,10 @@ Guacamole.Client = function(tunnel) {
             // If received first update, no longer waiting.
             if (currentState == STATE_WAITING)
                 setState(STATE_CONNECTED);
+
+            // Call sync handler if defined
+            if (guac_client.onsync)
+                guac_client.onsync(timestamp);
 
         },
 
