@@ -1104,11 +1104,20 @@ GuacUI.Client.attach = function(guac) {
             // Open file for writing
             var stream = GuacUI.Client.attachedClient.createFileStream(file.type, file.name);
 
+            var valid = true;
             var bytes = new Uint8Array(reader.result);
             var offset = 0;
+
+            // Invalidate stream on all errors
+            stream.onerror = function() {
+                valid = false;
+            };
            
             // Create upload callback
             function continueUpload() {
+
+                // Abort upload if stream is invalid
+                if (!valid) return false;
 
                 // Encode packet as base64
                 var slice = bytes.subarray(offset, offset+4096);

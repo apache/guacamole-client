@@ -365,6 +365,14 @@ Guacamole.OutputStream = function(client, index) {
     this.index = index;
 
     /**
+     * Fired when the stream is being closed due to an error.
+     * 
+     * @param {String} reason A human-readable reason describing the error.
+     * @param {Number} code The error code associated with the error.
+     */
+    this.onerror = null;
+
+    /**
      * Writes the given base64-encoded data to this stream as a blob.
      * 
      * @param {String} data The base64-encoded data to send.
@@ -494,8 +502,11 @@ Guacamole.Client = function(tunnel) {
     // No initial streams 
     var streams = [];
 
-    // Pool of available streams
+    // Pool of available stream indices
     var stream_indices = new Guacamole.IntegerPool();
+
+    // Array of allocated output streams by index
+    var output_streams = [];
 
     tunnel.onerror = function(message) {
         if (guac_client.onerror)
@@ -682,13 +693,14 @@ Guacamole.Client = function(tunnel) {
 
         // Create new stream
         guac_client.beginFileStream(index, mimetype, filename);
-        var stream = new Guacamole.OutputStream(guac_client, index);
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
 
         // Override close() of stream to automatically free index
         var old_close = stream.close;
         stream.close = function() {
             old_close();
             stream_indices.free(index);
+            delete output_streams[index];
         };
 
         // Return new, overridden stream
@@ -717,7 +729,8 @@ Guacamole.Client = function(tunnel) {
      * is being closed.
      * 
      * @event
-     * @param {String} error A human-readable description of the error.
+     * @param {String} reason A human-readable reason describing the error.
+     * @param {Number} code The error code associated with the error.
      */
     this.onerror = null;
 
@@ -861,6 +874,28 @@ Guacamole.Client = function(tunnel) {
      * @private
      */
     var instructionHandlers = {
+
+        "abort": function(parameters) {
+
+            var stream_index = parseInt(parameters[0]);
+            var reason = parameters[1];
+            var code = parameters[2];
+
+            // Get stream
+            var stream = output_streams[stream_index];
+
+            // Invalidate stream
+            if (stream) {
+
+                // Signal error if handler defined
+                if (stream.onerror)
+                    stream.onerror(reason, code);
+
+                stream_indices.free(stream_index);
+                delete output_streams[stream_index];
+            }
+
+        },
 
         "arc": function(parameters) {
 
@@ -1085,8 +1120,16 @@ Guacamole.Client = function(tunnel) {
         },
  
         "error": function(parameters) {
-            if (guac_client.onerror) guac_client.onerror(parameters[0]);
+
+            var reason = parameters[0];
+            var code = parameters[1];
+
+            // Call handler if defined
+            if (guac_client.onerror)
+                guac_client.onerror(reason, code);
+
             guac_client.disconnect();
+
         },
 
         "end": function(parameters) {
