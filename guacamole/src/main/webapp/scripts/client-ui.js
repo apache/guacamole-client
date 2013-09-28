@@ -673,6 +673,9 @@ GuacUI.Client.attach = function(guac) {
     // Get display element
     var guac_display = guac.getDisplay();
 
+    // Array of any pending uploads
+    var pending_uploads = [];
+
     /*
      * Update the scale of the display when the client display size changes.
      */
@@ -768,6 +771,18 @@ GuacUI.Client.attach = function(guac) {
     // Server copy handler
     guac.onclipboard = function(data) {
         GuacUI.sessionState.setProperty("clipboard", data);
+    };
+
+    // Handle any pending uploads when server is ready
+    guac.onsync = function() {
+
+        // Pull top pending upload from head of list
+        var pending_upload = pending_uploads.shift();
+
+        // If still more to upload, add to tail of list
+        if (pending_upload && pending_upload())
+            pending_uploads.push(pending_upload);
+
     };
 
     /*
@@ -1092,6 +1107,7 @@ GuacUI.Client.attach = function(guac) {
             var bytes = new Uint8Array(reader.result);
             var offset = 0;
            
+            // Create upload callback
             function continueUpload() {
 
                 // Encode packet as base64
@@ -1101,17 +1117,22 @@ GuacUI.Client.attach = function(guac) {
                 // Write packet
                 stream.write(base64);
 
-                // Advance to next packet, or close if EOF
+                // Advance to next packet
                 offset += 4096;
-                if (offset < bytes.length)
-                    window.setTimeout(continueUpload, 500);
-                else
+
+                // If at end, stop upload
+                if (offset >= bytes.length) {
                     stream.close();
+                    return false;
+                }
+
+                // Otherwise, continue
+                return true;
 
             };
 
-            // Start upload
-            window.setTimeout(continueUpload, 500);
+            // Add to list, ready for sending
+            pending_uploads.push(continueUpload);
 
         };
         reader.readAsArrayBuffer(file);
