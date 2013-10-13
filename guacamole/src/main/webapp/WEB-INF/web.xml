@@ -256,16 +256,6 @@
         <listener-class>org.glyptodon.guacamole.net.basic.rest.RESTServletContextListener</listener-class>
     </listener>
     
-    <init-param>
-        <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-        <param-value>true</param-value>
-    </init-param>
-    
-    <init-param>
-        <param-name>com.sun.jersey.config.property.packages</param-name>
-        <param-value>org.codehaus.jackson.jaxrs</param-value>
-    </init-param>
-
     <mime-mapping>
         <extension>mp3</extension>
         <mime-type>audio/mpeg</mime-type>
