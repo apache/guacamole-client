@@ -1086,6 +1086,12 @@ GuacUI.Client.attach = function(guac) {
         var reader = new FileReader();
         reader.onloadend = function() {
 
+            // Add upload notification
+            var upload = new GuacUI.Upload(file.name);
+            upload.updateProgress(getSizeString(0));
+
+            GuacUI.Client.notification_area.appendChild(upload.getElement());
+
             // Open file for writing
             var stream = GuacUI.Client.attachedClient.createFileStream(file.type, file.name);
 
@@ -1096,6 +1102,7 @@ GuacUI.Client.attach = function(guac) {
             // Invalidate stream on all errors
             stream.onerror = function() {
                 valid = false;
+                // TODO: Update notification with error status
             };
 
             // Continue upload when acknowledged
@@ -1115,8 +1122,14 @@ GuacUI.Client.attach = function(guac) {
                 offset += 4096;
 
                 // If at end, stop upload
-                if (offset >= bytes.length)
+                if (offset >= bytes.length) {
                     stream.close();
+                    GuacUI.Client.notification_area.removeChild(upload.getElement());
+                }
+
+                // Otherwise, update progress
+                else
+                    upload.updateProgress(getSizeString(offset));
 
             };
 

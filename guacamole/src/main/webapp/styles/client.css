@@ -361,6 +361,7 @@ p.hint {
     to   {background-position: 64px 0px;}
 }
 
+.upload.notification .caption,
 .download.notification .caption {
     width: 100%;
     white-space: nowrap;
@@ -369,7 +370,9 @@ p.hint {
 }
 
 .download.notification .progress,
-.download.notification .download {
+.upload.notification .progress,
+.download.notification .download,
+.upload.notification .upload {
 
     margin-top: 1em;
     margin-left: 0.75em;
@@ -384,6 +387,7 @@ p.hint {
 
 }
 
+.upload.notification .progress,
 .download.notification .progress {
 
     background: #444 url('../images/progress.png');
@@ -404,6 +408,7 @@ p.hint {
 
 }
 
+.upload.notification .upload,
 .download.notification .download {
     background: rgb(16, 87, 153);
     cursor: pointer;

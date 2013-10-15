@@ -789,6 +789,78 @@ GuacUI.Download = function(filename) {
 };
 
 /**
+ * Interface object which displays the progress of a upload.
+ * 
+ * @constructor
+ * @param {String} filename The name the file will have once complete.
+ */
+GuacUI.Upload = function(filename) {
+
+    /**
+     * Reference to this GuacUI.Upload.
+     * @private
+     */
+    var guac_upload = this;
+
+    /**
+     * The outer div representing the notification.
+     * @private
+     */
+    var element = GuacUI.createElement("div", "upload notification");
+
+    /**
+     * Title bar describing the notification.
+     * @private
+     */
+    var title = GuacUI.createChildElement(element, "div", "title-bar");
+
+    /**
+     * Close button for removing the notification.
+     * @private
+     */
+    var close_button = GuacUI.createChildElement(title, "div", "close");
+    close_button.onclick = function() {
+        if (guac_upload.onclose)
+            guac_upload.onclose();
+    };
+
+    GuacUI.createChildElement(title, "div", "title").textContent =
+        "File Transfer";
+
+    GuacUI.createChildElement(element, "div", "caption").textContent =
+        filename + " ";
+
+    /**
+     * Progress bar and status.
+     * @private
+     */
+    var progress = GuacUI.createChildElement(element, "div", "progress");
+
+    /**
+     * Updates the content of the progress indicator with the given text.
+     * 
+     * @param {String} text The text to assign to the progress indicator.
+     */
+    this.updateProgress = function(text) {
+        progress.textContent = text;
+    };
+
+    /**
+     * Returns the element representing this notification.
+     */
+    this.getElement = function() {
+        return element;
+    };
+
+    /**
+     * Called when the close button of this notification is clicked.
+     * @event
+     */
+    this.onclose = null;
+
+};
+
+/**
  * A grouping component. Child elements can be added via the addElement()
  * function. By default, groups display as collapsed.
  */
