@@ -373,6 +373,17 @@ Guacamole.OutputStream = function(client, index) {
     this.onerror = null;
 
     /**
+     * Fired whenever an acknowledgement is received from the server, indicating
+     * that a stream operation has completed.
+     * 
+     * @event
+     * @param {String} message A human-readable status message related to the
+     *                         operation performed.
+     * @param {Number} code The error code associated with the operation.
+     */
+    this.onack = null;
+
+    /**
      * Writes the given base64-encoded data to this stream as a blob.
      * 
      * @param {String} data The base64-encoded data to send.
@@ -875,7 +886,7 @@ Guacamole.Client = function(tunnel) {
      */
     var instructionHandlers = {
 
-        "abort": function(parameters) {
+        "ack": function(parameters) {
 
             var stream_index = parseInt(parameters[0]);
             var reason = parameters[1];
@@ -883,16 +894,23 @@ Guacamole.Client = function(tunnel) {
 
             // Get stream
             var stream = output_streams[stream_index];
-
-            // Invalidate stream
             if (stream) {
 
-                // Signal error if handler defined
-                if (stream.onerror)
-                    stream.onerror(reason, code);
+                // If code is an error, invalidate stream
+                if (code >= 0x0100) {
 
-                stream_indices.free(stream_index);
-                delete output_streams[stream_index];
+                    // Signal error
+                    if (stream.onerror)
+                        stream.onerror(reason, code);
+
+                    stream_indices.free(stream_index);
+                    delete output_streams[stream_index];
+                }
+
+                // Signal error if handler defined
+                else if (stream.onack)
+                    stream.onack(reason, code);
+
             }
 
         },

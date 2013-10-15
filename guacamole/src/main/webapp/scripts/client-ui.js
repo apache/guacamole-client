@@ -673,9 +673,6 @@ GuacUI.Client.attach = function(guac) {
     // Get display element
     var guac_display = guac.getDisplay();
 
-    // Array of any pending uploads
-    var pending_uploads = [];
-
     /*
      * Update the scale of the display when the client display size changes.
      */
@@ -771,18 +768,6 @@ GuacUI.Client.attach = function(guac) {
     // Server copy handler
     guac.onclipboard = function(data) {
         GuacUI.sessionState.setProperty("clipboard", data);
-    };
-
-    // Handle any pending uploads when server is ready
-    guac.onsync = function() {
-
-        // Pull top pending upload from head of list
-        var pending_upload = pending_uploads.shift();
-
-        // If still more to upload, add to tail of list
-        if (pending_upload && pending_upload())
-            pending_uploads.push(pending_upload);
-
     };
 
     /*
@@ -1112,9 +1097,9 @@ GuacUI.Client.attach = function(guac) {
             stream.onerror = function() {
                 valid = false;
             };
-           
-            // Create upload callback
-            function continueUpload() {
+
+            // Continue upload when acknowledged
+            stream.onack = function() {
 
                 // Abort upload if stream is invalid
                 if (!valid) return false;
@@ -1130,18 +1115,10 @@ GuacUI.Client.attach = function(guac) {
                 offset += 4096;
 
                 // If at end, stop upload
-                if (offset >= bytes.length) {
+                if (offset >= bytes.length)
                     stream.close();
-                    return false;
-                }
-
-                // Otherwise, continue
-                return true;
 
             };
-
-            // Add to list, ready for sending
-            pending_uploads.push(continueUpload);
 
         };
         reader.readAsArrayBuffer(file);
