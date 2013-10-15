@@ -751,6 +751,22 @@ GuacUI.Download = function(filename) {
     };
 
     /**
+     * Updates the content of the dialog to reflect an error condition
+     * represented by the given text.
+     * 
+     * @param {String} text A human-readable description of the error.
+     */
+    this.showError = function(text) {
+
+        element.removeChild(progress);
+        GuacUI.addClass(element, "error");
+
+        var status = GuacUI.createChildElement(element, "div", "status");
+        status.textContent = text;
+
+    };
+
+    /**
      * Removes the progress indicator and replaces it with a download button.
      */
     this.complete = function() {
@@ -843,6 +859,22 @@ GuacUI.Upload = function(filename) {
      */
     this.updateProgress = function(text) {
         progress.textContent = text;
+    };
+
+    /**
+     * Updates the content of the dialog to reflect an error condition
+     * represented by the given text.
+     * 
+     * @param {String} text A human-readable description of the error.
+     */
+    this.showError = function(text) {
+
+        element.removeChild(progress);
+        GuacUI.addClass(element, "error");
+
+        var status = GuacUI.createChildElement(element, "div", "status");
+        status.textContent = text;
+
     };
 
     /**

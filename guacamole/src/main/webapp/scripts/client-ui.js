@@ -1100,9 +1100,9 @@ GuacUI.Client.attach = function(guac) {
             var offset = 0;
 
             // Invalidate stream on all errors
-            stream.onerror = function() {
+            stream.onerror = function(text, code) {
                 valid = false;
-                // TODO: Update notification with error status
+                upload.showError(text);
             };
 
             // Continue upload when acknowledged
@@ -1131,6 +1131,12 @@ GuacUI.Client.attach = function(guac) {
                 else
                     upload.updateProgress(getSizeString(offset));
 
+            };
+
+            // Close dialog and abort when close is clicked
+            upload.onclose = function() {
+                GuacUI.Client.notification_area.removeChild(upload.getElement());
+                // TODO: Abort transfer
             };
 
         };

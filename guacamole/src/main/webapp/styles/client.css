@@ -369,6 +369,13 @@ p.hint {
     text-overflow: ellipsis;
 }
 
+.upload.notification .status,
+.download.notification .status {
+    color: red;
+    font-size: 1em;
+    padding: 1em;
+}
+
 .download.notification .progress,
 .upload.notification .progress,
 .download.notification .download,
