@@ -1088,7 +1088,7 @@ GuacUI.Client.attach = function(guac) {
 
             // Add upload notification
             var upload = new GuacUI.Upload(file.name);
-            upload.updateProgress(getSizeString(0));
+            upload.updateProgress(getSizeString(0), 0);
 
             GuacUI.Client.notification_area.appendChild(upload.getElement());
 
@@ -1129,7 +1129,7 @@ GuacUI.Client.attach = function(guac) {
 
                 // Otherwise, update progress
                 else
-                    upload.updateProgress(getSizeString(offset));
+                    upload.updateProgress(getSizeString(offset), offset / bytes.length * 100);
 
             };
 

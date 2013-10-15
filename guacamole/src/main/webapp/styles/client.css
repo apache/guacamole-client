@@ -298,6 +298,7 @@ p.hint {
 .notification {
 
     font-size: 0.9em;
+    text-align: center;
     
     border: 1px solid rgba(255, 255, 255, 0.25);
     background: black;
@@ -315,6 +316,7 @@ p.hint {
 
 .notification div {
     display: inline-block;
+    text-align: left;
 }
 
 .notification .title-bar {
@@ -378,8 +380,7 @@ p.hint {
 
 .download.notification .progress,
 .upload.notification .progress,
-.download.notification .download,
-.upload.notification .upload {
+.download.notification .download {
 
     margin-top: 1em;
     margin-left: 0.75em;
@@ -392,6 +393,32 @@ p.hint {
     text-align: center;
     float: right;
 
+    position: relative;
+    
+}
+
+.upload.notification .progress {
+    float: none;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.download.notification .progress div,
+.upload.notification .progress div {
+    position: relative;
+}
+
+.download.notification .progress .bar,
+.upload.notification .progress .bar {
+    background: #048;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    box-shadow: inset  1px  1px 2px rgba(255, 255, 255, 0.5),
+                inset -1px -1px 2px rgba(  0,   0,   0, 0.5);
 }
 
 .upload.notification .progress,
@@ -415,7 +442,6 @@ p.hint {
 
 }
 
-.upload.notification .upload,
 .download.notification .download {
     background: rgb(16, 87, 153);
     cursor: pointer;

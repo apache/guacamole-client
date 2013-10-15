@@ -853,12 +853,26 @@ GuacUI.Upload = function(filename) {
     var progress = GuacUI.createChildElement(element, "div", "progress");
 
     /**
+     * The actual moving bar within the progress bar.
+     * @private
+     */
+    var bar = GuacUI.createChildElement(progress, "div", "bar");
+
+    /**
+     * The textual readout of progress.
+     * @private
+     */
+    var progress_status = GuacUI.createChildElement(progress, "div");
+
+    /**
      * Updates the content of the progress indicator with the given text.
      * 
      * @param {String} text The text to assign to the progress indicator.
+     * @param {Number} percent The overall percent complete.
      */
-    this.updateProgress = function(text) {
-        progress.textContent = text;
+    this.updateProgress = function(text, percent) {
+        progress_status.textContent = text;
+        bar.style.width = percent + "%";
     };
 
     /**
