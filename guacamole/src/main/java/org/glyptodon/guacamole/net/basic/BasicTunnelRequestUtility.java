@@ -18,12 +18,9 @@ package org.glyptodon.guacamole.net.basic;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -41,27 +38,29 @@ import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
 import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
 import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
-import org.glyptodon.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Connects users to a tunnel associated with the authorized connection
- * having the given ID.
+ * Utility class that takes a standard request from the Guacamole JavaScript
+ * client and produces the corresponding GuacamoleTunnel. The implementation
+ * of this utility is specific to the form of request used by the upstream
+ * Guacamole web application, and is not necessarily useful to applications
+ * that use purely the Guacamole API.
  *
  * @author Michael Jumper
  */
-public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
+public class BasicTunnelRequestUtility {
 
     /**
      * Logger for this class.
      */
-    private static Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
+    private static Logger logger = LoggerFactory.getLogger(BasicTunnelRequestUtility.class);
 
     /**
      * All supported identifier types.
      */
-    public static enum IdentifierType {
+    private static enum IdentifierType {
 
         /**
          * The unique identifier of a connection.
@@ -115,30 +114,6 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
         
     };
     
-    @Override
-    protected void authenticatedService(
-            UserContext context,
-            HttpServletRequest request, HttpServletResponse response)
-    throws GuacamoleException {
-
-        try {
-
-            // If authenticated, respond as tunnel
-            tunnelServlet.service(request, response);
-        }
-
-        catch (ServletException e) {
-            logger.info("Error from tunnel (see previous log messages): {}",
-                    e.getMessage());
-        }
-
-        catch (IOException e) {
-            logger.info("I/O error from tunnel (see previous log messages): {}",
-                    e.getMessage());
-        }
-
-    }
-
     /**
      * Notifies all listeners in the given collection that a tunnel has been
      * connected.
@@ -156,7 +131,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *                            error, the connect is canceled, and no other
      *                            listeners will run.
      */
-    public static boolean notifyConnect(Collection listeners, UserContext context,
+    private static boolean notifyConnect(Collection listeners, UserContext context,
             Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
@@ -196,7 +171,7 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
      *                            error, the close is canceled, and no other
      *                            listeners will run.
      */
-    public static boolean notifyClose(Collection listeners, UserContext context,
+    private static boolean notifyClose(Collection listeners, UserContext context,
             Credentials credentials, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
@@ -254,10 +229,10 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
         id = id.substring(id_type.PREFIX.length());
 
         // Get credentials
-        final Credentials credentials = getCredentials(httpSession);
+        final Credentials credentials = AuthenticatingHttpServlet.getCredentials(httpSession);
 
         // Get context
-        final UserContext context = getUserContext(httpSession);
+        final UserContext context = AuthenticatingHttpServlet.getUserContext(httpSession);
 
         // If no context or no credentials, not logged in
         if (context == null || credentials == null)
@@ -360,31 +335,6 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
         }
 
         return tunnel;
-
-    }
-
-    /**
-     * Wrapped GuacamoleHTTPTunnelServlet which will handle all authenticated
-     * requests.
-     */
-    private GuacamoleHTTPTunnelServlet tunnelServlet = new GuacamoleHTTPTunnelServlet() {
-
-        @Override
-        protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
-            return createTunnel(request);
-        }
-
-    };
-
-    @Override
-    protected boolean hasNewCredentials(HttpServletRequest request) {
-
-        String query = request.getQueryString();
-        if (query == null)
-            return false;
-
-        // Only connections are given new credentials
-        return query.equals("connect");
 
     }
 
