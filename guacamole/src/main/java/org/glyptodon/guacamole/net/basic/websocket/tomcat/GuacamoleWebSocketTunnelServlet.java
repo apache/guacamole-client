@@ -83,7 +83,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
                 }
                 catch (GuacamoleException e) {
-                    // FIXME: Handle exception
+                    logger.debug("Tunnel write failed.", e);
                 }
 
                 tunnel.releaseWriter();
@@ -127,10 +127,10 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             }
                         }
                         catch (IOException e) {
-                            // FIXME: Handle exception
+                            logger.debug("Tunnel read failed due to I/O error.", e);
                         }
                         catch (GuacamoleException e) {
-                            // FIXME: Handle exception
+                            logger.debug("Tunnel read failed.", e);
                         }
 
                     }
@@ -147,7 +147,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                     tunnel.close();
                 }
                 catch (GuacamoleException e) {
-                    // FIXME: Handle exception
+                    logger.debug("Unable to close WebSocket tunnel.", e);
                 }
             }
 

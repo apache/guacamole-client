@@ -27,6 +27,8 @@ import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WebSocketServlet partial re-implementation of GuacamoleTunnelServlet.
@@ -35,6 +37,11 @@ import org.eclipse.jetty.websocket.WebSocketServlet;
  */
 public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
+    /**
+     * Logger for this class.
+     */
+    private static Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
+    
     /**
      * The default, minimum buffer size for instructions.
      */
@@ -50,7 +57,8 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             tunnel = doConnect(request);
         }
         catch (GuacamoleException e) {
-            return null; // FIXME: Can throw exception?
+            logger.error("Error connecting WebSocket tunnel.", e);
+            return null;
         }
 
         // Return new WebSocket which communicates through tunnel
@@ -65,7 +73,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                     writer.write(string.toCharArray());
                 }
                 catch (GuacamoleException e) {
-                    // FIXME: Handle exception
+                    logger.debug("Tunnel write failed.", e);
                 }
 
                 tunnel.releaseWriter();
@@ -98,10 +106,10 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             }
                         }
                         catch (IOException e) {
-                            // FIXME: Handle exception
+                            logger.debug("Tunnel read failed due to I/O error.", e);
                         }
                         catch (GuacamoleException e) {
-                            // FIXME: Handle exception
+                            logger.debug("Tunnel read failed.", e);
                         }
 
                     }
@@ -118,7 +126,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                     tunnel.close();
                 }
                 catch (GuacamoleException e) {
-                    // FIXME: Handle exception
+                    logger.debug("Unable to close WebSocket tunnel.", e);
                 }
             }
 
