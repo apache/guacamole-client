@@ -74,6 +74,11 @@ public abstract class AuthenticatingWebSocketServlet extends WebSocketServlet {
     };
 
     @Override
+    public void init() throws ServletException {
+        auth_servlet.init();
+    }
+
+    @Override
     protected void service(HttpServletRequest request,
         HttpServletResponse response)
         throws IOException, ServletException {

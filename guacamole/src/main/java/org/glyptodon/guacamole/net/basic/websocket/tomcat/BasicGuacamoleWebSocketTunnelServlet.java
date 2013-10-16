@@ -23,7 +23,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.apache.catalina.websocket.StreamInbound;
-import org.glyptodon.guacamole.net.basic.BasicGuacamoleTunnelServlet;
+import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
 
 /**
  * Authenticating tunnel servlet implementation which uses WebSocket as a
@@ -41,7 +41,7 @@ public class BasicGuacamoleWebSocketTunnelServlet extends AuthenticatingWebSocke
         @Override
         protected GuacamoleTunnel doConnect(HttpServletRequest request)
                 throws GuacamoleException {
-            return BasicGuacamoleTunnelServlet.createTunnel(request);
+            return BasicTunnelRequestUtility.createTunnel(request);
         }
 
     };
