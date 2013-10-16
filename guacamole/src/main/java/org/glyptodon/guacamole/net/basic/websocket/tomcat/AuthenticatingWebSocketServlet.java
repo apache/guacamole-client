@@ -20,6 +20,7 @@ package org.glyptodon.guacamole.net.basic.websocket.tomcat;
  */
 
 import java.io.IOException;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -104,6 +105,19 @@ public abstract class AuthenticatingWebSocketServlet extends WebSocketServlet {
 
         // Bypass override and service WebSocket request
         super.service(request, response);
+
+    }
+
+    @Override
+    protected String selectSubProtocol(List<String> subProtocols) {
+
+        // Search for expected protocol
+        for (String protocol : subProtocols)
+            if ("guacamole".equals(protocol))
+                return "guacamole";
+        
+        // Otherwise, fail
+        return null;
 
     }
 
