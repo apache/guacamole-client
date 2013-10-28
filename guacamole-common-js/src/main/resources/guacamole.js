@@ -944,6 +944,9 @@ Guacamole.Client = function(tunnel) {
                 channel.play(mimetype, duration, stream.getBlob());
             };
 
+            // Send success response
+            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+
         },
 
         "blob": function(parameters) {
@@ -963,6 +966,9 @@ Guacamole.Client = function(tunnel) {
 
             // Write data
             stream.receive(arrayBuffer);
+
+            // Send success response
+            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
 
         },
 
@@ -1174,6 +1180,9 @@ Guacamole.Client = function(tunnel) {
             // Call handler now that file stream is created
             if (guac_client.onfile)
                 guac_client.onfile(filename, stream);
+
+            // Send success response
+            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
 
         },
 
@@ -1525,6 +1534,9 @@ Guacamole.Client = function(tunnel) {
                 reader.readAsArrayBuffer(stream.getBlob());
 
             };
+
+            // Send success response
+            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
 
         }
 
