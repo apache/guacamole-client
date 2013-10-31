@@ -25,4 +25,9 @@
         <option value="96">96</option>
     </param>
 
+    <param name="enable-sftp" type="boolean" title="Enable SFTP" value="true"/>
+
+    <param name="private-key" type="multiline" title="Private key"/>
+    <param name="passphrase" type="password" title="Passphrase"/>
+
 </protocol>
