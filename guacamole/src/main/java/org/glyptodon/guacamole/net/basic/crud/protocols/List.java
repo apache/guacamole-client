@@ -166,6 +166,11 @@ public class List extends AuthenticatingHttpServlet {
                     xml.writeAttribute("type", "enum");
                     break;
 
+                // Multiline parameter
+                case MULTILINE:
+                    xml.writeAttribute("type", "multiline");
+                    break;
+
                 // If unknown, fail explicitly
                 default:
                     throw new UnsupportedOperationException(

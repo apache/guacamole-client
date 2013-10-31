@@ -58,7 +58,13 @@ public class ProtocolParameter {
          * An enumerated parameter, whose legal values are fully enumerated
          * by a provided, finite list.
          */
-        ENUM
+        ENUM,
+
+        /**
+         * A text parameter that can span more than one line.
+         */
+        MULTILINE
+
     }
 
     /**

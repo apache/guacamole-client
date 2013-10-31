@@ -61,6 +61,10 @@ public class ParamTagHandler implements TagHandler {
         else if ("enum".equals(type))
             protocolParameter.setType(ProtocolParameter.Type.ENUM);
 
+        // Multiline field
+        else if ("multiline".equals(type))
+            protocolParameter.setType(ProtocolParameter.Type.MULTILINE);
+
         // Boolean field
         else if ("boolean".equals(type)) {
             protocolParameter.setType(ProtocolParameter.Type.BOOLEAN);

@@ -31,17 +31,26 @@ input[type=submit], button {
     -webkit-appearance: none;
 }
 
-div.location, input[type=text], input[type=number], input[type=password] {
+div.location, input[type=text], input[type=number], input[type=password], textarea {
     border: 1px solid #777;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
     -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
     width: 100%;
+    max-width: 16em;
     padding: 0.25em;
     font-size: 10pt;
     background: white;
     cursor: text;
+}
+
+textarea {
+    max-width: none;
+    width: 30em;
+    height: 10em;
+    white-space: nowrap;
+    overflow: auto;
 }
 
 button {

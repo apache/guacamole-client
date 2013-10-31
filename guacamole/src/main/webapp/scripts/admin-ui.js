@@ -122,6 +122,36 @@ GuacAdmin.Field.TEXT.prototype = new GuacAdmin.Field._HTML_INPUT();
 
 
 /**
+ * A basic multiline text field.
+ * 
+ * @augments GuacAdmin.Field
+ */
+GuacAdmin.Field.MULTILINE = function() {
+
+    // Call parent constructor
+    GuacAdmin.Field.apply(this);
+
+    // Create backing element
+    var element = GuacUI.createElement("textarea");
+
+    this.getValue = function() {
+        return element.value;
+    };
+
+    this.getElement = function() {
+        return element;
+    };
+
+    this.setValue = function(value) {
+        element.value = value;
+    };
+
+};
+
+GuacAdmin.Field.MULTILINE.prototype = new GuacAdmin.Field();
+
+
+/**
  * A basic password field.
  * 
  * @augments GuacAdmin.Field._HTML_INPUT
@@ -880,6 +910,11 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
                 // Select field
                 case GuacamoleService.Protocol.Parameter.ENUM:
                     field = new GuacAdmin.Field.ENUM(parameter.options);
+                    break;
+
+                // Multiline text field
+                case GuacamoleService.Protocol.Parameter.MULTILINE:
+                    field = new GuacAdmin.Field.MULTILINE();
                     break;
 
                 default:

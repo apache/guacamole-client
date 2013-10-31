@@ -1250,7 +1250,7 @@ GuacamoleService.Protocol.Parameter.Option = function(value, title) {
 /**
  * A free-form text field.
  */
-GuacamoleService.Protocol.Parameter.TEXT     = 0;
+GuacamoleService.Protocol.Parameter.TEXT = 0;
 
 /**
  * A password field.
@@ -1260,17 +1260,22 @@ GuacamoleService.Protocol.Parameter.PASSWORD = 1;
 /**
  * A numeric field.
  */
-GuacamoleService.Protocol.Parameter.NUMERIC  = 2;
+GuacamoleService.Protocol.Parameter.NUMERIC = 2;
 
 /**
  * A boolean (checkbox) field.
  */
-GuacamoleService.Protocol.Parameter.BOOLEAN  = 3;
+GuacamoleService.Protocol.Parameter.BOOLEAN = 3;
 
 /**
  * An enumerated (select) field.
  */
-GuacamoleService.Protocol.Parameter.ENUM     = 4;
+GuacamoleService.Protocol.Parameter.ENUM = 4;
+
+/**
+ * A free-form, multi-line text field. 
+ */
+GuacamoleService.Protocol.Parameter.MULTILINE = 5;
 
 /**
  * Collection of service functions which deal with protocols. Each function
@@ -1362,6 +1367,11 @@ GuacamoleService.Protocols = {
                     // Enumerated parameter
                     case "enum":
                         parameter.type = GuacamoleService.Protocol.Parameter.ENUM;
+                        break;
+
+                    // Multiline text parameter
+                    case "multiline":
+                        parameter.type = GuacamoleService.Protocol.Parameter.MULTILINE;
                         break;
 
                 }
