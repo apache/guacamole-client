@@ -933,24 +933,6 @@ GuacUI.Client.attach = function(guac) {
 
     };
 
-    var thumbnail_update_interval = null;
-
-    window.onblur = function() {
-
-        // Regularly update screenshot if window not visible
-        if (!thumbnail_update_interval)
-            thumbnail_update_interval =
-                window.setInterval(GuacUI.Client.updateThumbnail, 1000);
-
-    };
-
-    window.onfocus = function() {
-        if (thumbnail_update_interval) {
-            window.clearInterval(thumbnail_update_interval);
-            thumbnail_update_interval = null;
-        }
-    };
-
     /*
      * Disconnect and update thumbnail on close
      */

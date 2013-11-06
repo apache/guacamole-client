@@ -1470,21 +1470,35 @@ Guacamole.Client = function(tunnel) {
             var srcY = parseInt(parameters[2]);
             var srcWidth = parseInt(parameters[3]);
             var srcHeight = parseInt(parameters[4]);
-            var transferFunction = Guacamole.Client.DefaultTransferFunction[parameters[5]];
+            var function_index = parseInt(parameters[5]);
             var dstL = getLayer(parseInt(parameters[6]));
             var dstX = parseInt(parameters[7]);
             var dstY = parseInt(parameters[8]);
 
-            dstL.transfer(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                dstX,
-                dstY,
-                transferFunction
-            );
+            /* SRC */
+            if (function_index === 0x3)
+                dstL.put(
+                    srcL,
+                    srcX,
+                    srcY,
+                    srcWidth, 
+                    srcHeight, 
+                    dstX,
+                    dstY
+                );
+
+            /* Anything else that isn't a NO-OP */
+            else if (function_index !== 0x5)
+                dstL.transfer(
+                    srcL,
+                    srcX,
+                    srcY,
+                    srcWidth, 
+                    srcHeight, 
+                    dstX,
+                    dstY,
+                    Guacamole.Client.DefaultTransferFunction[function_index]
+                );
 
         },
 

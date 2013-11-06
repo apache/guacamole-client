@@ -648,6 +648,51 @@ Guacamole.Layer = function(width, height) {
     };
 
     /**
+     * Put a rectangle of image data from one Layer to this Layer directly
+     * without performing any alpha blending. Simply copy the data.
+     * 
+     * @param {Guacamole.Layer} srcLayer The Layer to copy image data from.
+     * @param {Number} srcx The X coordinate of the upper-left corner of the
+     *                      rectangle within the source Layer's coordinate
+     *                      space to copy data from.
+     * @param {Number} srcy The Y coordinate of the upper-left corner of the
+     *                      rectangle within the source Layer's coordinate
+     *                      space to copy data from.
+     * @param {Number} srcw The width of the rectangle within the source Layer's
+     *                      coordinate space to copy data from.
+     * @param {Number} srch The height of the rectangle within the source
+     *                      Layer's coordinate space to copy data from.
+     * @param {Number} x The destination X coordinate.
+     * @param {Number} y The destination Y coordinate.
+     */
+    this.put = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
+        scheduleTaskSynced(srcLayer, function() {
+
+            var srcCanvas = srcLayer.getCanvas();
+
+            // If entire rectangle outside source canvas, stop
+            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+
+            // Otherwise, clip rectangle to area
+            if (srcx + srcw > srcCanvas.width)
+                srcw = srcCanvas.width - srcx;
+
+            if (srcy + srch > srcCanvas.height)
+                srch = srcCanvas.height - srcy;
+
+            // Stop if nothing to draw.
+            if (srcw == 0 || srch == 0) return;
+
+            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+
+            // Get image data from src and dst
+            var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+            displayContext.putImageData(src, x, y);
+
+        });
+    };
+
+    /**
      * Copy a rectangle of image data from one Layer to this Layer. This
      * operation will copy exactly the image data that will be drawn once all
      * operations of the source Layer that were pending at the time this
