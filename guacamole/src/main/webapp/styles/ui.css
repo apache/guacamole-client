@@ -53,24 +53,24 @@ textarea {
     overflow: auto;
 }
 
-button {
+input[type="submit"], button {
 
-    background: #8A6;
+    background-color: #3C3C3C;
+
     border: 1px solid rgba(0, 0, 0, 0.4);
-    -moz-border-radius: 0.6em;
-    -webkit-border-radius: 0.6em;
-    -khtml-border-radius: 0.6em;
-    border-radius: 0.6em;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
+    border-radius: 0.25em;
 
     color: white;
     text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
-    font-weight: bold;
-    font-size: 1.125em;
+    font-size: 1em;
 
-    box-shadow: inset -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                inset 1px 1px 0.25em rgba(255, 255, 255, 0.25),
-                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                1px 1px 0.25em rgba(255, 255, 255, 0.25);
+    box-shadow: inset -1px -1px 0.1em rgba(0, 0, 0, 0.25),
+                inset 1px 1px 0.1em rgba(255, 255, 255, 0.25),
+                -1px -1px 0.1em rgba(0, 0, 0, 0.25),
+                1px 1px 0.1em rgba(255, 255, 255, 0.25);
     
     padding: 0.35em;
     padding-right: 1em;
@@ -79,16 +79,13 @@ button {
 
 }
 
-button:hover {
-    background: #9C7;
+input[type="submit"]:hover, button:hover {
+    background-color: #5A5A5A;
 }
 
-button:active {
+input[type="submit"]:active, button:active {
 
-    padding-left: 1.1em;
-    padding-right: 0.9em;
-    padding-top: 0.45em;
-    padding-bottom: 0.25em;
+    background-color: #2C2C2C;
     
     box-shadow: 
                 inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
@@ -104,6 +101,10 @@ button.danger:hover {
     background: #C54;
 }
 
+button.danger:active {
+    background: #932;
+}
+
 body {
     background: #EEE;
     font-family: FreeSans, Helvetica, Arial, sans-serif;
@@ -114,20 +115,6 @@ body {
 img {
     border: none;
     vertical-align: middle;
-}
-
-div#version-dialog {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    text-align: right;
-
-    font-style: italic;
-    font-size: 0.75em;
-    color: black;
-    opacity: 0.5;
-
-    padding: 0.5em;
 }
 
 h1 {

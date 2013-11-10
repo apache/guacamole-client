@@ -41,6 +41,10 @@
 
                     <form id="login-form" action="#" method="post">
 
+                        <div id="version">
+                            Guacamole ${project.version}
+                        </div>
+
                         <div id="login-fields">
                             <table>
                                 <tr>
@@ -57,7 +61,7 @@
                         </div>
 
                         <div id="buttons">
-                            <input type="submit" name="login" id="login" value="Login"/>
+                            <input type="submit" name="login" class="login" id="login" value="Login"/>
                         </div>
 
                     </form>
@@ -132,10 +136,6 @@
 
             </div>
 
-        </div>
-
-        <div id="version-dialog">
-            Guacamole ${project.version}
         </div>
 
         <script type="text/javascript" src="scripts/service.js"></script>

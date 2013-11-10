@@ -93,50 +93,15 @@ div#login-dialog #buttons {
     text-align: right;
 }
 
-div#login-dialog #buttons input,
-div#logout-panel button {
+input[type="submit"].login, button.login {
 
-    background: #8A6;
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    -moz-border-radius: 0.6em;
-    -webkit-border-radius: 0.6em;
-    -khtml-border-radius: 0.6em;
-    border-radius: 0.6em;
+    background-image: url('../images/guacamole-logo-64.png');
+    background-repeat: no-repeat;
+    background-size: 1.5em;
+    background-position: 0.5em 0.25em;
 
-    color: white;
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
-    font-weight: bold;
-    font-size: 1.125em;
+    padding-left: 2.5em;
 
-    box-shadow: inset -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                inset 1px 1px 0.25em rgba(255, 255, 255, 0.25),
-                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                1px 1px 0.25em rgba(255, 255, 255, 0.25);
-    
-    padding: 0.35em;
-    padding-right: 1em;
-    padding-left: 1em;
-    min-width: 5em;
-
-}
-
-div#login-dialog #buttons input:hover,
-div#logout-panel button:hover {
-    background: #9C7;
-}
-
-div#login-dialog #buttons input:active,
-div#logout-panel button:active {
-
-    padding-left: 1.1em;
-    padding-right: 0.9em;
-    padding-top: 0.45em;
-    padding-bottom: 0.25em;
-    
-    box-shadow: 
-                inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
-                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                1px 1px 0.25em rgba(255, 255, 255, 0.25);
 }
 
 div#login-dialog #login-fields {
@@ -144,12 +109,8 @@ div#login-dialog #login-fields {
     vertical-align: middle;
 
     padding: 1em;
-    background: #DDD;
-    border: 1px solid #999;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
+    border-top: 1px solid #999;
+    border-bottom: 1px solid #999;
 
 }
 
@@ -175,12 +136,8 @@ div#login-dialog #login-fields img.logo {
     z-index: -1;
 }
 
-div#version-dialog {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    text-align: right;
-
+div#version {
+    text-align: center;
     font-style: italic;
     font-size: 0.75em;
     color: black;
