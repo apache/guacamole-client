@@ -54,19 +54,19 @@ div#login-ui {
 }
 
 @keyframes shake-head {
-    0%   { margin-left:  0.5em; }
-    25%  { margin-left: -0.5em; }
-    50%  { margin-left:  0.5em; }
-    75%  { margin-left: -0.5em; }
-    100% { margin-left:  0.0em; }
+    0%   { margin-left:  0.25em; margin-right: -0.25em; }
+    25%  { margin-left: -0.25em; margin-right:  0.25em; }
+    50%  { margin-left:  0.25em; margin-right: -0.25em; }
+    75%  { margin-left: -0.25em; margin-right:  0.25em; }
+    100% { margin-left:  0.00em; margin-right:  0.00em; }
 }
 
 @-webkit-keyframes shake-head {
-    0%   { margin-left:  0.5em; }
-    25%  { margin-left: -0.5em; }
-    50%  { margin-left:  0.5em; }
-    75%  { margin-left: -0.5em; }
-    100% { margin-left:  0.0em; }
+    0%   { margin-left:  0.25em; margin-right: -0.25em; }
+    25%  { margin-left: -0.25em; margin-right:  0.25em; }
+    50%  { margin-left:  0.25em; margin-right: -0.25em; }
+    75%  { margin-left: -0.25em; margin-right:  0.25em; }
+    100% { margin-left:  0.00em; margin-right:  0.00em; }
 }
 
 p#login-error {
