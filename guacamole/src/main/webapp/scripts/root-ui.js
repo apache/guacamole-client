@@ -466,6 +466,8 @@ GuacamoleRootUI.sections.login_form.onsubmit = function() {
 
     try {
 
+        GuacUI.removeClass(GuacamoleRootUI.views.login, "error");
+
         // Attempt login
         GuacamoleRootUI.login(
             GuacamoleRootUI.fields.username.value,
@@ -482,12 +484,17 @@ GuacamoleRootUI.sections.login_form.onsubmit = function() {
     }
     catch (e) {
 
-        // Display error, reset and refocus password field
-        GuacamoleRootUI.messages.login_error.textContent = e.message;
+        window.setTimeout(function() {
 
-        // Reset and recofus password field
-        GuacamoleRootUI.fields.password.value = "";
-        GuacamoleRootUI.fields.password.focus();
+            // Display error
+            GuacUI.addClass(GuacamoleRootUI.views.login, "error");
+            GuacamoleRootUI.messages.login_error.textContent = e.message;
+
+            // Reset and refocus password field
+            GuacamoleRootUI.fields.password.value = "";
+            GuacamoleRootUI.fields.password.focus();
+
+        }, 1);
 
     }
 

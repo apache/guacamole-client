@@ -53,11 +53,53 @@ div#login-ui {
     display: table;
 }
 
+@keyframes shake-head {
+    0%   { margin-left:  0.5em; }
+    25%  { margin-left: -0.5em; }
+    50%  { margin-left:  0.5em; }
+    75%  { margin-left: -0.5em; }
+    100% { margin-left:  0.0em; }
+}
+
+@-webkit-keyframes shake-head {
+    0%   { margin-left:  0.5em; }
+    25%  { margin-left: -0.5em; }
+    50%  { margin-left:  0.5em; }
+    75%  { margin-left: -0.5em; }
+    100% { margin-left:  0.0em; }
+}
+
 p#login-error {
-    text-align: center;
-    background: #FDD;
-    color: red;
+    display: none;
+}
+
+.error p#login-error {
+    display: block;
+
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+
+    padding: 1em;
     margin: 0.2em;
+
+    background: #FDD;
+    border: 1px solid #964040;
+    -moz-border-radius: 0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius: 0.25em;
+    text-align: center;
+    color: #964040;
+}
+
+.error #login-form {
+    animation-name: shake-head;
+    animation-duration: 0.25s;
+    animation-timing-function: linear;
+    -webkit-animation-name: shake-head;
+    -webkit-animation-duration: 0.25s;
+    -webkit-animation-timing-function: linear;
 }
 
 div#login-logo {
