@@ -702,13 +702,13 @@ GuacUI.Client.attach = function(guac) {
 
             // Connecting
             case 1:
-                GuacUI.Client.showStatus("Connecting", "Connecting to server...");
+                GuacUI.Client.showStatus("Connecting", "Connecting to Guacamole...");
                 GuacUI.Client.titlePrefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
-                GuacUI.Client.showStatus("Waiting", "Connected. Waiting for first frame...");
+                GuacUI.Client.showStatus("Connecting", "Connected to Guacamole. Waiting for response...");
                 GuacUI.Client.titlePrefix = "[Waiting...]";
                 break;
 

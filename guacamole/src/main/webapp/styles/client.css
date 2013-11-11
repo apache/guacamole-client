@@ -65,27 +65,6 @@ div.dialogMiddle {
     vertical-align: middle;
 }
 
-div.dialog {
-    padding: 1em;
-
-    max-width: 75%;
-    text-align: left;
-
-    display: inline-block;
-}
-
-div.dialog h1 {
-    margin: 0;
-    margin-bottom: 0.25em;
-    text-align: center;
-}
-
-div.dialog div.buttons {
-    margin: 0;
-    margin-top: 0.5em;
-    text-align: center;
-}
-
 button {
 
     border-style: solid;
@@ -257,29 +236,35 @@ div#viewportClone {
 }
 
 @keyframes show-dialog {
-    0%   {transform: scale(0.5); }
+    0%   {transform: scale(0.75); }
     100% {transform: scale(1); }
 }
 
 @-webkit-keyframes show-dialog {
-    0%   {-webkit-transform: scale(0.5); }
+    0%   {-webkit-transform: scale(0.75); }
     100% {-webkit-transform: scale(1); }
 }
 
 .dialog {
 
     animation-name: show-dialog;
+    animation-timing-function: linear;
     animation-duration: 0.125s;
     -webkit-animation-name: show-dialog;
+    -webkit-animation-timing-function: linear;
     -webkit-animation-duration: 0.125s;
     
+    max-width: 75%;
     max-height: none;
     width: 4in;
-    font-size: 0.75em;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
     -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
+
+    padding: 0.5em;
+    text-align: left;
+    
 }
 
 .guac-error .dialog {
@@ -292,6 +277,11 @@ div#viewportClone {
     font-weight: bold;
     border-bottom: 1px solid black;
     margin-bottom: 0.5em;
+}
+
+.dialog .status {
+    padding: 0.5em;
+    font-size: 0.8em;
 }
 
 p.hint {
