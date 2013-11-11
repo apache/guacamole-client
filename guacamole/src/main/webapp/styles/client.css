@@ -256,15 +256,42 @@ div#viewportClone {
     visibility: hidden;
 }
 
-.status {
-    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
-    font-size: xx-large;
-    color: white;
+@keyframes show-dialog {
+    0%   {transform: scale(0.5); }
+    100% {transform: scale(1); }
 }
 
-.guac-error .status {
-    text-shadow: 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black, 0 0 0.25em black;
-    color: #D44;
+@-webkit-keyframes show-dialog {
+    0%   {-webkit-transform: scale(0.5); }
+    100% {-webkit-transform: scale(1); }
+}
+
+.dialog {
+
+    animation-name: show-dialog;
+    animation-duration: 0.125s;
+    -webkit-animation-name: show-dialog;
+    -webkit-animation-duration: 0.125s;
+    
+    max-height: none;
+    width: 4in;
+    font-size: 0.75em;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+}
+
+.guac-error .dialog {
+    background: #FDD;
+    border: 1px solid #964040;
+}
+
+.dialog .title {
+    font-size: 1.1em;
+    font-weight: bold;
+    border-bottom: 1px solid black;
+    margin-bottom: 0.5em;
 }
 
 p.hint {

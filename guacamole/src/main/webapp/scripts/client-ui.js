@@ -525,20 +525,25 @@ GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
  * @constructor
  * @augments GuacUI.Component
  */
-GuacUI.Client.ModalStatus = function(text, classname) {
+GuacUI.Client.ModalStatus = function(title_text, text, classname) {
 
     // Create element hierarchy
     var outer  = GuacUI.createElement("div", "dialogOuter");
     var middle = GuacUI.createChildElement(outer, "div", "dialogMiddle");
     var dialog = GuacUI.createChildElement(middle, "div", "dialog");
+
+    // Add title if given
+    if (title_text) {
+        var title = GuacUI.createChildElement(dialog, "p", "title");
+        title.textContent = title_text;
+    }
+
     var status = GuacUI.createChildElement(dialog, "p", "status");
+    status.textContent = text;
 
     // Set classname if given
     if (classname)
         GuacUI.addClass(outer, classname);
-
-    // Set status text
-    status.textContent = text;
 
     this.show = function() {
         document.body.appendChild(outer);
@@ -641,21 +646,21 @@ GuacUI.Client.hideStatus = function() {
 /**
  * Displays a status overlay with the given text.
  */
-GuacUI.Client.showStatus = function(status) {
+GuacUI.Client.showStatus = function(title, status) {
     GuacUI.Client.hideStatus();
 
-    GuacUI.Client.visibleStatus = new GuacUI.Client.ModalStatus(status);
+    GuacUI.Client.visibleStatus = new GuacUI.Client.ModalStatus(title, status);
     GuacUI.Client.visibleStatus.show();
 };
 
 /**
  * Displays an error status overlay with the given text.
  */
-GuacUI.Client.showError = function(status) {
+GuacUI.Client.showError = function(title, status) {
     GuacUI.Client.hideStatus();
 
     GuacUI.Client.visibleStatus =
-        new GuacUI.Client.ModalStatus(status, "guac-error");
+        new GuacUI.Client.ModalStatus(title, status, "guac-error");
     GuacUI.Client.visibleStatus.show();
 }
 
@@ -691,19 +696,19 @@ GuacUI.Client.attach = function(guac) {
 
             // Idle
             case 0:
-                GuacUI.Client.showStatus("Idle.");
+                GuacUI.Client.showStatus(null, "Idle.");
                 GuacUI.Client.titlePrefix = "[Idle]";
                 break;
 
             // Connecting
             case 1:
-                GuacUI.Client.showStatus("Connecting...");
+                GuacUI.Client.showStatus("Connecting", "Connecting to server...");
                 GuacUI.Client.titlePrefix = "[Connecting...]";
                 break;
 
             // Connected + waiting
             case 2:
-                GuacUI.Client.showStatus("Connected, waiting for first update...");
+                GuacUI.Client.showStatus("Waiting", "Connected. Waiting for first frame...");
                 GuacUI.Client.titlePrefix = "[Waiting...]";
                 break;
 
@@ -721,19 +726,19 @@ GuacUI.Client.attach = function(guac) {
 
             // Disconnecting
             case 4:
-                GuacUI.Client.showStatus("Disconnecting...");
+                GuacUI.Client.showStatus(null, "Disconnecting...");
                 GuacUI.Client.titlePrefix = "[Disconnecting...]";
                 break;
 
             // Disconnected
             case 5:
-                GuacUI.Client.showStatus("Disconnected.");
+                GuacUI.Client.showStatus("Disconnected", "Guacamole has been manually disconnected. Reload the page to reconnect.");
                 GuacUI.Client.titlePrefix = "[Disconnected]";
                 break;
 
             // Unknown status code
             default:
-                GuacUI.Client.showStatus("[UNKNOWN STATUS]");
+                GuacUI.Client.showStatus("Unknown Status", "An unknown status code was received. This is most likely a bug.");
 
         }
 
@@ -761,7 +766,7 @@ GuacUI.Client.attach = function(guac) {
         guac.disconnect();
 
         // Display error message
-        GuacUI.Client.showError(error);
+        GuacUI.Client.showError("Connection Error", error);
         
     };
 
