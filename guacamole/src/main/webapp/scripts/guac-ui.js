@@ -774,7 +774,7 @@ GuacUI.Download = function(filename) {
         element.removeChild(progress);
         GuacUI.addClass(element, "complete");
 
-        var download = GuacUI.createChildElement(element, "div", "download");
+        var download = GuacUI.createChildElement(element, "button");
         download.textContent = "Download";
         download.onclick = function() {
             if (guac_download.ondownload)

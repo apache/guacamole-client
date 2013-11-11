@@ -420,13 +420,14 @@ p.hint {
     height: 100%;
     width: 0;
     box-shadow: inset  1px  1px 0 rgba(255, 255, 255, 0.5),
-                inset -1px -1px 0 rgba(  0,   0,   0, 0.1);
+                inset -1px -1px 0 rgba(  0,   0,   0, 0.1),
+                       1px 1px  0 gray;
 }
 
 .upload.notification .progress,
 .download.notification .progress {
 
-    background: #444 url('../images/progress.png');
+    background: #C2C2C2 url('../images/progress.png');
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;
     -webkit-background-size: 16px 16px;
