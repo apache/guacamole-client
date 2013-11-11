@@ -297,20 +297,23 @@ p.hint {
 
 .notification {
 
-    font-size: 0.9em;
+    font-size: 0.7em;
     text-align: center;
     
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    background: black;
-    opacity: 0.9;
+    border: 1px solid rgba(0, 0, 0, 0.75);
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+    background: white;
 
-    color: white;
+    color: black;
 
     padding: 0.5em;
     margin: 1em;
     overflow: hidden;
 
-    box-shadow: 0.25em 0.25em 0.25em rgba(0, 0, 0, 0.75);
+    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.25);
  
 }
 
@@ -324,17 +327,13 @@ p.hint {
     white-space: nowrap;
     font-weight: bold;
 
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid black;
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;
 }
 
 .notification .title-bar * {
     vertical-align: middle;
-}
-
-.notification .caption {
-    color: silver;
 }
 
 .notification .close {
@@ -363,7 +362,7 @@ p.hint {
     to   {background-position: 64px 0px;}
 }
 
-.upload.notification .caption,
+.notification .caption,
 .download.notification .caption {
     width: 100%;
     white-space: nowrap;
@@ -388,6 +387,9 @@ p.hint {
     min-width: 5em;
     
     border: 1px solid gray;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
 
     text-align: center;
@@ -411,14 +413,14 @@ p.hint {
 
 .download.notification .progress .bar,
 .upload.notification .progress .bar {
-    background: #048;
+    background: #A3D655;
     position: absolute;
     top: 0;
     left: 0;
     height: 100%;
     width: 0;
-    box-shadow: inset  1px  1px 2px rgba(255, 255, 255, 0.5),
-                inset -1px -1px 2px rgba(  0,   0,   0, 0.5);
+    box-shadow: inset  1px  1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 0 rgba(  0,   0,   0, 0.1);
 }
 
 .upload.notification .progress,
