@@ -146,7 +146,7 @@ div#login-dialog #buttons {
     text-align: right;
 }
 
-input[type="submit"].login, button.login {
+input[type="submit"]#login, button#login {
 
     background-image: url('../images/guacamole-logo-64.png');
     background-repeat: no-repeat;
