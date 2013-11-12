@@ -25,6 +25,7 @@
         <link rel="icon" type="image/png" href="images/guacamole-logo-64.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/guacamole-logo-144.png"/>
         <link rel="stylesheet" type="text/css" href="styles/ui.css"/>
+        <link rel="stylesheet" type="text/css" href="styles/admin.css"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi"/>
         <title>Guacamole ${project.version}</title>
     </head>
@@ -48,9 +49,7 @@
                     passwords can be changed.
                 </p>
                
-                <div id="user-add-form">
-                    <div class="icon user add"/><input type="text" class="name" id="username" placeholder="Add user"/><button id="add-user">Add</button>
-                </div>
+                <div id="user-add-form"><input type="text" class="name" id="username" placeholder="Username"/><button id="add-user">Add User</button></div>
                 
                 <div id="user-list">
                 </div>
@@ -70,9 +69,7 @@
                     can be changed.
                 </p>
 
-                <div id="connection-add-form">
-                    <button id="add-connection">New Connection</button><button id="add-connection-group">New Group</button>
-                </div>
+                <div id="connection-add-form"><button id="add-connection">New Connection</button><button id="add-connection-group">New Group</button></div>
                 
                 <div id="connection-list">
                 </div>
