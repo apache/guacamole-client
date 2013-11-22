@@ -29,7 +29,7 @@ img {
 }
 
 .software-cursor {
-    cursor: url('../images/mouse/dot.gif'),url('../images/mouse/blank.cur'),default;
+    cursor: url('../images/mouse/blank.gif'),url('../images/mouse/blank.cur'),default;
     overflow: hidden;
     cursor: none;
 }
