@@ -150,6 +150,9 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get user
         MySQLUser user = userService.retrieveUser(identifier);
+        
+        if(user == null)
+            return null;
 
         // Verify access is granted
         permissionCheckService.verifyUserAccess(this.user_id,
@@ -157,7 +160,7 @@ public class UserDirectory implements Directory<String, User> {
                 MySQLConstants.USER_READ);
 
         // Return user
-        return userService.retrieveUser(identifier);
+        return user;
 
     }
 
