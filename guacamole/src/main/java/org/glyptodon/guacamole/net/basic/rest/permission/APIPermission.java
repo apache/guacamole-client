@@ -18,6 +18,7 @@ package org.glyptodon.guacamole.net.basic.rest.permission;
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -30,6 +31,7 @@ import org.glyptodon.guacamole.net.auth.permission.UserPermission;
  * 
  * @author James Muehlner
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class APIPermission {
     
     /**
@@ -79,14 +81,17 @@ public class APIPermission {
             this.objectType = ObjectType.CONNECTION;
             
             this.objectPermissionType = ((ConnectionPermission) permission).getType();
+            this.objectIdentifier = ((ConnectionPermission) permission).getObjectIdentifier();
         } else if(permission instanceof ConnectionGroupPermission) {
             this.objectType = ObjectType.CONNECTION_GROUP;
             
             this.objectPermissionType = ((ConnectionGroupPermission) permission).getType();
+            this.objectIdentifier = ((ConnectionGroupPermission) permission).getObjectIdentifier();
         } else if(permission instanceof UserPermission) {
             this.objectType = ObjectType.USER;
             
             this.objectPermissionType = ((UserPermission) permission).getType();
+            this.objectIdentifier = ((UserPermission) permission).getObjectIdentifier();
         } else if(permission instanceof SystemPermission) {
             this.objectType = ObjectType.SYSTEM;
             
@@ -175,7 +180,7 @@ public class APIPermission {
      * @return An org.glyptodon.guacamole.net.auth.permission.Permission
      * representation of this APIPermission.
      */
-    public Permission getPermission() {
+    public Permission toPermission() {
         switch(this.objectType) {
             case CONNECTION:
                 return new ConnectionPermission

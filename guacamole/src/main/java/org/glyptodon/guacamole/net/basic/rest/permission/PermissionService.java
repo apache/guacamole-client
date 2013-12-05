@@ -61,7 +61,7 @@ public class PermissionService {
         Set<Permission> permissions = new HashSet<Permission>();
         
         for(APIPermission restPermission : restPermissions) {
-            permissions.add(restPermission.getPermission());
+            permissions.add(restPermission.toPermission());
         }
         
         return permissions;
