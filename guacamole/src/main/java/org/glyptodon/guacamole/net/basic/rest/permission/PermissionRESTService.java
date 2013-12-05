@@ -128,9 +128,8 @@ public class PermissionRESTService {
             // Get the original permissions the user had
             Set<Permission> originalPermissions = user.getPermissions();
             
-            Set<Permission> permissionsToRemove = new HashSet<Permission>(originalPermissions);
-            
             // Find all permissions in the original set, but not the new one
+            Set<Permission> permissionsToRemove = new HashSet<Permission>(originalPermissions);
             permissionsToRemove.removeAll(newPermissions);
             
             // Remove all permissions that are no longer wanted
