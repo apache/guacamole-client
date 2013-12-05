@@ -2,7 +2,6 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 
 /*
@@ -38,7 +37,7 @@ public class ConnectionGroupService {
      * @return A List of APIConnectionGroup objects for use with the REST endpoint.
      */
     public List<APIConnectionGroup> convertConnectionGroupList(
-            List<? extends ConnectionGroup> connectionGroups) {
+            Iterable<? extends ConnectionGroup> connectionGroups) {
         List<APIConnectionGroup> restConnectionGroups = new ArrayList<APIConnectionGroup>();
         
         for(ConnectionGroup connectionGroup : connectionGroups) {

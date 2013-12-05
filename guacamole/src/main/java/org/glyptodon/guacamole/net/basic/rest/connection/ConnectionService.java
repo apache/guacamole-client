@@ -39,7 +39,7 @@ public class ConnectionService {
      * @throws GuacamoleException If an error occurs while converting the 
      *                            connections.
      */
-    public List<APIConnection> convertConnectionList(List<? extends Connection> connections) 
+    public List<APIConnection> convertConnectionList(Iterable<? extends Connection> connections) 
             throws GuacamoleException {
         List<APIConnection> restConnections = new ArrayList<APIConnection>();
         

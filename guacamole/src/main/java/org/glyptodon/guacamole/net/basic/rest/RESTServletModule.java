@@ -25,6 +25,7 @@ import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.glyptodon.guacamole.net.basic.rest.auth.LoginRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
+import org.glyptodon.guacamole.net.basic.rest.permission.PermissionRESTService;
 
 /**
  * A Guice Module to set up the servlet mappings for the Guacamole REST API.
@@ -39,6 +40,7 @@ public class RESTServletModule extends ServletModule {
         // Set up the API endpoints
         bind(ConnectionRESTService.class);
         bind(ConnectionGroupRESTService.class);
+        bind(PermissionRESTService.class);
         bind(LoginRESTService.class);
         
         // Set up the servlet and JSON mappings
