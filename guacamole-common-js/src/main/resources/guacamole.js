@@ -1428,7 +1428,7 @@ Guacamole.Client = function(tunnel) {
             // Count active, not-ready layers and install sync tracking hooks
             for (var i=0; i<layers.length; i++) {
 
-                var layer_container = layer[i]
+                var layer_container = layers[i];
                 if (layer_container) {
 
                     var layer = layer_container.getLayer();
