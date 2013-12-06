@@ -1428,21 +1428,26 @@ Guacamole.Client = function(tunnel) {
             // Count active, not-ready layers and install sync tracking hooks
             for (var i=0; i<layers.length; i++) {
 
-                var layer = layers[i].getLayer();
-                if (layer) {
+                var layer_container = layer[i]
+                if (layer_container) {
 
-                    // Flush layer
-                    layer.flush();
+                    var layer = layer_container.getLayer();
+                    if (layer) {
 
-                    // If still not ready, sync later
-                    if (!layer.isReady()) {
-                        layersToSync++;
-                        layer.sync(syncLayer);
+                        // Flush layer
+                        layer.flush();
+
+                        // If still not ready, sync later
+                        if (!layer.isReady()) {
+                            layersToSync++;
+                            layer.sync(syncLayer);
+                        }
+
                     }
 
-                }
+                } // end if layer exists
 
-            }
+            } // end for each layer
 
             // If all layers are ready, then we didn't install any hooks.
             // Send sync message now,
