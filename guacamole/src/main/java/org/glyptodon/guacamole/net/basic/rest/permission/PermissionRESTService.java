@@ -143,7 +143,7 @@ public class PermissionRESTService {
      * @param permission The permission to remove for the user with the given userID.
      */
     @POST
-    @Path("/{userID}/remove")
+    @Path("/remove{userID}/")
     public void removePermission(@QueryParam("token") String authToken, 
             @PathParam("userID") String userID, APIPermission permission) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
