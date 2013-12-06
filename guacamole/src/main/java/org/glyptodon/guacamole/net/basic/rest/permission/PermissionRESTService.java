@@ -102,17 +102,17 @@ public class PermissionRESTService {
     }
     
     /**
-     * Sets the permissions for a user with the given userID.
+     * Adds a permissions for a user with the given userID.
      * 
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
-     * @param userID The user ID to retrieve permissions for.
-     * @param permissions The permissions to set for the user with the given userID.
+     * @param userID The user ID to add the permission for.
+     * @param permission The permission to add for the user with the given userID.
      */
     @POST
     @Path("/{userID}")
-    public void setPermissions(@QueryParam("token") String authToken, 
-            @PathParam("userID") String userID, List<APIPermission> permissions) {
+    public void addPermission(@QueryParam("token") String authToken, 
+            @PathParam("userID") String userID, APIPermission permission) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
@@ -122,34 +122,47 @@ public class PermissionRESTService {
             if(user == null)
                 throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
             
-            // All the permissions the user should have after this operation
-            Set<Permission> newPermissions = permissionService.convertAPIPermissionList(permissions);
-            
-            // Get the original permissions the user had
-            Set<Permission> originalPermissions = user.getPermissions();
-            
-            // Find all permissions in the original set, but not the new one
-            Set<Permission> permissionsToRemove = new HashSet<Permission>(originalPermissions);
-            permissionsToRemove.removeAll(newPermissions);
-            
-            // Remove all permissions that are no longer wanted
-            for(Permission permissionToRemove : permissionsToRemove) {
-                user.removePermission(permissionToRemove);
-            }
-            
-            // Get only those permissions that need to be added
-            newPermissions.removeAll(originalPermissions);
-            
-            // Add all new permissions
-            for(Permission newPermission : newPermissions) {
-                user.addPermission(newPermission);
-            }
+            // Add the new permission
+            user.addPermission(permission.toPermission());
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
                 throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught setting permissions.", e);
+            logger.error("Unexpected GuacamoleException caught adding permission.", e);
+            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
+        }
+    }
+    
+    /**
+     * Removes a permissions for a user with the given userID.
+     * 
+     * @param authToken The authentication token that is used to authenticate
+     *                  the user performing the operation.
+     * @param userID The user ID to remove the permission for.
+     * @param permission The permission to remove for the user with the given userID.
+     */
+    @POST
+    @Path("/{userID}/remove")
+    public void removePermission(@QueryParam("token") String authToken, 
+            @PathParam("userID") String userID, APIPermission permission) {
+        UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
+        
+        try {
+            // Get the user
+            User user = userContext.getUserDirectory().get(userID);
+            
+            if(user == null)
+                throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+            
+            // Remove the permission
+            user.removePermission(permission.toPermission());
+        } catch(GuacamoleSecurityException e) {
+                throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+        } catch(GuacamoleClientException e) {
+                throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
+        } catch(GuacamoleException e) {
+            logger.error("Unexpected GuacamoleException caught adding permission.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
