@@ -1144,6 +1144,11 @@ Guacamole.Layer = function(width, height) {
     display.width = width;
     display.height = height;
 
+    // Explicitly render canvas below other elements in the layer (such as
+    // child layers). Chrome and others may fail to render layers properly
+    // without this.
+    display.style.zIndex = -1;
+
 };
 
 /**
