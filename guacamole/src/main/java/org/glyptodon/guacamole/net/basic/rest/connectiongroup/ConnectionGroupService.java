@@ -32,10 +32,10 @@ import org.glyptodon.guacamole.net.auth.Directory;
 public class ConnectionGroupService {
     
     /**
-     * Converts a list of ConnectionGroup to a list of APIConnectionGroup
+     * Converts a ConnectionGroup directory to a list of APIConnectionGroup
      * objects for exposing with the REST endpoints.
      * 
-     * @param connectionGroups The ConnectionGroup to convert for REST endpoint use.
+     * @param connectionGroupDirectory The ConnectionGroup Directory to convert for REST endpoint use.
      * @return A List of APIConnectionGroup objects for use with the REST endpoint.
      * @throws GuacamoleException If an error occurs while converting the 
      *                            connection group directory.
