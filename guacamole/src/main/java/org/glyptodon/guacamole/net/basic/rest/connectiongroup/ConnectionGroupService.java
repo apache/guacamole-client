@@ -2,7 +2,9 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.Directory;
 
 /*
  *  Guacamole - Clientless Remote Desktop
@@ -35,13 +37,15 @@ public class ConnectionGroupService {
      * 
      * @param connectionGroups The ConnectionGroup to convert for REST endpoint use.
      * @return A List of APIConnectionGroup objects for use with the REST endpoint.
+     * @throws GuacamoleException If an error occurs while converting the 
+     *                            connection group directory.
      */
     public List<APIConnectionGroup> convertConnectionGroupList(
-            Iterable<? extends ConnectionGroup> connectionGroups) {
+            Directory<String, ConnectionGroup> connectionGroupDirectory) throws GuacamoleException {
         List<APIConnectionGroup> restConnectionGroups = new ArrayList<APIConnectionGroup>();
         
-        for(ConnectionGroup connectionGroup : connectionGroups) {
-            restConnectionGroups.add(new APIConnectionGroup(connectionGroup));
+        for(String connectionGroupID : connectionGroupDirectory.getIdentifiers()) {
+            restConnectionGroups.add(new APIConnectionGroup(connectionGroupDirectory.get(connectionGroupID)));
         }
             
         return restConnectionGroups;

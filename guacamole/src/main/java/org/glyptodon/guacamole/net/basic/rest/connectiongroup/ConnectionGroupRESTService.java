@@ -101,15 +101,8 @@ public class ConnectionGroupRESTService {
             Directory<String, ConnectionGroup> connectionGroupDirectory = 
                     parentConnectionGroup.getConnectionGroupDirectory();
             
-            // Get the list of connection group names
-            List<ConnectionGroup> connectionGroups = new ArrayList<ConnectionGroup>();
-            Iterable<String> identifiers = connectionGroupDirectory.getIdentifiers();
-            
-            // Get the connection group for each name
-            for(String identifier : identifiers)
-                connectionGroups.add(connectionGroupDirectory.get(identifier));
-            
-            return connectionGroupService.convertConnectionGroupList(connectionGroups);
+            // return the converted connection group list
+            return connectionGroupService.convertConnectionGroupList(connectionGroupDirectory);
         } catch(GuacamoleSecurityException e) {
             throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
@@ -146,6 +139,7 @@ public class ConnectionGroupRESTService {
             if(connectionGroup == null)
                 throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided ID.");
             
+            // Return the connectiion group
             return new APIConnectionGroup(connectionGroup);
         } catch(GuacamoleSecurityException e) {
             throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
@@ -311,7 +305,7 @@ public class ConnectionGroupRESTService {
             if(parentConnectionGroup == null)
                 throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
             
-            // Move the connection
+            // Move the connection group
             connectionGroupDirectory.move(connectionGroupID, parentConnectionGroup.getConnectionGroupDirectory());
         } catch(GuacamoleSecurityException e) {
             throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");

@@ -102,15 +102,8 @@ public class ConnectionRESTService {
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
             
-            // Get the list of connection names
-            List<Connection> connections = new ArrayList<Connection>();
-            Iterable<String> identifiers = connectionDirectory.getIdentifiers();
-            
-            // Get the connection for each name
-            for(String identifier : identifiers)
-                connections.add(connectionDirectory.get(identifier));
-            
-            return connectionService.convertConnectionList(connections);
+            // Return the converted connection directory
+            return connectionService.convertConnectionList(connectionDirectory);
         } catch(GuacamoleSecurityException e) {
             throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
