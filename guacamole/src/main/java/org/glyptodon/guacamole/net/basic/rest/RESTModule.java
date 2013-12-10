@@ -30,6 +30,7 @@ import org.glyptodon.guacamole.net.basic.rest.auth.TokenUserContextMap;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupService;
 import org.glyptodon.guacamole.net.basic.rest.permission.PermissionService;
+import org.glyptodon.guacamole.net.basic.rest.user.UserService;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +70,7 @@ public class RESTModule extends AbstractModule {
         bind(ConnectionService.class);
         bind(ConnectionGroupService.class);
         bind(PermissionService.class);
+        bind(UserService.class);
         bind(AuthenticationService.class);
         
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);

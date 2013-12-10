@@ -39,8 +39,7 @@ public class PermissionService {
      * @param permissions The Connections to convert for REST endpoint use.
      * @return A List of APIPermission objects for use with the REST endpoint.
      */
-    public List<APIPermission> convertPermissionList(Iterable<? extends Permission> permissions) 
-            throws GuacamoleException {
+    public List<APIPermission> convertPermissionList(Iterable<? extends Permission> permissions) {
         List<APIPermission> restPermissions = new ArrayList<APIPermission>();
         
         for(Permission permission : permissions) {
