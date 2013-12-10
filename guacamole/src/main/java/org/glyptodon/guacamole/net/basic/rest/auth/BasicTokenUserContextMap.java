@@ -95,6 +95,11 @@ public class BasicTokenUserContextMap implements TokenUserContextMap {
         lastAccessTimeMap.put(authToken, new Date().getTime());
     }
     
+    /**
+     * Check if a session has timed out.
+     * @param authToken The auth token for the session.
+     * @return True if the session has timed out, false otherwise.
+     */
     private boolean sessionHasTimedOut(String authToken) {
         if(!lastAccessTimeMap.containsKey(authToken))
             return true;

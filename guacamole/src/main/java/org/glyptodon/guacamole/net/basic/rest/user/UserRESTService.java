@@ -70,7 +70,7 @@ public class UserRESTService {
     private UserService userService;
     
     /**
-     * Get a list of users in the system.
+     * Gets a list of users in the system.
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @return The user list.
@@ -96,7 +96,7 @@ public class UserRESTService {
     }
     
     /**
-     * Get a user.
+     * Gets an individual user.
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @return user The user.
@@ -129,13 +129,13 @@ public class UserRESTService {
     }
     
     /**
-     * Create a new user.
+     * Creates a new user and returns the username.
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param user The new user to create.
      */
     @POST
-    public void createUser(@QueryParam("token") String authToken, APIUser user) {
+    public String createUser(@QueryParam("token") String authToken, APIUser user) {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
         try {
@@ -144,6 +144,8 @@ public class UserRESTService {
             
             // Create the user
             userDirectory.add(new APIUserWrapper(user));
+            
+            return user.getUsername();
         } catch(GuacamoleSecurityException e) {
                 throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
@@ -155,7 +157,7 @@ public class UserRESTService {
     }
     
     /**
-     * Update an existing user.
+     * Updates an individual existing user.
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param userID The unique identifier of the user to update.
@@ -195,7 +197,7 @@ public class UserRESTService {
     }
     
     /**
-     * Delete an existing user.
+     * Deletes an individual existing user.
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param userID The unique identifier of the user to delete.
