@@ -90,7 +90,7 @@ public class UserRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
+            logger.error("Unexpected GuacamoleException caught while listing users.", e);
             throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -123,7 +123,7 @@ public class UserRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
+            logger.error("Unexpected GuacamoleException caught while getting user.", e);
             throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -151,7 +151,7 @@ public class UserRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
+            logger.error("Unexpected GuacamoleException caught while creating user.", e);
             throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -191,7 +191,7 @@ public class UserRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
+            logger.error("Unexpected GuacamoleException caught while updating user.", e);
             throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -224,7 +224,7 @@ public class UserRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
+            logger.error("Unexpected GuacamoleException caught while deleting user.", e);
             throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }

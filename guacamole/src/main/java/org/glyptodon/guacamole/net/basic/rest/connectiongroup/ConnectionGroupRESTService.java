@@ -239,7 +239,7 @@ public class ConnectionGroupRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while creating connection.", e);
+            logger.error("Unexpected GuacamoleException caught while creating connection group.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -278,7 +278,7 @@ public class ConnectionGroupRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught updating connection.", e);
+            logger.error("Unexpected GuacamoleException caught updating connection group.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
@@ -318,7 +318,7 @@ public class ConnectionGroupRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught moving connection.", e);
+            logger.error("Unexpected GuacamoleException caught moving connection group.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }

@@ -159,7 +159,7 @@ public class PermissionRESTService {
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught adding permission.", e);
+            logger.error("Unexpected GuacamoleException caught removing permission.", e);
             throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
         }
     }
