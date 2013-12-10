@@ -97,7 +97,7 @@ public class ConnectionRESTService {
             }
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided parentID.");
+                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
             
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
@@ -145,7 +145,7 @@ public class ConnectionRESTService {
             Connection connection = connectionDirectory.get(connectionID);
             
             if(connection == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided parentID.");
+                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
             
             return new APIConnection(connection);
         } catch(GuacamoleSecurityException e) {
@@ -225,7 +225,7 @@ public class ConnectionRESTService {
             }
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided parentID.");
+                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
             
             Directory<String, Connection> connectionDirectory = 
                     parentConnectionGroup.getConnectionDirectory();
@@ -310,7 +310,7 @@ public class ConnectionRESTService {
             ConnectionGroup parentConnectionGroup = connectionGroupDirectory.get(parentID);
             
             if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided parentID.");
+                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
             
             // Move the connection
             connectionDirectory.move(connectionID, parentConnectionGroup.getConnectionDirectory());
