@@ -29,6 +29,8 @@
     <param name="console-audio"   type="boolean" title="Support audio in console" value="true"/>
     <param name="disable-audio"   type="boolean" title="Disable audio"            value="true"/>
     <param name="enable-printing" type="boolean" title="Enable printing"          value="true"/>
+    <param name="enable-drive"    type="boolean" title="Enable drive"             value="true"/>
+    <param name="drive-path"      type="text"    title="Drive path"/>
 
     <param name="security" type="enum" title="Security mode">
         <option value="">(default)</option>
