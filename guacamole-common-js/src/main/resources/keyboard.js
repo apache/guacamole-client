@@ -557,7 +557,7 @@ Guacamole.Keyboard = function(element) {
         // By default, we expect a corresponding keypress event
         var expect_keypress = true;
 
-        // If key is known from keycode, or this browse supports DOM3 key
+        // If key is known from keycode, or this browser supports DOM3 key
         // events, prevent default
         if (keysym || e.key)
             expect_keypress = false;
