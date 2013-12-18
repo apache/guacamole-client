@@ -127,24 +127,37 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var keyidentifier_keysym = {
+        "Again": [0xFF66],
         "AllCandidates": [0xFF3D],
         "Alphanumeric": [0xFF30],
         "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
         "Attn": [0xFD0E],
         "AltGraph": [0xFFEA],
+        "ArrowDown": [0xFF54],
+        "ArrowLeft": [0xFF51],
+        "ArrowRight": [0xFF53],
+        "ArrowUp": [0xFF52],
+        "Backspace": [0xFF08],
         "CapsLock": [0xFFE5],
+        "Cancel": [0xFF69],
         "Clear": [0xFF0B],
         "Convert": [0xFF21],
         "Copy": [0xFD15],
         "Crsel": [0xFD1C],
+        "CrSel": [0xFD1C],
         "CodeInput": [0xFF37],
+        "Compose": [0xFF20],
         "Control": [0xFFE3, 0xFFE3, 0xFFE4],
+        "ContextMenu": [0xFF67],
+        "Delete": [0xFFFF],
         "Down": [0xFF54],
         "End": [0xFF57],
         "Enter": [0xFF0D],
         "EraseEof": [0xFD06],
+        "Escape": [0xFF1B],
         "Execute": [0xFF62],
         "Exsel": [0xFD1D],
+        "ExSel": [0xFD1D],
         "F1": [0xFFBE],
         "F2": [0xFFBF],
         "F3": [0xFFC0],
@@ -170,13 +183,20 @@ Guacamole.Keyboard = function(element) {
         "F23": [0xFFD4],
         "F24": [0xFFD5],
         "Find": [0xFF68],
+        "GroupFirst": [0xFE0C],
+        "GroupLast": [0xFE0E],
+        "GroupNext": [0xFE08],
+        "GroupPrevious": [0xFE0A],
         "FullWidth": null,
         "HalfWidth": null,
         "HangulMode": [0xFF31],
+        "Hankaku": [0xFF29],
         "HanjaMode": [0xFF34],
         "Help": [0xFF6A],
         "Hiragana": [0xFF25],
+        "HiraganaKatakana": [0xFF27],
         "Home": [0xFF50],
+        "Hyper": [0xFFED, 0xFFED, 0xFFEE],
         "Insert": [0xFF63],
         "JapaneseHiragana": [0xFF25],
         "JapaneseKatakana": [0xFF26],
@@ -187,20 +207,29 @@ Guacamole.Keyboard = function(element) {
         "Katakana": [0xFF26],
         "Left": [0xFF51],
         "Meta": [0xFFE7],
+        "ModeChange": [0xFF7E],
         "NumLock": [0xFF7F],
         "PageDown": [0xFF55],
         "PageUp": [0xFF56],
         "Pause": [0xFF13],
+        "Play": [0xFD16],
         "PreviousCandidate": [0xFF3E],
         "PrintScreen": [0xFD1D],
+        "Redo": [0xFF66],
         "Right": [0xFF53],
         "RomanCharacters": null,
         "Scroll": [0xFF14],
         "Select": [0xFF60],
+        "Separator": [0xFFAC],
         "Shift": [0xFFE1, 0xFFE1, 0xFFE2],
+        "SingleCandidate": [0xFF3C],
+        "Super": [0xFFEB, 0xFFEB, 0xFFEC],
+        "Tab": [0xFF09],
         "Up": [0xFF52],
         "Undo": [0xFF65],
-        "Win": [0xFFEB]
+        "Win": [0xFFEB],
+        "Zenkaku": [0xFF28],
+        "ZenkakuHankaku": [0xFF2A]
     };
 
     /**
@@ -301,6 +330,7 @@ Guacamole.Keyboard = function(element) {
 
     function keysym_from_key_identifier(shifted, keyIdentifier, location) {
 
+        // If identifier is U+xxxx, decode Unicode codepoint
         var unicodePrefixLocation = keyIdentifier.indexOf("U+");
         if (unicodePrefixLocation >= 0) {
 
@@ -309,7 +339,7 @@ Guacamole.Keyboard = function(element) {
             var typedCharacter;
 
             // Convert case if shifted
-            if (shifted == 0)
+            if (shifted === 0)
                 typedCharacter = String.fromCharCode(codepoint).toLowerCase();
             else
                 typedCharacter = String.fromCharCode(codepoint).toUpperCase();
@@ -319,6 +349,12 @@ Guacamole.Keyboard = function(element) {
 
             return keysym_from_charcode(codepoint);
 
+        }
+
+        // If single character, return keysym from codepoint
+        if (keyIdentifier.length === 1) {
+            var codepoint = keyIdentifier.charCodeAt(0);
+            return keysym_from_charcode(codepoint);
         }
 
         return get_keysym(keyidentifier_keysym[keyIdentifier], location);
@@ -367,12 +403,14 @@ Guacamole.Keyboard = function(element) {
      * Marks a key as pressed, firing the keydown event if registered. Key
      * repeat for the pressed key will start after a delay if that key is
      * not a modifier.
+     * 
      * @private
+     * @param keysym The keysym of the key to press.
      */
     function press_key(keysym) {
 
         // Don't bother with pressing the key if the key is unknown
-        if (keysym == null) return;
+        if (keysym === null) return;
 
         // Only press if released
         if (!guac_keyboard.pressed[keysym]) {
@@ -405,7 +443,9 @@ Guacamole.Keyboard = function(element) {
 
     /**
      * Marks a key as released, firing the keyup event if registered.
+     * 
      * @private
+     * @param keysym The keysym of the key to release.
      */
     function release_key(keysym) {
 
@@ -420,7 +460,7 @@ Guacamole.Keyboard = function(element) {
             window.clearInterval(key_repeat_interval);
 
             // Send key event
-            if (keysym != null && guac_keyboard.onkeyup)
+            if (keysym !== null && guac_keyboard.onkeyup)
                 guac_keyboard.onkeyup(keysym);
 
         }
@@ -429,9 +469,13 @@ Guacamole.Keyboard = function(element) {
 
     function isTypable(keyIdentifier) {
 
+        // Identifiers which are a single character are typeable
+        if (keyIdentifier.length === 1)
+            return true;
+
         // Find unicode prefix
         var unicodePrefixLocation = keyIdentifier.indexOf("U+");
-        if (unicodePrefixLocation == -1)
+        if (unicodePrefixLocation === -1)
             return false;
 
         // Parse codepoint value
@@ -490,9 +534,10 @@ Guacamole.Keyboard = function(element) {
 
         // Get key location
         var location = e.location || e.keyLocation || 0;
+        var identifier = e.key || e.keyIdentifier;
 
         // Ignore any unknown key events
-        if (keynum == 0 && !e.keyIdentifier) {
+        if (keynum === 0 && !identifier) {
             e.preventDefault();
             return;
         }
@@ -501,10 +546,10 @@ Guacamole.Keyboard = function(element) {
         update_modifier_state(e);
 
         // Ctrl/Alt/Shift/Meta
-        if      (keynum == 16) guac_keyboard.modifiers.shift = true;
-        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = true;
-        else if (keynum == 18) guac_keyboard.modifiers.alt   = true;
-        else if (keynum == 91) guac_keyboard.modifiers.meta  = true;
+        if      (keynum === 16) guac_keyboard.modifiers.shift = true;
+        else if (keynum === 17) guac_keyboard.modifiers.ctrl  = true;
+        else if (keynum === 18) guac_keyboard.modifiers.alt   = true;
+        else if (keynum === 91) guac_keyboard.modifiers.meta  = true;
 
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
@@ -512,23 +557,24 @@ Guacamole.Keyboard = function(element) {
         // By default, we expect a corresponding keypress event
         var expect_keypress = true;
 
-        // If key is known from keycode, prevent default
-        if (keysym)
+        // If key is known from keycode, or this browse supports DOM3 key
+        // events, prevent default
+        if (keysym || e.key)
             expect_keypress = false;
         
         // Also try to get get keysym from keyIdentifier
-        if (e.keyIdentifier) {
+        if (identifier) {
 
             keysym = keysym ||
             keysym_from_key_identifier(guac_keyboard.modifiers.shift,
-                e.keyIdentifier, location);
+                identifier, location);
 
             // Prevent default if non-typable character or if modifier combination
             // likely to be eaten by browser otherwise (NOTE: We must not prevent
             // default for Ctrl+Alt, as that combination is commonly used for
             // AltGr. If we receive AltGr, we need to handle keypress, which
             // means we cannot cancel keydown).
-            if (!isTypable(e.keyIdentifier)
+            if (!isTypable(identifier)
                 || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
                 || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt)
                 || (guac_keyboard.modifiers.meta))
@@ -541,7 +587,7 @@ Guacamole.Keyboard = function(element) {
             e.preventDefault();
 
             // Press key if known
-            if (keysym != null) {
+            if (keysym !== null) {
                 keydownChar[keynum] = keysym;
                 press_key(keysym);
                 
@@ -582,7 +628,7 @@ Guacamole.Keyboard = function(element) {
         }
 
         // Send press + release if keysym known
-        if (keysym != null) {
+        if (keysym !== null) {
             press_key(keysym);
             release_key(keysym);
         }
@@ -605,14 +651,14 @@ Guacamole.Keyboard = function(element) {
         update_modifier_state(e);
 
         // Ctrl/Alt/Shift/Meta
-        if      (keynum == 16) guac_keyboard.modifiers.shift = false;
-        else if (keynum == 17) guac_keyboard.modifiers.ctrl  = false;
-        else if (keynum == 18) guac_keyboard.modifiers.alt   = false;
-        else if (keynum == 91) guac_keyboard.modifiers.meta  = false;
+        if      (keynum === 16) guac_keyboard.modifiers.shift = false;
+        else if (keynum === 17) guac_keyboard.modifiers.ctrl  = false;
+        else if (keynum === 18) guac_keyboard.modifiers.alt   = false;
+        else if (keynum === 91) guac_keyboard.modifiers.meta  = false;
 
         // Send release event if original key known
         var keydown_keysym = keydownChar[keynum];
-        if (keydown_keysym != null)
+        if (keydown_keysym !== null)
             release_key(keydown_keysym);
 
         // Clear character record
