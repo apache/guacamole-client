@@ -348,7 +348,7 @@ public class ConnectionGroupService {
     }
 
     /**
-     * Creates a new connection group having the given name and protocol.
+     * Creates a new connection group having the given name and type.
      *
      * @param name The name to assign to the new connection group.
      * @param userID The ID of the user who created this connection group.

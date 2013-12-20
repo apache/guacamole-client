@@ -180,6 +180,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
                 name, object.getConfiguration().getProtocol(), user_id, parentID);
+        
+        // Set the connection ID
+        object.setIdentifier(connection.getIdentifier());
 
         // Add connection parameters
         createConfigurationValues(connection.getConnectionID(),

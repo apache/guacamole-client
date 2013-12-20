@@ -20,6 +20,7 @@ package org.glyptodon.guacamole.net.basic.properties;
  */
 
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
+import org.glyptodon.guacamole.properties.LongGuacamoleProperty;
 
 /**
  * Properties used by the default Guacamole web application.
@@ -61,6 +62,16 @@ public class BasicGuacamoleProperties {
 
         @Override
         public String getName() { return "event-listeners"; }
+
+    };
+
+    /**
+     * The session timeout for the API, in milliseconds.
+     */
+    public static final LongGuacamoleProperty API_SESSION_TIMEOUT = new LongGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "api-session-timeout"; }
 
     };
 
