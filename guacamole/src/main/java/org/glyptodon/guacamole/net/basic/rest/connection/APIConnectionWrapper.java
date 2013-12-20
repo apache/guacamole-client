@@ -70,8 +70,8 @@ public class APIConnectionWrapper implements Connection {
         
         Map<String, String> parameters = apiConnection.getParameters();
         
-        for(String key : parameters.keySet())
-            configuration.setParameter(key, parameters.get(key));
+        for(Map.Entry<String, String> entry : parameters.entrySet())
+            configuration.setParameter(entry.getKey(), entry.getValue());
         
         return configuration;
     }
