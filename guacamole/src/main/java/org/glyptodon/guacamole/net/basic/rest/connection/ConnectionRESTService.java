@@ -105,7 +105,7 @@ public class ConnectionRESTService {
             // Return the converted connection directory
             return connectionService.convertConnectionList(connectionDirectory);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -142,7 +142,7 @@ public class ConnectionRESTService {
             
             return new APIConnection(connection);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -176,7 +176,7 @@ public class ConnectionRESTService {
             // Delete the connection
             connectionDirectory.remove(connectionID);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -229,7 +229,7 @@ public class ConnectionRESTService {
             // Return the new connection identifier
             return connection.getIdentifier();
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -268,7 +268,7 @@ public class ConnectionRESTService {
             // Update the connection
             connectionDirectory.update(new APIConnectionWrapper(connection));
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -308,7 +308,7 @@ public class ConnectionRESTService {
             // Move the connection
             connectionDirectory.move(connectionID, parentConnectionGroup.getConnectionDirectory());
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {

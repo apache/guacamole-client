@@ -86,7 +86,7 @@ public class UserRESTService {
             // Convert and return the user directory listing
             return userService.convertUserList(userDirectory);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -119,7 +119,7 @@ public class UserRESTService {
             // Return the user
             return new APIUser(user);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -147,7 +147,7 @@ public class UserRESTService {
             
             return user.getUsername();
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -187,7 +187,7 @@ public class UserRESTService {
              */
             userDirectory.update(new APIUserWrapper(user, existingUser.getPermissions()));
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -220,7 +220,7 @@ public class UserRESTService {
             // Delete the user
             userDirectory.remove(userID);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {

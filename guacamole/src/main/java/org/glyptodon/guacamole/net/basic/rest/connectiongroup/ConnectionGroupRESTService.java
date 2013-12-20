@@ -104,7 +104,7 @@ public class ConnectionGroupRESTService {
             // return the converted connection group list
             return connectionGroupService.convertConnectionGroupList(connectionGroupDirectory);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -142,7 +142,7 @@ public class ConnectionGroupRESTService {
             // Return the connectiion group
             return new APIConnectionGroup(connectionGroup);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -176,7 +176,7 @@ public class ConnectionGroupRESTService {
             // Delete the connection group
             connectionGroupDirectory.remove(connectionGroupID);
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -229,7 +229,7 @@ public class ConnectionGroupRESTService {
             // Return the new connection group identifier
             return connectionGroup.getIdentifier();
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -268,7 +268,7 @@ public class ConnectionGroupRESTService {
             // Update the connection group
             connectionGroupDirectory.update(new APIConnectionGroupWrapper(connectionGroup));
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
@@ -308,7 +308,7 @@ public class ConnectionGroupRESTService {
             // Move the connection group
             connectionGroupDirectory.move(connectionGroupID, parentConnectionGroup.getConnectionGroupDirectory());
         } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.UNAUTHORIZED, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
         } catch(GuacamoleClientException e) {
             throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
         } catch(GuacamoleException e) {
