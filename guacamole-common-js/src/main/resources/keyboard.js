@@ -554,49 +554,24 @@ Guacamole.Keyboard = function(element) {
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
 
-        // By default, we expect a corresponding keypress event
-        var expect_keypress = true;
-
-        // If key is known from keycode, or this browser supports DOM3 key
-        // events, prevent default
-        if (keysym || e.key)
-            expect_keypress = false;
-        
         // Also try to get get keysym from keyIdentifier
-        if (identifier) {
-
+        if (identifier)
             keysym = keysym ||
             keysym_from_key_identifier(guac_keyboard.modifiers.shift,
                 identifier, location);
 
-            // Prevent default if non-typable character or if modifier combination
-            // likely to be eaten by browser otherwise (NOTE: We must not prevent
-            // default for Ctrl+Alt, as that combination is commonly used for
-            // AltGr. If we receive AltGr, we need to handle keypress, which
-            // means we cannot cancel keydown).
-            if (!isTypable(identifier)
-                || ( guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
-                || (!guac_keyboard.modifiers.ctrl &&  guac_keyboard.modifiers.alt)
-                || (guac_keyboard.modifiers.meta))
-                expect_keypress = false;
-            
-        }
+        // Press key if known
+        if (keysym !== null) {
 
-        // If we do not expect to handle via keypress, handle now
-        if (!expect_keypress) {
             e.preventDefault();
-
-            // Press key if known
-            if (keysym !== null) {
-                keydownChar[keynum] = keysym;
-                press_key(keysym);
-                
-                // If a key is pressed while meta is held down, the keyup will never be sent in Chrome, so send it now. (bug #108404)
-                if(guac_keyboard.modifiers.meta) {
-                    release_key(keysym);
-                }
-            }
+            keydownChar[keynum] = keysym;
+            press_key(keysym);
             
+            // If a key is pressed while meta is held down, the keyup will
+            // never be sent in Chrome, so send it now. (bug #108404)
+            if(guac_keyboard.modifiers.meta)
+                release_key(keysym);
+
         }
 
     }, true);
