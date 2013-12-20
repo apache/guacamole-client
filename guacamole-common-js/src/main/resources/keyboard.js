@@ -328,13 +328,13 @@ Guacamole.Keyboard = function(element) {
         return keysyms[location] || keysyms[0];
     }
 
-    function keysym_from_key_identifier(shifted, keyIdentifier, location) {
+    function keysym_from_key_identifier(shifted, identifier, location) {
 
         // If identifier is U+xxxx, decode Unicode codepoint
-        var unicodePrefixLocation = keyIdentifier.indexOf("U+");
+        var unicodePrefixLocation = identifier.indexOf("U+");
         if (unicodePrefixLocation >= 0) {
 
-            var hex = keyIdentifier.substring(unicodePrefixLocation+2);
+            var hex = identifier.substring(unicodePrefixLocation+2);
             var codepoint = parseInt(hex, 16);
             var typedCharacter;
 
@@ -346,18 +346,17 @@ Guacamole.Keyboard = function(element) {
 
             // Get codepoint
             codepoint = typedCharacter.charCodeAt(0);
-
             return keysym_from_charcode(codepoint);
 
         }
 
         // If single character, return keysym from codepoint
-        if (keyIdentifier.length === 1) {
-            var codepoint = keyIdentifier.charCodeAt(0);
+        if (identifier.length === 1) {
+            var codepoint = identifier.charCodeAt(0);
             return keysym_from_charcode(codepoint);
         }
 
-        return get_keysym(keyidentifier_keysym[keyIdentifier], location);
+        return get_keysym(keyidentifier_keysym[identifier], location);
 
     }
 
@@ -511,7 +510,7 @@ Guacamole.Keyboard = function(element) {
 
         // Get key location
         var location = e.location || e.keyLocation || 0;
-        var identifier = e.key || e.keyIdentifier;
+        var identifier = e.key;
 
         // Ignore any unknown key events
         if (!keynum && !identifier) {
@@ -531,7 +530,7 @@ Guacamole.Keyboard = function(element) {
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
 
-        // Also try to get get keysym from keyIdentifier
+        // Also try to get get keysym from identifier
         if (identifier)
             keysym = keysym ||
             keysym_from_key_identifier(guac_keyboard.modifiers.shift,
