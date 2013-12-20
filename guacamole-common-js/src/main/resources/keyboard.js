@@ -339,7 +339,7 @@ Guacamole.Keyboard = function(element) {
             var typedCharacter;
 
             // Convert case if shifted
-            if (shifted === 0)
+            if (!shifted)
                 typedCharacter = String.fromCharCode(codepoint).toLowerCase();
             else
                 typedCharacter = String.fromCharCode(codepoint).toUpperCase();
@@ -467,29 +467,6 @@ Guacamole.Keyboard = function(element) {
 
     }
 
-    function isTypable(keyIdentifier) {
-
-        // Identifiers which are a single character are typeable
-        if (keyIdentifier.length === 1)
-            return true;
-
-        // Find unicode prefix
-        var unicodePrefixLocation = keyIdentifier.indexOf("U+");
-        if (unicodePrefixLocation === -1)
-            return false;
-
-        // Parse codepoint value
-        var hex = keyIdentifier.substring(unicodePrefixLocation+2);
-        var codepoint = parseInt(hex, 16);
-
-        // If control character, not typable
-        if (isControlCharacter(codepoint)) return false;
-
-        // Otherwise, typable
-        return true;
-
-    }
-
     /**
      * Given a keyboard event, updates the local modifier state and remote
      * key state based on the modifier flags within the event. This function
@@ -537,7 +514,7 @@ Guacamole.Keyboard = function(element) {
         var identifier = e.key || e.keyIdentifier;
 
         // Ignore any unknown key events
-        if (keynum === 0 && !identifier) {
+        if (!keynum && !identifier) {
             e.preventDefault();
             return;
         }
