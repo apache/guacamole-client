@@ -330,33 +330,32 @@ Guacamole.Keyboard = function(element) {
 
     function keysym_from_key_identifier(shifted, identifier, location) {
 
-        // If identifier is U+xxxx, decode Unicode codepoint
+        var typedCharacter;
+
+        // If identifier is U+xxxx, decode Unicode character 
         var unicodePrefixLocation = identifier.indexOf("U+");
         if (unicodePrefixLocation >= 0) {
-
             var hex = identifier.substring(unicodePrefixLocation+2);
-            var codepoint = parseInt(hex, 16);
-            var typedCharacter;
-
-            // Convert case if shifted
-            if (!shifted)
-                typedCharacter = String.fromCharCode(codepoint).toLowerCase();
-            else
-                typedCharacter = String.fromCharCode(codepoint).toUpperCase();
-
-            // Get codepoint
-            codepoint = typedCharacter.charCodeAt(0);
-            return keysym_from_charcode(codepoint);
-
+            typedCharacter = String.fromCharCode(parseInt(hex, 16));
         }
 
-        // If single character, return keysym from codepoint
-        if (identifier.length === 1) {
-            var codepoint = identifier.charCodeAt(0);
-            return keysym_from_charcode(codepoint);
-        }
+        // If single character, use that as typed character
+        else if (identifier.length === 1)
+            typedCharacter = identifier;
 
-        return get_keysym(keyidentifier_keysym[identifier], location);
+        // Otherwise, look up corresponding keysym
+        else
+            return get_keysym(keyidentifier_keysym[identifier], location);
+
+        // Convert case if shifted
+        if (shifted)
+            typedCharacter = typedCharacter.toUpperCase();
+        else
+            typedCharacter = typedCharacter.toLowerCase();
+
+        // Get codepoint
+        var codepoint = typedCharacter.charCodeAt(0);
+        return keysym_from_charcode(codepoint);
 
     }
 
@@ -510,7 +509,6 @@ Guacamole.Keyboard = function(element) {
 
         // Get key location
         var location = e.location || e.keyLocation || 0;
-        var identifier = e.key;
 
         // Ignore any unknown key events
         if (!keynum && !identifier) {
@@ -530,11 +528,24 @@ Guacamole.Keyboard = function(element) {
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
 
-        // Also try to get get keysym from identifier
-        if (identifier)
-            keysym = keysym ||
-            keysym_from_key_identifier(guac_keyboard.modifiers.shift,
-                identifier, location);
+        // Also try to get get keysym from e.key 
+        if (e.key)
+            keysym = keysym || keysym_from_key_identifier(
+                guac_keyboard.modifiers.shift, e.key, location);
+
+        // If no e.key, use e.keyIdentifier if absolutely necessary (can be buggy)
+        else {
+
+            var keypress_unlikely = 
+                        (guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
+                     || (!guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt)
+                     || (guac_keyboard.modifiers.meta);
+
+            if (keypress_unlikely && e.keyIdentifier)
+                keysym = keysym || keysym_from_key_identifier(
+                    guac_keyboard.modifiers.shift, e.keyIdentifier, location);
+
+        }
 
         // Press key if known
         if (keysym !== null) {
