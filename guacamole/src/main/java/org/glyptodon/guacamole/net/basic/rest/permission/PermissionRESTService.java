@@ -34,6 +34,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -73,29 +74,22 @@ public class PermissionRESTService {
      *                  the user performing the operation.
      * @param userID The ID of the user to retrieve permissions for.
      * @return The permission list.
+     * @throws GuacamoleException If a problem is encountered while listing permissions.
      */
     @GET
     @Path("/{userID}")
-    public List<APIPermission> getPermissions(@QueryParam("token") String authToken, @PathParam("userID") String userID) {
+    @AuthProviderRESTExposure
+    public List<APIPermission> getPermissions(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the user
-            User user = userContext.getUserDirectory().get(userID);
-            
-            if(user == null)
-                throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            return permissionService.convertPermissionList(user.getPermissions());
-            
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing permissions.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the user
+        User user = userContext.getUserDirectory().get(userID);
+
+        if(user == null)
+            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+
+        return permissionService.convertPermissionList(user.getPermissions());
     }
     
     /**
@@ -105,30 +99,24 @@ public class PermissionRESTService {
      *                  the user performing the operation.
      * @param userID The user ID to add the permission for.
      * @param permission The permission to add for the user with the given userID.
+     * @throws GuacamoleException If a problem is encountered while adding the permission.
      */
     @POST
     @Path("/{userID}")
+    @AuthProviderRESTExposure
     public void addPermission(@QueryParam("token") String authToken, 
-            @PathParam("userID") String userID, APIPermission permission) {
+            @PathParam("userID") String userID, APIPermission permission) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the user
-            User user = userContext.getUserDirectory().get(userID);
-            
-            if(user == null)
-                throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            // Add the new permission
-            user.addPermission(permission.toPermission());
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught adding permission.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the user
+        User user = userContext.getUserDirectory().get(userID);
+
+        if(user == null)
+            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+
+        // Add the new permission
+        user.addPermission(permission.toPermission());
     }
     
     /**
@@ -138,30 +126,24 @@ public class PermissionRESTService {
      *                  the user performing the operation.
      * @param userID The user ID to remove the permission for.
      * @param permission The permission to remove for the user with the given userID.
+     * @throws GuacamoleException If a problem is encountered while removing the permission.
      */
     @POST
     @Path("/remove{userID}/")
+    @AuthProviderRESTExposure
     public void removePermission(@QueryParam("token") String authToken, 
-            @PathParam("userID") String userID, APIPermission permission) {
+            @PathParam("userID") String userID, APIPermission permission) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // Get the user
-            User user = userContext.getUserDirectory().get(userID);
-            
-            if(user == null)
-                throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            // Remove the permission
-            user.removePermission(permission.toPermission());
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught removing permission.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        // Get the user
+        User user = userContext.getUserDirectory().get(userID);
+
+        if(user == null)
+            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+
+        // Remove the permission
+        user.removePermission(permission.toPermission());
     }
 
 }

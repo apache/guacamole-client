@@ -19,6 +19,7 @@ package org.glyptodon.guacamole.net.basic.rest;
  */
 
 import com.google.inject.AbstractModule;
+import com.google.inject.matcher.Matchers;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
@@ -74,6 +75,8 @@ public class RESTModule extends AbstractModule {
         bind(AuthenticationService.class);
         
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
+        
+        bindInterceptor(Matchers.any(), Matchers.annotatedWith(AuthProviderRESTExposure.class), new AuthProviderRESTExceptionWrapper());
     }
     
 }

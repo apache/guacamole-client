@@ -39,6 +39,7 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -80,38 +81,32 @@ public class ConnectionRESTService {
      * @param parentID The ID of the ConnectionGroup the connections
      *                 belong to. If null, the root connection group will be used.
      * @return The connection list.
+     * @throws GuacamoleException If a problem is encountered while listing connections.
      */
     @GET
-    public List<APIConnection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) {
+    @AuthProviderRESTExposure
+    public List<APIConnection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // If the parent connection group is passed in, try to find it.
-            ConnectionGroup parentConnectionGroup;
-            if(parentID == null)
-                parentConnectionGroup = userContext.getRootConnectionGroup();
-            else {
-                ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-                Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-                parentConnectionGroup = connectionGroupDirectory.get(parentID);
-            }
-            
-            if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
-            
-            Directory<String, Connection> connectionDirectory = 
-                    parentConnectionGroup.getConnectionDirectory();
-            
-            // Return the converted connection directory
-            return connectionService.convertConnectionList(connectionDirectory);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing connections.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
+        // If the parent connection group is passed in, try to find it.
+        ConnectionGroup parentConnectionGroup;
+        if(parentID == null)
+            parentConnectionGroup = userContext.getRootConnectionGroup();
+        else {
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
+            parentConnectionGroup = connectionGroupDirectory.get(parentID);
         }
+
+        if(parentConnectionGroup == null)
+            throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
+
+        Directory<String, Connection> connectionDirectory = 
+                parentConnectionGroup.getConnectionDirectory();
+
+        // Return the converted connection directory
+        return connectionService.convertConnectionList(connectionDirectory);
     }
     
     /**
@@ -121,34 +116,27 @@ public class ConnectionRESTService {
      *                  the user performing the operation.
      * @param connectionID The ID of the Connection..
      * @return The connection.
+     * @throws GuacamoleException If a problem is encountered while retrieving the connection.
      */
     @GET
     @Path("/{connectionID}")
+    @AuthProviderRESTExposure
     public APIConnection getConnection(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID) {
+            @PathParam("connectionID") String connectionID) throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // Get the connection directory
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, Connection> connectionDirectory =
-                    rootGroup.getConnectionDirectory();
-            
-            // Get the connection
-            Connection connection = connectionDirectory.get(connectionID);
-            
-            if(connection == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
-            
-            return new APIConnection(connection);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while getting connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Get the connection
+        Connection connection = connectionDirectory.get(connectionID);
+
+        if(connection == null)
+            throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
+
+        return new APIConnection(connection);
     }
     
     /**
@@ -157,32 +145,26 @@ public class ConnectionRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param connectionID The ID of the Connection to delete.
+     * @throws GuacamoleException If a problem is encountered while deleting the connection.
      */
     @DELETE
     @Path("/{connectionID}")
-    public void deleteConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) {
+    @AuthProviderRESTExposure
+    public void deleteConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the connection directory
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, Connection> connectionDirectory =
-                    rootGroup.getConnectionDirectory();
-            
-            // Make sure the connection is there before trying to delete
-            if(connectionDirectory.get(connectionID) == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
-            
-            // Delete the connection
-            connectionDirectory.remove(connectionID);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while deleting connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Make sure the connection is there before trying to delete
+        if(connectionDirectory.get(connectionID) == null)
+            throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
+
+        // Delete the connection
+        connectionDirectory.remove(connectionID);
     }
     
     /**
@@ -197,45 +179,38 @@ public class ConnectionRESTService {
      *                 belong to. If null, the root connection group will be used.
      * @param connection The connection to create.
      * @return The identifier of the new connection.
+     * @throws GuacamoleException If a problem is encountered while creating the connection.
      */
     @POST
+    @AuthProviderRESTExposure
     public String createConnection(@QueryParam("token") String authToken, 
-            @QueryParam("parentID") String parentID, APIConnection connection) {
+            @QueryParam("parentID") String parentID, APIConnection connection) throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            if(connection == null)
-                throw new GuacamoleClientException("A connection is required for this request.");
-            
-            // If the parent connection group is passed in, try to find it.
-            ConnectionGroup parentConnectionGroup;
-            if(parentID == null)
-                parentConnectionGroup = userContext.getRootConnectionGroup();
-            else {
-                ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-                Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-                parentConnectionGroup = connectionGroupDirectory.get(parentID);
-            }
-            
-            if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
-            
-            Directory<String, Connection> connectionDirectory = 
-                    parentConnectionGroup.getConnectionDirectory();
-            
-            // Create the connection
-            connectionDirectory.add(new APIConnectionWrapper(connection));
-            
-            // Return the new connection identifier
-            return connection.getIdentifier();
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while creating connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
+        if(connection == null)
+            throw new GuacamoleClientException("A connection is required for this request.");
+
+        // If the parent connection group is passed in, try to find it.
+        ConnectionGroup parentConnectionGroup;
+        if(parentID == null)
+            parentConnectionGroup = userContext.getRootConnectionGroup();
+        else {
+            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
+            parentConnectionGroup = connectionGroupDirectory.get(parentID);
         }
+
+        if(parentConnectionGroup == null)
+            throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
+
+        Directory<String, Connection> connectionDirectory = 
+                parentConnectionGroup.getConnectionDirectory();
+
+        // Create the connection
+        connectionDirectory.add(new APIConnectionWrapper(connection));
+
+        // Return the new connection identifier
+        return connection.getIdentifier();
     }
     
     /**
@@ -245,36 +220,29 @@ public class ConnectionRESTService {
      *                  the user performing the operation.
      * @param connectionID The ID of the Connection to move.
      * @param connection The connection to update.
+     * @throws GuacamoleException If a problem is encountered while updating the connection.
      */
     @POST
     @Path("/{connectionID}")
+    @AuthProviderRESTExposure
     public void updateConnection(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID, APIConnection connection) {
+            @PathParam("connectionID") String connectionID, APIConnection connection) throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            if(connection == null)
-                throw new GuacamoleClientException("A connection is required for this request.");
-        
-            // Get the connection directory
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, Connection> connectionDirectory =
-                    rootGroup.getConnectionDirectory();
-            
-            // Make sure the connection is there before trying to update
-            if(connectionDirectory.get(connectionID) == null)
-                throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
-            
-            // Update the connection
-            connectionDirectory.update(new APIConnectionWrapper(connection));
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught updating connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        if(connection == null)
+            throw new GuacamoleClientException("A connection is required for this request.");
+
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Make sure the connection is there before trying to update
+        if(connectionDirectory.get(connectionID) == null)
+            throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
+
+        // Update the connection
+        connectionDirectory.update(new APIConnectionWrapper(connection));
     }
     
     /**
@@ -283,38 +251,31 @@ public class ConnectionRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param connectionID The ID of the Connection to move.
-     * @param parentID The ID of the ConnectionGroup the connections
-     *                 belong to. If null, the root connection group will be used.
+     * @param parentID The ID of the ConnectionGroup the connection is to be moved to.
+     * @throws GuacamoleException If a problem is encountered while moving the connection.
      */
     @PUT
     @Path("/{connectionID}")
+    @AuthProviderRESTExposure
     public void moveConnection(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID, @QueryParam("parentID") String parentID) {
+            @PathParam("connectionID") String connectionID, @QueryParam("parentID") String parentID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the connection directory
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, Connection> connectionDirectory =
-                    rootGroup.getConnectionDirectory();
-            
-            // Find the new parent connection group
-            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-            ConnectionGroup parentConnectionGroup = connectionGroupDirectory.get(parentID);
-            
-            if(parentConnectionGroup == null)
-                throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
-            
-            // Move the connection
-            connectionDirectory.move(connectionID, parentConnectionGroup.getConnectionDirectory());
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught moving connection.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Find the new parent connection group
+        Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
+        ConnectionGroup parentConnectionGroup = connectionGroupDirectory.get(parentID);
+
+        if(parentConnectionGroup == null)
+            throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
+
+        // Move the connection
+        connectionDirectory.move(connectionID, parentConnectionGroup.getConnectionDirectory());
     }
 
 }

@@ -18,6 +18,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -74,25 +75,18 @@ public class UserRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @return The user list.
+     * @throws GuacamoleException If a problem is encountered while listing users.
      */
     @GET
-    public List<APIUser> getUsers(@QueryParam("token") String authToken) {
+    @AuthProviderRESTExposure
+    public List<APIUser> getUsers(@QueryParam("token") String authToken) throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the directory
-            Directory<String, User> userDirectory = userContext.getUserDirectory();
-            
-            // Convert and return the user directory listing
-            return userService.convertUserList(userDirectory);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while listing users.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        // Convert and return the user directory listing
+        return userService.convertUserList(userDirectory);
     }
     
     /**
@@ -100,32 +94,26 @@ public class UserRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @return user The user.
+     * @throws GuacamoleException If a problem is encountered while retrieving the user.
      */
     @GET
     @Path("/{userID}")
-    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) {
+    @AuthProviderRESTExposure
+    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
-        
-        try {
-            // Get the directory
-            Directory<String, User> userDirectory = userContext.getUserDirectory();
-            
-            // Get the user
-            User user = userDirectory.get(userID);
-            
-            if(user == null)
-                throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            // Return the user
-            return new APIUser(user);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while getting user.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+
+        // Get the directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        // Get the user
+        User user = userDirectory.get(userID);
+
+        if(user == null)
+            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+
+        // Return the user
+        return new APIUser(user);
     }
     
     /**
@@ -133,27 +121,21 @@ public class UserRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param user The new user to create.
+     * @throws GuacamoleException If a problem is encountered while creating the user.
      */
     @POST
-    public String createUser(@QueryParam("token") String authToken, APIUser user) {
+    @AuthProviderRESTExposure
+    public String createUser(@QueryParam("token") String authToken, APIUser user) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // Get the directory
-            Directory<String, User> userDirectory = userContext.getUserDirectory();
-            
-            // Create the user
-            userDirectory.add(new APIUserWrapper(user));
-            
-            return user.getUsername();
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while creating user.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        // Get the directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        // Create the user
+        userDirectory.add(new APIUserWrapper(user));
+
+        return user.getUsername();
     }
     
     /**
@@ -162,38 +144,32 @@ public class UserRESTService {
      *                  the user performing the operation.
      * @param userID The unique identifier of the user to update.
      * @param user The updated user.
+     * @throws GuacamoleException If a problem is encountered while updating the user.
      */
     @POST
     @Path("/{userID}")
-    public void updateUser(@QueryParam("token") String authToken, @PathParam("userID") String userID, APIUser user) {
+    @AuthProviderRESTExposure
+    public void updateUser(@QueryParam("token") String authToken, @PathParam("userID") String userID, APIUser user) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // Get the directory
-            Directory<String, User> userDirectory = userContext.getUserDirectory();
-            
-            if(!user.getUsername().equals(userID))
-                throw new HTTPException(Response.Status.BAD_REQUEST, "Username does not match provided userID.");
-            
-            // Get the user
-            User existingUser = userDirectory.get(userID);
-            
-            if(existingUser == null)
-                throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            /*
-             * Update the user with the permission set from the existing user
-             * since the user REST endpoints do not expose permissions
-             */
-            userDirectory.update(new APIUserWrapper(user, existingUser.getPermissions()));
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while updating user.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        // Get the directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        if(!user.getUsername().equals(userID))
+            throw new HTTPException(Response.Status.BAD_REQUEST, "Username does not match provided userID.");
+
+        // Get the user
+        User existingUser = userDirectory.get(userID);
+
+        if(existingUser == null)
+            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+
+        /*
+         * Update the user with the permission set from the existing user
+         * since the user REST endpoints do not expose permissions
+         */
+        userDirectory.update(new APIUserWrapper(user, existingUser.getPermissions()));
     }
     
     /**
@@ -201,31 +177,25 @@ public class UserRESTService {
      * @param authToken The authentication token that is used to authenticate
      *                  the user performing the operation.
      * @param userID The unique identifier of the user to delete.
+     * @throws GuacamoleException If a problem is encountered while deleting the user.
      */
     @DELETE
     @Path("/{userID}")
-    public void deleteUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) {
+    @AuthProviderRESTExposure
+    public void deleteUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+            throws GuacamoleException {
         UserContext userContext = authenticationService.getUserContextFromAuthToken(authToken);
         
-        try {
-            // Get the directory
-            Directory<String, User> userDirectory = userContext.getUserDirectory();
-            
-            // Get the user
-            User existingUser = userDirectory.get(userID);
-            
-            if(existingUser == null)
-                throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
-            
-            // Delete the user
-            userDirectory.remove(userID);
-        } catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
-        } catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
-        } catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while deleting user.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
-        }
+        // Get the directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        // Get the user
+        User existingUser = userDirectory.get(userID);
+
+        if(existingUser == null)
+            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+
+        // Delete the user
+        userDirectory.remove(userID);
     }
 }

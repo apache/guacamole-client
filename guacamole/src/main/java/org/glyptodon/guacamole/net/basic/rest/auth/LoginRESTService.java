@@ -11,6 +11,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,7 @@ public class LoginRESTService {
      * @return The auth token for the newly logged-in user.
      */
     @POST
+    @AuthProviderRESTExposure
     public APIAuthToken login(@QueryParam("username") String username,
             @QueryParam("password") String password) {
         
