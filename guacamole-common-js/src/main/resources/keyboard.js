@@ -495,6 +495,13 @@ Guacamole.Keyboard = function(element) {
             guac_keyboard.modifiers.ctrl = false;
         }
 
+        // Release meta if implicitly released
+        if (guac_keyboard.modifiers.meta && e.metaKey === false) {
+            release_key(0xFFE7); // Left meta 
+            release_key(0xFFE8); // Right meta 
+            guac_keyboard.modifiers.meta = false;
+        }
+
     }
 
     // When key pressed
