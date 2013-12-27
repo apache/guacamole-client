@@ -149,7 +149,8 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
             new GuacamoleInstruction(
                 "size",
                 Integer.toString(info.getOptimalScreenWidth()),
-                Integer.toString(info.getOptimalScreenHeight())
+                Integer.toString(info.getOptimalScreenHeight()),
+                Integer.toString(info.getOptimalResolution())
             )
         );
 

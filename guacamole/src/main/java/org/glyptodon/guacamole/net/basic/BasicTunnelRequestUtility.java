@@ -251,6 +251,11 @@ public class BasicTunnelRequestUtility {
         if (height != null)
             info.setOptimalScreenHeight(Integer.parseInt(height));
 
+        // Set resolution if provided
+        String dpi = request.getParameter("dpi");
+        if (dpi != null)
+            info.setOptimalResolution(Integer.parseInt(dpi));
+
         // Add audio mimetypes
         String[] audio_mimetypes = request.getParameterValues("audio");
         if (audio_mimetypes != null)

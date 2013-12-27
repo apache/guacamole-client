@@ -953,7 +953,11 @@ GuacUI.Client.attach = function(guac) {
      */
     window.onresize = function() {
 
-        guac.sendSize(window.innerWidth, window.innerHeight);
+        var pixel_density = window.devicePixelRatio || 1;
+        var width = window.innerWidth * pixel_density;
+        var height = window.innerHeight * pixel_density;
+
+        guac.sendSize(width, height);
         GuacUI.Client.updateDisplayScale();
 
     };

@@ -105,8 +105,10 @@
                     try {
 
                         // Calculate optimal width/height for display
-                        var optimal_width = window.innerWidth;
-                        var optimal_height = window.innerHeight;
+                        var pixel_density = window.devicePixelRatio || 1;
+                        var optimal_dpi = pixel_density * 96;
+                        var optimal_width = window.innerWidth * pixel_density;
+                        var optimal_height = window.innerHeight * pixel_density;
 
                         // Scale width/height to be at least 600x600
                         if (optimal_width < 600 || optimal_height < 600) {
@@ -123,7 +125,8 @@
                         var connect_string =
                             window.location.search.substring(1)
                             + "&width="  + optimal_width
-                            + "&height=" + optimal_height;
+                            + "&height=" + optimal_height
+                            + "&dpi="    + optimal_dpi;
 
                         // Add audio mimetypes to connect_string
                         GuacUI.Audio.supported.forEach(function(mimetype) {
