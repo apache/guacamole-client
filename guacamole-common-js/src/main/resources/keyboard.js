@@ -252,37 +252,19 @@ Guacamole.Keyboard = function(element) {
         0xFFE2: true, // Right shift
         0xFFE3: true, // Left ctrl 
         0xFFE4: true, // Right ctrl 
+        0xFFE7: true, // Left meta 
+        0xFFE8: true, // Right meta 
         0xFFE9: true, // Left alt
-        0xFFEA: true  // Right alt (or AltGr)
+        0xFFEA: true, // Right alt (or AltGr)
+        0xFFEB: true, // Left super
+        0xFFEC: true  // Right super
     };
 
     /**
      * All modifiers and their states.
      */
-    this.modifiers = {
+    this.modifiers = new Guacamole.Keyboard.ModifierState();
         
-        /**
-         * Whether shift is currently pressed.
-         */
-        "shift": false,
-        
-        /**
-         * Whether ctrl is currently pressed.
-         */
-        "ctrl" : false,
-        
-        /**
-         * Whether alt is currently pressed.
-         */
-        "alt"  : false,
-        
-        /**
-         * Whether meta (apple key) is currently pressed.
-         */
-        "meta" : false
-
-    };
-
     /**
      * The state of every key, indexed by keysym. If a particular key is
      * pressed, the value of pressed for that keysym will be true. If a key
@@ -474,33 +456,41 @@ Guacamole.Keyboard = function(element) {
      */
     function update_modifier_state(e) {
 
+        // Get state
+        var state = Guacamole.Keyboard.ModifierState.fromKeyboardEvent(e);
+
         // Release alt if implicitly released
-        if (guac_keyboard.modifiers.alt && e.altKey === false) {
+        if (guac_keyboard.modifiers.alt && state.alt === false) {
             release_key(0xFFE9); // Left alt
             release_key(0xFFEA); // Right alt (or AltGr)
-            guac_keyboard.modifiers.alt = false;
         }
 
         // Release shift if implicitly released
-        if (guac_keyboard.modifiers.shift && e.shiftKey === false) {
+        if (guac_keyboard.modifiers.shift && state.shift === false) {
             release_key(0xFFE1); // Left shift
             release_key(0xFFE2); // Right shift
-            guac_keyboard.modifiers.shift = false;
         }
 
         // Release ctrl if implicitly released
-        if (guac_keyboard.modifiers.ctrl && e.ctrlKey === false) {
+        if (guac_keyboard.modifiers.ctrl && state.ctrl === false) {
             release_key(0xFFE3); // Left ctrl 
             release_key(0xFFE4); // Right ctrl 
-            guac_keyboard.modifiers.ctrl = false;
         }
 
         // Release meta if implicitly released
-        if (guac_keyboard.modifiers.meta && e.metaKey === false) {
+        if (guac_keyboard.modifiers.meta && state.meta === false) {
             release_key(0xFFE7); // Left meta 
             release_key(0xFFE8); // Right meta 
-            guac_keyboard.modifiers.meta = false;
         }
+
+        // Release super if implicitly released
+        if (guac_keyboard.modifiers.super && state.super === false) {
+            release_key(0xFFEB); // Left super
+            release_key(0xFFEC); // Right super
+        }
+
+        // Update state
+        guac_keyboard.modifiers = state;
 
     }
 
@@ -526,12 +516,6 @@ Guacamole.Keyboard = function(element) {
         // Fix modifier states
         update_modifier_state(e);
 
-        // Ctrl/Alt/Shift/Meta
-        if      (keynum === 16) guac_keyboard.modifiers.shift = true;
-        else if (keynum === 17) guac_keyboard.modifiers.ctrl  = true;
-        else if (keynum === 18) guac_keyboard.modifiers.alt   = true;
-        else if (keynum === 91) guac_keyboard.modifiers.meta  = true;
-
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
 
@@ -543,10 +527,10 @@ Guacamole.Keyboard = function(element) {
         // If no e.key, use e.keyIdentifier if absolutely necessary (can be buggy)
         else {
 
-            var keypress_unlikely = 
-                        (guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
-                     || (!guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt)
-                     || (guac_keyboard.modifiers.meta);
+            var keypress_unlikely =  guac_keyboard.modifiers.ctrl
+                                  || guac_keyboard.modifiers.alt
+                                  || guac_keyboard.modifiers.meta
+                                  || guac_keyboard.modifiers.super;
 
             if (keypress_unlikely && e.keyIdentifier)
                 keysym = keysym || keysym_from_key_identifier(
@@ -563,7 +547,7 @@ Guacamole.Keyboard = function(element) {
             
             // If a key is pressed while meta is held down, the keyup will
             // never be sent in Chrome, so send it now. (bug #108404)
-            if(guac_keyboard.modifiers.meta)
+            if (guac_keyboard.modifiers.meta && keysym !== 0xFFE7 && keysym !== 0xFFE8)
                 release_key(keysym);
 
         }
@@ -619,20 +603,81 @@ Guacamole.Keyboard = function(element) {
         // Fix modifier states
         update_modifier_state(e);
 
-        // Ctrl/Alt/Shift/Meta
-        if      (keynum === 16) guac_keyboard.modifiers.shift = false;
-        else if (keynum === 17) guac_keyboard.modifiers.ctrl  = false;
-        else if (keynum === 18) guac_keyboard.modifiers.alt   = false;
-        else if (keynum === 91) guac_keyboard.modifiers.meta  = false;
-
         // Send release event if original key known
-        var keydown_keysym = keydownChar[keynum];
-        if (keydown_keysym !== null)
-            release_key(keydown_keysym);
+        var keysym = keydownChar[keynum];
+        if (keysym !== null)
+            release_key(keysym);
 
         // Clear character record
         keydownChar[keynum] = null;
 
     }, true);
 
+};
+
+/**
+ * The state of all supported keyboard modifiers.
+ * @constructor
+ */
+Guacamole.Keyboard.ModifierState = function() {
+    
+    /**
+     * Whether shift is currently pressed.
+     * @type Boolean
+     */
+    this.shift = false;
+    
+    /**
+     * Whether ctrl is currently pressed.
+     * @type Boolean
+     */
+    this.ctrl = false;
+    
+    /**
+     * Whether alt is currently pressed.
+     * @type Boolean
+     */
+    this.alt = false;
+    
+    /**
+     * Whether meta (apple key) is currently pressed.
+     * @type Boolean
+     */
+    this.meta = false;
+
+    /**
+     * Whether super (windows key) is currently pressed.
+     * @type Boolean
+     */
+    this.super = false;
+    
+};
+
+/**
+ * Returns the modifier state applicable to the keyboard event given.
+ * 
+ * @param {KeyboardEvent} e The keyboard event to read.
+ * @returns {Guacamole.Keyboard.ModifierState} The current state of keyboard
+ *                                             modifiers.
+ */
+Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
+    
+    var state = new Guacamole.Keyboard.ModifierState();
+
+    // Assign states from old flags
+    state.shift = e.shiftKey;
+    state.ctrl  = e.ctrlKey;
+    state.alt   = e.altKey;
+    state.meta  = e.metaKey;
+
+    // Use DOM3 getModifierState() for others
+    if (e.getModifierState) {
+        state.super = e.getModifierState("OS")
+                   || e.getModifierState("Super")
+                   || e.getModifierState("Hyper")
+                   || e.getModifierState("Win");
+    }
+
+    return state;
+    
 };
