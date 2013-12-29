@@ -17,8 +17,8 @@
     <!-- All applicable licenses -->
     <licenses>
         <license>
-            <name>GNU Affero General Public License</name>
-            <url>http://www.gnu.org/licenses/agpl-3.0.html</url>
+            <name>The MIT License</name>
+            <url>http://www.opensource.org/licenses/mit-license.php</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
