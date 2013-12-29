@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+package net.sourceforge.guacamole.net.auth.mysql.properties;
 
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;

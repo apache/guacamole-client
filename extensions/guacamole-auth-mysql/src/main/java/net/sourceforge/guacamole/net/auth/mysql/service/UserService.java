@@ -22,7 +22,6 @@
 
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
-
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.Provider;

@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 /**
  * A service to generate password salts.

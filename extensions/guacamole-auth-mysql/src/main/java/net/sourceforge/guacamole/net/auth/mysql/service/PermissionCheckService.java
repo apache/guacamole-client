@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;

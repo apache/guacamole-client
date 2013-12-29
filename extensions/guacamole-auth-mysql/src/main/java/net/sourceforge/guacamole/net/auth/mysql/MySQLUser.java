@@ -20,6 +20,7 @@
  * THE SOFTWARE.
  */
 
+package net.sourceforge.guacamole.net.auth.mysql;
 
 import java.util.Collections;
 import java.util.HashSet;
