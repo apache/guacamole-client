@@ -618,6 +618,7 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // Currently attacched client
     var guac = GuacUI.Client.attachedClient;
+    var adjusted_scale = 1 / (window.devicePixelRatio || 1);
 
     // If auto-fit is enabled, scale display
     if (!GuacUI.Client.overrideAutoFit
@@ -630,14 +631,14 @@ GuacUI.Client.updateDisplayScale = function() {
         );
           
         // Scale client
-        if (fit_scale != guac.getScale())
+        if (guac.getScale() !== fit_scale)
             guac.scale(fit_scale);
 
     }
 
     // Otherwise, scale to 100%
-    else if (guac.getScale() != 1.0)
-        guac.scale(1.0);
+    else if (guac.getScale() !== adjusted_scale)
+        guac.scale(adjusted_scale);
 
 };
 

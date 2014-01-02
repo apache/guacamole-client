@@ -117,8 +117,8 @@
                         // Scale width/height to be at least 600x600
                         if (optimal_width < 600 || optimal_height < 600) {
                             var scale = Math.max(600 / optimal_width, 600 / optimal_height);
-                            optimal_width = Math.floor(optimal_width * scale);
-                            optimal_height = Math.floor(optimal_height * scale);
+                            optimal_width = optimal_width * scale;
+                            optimal_height = optimal_height * scale;
                         }
 
                         // Get entire query string, and pass to connect().
@@ -128,9 +128,9 @@
 
                         var connect_string =
                             window.location.search.substring(1)
-                            + "&width="  + optimal_width
-                            + "&height=" + optimal_height
-                            + "&dpi="    + optimal_dpi;
+                            + "&width="  + Math.floor(optimal_width)
+                            + "&height=" + Math.floor(optimal_height)
+                            + "&dpi="    + Math.floor(optimal_dpi);
 
                         // Add audio mimetypes to connect_string
                         GuacUI.Audio.supported.forEach(function(mimetype) {
