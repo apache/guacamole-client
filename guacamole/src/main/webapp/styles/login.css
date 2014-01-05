@@ -349,6 +349,7 @@ div#recent-connections .protocol {
     -webkit-border-radius: 0.25em;
     -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
+    white-space: pre;
 }
 
 #settings dt {
