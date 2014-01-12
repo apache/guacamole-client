@@ -6,6 +6,13 @@
     </formats>
     <fileSets>
         <fileSet>
+            <directory>src/main/resources/modules/</directory>
+            <includes>
+                <include>*.js</include>
+            </includes>
+            <outputDirectory></outputDirectory>
+        </fileSet>
+        <fileSet>
             <directory>target/</directory>
             <includes>
                 <include>*.js</include>

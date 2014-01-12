@@ -51,6 +51,7 @@
     <build>
         <plugins>
 
+            <!-- Assemble JS files into single .zip -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
@@ -71,6 +72,7 @@
                 </executions>
             </plugin>
 
+            <!-- Combine all .js into single aggregate -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
