@@ -88,7 +88,7 @@ Guacamole.Keyboard = function(element) {
         40:  [0xFF54], // down arrow
         45:  [0xFF63], // insert
         46:  [0xFFFF], // delete
-        91:  [0xFFEB], // left window key (super_l)
+        91:  [0xFFEB], // left window key (hyper_l)
         92:  [0xFF67], // right window key (menu key?)
         93:  null,     // select key
         112: [0xFFBE], // f1
@@ -242,8 +242,8 @@ Guacamole.Keyboard = function(element) {
         0xFFE8: true, // Right meta 
         0xFFE9: true, // Left alt
         0xFFEA: true, // Right alt (or AltGr)
-        0xFFEB: true, // Left super
-        0xFFEC: true  // Right super
+        0xFFEB: true, // Left hyper
+        0xFFEC: true  // Right hyper
     };
 
     /**
@@ -467,10 +467,10 @@ Guacamole.Keyboard = function(element) {
             release_key(0xFFE8); // Right meta 
         }
 
-        // Release super if implicitly released
-        if (guac_keyboard.modifiers.super && state.super === false) {
-            release_key(0xFFEB); // Left super
-            release_key(0xFFEC); // Right super
+        // Release hyper if implicitly released
+        if (guac_keyboard.modifiers.hyper && state.hyper === false) {
+            release_key(0xFFEB); // Left hyper
+            release_key(0xFFEC); // Right hyper
         }
 
         // Update state
@@ -514,7 +514,7 @@ Guacamole.Keyboard = function(element) {
             var keypress_unlikely =  guac_keyboard.modifiers.ctrl
                                   || guac_keyboard.modifiers.alt
                                   || guac_keyboard.modifiers.meta
-                                  || guac_keyboard.modifiers.super;
+                                  || guac_keyboard.modifiers.hyper;
 
             if (keypress_unlikely && e.keyIdentifier)
                 keysym = keysym || keysym_from_key_identifier(
@@ -630,10 +630,10 @@ Guacamole.Keyboard.ModifierState = function() {
     this.meta = false;
 
     /**
-     * Whether super (windows key) is currently pressed.
+     * Whether hyper (windows key) is currently pressed.
      * @type Boolean
      */
-    this.super = false;
+    this.hyper = false;
     
 };
 
@@ -656,7 +656,7 @@ Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
 
     // Use DOM3 getModifierState() for others
     if (e.getModifierState) {
-        state.super = e.getModifierState("OS")
+        state.hyper = e.getModifierState("OS")
                    || e.getModifierState("Super")
                    || e.getModifierState("Hyper")
                    || e.getModifierState("Win");
