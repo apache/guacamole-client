@@ -20,12 +20,6 @@
  * THE SOFTWARE.
  */
 
-
-/**
- * Namespace for all Guacamole JavaScript objects.
- * @ignore
- * @namespace
- */
 var Guacamole = Guacamole || {};
 
 /**
@@ -308,6 +302,113 @@ Guacamole.Mouse = function(element) {
     element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
     element.addEventListener('mousewheel',     mousewheel_handler, false);
     element.addEventListener('wheel',          mousewheel_handler, false);
+
+};
+
+/**
+ * Simple container for properties describing the state of a mouse.
+ * 
+ * @constructor
+ * @param {Number} x The X position of the mouse pointer in pixels.
+ * @param {Number} y The Y position of the mouse pointer in pixels.
+ * @param {Boolean} left Whether the left mouse button is pressed. 
+ * @param {Boolean} middle Whether the middle mouse button is pressed. 
+ * @param {Boolean} right Whether the right mouse button is pressed. 
+ * @param {Boolean} up Whether the up mouse button is pressed (the fourth
+ *                     button, usually part of a scroll wheel). 
+ * @param {Boolean} down Whether the down mouse button is pressed (the fifth
+ *                       button, usually part of a scroll wheel). 
+ */
+Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
+
+    /**
+     * Reference to this Guacamole.Mouse.State.
+     * @private
+     */
+    var guac_state = this;
+
+    /**
+     * The current X position of the mouse pointer.
+     * @type Number
+     */
+    this.x = x;
+
+    /**
+     * The current Y position of the mouse pointer.
+     * @type Number
+     */
+    this.y = y;
+
+    /**
+     * Whether the left mouse button is currently pressed.
+     * @type Boolean
+     */
+    this.left = left;
+
+    /**
+     * Whether the middle mouse button is currently pressed.
+     * @type Boolean
+     */
+    this.middle = middle
+
+    /**
+     * Whether the right mouse button is currently pressed.
+     * @type Boolean
+     */
+    this.right = right;
+
+    /**
+     * Whether the up mouse button is currently pressed. This is the fourth
+     * mouse button, associated with upward scrolling of the mouse scroll
+     * wheel.
+     * @type Boolean
+     */
+    this.up = up;
+
+    /**
+     * Whether the down mouse button is currently pressed. This is the fifth 
+     * mouse button, associated with downward scrolling of the mouse scroll
+     * wheel.
+     * @type Boolean
+     */
+    this.down = down;
+
+    /**
+     * Updates the position represented within this state object by the given
+     * element and clientX/clientY coordinates (commonly available within event
+     * objects). Position is translated from clientX/clientY (relative to
+     * viewport) to element-relative coordinates.
+     * 
+     * @param {Element} element The element the coordinates should be relative
+     *                          to.
+     * @param {Number} clientX The X coordinate to translate, viewport-relative.
+     * @param {Number} clientY The Y coordinate to translate, viewport-relative.
+     */
+    this.fromClientPosition = function(element, clientX, clientY) {
+    
+        guac_state.x = clientX - element.offsetLeft;
+        guac_state.y = clientY - element.offsetTop;
+
+        // This is all JUST so we can get the mouse position within the element
+        var parent = element.offsetParent;
+        while (parent && !(parent === document.body)) {
+            guac_state.x -= parent.offsetLeft - parent.scrollLeft;
+            guac_state.y -= parent.offsetTop  - parent.scrollTop;
+
+            parent = parent.offsetParent;
+        }
+
+        // Element ultimately depends on positioning within document body,
+        // take document scroll into account. 
+        if (parent) {
+            var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
+            var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+
+            guac_state.x -= parent.offsetLeft - documentScrollLeft;
+            guac_state.y -= parent.offsetTop  - documentScrollTop;
+        }
+
+    };
 
 };
 
@@ -709,113 +810,6 @@ Guacamole.Mouse.Touchscreen = function(element) {
             guac_touchscreen.onmousemove(guac_touchscreen.currentState);
 
     }, false);
-
-};
-
-/**
- * Simple container for properties describing the state of a mouse.
- * 
- * @constructor
- * @param {Number} x The X position of the mouse pointer in pixels.
- * @param {Number} y The Y position of the mouse pointer in pixels.
- * @param {Boolean} left Whether the left mouse button is pressed. 
- * @param {Boolean} middle Whether the middle mouse button is pressed. 
- * @param {Boolean} right Whether the right mouse button is pressed. 
- * @param {Boolean} up Whether the up mouse button is pressed (the fourth
- *                     button, usually part of a scroll wheel). 
- * @param {Boolean} down Whether the down mouse button is pressed (the fifth
- *                       button, usually part of a scroll wheel). 
- */
-Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
-
-    /**
-     * Reference to this Guacamole.Mouse.State.
-     * @private
-     */
-    var guac_state = this;
-
-    /**
-     * The current X position of the mouse pointer.
-     * @type Number
-     */
-    this.x = x;
-
-    /**
-     * The current Y position of the mouse pointer.
-     * @type Number
-     */
-    this.y = y;
-
-    /**
-     * Whether the left mouse button is currently pressed.
-     * @type Boolean
-     */
-    this.left = left;
-
-    /**
-     * Whether the middle mouse button is currently pressed.
-     * @type Boolean
-     */
-    this.middle = middle
-
-    /**
-     * Whether the right mouse button is currently pressed.
-     * @type Boolean
-     */
-    this.right = right;
-
-    /**
-     * Whether the up mouse button is currently pressed. This is the fourth
-     * mouse button, associated with upward scrolling of the mouse scroll
-     * wheel.
-     * @type Boolean
-     */
-    this.up = up;
-
-    /**
-     * Whether the down mouse button is currently pressed. This is the fifth 
-     * mouse button, associated with downward scrolling of the mouse scroll
-     * wheel.
-     * @type Boolean
-     */
-    this.down = down;
-
-    /**
-     * Updates the position represented within this state object by the given
-     * element and clientX/clientY coordinates (commonly available within event
-     * objects). Position is translated from clientX/clientY (relative to
-     * viewport) to element-relative coordinates.
-     * 
-     * @param {Element} element The element the coordinates should be relative
-     *                          to.
-     * @param {Number} clientX The X coordinate to translate, viewport-relative.
-     * @param {Number} clientY The Y coordinate to translate, viewport-relative.
-     */
-    this.fromClientPosition = function(element, clientX, clientY) {
-    
-        guac_state.x = clientX - element.offsetLeft;
-        guac_state.y = clientY - element.offsetTop;
-
-        // This is all JUST so we can get the mouse position within the element
-        var parent = element.offsetParent;
-        while (parent && !(parent === document.body)) {
-            guac_state.x -= parent.offsetLeft - parent.scrollLeft;
-            guac_state.y -= parent.offsetTop  - parent.scrollTop;
-
-            parent = parent.offsetParent;
-        }
-
-        // Element ultimately depends on positioning within document body,
-        // take document scroll into account. 
-        if (parent) {
-            var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-            var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-
-            guac_state.x -= parent.offsetLeft - documentScrollLeft;
-            guac_state.y -= parent.offsetTop  - documentScrollTop;
-        }
-
-    };
 
 };
 
