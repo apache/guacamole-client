@@ -86,6 +86,7 @@
                 </executions>
                 <configuration>
                     <nosuffix>true</nosuffix>
+                    <jswarn>false</jswarn>
                     <aggregations>
                         <aggregation>
                             <output>${project.build.directory}/guacamole.js</output>
