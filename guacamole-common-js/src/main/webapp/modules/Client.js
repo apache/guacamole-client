@@ -92,7 +92,7 @@ Guacamole.Client = function(tunnel) {
         "0 0";
 
     // Create default layer
-    var default_layer_container = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
+    var default_layer_container = new Guacamole.Client.LayerContainer(0, displayWidth, displayHeight);
 
     // Position default layer
     var default_layer_container_element = default_layer_container.getElement();
@@ -102,7 +102,7 @@ Guacamole.Client = function(tunnel) {
     default_layer_container_element.style.overflow = "hidden";
 
     // Create cursor layer
-    var cursor = new Guacamole.Client.LayerContainer(0, 0);
+    var cursor = new Guacamole.Client.LayerContainer(null, 0, 0);
     cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
     cursor.getLayer().autoflush = true;
 
@@ -431,7 +431,7 @@ Guacamole.Client = function(tunnel) {
         if (layer == null) {
 
             // Add new layer
-            layer = new Guacamole.Client.LayerContainer(displayWidth, displayHeight);
+            layer = new Guacamole.Client.LayerContainer(index, displayWidth, displayHeight);
             layers[index] = layer;
 
             // Get and position layer
@@ -862,16 +862,10 @@ Guacamole.Client = function(tunnel) {
 
                 // Get container element
                 var layer_container = getLayerContainer(layer_index);
-                var layer_container_element = layer_container.getElement();
-                var parent = getLayerContainer(parent_index).getElement();
-
-                // Set parent if necessary
-                if (!(layer_container_element.parentNode === parent))
-                    parent.appendChild(layer_container_element);
+                var parent = getLayerContainer(parent_index);
 
                 // Move layer
-                layer_container.translate(x, y);
-                layer_container_element.style.zIndex = z;
+                layer_container.move(parent, x, y, z);
 
             }
 
@@ -1303,18 +1297,41 @@ Guacamole.Client = function(tunnel) {
      */
     this.flatten = function() {
        
-        // Get source and destination canvases
-        var source = getLayer(0).getCanvas();
-        var canvas = document.createElement("canvas");
+        // Get default layer
+        var default_layer = getLayerContainer(0);
 
-        // Set dimensions
-        canvas.width = source.width;
-        canvas.height = source.height;
+        // Get destination canvas
+        var canvas = document.createElement("canvas");
+        canvas.width = default_layer.width;
+        canvas.height = default_layer.height;
 
         // Copy image from source
         var context = canvas.getContext("2d");
-        context.drawImage(source, 0, 0);
-        
+        context.drawImage(default_layer.getLayer().getCanvas(), 0, 0);
+
+        function draw_all(layers, x, y) {
+
+            var index, layer;
+
+            // Draw all immediate children
+            for (index in layers) {
+                var layer = layers[index];
+                var context = canvas.getContext("2d");
+                context.drawImage(layer.getLayer().getCanvas(),
+                    layer.x + x, layer.y + y);
+            }
+
+            // Draw all children of children
+            for (layer in layers) {
+                var layer = layers[index];
+                draw_all(layer.children, layer.x + x, layer.y + y);
+            }
+
+        }
+
+        // Draw all immediate children
+        draw_all(default_layer.children, 0, 0);
+
         // Return new canvas copy
         return canvas;
         
@@ -1328,20 +1345,72 @@ Guacamole.Client = function(tunnel) {
  * through DOM manipulation, rather than raster operations.
  * 
  * @constructor
- * 
+ *
+ * @param {Number} index The unique integer which identifies this layer.
+ *
  * @param {Number} width The width of the Layer, in pixels. The canvas element
  *                       backing this Layer will be given this width.
  *                       
  * @param {Number} height The height of the Layer, in pixels. The canvas element
  *                        backing this Layer will be given this height.
  */
-Guacamole.Client.LayerContainer = function(width, height) {
+Guacamole.Client.LayerContainer = function(index, width, height) {
 
     /**
      * Reference to this LayerContainer.
      * @private
      */
     var layer_container = this;
+
+    /**
+     * Unique integer identifying this layer container.
+     * @type Number
+     */
+    this.index = index;
+
+    /**
+     * X coordinate of the upper-left corner of this layer container within
+     * its parent, in pixels.
+     * @type Number
+     */
+    this.x = 0;
+
+    /**
+     * Y coordinate of the upper-left corner of this layer container within
+     * its parent, in pixels.
+     * @type Number
+     */
+    this.y = 0;
+
+    /**
+     * Z stacking order of this layer relative to other sibling layers.
+     * @type Number
+     */
+    this.z = 0;
+
+    /**
+     * The width of this layer in pixels.
+     * @type Number
+     */
+    this.width = 0;
+
+    /**
+     * The height of this layer in pixels.
+     * @type Number
+     */
+    this.height = 0;
+
+    /**
+     * The parent layer container of this layer, if any.
+     * @type Guacamole.Client.LayerContainer
+     */
+    this.parent = null;
+
+    /**
+     * Set of all children of this layer, indexed by layer index. This object
+     * will have one property per child.
+     */
+    this.children = {};
 
     // Create layer with given size
     var layer = new Guacamole.Layer(width, height);
@@ -1366,6 +1435,9 @@ Guacamole.Client.LayerContainer = function(width, height) {
      * @param {Number} height The new height to assign to this Layer.
      */
     this.resize = function(width, height) {
+
+        layer_container.width = width;
+        layer_container.height = height;
 
         // Resize layer
         layer.resize(width, height);
@@ -1415,6 +1487,9 @@ Guacamole.Client.LayerContainer = function(width, height) {
      */
     this.translate = function(x, y) {
 
+        layer_container.x = x;
+        layer_container.y = y;
+
         // Generate translation
         translate = "translate("
                         + x + "px,"
@@ -1428,6 +1503,42 @@ Guacamole.Client.LayerContainer = function(width, height) {
         div.style.msTransform =
 
             translate + " " + matrix;
+
+    };
+
+    /**
+     * Moves the upper-left corner of this LayerContainer to the given X and Y
+     * coordinate, sets the Z stacking order, and reparents this LayerContainer
+     * to the given LayerContainer.
+     * 
+     * @param {Guacamole.Client.LayerContainer} parent The parent to set.
+     * @param {Number} x The X coordinate to move to.
+     * @param {Number} y The Y coordinate to move to.
+     * @param {Number} z The Z coordinate to move to.
+     */
+    this.move = function(parent, x, y, z) {
+
+        var layer_container_element = layer_container.getElement();
+
+        // Set parent if necessary
+        if (layer_container.parent !== parent) {
+
+            // Maintain relationship
+            if (layer_container.parent)
+                delete layer_container.parent.children[layer_container.index];
+            layer_container.parent = parent;
+            parent.children[layer_container.index] = layer_container;
+
+            // Reparent element
+            var parent_element = parent.getElement();
+            parent_element.appendChild(layer_container_element);
+
+        }
+
+        // Set location
+        layer_container.translate(x, y);
+        layer_container.z = z;
+        layer_container_element.style.zIndex = z;
 
     };
 
