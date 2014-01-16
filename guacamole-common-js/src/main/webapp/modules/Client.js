@@ -1296,36 +1296,35 @@ Guacamole.Client = function(tunnel) {
         canvas.width = default_layer.width;
         canvas.height = default_layer.height;
 
-        // Copy image from source
         var context = canvas.getContext("2d");
-        context.drawImage(default_layer.getLayer().getCanvas(), 0, 0);
 
-        function draw_all(layers, x, y) {
+        function draw_layer(layer, x, y) {
 
-            var index, layer;
+            // Draw layer
+            if (layer.width > 0 && layer.height > 0) {
 
-            // Draw all immediate children
-            for (index in layers) {
-                layer = layers[index];
+                // Save and update alpha
+                var initial_alpha = context.globalAlpha;
+                context.globalAlpha *= layer.alpha / 255.0;
 
-                context.globalAlpha = layer.alpha / 255.0;
-                context.drawImage(layer.getLayer().getCanvas(),
-                    layer.x + x, layer.y + y);
+                // Copy data
+                context.drawImage(layer.getLayer().getCanvas(), x, y);
+
+                // Draw all children
+                for (var index in layer.children) {
+                    var child = layer.children[index];
+                    draw_layer(child, x + child.x, y + child.y);
+                }
+
+                // Restore alpha
+                context.globalAlpha = initial_alpha;
+
             }
-
-            // Draw all children of children
-            for (layer in layers) {
-                layer = layers[index];
-                draw_all(layer.children, layer.x + x, layer.y + y);
-            }
-
-            // Restore alpha
-            context.globalAlpha = 1;
 
         }
 
-        // Draw all immediate children
-        draw_all(default_layer.children, 0, 0);
+        // Draw default layer and all children
+        draw_layer(default_layer, 0, 0);
 
         // Return new canvas copy
         return canvas;
@@ -1403,13 +1402,13 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
      * The width of this layer in pixels.
      * @type Number
      */
-    this.width = 0;
+    this.width = width;
 
     /**
      * The height of this layer in pixels.
      * @type Number
      */
-    this.height = 0;
+    this.height = height;
 
     /**
      * The parent layer container of this layer, if any.
