@@ -1,3 +1,5 @@
+/*! (C) 2014 Glyptodon LLC - glyptodon.org/MIT-LICENSE */
+
 /*
  * Copyright (C) 2013 Glyptodon LLC
  *

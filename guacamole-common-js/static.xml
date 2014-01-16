@@ -6,14 +6,14 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>src/main/resources/modules/</directory>
+            <directory>src/main/webapp/modules/</directory>
             <includes>
                 <include>*.js</include>
             </includes>
-            <outputDirectory></outputDirectory>
+            <outputDirectory>modules/</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>target/</directory>
+            <directory>target/${project.name}-${project.version}/</directory>
             <includes>
                 <include>*.js</include>
             </includes>

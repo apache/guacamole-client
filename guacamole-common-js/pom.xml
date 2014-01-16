@@ -72,31 +72,37 @@
                 </executions>
             </plugin>
 
-            <!-- Combine all .js into single aggregate -->
+            <!-- JS/CSS Minification Plugin -->
             <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.3.0</version>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.6.1</version>
                 <executions>
                     <execution>
+                        <id>default-minify</id>
+                        <configuration>
+
+                            <charset>UTF-8</charset>
+                            <jsEngine>CLOSURE</jsEngine>
+
+                            <jsSourceDir>/</jsSourceDir>
+                            <jsTargetDir>/</jsTargetDir>
+                            <jsFinalFile>guacamole.js</jsFinalFile>
+
+                            <jsSourceFiles>
+                                <jsSourceFile>common/license.js</jsSourceFile> 
+                            </jsSourceFiles>
+
+                            <jsSourceIncludes>
+                                <jsSourceInclude>modules/**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+
+                        </configuration>
                         <goals>
-                            <goal>compress</goal>
+                            <goal>minify</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <nosuffix>true</nosuffix>
-                    <jswarn>false</jswarn>
-                    <aggregations>
-                        <aggregation>
-                            <output>${project.build.directory}/guacamole.js</output>
-                            <includes>
-                                <include>${basedir}/src/main/resources/common/license.js</include>
-                                <include>**/*.js</include>
-                            </includes>
-                        </aggregation>
-                    </aggregations>
-                </configuration>
             </plugin>
 
         </plugins>
