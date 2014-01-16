@@ -954,13 +954,8 @@ Guacamole.Client = function(tunnel) {
 
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
-
-                // Get container element
-                var layer_container = getLayerContainer(layer_index).getElement();
-
-                // Set layer opacity
-                layer_container.style.opacity = a/255.0;
-
+                var layer_container = getLayerContainer(layer_index);
+                layer_container.shade(a);
             }
 
         },
@@ -1315,17 +1310,21 @@ Guacamole.Client = function(tunnel) {
 
             // Draw all immediate children
             for (index in layers) {
-                var layer = layers[index];
-                var context = canvas.getContext("2d");
+                layer = layers[index];
+
+                context.globalAlpha = layer.alpha / 255.0;
                 context.drawImage(layer.getLayer().getCanvas(),
                     layer.x + x, layer.y + y);
             }
 
             // Draw all children of children
             for (layer in layers) {
-                var layer = layers[index];
+                layer = layers[index];
                 draw_all(layer.children, layer.x + x, layer.y + y);
             }
+
+            // Restore alpha
+            context.globalAlpha = 1;
 
         }
 
@@ -1367,6 +1366,12 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
      * @type Number
      */
     this.index = index;
+
+    /**
+     * The opacity of the layer container, where 255 is fully opaque and 0 is
+     * fully transparent.
+     */
+    this.alpha = 0xFF;
 
     /**
      * X coordinate of the upper-left corner of this layer container within
@@ -1518,8 +1523,6 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
      */
     this.move = function(parent, x, y, z) {
 
-        var layer_container_element = layer_container.getElement();
-
         // Set parent if necessary
         if (layer_container.parent !== parent) {
 
@@ -1531,15 +1534,26 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
 
             // Reparent element
             var parent_element = parent.getElement();
-            parent_element.appendChild(layer_container_element);
+            parent_element.appendChild(div);
 
         }
 
         // Set location
         layer_container.translate(x, y);
         layer_container.z = z;
-        layer_container_element.style.zIndex = z;
+        div.style.zIndex = z;
 
+    };
+
+    /**
+     * Sets the opacity of this layer to the given value, where 255 is fully
+     * opaque and 0 is fully transparent.
+     * 
+     * @param {Number} a The opacity to set.
+     */
+    this.shade = function(a) {
+        layer_container.alpha = a;
+        div.style.opacity = a/255.0;
     };
 
     /**
