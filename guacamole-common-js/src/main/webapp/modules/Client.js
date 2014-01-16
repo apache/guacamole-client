@@ -752,10 +752,8 @@ Guacamole.Client = function(tunnel) {
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
 
-                // Get container element
-                var layer_container = getLayerContainer(layer_index).getElement();
-
                 // Set layer transform 
+                var layer_container = getLayerContainer(layer_index);
                 layer_container.transform(a, b, c, d, e, f);
 
              }
@@ -1392,6 +1390,16 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
     this.z = 0;
 
     /**
+     * The affine transformation applied to this layer container. Each element
+     * corresponds to a value from the transformation matrix, with the first
+     * three values being the first row, and the last three values being the
+     * second row. There are six values total.
+     * 
+     * @type Number[]
+     */
+    this.matrix = [1, 0, 0, 1, 0, 0];
+
+    /**
      * The width of this layer in pixels.
      * @type Number
      */
@@ -1584,6 +1592,9 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
      * @param {Number} f The sixth value in the affine transform's matrix.
      */
     this.transform = function(a, b, c, d, e, f) {
+
+        // Store matrix
+        layer_container.matrix = [a, b, c, d, e, f];
 
         // Generate matrix transformation
         matrix =
