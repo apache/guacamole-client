@@ -722,11 +722,9 @@ Guacamole.Client = function(tunnel) {
             // If visible layer, remove from parent
             if (layer_index > 0) {
 
-                // Get container element
-                var layer_container = getLayerContainer(layer_index).getElement();
-
                 // Remove from parent
-                layer_container.parentNode.removeChild(layer_container);
+                var layer_container = getLayerContainer(layer_index);
+                layer_container.dispose();
 
                 // Delete reference
                 delete layers[layer_index];
@@ -1554,6 +1552,24 @@ Guacamole.Client.LayerContainer = function(index, width, height) {
     this.shade = function(a) {
         layer_container.alpha = a;
         div.style.opacity = a/255.0;
+    };
+
+    /**
+     * Removes this layer container entirely, such that it is no longer
+     * contained within its parent layer, if any.
+     */
+    this.dispose = function() {
+
+        // Remove from parent container
+        if (layer_container.parent) {
+            delete layer_container.parent.children[layer_container.index];
+            layer_container.parent = null;
+        }
+
+        // Remove from parent element
+        if (div.parentNode)
+            div.parentNode.removeChild(div);
+        
     };
 
     /**
