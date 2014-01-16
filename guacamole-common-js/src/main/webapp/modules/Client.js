@@ -442,7 +442,7 @@ Guacamole.Client = function(tunnel) {
             layer_element.style.overflow = "hidden";
 
             // Add to default layer container
-            default_layer_container.getElement().appendChild(layer_element);
+            layer.move(default_layer_container, 0, 0, 0);
 
         }
 
