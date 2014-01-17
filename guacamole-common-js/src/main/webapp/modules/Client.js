@@ -100,6 +100,7 @@ Guacamole.Client = function(tunnel) {
     default_layer_container_element.style.left = "0px";
     default_layer_container_element.style.top  = "0px";
     default_layer_container_element.style.overflow = "hidden";
+    default_layer_container_element.style.zIndex = "0";
 
     // Create cursor layer
     var cursor = new Guacamole.Client.LayerContainer(null, 0, 0);
@@ -111,6 +112,7 @@ Guacamole.Client = function(tunnel) {
     cursor_element.style.position = "absolute";
     cursor_element.style.left = "0px";
     cursor_element.style.top  = "0px";
+    cursor_element.style.zIndex = "1";
 
     // Add default layer and cursor to display
     display.appendChild(default_layer_container.getElement());
