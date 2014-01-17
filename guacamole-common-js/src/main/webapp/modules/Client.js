@@ -1298,6 +1298,41 @@ Guacamole.Client = function(tunnel) {
 
         var context = canvas.getContext("2d");
 
+        // Returns sorted array of children
+        function get_children(layer) {
+
+            // Build array of children
+            var children = [];
+            for (var index in layer.children)
+                children.push(layer.children[index]);
+
+            // Sort
+            children.sort(function children_comparator(a, b) {
+
+                // Compare based on Z order
+                var diff = a.z - b.z;
+                if (diff !== 0)
+                    return diff;
+
+                // If Z order identical, use document order
+                var a_element = a.getElement();
+                var b_element = b.getElement();
+                var position = b_element.compareDocumentPosition(a_element);
+
+                if (position & Node.DOCUMENT_POSITION_PRECEDING) return -1;
+                if (position & Node.DOCUMENT_POSITION_FOLLOWING) return  1;
+
+                // Otherwise, assume same
+                return 0;
+
+            });
+
+            // Done
+            return children;
+
+        }
+
+        // Draws the contents of the given layer at the given coordinates
         function draw_layer(layer, x, y) {
 
             // Draw layer
@@ -1311,8 +1346,9 @@ Guacamole.Client = function(tunnel) {
                 context.drawImage(layer.getLayer().getCanvas(), x, y);
 
                 // Draw all children
-                for (var index in layer.children) {
-                    var child = layer.children[index];
+                var children = get_children(layer);
+                for (var i=0; i<children.length; i++) {
+                    var child = children[i];
                     draw_layer(child, x + child.x, y + child.y);
                 }
 
