@@ -87,7 +87,7 @@
 
                             <jsSourceDir>/</jsSourceDir>
                             <jsTargetDir>/</jsTargetDir>
-                            <jsFinalFile>guacamole.js</jsFinalFile>
+                            <jsFinalFile>all.js</jsFinalFile>
 
                             <jsSourceFiles>
                                 <jsSourceFile>common/license.js</jsSourceFile> 
