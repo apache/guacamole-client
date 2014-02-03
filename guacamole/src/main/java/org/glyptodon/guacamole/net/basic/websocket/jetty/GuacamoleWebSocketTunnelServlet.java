@@ -101,6 +101,8 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         try {
 
                             try {
+
+                                // Attempt to read
                                 while ((readMessage = reader.read()) != null) {
 
                                     // Buffer message
@@ -113,6 +115,10 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                     }
 
                                 }
+
+                                // No more data
+                                connection.close(1001, null); // Shutdown
+                                
                             }
 
                             // Catch any thrown guacamole exception and attempt
