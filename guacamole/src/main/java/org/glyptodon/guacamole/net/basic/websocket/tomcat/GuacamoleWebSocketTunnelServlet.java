@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.CharBuffer;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.catalina.websocket.Constants;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
@@ -34,6 +35,9 @@ import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +56,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
 
     @Override
     public StreamInbound createWebSocketInbound(String protocol, HttpServletRequest request) {
@@ -101,40 +105,51 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                     @Override
                     public void run() {
 
-                        CharBuffer charBuffer = CharBuffer.allocate(BUFFER_SIZE);
                         StringBuilder buffer = new StringBuilder(BUFFER_SIZE);
                         GuacamoleReader reader = tunnel.acquireReader();
                         char[] readMessage;
 
                         try {
-                            while ((readMessage = reader.read()) != null) {
 
-                                // Buffer message
-                                buffer.append(readMessage);
+                            // Attempt to read
+                            try {
+                                while ((readMessage = reader.read()) != null) {
 
-                                // Flush if we expect to wait or buffer is getting full
-                                if (!reader.available() || buffer.length() >= BUFFER_SIZE) {
+                                    // Buffer message
+                                    buffer.append(readMessage);
 
-                                    // Reallocate buffer if necessary
-                                    if (buffer.length() > charBuffer.length())
-                                        charBuffer = CharBuffer.allocate(buffer.length());
-                                    else
-                                        charBuffer.clear();
+                                    // Flush if we expect to wait or buffer is getting full
+                                    if (!reader.available() || buffer.length() >= BUFFER_SIZE) {
+                                        outbound.writeTextMessage(CharBuffer.wrap(buffer));
+                                        buffer.setLength(0);
+                                    }
 
-                                    charBuffer.put(buffer.toString().toCharArray());
-                                    charBuffer.flip();
-
-                                    outbound.writeTextMessage(charBuffer);
-                                    buffer.setLength(0);
                                 }
-
                             }
+
+                            // Catch any thrown guacamole exception and attempt
+                            // to pass within the WebSocket connection, logging
+                            // each error appropriately.
+                            catch (GuacamoleSecurityException e) {
+                                logger.warn("Authorization failed.", e);
+                                outbound.close(Constants.STATUS_POLICY_VIOLATION, null);
+                            }
+                            catch (GuacamoleResourceNotFoundException e) {
+                                logger.debug("Resource not found.", e);
+                                outbound.close(Constants.STATUS_PROTOCOL_ERROR, null);
+                            }
+                            catch (GuacamoleClientException e) {
+                                logger.warn("Error in client request.", e);
+                                outbound.close(Constants.STATUS_PROTOCOL_ERROR, null);
+                            }
+                            catch (GuacamoleException e) {
+                                logger.error("Server error in tunnel", e);
+                                outbound.close(Constants.STATUS_UNEXPECTED_CONDITION, null);
+                            }
+
                         }
                         catch (IOException e) {
-                            logger.debug("Tunnel read failed due to I/O error.", e);
-                        }
-                        catch (GuacamoleException e) {
-                            logger.debug("Tunnel read failed.", e);
+                            logger.debug("I/O error prevents further reads.", e);
                         }
 
                     }

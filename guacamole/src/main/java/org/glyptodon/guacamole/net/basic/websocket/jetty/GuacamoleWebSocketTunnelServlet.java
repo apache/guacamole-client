@@ -31,6 +31,9 @@ import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +47,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     /**
      * Logger for this class.
      */
-    private static Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
     
     /**
      * The default, minimum buffer size for instructions.
@@ -96,24 +99,45 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                         char[] readMessage;
 
                         try {
-                            while ((readMessage = reader.read()) != null) {
 
-                                // Buffer message
-                                buffer.append(readMessage);
+                            try {
+                                while ((readMessage = reader.read()) != null) {
 
-                                // Flush if we expect to wait or buffer is getting full
-                                if (!reader.available() || buffer.length() >= BUFFER_SIZE) {
-                                    connection.sendMessage(buffer.toString());
-                                    buffer.setLength(0);
+                                    // Buffer message
+                                    buffer.append(readMessage);
+
+                                    // Flush if we expect to wait or buffer is getting full
+                                    if (!reader.available() || buffer.length() >= BUFFER_SIZE) {
+                                        connection.sendMessage(buffer.toString());
+                                        buffer.setLength(0);
+                                    }
+
                                 }
-
                             }
+
+                            // Catch any thrown guacamole exception and attempt
+                            // to pass within the WebSocket connection, logging
+                            // each error appropriately.
+                            catch (GuacamoleSecurityException e) {
+                                logger.warn("Authorization failed.", e);
+                                connection.close(1008, null); // Policy violation
+                            }
+                            catch (GuacamoleResourceNotFoundException e) {
+                                logger.debug("Resource not found.", e);
+                                connection.close(1002, null); // Protocol error
+                            }
+                            catch (GuacamoleClientException e) {
+                                logger.warn("Error in client request.", e);
+                                connection.close(1002, null); // Protocol error
+                            }
+                            catch (GuacamoleException e) {
+                                logger.error("Server error in tunnel", e);
+                                connection.close(1011, null); // Server error
+                            }
+
                         }
                         catch (IOException e) {
                             logger.debug("Tunnel read failed due to I/O error.", e);
-                        }
-                        catch (GuacamoleException e) {
-                            logger.debug("Tunnel read failed.", e);
                         }
 
                     }
