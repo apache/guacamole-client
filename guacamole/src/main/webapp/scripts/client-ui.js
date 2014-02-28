@@ -1115,13 +1115,14 @@ GuacUI.Client.attach = function(guac) {
             var offset = 0;
 
             // Invalidate stream on all errors
-            stream.onerror = function(text, code) {
-                valid = false;
-                upload.showError(text);
-            };
-
             // Continue upload when acknowledged
-            stream.onack = function() {
+            stream.onack = function(text, code) {
+
+                // Handle codes
+                if (code >= 0x0100) {
+                    valid = false;
+                    upload.showError(text);
+                }
 
                 // Abort upload if stream is invalid
                 if (!valid) return false;
@@ -1131,14 +1132,14 @@ GuacUI.Client.attach = function(guac) {
                 var base64 = _get_base64(slice);
 
                 // Write packet
-                stream.write(base64);
+                stream.sendBlob(base64);
 
                 // Advance to next packet
                 offset += 4096;
 
                 // If at end, stop upload
                 if (offset >= bytes.length) {
-                    stream.close();
+                    stream.sendEnd();
                     GuacUI.Client.notification_area.removeChild(upload.getElement());
                 }
 
