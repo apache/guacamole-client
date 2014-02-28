@@ -268,38 +268,80 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Opens a new file for writing, having the given index, mimetype and
-     * filename.
+     * filename. The stream to associate with this file must already exist.
      * 
-     * @param {Number} index The index of the file to write to. This index must
-     *                       be unused.
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
+     * @return {Guacamole.OutputStream} The created file stream.
      */
-    this.beginFileStream = function(index, mimetype, filename) {
+    this.createFileStream = function(mimetype, filename) {
 
-        // Do not send requests if not connected
-        if (!isConnected())
-            return;
+        // Allocate index
+        var index = stream_indices.next();
 
+        // Create new stream
         tunnel.sendMessage("file", index, mimetype, filename);
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
+
+        // Override sendEnd() of stream to automatically free index
+        var old_end = stream.sendEnd;
+        stream.sendEnd = function() {
+            old_end();
+            stream_indices.free(index);
+            delete output_streams[index];
+        };
+
+        // Return new, overridden stream
+        return stream;
+
     };
 
     /**
-     * Opens a new pipe for writing, having the given index, mimetype and
-     * name.
+     * Opens a new pipe for writing, having the given name and mimetype. The
+     * stream to associate with this pipe must already exist.
      * 
-     * @param {Number} index The index of the pipe to write to. This index must
-     *                       be unused.
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
+     * @return {Guacamole.OutputStream} The created file stream.
      */
-    this.beginPipeStream = function(index, mimetype, name) {
+    this.createPipeStream = function(mimetype, name) {
+
+        // Allocate index
+        var index = stream_indices.next();
+
+        // Create new stream
+        tunnel.sendMessage("pipe", index, mimetype, name);
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
+
+        // Override sendEnd() of stream to automatically free index
+        var old_end = stream.sendEnd;
+        stream.sendEnd = function() {
+            old_end();
+            stream_indices.free(index);
+            delete output_streams[index];
+        };
+
+        // Return new, overridden stream
+        return stream;
+
+    };
+
+    /**
+     * Acknowledge receipt of a blob on the stream with the given index.
+     * 
+     * @param {Number} index The index of the stream associated with the
+     *                       received blob.
+     * @param {String} message A human-readable message describing the error
+     *                         or status.
+     * @param {Number} code The error code, if any, or 0 for success.
+     */
+    this.sendAck = function(index, message, code) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("pipe", index, mimetype, name);
+        tunnel.sendMessage("ack", index, message, code);
     };
 
     /**
@@ -329,63 +371,6 @@ Guacamole.Client = function(tunnel) {
             return;
 
         tunnel.sendMessage("end", index);
-    };
-
-    /**
-     * Opens a new file for writing, having the given index, mimetype and
-     * filename.
-     * 
-     * @param {String} mimetype The mimetype of the file being sent.
-     * @param {String} filename The filename of the file being sent.
-     */
-    this.createFileStream = function(mimetype, filename) {
-
-        // Allocate index
-        var index = stream_indices.next();
-
-        // Create new stream
-        guac_client.beginFileStream(index, mimetype, filename);
-        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
-
-        // Override close() of stream to automatically free index
-        var old_close = stream.close;
-        stream.close = function() {
-            old_close();
-            stream_indices.free(index);
-            delete output_streams[index];
-        };
-
-        // Return new, overridden stream
-        return stream;
-
-    };
-
-    /**
-     * Opens a new pipe for writing, having the given name and mimetype.
-     * 
-     * @param {String} mimetype The mimetype of the data being sent.
-     * @param {String} name The name of the pipe.
-     */
-    this.createPipeStream = function(mimetype, name) {
-
-        // Allocate index
-        var index = stream_indices.next();
-
-        // Create new stream
-        guac_client.beginPipeStream(index, mimetype, name);
-        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
-
-        // Override close() of stream to automatically free index
-        var old_close = stream.close;
-        stream.close = function() {
-            old_close();
-            stream_indices.free(index);
-            delete output_streams[index];
-        };
-
-        // Return new, overridden stream
-        return stream;
-
     };
 
     /**
@@ -434,27 +419,25 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Fired when a file stream is created. The stream provided to this event
-     * handler will contain its own event handlers for received data and the
-     * close event.
+     * handler will contain its own event handlers for received data.
      * 
      * @event
+     * @param {Guacamole.InputStream} stream The stream that will receive data
+     *                                       from the server.
      * @param {String} mimetype The mimetype of the file received.
      * @param {String} filename The name of the file received.
-     * @return {Guacamole.InputStream} The stream that will receive data from
-     *                                 the server.
      */
     this.onfile = null;
 
     /**
      * Fired when a pipe stream is created. The stream provided to this event
-     * handler will contain its own event handlers for received data and the
-     * close event.
+     * handler will contain its own event handlers for received data;
      * 
      * @event
+     * @param {Guacamole.InputStream} stream The stream that will receive data
+     *                                       from the server.
      * @param {String} mimetype The mimetype of the data which will be received.
      * @param {String} name The name of the pipe.
-     * @return {Guacamole.InputStream} The stream that will receive data from
-     *                                 the server.
      */
     this.onpipe = null;
 
@@ -579,20 +562,15 @@ Guacamole.Client = function(tunnel) {
             var stream = output_streams[stream_index];
             if (stream) {
 
+                // Signal ack if handler defined
+                if (stream.onack)
+                    stream.onack(reason, code);
+
                 // If code is an error, invalidate stream
                 if (code >= 0x0100) {
-
-                    // Signal error
-                    if (stream.onerror)
-                        stream.onerror(reason, code);
-
                     stream_indices.free(stream_index);
                     delete output_streams[stream_index];
                 }
-
-                // Signal error if handler defined
-                else if (stream.onack)
-                    stream.onack(reason, code);
 
             }
 
@@ -621,14 +599,18 @@ Guacamole.Client = function(tunnel) {
 
             // Create stream 
             var stream = streams[stream_index] =
-                    new Guacamole.InputStream(mimetype);
+                    new Guacamole.InputStream(guac_client, stream_index);
 
-            stream.onclose = function() {
-                channel.play(mimetype, duration, stream.getBlob());
+            // Assemble entire stream as a blob
+            var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+
+            // Play blob as audio
+            blob_reader.onend = function() {
+                channel.play(mimetype, duration, blob_reader.getBlob());
             };
 
             // Send success response
-            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+            guac_client.sendAck(stream_index, "OK", 0x0000);
 
         },
 
@@ -640,10 +622,10 @@ Guacamole.Client = function(tunnel) {
             var stream = streams[stream_index];
 
             // Write data
-            stream.receive(data);
+            stream.onblob(data);
 
             // Send success response
-            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+            guac_client.sendAck(stream_index, "OK", 0x0000);
 
         },
 
@@ -833,8 +815,9 @@ Guacamole.Client = function(tunnel) {
             var stream_index = parseInt(parameters[0]);
             var stream = streams[stream_index];
 
-            // Close stream 
-            stream.close();
+            // Signal end of stream
+            if (stream.onend)
+                stream.onend();
 
         },
 
@@ -846,23 +829,13 @@ Guacamole.Client = function(tunnel) {
 
             // Create stream 
             if (guac_client.onfile) {
-
-                // Attempt to create stream
-                var stream = guac_client.onfile(mimetype, filename);
-                if (stream) {
-                    streams[stream_index] = stream;
-                    tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
-                }
-
-                // Notify if creation failed
-                else
-                    tunnel.sendMessage("ack", stream_index, "Unable to receive file", 0x0201);
-
+                var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
+                guac_client.onfile(stream, mimetype, filename);
             }
 
             // Otherwise, unsupported
             else
-                tunnel.sendMessage("ack", stream_index, "File transfer unsupported", 0x0100);
+                guac_client.sendAck(stream_index, "File transfer unsupported", 0x0100);
 
         },
 
@@ -947,23 +920,13 @@ Guacamole.Client = function(tunnel) {
 
             // Create stream 
             if (guac_client.onpipe) {
-
-                // Attempt to create stream
-                var stream = guac_client.onpipe(mimetype, name);
-                if (stream) {
-                    streams[stream_index] = stream;
-                    tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
-                }
-
-                // Notify if creation failed
-                else
-                    tunnel.sendMessage("ack", stream_index, "Unable to create pipe", 0x0201);
-
+                var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
+                guac_client.onpipe(stream, mimetype, name);
             }
 
             // Otherwise, unsupported
             else
-                tunnel.sendMessage("ack", stream_index, "Named pipes unsupported", 0x0100);
+                guac_client.sendAck(stream_index, "Named pipes unsupported", 0x0100);
 
         },
 
@@ -1227,10 +1190,13 @@ Guacamole.Client = function(tunnel) {
 
             // Create stream 
             var stream = streams[stream_index] =
-                    new Guacamole.InputStream(mimetype);
+                    new Guacamole.InputStream(guac_client, stream_index);
 
-            // Play video once closed
-            stream.onclose = function() {
+            // Assemble entire stream as a blob
+            var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+
+            // Play video once finished 
+            blob_reader.onend = function() {
 
                 // Read data from blob from stream
                 var reader = new FileReader();
@@ -1247,7 +1213,7 @@ Guacamole.Client = function(tunnel) {
                     layer.play(mimetype, duration, "data:" + mimetype + ";base64," + window.btoa(binary));
 
                 };
-                reader.readAsArrayBuffer(stream.getBlob());
+                reader.readAsArrayBuffer(blob_reader.getBlob());
 
             };
 

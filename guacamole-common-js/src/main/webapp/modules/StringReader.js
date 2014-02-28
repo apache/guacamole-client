@@ -23,51 +23,52 @@
 var Guacamole = Guacamole || {};
 
 /**
- * Abstract stream which can receive data.
+ * A reader which automatically handles the given input stream, returning
+ * strictly text data. Note that this object will overwrite any installed event
+ * handlers on the given Guacamole.InputStream.
  * 
  * @constructor
- * @param {Guacamole.Client} client The client owning this stream.
- * @param {Number} index The index of this stream.
+ * @param {Guacamole.InputStream} stream The stream that data will be read
+ *                                       from.
  */
-Guacamole.OutputStream = function(client, index) {
+Guacamole.StringReader = function(stream) {
 
     /**
-     * Reference to this stream.
+     * Reference to this Guacamole.InputStream.
      * @private
      */
-    var guac_stream = this;
+    var guac_reader = this;
+
+    // Receive blobs as strings
+    stream.onblob = function(data) {
+
+        // Convert to string 
+        var text = window.atob(data);
+
+        // Call handler, if present
+        if (guac_reader.ontext)
+            guac_reader.ontext(text);
+
+    };
+
+    // Simply call onend when end received
+    stream.onend = function() {
+        if (guac_reader.onend)
+            guac_reader.onend();
+    };
 
     /**
-     * The index of this stream.
-     * @type Number
-     */
-    this.index = index;
-
-    /**
-     * Fired whenever an acknowledgement is received from the server, indicating
-     * that a stream operation has completed, or an error has occurred.
+     * Fired once for every blob of text data received.
      * 
      * @event
-     * @param {String} message A human-readable status message related to the
-     *                         operation performed.
-     * @param {Number} code The error code associated with the operation.
+     * @param {String} text The data packet received.
      */
-    this.onack = null;
+    this.ontext = null;
 
     /**
-     * Writes the given base64-encoded data to this stream as a blob.
-     * 
-     * @param {String} data The base64-encoded data to send.
+     * Fired once this stream is finished and no further data will be written.
+     * @event
      */
-    this.sendBlob = function(data) {
-        client.sendBlob(guac_stream.index, data);
-    };
-
-    /**
-     * Closes this stream.
-     */
-    this.sendEnd = function() {
-        client.endStream(guac_stream.index);
-    };
+    this.onend = null;
 
 };

@@ -815,9 +815,7 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
-    guac.onfile = function(mimetype, filename) {
-
-        var stream = new Guacamole.BlobInputStream(mimetype);
+    guac.onfile = function(stream, mimetype, filename) {
 
         var download = new GuacUI.Download(filename);
         download.updateProgress(getSizeString(0));
@@ -844,8 +842,6 @@ GuacUI.Client.attach = function(guac) {
         download.onclose = function() {
             GuacUI.Client.notification_area.removeChild(download.getElement());
         };
-
-        return stream;
 
     };
 
