@@ -285,6 +285,24 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Opens a new pipe for writing, having the given index, mimetype and
+     * name.
+     * 
+     * @param {Number} index The index of the pipe to write to. This index must
+     *                       be unused.
+     * @param {String} mimetype The mimetype of the data being sent.
+     * @param {String} name The name of the pipe.
+     */
+    this.beginPipeStream = function(index, mimetype, name) {
+
+        // Do not send requests if not connected
+        if (!isConnected())
+            return;
+
+        tunnel.sendMessage("pipe", index, mimetype, name);
+    };
+
+    /**
      * Given the index of a file, writes a blob of data to that file.
      * 
      * @param {Number} index The index of the file to write to.
@@ -327,6 +345,34 @@ Guacamole.Client = function(tunnel) {
 
         // Create new stream
         guac_client.beginFileStream(index, mimetype, filename);
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
+
+        // Override close() of stream to automatically free index
+        var old_close = stream.close;
+        stream.close = function() {
+            old_close();
+            stream_indices.free(index);
+            delete output_streams[index];
+        };
+
+        // Return new, overridden stream
+        return stream;
+
+    };
+
+    /**
+     * Opens a new pipe for writing, having the given name and mimetype.
+     * 
+     * @param {String} mimetype The mimetype of the data being sent.
+     * @param {String} name The name of the pipe.
+     */
+    this.createPipeStream = function(mimetype, name) {
+
+        // Allocate index
+        var index = stream_indices.next();
+
+        // Create new stream
+        guac_client.beginPipeStream(index, mimetype, name);
         var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
 
         // Override close() of stream to automatically free index
@@ -397,6 +443,18 @@ Guacamole.Client = function(tunnel) {
      *                                       data from the server.
      */
     this.onfile = null;
+
+    /**
+     * Fired when a pipe stream is created. The stream provided to this event
+     * handler will contain its own event handlers for received data and the
+     * close event.
+     * 
+     * @event
+     * @param {String} name The name of the pipe.
+     * @param {Guacamole.InputStream} stream A stream that will receive
+     *                                       data from the server.
+     */
+    this.onpipe = null;
 
     /**
      * Fired whenever a sync instruction is received from the server, indicating
@@ -876,6 +934,25 @@ Guacamole.Client = function(tunnel) {
         "nest": function(parameters) {
             var parser = getParser(parseInt(parameters[0]));
             parser.receive(parameters[1]);
+        },
+
+        "pipe": function(parameters) {
+
+            var stream_index = parseInt(parameters[0]);
+            var mimetype = parameters[1];
+            var name = parameters[2];
+
+            // Create stream 
+            var stream = streams[stream_index] =
+                    new Guacamole.InputStream(mimetype);
+
+            // Call handler now that pipe stream is created
+            if (guac_client.onpipe)
+                guac_client.onpipe(name, stream);
+
+            // Send success response
+            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+
         },
 
         "png": function(parameters) {
