@@ -32,6 +32,102 @@ var Guacamole = Guacamole || {};
 Guacamole.InputStream = function(mimetype) {
 
     /**
+     * The mimetype of the data contained within this blob.
+     */
+    this.mimetype = mimetype;
+
+    /**
+     * Receives the given base64-encoded data.
+     * 
+     * @param {String} data The received base64 data.
+     */
+    this.receive = function(data) {};
+
+    /**
+     * Closes this Guacamole.InputStream such that no further data will be
+     * written.
+     */
+    this.close = function() {};
+
+};
+
+/**
+ * An input stream which receives all data packets as individual ArrayBuffer
+ * objects.
+ * 
+ * @constructor
+ * @param {String} mimetype The mimetype of the data this stream will receive.
+ */
+Guacamole.ArrayBufferInputStream = function(mimetype) {
+
+    /**
+     * Reference to this Guacamole.InputStream.
+     * @private
+     */
+    var guac_stream = this;
+
+    /*
+     * This is an input stream.
+     */
+    Guacamole.InputStream.apply(this, [mimetype]);
+
+    // Receive implementation
+    this.receive = function(data) {
+
+        // Convert to ArrayBuffer
+        var binary = window.atob(data);
+        var arrayBuffer = new ArrayBuffer(binary.length);
+        var bufferView = new Uint8Array(arrayBuffer);
+
+        for (var i=0; i<binary.length; i++)
+            bufferView[i] = binary.charCodeAt(i);
+
+        // Call handler, if present
+        if (guac_stream.onreceive)
+            guac_stream.onreceive(arrayBuffer);
+
+    };
+
+    // Close implementation
+    this.close = function() {
+
+        // Call handler, if present
+        if (guac_stream.onclose)
+            guac_stream.onclose();
+
+        // NOTE: Currently not enforced.
+
+    };
+
+    /**
+     * Fired once for every blob of data received.
+     * 
+     * @event
+     * @param {ArrayBuffer} buffer The data packet received.
+     */
+    this.onreceive = null;
+
+    /**
+     * Fired once this stream is finished and no further data will be written.
+     * @event
+     */
+    this.onclose = null;
+
+};
+
+Guacamole.ArrayBufferInputStream.prototype = new Guacamole.InputStream();
+
+/**
+ * An input stream which continuously builds a single blob by appending each
+ * individual blob received. Only the size of each blob received is exposed.
+ * 
+ * @constructor
+ * @augments Guacamole.InputStream
+ * @param {String} mimetype The mimetype of the data this stream will receive.
+ */
+Guacamole.BlobInputStream = function(mimetype) {
+
+    /**
      * Reference to this Guacamole.InputStream.
      * @private
      */
@@ -43,10 +139,10 @@ Guacamole.InputStream = function(mimetype) {
      */
     var length = 0;
 
-    /**
-     * The mimetype of the data contained within this blob.
+    /*
+     * This is an input stream.
      */
-    this.mimetype = mimetype;
+    Guacamole.InputStream.apply(this, [mimetype]);
 
     // Get blob builder
     var blob_builder;
@@ -70,28 +166,27 @@ Guacamole.InputStream = function(mimetype) {
 
         })();
 
-    /**
-     * Receives the given ArrayBuffer, storing its data within this
-     * Guacamole.InputStream.
-     * 
-     * @param {ArrayBuffer} buffer An ArrayBuffer containing the data to be
-     *                             received.
-     */
-    this.receive = function(buffer) {
+    // Receive implementation
+    this.receive = function(data) {
 
-        blob_builder.append(buffer);
-        length += buffer.byteLength;
+        // Convert to ArrayBuffer
+        var binary = window.atob(data);
+        var arrayBuffer = new ArrayBuffer(binary.length);
+        var bufferView = new Uint8Array(arrayBuffer);
+
+        for (var i=0; i<binary.length; i++)
+            bufferView[i] = binary.charCodeAt(i);
+
+        blob_builder.append(arrayBuffer);
+        length += arrayBuffer.byteLength;
 
         // Call handler, if present
-        if (guac_stream.onreceive)
-            guac_stream.onreceive(buffer.byteLength);
+        if (guac_stream.onprogress)
+            guac_stream.onprogress(arrayBuffer.byteLength);
 
     };
 
-    /**
-     * Closes this Guacamole.InputStream such that no further data will be
-     * written.
-     */
+    // Close implementation
     this.close = function() {
 
         // Call handler, if present
@@ -124,6 +219,66 @@ Guacamole.InputStream = function(mimetype) {
      * @event
      * @param {Number} length The number of bytes received.
      */
+    this.onprogress = null;
+
+    /**
+     * Fired once this stream is finished and no further data will be written.
+     * @event
+     */
+    this.onclose = null;
+
+};
+
+Guacamole.BlobInputStream.prototype = new Guacamole.InputStream();
+
+/**
+ * An input stream which receives strictly text data.
+ * 
+ * @constructor
+ * @param {String} mimetype The mimetype of the data this stream will receive.
+ */
+Guacamole.StringInputStream = function(mimetype) {
+
+    /**
+     * Reference to this Guacamole.InputStream.
+     * @private
+     */
+    var guac_stream = this;
+
+    /*
+     * This is an input stream.
+     */
+    Guacamole.InputStream.apply(this, [mimetype]);
+
+    // Receive implementation
+    this.receive = function(data) {
+
+        // Convert to string 
+        var text = window.atob(data);
+
+        // Call handler, if present
+        if (guac_stream.onreceive)
+            guac_stream.onreceive(text);
+
+    };
+
+    // Close implementation
+    this.close = function() {
+
+        // Call handler, if present
+        if (guac_stream.onclose)
+            guac_stream.onclose();
+
+        // NOTE: Currently not enforced.
+
+    };
+
+    /**
+     * Fired once for every blob of data received.
+     * 
+     * @event
+     * @param {String} text The data packet received.
+     */
     this.onreceive = null;
 
     /**
@@ -133,3 +288,5 @@ Guacamole.InputStream = function(mimetype) {
     this.onclose = null;
 
 };
+
+Guacamole.StringInputStream.prototype = new Guacamole.InputStream();

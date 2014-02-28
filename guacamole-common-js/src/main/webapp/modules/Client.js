@@ -438,9 +438,10 @@ Guacamole.Client = function(tunnel) {
      * close event.
      * 
      * @event
+     * @param {String} mimetype The mimetype of the file received.
      * @param {String} filename The name of the file received.
-     * @param {Guacamole.InputStream} stream A stream that will receive
-     *                                       data from the server.
+     * @return {Guacamole.InputStream} The stream that will receive data from
+     *                                 the server.
      */
     this.onfile = null;
 
@@ -450,9 +451,10 @@ Guacamole.Client = function(tunnel) {
      * close event.
      * 
      * @event
+     * @param {String} mimetype The mimetype of the data which will be received.
      * @param {String} name The name of the pipe.
-     * @param {Guacamole.InputStream} stream A stream that will receive
-     *                                       data from the server.
+     * @return {Guacamole.InputStream} The stream that will receive data from
+     *                                 the server.
      */
     this.onpipe = null;
 
@@ -637,16 +639,8 @@ Guacamole.Client = function(tunnel) {
             var data = parameters[1];
             var stream = streams[stream_index];
 
-            // Convert to ArrayBuffer
-            var binary = window.atob(data);
-            var arrayBuffer = new ArrayBuffer(binary.length);
-            var bufferView = new Uint8Array(arrayBuffer);
-
-            for (var i=0; i<binary.length; i++)
-                bufferView[i] = binary.charCodeAt(i);
-
             // Write data
-            stream.receive(arrayBuffer);
+            stream.receive(data);
 
             // Send success response
             tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
@@ -851,15 +845,24 @@ Guacamole.Client = function(tunnel) {
             var filename = parameters[2];
 
             // Create stream 
-            var stream = streams[stream_index] =
-                    new Guacamole.InputStream(mimetype);
+            if (guac_client.onfile) {
 
-            // Call handler now that file stream is created
-            if (guac_client.onfile)
-                guac_client.onfile(filename, stream);
+                // Attempt to create stream
+                var stream = guac_client.onfile(mimetype, filename);
+                if (stream) {
+                    streams[stream_index] = stream;
+                    tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+                }
 
-            // Send success response
-            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+                // Notify if creation failed
+                else
+                    tunnel.sendMessage("ack", stream_index, "Unable to receive file", 0x0201);
+
+            }
+
+            // Otherwise, unsupported
+            else
+                tunnel.sendMessage("ack", stream_index, "File transfer unsupported", 0x0100);
 
         },
 
@@ -943,15 +946,24 @@ Guacamole.Client = function(tunnel) {
             var name = parameters[2];
 
             // Create stream 
-            var stream = streams[stream_index] =
-                    new Guacamole.InputStream(mimetype);
+            if (guac_client.onpipe) {
 
-            // Call handler now that pipe stream is created
-            if (guac_client.onpipe)
-                guac_client.onpipe(name, stream);
+                // Attempt to create stream
+                var stream = guac_client.onpipe(mimetype, name);
+                if (stream) {
+                    streams[stream_index] = stream;
+                    tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+                }
 
-            // Send success response
-            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+                // Notify if creation failed
+                else
+                    tunnel.sendMessage("ack", stream_index, "Unable to create pipe", 0x0201);
+
+            }
+
+            // Otherwise, unsupported
+            else
+                tunnel.sendMessage("ack", stream_index, "Named pipes unsupported", 0x0100);
 
         },
 
