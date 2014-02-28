@@ -820,18 +820,21 @@ GuacUI.Client.attach = function(guac) {
         var download = new GuacUI.Download(filename);
         download.updateProgress(getSizeString(0));
 
+        var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+
         GuacUI.Client.notification_area.appendChild(download.getElement());
 
         // Update progress as data is received
-        stream.onreceive = function() {
-            download.updateProgress(getSizeString(stream.getLength()));
+        blob_reader.onprogress = function() {
+            download.updateProgress(getSizeString(blob_reader.getLength()));
+            stream.sendAck("Received", 0x0000);
         };
 
         // When complete, prompt for download
-        stream.onclose = function() {
+        blob_reader.onend = function() {
 
             download.ondownload = function() {
-                saveAs(stream.getBlob(), filename);
+                saveAs(blob_reader.getBlob(), filename);
             };
 
             download.complete();
@@ -842,6 +845,8 @@ GuacUI.Client.attach = function(guac) {
         download.onclose = function() {
             GuacUI.Client.notification_area.removeChild(download.getElement());
         };
+
+        stream.sendAck("Ready", 0x0000);
 
     };
 
