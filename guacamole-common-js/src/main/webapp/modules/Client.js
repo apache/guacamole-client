@@ -624,9 +624,6 @@ Guacamole.Client = function(tunnel) {
             // Write data
             stream.onblob(data);
 
-            // Send success response
-            guac_client.sendAck(stream_index, "OK", 0x0000);
-
         },
 
         "cfill": function(parameters) {

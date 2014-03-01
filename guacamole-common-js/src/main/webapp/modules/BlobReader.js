@@ -87,6 +87,9 @@ Guacamole.BlobReader = function(stream, mimetype) {
         if (guac_reader.onprogress)
             guac_reader.onprogress(arrayBuffer.byteLength);
 
+        // Send success response
+        stream.sendAck("OK", 0x0000);
+
     };
 
     // Simply call onend when end received
