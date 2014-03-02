@@ -51,8 +51,8 @@ Guacamole.ArrayBufferReader = function(stream) {
             bufferView[i] = binary.charCodeAt(i);
 
         // Call handler, if present
-        if (guac_stream.ondata)
-            guac_stream.ondata(arrayBuffer);
+        if (guac_reader.ondata)
+            guac_reader.ondata(arrayBuffer);
 
     };
 
