@@ -922,6 +922,27 @@ GuacUI.Client.attach = function(guac) {
     var show_keyboard_gesture_possible = true;
 
     keyboard.onkeydown = function (keysym) {
+
+        // Handle Ctrl-shortcuts specifically
+        if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
+
+            // Allow event through if Ctrl+C or Ctrl+X
+            if (keyboard.pressed[0x63] || keyboard.pressed[0x78]) {
+                guac.sendKeyEvent(1, keysym);
+                return true;
+            }
+
+            // If Ctrl+V, wait until after paste event (next event loop)
+            if (keyboard.pressed[0x76]) {
+                window.setTimeout(function after_paste() {
+                    guac.sendKeyEvent(1, keysym);
+                }, 10);
+                return true;
+            }
+
+        }
+
+        // Just send key for all other cases
         guac.sendKeyEvent(1, keysym);
 
         // If key is NOT one of the expected keys, gesture not possible
@@ -961,6 +982,26 @@ GuacUI.Client.attach = function(guac) {
             show_keyboard_gesture_possible = true;
 
     };
+
+    // Set local clipboard contents on cut 
+    document.body.addEventListener("cut", function handle_cut(e) {
+        /* STUB */
+        e.preventDefault();
+        e.clipboardData.setData("text/plain", "STUB: CUT");
+    }, false);
+
+    // Set local clipboard contents on copy 
+    document.body.addEventListener("copy", function handle_copy(e) {
+        /* STUB */
+        e.preventDefault();
+        e.clipboardData.setData("text/plain", "STUB: COPY");
+    }, false);
+
+    // Set remote clipboard contents on paste
+    document.body.addEventListener("paste", function handle_paste(e) {
+        e.preventDefault();
+        guac.setClipboard(e.clipboardData.getData("text/plain"));
+    }, false);
 
     /*
      * Disconnect and update thumbnail on close
