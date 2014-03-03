@@ -38,6 +38,12 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
      * The unique identifier associated with this connection group.
      */
     private String identifier;
+
+    /**
+     * The unique identifier of the parent connection group for
+     * this connection group.
+     */
+    private String parentIdentifier;
     
     /**
      * The type of this connection group.
@@ -62,6 +68,16 @@ public abstract class AbstractConnectionGroup implements ConnectionGroup {
     @Override
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    @Override
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+
+    @Override
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
     
     @Override

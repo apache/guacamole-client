@@ -42,6 +42,12 @@ public abstract class AbstractConnection implements Connection {
     private String identifier;
 
     /**
+     * The unique identifier of the parent ConnectionGroup for
+     * this Connection.
+     */
+    private String parentIdentifier;
+
+    /**
      * The GuacamoleConfiguration associated with this connection.
      */
     private GuacamoleConfiguration configuration;
@@ -64,6 +70,16 @@ public abstract class AbstractConnection implements Connection {
     @Override
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    @Override
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+
+    @Override
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     @Override

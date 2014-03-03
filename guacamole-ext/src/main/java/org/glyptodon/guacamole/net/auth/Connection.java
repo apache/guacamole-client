@@ -47,7 +47,7 @@ public interface Connection {
     /**
      * Sets the name assigned to this Connection.
      *
-     * @param identifier The name to assign.
+     * @param name The name to assign.
      */
     public void setName(String name);
 
@@ -63,6 +63,24 @@ public interface Connection {
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
+
+    /**
+     * Returns the unique identifier of the parent ConnectionGroup for
+     * this Connection.
+     * 
+     * @return The unique identifier of the parent ConnectionGroup for
+     * this Connection.
+     */
+    public String getParentIdentifier();
+
+    /**
+     * Sets the unique identifier of the parent ConnectionGroup for
+     * this Connection.
+     * 
+     * @param parentIdentifier The unique identifier of the parent 
+     * ConnectionGroup for this Connection.
+     */
+    public void setParentIdentifier(String parentIdentifier);
 
     /**
      * Returns the GuacamoleConfiguration associated with this Connection. Note

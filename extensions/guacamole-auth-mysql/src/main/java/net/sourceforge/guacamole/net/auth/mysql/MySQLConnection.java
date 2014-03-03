@@ -99,10 +99,11 @@ public class MySQLConnection extends AbstractConnection {
 
     /**
      * Sets the ID of the parent connection group for this connection.
-     * @param connectionID The ID of the parent connection group for this connection.
+     * @param parentID The ID of the parent connection group for this connection.
      */
     public void setParentID(Integer parentID) {
         this.parentID = parentID;
+        this.setParentIdentifier(String.valueOf(parentID));
     }
 
     /**
@@ -120,7 +121,7 @@ public class MySQLConnection extends AbstractConnection {
             List<? extends ConnectionRecord> history, int userID) {
 
         this.connectionID = connectionID;
-        this.parentID = parentID;
+        this.setParentID(parentID);
         setName(name);
         setIdentifier(identifier);
         setConfiguration(config);

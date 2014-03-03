@@ -104,7 +104,7 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
 
     /**
      * Sets the ID of the corresponding connection group record.
-     * @param connectionID The ID to assign to this connection group.
+     * @param connectionGroupID The ID to assign to this connection group.
      */
     public void setConnectionID(Integer connectionGroupID) {
         this.connectionGroupID = connectionGroupID;
@@ -120,10 +120,11 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
 
     /**
      * Sets the ID of the parent connection group for this connection group.
-     * @param connectionID The ID of the parent connection group for this connection group.
+     * @param parentID The ID of the parent connection group for this connection group.
      */
     public void setParentID(Integer parentID) {
         this.parentID = parentID;
+        this.setParentIdentifier(String.valueOf(parentID));
     }
 
     /**
@@ -131,6 +132,7 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
      *
      * @param connectionGroupID The ID of the associated database record, if any.
      * @param parentID The ID of the parent connection group for this connection group, if any.
+     * @param name The name of this connection group.
      * @param identifier The unique identifier associated with this connection group.
      * @param type The type of this connection group.
      * @param userID The IID of the user who queried this connection.
@@ -138,7 +140,7 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     public void init(Integer connectionGroupID, Integer parentID, String name, 
             String identifier, ConnectionGroup.Type type, int userID) {
         this.connectionGroupID = connectionGroupID;
-        this.parentID = parentID;
+        this.setParentID(parentID);
         setName(name);
         setIdentifier(identifier);
         setType(type);

@@ -47,7 +47,7 @@ public interface ConnectionGroup {
     /**
      * Sets the name assigned to this ConnectionGroup.
      *
-     * @param identifier The name to assign.
+     * @param name The name to assign.
      */
     public void setName(String name);
 
@@ -63,6 +63,24 @@ public interface ConnectionGroup {
      * @param identifier The identifier to assign.
      */
     public void setIdentifier(String identifier);
+
+    /**
+     * Returns the unique identifier of the parent ConnectionGroup for
+     * this ConnectionGroup.
+     * 
+     * @return The unique identifier of the parent ConnectionGroup for
+     * this ConnectionGroup.
+     */
+    public String getParentIdentifier();
+
+    /**
+     * Sets the unique identifier of the parent ConnectionGroup for
+     * this ConnectionGroup.
+     * 
+     * @param parentIdentifier The unique identifier of the parent 
+     * ConnectionGroup for this ConnectionGroup.
+     */
+    public void setParentIdentifier(String parentIdentifier);
     
     /**
      * Set the type of this ConnectionGroup.

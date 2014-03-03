@@ -43,6 +43,11 @@ public class APIConnectionGroup {
     private String identifier;
     
     /**
+     * The identifier of the parent connection group for this connection group.
+     */
+    private String parentIdentifier;
+    
+    /**
      * The type of this connection group.
      */
     private Type type;
@@ -60,6 +65,7 @@ public class APIConnectionGroup {
      */
     public APIConnectionGroup(ConnectionGroup connectionGroup) {
         this.identifier = connectionGroup.getIdentifier();
+        this.parentIdentifier = connectionGroup.getParentIdentifier();
         this.name = connectionGroup.getName();
         this.type = connectionGroup.getType();
     }
@@ -94,6 +100,22 @@ public class APIConnectionGroup {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    /**
+     * Returns the unique identifier for this connection group.
+     * @return The unique identifier for this connection group.
+     */
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+    /**
+     * Sets the parent connection group identifier for this connection group.
+     * @param parentIdentifier The parent connection group identifier 
+     *                         for this connection group.
+     */
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     /**

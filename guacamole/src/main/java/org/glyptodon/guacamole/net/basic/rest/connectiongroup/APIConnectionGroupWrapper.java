@@ -72,6 +72,16 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     }
 
     @Override
+    public String getParentIdentifier() {
+        return apiConnectionGroup.getParentIdentifier();
+    }
+
+    @Override
+    public void setParentIdentifier(String parentIdentifier) {
+        apiConnectionGroup.setParentIdentifier(parentIdentifier);
+    }
+
+    @Override
     public void setType(Type type) {
         apiConnectionGroup.setType(type);
     }

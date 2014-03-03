@@ -67,6 +67,16 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
+    public String getParentIdentifier() {
+        return apiConnection.getParentIdentifier();
+    }
+
+    @Override
+    public void setParentIdentifier(String parentIdentifier) {
+        apiConnection.setParentIdentifier(parentIdentifier);
+    }
+
+    @Override
     public GuacamoleConfiguration getConfiguration() {
         
         // Create the GuacamoleConfiguration from the parameter map

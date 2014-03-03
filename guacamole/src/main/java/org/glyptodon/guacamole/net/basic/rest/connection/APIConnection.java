@@ -47,6 +47,11 @@ public class APIConnection {
     private String identifier;
     
     /**
+     * The identifier of the parent connection group for this connection.
+     */
+    private String parentIdentifier;
+    
+    /**
      * The history records associated with this connection.
      */
     private List<? extends ConnectionRecord> history;
@@ -71,6 +76,7 @@ public class APIConnection {
             throws GuacamoleException {
         this.name = connection.getName();
         this.identifier = connection.getIdentifier();
+        this.parentIdentifier = connection.getParentIdentifier();
         this.history = connection.getHistory();
     }
 
@@ -99,9 +105,26 @@ public class APIConnection {
     }
     /**
      * Sets the unique identifier for this connection.
+     * @param identifier The unique identifier for this connection.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    /**
+     * Returns the unique identifier for this connection.
+     * @return The unique identifier for this connection.
+     */
+    public String getParentIdentifier() {
+        return parentIdentifier;
+    }
+    /**
+     * Sets the parent connection group identifier for this connection.
+     * @param parentIdentifier The parent connection group identifier 
+     *                         for this connection.
+     */
+    public void setParentIdentifier(String parentIdentifier) {
+        this.parentIdentifier = parentIdentifier;
     }
 
     /**
