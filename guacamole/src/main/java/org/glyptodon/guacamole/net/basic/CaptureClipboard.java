@@ -29,8 +29,8 @@ import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * Servlet which dumps the current contents of the clipboard.
@@ -40,34 +40,45 @@ import org.slf4j.LoggerFactory;
 public class CaptureClipboard extends AuthenticatingHttpServlet {
 
     /**
-     * Logger for this class.
-     */
-    private Logger logger = LoggerFactory.getLogger(CaptureClipboard.class);
-
-    /**
      * The amount of time to wait for clipboard changes, in milliseconds.
      */
     private static final int CLIPBOARD_TIMEOUT = 250;
-    
+
+    /**
+     * Whether clipboard integration is enabled.
+     */
+    public static final BooleanGuacamoleProperty INTEGRATION_ENABLED = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "enable-clipboard-integration"; }
+
+    };
+
+
     @Override
     protected void authenticatedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
 
-        // Get clipboard
-        final HttpSession session = request.getSession(true);
-        final ClipboardState clipboard = getClipboardState(session);
-
-        // Send clipboard contents
-        try {
-            response.setContentType("text/plain");
-            response.getWriter().print(clipboard.waitForContents(CLIPBOARD_TIMEOUT));
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException("Unable to send clipboard contents", e);
-        }
+        // Only bother if actually enabled
+        if (GuacamoleProperties.getProperty(INTEGRATION_ENABLED, false)) {
         
+            // Get clipboard
+            final HttpSession session = request.getSession(true);
+            final ClipboardState clipboard = getClipboardState(session);
+
+            // Send clipboard contents
+            try {
+                response.setContentType("text/plain");
+                response.getWriter().print(clipboard.waitForContents(CLIPBOARD_TIMEOUT));
+            }
+            catch (IOException e) {
+                throw new GuacamoleServerException("Unable to send clipboard contents", e);
+            }
+
+        }
+
     }
 
 }
