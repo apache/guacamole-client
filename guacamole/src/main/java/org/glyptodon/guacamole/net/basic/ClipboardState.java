@@ -37,6 +37,11 @@ public class ClipboardState {
     private String contents = "";
 
     /**
+     * The timestamp of the last contents update.
+     */
+    private long last_update = 0;
+    
+    /**
      * Returns the current clipboard contents.
      * @return The current clipboard contents
      */
@@ -48,8 +53,31 @@ public class ClipboardState {
      * Sets the current clipboard contents.
      * @param contents The contents to assign to the clipboard.
      */
-    public void setContents(String contents) {
+    public synchronized void setContents(String contents) {
         this.contents = contents;
+        last_update = System.currentTimeMillis();
+        this.notifyAll();
+    }
+
+    /**
+     * Wait up to the given timeout for new clipboard data. If data more recent
+     * than the timeout period is available, return that.
+     * 
+     * @param timeout The amount of time to wait, in milliseconds.
+     * @return The current clipboard contents.
+     */
+    public synchronized String waitForContents(int timeout) {
+
+        // Wait for new contents if it's been a while
+        if (System.currentTimeMillis() - last_update > timeout) {
+            try {
+                this.wait(timeout);
+            }
+            catch (InterruptedException e) { /* ignore */ }
+        }
+
+        return getContents();
+
     }
     
 }
