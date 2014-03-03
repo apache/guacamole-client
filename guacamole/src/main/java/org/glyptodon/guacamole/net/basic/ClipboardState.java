@@ -1,16 +1,16 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
- * 
+ * Copyright (C) 2014 Glyptodon LLC.
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,31 +20,36 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.event.listener;
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.basic.event.ClipboardChangeEvent;
+package org.glyptodon.guacamole.net.basic;
 
 /**
- * A listener whose clipboardChanged() hook will fire immediately after
- * clipboard data is received.
- *
+ * Provides central storage for a cross-connection clipboard state. This
+ * clipboard state is shared only for a single HTTP session. Multiple HTTP
+ * sessions will all have their own state.
+ * 
  * @author Michael Jumper
  */
-public interface ClipboardChangeListener {
+public class ClipboardState {
 
     /**
-     * Event hook which fires immediately after an existing tunnel is closed.
-     * The return value of this hook dictates whether the tunnel is allowed to
-     * be closed.
-     *
-     * @param e The TunnelCloseEvent describing the tunnel being closed and
-     *          any associated credentials.
-     * @throws GuacamoleException If an error occurs while handling the
-     *                            tunnel close event. Throwing an exception
-     *                            will also stop the tunnel from being closed.
+     * The current contents.
      */
-    void clipboardChanged(ClipboardChangeEvent e)
-            throws GuacamoleException;
+    private String contents = "";
 
+    /**
+     * Returns the current clipboard contents.
+     * @return The current clipboard contents
+     */
+    public String getContents() {
+        return contents;
+    }
+
+    /**
+     * Sets the current clipboard contents.
+     * @param contents The contents to assign to the clipboard.
+     */
+    public void setContents(String contents) {
+        this.contents = contents;
+    }
+    
 }

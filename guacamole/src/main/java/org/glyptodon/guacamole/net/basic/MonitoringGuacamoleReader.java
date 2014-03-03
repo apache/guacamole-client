@@ -22,18 +22,14 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import java.util.Collection;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
-import org.glyptodon.guacamole.net.basic.event.ClipboardChangeEvent;
-import org.glyptodon.guacamole.net.basic.event.SessionListenerCollection;
-import org.glyptodon.guacamole.net.basic.event.listener.ClipboardChangeListener;
 import org.glyptodon.guacamole.protocol.GuacamoleInstruction;
 
 /**
  * GuacamoleReader implementation which watches for specific instructions,
- * firing server-side events when they are observed.
+ * maintaining state based on the observed instructions.
  * 
  * @author Michael Jumper
  */
@@ -47,44 +43,19 @@ public class MonitoringGuacamoleReader implements GuacamoleReader {
     /**
      * Collection of all listeners which will receive events.
      */
-    private final SessionListenerCollection listeners;
-
-    /**
-     * Notifies all listeners in the given collection that clipboard data has
-     * changed.
-     *
-     * @param listeners A collection of all listeners that should be notified.
-     * @param data The new clipboard data.
-     * @throws GuacamoleException If any listener throws an error while being
-     *                            notified.
-     */
-    private static boolean notifyClipboardChange(Collection listeners, String data)
-            throws GuacamoleException {
-
-        // Build event for clipboard change
-        ClipboardChangeEvent event = new ClipboardChangeEvent(data);
-
-        // Notify all listeners
-        for (Object listener : listeners) {
-            if (listener instanceof ClipboardChangeListener)
-                ((ClipboardChangeListener) listener).clipboardChanged(event);
-        }
-
-        return true;
-
-    }
+    private final ClipboardState clipboard;
 
     /**
      * Creates a new MonitoringGuacamoleReader which watches the instructions
      * read by the given GuacamoleReader, firing events when specific
      * instructions are seen.
      * 
-     * @param listeners The collection of listeners receiving events.
+     * @param clipboard The clipboard state to maintain.
      * @param reader The reader to observe.
      */
-    public MonitoringGuacamoleReader(SessionListenerCollection listeners,
+    public MonitoringGuacamoleReader(ClipboardState clipboard,
             GuacamoleReader reader) {
-        this.listeners = listeners;
+        this.clipboard = clipboard;
         this.reader = reader;
     }
 
@@ -107,7 +78,7 @@ public class MonitoringGuacamoleReader implements GuacamoleReader {
         if (instruction.getOpcode().equals("clipboard")) {
             List<String> args = instruction.getArgs();
             if (args.size() >= 1)
-                notifyClipboardChange(listeners, args.get(0));
+                clipboard.setContents(args.get(0));
         }
         
         return instruction;

@@ -243,6 +243,9 @@ public class BasicTunnelRequestUtility {
         if (context == null || credentials == null)
             throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
+        // Get clipboard 
+        final ClipboardState clipboard = AuthenticatingHttpServlet.getClipboardState(httpSession);
+
         // Get client information
         GuacamoleClientInformation info = new GuacamoleClientInformation();
 
@@ -327,7 +330,7 @@ public class BasicTunnelRequestUtility {
             @Override
             public GuacamoleReader acquireReader() {
                 // Monitor instructions which pertain to server-side events
-                return new MonitoringGuacamoleReader(listeners, super.acquireReader());
+                return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
             }
 
             @Override

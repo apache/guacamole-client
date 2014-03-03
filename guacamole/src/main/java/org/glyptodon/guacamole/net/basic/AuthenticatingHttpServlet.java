@@ -81,6 +81,11 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     public static final String CREDENTIALS_ATTRIBUTE = "GUAC_CREDS";
 
     /**
+     * The session attribute holding the session-scoped clipboard storage.
+     */
+    public static final String CLIPBOARD_ATTRIBUTE = "GUAC_CLIP";
+    
+    /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
     private AuthenticationProvider authProvider;
@@ -216,6 +221,25 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      */
     public static UserContext getUserContext(HttpSession session) {
         return (UserContext) session.getAttribute(CONTEXT_ATTRIBUTE);
+    }
+
+    /**
+     * Returns the ClipboardState associated with the given session. If none
+     * exists yet, one is created.
+     *
+     * @param session The session to retrieve the ClipboardState from.
+     * @return The ClipboardState associated with the given session.
+     */
+    public static ClipboardState getClipboardState(HttpSession session) {
+
+        ClipboardState clipboard = (ClipboardState) session.getAttribute(CLIPBOARD_ATTRIBUTE);
+        if (clipboard == null) {
+            clipboard = new ClipboardState();
+            session.setAttribute(CLIPBOARD_ATTRIBUTE, clipboard);
+        }
+
+        return clipboard;
+
     }
 
     /**
