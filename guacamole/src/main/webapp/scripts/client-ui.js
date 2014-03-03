@@ -985,16 +985,16 @@ GuacUI.Client.attach = function(guac) {
 
     // Set local clipboard contents on cut 
     document.body.addEventListener("cut", function handle_cut(e) {
-        /* STUB */
         e.preventDefault();
-        e.clipboardData.setData("text/plain", "STUB: CUT");
+        var data = GuacamoleService.Clipboard.get();
+        e.clipboardData.setData("text/plain", data);
     }, false);
 
     // Set local clipboard contents on copy 
     document.body.addEventListener("copy", function handle_copy(e) {
-        /* STUB */
         e.preventDefault();
-        e.clipboardData.setData("text/plain", "STUB: COPY");
+        var data = GuacamoleService.Clipboard.get();
+        e.clipboardData.setData("text/plain", data);
     }, false);
 
     // Set remote clipboard contents on paste

@@ -1410,3 +1410,28 @@ GuacamoleService.Protocols = {
     }
 
 };
+
+/**
+ * Collection of service functions which deal with the clipboard state. Each
+ * function makes an explicit HTTP query to the server, and parses the response.
+ */
+GuacamoleService.Clipboard = {
+    
+    "get" : function(parameters) {
+        
+        // Construct request URL
+        var list_url = "clipboard";
+        if (parameters) list_url += "?" + parameters;
+        
+        // Get permission list
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", list_url, false);
+        xhr.send(null);
+        
+        // Handle response
+        GuacamoleService.handleResponse(xhr);
+        return xhr.responseText;
+        
+    }
+    
+};

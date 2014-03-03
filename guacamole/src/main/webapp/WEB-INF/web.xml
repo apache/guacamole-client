@@ -59,6 +59,17 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
+    <!-- Clipboard State Servlet -->
+    <servlet>
+        <description>Clipboard state servlet.</description>
+        <servlet-name>Clipboard</servlet-name>
+        <servlet-class>org.glyptodon.guacamole.net.basic.CaptureClipboard</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Clipboard</servlet-name>
+        <url-pattern>/clipboard</url-pattern>
+    </servlet-mapping>
+
     <!-- Connection Creation Servlet -->
     <servlet>
         <description>Connection creation servlet.</description>
