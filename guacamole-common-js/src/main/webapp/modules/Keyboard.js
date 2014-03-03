@@ -44,6 +44,8 @@ Guacamole.Keyboard = function(element) {
      * 
      * @event
      * @param {Number} keysym The keysym of the key being pressed.
+     * @return {Boolean} true if the key event should be allowed through to the
+     *                   browser, false otherwise.
      */
     this.onkeydown = null;
 
@@ -365,6 +367,7 @@ Guacamole.Keyboard = function(element) {
      * 
      * @private
      * @param keysym The keysym of the key to press.
+     * @return {Boolean} true if event should NOT be canceled, false otherwise.
      */
     function press_key(keysym) {
 
@@ -379,7 +382,7 @@ Guacamole.Keyboard = function(element) {
 
             // Send key event
             if (guac_keyboard.onkeydown) {
-                guac_keyboard.onkeydown(keysym);
+                var result = guac_keyboard.onkeydown(keysym);
 
                 // Stop any current repeat
                 window.clearTimeout(key_repeat_timeout);
@@ -394,8 +397,11 @@ Guacamole.Keyboard = function(element) {
                         }, 50);
                     }, 500);
 
+                return result;
             }
         }
+
+        return false;
 
     }
 
@@ -519,9 +525,9 @@ Guacamole.Keyboard = function(element) {
         // Press key if known
         if (keysym !== null) {
 
-            e.preventDefault();
             keydownChar[keynum] = keysym;
-            press_key(keysym);
+            if (!press_key(keysym))
+                e.preventDefault();
             
             // If a key is pressed while meta is held down, the keyup will
             // never be sent in Chrome, so send it now. (bug #108404)
@@ -537,8 +543,6 @@ Guacamole.Keyboard = function(element) {
 
         // Only intercept if handler set
         if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
-
-        e.preventDefault();
 
         var keynum;
         if (window.event) keynum = window.event.keyCode;
@@ -560,9 +564,12 @@ Guacamole.Keyboard = function(element) {
 
         // Send press + release if keysym known
         if (keysym !== null) {
-            press_key(keysym);
+            if (!press_key(keysym))
+                e.preventDefault();
             release_key(keysym);
         }
+        else
+            e.preventDefault();
 
     }, true);
 
