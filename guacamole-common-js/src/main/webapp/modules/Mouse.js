@@ -712,6 +712,11 @@ Guacamole.Mouse.Touchscreen = function(element) {
     var click_start_y = null;
 
     /**
+     * The timeout associated with the delayed, cancellable click release.
+     */
+    var click_release_timeout = null;
+
+    /**
      * The distance a two-finger touch must move per scrollwheel event, in
      * pixels.
      */
@@ -780,6 +785,13 @@ Guacamole.Mouse.Touchscreen = function(element) {
         if (e.touches.length !== 0 || e.changedTouches.length !== 1)
             return;
 
+        // Always release mouse button if pressed
+        if (guac_touchscreen.currentState.left) {
+            guac_touchscreen.currentState.left = false;
+            if (guac_touchscreen.onmouseup)
+                guac_touchscreen.onmouseup(guac_touchscreen.currentState);
+        }
+
         // If finger hasn't moved enough to cancel the click
         var touch = e.changedTouches[0];
         if (   Math.abs(touch.clientX - click_start_x) < guac_touchscreen.clickMoveThreshold
@@ -787,19 +799,22 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
             e.preventDefault();
 
-            // Press button
-            guac_touchscreen.currentState.left = true;
+            // If not yet pressed, press and start delay release
+            if (!guac_touchscreen.currentState.left) {
 
-            // Fire press event, if defined
-            if (guac_touchscreen.onmousedown)
-                guac_touchscreen.onmousedown(guac_touchscreen.currentState);
+                // Press button
+                guac_touchscreen.currentState.left = true;
+                if (guac_touchscreen.onmousedown)
+                    guac_touchscreen.onmousedown(guac_touchscreen.currentState);
 
-            // Release button
-            guac_touchscreen.currentState.left = false;
+                // Release button after a delay, if not canceled
+                click_release_timeout = window.setTimeout(function() {
+                    guac_touchscreen.currentState.left = false;
+                    if (guac_touchscreen.onmouseup)
+                        guac_touchscreen.onmouseup(guac_touchscreen.currentState);
+                }, guac_touchscreen.clickTimingThreshold);
 
-            // Fire release event when the last touch is released, if event defined
-            if (guac_touchscreen.onmouseup)
-                guac_touchscreen.onmouseup(guac_touchscreen.currentState);
+            }
 
         }
 
@@ -820,6 +835,12 @@ Guacamole.Mouse.Touchscreen = function(element) {
         click_start_x = touch.clientX;
         click_start_y = touch.clientY;
 
+        // Clear timeout, if set
+        if (click_release_timeout) {
+            window.clearTimeout(click_release_timeout);
+            click_release_timeout = null;
+        }
+
     }, false);
 
     element.addEventListener("touchmove", function(e) {
@@ -832,6 +853,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
         if (guac_touchscreen.currentState.left) {
 
             e.preventDefault();
+            e.stopPropagation();
 
             // Get touch
             var touch = e.touches[0];
