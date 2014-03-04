@@ -700,10 +700,34 @@ Guacamole.Mouse.Touchscreen = function(element) {
     var guac_touchscreen = this;
 
     /**
+     * The start X location of a click (tap) gesture.
+     * @private
+     */
+    var click_start_x = null;
+
+    /**
+     * The start Y location of a click (tap) gesture.
+     * @private
+     */
+    var click_start_y = null;
+
+    /**
      * The distance a two-finger touch must move per scrollwheel event, in
      * pixels.
      */
     this.scrollThreshold = 20 * (window.devicePixelRatio || 1);
+
+    /**
+     * The maximum number of milliseconds to wait for a touch to end for the
+     * gesture to be considered a click.
+     */
+    this.clickTimingThreshold = 250;
+
+    /**
+     * The maximum number of pixels to allow a touch to move for the gesture to
+     * be considered a click.
+     */
+    this.clickMoveThreshold = 10 * (window.devicePixelRatio || 1);
 
     /**
      * The current mouse state. The properties of this state are updated when
@@ -753,18 +777,31 @@ Guacamole.Mouse.Touchscreen = function(element) {
     element.addEventListener("touchend", function(e) {
         
         // Ignore if more than one touch
-        if (e.touches.length + e.changedTouches.length !== 1)
+        if (e.touches.length !== 0 || e.changedTouches.length !== 1)
             return;
 
-        e.stopPropagation();
-        e.preventDefault();
+        // If finger hasn't moved enough to cancel the click
+        var touch = e.changedTouches[0];
+        if (   Math.abs(touch.clientX - click_start_x) < guac_touchscreen.clickMoveThreshold
+            && Math.abs(touch.clientY - click_start_y) < guac_touchscreen.clickMoveThreshold) {
 
-        // Release button
-        guac_touchscreen.currentState.left = false;
+            e.preventDefault();
 
-        // Fire release event when the last touch is released, if event defined
-        if (e.touches.length === 0 && guac_touchscreen.onmouseup)
-            guac_touchscreen.onmouseup(guac_touchscreen.currentState);
+            // Press button
+            guac_touchscreen.currentState.left = true;
+
+            // Fire press event, if defined
+            if (guac_touchscreen.onmousedown)
+                guac_touchscreen.onmousedown(guac_touchscreen.currentState);
+
+            // Release button
+            guac_touchscreen.currentState.left = false;
+
+            // Fire release event when the last touch is released, if event defined
+            if (guac_touchscreen.onmouseup)
+                guac_touchscreen.onmouseup(guac_touchscreen.currentState);
+
+        }
 
     }, false);
 
@@ -774,19 +811,14 @@ Guacamole.Mouse.Touchscreen = function(element) {
         if (e.touches.length !== 1)
             return;
 
-        e.stopPropagation();
         e.preventDefault();
 
-        // Get touch
-        var touch = e.touches[0];
-
         // Update state
-        guac_touchscreen.currentState.left = true;
+        var touch = e.touches[0];
         guac_touchscreen.currentState.fromClientPosition(element, touch.clientX, touch.clientY);
 
-        // Fire press event, if defined
-        if (guac_touchscreen.onmousedown)
-            guac_touchscreen.onmousedown(guac_touchscreen.currentState);
+        click_start_x = touch.clientX;
+        click_start_y = touch.clientY;
 
     }, false);
 
@@ -796,18 +828,22 @@ Guacamole.Mouse.Touchscreen = function(element) {
         if (e.touches.length !== 1)
             return;
 
-        e.stopPropagation();
-        e.preventDefault();
+        // Only handle move if in process of drag
+        if (guac_touchscreen.currentState.left) {
 
-        // Get touch
-        var touch = e.touches[0];
+            e.preventDefault();
 
-        // Update state
-        guac_touchscreen.currentState.fromClientPosition(element, touch.clientX, touch.clientY);
+            // Get touch
+            var touch = e.touches[0];
 
-        // Fire movement event, if defined
-        if (guac_touchscreen.onmousemove)
-            guac_touchscreen.onmousemove(guac_touchscreen.currentState);
+            // Update state
+            guac_touchscreen.currentState.fromClientPosition(element, touch.clientX, touch.clientY);
+
+            // Fire movement event, if defined
+            if (guac_touchscreen.onmousemove)
+                guac_touchscreen.onmousemove(guac_touchscreen.currentState);
+
+        }
 
     }, false);
 
