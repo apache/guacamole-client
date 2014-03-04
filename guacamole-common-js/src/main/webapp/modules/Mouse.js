@@ -199,7 +199,7 @@ Guacamole.Mouse = function(element) {
 
         // Check that mouseout is due to actually LEAVING the element
         var target = e.relatedTarget || e.toElement;
-        while (target != null) {
+        while (target !== null) {
             if (target === element)
                 return;
             target = target.parentNode;
@@ -349,7 +349,7 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
      * Whether the middle mouse button is currently pressed.
      * @type Boolean
      */
-    this.middle = middle
+    this.middle = middle;
 
     /**
      * Whether the right mouse button is currently pressed.
@@ -511,7 +511,7 @@ Guacamole.Mouse.Touchpad = function(element) {
         e.preventDefault();
             
         // If we're handling a gesture AND this is the last touch
-        if (gesture_in_progress && e.touches.length == 0) {
+        if (gesture_in_progress && e.touches.length === 0) {
             
             var time = new Date().getTime();
 
@@ -613,7 +613,7 @@ Guacamole.Mouse.Touchpad = function(element) {
         pixels_moved += Math.abs(delta_x) + Math.abs(delta_y);
 
         // If only one touch involved, this is mouse move
-        if (touch_count == 1) {
+        if (touch_count === 1) {
 
             // Calculate average velocity in Manhatten pixels per millisecond
             var velocity = pixels_moved / (new Date().getTime() - last_touch_time);
@@ -648,7 +648,7 @@ Guacamole.Mouse.Touchpad = function(element) {
         }
 
         // Interpret two-finger swipe as scrollwheel
-        else if (touch_count == 2) {
+        else if (touch_count === 2) {
 
             // If change in location passes threshold for scroll
             if (Math.abs(delta_y) >= guac_touchpad.scrollThreshold) {
@@ -753,7 +753,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
     element.addEventListener("touchend", function(e) {
         
         // Ignore if more than one touch
-        if (e.touches.length + e.changedTouches.length != 1)
+        if (e.touches.length + e.changedTouches.length !== 1)
             return;
 
         e.stopPropagation();
@@ -763,7 +763,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
         guac_touchscreen.currentState.left = false;
 
         // Fire release event when the last touch is released, if event defined
-        if (e.touches.length == 0 && guac_touchscreen.onmouseup)
+        if (e.touches.length === 0 && guac_touchscreen.onmouseup)
             guac_touchscreen.onmouseup(guac_touchscreen.currentState);
 
     }, false);
@@ -771,7 +771,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
     element.addEventListener("touchstart", function(e) {
 
         // Ignore if more than one touch
-        if (e.touches.length != 1)
+        if (e.touches.length !== 1)
             return;
 
         e.stopPropagation();
@@ -793,7 +793,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
     element.addEventListener("touchmove", function(e) {
 
         // Ignore if more than one touch
-        if (e.touches.length != 1)
+        if (e.touches.length !== 1)
             return;
 
         e.stopPropagation();
