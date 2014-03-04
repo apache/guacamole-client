@@ -47,4 +47,6 @@
     <param name="remote-app-dir" type="text" title="RemoteApp working directory"/>
     <param name="remote-app-args" type="text" title="RemoteApp parameters"/>
 
+    <param name="static-channels" type="text" title="Static channel names"/>
+
 </protocol>
