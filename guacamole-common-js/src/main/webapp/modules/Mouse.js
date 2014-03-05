@@ -868,6 +868,32 @@ Guacamole.Mouse.Touchscreen = function(element) {
             && Math.abs(touch.clientY - gesture_start_y) >= guac_touchscreen.clickMoveThreshold;
     }
 
+    /**
+     * Begins a new gesture at the location of the first touch in the given
+     * touch event.
+     * 
+     * @private
+     * @param {TouchEvent} e The touch event beginning this new gesture.
+     */
+    function begin_gesture(e) {
+        var touch = e.touches[0];
+        gesture_in_progress = true;
+        gesture_start_x = touch.clientX;
+        gesture_start_y = touch.clientY;
+    }
+
+    /**
+     * End the current gesture entirely. Wait for all touches to be done before
+     * resuming gesture detection.
+     * 
+     * @private
+     */
+    function end_gesture() {
+        window.clearTimeout(click_release_timeout);
+        window.clearTimeout(long_press_timeout);
+        gesture_in_progress = false;
+    }
+
     element.addEventListener("touchend", function(e) {
 
         // Do not handle if no gesture
@@ -875,12 +901,13 @@ Guacamole.Mouse.Touchscreen = function(element) {
             return;
 
         // Ignore if more than one touch
-        if (e.touches.length !== 0 || e.changedTouches.length !== 1)
+        if (e.touches.length !== 0 || e.changedTouches.length !== 1) {
+            end_gesture();
             return;
+        }
 
         // Long-press, if any, is over
         window.clearTimeout(long_press_timeout);
-        long_press_timeout = null;
 
         // Always release mouse button if pressed
         release_button("left");
@@ -893,12 +920,14 @@ Guacamole.Mouse.Touchscreen = function(element) {
             // If not yet pressed, press and start delay release
             if (!guac_touchscreen.currentState.left) {
 
+                var touch = e.changedTouches[0];
+                move_mouse(touch.clientX, touch.clientY);
                 press_button("left");
 
                 // Release button after a delay, if not canceled
                 click_release_timeout = window.setTimeout(function() {
                     release_button("left");
-                    gesture_in_progress = false;
+                    end_gesture();
                 }, guac_touchscreen.clickTimingThreshold);
 
             }
@@ -910,31 +939,25 @@ Guacamole.Mouse.Touchscreen = function(element) {
     element.addEventListener("touchstart", function(e) {
 
         // Ignore if more than one touch
-        if (e.touches.length !== 1)
+        if (e.touches.length !== 1) {
+            end_gesture();
             return;
+        }
 
         e.preventDefault();
 
-        // Update state
-        var touch = e.touches[0];
-        move_mouse(touch.clientX, touch.clientY);
-
         // New touch begins a new gesture
-        gesture_in_progress = true;
-        gesture_start_x = touch.clientX;
-        gesture_start_y = touch.clientY;
+        begin_gesture(e);
 
         // Keep button pressed if tap after left click
-        if (click_release_timeout) {
-            window.clearTimeout(click_release_timeout);
-            click_release_timeout = null;
-        }
+        window.clearTimeout(click_release_timeout);
 
         // Click right button if this turns into a long-press
         long_press_timeout = window.setTimeout(function() {
+            var touch = e.touches[0];
+            move_mouse(touch.clientX, touch.clientY);
             click_button("right");
-            long_press_timeout = null;
-            gesture_in_progress = false;
+            end_gesture();
         }, guac_touchscreen.longPressThreshold);
 
     }, false);
@@ -946,14 +969,14 @@ Guacamole.Mouse.Touchscreen = function(element) {
             return;
 
         // Cancel long press if finger moved
-        if (long_press_timeout && finger_moved(e)) {
+        if (finger_moved(e))
             window.clearTimeout(long_press_timeout);
-            long_press_timeout = null;
-        }
 
         // Ignore if more than one touch
-        if (e.touches.length !== 1)
+        if (e.touches.length !== 1) {
+            end_gesture();
             return;
+        }
 
         // Update mouse position if dragging
         if (guac_touchscreen.currentState.left) {
