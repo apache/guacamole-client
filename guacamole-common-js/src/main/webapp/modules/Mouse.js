@@ -849,8 +849,8 @@ Guacamole.Mouse.Touchscreen = function(element) {
      */
     function move_mouse(x, y) {
         guac_touchscreen.currentState.fromClientPosition(element, x, y);
-            if (guac_touchscreen.onmousemove)
-                guac_touchscreen.onmousemove(guac_touchscreen.currentState);
+        if (guac_touchscreen.onmousemove)
+            guac_touchscreen.onmousemove(guac_touchscreen.currentState);
     }
 
     /**
@@ -864,8 +864,9 @@ Guacamole.Mouse.Touchscreen = function(element) {
      */
     function finger_moved(e) {
         var touch = e.touches[0] || e.changedTouches[0];
-        return Math.abs(touch.clientX - gesture_start_x) >= guac_touchscreen.clickMoveThreshold
-            && Math.abs(touch.clientY - gesture_start_y) >= guac_touchscreen.clickMoveThreshold;
+        var delta_x = touch.clientX - gesture_start_x;
+        var delta_y = touch.clientY - gesture_start_y;
+        return Math.sqrt(delta_x*delta_x + delta_y*delta_y) >= guac_touchscreen.clickMoveThreshold;
     }
 
     /**
