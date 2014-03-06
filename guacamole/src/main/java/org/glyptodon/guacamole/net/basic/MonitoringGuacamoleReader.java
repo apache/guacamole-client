@@ -66,13 +66,23 @@ public class MonitoringGuacamoleReader implements GuacamoleReader {
 
     @Override
     public char[] read() throws GuacamoleException {
-        return readInstruction().toString().toCharArray();
+
+        // Read single instruction, handle end-of-stream
+        GuacamoleInstruction instruction = readInstruction();
+        if (instruction == null)
+            return null;
+
+        return instruction.toString().toCharArray();
+
     }
 
     @Override
     public GuacamoleInstruction readInstruction() throws GuacamoleException {
 
+        // Read single instruction, handle end-of-stream
         GuacamoleInstruction instruction = reader.readInstruction();
+        if (instruction == null)
+            return null;
 
         // If clipboard changed, notify listeners
         if (instruction.getOpcode().equals("clipboard")) {
