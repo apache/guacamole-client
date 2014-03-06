@@ -45,7 +45,7 @@ public class ClipboardState {
      * Returns the current clipboard contents.
      * @return The current clipboard contents
      */
-    public String getContents() {
+    public synchronized String getContents() {
         return contents;
     }
 
