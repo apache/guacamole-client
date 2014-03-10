@@ -38,28 +38,7 @@ GuacUI.Client = {
         /**
          * Same as INTERACTIVE except with visible on-screen keyboard.
          */
-        "OSK"              : 1,
-
-        /**
-         * No on-screen keyboard, but a visible magnifier.
-         */
-        "MAGNIFIER"        : 2,
-
-        /**
-         * Arrows and a draggable view.
-         */
-        "PAN"              : 3,
-
-        /**
-         * Same as PAN, but with visible native OSK.
-         */
-        "PAN_TYPING"       : 4,
-
-        /**
-         * Precursor to PAN_TYPING, like PAN, except does not pan the
-         * screen, but rather hints at how to start typing.
-         */
-        "WAIT_TYPING"      : 5
+        "OSK"              : 1
 
     },
 
@@ -234,8 +213,6 @@ GuacUI.Client = {
 
     /* Constants */
     
-    "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
-    "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */    
     "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
     "RECONNECT_PERIOD"              : 15,  /* seconds */
 
@@ -252,6 +229,9 @@ GuacUI.Client = {
     "expected_input_width"  : 1,
     "expected_input_height" : 1,
 
+    "min_zoom"        : 0,
+    "max_zoom"        : 3,
+
     "connectionName"  : "Guacamole",
     "overrideAutoFit" : false,
     "attachedClient"  : null,
@@ -259,365 +239,6 @@ GuacUI.Client = {
     "clipboard_integration_enabled" : undefined,
 
 };
-
-/**
- * Component which displays a magnified (100% zoomed) client display.
- * 
- * @constructor
- * @augments GuacUI.DraggableComponent
- */
-GuacUI.Client.Magnifier = function() {
-
-    /**
-     * Reference to this magnifier.
-     * @private
-     */
-    var guac_magnifier = this;
-
-    /**
-     * Large background div which will block touch events from reaching the
-     * client while also providing a click target to deactivate the
-     * magnifier.
-     * @private
-     */
-    var magnifier_background = GuacUI.createElement("div", "magnifier-background");
-
-    /**
-     * Container div for the magnifier, providing a clipping rectangle.
-     * @private
-     */
-    var magnifier = GuacUI.createChildElement(magnifier_background,
-        "div", "magnifier");
-
-    /**
-     * Canvas which will contain the static image copy of the display at time
-     * of show.
-     * @private
-     */
-    var magnifier_display = GuacUI.createChildElement(magnifier, "canvas");
-
-    /**
-     * Context of magnifier display.
-     * @private
-     */
-    var magnifier_context = magnifier_display.getContext("2d");
-
-    /*
-     * This component is draggable.
-     */
-    GuacUI.DraggableComponent.apply(this, [magnifier]);
-
-    // Ensure transformations on display originate at 0,0
-    magnifier.style.transformOrigin =
-    magnifier.style.webkitTransformOrigin =
-    magnifier.style.MozTransformOrigin =
-    magnifier.style.OTransformOrigin =
-    magnifier.style.msTransformOrigin =
-        "0 0";
-
-    /*
-     * Reposition magnifier display relative to own position on screen.
-     */
-
-    this.onmove = function(x, y) {
-
-        var width = magnifier.offsetWidth;
-        var height = magnifier.offsetHeight;
-
-        // Update contents relative to new position
-        var clip_x = x
-            / (window.innerWidth - width) * (GuacUI.Client.attachedClient.getWidth() - width);
-        var clip_y = y
-            / (window.innerHeight - height) * (GuacUI.Client.attachedClient.getHeight() - height);
-       
-        magnifier_display.style.WebkitTransform =
-        magnifier_display.style.MozTransform =
-        magnifier_display.style.OTransform =
-        magnifier_display.style.msTransform =
-        magnifier_display.style.transform = "translate("
-            + (-clip_x) + "px, " + (-clip_y) + "px)";
-
-        /* Update expected input rectangle */
-        GuacUI.Client.expected_input_x = clip_x;
-        GuacUI.Client.expected_input_y = clip_y;
-        GuacUI.Client.expected_input_width  = width;
-        GuacUI.Client.expected_input_height = height;
-
-    };
-
-    /*
-     * Copy display and add self to body on show.
-     */
-
-    this.show = function() {
-
-        // Copy displayed image
-        magnifier_display.width = GuacUI.Client.attachedClient.getWidth();
-        magnifier_display.height = GuacUI.Client.attachedClient.getHeight();
-        magnifier_context.drawImage(GuacUI.Client.attachedClient.flatten(), 0, 0);
-
-        // Show magnifier container
-        document.body.appendChild(magnifier_background);
-
-    };
-
-    /*
-     * Remove self from body on hide.
-     */
-
-    this.hide = function() {
-
-        // Hide magnifier container
-        document.body.removeChild(magnifier_background);
-
-    };
-
-    /*
-     * If the user clicks on the background, switch to INTERACTIVE mode.
-     */
-
-    magnifier_background.addEventListener("click", function() {
-        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-    }, true);
-
-    /*
-     * If the user clicks on the magnifier, switch to PAN_TYPING mode.
-     */
-
-    magnifier.addEventListener("click", function(e) {
-        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
-        e.stopPropagation();
-    }, true);
-
-};
-
-/*
- * We inherit from GuacUI.DraggableComponent.
- */
-GuacUI.Client.Magnifier.prototype = new GuacUI.DraggableComponent();
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.Magnifier(),
-    GuacUI.Client.states.MAGNIFIER
-);
-
-/**
- * Zoomed Display, a pseudo-component.
- * 
- * @constructor
- * @augments GuacUI.Component
- */
-GuacUI.Client.ZoomedDisplay = function() {
-
-    this.show = function() {
-        GuacUI.Client.overrideAutoFit = true;
-        GuacUI.Client.updateDisplayScale();
-    };
-
-    this.hide = function() {
-        GuacUI.Client.overrideAutoFit = false;
-        GuacUI.Client.updateDisplayScale();
-    };
-
-};
-
-GuacUI.Client.ZoomedDisplay.prototype = new GuacUI.Component();
-
-/*
- * Zoom the main display during PAN and PAN_TYPING modes.
- */
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.ZoomedDisplay(),
-    GuacUI.Client.states.PAN,
-    GuacUI.Client.states.PAN_TYPING
-);
-
-/**
- * Type overlay UI. This component functions to provide a means of activating
- * the keyboard, when neither panning nor magnification make sense.
- * 
- * @constructor
- * @augments GuacUI.Component
- */
-GuacUI.Client.TypeOverlay = function() {
-
-    /**
-     * Overlay which will provide the means of scrolling the screen.
-     */
-    var type_overlay = GuacUI.createElement("div", "type-overlay");
-
-    /*
-     * Add exit button
-     */
-
-    var start = GuacUI.createChildElement(type_overlay, "p", "hint");
-    start.textContent = "Tap here to type, or tap the screen to cancel.";
-
-    // Begin typing when user clicks hint
-    start.addEventListener("click", function(e) {
-        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
-        e.stopPropagation();
-    }, false);
-
-    this.show = function() {
-        document.body.appendChild(type_overlay);
-    };
-
-    this.hide = function() {
-        document.body.removeChild(type_overlay);
-    };
-
-    /*
-     * Cancel when user taps screen
-     */
-
-    type_overlay.addEventListener("click", function(e) {
-        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-        e.stopPropagation();
-    }, false);
-
-};
-
-GuacUI.Client.TypeOverlay.prototype = new GuacUI.Component();
-
-/*
- * Show the type overlay during WAIT_TYPING mode only
- */
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.TypeOverlay(),
-    GuacUI.Client.states.WAIT_TYPING
-);
-
-/**
- * Pan overlay UI. This component functions to receive touch events and
- * translate them into scrolling of the main UI.
- * 
- * @constructor
- * @augments GuacUI.Component
- */
-GuacUI.Client.PanOverlay = function() {
-
-    /**
-     * Overlay which will provide the means of scrolling the screen.
-     */
-    var pan_overlay = GuacUI.createElement("div", "pan-overlay");
-
-    /*
-     * Add arrows
-     */
-
-    GuacUI.createChildElement(pan_overlay, "div", "indicator up");
-    GuacUI.createChildElement(pan_overlay, "div", "indicator down");
-    GuacUI.createChildElement(pan_overlay, "div", "indicator right");
-    GuacUI.createChildElement(pan_overlay, "div", "indicator left");
-
-    /*
-     * Add exit button
-     */
-
-    var back = GuacUI.createChildElement(pan_overlay, "p", "hint");
-    back.textContent = "Tap here to exit panning mode";
-
-    // Return to interactive when back is clicked
-    back.addEventListener("click", function() {
-        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-    }, false);
-
-    this.show = function() {
-        document.body.appendChild(pan_overlay);
-    };
-
-    this.hide = function() {
-        document.body.removeChild(pan_overlay);
-    };
-
-    /*
-     * Transition to PAN_TYPING when the user taps on the overlay.
-     */
-
-    pan_overlay.addEventListener("click", function(e) {
-        GuacUI.StateManager.setState(GuacUI.Client.states.PAN_TYPING);
-        e.stopPropagation();
-    }, true);
-
-};
-
-GuacUI.Client.PanOverlay.prototype = new GuacUI.Component();
-
-/*
- * Show the pan overlay during PAN or PAN_TYPING modes.
- */
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.PanOverlay(),
-    GuacUI.Client.states.PAN,
-    GuacUI.Client.states.PAN_TYPING
-);
-
-/**
- * Native Keyboard. This component uses a hidden textarea field to show the
- * platforms native on-screen keyboard (if any) or otherwise enable typing,
- * should the platform require a text field with focus for keyboard events to
- * register.
- * 
- * @constructor
- * @augments GuacUI.Component
- */
-GuacUI.Client.NativeKeyboard = function() {
-
-    /**
-     * Event target. This is a hidden textarea element which will receive
-     * key events.
-     * @private
-     */
-    var eventTarget = GuacUI.createElement("textarea", "event-target");
-    eventTarget.setAttribute("autocorrect", "off");
-    eventTarget.setAttribute("autocapitalize", "off");
-
-    this.show = function() {
-
-        // Move to location of expected input
-        eventTarget.style.left   = GuacUI.Client.expected_input_x + "px";
-        eventTarget.style.top    = GuacUI.Client.expected_input_y + "px";
-        eventTarget.style.width  = GuacUI.Client.expected_input_width + "px";
-        eventTarget.style.height = GuacUI.Client.expected_input_height + "px";
-
-        // Show and focus target
-        document.body.appendChild(eventTarget);
-        eventTarget.focus();
-
-    };
-
-    this.hide = function() {
-
-        // Hide and blur target
-        eventTarget.blur();
-        document.body.removeChild(eventTarget);
-
-    };
-
-    /*
-     * Automatically switch to INTERACTIVE mode after target loses focus
-     */
-
-    eventTarget.addEventListener("blur", function() {
-        GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
-    }, false);
-
-};
-
-GuacUI.Client.NativeKeyboard.prototype = new GuacUI.Component();
-
-/*
- * Show native keyboard during PAN_TYPING mode only.
- */
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.NativeKeyboard(),
-    GuacUI.Client.states.PAN_TYPING
-);
 
 /**
  * On-screen Keyboard. This component provides a clickable/touchable keyboard
@@ -796,6 +417,250 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
 GuacUI.Client.ModalStatus.prototype = new GuacUI.Component();
 
 /**
+ * Monitors a given element for touch events, firing pan-specific events
+ * based on pre-defined gestures.
+ * 
+ * @constructor
+ * @param {Element} element The element to monitor for touch events. 
+ */
+GuacUI.Client.Pan = function(element) {
+
+    /**
+     * Reference to this pan instance.
+     * @private
+     */
+    var guac_pan = this;
+
+    /**
+     * The starting X location of the pan gesture.
+     * @private
+     */
+    var start_x = null;
+
+    /**
+     * The starting Y location of the pan gesture.
+     * @private
+     */
+    var start_y = null;
+
+    /**
+     * The change in X relative to pan start.
+     */
+    this.delta_x = 0;
+
+    /**
+     * The change in X relative to pan start.
+     */
+    this.delta_y = 0;
+
+    /**
+     * Called when a pan gesture begins.
+     *
+     * @event
+     * @param {Number} x The relative change in X location relative to
+     *                   pan start. For pan start, this will ALWAYS be 0.
+     * @param {Number} y The relative change in Y location relative to
+     *                   pan start. For pan start, this will ALWAYS be 0.
+     */
+    this.onpanstart = null;
+
+    /**
+     * Called when the pan amount changes.
+     *
+     * @event
+     * @param {Number} x The relative change in X location relative to
+     *                   pan start.
+     * @param {Number} y The relative change in Y location relative to
+     *                   pan start.
+     */
+    this.onpanchange = null;
+
+    /**
+     * Called when a pan gesture ends.
+     *
+     * @event
+     * @param {Number} x The relative change in X location relative to
+     *                   pan start.
+     * @param {Number} y The relative change in Y location relative to
+     *                   pan start.
+     */
+    this.onpanend = null;
+
+    // When there is exactly one touch, monitor the change in location
+    element.addEventListener("touchmove", function(e) {
+        if (e.touches.length === 1) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Get touch location
+            var x = e.touches[0].clientX;
+            var y = e.touches[0].clientY;
+
+            // If gesture just starting, fire zoom start
+            if (!start_x || !start_y) {
+                start_x = x;
+                start_y = y;
+                guac_pan.delta_x = 0;
+                guac_pan.delta_y = 0;
+                if (guac_pan.onpanstart)
+                    guac_pan.onpanstart(guac_pan.delta_x, guac_pan.delta_y);
+            }
+
+            // Otherwise, notify of zoom change
+            else if (guac_pan.onpanchange) {
+                guac_pan.delta_x = x - start_x;
+                guac_pan.delta_y = y - start_y;
+                guac_pan.onpanchange(guac_pan.delta_x, guac_pan.delta_y);
+            }
+
+        }
+    }, false);
+
+    // Reset monitoring and fire end event when done
+    element.addEventListener("touchend", function(e) {
+
+        if (start_x && start_y && e.touches.length === 0) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (guac_pan.onpanend)
+                guac_pan.onpanend();
+
+            start_x = null;
+            start_y = null;
+            guac_pan.delta_x = 0;
+            guac_pan.delta_y = 0;
+
+        }
+
+    }, false);
+
+};
+
+/**
+ * Monitors a given element for touch events, firing zoom-specific events
+ * based on pre-defined gestures.
+ * 
+ * @constructor
+ * @param {Element} element The element to monitor for touch events. 
+ */
+GuacUI.Client.Pinch = function(element) {
+
+    /**
+     * Reference to this zoom instance.
+     * @private
+     */
+    var guac_zoom = this;
+
+    /**
+     * The current pinch distance, or null if the gesture has not yet started.
+     * @private
+     */
+    var start_length = null;
+
+    /**
+     * The current zoom ratio.
+     * @type Number
+     */
+    this.ratio = 1;
+
+    /**
+     * Called when a zoom gesture begins.
+     *
+     * @event
+     * @param {Number} ratio The relative value of the starting zoom. This will
+     *                       ALWAYS be 1.
+     */
+    this.onzoomstart = null;
+
+    /**
+     * Called when the amount of zoom changes.
+     *
+     * @event
+     * @param {Number} ratio The relative value of the changed zoom, with 1
+     *                       being no change.
+     */
+    this.onzoomchange = null;
+
+    /**
+     * Called when a zoom gesture ends.
+     *
+     * @event
+     * @param {Number} ratio The relative value of the final zoom, with 1
+     *                       being no change.
+     */
+    this.onzoomend = null;
+
+    /**
+     * Given a touch event, calculates the distance between the first two
+     * touches in pixels.
+     *
+     * @param {TouchEvent} e The touch event to use when performing distance
+     *                       calculation.
+     * @return {Number} The distance in pixels between the first two touches.
+     */
+    function pinch_distance(e) {
+
+        var touch_a = e.touches[0];
+        var touch_b = e.touches[1];
+
+        var delta_x = touch_a.clientX - touch_b.clientX;
+        var delta_y = touch_a.clientY - touch_b.clientY;
+
+        return Math.sqrt(delta_x*delta_x + delta_y*delta_y);
+
+    }
+
+    // When there are exactly two touches, monitor the distance between
+    // them, firing zoom events as appropriate
+    element.addEventListener("touchmove", function(e) {
+        if (e.touches.length === 2) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Calculate current zoom level
+            var current = pinch_distance(e);
+
+            // If gesture just starting, fire zoom start
+            if (!start_length) {
+                start_length = current;
+                guac_zoom.ratio = 1;
+                if (guac_zoom.onzoomstart)
+                    guac_zoom.onzoomstart(guac_zoom.ratio);
+            }
+
+            // Otherwise, notify of zoom change
+            else {
+                guac_zoom.ratio = current / start_length;
+                if (guac_zoom.onzoomchange)
+                    guac_zoom.onzoomchange(guac_zoom.ratio);
+            }
+
+        }
+    }, false);
+
+    // Reset monitoring and fire end event when done
+    element.addEventListener("touchend", function(e) {
+
+        if (start_length && e.touches.length < 2) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            start_length = null;
+            if (guac_zoom.onzoomend)
+                guac_zoom.onzoomend(guac_zoom.ratio);
+            guac_zoom.ratio = 1;
+        }
+
+    }, false);
+
+};
+
+/**
  * Flattens the attached Guacamole.Client, storing the result within the
  * connection history.
  */
@@ -839,25 +704,14 @@ GuacUI.Client.updateDisplayScale = function() {
     var guac = GuacUI.Client.attachedClient;
     var adjusted_scale = 1 / (window.devicePixelRatio || 1);
 
-    // If auto-fit is enabled, scale display
-    if (!GuacUI.Client.overrideAutoFit
-         && GuacamoleSessionStorage.getItem("auto-fit", true)) {
+    // Calculate scale to fit screen
+    GuacUI.Client.min_zoom = Math.min(
+        window.innerWidth  / guac.getWidth(),
+        window.innerHeight / guac.getHeight()
+    );
 
-        // Calculate scale to fit screen
-        var fit_scale = Math.min(
-            window.innerWidth  / guac.getWidth(),
-            window.innerHeight / guac.getHeight()
-        );
-          
-        // Scale client
-        if (guac.getScale() !== fit_scale)
-            guac.scale(fit_scale);
-
-    }
-
-    // Otherwise, scale to 100%
-    else if (guac.getScale() !== adjusted_scale)
-        guac.scale(adjusted_scale);
+    if (guac.getScale() < GuacUI.Client.min_zoom)
+        guac.scale(GuacUI.Client.min_zoom);
 
 };
 
@@ -1191,39 +1045,10 @@ GuacUI.Client.attach = function(guac) {
 
     // Mouse
     var mouse = new Guacamole.Mouse(guac_display);
-    var touch = new Guacamole.Mouse.Touchpad(guac_display);
+    var touch = new Guacamole.Mouse.Touchscreen(guac_display);
     touch.onmousedown = touch.onmouseup = touch.onmousemove =
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
         function(mouseState) {
-       
-            // Determine mouse position within view
-            var mouse_view_x = mouseState.x + guac_display.offsetLeft - window.pageXOffset;
-            var mouse_view_y = mouseState.y + guac_display.offsetTop  - window.pageYOffset;
-
-            // Determine viewport dimensioins
-            var view_width  = GuacUI.Client.viewport.offsetWidth;
-            var view_height = GuacUI.Client.viewport.offsetHeight;
-
-            // Determine scroll amounts based on mouse position relative to document
-
-            var scroll_amount_x;
-            if (mouse_view_x > view_width)
-                scroll_amount_x = mouse_view_x - view_width;
-            else if (mouse_view_x < 0)
-                scroll_amount_x = mouse_view_x;
-            else
-                scroll_amount_x = 0;
-
-            var scroll_amount_y;
-            if (mouse_view_y > view_height)
-                scroll_amount_y = mouse_view_y - view_height;
-            else if (mouse_view_y < 0)
-                scroll_amount_y = mouse_view_y;
-            else
-                scroll_amount_y = 0;
-
-            // Scroll (if necessary) to keep mouse on screen.
-            window.scrollBy(scroll_amount_x, scroll_amount_y);
 
             // Scale event by current scale
             var scaledState = new Guacamole.Mouse.State(
@@ -1391,6 +1216,48 @@ GuacUI.Client.attach = function(guac) {
     }, false);
 
     /*
+     * Pinch-to-zoom
+     */
+
+    var guac_pinch = new GuacUI.Client.Pinch(document.body);
+    var initial_scale = null;
+
+    guac_pinch.onzoomstart = function() {
+        initial_scale = guac.getScale();
+    };
+
+    guac_pinch.onzoomchange = function(ratio) {
+        var new_scale = initial_scale * ratio;
+        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
+        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
+        guac.scale(new_scale);
+    };
+
+    /*
+     * Touch panning
+     */
+
+    var guac_pan = new GuacUI.Client.Pan(document.body);
+
+    var last_pan_dx = 0;
+    var last_pan_dy = 0;
+
+    guac_pan.onpanstart = function(dx, dy) {
+        last_pan_dx = dx;
+        last_pan_dy = dy;
+    };
+
+    guac_pan.onpanchange = function(dx, dy) {
+        if (!touch.currentState.left) {
+            var change_pan_dx = dx - last_pan_dx;
+            var change_pan_dy = dy - last_pan_dy;
+            window.scrollBy(-change_pan_dx, -change_pan_dy);
+            last_pan_dx = dx;
+            last_pan_dy = dy;
+        }
+    };
+
+    /*
      * Disconnect and update thumbnail on close
      */
     window.onunload = function() {
@@ -1424,70 +1291,6 @@ GuacUI.Client.attach = function(guac) {
         else if (name === "auto-fit")
             GuacUI.Client.updateDisplayScale();
     });
-
-    var long_press_start_x = 0;
-    var long_press_start_y = 0;
-    var longPressTimeout = null;
-
-    GuacUI.Client.startLongPressDetect = function() {
-
-        if (!longPressTimeout) {
-
-            longPressTimeout = window.setTimeout(function() {
-                longPressTimeout = null;
-
-                // If screen shrunken, show magnifier
-                if (GuacUI.Client.attachedClient.getScale() < 1.0)
-                    GuacUI.StateManager.setState(GuacUI.Client.states.MAGNIFIER);
-
-                // Otherwise, if screen too big to fit, use panning mode
-                else if (
-                       GuacUI.Client.attachedClient.getWidth() > window.innerWidth
-                    || GuacUI.Client.attachedClient.getHeight() > window.innerHeight
-                )
-                    GuacUI.StateManager.setState(GuacUI.Client.states.PAN);
-
-                // Otherwise, just show a hint
-                else
-                    GuacUI.StateManager.setState(GuacUI.Client.states.WAIT_TYPING);
-            }, GuacUI.Client.LONG_PRESS_DETECT_TIMEOUT);
-
-        }
-    };
-
-    GuacUI.Client.stopLongPressDetect = function() {
-        window.clearTimeout(longPressTimeout);
-        longPressTimeout = null;
-    };
-
-    // Detect long-press at bottom of screen
-    GuacUI.Client.display.addEventListener('touchstart', function(e) {
-        
-        // Record touch location
-        if (e.touches.length === 1) {
-            var touch = e.touches[0];
-            long_press_start_x = touch.screenX;
-            long_press_start_y = touch.screenY;
-        }
-        
-        // Start detection
-        GuacUI.Client.startLongPressDetect();
-        
-    }, true);
-
-    // Stop detection if touch moves significantly
-    GuacUI.Client.display.addEventListener('touchmove', function(e) {
-        
-        // If touch distance from start exceeds threshold, cancel long press
-        var touch = e.touches[0];
-        if (Math.abs(touch.screenX - long_press_start_x) >= GuacUI.Client.LONG_PRESS_MOVEMENT_THRESHOLD
-            || Math.abs(touch.screenY - long_press_start_y) >= GuacUI.Client.LONG_PRESS_MOVEMENT_THRESHOLD)
-            GuacUI.Client.stopLongPressDetect();
-        
-    }, true);
-
-    // Stop detection if press stops
-    GuacUI.Client.display.addEventListener('touchend', GuacUI.Client.stopLongPressDetect, true);
 
     /**
      * Ignores the given event.
