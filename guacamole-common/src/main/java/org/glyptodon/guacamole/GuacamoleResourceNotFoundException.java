@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole;
 
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
+
 
 /**
  * A generic exception thrown when part of the Guacamole API fails to find
@@ -60,6 +62,11 @@ public class GuacamoleResourceNotFoundException extends GuacamoleClientException
      */
     public GuacamoleResourceNotFoundException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public GuacamoleStatus getStatus() {
+        return GuacamoleStatus.RESOURCE_NOT_FOUND;
     }
 
 }

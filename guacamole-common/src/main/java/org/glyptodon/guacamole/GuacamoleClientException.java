@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole;
 
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
+
 
 /**
  * A generic exception thrown when part of the Guacamole API encounters
@@ -60,6 +62,11 @@ public class GuacamoleClientException extends GuacamoleException {
      */
     public GuacamoleClientException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public GuacamoleStatus getStatus() {
+        return GuacamoleStatus.CLIENT_BAD_REQUEST;
     }
 
 }

@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole;
 
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
+
 
 /**
  * A security-related exception thrown when parts of the Guacamole API is
@@ -59,6 +61,11 @@ public class GuacamoleSecurityException extends GuacamoleClientException {
      */
     public GuacamoleSecurityException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public GuacamoleStatus getStatus() {
+        return GuacamoleStatus.CLIENT_FORBIDDEN;
     }
 
 }
