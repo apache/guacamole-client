@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole;
 
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
+
 
 /**
  * A generic exception thrown when part of the Guacamole API encounters
@@ -33,7 +35,7 @@ package org.glyptodon.guacamole;
 public class GuacamoleServerException extends GuacamoleException {
 
     /**
-     * Creates a new GuacamoleException with the given message and cause.
+     * Creates a new GuacamoleServerException with the given message and cause.
      *
      * @param message A human readable description of the exception that
      *                occurred.
@@ -44,7 +46,7 @@ public class GuacamoleServerException extends GuacamoleException {
     }
 
     /**
-     * Creates a new GuacamoleException with the given message.
+     * Creates a new GuacamoleServerException with the given message.
      *
      * @param message A human readable description of the exception that
      *                occurred.
@@ -54,12 +56,17 @@ public class GuacamoleServerException extends GuacamoleException {
     }
 
     /**
-     * Creates a new GuacamoleException with the given cause.
+     * Creates a new GuacamoleServerException with the given cause.
      *
      * @param cause The cause of this exception.
      */
     public GuacamoleServerException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public GuacamoleStatus getStatus() {
+        return GuacamoleStatus.SERVER_ERROR;
     }
 
 }
