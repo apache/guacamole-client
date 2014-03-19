@@ -61,7 +61,7 @@
         <script type="text/javascript" src="scripts/lib/filesaver/filesaver.js"></script>
 
         <!-- guacamole-common-js -->
-        <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/all.js"></script>
 
         <!-- guacamole-default-webapp scripts -->
         <script type="text/javascript" src="scripts/session.js"></script>
@@ -101,47 +101,46 @@
                     // Tie UI to client
                     GuacUI.Client.attach(guac);
 
-                    try {
+                    // Calculate optimal width/height for display
+                    var pixel_density = window.devicePixelRatio || 1;
+                    var optimal_dpi = pixel_density * 96;
+                    var optimal_width = window.innerWidth * pixel_density;
+                    var optimal_height = window.innerHeight * pixel_density;
 
-                        // Calculate optimal width/height for display
-                        var pixel_density = window.devicePixelRatio || 1;
-                        var optimal_dpi = pixel_density * 96;
-                        var optimal_width = window.innerWidth * pixel_density;
-                        var optimal_height = window.innerHeight * pixel_density;
-
-                        // Scale width/height to be at least 600x600
-                        if (optimal_width < 600 || optimal_height < 600) {
-                            var scale = Math.max(600 / optimal_width, 600 / optimal_height);
-                            optimal_width = optimal_width * scale;
-                            optimal_height = optimal_height * scale;
-                        }
-
-                        // Get entire query string, and pass to connect().
-                        // Normally, only the "id" parameter is required, but
-                        // all parameters should be preserved and passed on for
-                        // the sake of authentication.
-
-                        var connect_string =
-                            window.location.search.substring(1)
-                            + "&width="  + Math.floor(optimal_width)
-                            + "&height=" + Math.floor(optimal_height)
-                            + "&dpi="    + Math.floor(optimal_dpi);
-
-                        // Add audio mimetypes to connect_string
-                        GuacUI.Audio.supported.forEach(function(mimetype) {
-                            connect_string += "&audio=" + encodeURIComponent(mimetype);
-                        });
-
-                        // Add video mimetypes to connect_string
-                        GuacUI.Video.supported.forEach(function(mimetype) {
-                            connect_string += "&video=" + encodeURIComponent(mimetype);
-                        });
-
-                        guac.connect(connect_string);
-
+                    // Scale width/height to be at least 600x600
+                    if (optimal_width < 600 || optimal_height < 600) {
+                        var scale = Math.max(600 / optimal_width, 600 / optimal_height);
+                        optimal_width = optimal_width * scale;
+                        optimal_height = optimal_height * scale;
                     }
-                    catch (e) {
-                        GuacUI.Client.showError("Cannot Connect", e.message);
+
+                    // Get entire query string, and pass to connect().
+                    // Normally, only the "id" parameter is required, but
+                    // all parameters should be preserved and passed on for
+                    // the sake of authentication.
+
+                    var connect_string =
+                        window.location.search.substring(1)
+                        + "&width="  + Math.floor(optimal_width)
+                        + "&height=" + Math.floor(optimal_height)
+                        + "&dpi="    + Math.floor(optimal_dpi);
+
+                    // Add audio mimetypes to connect_string
+                    GuacUI.Audio.supported.forEach(function(mimetype) {
+                        connect_string += "&audio=" + encodeURIComponent(mimetype);
+                    });
+
+                    // Add video mimetypes to connect_string
+                    GuacUI.Video.supported.forEach(function(mimetype) {
+                        connect_string += "&video=" + encodeURIComponent(mimetype);
+                    });
+
+                    try {
+                        guac.connect(connect_string);
+                    }
+                    catch (status) {
+                        var message = GuacUI.Client.errors[status.code] || GuacUI.Client.errors.DEFAULT;
+                        GuacUI.Client.showError("Cannot Connect", message);
                     }
 
                 }, 0);
