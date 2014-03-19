@@ -33,90 +33,95 @@ public enum GuacamoleStatus {
     /**
      * The operation succeeded.
      */
-    SUCCESS(200, 0x0000),
+    SUCCESS(200, 1000, 0x0000),
 
     /**
      * The requested operation is unsupported.
      */
-    UNSUPPORTED(501, 0x0100),
+    UNSUPPORTED(501, 1011, 0x0100),
 
     /**
      * The operation could not be performed due to an internal failure.
      */
-    SERVER_ERROR(500, 0x0200),
+    SERVER_ERROR(500, 1011, 0x0200),
 
     /**
      * The operation could not be performed as the server is busy.
      */
-    SERVER_BUSY(503, 0x0201),
+    SERVER_BUSY(503, 1008, 0x0201),
 
     /**
      * The operation could not be performed because the upstream server is not
      * responding.
      */
-    UPSTREAM_TIMEOUT(504, 0x0202),
+    UPSTREAM_TIMEOUT(504, 1011, 0x0202),
 
     /**
      * The operation was unsuccessful due to an error or otherwise unexpected
      * condition of the upstream server.
      */
-    UPSTREAM_ERROR(502, 0x0203),
+    UPSTREAM_ERROR(502, 1011, 0x0203),
 
     /**
      * The operation could not be performed as the requested resource does not
      * exist.
      */
-    RESOURCE_NOT_FOUND(404, 0x0204),
+    RESOURCE_NOT_FOUND(404, 1002, 0x0204),
 
     /**
      * The operation could not be performed as the requested resource is already
      * in use.
      */
-    RESOURCE_CONFLICT(409, 0x0205),
+    RESOURCE_CONFLICT(409, 1008, 0x0205),
 
     /**
      * The operation could not be performed because bad parameters were given.
      */
-    CLIENT_BAD_REQUEST(400, 0x0300),
+    CLIENT_BAD_REQUEST(400, 1002, 0x0300),
 
     /**
      * Permission was denied to perform the operation, as the user is not yet
      * authorized (not yet logged in, for example).
      */
-    CLIENT_UNAUTHORIZED(401, 0x0301),
+    CLIENT_UNAUTHORIZED(401, 1008, 0x0301),
 
     /**
      * Permission was denied to perform the operation, and this operation will
      * not be granted even if the user is authorized.
      */
-    CLIENT_FORBIDDEN(403, 0x0303),
+    CLIENT_FORBIDDEN(403, 1008, 0x0303),
 
     /**
      * The client took too long to respond.
      */
-    CLIENT_TIMEOUT(408, 0x0308),
+    CLIENT_TIMEOUT(408, 1002, 0x0308),
 
     /**
      * The client sent too much data.
      */
-    CLIENT_OVERRUN(413, 0x030D),
+    CLIENT_OVERRUN(413, 1009, 0x030D),
 
     /**
      * The client sent data of an unsupported or unexpected type.
      */
-    CLIENT_BAD_TYPE(415, 0x030F),
+    CLIENT_BAD_TYPE(415, 1003, 0x030F),
 
     /**
      * The operation failed because the current client is already using too
      * many resources.
      */
-    CLIENT_TOO_MANY(429, 0x031D);
+    CLIENT_TOO_MANY(429, 1008, 0x031D);
 
     /**
      * The most applicable HTTP error code.
      */
     private final int http_code;
 
+    /**
+     * The most applicable WebSocket error code.
+     */
+    private final int websocket_code;
+    
     /**
      * The Guacamole protocol status code.
      */
@@ -127,10 +132,12 @@ public enum GuacamoleStatus {
      * status/error code values.
      * 
      * @param http_code The most applicable HTTP error code.
+     * @param websocket_code The most applicable WebSocket error code.
      * @param guac_code The Guacamole protocol status code.
      */
-    private GuacamoleStatus(int http_code, int guac_code) {
+    private GuacamoleStatus(int http_code, int websocket_code, int guac_code) {
         this.http_code = http_code;
+        this.websocket_code = websocket_code;
         this.guac_code = guac_code;
     }
 
@@ -141,6 +148,15 @@ public enum GuacamoleStatus {
      */
     public int getHttpStatusCode() {
         return http_code;
+    }
+
+    /**
+     * Returns the most applicable HTTP error code.
+     * 
+     * @return The most applicable HTTP error code.
+     */
+    public int getWebSocketCode() {
+        return websocket_code;
     }
 
     /**
