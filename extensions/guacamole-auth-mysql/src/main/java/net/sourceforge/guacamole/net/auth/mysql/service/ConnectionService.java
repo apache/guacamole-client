@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
@@ -55,6 +54,8 @@ import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.ibatis.session.RowBounds;
+import org.glyptodon.guacamole.GuacamoleClientTooManyException;
+import org.glyptodon.guacamole.GuacamoleResourceConflictException;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -326,12 +327,12 @@ public class ConnectionService {
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
                 && activeConnectionMap.isActive(connection.getConnectionID()))
-            throw new GuacamoleClientException("Cannot connect. This connection is in use.");
+            throw new GuacamoleResourceConflictException("Cannot connect. This connection is in use.");
         
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
                 && activeConnectionMap.isConnectionUserActive(connection.getConnectionID(), userID))
-            throw new GuacamoleClientException
+            throw new GuacamoleClientTooManyException
                     ("Cannot connect. Connection already in use by this user.");
 
         // Get guacd connection information

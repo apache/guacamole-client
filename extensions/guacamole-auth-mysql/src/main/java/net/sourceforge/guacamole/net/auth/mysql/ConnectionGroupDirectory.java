@@ -34,6 +34,8 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMap
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -189,7 +191,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         // If connection not actually from this auth provider, we can't handle
         // the update
         if (!(object instanceof MySQLConnectionGroup))
-            throw new GuacamoleException("Connection not from database.");
+            throw new GuacamoleUnsupportedException("Connection not from database.");
 
         MySQLConnectionGroup mySQLConnectionGroup = (MySQLConnectionGroup) object;
 
@@ -211,7 +213,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
                 connectionGroupService.retrieveConnectionGroup(identifier, user_id);
         
         if(mySQLConnectionGroup == null)
-            throw new GuacamoleException("Connection group not found.");
+            throw new GuacamoleResourceNotFoundException("Connection group not found.");
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
@@ -233,10 +235,10 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
             throws GuacamoleException {
         
         if(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER.equals(identifier))
-            throw new GuacamoleClientException("The root connection group cannot be moved.");
+            throw new GuacamoleUnsupportedException("The root connection group cannot be moved.");
         
         if(!(directory instanceof ConnectionGroupDirectory))
-            throw new GuacamoleClientException("Directory not from database");
+            throw new GuacamoleUnsupportedException("Directory not from database");
         
         Integer toConnectionGroupID = ((ConnectionGroupDirectory)directory).parentID;
 
@@ -245,7 +247,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
                 connectionGroupService.retrieveConnectionGroup(identifier, user_id);
         
         if(mySQLConnectionGroup == null)
-            throw new GuacamoleClientException("Connection group not found.");
+            throw new GuacamoleResourceNotFoundException("Connection group not found.");
 
         // Verify permission to update the connection
         permissionCheckService.verifyConnectionAccess(this.user_id,
@@ -279,7 +281,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         Integer relativeParentID = toConnectionGroupID;
         while(relativeParentID != null) {
             if(relativeParentID == mySQLConnectionGroup.getConnectionGroupID())
-                throw new GuacamoleClientException("Connection group cycle detected.");
+                throw new GuacamoleUnsupportedException("Connection group cycle detected.");
             
             MySQLConnectionGroup relativeParentGroup = connectionGroupService.
                     retrieveConnectionGroup(relativeParentID, user_id);

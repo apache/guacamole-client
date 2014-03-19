@@ -37,6 +37,8 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionPermissionKey;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -231,7 +233,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // If connection not actually from this auth provider, we can't handle
         // the update
         if (!(object instanceof MySQLConnection))
-            throw new GuacamoleException("Connection not from database.");
+            throw new GuacamoleUnsupportedException("Connection not from database.");
 
         MySQLConnection mySQLConnection = (MySQLConnection) object;
 
@@ -263,7 +265,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
                 connectionService.retrieveConnection(identifier, user_id);
         
         if(mySQLConnection == null)
-            throw new GuacamoleException("Connection not found.");
+            throw new GuacamoleResourceNotFoundException("Connection not found.");
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
@@ -284,7 +286,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
             throws GuacamoleException {
         
         if(!(directory instanceof ConnectionDirectory))
-            throw new GuacamoleClientException("Directory not from database");
+            throw new GuacamoleUnsupportedException("Directory not from database");
         
         Integer toConnectionGroupID = ((ConnectionDirectory)directory).parentID;
         
@@ -293,7 +295,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
                 connectionService.retrieveConnection(identifier, user_id);
         
         if(mySQLConnection == null)
-            throw new GuacamoleClientException("Connection not found.");
+            throw new GuacamoleResourceNotFoundException("Connection not found.");
 
         // Verify permission to update the connection
         permissionCheckService.verifyConnectionAccess(this.user_id,

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionMap;
@@ -40,6 +39,9 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionGroupExample.Criteria;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import org.glyptodon.guacamole.GuacamoleClientTooManyException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleServerBusyException;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
@@ -130,7 +132,7 @@ public class ConnectionGroupService {
             try {
                 connectionGroupID = Integer.parseInt(uniqueIdentifier);
             } catch(NumberFormatException e) {
-                throw new GuacamoleException("Invalid connection group ID.");
+                throw new GuacamoleResourceNotFoundException("Invalid connection group ID.");
             }
         }
         
@@ -194,18 +196,18 @@ public class ConnectionGroupService {
                 activeConnectionMap.getLeastUsedConnection(connectionIDs);
         
         if(leastUsedConnectionID == null)
-            throw new GuacamoleException("No connections found in group.");
+            throw new GuacamoleResourceNotFoundException("No connections found in group.");
         
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
                 && activeConnectionMap.isActive(leastUsedConnectionID))
-            throw new GuacamoleClientException
+            throw new GuacamoleServerBusyException
                     ("Cannot connect. All connections are in use.");
         
         if(GuacamoleProperties.getProperty(
                 MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
                 && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), userID))
-            throw new GuacamoleClientException
+            throw new GuacamoleClientTooManyException
                     ("Cannot connect. Connection group already in use by this user.");
         
         // Get the connection 

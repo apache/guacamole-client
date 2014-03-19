@@ -31,6 +31,7 @@ import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionHistory;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 
 /**
  * Represents the map of currently active Connections to the count of the number
@@ -396,7 +397,7 @@ public class ActiveConnectionMap {
         Connection connection = activeConnectionMap.get(connectionID);
         
         if(connection == null)
-            throw new GuacamoleException
+            throw new GuacamoleResourceNotFoundException
                     ("Connection to decrement does not exist.");
         
         // Decrement the current user count
@@ -478,7 +479,7 @@ public class ActiveConnectionMap {
                 connectionHistoryDAO.selectByPrimaryKey(historyID);
 
         if(connectionHistory == null)
-            throw new GuacamoleException("History record not found.");
+            throw new GuacamoleResourceNotFoundException("History record not found.");
         
         // Get the connection and user IDs
         int connectionID = connectionHistory.getConnection_id();

@@ -52,6 +52,7 @@ import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
@@ -631,7 +632,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Prevent self-de-adminifying
         if (user_id == this.user_id)
-            throw new GuacamoleClientException("Removing your own administrative permissions is not allowed.");
+            throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
 
         // Build list of requested system permissions
         List<String> systemPermissionTypes = new ArrayList<String>();
@@ -654,7 +655,7 @@ public class UserDirectory implements Directory<String, User> {
         // If user not actually from this auth provider, we can't handle updated
         // permissions.
         if (!(object instanceof MySQLUser))
-            throw new GuacamoleException("User not from database.");
+            throw new GuacamoleUnsupportedException("User not from database.");
 
         MySQLUser mySQLUser = (MySQLUser) object;
 
@@ -685,7 +686,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Prevent self-deletion
         if (user.getUserID() == this.user_id)
-            throw new GuacamoleClientException("Deleting your own user is not allowed.");
+            throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
 
         // Validate current user has permission to remove the specified user
         permissionCheckService.verifyUserAccess(this.user_id,
