@@ -32,8 +32,7 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.glyptodon.guacamole.GuacamoleClientException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +52,22 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * The default, minimum buffer size for instructions.
      */
     private static final int BUFFER_SIZE = 8192;
+
+    /**
+     * Sends an error on the given WebSocket connection and closes the
+     * connection. The error sent is determined from using the information
+     * within the given GuacamoleStatus.
+     *
+     * @param connection The WebSocket connection to close.
+     * @param guac_status The status to send.
+     */
+    public static void sendError(Connection connection,
+            GuacamoleStatus guac_status) {
+
+        connection.close(guac_status.getWebSocketCode(),
+                Integer.toString(guac_status.getGuacamoleStatusCode()));
+
+    }
 
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
@@ -124,21 +139,13 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             // Catch any thrown guacamole exception and attempt
                             // to pass within the WebSocket connection, logging
                             // each error appropriately.
-                            catch (GuacamoleSecurityException e) {
-                                logger.warn("Authorization failed.", e);
-                                connection.close(1008, null); // Policy violation
-                            }
-                            catch (GuacamoleResourceNotFoundException e) {
-                                logger.debug("Resource not found.", e);
-                                connection.close(1002, null); // Protocol error
-                            }
                             catch (GuacamoleClientException e) {
-                                logger.warn("Error in client request.", e);
-                                connection.close(1002, null); // Protocol error
+                                logger.warn("Client request rejected: {}", e.getMessage());
+                                sendError(connection, e.getStatus());
                             }
                             catch (GuacamoleException e) {
-                                logger.error("Server error in tunnel", e);
-                                connection.close(1011, null); // Server error
+                                logger.error("Internal server error.", e);
+                                sendError(connection, e.getStatus());
                             }
 
                         }
