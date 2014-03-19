@@ -39,6 +39,7 @@ Guacamole.Tunnel = function() {
      * up to the tunnel implementation.
      * 
      * @param {String} data The data to send to the tunnel when connecting.
+     * @throws {Guacamole.Status} If an error occurs during connection.
      */
     this.connect = function(data) {};
     
@@ -60,8 +61,8 @@ Guacamole.Tunnel = function() {
      * Fired whenever an error is encountered by the tunnel.
      * 
      * @event
-     * @param {String} message A human-readable description of the error that
-     *                         occurred.
+     * @param {Guacamole.Status} status A status object which describes the
+     *                                  error.
      */
     this.onerror = null;
 
@@ -189,43 +190,22 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     }
 
-    function getHTTPTunnelErrorMessage(xmlhttprequest) {
+    function getHTTPTunnelErrorStatus(xmlhttprequest) {
 
-        var status = xmlhttprequest.status;
+        var code = parseInt(xmlhttprequest.getResponseHeader("Guacamole-Status-Code"));
+        var message = xmlhttprequest.getResponseHeader("Guacamole-Error-Message");
 
-        // Special cases
-        if (status == 0)   return "Disconnected";
-        if (status == 200) return "Success";
-        if (status == 403) return "Unauthorized";
-        if (status == 404) return "Connection closed"; /* While it may be more
-                                                        * accurate to say the
-                                                        * connection does not
-                                                        * exist, it is confusing
-                                                        * to the user.
-                                                        * 
-                                                        * In general, this error
-                                                        * will only happen when
-                                                        * the tunnel does not
-                                                        * exist, which happens
-                                                        * after the connection
-                                                        * is closed and the
-                                                        * tunnel is detached.
-                                                        */
-        // Internal server errors
-        if (status >= 500 && status <= 599) return "Server error";
-
-        // Otherwise, unknown
-        return "Unknown error";
+        return new Guacamole.Status(code, message);
 
     }
 
     function handleHTTPTunnelError(xmlhttprequest) {
 
-        // Get error message
-        var message = getHTTPTunnelErrorMessage(xmlhttprequest);
+        // Get error status 
+        var status = getHTTPTunnelErrorStatus(xmlhttprequest);
 
         // Call error handler
-        if (tunnel.onerror) tunnel.onerror(message);
+        if (tunnel.onerror) tunnel.onerror(status);
 
         // Finish
         tunnel.disconnect();
@@ -441,8 +421,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
         // If failure, throw error
         if (connect_xmlhttprequest.status != 200) {
-            var message = getHTTPTunnelErrorMessage(connect_xmlhttprequest);
-            throw new Error(message);
+            var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
+            throw status;
         }
 
         // Get UUID from response
@@ -594,16 +574,19 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
         socket.onclose = function(event) {
 
+            var guac_code = parseInt(event.reason);
+
             // If connection closed abnormally, signal error.
-            if (event.code != 1000 && tunnel.onerror)
-                tunnel.onerror(status_code[event.code]);
+            if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+                tunnel.onerror(guac_code, event.reason);
 
         };
         
         socket.onerror = function(event) {
 
             // Call error handler
-            if (tunnel.onerror) tunnel.onerror(event.data);
+            if (tunnel.onerror)
+                tunnel.onerror(Guacamole.Status.Code.SERVER_ERROR, event.data);
 
         };
 
@@ -756,7 +739,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         }
 
         // Attach next tunnel on error
-        current_tunnel.onerror = function(message) {
+        current_tunnel.onerror = function(status) {
 
             // Get next tunnel
             var next_tunnel = tunnels.shift();
@@ -767,7 +750,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
             // Otherwise, call error handler
             else if (chained_tunnel.onerror)
-                chained_tunnel.onerror(message);
+                chained_tunnel.onerror(status);
 
         };
 
@@ -777,10 +760,10 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
             current_tunnel.connect(connect_data);
             
         }
-        catch (e) {
+        catch (status) {
             
             // Call error handler of current tunnel on error
-            current_tunnel.onerror(e.message);
+            current_tunnel.onerror(status);
             
         }
 
@@ -800,7 +783,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
         // If there IS no first tunnel, error
         else if (chained_tunnel.onerror)
-            chained_tunnel.onerror("No tunnels to try.");
+            chained_tunnel.onerror(Guacamole.Status.Code.SERVER_ERROR, "No tunnels to try.");
 
     };
     
