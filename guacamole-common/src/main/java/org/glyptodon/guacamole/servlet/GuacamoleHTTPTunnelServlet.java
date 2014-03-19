@@ -42,6 +42,7 @@ import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,21 +95,28 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     }
 
     /**
-     * Sends an error on the given HTTP response with the given integer error
-     * code.
+     * Sends an error on the given HTTP response using the information within
+     * the given GuacamoleStatus.
      *
      * @param response The HTTP response to use to send the error.
-     * @param code The HTTP status code of the error.
+     * @param guac_status The status to send
+     * @param message A human-readable message that can be presented to the
+     *                user.
      * @throws ServletException If an error prevents sending of the error
      *                          code.
      */
-    private void sendError(HttpServletResponse response, int code) throws ServletException {
+    public static void sendError(HttpServletResponse response,
+            GuacamoleStatus guac_status, String message)
+            throws ServletException {
 
         try {
 
-            // If response not committed, send error code
-            if (!response.isCommitted())
-                response.sendError(code);
+            // If response not committed, send error code and message
+            if (!response.isCommitted()) {
+                response.addHeader("Guacamole-Status-Code", Integer.toString(guac_status.getGuacamoleStatusCode()));
+                response.addHeader("Guacamole-Error-Message", message);
+                response.sendError(guac_status.getHttpStatusCode());
+            }
 
         }
         catch (IOException ioe) {
@@ -197,21 +205,13 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
         // Catch any thrown guacamole exception and attempt to pass within the
         // HTTP response, logging each error appropriately.
-        catch (GuacamoleSecurityException e) {
-            logger.warn("Authorization failed.", e);
-            sendError(response, HttpServletResponse.SC_FORBIDDEN);
-        }
-        catch (GuacamoleResourceNotFoundException e) {
-            logger.debug("Resource not found.", e);
-            sendError(response, HttpServletResponse.SC_NOT_FOUND);
-        }
         catch (GuacamoleClientException e) {
-            logger.warn("Error in client request.", e);
-            sendError(response, HttpServletResponse.SC_BAD_REQUEST);
+            logger.warn("Client request rejected: {}", e.getMessage());
+            sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
-            logger.error("Server error in tunnel", e);
-            sendError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            logger.error("Internal server error.", e);
+            sendError(response, e.getStatus(), "Internal server error.");
         }
 
     }
