@@ -564,7 +564,7 @@ Guacamole.Client = function(tunnel) {
 
                 // Signal ack if handler defined
                 if (stream.onack)
-                    stream.onack(reason, code);
+                    stream.onack(new Guacamole.Status(code, reason));
 
                 // If code is an error, invalidate stream
                 if (code >= 0x0100) {

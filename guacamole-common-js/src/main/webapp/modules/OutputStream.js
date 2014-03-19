@@ -48,9 +48,7 @@ Guacamole.OutputStream = function(client, index) {
      * that a stream operation has completed, or an error has occurred.
      * 
      * @event
-     * @param {String} message A human-readable status message related to the
-     *                         operation performed.
-     * @param {Number} code The error code associated with the operation.
+     * @param {Guacamole.Status} status The status of the operation.
      */
     this.onack = null;
 

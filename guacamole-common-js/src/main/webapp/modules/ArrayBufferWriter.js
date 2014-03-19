@@ -39,9 +39,9 @@ Guacamole.ArrayBufferWriter = function(stream) {
     var guac_writer = this;
 
     // Simply call onack for acknowledgements
-    stream.onack = function(message, code) {
+    stream.onack = function(status) {
         if (guac_writer.onack)
-            guac_writer.onack(message, code);
+            guac_writer.onack(status);
     };
 
     /**
@@ -74,9 +74,7 @@ Guacamole.ArrayBufferWriter = function(stream) {
     /**
      * Fired for received data, if acknowledged by the server.
      * @event
-     * @param {String} message A human-readable status message related to the
-     *                         operation performed.
-     * @param {Number} code The error code associated with the operation.
+     * @param {Guacamole.Status} status The status of the operation.
      */
     this.onack = null;
 
