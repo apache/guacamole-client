@@ -101,20 +101,20 @@ Guacamole.Status.Code = {
     "SERVER_BUSY": 0x0201,
 
     /**
-     * The operation could not be performed because the upstream server is not
-     * responding.
-     *
-     * @type Number
-     */
-    "UPSTREAM_ERROR": 0x0202,
-
-    /**
      * The operation was unsuccessful due to an error or otherwise unexpected
      * condition of the upstream server.
      *
      * @type Number
      */
-    "UPSTREAM_TIMEOUT": 0x0203,
+    "UPSTREAM_TIMEOUT": 0x0202,
+
+    /**
+     * The operation could not be performed because the upstream server is not
+     * responding.
+     *
+     * @type Number
+     */
+    "UPSTREAM_ERROR": 0x0203,
 
     /**
      * The operation could not be performed as the requested resource does not
