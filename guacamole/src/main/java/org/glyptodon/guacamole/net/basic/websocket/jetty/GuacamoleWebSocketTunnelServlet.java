@@ -54,14 +54,13 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     private static final int BUFFER_SIZE = 8192;
 
     /**
-     * Sends an error on the given WebSocket connection and closes the
-     * connection. The error sent is determined from using the information
-     * within the given GuacamoleStatus.
+     * Sends the given status on the given WebSocket connection and closes the
+     * connection.
      *
      * @param connection The WebSocket connection to close.
      * @param guac_status The status to send.
      */
-    public static void sendError(Connection connection,
+    public static void closeConnection(Connection connection,
             GuacamoleStatus guac_status) {
 
         connection.close(guac_status.getWebSocketCode(),
@@ -132,7 +131,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                 }
 
                                 // No more data
-                                connection.close(1001, null); // Shutdown
+                                closeConnection(connection, GuacamoleStatus.SUCCESS);
                                 
                             }
 
@@ -141,11 +140,11 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             // each error appropriately.
                             catch (GuacamoleClientException e) {
                                 logger.warn("Client request rejected: {}", e.getMessage());
-                                sendError(connection, e.getStatus());
+                                closeConnection(connection, e.getStatus());
                             }
                             catch (GuacamoleException e) {
                                 logger.error("Internal server error.", e);
-                                sendError(connection, e.getStatus());
+                                closeConnection(connection, e.getStatus());
                             }
 
                         }

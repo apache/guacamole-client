@@ -28,7 +28,6 @@ import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.catalina.websocket.Constants;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
@@ -59,16 +58,15 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     private final Logger logger = LoggerFactory.getLogger(GuacamoleWebSocketTunnelServlet.class);
 
     /**
-     * Sends an error on the given WebSocket connection and closes the
-     * connection. The error sent is determined from using the information
-     * within the given GuacamoleStatus.
+     * Sends the given status on the given WebSocket connection and closes the
+     * connection.
      *
      * @param outbound The outbound WebSocket connection to close.
      * @param guac_status The status to send.
      * @throws IOException If an error prevents proper closure of the WebSocket
      *                     connection.
      */
-    public static void sendError(WsOutbound outbound,
+    public static void closeConnection(WsOutbound outbound,
             GuacamoleStatus guac_status) throws IOException {
 
         byte[] message = Integer.toString(guac_status.getGuacamoleStatusCode()).getBytes("UTF-8");
@@ -146,7 +144,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                 }
 
                                 // No more data
-                                outbound.close(Constants.STATUS_SHUTDOWN, null);
+                                closeConnection(outbound, GuacamoleStatus.SUCCESS);
 
                             }
 
@@ -155,11 +153,11 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             // each error appropriately.
                             catch (GuacamoleClientException e) {
                                 logger.warn("Client request rejected: {}", e.getMessage());
-                                sendError(outbound, e.getStatus());
+                                closeConnection(outbound, e.getStatus());
                             }
                             catch (GuacamoleException e) {
                                 logger.error("Internal server error.", e);
-                                sendError(outbound, e.getStatus());
+                                closeConnection(outbound, e.getStatus());
                             }
 
                         }
