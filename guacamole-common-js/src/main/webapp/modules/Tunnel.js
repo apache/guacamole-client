@@ -39,7 +39,6 @@ Guacamole.Tunnel = function() {
      * up to the tunnel implementation.
      * 
      * @param {String} data The data to send to the tunnel when connecting.
-     * @throws {Guacamole.Status} If an error occurs during connection.
      */
     this.connect = function(data) {};
     
@@ -56,7 +55,14 @@ Guacamole.Tunnel = function() {
      *                       service on the other side of the tunnel.
      */
     this.sendMessage = function(elements) {};
-    
+
+    /**
+     * The current state of this tunnel.
+     * 
+     * @type Number
+     */
+    this.state = Guacamole.Tunnel.State.CONNECTING;
+
     /**
      * Fired whenever an error is encountered by the tunnel.
      * 
@@ -67,6 +73,14 @@ Guacamole.Tunnel = function() {
     this.onerror = null;
 
     /**
+     * Fired whenever the state of the tunnel changes.
+     * 
+     * @event
+     * @param {Number} state The new state of the client.
+     */
+    this.onstatechange = null;
+
+    /**
      * Fired once for every complete Guacamole instruction received, in order.
      * 
      * @event
@@ -75,6 +89,37 @@ Guacamole.Tunnel = function() {
      *                           if any.
      */
     this.oninstruction = null;
+
+};
+
+/**
+ * All possible tunnel states.
+ */
+Guacamole.Tunnel.State = {
+
+    /**
+     * A connection is in pending. It is not yet known whether connection was
+     * successful.
+     * 
+     * @type Number
+     */
+    "CONNECTING": 0,
+
+    /**
+     * Connection was successful, and data is being received.
+     * 
+     * @type Number
+     */
+    "OPEN": 1,
+
+    /**
+     * The connection is closed. Connection may not have been successful, the
+     * tunnel may have been explicitly closed by either side, or an error may
+     * have occurred.
+     * 
+     * @type Number
+     */
+    "CLOSED": 2
 
 };
 
@@ -99,12 +144,6 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
     var TUNNEL_READ    = tunnelURL + "?read:";
     var TUNNEL_WRITE   = tunnelURL + "?write:";
 
-    var STATE_IDLE          = 0;
-    var STATE_CONNECTED     = 1;
-    var STATE_DISCONNECTED  = 2;
-
-    var currentState = STATE_IDLE;
-
     var POLLING_ENABLED     = 1;
     var POLLING_DISABLED    = 0;
 
@@ -114,14 +153,42 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
     var sendingMessages = false;
     var outputMessageBuffer = "";
 
+    /**
+     * Closes this tunnel, signaling the given status and corresponding
+     * message, which will be sent to the onerror handler if the status is
+     * an error status.
+     * 
+     * @private
+     * @param {Number} guac_code The Guacamole status code related to the
+     *                           closure.
+     * @param {String} message A human-readable message for debugging.
+     */
+    function close_tunnel(guac_code, message) {
+
+        // Ignore if already closed
+        if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
+            return;
+
+        // Mark as closed
+        tunnel.state = Guacamole.Tunnel.State.CLOSED;
+        if (tunnel.onstatechange)
+            tunnel.onstatechange(tunnel.state);
+
+        // If connection closed abnormally, signal error.
+        if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(guac_code, message);
+
+    }
+
+
     this.sendMessage = function() {
 
         // Do not attempt to send messages if not connected
-        if (currentState != STATE_CONNECTED)
+        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
             return;
 
         // Do not attempt to send empty messages
-        if (arguments.length == 0)
+        if (arguments.length === 0)
             return;
 
         /**
@@ -168,10 +235,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             // Once response received, send next queued event.
             message_xmlhttprequest.onreadystatechange = function() {
-                if (message_xmlhttprequest.readyState == 4) {
+                if (message_xmlhttprequest.readyState === 4) {
 
                     // If an error occurs during send, handle it
-                    if (message_xmlhttprequest.status != 200)
+                    if (message_xmlhttprequest.status !== 200)
                         handleHTTPTunnelError(message_xmlhttprequest);
 
                     // Otherwise, continue the send loop
@@ -179,7 +246,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                         sendPendingMessages();
 
                 }
-            }
+            };
 
             message_xmlhttprequest.send(outputMessageBuffer);
             outputMessageBuffer = ""; // Clear buffer
@@ -231,10 +298,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         function parseResponse() {
 
             // Do not handle responses if not connected
-            if (currentState != STATE_CONNECTED) {
+            if (tunnel.state !== Guacamole.Tunnel.State.OPEN) {
                 
                 // Clean up interval if polling
-                if (interval != null)
+                if (interval !== null)
                     clearInterval(interval);
                 
                 return;
@@ -251,29 +318,29 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             catch (e) { status = 200; }
 
             // Start next request as soon as possible IF request was successful
-            if (nextRequest == null && status == 200)
+            if (!nextRequest && status === 200)
                 nextRequest = makeRequest();
 
             // Parse stream when data is received and when complete.
-            if (xmlhttprequest.readyState == 3 ||
-                xmlhttprequest.readyState == 4) {
+            if (xmlhttprequest.readyState === 3 ||
+                xmlhttprequest.readyState === 4) {
 
                 // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
-                if (pollingMode == POLLING_ENABLED) {
-                    if (xmlhttprequest.readyState == 3 && interval == null)
+                if (pollingMode === POLLING_ENABLED) {
+                    if (xmlhttprequest.readyState === 3 && !interval)
                         interval = setInterval(parseResponse, 30);
-                    else if (xmlhttprequest.readyState == 4 && interval != null)
+                    else if (xmlhttprequest.readyState === 4 && !interval)
                         clearInterval(interval);
                 }
 
                 // If canceled, stop transfer
-                if (xmlhttprequest.status == 0) {
+                if (xmlhttprequest.status === 0) {
                     tunnel.disconnect();
                     return;
                 }
 
                 // Halt on error during request
-                else if (xmlhttprequest.status != 200) {
+                else if (xmlhttprequest.status !== 200) {
                     handleHTTPTunnelError(xmlhttprequest);
                     return;
                 }
@@ -299,13 +366,13 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                         elements.push(element);
 
                         // If last element, handle instruction
-                        if (terminator == ";") {
+                        if (terminator === ";") {
 
                             // Get opcode
                             var opcode = elements.shift();
 
                             // Call instruction handler.
-                            if (tunnel.oninstruction != null)
+                            if (tunnel.oninstruction)
                                 tunnel.oninstruction(opcode, elements);
 
                             // Clear elements
@@ -321,16 +388,16 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
                     // Search for end of length
                     var lengthEnd = current.indexOf(".", startIndex);
-                    if (lengthEnd != -1) {
+                    if (lengthEnd !== -1) {
 
                         // Parse length
                         var length = parseInt(current.substring(elementEnd+1, lengthEnd));
 
                         // If we're done parsing, handle the next response.
-                        if (length == 0) {
+                        if (length === 0) {
 
                             // Clean up interval if polling
-                            if (interval != null)
+                            if (!interval)
                                 clearInterval(interval);
                            
                             // Clean up object
@@ -369,12 +436,12 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
         // If response polling enabled, attempt to detect if still
         // necessary (via wrapping parseResponse())
-        if (pollingMode == POLLING_ENABLED) {
+        if (pollingMode === POLLING_ENABLED) {
             xmlhttprequest.onreadystatechange = function() {
 
                 // If we receive two or more readyState==3 events,
                 // there is no need to poll.
-                if (xmlhttprequest.readyState == 3) {
+                if (xmlhttprequest.readyState === 3) {
                     dataUpdateEvents++;
                     if (dataUpdateEvents >= 2) {
                         pollingMode = POLLING_DISABLED;
@@ -383,7 +450,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 }
 
                 parseResponse();
-            }
+            };
         }
 
         // Otherwise, just parse
@@ -413,29 +480,39 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     this.connect = function(data) {
 
-        // Start tunnel and connect synchronously
+        // Start tunnel and connect
         var connect_xmlhttprequest = new XMLHttpRequest();
-        connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, false);
+        connect_xmlhttprequest.onreadystatechange = function() {
+
+            if (connect_xmlhttprequest.readyState !== 4)
+                return;
+
+            // If failure, throw error
+            if (connect_xmlhttprequest.status !== 200) {
+                var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
+                close_tunnel(status.code, status.message);
+            }
+
+            // Get UUID from response
+            tunnel_uuid = connect_xmlhttprequest.responseText;
+
+            tunnel.state = Guacamole.Tunnel.State.OPEN;
+            if (tunnel.onstatechange)
+                tunnel.onstatechange(tunnel.state);
+
+            // Start reading data
+            handleResponse(makeRequest());
+
+        };
+
+        connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, true);
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         connect_xmlhttprequest.send(data);
-
-        // If failure, throw error
-        if (connect_xmlhttprequest.status != 200) {
-            var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
-            throw status;
-        }
-
-        // Get UUID from response
-        tunnel_uuid = connect_xmlhttprequest.responseText;
-
-        // Start reading data
-        currentState = STATE_CONNECTED;
-        handleResponse(makeRequest());
 
     };
 
     this.disconnect = function() {
-        currentState = STATE_DISCONNECTED;
+        close_tunnel(Guacamole.Status.Code.SUCCESS, "Manually closed.");
     };
 
 };
@@ -473,36 +550,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         "https:": "wss:"
     };
 
-    var status_code = {
-        1000: "Connection closed normally.",
-        1001: "Connection shut down.",
-        1002: "Protocol error.",
-        1003: "Invalid data.",
-        1004: "[UNKNOWN, RESERVED]",
-        1005: "No status code present.",
-        1006: "Connection closed abnormally.",
-        1007: "Inconsistent data type.",
-        1008: "Policy violation.",
-        1009: "Message too large.",
-        1010: "Extension negotiation failed."
-    };
-
-    var STATE_IDLE          = 0;
-    var STATE_CONNECTED     = 1;
-    var STATE_DISCONNECTED  = 2;
-
-    var currentState = STATE_IDLE;
-    
     // Transform current URL to WebSocket URL
 
     // If not already a websocket URL
-    if (   tunnelURL.substring(0, 3) != "ws:"
-        && tunnelURL.substring(0, 4) != "wss:") {
+    if (   tunnelURL.substring(0, 3) !== "ws:"
+        && tunnelURL.substring(0, 4) !== "wss:") {
 
         var protocol = ws_protocol[window.location.protocol];
 
         // If absolute URL, convert to absolute WS URL
-        if (tunnelURL.substring(0, 1) == "/")
+        if (tunnelURL.substring(0, 1) === "/")
             tunnelURL =
                 protocol
                 + "//" + window.location.host
@@ -526,14 +583,43 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     }
 
+    /**
+     * Closes this tunnel, signaling the given status and corresponding
+     * message, which will be sent to the onerror handler if the status is
+     * an error status.
+     * 
+     * @private
+     * @param {Number} guac_code The Guacamole status code related to the
+     *                           closure.
+     * @param {String} message A human-readable message for debugging.
+     */
+    function close_tunnel(guac_code, message) {
+
+        // Ignore if already closed
+        if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
+            return;
+
+        // Mark as closed
+        tunnel.state = Guacamole.Tunnel.State.CLOSED;
+        if (tunnel.onstatechange)
+            tunnel.onstatechange(tunnel.state);
+
+        // If connection closed abnormally, signal error.
+        if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(guac_code, message);
+
+        socket.close();
+
+    }
+
     this.sendMessage = function(elements) {
 
         // Do not attempt to send messages if not connected
-        if (currentState != STATE_CONNECTED)
+        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
             return;
 
         // Do not attempt to send empty messages
-        if (arguments.length == 0)
+        if (arguments.length === 0)
             return;
 
         /**
@@ -569,25 +655,17 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
 
         socket.onopen = function(event) {
-            currentState = STATE_CONNECTED;
+            tunnel.state = Guacamole.Tunnel.State.OPEN;
+            if (tunnel.onstatechange)
+                tunnel.onstatechange(tunnel.state);
         };
 
         socket.onclose = function(event) {
-
-            var guac_code = parseInt(event.reason);
-
-            // If connection closed abnormally, signal error.
-            if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-                tunnel.onerror(guac_code, event.reason);
-
+            close_tunnel(parseInt(event.reason), event.reason);
         };
         
         socket.onerror = function(event) {
-
-            // Call error handler
-            if (tunnel.onerror)
-                tunnel.onerror(Guacamole.Status.Code.SERVER_ERROR, event.data);
-
+            close_tunnel(Guacamole.Status.Code.SERVER_ERROR, event.data);
         };
 
         socket.onmessage = function(event) {
@@ -602,7 +680,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
                 // Search for end of length
                 var lengthEnd = message.indexOf(".", startIndex);
-                if (lengthEnd != -1) {
+                if (lengthEnd !== -1) {
 
                     // Parse length
                     var length = parseInt(message.substring(elementEnd+1, lengthEnd));
@@ -617,7 +695,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                 
                 // If no period, incomplete instruction.
                 else
-                    throw new Error("Incomplete instruction.");
+                    close_tunnel(Guacamole.Status.Code.SERVER_ERROR, "Incomplete instruction.");
 
                 // We now have enough data for the element. Parse.
                 var element = message.substring(startIndex, elementEnd);
@@ -627,13 +705,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                 elements.push(element);
 
                 // If last element, handle instruction
-                if (terminator == ";") {
+                if (terminator === ";") {
 
                     // Get opcode
                     var opcode = elements.shift();
 
                     // Call instruction handler.
-                    if (tunnel.oninstruction != null)
+                    if (tunnel.oninstruction)
                         tunnel.oninstruction(opcode, elements);
 
                     // Clear elements
@@ -652,8 +730,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     };
 
     this.disconnect = function() {
-        currentState = STATE_DISCONNECTED;
-        socket.close();
+        close_tunnel(Guacamole.Status.Code.SUCCESS, "Manually closed.");
     };
 
 };
@@ -715,6 +792,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         if (current_tunnel) {
             current_tunnel.onerror = null;
             current_tunnel.oninstruction = null;
+            current_tunnel.onstatechange = null;
         }
 
         // Set own functions to tunnel's functions
@@ -724,19 +802,30 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         // Record current tunnel
         current_tunnel = tunnel;
 
+        // Wrap own onstatechange within current tunnel
+        current_tunnel.onstatechange = function(state) {
+            
+            // Invoke handler
+            if (chained_tunnel.onstatechange)
+                chained_tunnel.onstatechange(state);
+
+            // Use handlers permanently from now on
+            if (state === Guacamole.Tunnel.State.OPEN) {
+                current_tunnel.onstatechange = chained_tunnel.onstatechange;
+                current_tunnel.oninstruction = chained_tunnel.oninstruction;
+                current_tunnel.onerror = chained_tunnel.onerror;
+            }
+            
+        };
+
         // Wrap own oninstruction within current tunnel
         current_tunnel.oninstruction = function(opcode, elements) {
             
             // Invoke handler
-            chained_tunnel.oninstruction(opcode, elements);
+            if (chained_tunnel.oninstruction)
+                chained_tunnel.oninstruction(opcode, elements);
 
-            // Use handler permanently from now on
-            current_tunnel.oninstruction = chained_tunnel.oninstruction;
-
-            // Pass through errors (without trying other tunnels)
-            current_tunnel.onerror = chained_tunnel.onerror;
-            
-        }
+        };
 
         // Attach next tunnel on error
         current_tunnel.onerror = function(status) {

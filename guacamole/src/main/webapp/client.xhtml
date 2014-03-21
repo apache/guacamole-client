@@ -89,7 +89,7 @@
 
                     // If no WebSocket, then use HTTP.
                     else
-                        tunnel = new Guacamole.HTTPTunnel("tunnel")
+                        tunnel = new Guacamole.HTTPTunnel("tunnel");
 
                     // Instantiate client
                     var guac = new Guacamole.Client(tunnel);
@@ -135,13 +135,14 @@
                         connect_string += "&video=" + encodeURIComponent(mimetype);
                     });
 
-                    try {
-                        guac.connect(connect_string);
-                    }
-                    catch (status) {
+                    // Show connection errors from tunnel
+                    tunnel.onerror = function(status) {
                         var message = GuacUI.Client.errors[status.code] || GuacUI.Client.errors.DEFAULT;
-                        GuacUI.Client.showError("Cannot Connect", message);
-                    }
+                        GuacUI.Client.showError("Connection Error", message);
+                    };
+
+                    // Connect
+                    guac.connect(connect_string);
 
                 }, 0);
             };
