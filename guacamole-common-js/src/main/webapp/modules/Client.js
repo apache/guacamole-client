@@ -142,11 +142,6 @@ Guacamole.Client = function(tunnel) {
     // Array of allocated output streams by index
     var output_streams = [];
 
-    tunnel.onerror = function(status) {
-        if (guac_client.onerror)
-            guac_client.onerror(status);
-    };
-
     function setState(state) {
         if (state != currentState) {
             currentState = state;
