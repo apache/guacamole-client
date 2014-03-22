@@ -64,9 +64,10 @@ GuacUI.Client = {
     },
 
     /**
-     * Enumeration of all error messages for each applicable error code.
+     * Enumeration of all tunnel-specific error messages for each applicable
+     * error code.
      */
-    "errors": {
+    "tunnel_errors": {
 
         0x0201: "The Guacamole server has rejected this connection attempt  \
                  because there are too many active connections. Please wait \
@@ -88,6 +89,51 @@ GuacUI.Client = {
 
         0x0301: "You do not have permission to access this connection because \
                  you are not logged in. Please log in and try again.",
+
+        0x0303: "You do not have permission to access this connection. If you \
+                 require access, please ask your system administrator to add  \
+                 you the list of allowed users, or check your system settings.",
+
+        0x0308: "The Guacamole server has closed the connection because there \
+                 has been no response from your browser for long enough that  \
+                 it appeared to be disconnected. This is commonly caused by   \
+                 network problems, such as spotty wireless signal, or simply  \
+                 very slow network speeds. Please check your network and try  \
+                 again.",
+
+        0x031D: "The Guacamole server is denying access to this connection \
+                 because you have exhausted the limit for simultaneous     \
+                 connection use by an individual user. Please close one or \
+                 more connections and try again.",
+
+        "DEFAULT": "An internal error has occurred within the Guacamole \
+                    server, and the connection has been terminated. If  \
+                    the problem persists, please notify your system     \
+                    administrator, or check your system logs."
+
+    },
+
+    /**
+     * Enumeration of all client-specific error messages for each applicable
+     * error code.
+     */
+    "client_errors": {
+
+        0x0201: "This connection has been closed because the server is busy. \
+                 Please wait a few minutes and try again.",
+
+        0x0202: "The Guacamole server has closed the connection because the \
+                 remote desktop is taking too long to respond. Please try   \
+                 again or contact your system administrator.",
+
+        0x0203: "The remote desktop server encountered an error and has closed \
+                 the connection. Please try again or contact your system       \
+                 administrator.",
+
+        0x0205: "This connection has been closed because it conflicts with \
+                 another connection. Please try again later.",
+
+        0x0301: "Log in failed. Please reconnect and try again.",
 
         0x0303: "You do not have permission to access this connection. If you \
                  require access, please ask your system administrator to add  \
@@ -884,7 +930,7 @@ GuacUI.Client.attach = function(guac) {
         guac.disconnect();
 
         // Display error message
-        var message = GuacUI.Client.errors[status.code] || GuacUI.Client.errors.DEFAULT;
+        var message = GuacUI.Client.client_errors[status.code] || GuacUI.Client.client_errors.DEFAULT;
         GuacUI.Client.showError("Connection Error", message);
         
     };

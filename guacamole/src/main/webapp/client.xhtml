@@ -137,7 +137,7 @@
 
                     // Show connection errors from tunnel
                     tunnel.onerror = function(status) {
-                        var message = GuacUI.Client.errors[status.code] || GuacUI.Client.errors.DEFAULT;
+                        var message = GuacUI.Client.tunnel_errors[status.code] || GuacUI.Client.tunnel_errors.DEFAULT;
                         GuacUI.Client.showError("Connection Error", message);
                     };
 
