@@ -32,8 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -331,7 +330,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
             // If no context, no authorizaton present
             if (context == null)
-                throw new GuacamoleSecurityException("Not authenticated");
+                throw new GuacamoleUnauthorizedException("Not authenticated");
 
             // Allow servlet to run now that authentication has been validated
             authenticatedService(context, request, response);
