@@ -495,6 +495,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             if (connect_xmlhttprequest.status !== 200) {
                 var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
                 close_tunnel(status.code, status.message);
+                return;
             }
 
             // Get UUID from response
