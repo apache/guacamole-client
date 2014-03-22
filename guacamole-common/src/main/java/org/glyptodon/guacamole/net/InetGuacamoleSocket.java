@@ -36,8 +36,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.GuacamoleUpstreamTimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +111,9 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
             reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream(),   "UTF-8"));
             writer = new WriterGuacamoleWriter(new OutputStreamWriter(sock.getOutputStream(), "UTF-8"));
 
+        }
+        catch (SocketTimeoutException e) {
+            throw new GuacamoleUpstreamTimeoutException("Connection timed out.", e);
         }
         catch (IOException e) {
             throw new GuacamoleServerException(e);
