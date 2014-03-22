@@ -159,11 +159,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
      * an error status.
      * 
      * @private
-     * @param {Number} guac_code The Guacamole status code related to the
-     *                           closure.
-     * @param {String} message A human-readable message for debugging.
+     * @param {Guacamole.Status} status The status causing the connection to
+     *                                  close;
      */
-    function close_tunnel(guac_code, message) {
+    function close_tunnel(status) {
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -175,8 +174,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             tunnel.onstatechange(tunnel.state);
 
         // If connection closed abnormally, signal error.
-        if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-            tunnel.onerror(guac_code, message);
+        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(status);
 
     }
 
@@ -494,7 +493,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             // If failure, throw error
             if (connect_xmlhttprequest.status !== 200) {
                 var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
-                close_tunnel(status.code, status.message);
+                close_tunnel(status);
                 return;
             }
 
@@ -517,7 +516,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
     };
 
     this.disconnect = function() {
-        close_tunnel(Guacamole.Status.Code.SUCCESS, "Manually closed.");
+        close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SUCCESS, "Manually closed."));
     };
 
 };
@@ -594,11 +593,10 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      * an error status.
      * 
      * @private
-     * @param {Number} guac_code The Guacamole status code related to the
-     *                           closure.
-     * @param {String} message A human-readable message for debugging.
+     * @param {Guacamole.Status} status The status causing the connection to
+     *                                  close;
      */
-    function close_tunnel(guac_code, message) {
+    function close_tunnel(status) {
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -610,8 +608,8 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             tunnel.onstatechange(tunnel.state);
 
         // If connection closed abnormally, signal error.
-        if (guac_code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-            tunnel.onerror(guac_code, message);
+        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(status);
 
         socket.close();
 
@@ -666,11 +664,11 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         };
 
         socket.onclose = function(event) {
-            close_tunnel(parseInt(event.reason), event.reason);
+            close_tunnel(new Guacamole.Status(parseInt(event.reason), event.reason));
         };
         
         socket.onerror = function(event) {
-            close_tunnel(Guacamole.Status.Code.SERVER_ERROR, event.data);
+            close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SERVER_ERROR, event.data));
         };
 
         socket.onmessage = function(event) {
@@ -700,7 +698,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                 
                 // If no period, incomplete instruction.
                 else
-                    close_tunnel(Guacamole.Status.Code.SERVER_ERROR, "Incomplete instruction.");
+                    close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SERVER_ERROR, "Incomplete instruction."));
 
                 // We now have enough data for the element. Parse.
                 var element = message.substring(startIndex, elementEnd);
@@ -735,7 +733,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     };
 
     this.disconnect = function() {
-        close_tunnel(Guacamole.Status.Code.SUCCESS, "Manually closed.");
+        close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SUCCESS, "Manually closed."));
     };
 
 };
