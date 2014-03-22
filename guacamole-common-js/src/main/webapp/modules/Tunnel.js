@@ -169,8 +169,15 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             return;
 
         // If connection closed abnormally, signal error.
-        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-            tunnel.onerror(status);
+        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror) {
+
+            // Ignore RESOURCE_NOT_FOUND if we've already connected, as that
+            // only signals end-of-stream for the HTTP tunnel.
+            if (tunnel.state === Guacamole.Tunnel.State.CONNECTING
+                    || status.code !== Guacamole.Status.Code.RESOURCE_NOT_FOUND)
+                tunnel.onerror(status);
+
+        }
 
         // Mark as closed
         tunnel.state = Guacamole.Tunnel.State.CLOSED;
@@ -260,25 +267,12 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     }
 
-    function getHTTPTunnelErrorStatus(xmlhttprequest) {
+    function handleHTTPTunnelError(xmlhttprequest) {
 
         var code = parseInt(xmlhttprequest.getResponseHeader("Guacamole-Status-Code"));
         var message = xmlhttprequest.getResponseHeader("Guacamole-Error-Message");
 
-        return new Guacamole.Status(code, message);
-
-    }
-
-    function handleHTTPTunnelError(xmlhttprequest) {
-
-        // Get error status 
-        var status = getHTTPTunnelErrorStatus(xmlhttprequest);
-
-        // Call error handler
-        if (tunnel.onerror) tunnel.onerror(status);
-
-        // Finish
-        tunnel.disconnect();
+        close_tunnel(new Guacamole.Status(code, message));
 
     }
 
@@ -492,8 +486,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             // If failure, throw error
             if (connect_xmlhttprequest.status !== 200) {
-                var status = getHTTPTunnelErrorStatus(connect_xmlhttprequest);
-                close_tunnel(status);
+                handleHTTPTunnelError(connect_xmlhttprequest);
                 return;
             }
 
