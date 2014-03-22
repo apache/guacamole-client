@@ -168,14 +168,14 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
             return;
 
+        // If connection closed abnormally, signal error.
+        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(status);
+
         // Mark as closed
         tunnel.state = Guacamole.Tunnel.State.CLOSED;
         if (tunnel.onstatechange)
             tunnel.onstatechange(tunnel.state);
-
-        // If connection closed abnormally, signal error.
-        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-            tunnel.onerror(status);
 
     }
 
@@ -602,14 +602,14 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
             return;
 
+        // If connection closed abnormally, signal error.
+        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
+            tunnel.onerror(status);
+
         // Mark as closed
         tunnel.state = Guacamole.Tunnel.State.CLOSED;
         if (tunnel.onstatechange)
             tunnel.onstatechange(tunnel.state);
-
-        // If connection closed abnormally, signal error.
-        if (status.code !== Guacamole.Status.Code.SUCCESS && tunnel.onerror)
-            tunnel.onerror(status);
 
         socket.close();
 
@@ -760,12 +760,6 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
     var chained_tunnel = this;
 
     /**
-     * The currently wrapped tunnel, if any.
-     * @private
-     */
-    var current_tunnel = null;
-
-    /**
      * Data passed in via connect(), to be used for
      * wrapped calls to other tunnels' connect() functions.
      * @private
@@ -791,39 +785,75 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
      */
     function attach(tunnel) {
 
-        // Clear handlers of current tunnel, if any
-        if (current_tunnel) {
-            current_tunnel.onerror = null;
-            current_tunnel.oninstruction = null;
-            current_tunnel.onstatechange = null;
+        // Set own functions to tunnel's functions
+        chained_tunnel.disconnect  = tunnel.disconnect;
+        chained_tunnel.sendMessage = tunnel.sendMessage;
+
+        /**
+         * Fails the currently-attached tunnel, attaching a new tunnel if
+         * possible.
+         * 
+         * @private
+         * @return {Guacamole.Tunnel} The next tunnel, or null if there are no
+         *                            more tunnels to try.
+         */
+        function fail_tunnel() {
+
+            // Get next tunnel
+            var next_tunnel = tunnels.shift();
+
+            // If there IS a next tunnel, try using it.
+            if (next_tunnel) {
+                tunnel.onerror = null;
+                tunnel.oninstruction = null;
+                tunnel.onstatechange = null;
+                attach(next_tunnel);
+            }
+
+            return next_tunnel;
+
         }
 
-        // Set own functions to tunnel's functions
-        chained_tunnel.disconnect    = tunnel.disconnect;
-        chained_tunnel.sendMessage   = tunnel.sendMessage;
-        
-        // Record current tunnel
-        current_tunnel = tunnel;
+        /**
+         * Use the current tunnel from this point forward. Do not try any more
+         * tunnels, even if the current tunnel fails.
+         * 
+         * @private
+         */
+        function commit_tunnel() {
+            tunnel.onstatechange = chained_tunnel.onstatechange;
+            tunnel.oninstruction = chained_tunnel.oninstruction;
+            tunnel.onerror = chained_tunnel.onerror;
+        }
 
         // Wrap own onstatechange within current tunnel
-        current_tunnel.onstatechange = function(state) {
-            
-            // Invoke handler
-            if (chained_tunnel.onstatechange)
-                chained_tunnel.onstatechange(state);
+        tunnel.onstatechange = function(state) {
 
-            // Use handlers permanently from now on
-            if (state === Guacamole.Tunnel.State.OPEN) {
-                current_tunnel.onstatechange = chained_tunnel.onstatechange;
-                current_tunnel.oninstruction = chained_tunnel.oninstruction;
-                current_tunnel.onerror = chained_tunnel.onerror;
+            switch (state) {
+
+                // If open, use this tunnel from this point forward.
+                case Guacamole.Tunnel.State.OPEN:
+                    commit_tunnel();
+                    if (chained_tunnel.onstatechange)
+                        chained_tunnel.onstatechange(state);
+                    break;
+
+                // If closed, mark failure, attempt next tunnel
+                case Guacamole.Tunnel.State.CLOSED:
+                    if (!fail_tunnel() && chained_tunnel.onstatechange)
+                        chained_tunnel.onstatechange(state);
+                    break;
+                
             }
-            
+
         };
 
         // Wrap own oninstruction within current tunnel
-        current_tunnel.oninstruction = function(opcode, elements) {
-            
+        tunnel.oninstruction = function(opcode, elements) {
+
+            // Accept current tunnel
+            commit_tunnel();
+
             // Invoke handler
             if (chained_tunnel.oninstruction)
                 chained_tunnel.oninstruction(opcode, elements);
@@ -831,34 +861,17 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         };
 
         // Attach next tunnel on error
-        current_tunnel.onerror = function(status) {
+        tunnel.onerror = function(status) {
 
-            // Get next tunnel
-            var next_tunnel = tunnels.shift();
-
-            // If there IS a next tunnel, try using it.
-            if (next_tunnel)
-                attach(next_tunnel);
-
-            // Otherwise, call error handler
-            else if (chained_tunnel.onerror)
+            // Mark failure, attempt next tunnel
+            if (!fail_tunnel() && chained_tunnel.onerror)
                 chained_tunnel.onerror(status);
 
         };
 
-        try {
-            
-            // Attempt connection
-            current_tunnel.connect(connect_data);
-            
-        }
-        catch (status) {
-            
-            // Call error handler of current tunnel on error
-            current_tunnel.onerror(status);
-            
-        }
-
+        // Attempt connection
+        tunnel.connect(connect_data);
+        
     }
 
     this.connect = function(data) {
