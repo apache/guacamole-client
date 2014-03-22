@@ -225,6 +225,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     function sendPendingMessages() {
 
+        // Do not attempt to send messages if not connected
+        if (tunnel.state !== Guacamole.Tunnel.State.OPEN)
+            return;
+
         if (outputMessageBuffer.length > 0) {
 
             sendingMessages = true;
