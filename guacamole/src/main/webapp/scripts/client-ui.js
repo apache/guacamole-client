@@ -73,13 +73,15 @@ GuacUI.Client = {
                  because there are too many active connections. Please wait \
                  a few minutes and try again.",
 
-        0x0202: "The Guacamole server has closed the connection because the \
-                 remote desktop is taking too long to respond. Please try   \
-                 again or contact your system administrator.",
+        0x0202: "The connection has been closed because the server is taking \
+                 too long to respond. This is usually caused by network      \
+                 problems, such as a spotty wireless signal, or slow network \
+                 speeds. Please check your network connection and try again  \
+                 or contact your system administrator.",
 
-        0x0203: "The remote desktop server encountered an error and has closed \
-                 the connection. Please try again or contact your system       \
-                 administrator.",
+        0x0203: "The server encountered an error and has closed the \
+                 connection. Please try again or contact your       \
+                 system administrator.",
 
         0x0204: "The requested connection does not exist. Please check the \
                  connection name and try again.",
