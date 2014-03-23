@@ -64,6 +64,15 @@ Guacamole.Tunnel = function() {
     this.state = Guacamole.Tunnel.State.CONNECTING;
 
     /**
+     * The maximum amount of time to wait for data to be received, in
+     * milliseconds. If data is not received within this amount of time,
+     * the tunnel is closed with an error. The default value is 15000.
+     * 
+     * @type Number
+     */
+    this.receiveTimeout = 15000;
+
+    /**
      * Fired whenever an error is encountered by the tunnel.
      * 
      * @event
@@ -152,6 +161,30 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var sendingMessages = false;
     var outputMessageBuffer = "";
+
+    /**
+     * The current receive timeout ID, if any.
+     * @private
+     */
+    var receive_timeout = null;
+
+    /**
+     * Initiates a timeout which, if data is not received, causes the tunnel
+     * to close with an error.
+     * 
+     * @private
+     */
+    function reset_timeout() {
+
+        // Get rid of old timeout (if any)
+        window.clearTimeout(receive_timeout);
+
+        // Set new timeout
+        receive_timeout = window.setTimeout(function () {
+            close_tunnel(new Guacamole.Status(Guacamole.Status.Code.UPSTREAM_TIMEOUT, "Server timeout."));
+        }, tunnel.receiveTimeout);
+
+    }
 
     /**
      * Closes this tunnel, signaling the given status and corresponding
@@ -322,6 +355,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
             if (xmlhttprequest.readyState === 3 ||
                 xmlhttprequest.readyState === 4) {
 
+                reset_timeout();
+
                 // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
                 if (pollingMode === POLLING_ENABLED) {
                     if (xmlhttprequest.readyState === 3 && !interval)
@@ -477,6 +512,9 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     this.connect = function(data) {
 
+        // Start waiting for connect
+        reset_timeout();
+
         // Start tunnel and connect
         var connect_xmlhttprequest = new XMLHttpRequest();
         connect_xmlhttprequest.onreadystatechange = function() {
@@ -489,6 +527,8 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
                 handleHTTPTunnelError(connect_xmlhttprequest);
                 return;
             }
+
+            reset_timeout();
 
             // Get UUID from response
             tunnel_uuid = connect_xmlhttprequest.responseText;
@@ -538,6 +578,12 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     var socket = null;
 
     /**
+     * The current receive timeout ID, if any.
+     * @private
+     */
+    var receive_timeout = null;
+
+    /**
      * The WebSocket protocol corresponding to the protocol used for the current
      * location.
      * @private
@@ -577,6 +623,24 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
                 + tunnelURL;
 
         }
+
+    }
+
+    /**
+     * Initiates a timeout which, if data is not received, causes the tunnel
+     * to close with an error.
+     * 
+     * @private
+     */
+    function reset_timeout() {
+
+        // Get rid of old timeout (if any)
+        window.clearTimeout(receive_timeout);
+
+        // Set new timeout
+        receive_timeout = window.setTimeout(function () {
+            close_tunnel(new Guacamole.Status(Guacamole.Status.Code.UPSTREAM_TIMEOUT, "Server timeout."));
+        }, tunnel.receiveTimeout);
 
     }
 
@@ -647,13 +711,19 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     this.connect = function(data) {
 
+        reset_timeout();
+
         // Connect socket
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
 
         socket.onopen = function(event) {
+
+            reset_timeout();
+
             tunnel.state = Guacamole.Tunnel.State.OPEN;
             if (tunnel.onstatechange)
                 tunnel.onstatechange(tunnel.state);
+
         };
 
         socket.onclose = function(event) {
@@ -665,6 +735,8 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         };
 
         socket.onmessage = function(event) {
+
+            reset_timeout();
 
             var message = event.data;
             var startIndex = 0;
