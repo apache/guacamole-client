@@ -828,15 +828,98 @@ GuacUI.Client.showError = function(title, status) {
     GuacUI.Client.visibleStatus =
         new GuacUI.Client.ModalStatus(title, status, "guac-error");
     GuacUI.Client.visibleStatus.show();
-}
+};
+
+/**
+ * Connects to the current Guacamole connection, attaching a new Guacamole
+ * client to the user interface. If a Guacamole client is already attached,
+ * it is replaced.
+ */
+GuacUI.Client.connect = function() {
+
+    var tunnel;
+
+    // If WebSocket available, try to use it.
+    if (window.WebSocket)
+        tunnel = new Guacamole.ChainedTunnel(
+            new Guacamole.WebSocketTunnel("websocket-tunnel"),
+            new Guacamole.HTTPTunnel("tunnel")
+        );
+
+    // If no WebSocket, then use HTTP.
+    else
+        tunnel = new Guacamole.HTTPTunnel("tunnel");
+
+    // Instantiate client
+    var guac = new Guacamole.Client(tunnel);
+
+    // Tie UI to client
+    GuacUI.Client.attach(guac);
+
+    // Calculate optimal width/height for display
+    var pixel_density = window.devicePixelRatio || 1;
+    var optimal_dpi = pixel_density * 96;
+    var optimal_width = window.innerWidth * pixel_density;
+    var optimal_height = window.innerHeight * pixel_density;
+
+    // Scale width/height to be at least 600x600
+    if (optimal_width < 600 || optimal_height < 600) {
+        var scale = Math.max(600 / optimal_width, 600 / optimal_height);
+        optimal_width = optimal_width * scale;
+        optimal_height = optimal_height * scale;
+    }
+
+    // Get entire query string, and pass to connect().
+    // Normally, only the "id" parameter is required, but
+    // all parameters should be preserved and passed on for
+    // the sake of authentication.
+
+    var connect_string =
+        window.location.search.substring(1)
+        + "&width="  + Math.floor(optimal_width)
+        + "&height=" + Math.floor(optimal_height)
+        + "&dpi="    + Math.floor(optimal_dpi);
+
+    // Add audio mimetypes to connect_string
+    GuacUI.Audio.supported.forEach(function(mimetype) {
+        connect_string += "&audio=" + encodeURIComponent(mimetype);
+    });
+
+    // Add video mimetypes to connect_string
+    GuacUI.Video.supported.forEach(function(mimetype) {
+        connect_string += "&video=" + encodeURIComponent(mimetype);
+    });
+
+    // Show connection errors from tunnel
+    tunnel.onerror = function(status) {
+        var message = GuacUI.Client.tunnel_errors[status.code] || GuacUI.Client.tunnel_errors.DEFAULT;
+        GuacUI.Client.showError("Connection Error", message);
+    };
+
+    // Notify of disconnections (if not already notified of something else)
+    tunnel.onstatechange = function(state) {
+        if (state === Guacamole.Tunnel.State.CLOSED && !GuacUI.Client.visibleStatus)
+            GuacUI.Client.showStatus("Disconnected", "You have been disconnected. Reload the page to reconnect.");
+    };
+
+    // Connect
+    guac.connect(connect_string);
+
+
+};
 
 /**
  * Attaches a Guacamole.Client to the client UI, such that Guacamole events
- * affect the UI, and local events affect the Guacamole.Client.
+ * affect the UI, and local events affect the Guacamole.Client. If a client
+ * is already attached, it is replaced.
  * 
  * @param {Guacamole.Client} guac The Guacamole.Client to attach to the UI.
  */
 GuacUI.Client.attach = function(guac) {
+
+    // If a client is already attached, ensure it is disconnected
+    if (GuacUI.Client.attachedClient)
+        GuacUI.Client.attachedClient.disconnect();
 
     // Store attached client
     GuacUI.Client.attachedClient = guac;
@@ -850,7 +933,7 @@ GuacUI.Client.attach = function(guac) {
 
     guac.onresize = function(width, height) {
         GuacUI.Client.updateDisplayScale();
-    }
+    };
 
     /*
      * Update UI when the state of the Guacamole.Client changes.
@@ -1054,6 +1137,21 @@ GuacUI.Client.attach = function(guac) {
             
         };
 
+    // Hide any existing status notifications
+    GuacUI.Client.hideStatus();
+
+    // Remove old client from UI, if any
+    GuacUI.Client.display.innerHTML = "";
+
+    // Add client to UI
+    guac.getDisplay().className = "software-cursor";
+    GuacUI.Client.display.appendChild(guac.getDisplay());
+
+};
+
+// One-time UI initialization
+(function() {
+
     /*
      * Route document-level keyboard events to the client.
      */
@@ -1062,6 +1160,10 @@ GuacUI.Client.attach = function(guac) {
     var show_keyboard_gesture_possible = true;
 
     keyboard.onkeydown = function (keysym) {
+
+        // Only handle key events if client is attached
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac) return;
 
         // Handle Ctrl-shortcuts specifically
         if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
@@ -1086,25 +1188,30 @@ GuacUI.Client.attach = function(guac) {
         guac.sendKeyEvent(1, keysym);
 
         // If key is NOT one of the expected keys, gesture not possible
-        if (keysym != 0xFFE3 && keysym != 0xFFE9 && keysym != 0xFFE1)
+        if (keysym !== 0xFFE3 && keysym !== 0xFFE9 && keysym !== 0xFFE1)
             show_keyboard_gesture_possible = false;
 
     };
 
     keyboard.onkeyup = function (keysym) {
+
+        // Only handle key events if client is attached
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac) return;
+
         guac.sendKeyEvent(0, keysym);
 
         // If lifting up on shift, toggle keyboard if rest of gesture
         // conditions satisfied
-        if (show_keyboard_gesture_possible && keysym == 0xFFE1) {
+        if (show_keyboard_gesture_possible && keysym === 0xFFE1) {
             if (keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9]) {
 
                 // If in INTERACTIVE mode, switch to OSK
-                if (GuacUI.StateManager.getState() == GuacUI.Client.states.INTERACTIVE)
+                if (GuacUI.StateManager.getState() === GuacUI.Client.states.INTERACTIVE)
                     GuacUI.StateManager.setState(GuacUI.Client.states.OSK);
 
                 // If in OSK mode, switch to INTERACTIVE 
-                else if (GuacUI.StateManager.getState() == GuacUI.Client.states.OSK)
+                else if (GuacUI.StateManager.getState() === GuacUI.Client.states.OSK)
                     GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
 
             }
@@ -1140,7 +1247,8 @@ GuacUI.Client.attach = function(guac) {
     // Set remote clipboard contents on paste
     document.body.addEventListener("paste", function handle_paste(e) {
         e.preventDefault();
-        guac.setClipboard(e.clipboardData.getData("text/plain"));
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.setClipboard(e.clipboardData.getData("text/plain"));
     }, false);
 
     /*
@@ -1149,7 +1257,9 @@ GuacUI.Client.attach = function(guac) {
     window.onunload = function() {
 
         GuacUI.Client.updateThumbnail();
-        guac.disconnect();
+
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.disconnect();
 
     };
 
@@ -1162,15 +1272,17 @@ GuacUI.Client.attach = function(guac) {
         var width = window.innerWidth * pixel_density;
         var height = window.innerHeight * pixel_density;
 
-        guac.sendSize(width, height);
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.sendSize(width, height);
+
         GuacUI.Client.updateDisplayScale();
 
     };
 
     GuacUI.sessionState.onchange = function(old_state, new_state, name) {
-        if (name == "clipboard")
-            guac.setClipboard(new_state[name]);
-        else if (name == "auto-fit")
+        if (name === "clipboard" && GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.setClipboard(new_state[name]);
+        else if (name === "auto-fit")
             GuacUI.Client.updateDisplayScale();
     };
 
@@ -1213,7 +1325,7 @@ GuacUI.Client.attach = function(guac) {
     GuacUI.Client.display.addEventListener('touchstart', function(e) {
         
         // Record touch location
-        if (e.touches.length == 1) {
+        if (e.touches.length === 1) {
             var touch = e.touches[0];
             long_press_start_x = touch.screenX;
             long_press_start_y = touch.screenY;
@@ -1353,6 +1465,9 @@ GuacUI.Client.attach = function(guac) {
         e.preventDefault();
         e.stopPropagation();
 
+        // Ignore file drops if no attached client
+        if (!GuacUI.Client.attachedClient) return;
+
         // Upload each file 
         var files = e.dataTransfer.files;
         for (var i=0; i<files.length; i++)
@@ -1360,5 +1475,4 @@ GuacUI.Client.attach = function(guac) {
 
     }, false);
 
-};
-
+})();
