@@ -890,16 +890,9 @@ GuacUI.Client.attach = function(guac) {
 
                 break;
 
-            // Disconnecting
+            // Disconnecting / disconnected are handled by tunnel instead
             case 4:
-                GuacUI.Client.showStatus(null, "Disconnecting...");
-                GuacUI.Client.titlePrefix = "[Disconnecting...]";
-                break;
-
-            // Disconnected
             case 5:
-                GuacUI.Client.showStatus("Disconnected", "Guacamole has been manually disconnected. Reload the page to reconnect.");
-                GuacUI.Client.titlePrefix = "[Disconnected]";
                 break;
 
             // Unknown status code

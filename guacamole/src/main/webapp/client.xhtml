@@ -141,6 +141,12 @@
                         GuacUI.Client.showError("Connection Error", message);
                     };
 
+                    // Notify of disconnections (if not already notified of something else)
+                    tunnel.onstatechange = function(state) {
+                        if (state === Guacamole.Tunnel.State.CLOSED && !GuacUI.Client.visibleStatus)
+                            GuacUI.Client.showStatus("Disconnected", "You have been disconnected. Reload the page to reconnect.");
+                    };
+
                     // Connect
                     guac.connect(connect_string);
 
