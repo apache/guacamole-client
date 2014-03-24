@@ -283,9 +283,19 @@ div#viewportClone {
     margin-bottom: 0.5em;
 }
 
-.dialog .status {
+.dialog .status, .dialog .countdown, .dialog .reconnect {
+    margin: 0;
     padding: 0.5em;
     font-size: 0.8em;
+}
+
+.dialog .reconnect {
+    display: none;
+}
+
+.guac-error .dialog .reconnect {
+    display: block;
+    text-align: center;
 }
 
 p.hint {

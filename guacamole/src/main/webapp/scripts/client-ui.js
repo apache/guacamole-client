@@ -690,7 +690,7 @@ GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
  * @constructor
  * @augments GuacUI.Component
  */
-GuacUI.Client.ModalStatus = function(title_text, text, classname) {
+GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
 
     // Create element hierarchy
     var outer  = GuacUI.createElement("div", "dialogOuter");
@@ -710,11 +710,58 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname) {
     if (classname)
         GuacUI.addClass(outer, classname);
 
+    // Automatically reconnect after the given time period
+    var reconnect_interval = null;
+    if (reconnect) {
+
+        var countdown = GuacUI.createChildElement(dialog, "p", "countdown");
+
+        function update_status() {
+
+            // Use appropriate description of time remaining 
+            if (reconnect === 0)
+                countdown.textContent = "Reconnecting...";
+            if (reconnect === 1)
+                countdown.textContent = "Reconnecting in 1 second...";
+            else
+                countdown.textContent = "Reconnecting in " + reconnect + " seconds...";
+
+            // Reconnect if countdown complete
+            if (reconnect === 0) {
+                window.clearInterval(reconnect_interval);
+                GuacUI.Client.connect();
+            }
+
+        }
+
+        // Update counter every second
+        reconnect_interval = window.setInterval(function update_countdown() {
+            reconnect--;
+            update_status();
+        }, 1000);
+
+        // Init status
+        update_status();
+
+    }
+
+    // Reconnect button
+    var reconnect_section = GuacUI.createChildElement(dialog, "div", "reconnect");
+    var reconnect_button = GuacUI.createChildElement(reconnect_section, "button");
+    reconnect_button.textContent = "Reconnect";
+
+    // Reconnect if button clicked
+    reconnect_button.onclick = function() {
+        window.clearInterval(reconnect_interval);
+        GuacUI.Client.connect();
+    };
+
     this.show = function() {
         document.body.appendChild(outer);
     };
 
     this.hide = function() {
+        window.clearInterval(reconnect_interval);
         document.body.removeChild(outer);
     };
 
