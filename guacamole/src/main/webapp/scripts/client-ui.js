@@ -209,11 +209,35 @@ GuacUI.Client = {
 
     },
 
+    /**
+     * All error codes for which automatic reconnection is appropriate when a
+     * tunnel error occurs.
+     */
+    "tunnel_auto_reconnect": {
+        0x0200: true,
+        0x0202: true,
+        0x0203: true,
+        0x0308: true
+    },
+
+    /**
+     * All error codes for which automatic reconnection is appropriate when a
+     * client error occurs.
+     */
+    "client_auto_reconnect": {
+        0x0200: true,
+        0x0202: true,
+        0x0203: true,
+        0x0301: true,
+        0x0308: true
+    },
+
     /* Constants */
     
     "LONG_PRESS_DETECT_TIMEOUT"     : 800, /* milliseconds */
     "LONG_PRESS_MOVEMENT_THRESHOLD" : 10,  /* pixels */    
     "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
+    "RECONNECT_PERIOD"              : 15,  /* seconds */
 
     /* UI Components */
 
@@ -869,11 +893,11 @@ GuacUI.Client.showStatus = function(title, status) {
 /**
  * Displays an error status overlay with the given text.
  */
-GuacUI.Client.showError = function(title, status) {
+GuacUI.Client.showError = function(title, status, reconnect) {
     GuacUI.Client.hideStatus();
 
     GuacUI.Client.visibleStatus =
-        new GuacUI.Client.ModalStatus(title, status, "guac-error");
+        new GuacUI.Client.ModalStatus(title, status, "guac-error", reconnect);
     GuacUI.Client.visibleStatus.show();
 };
 
@@ -940,7 +964,8 @@ GuacUI.Client.connect = function() {
     // Show connection errors from tunnel
     tunnel.onerror = function(status) {
         var message = GuacUI.Client.tunnel_errors[status.code] || GuacUI.Client.tunnel_errors.DEFAULT;
-        GuacUI.Client.showError("Connection Error", message);
+        GuacUI.Client.showError("Connection Error", message,
+            GuacUI.Client.tunnel_auto_reconnect[status.code] && GuacUI.Client.RECONNECT_PERIOD);
     };
 
     // Notify of disconnections (if not already notified of something else)
@@ -1056,7 +1081,8 @@ GuacUI.Client.attach = function(guac) {
 
         // Display error message
         var message = GuacUI.Client.client_errors[status.code] || GuacUI.Client.client_errors.DEFAULT;
-        GuacUI.Client.showError("Connection Error", message);
+        GuacUI.Client.showError("Connection Error", message,
+            GuacUI.Client.client_auto_reconnect[status.code] && GuacUI.Client.RECONNECT_PERIOD);
         
     };
 
