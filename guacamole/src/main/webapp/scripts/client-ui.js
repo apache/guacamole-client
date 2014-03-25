@@ -981,6 +981,29 @@ GuacUI.Client.connect = function() {
 };
 
 /**
+ * Represents a number of bytes as a human-readable size string, including
+ * units.
+ *
+ * @param {Number} bytes The number of bytes.
+ * @returns {String} A human-readable string containing the size given.
+ */
+GuacUI.Client.getSizeString = function(bytes) {
+
+    if (bytes > 1000000000)
+        return (bytes / 1000000000).toFixed(1) + " GB";
+
+    else if (bytes > 1000000)
+        return (bytes / 1000000).toFixed(1) + " MB";
+
+    else if (bytes > 1000)
+        return (bytes / 1000).toFixed(1) + " KB";
+
+    else
+        return bytes + " B";
+
+};
+
+/**
  * Attaches a Guacamole.Client to the client UI, such that Guacamole events
  * affect the UI, and local events affect the Guacamole.Client. If a client
  * is already attached, it is replaced.
@@ -1095,26 +1118,10 @@ GuacUI.Client.attach = function(guac) {
      * Prompt to download file when file received.
      */
 
-    function getSizeString(bytes) {
-
-        if (bytes > 1000000000)
-            return (bytes / 1000000000).toFixed(1) + " GB";
-
-        else if (bytes > 1000000)
-            return (bytes / 1000000).toFixed(1) + " MB";
-
-        else if (bytes > 1000)
-            return (bytes / 1000).toFixed(1) + " KB";
-
-        else
-            return bytes + " B";
-
-    }
-
     guac.onfile = function(stream, mimetype, filename) {
 
         var download = new GuacUI.Download(filename);
-        download.updateProgress(getSizeString(0));
+        download.updateProgress(GuacUI.Client.getSizeString(0));
 
         var blob_reader = new Guacamole.BlobReader(stream, mimetype);
 
@@ -1122,7 +1129,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Update progress as data is received
         blob_reader.onprogress = function() {
-            download.updateProgress(getSizeString(blob_reader.getLength()));
+            download.updateProgress(GuacUI.Client.getSizeString(blob_reader.getLength()));
             stream.sendAck("Received", 0x0000);
         };
 
@@ -1469,7 +1476,7 @@ GuacUI.Client.attach = function(guac) {
 
             // Add upload notification
             var upload = new GuacUI.Upload(file.name);
-            upload.updateProgress(getSizeString(0), 0);
+            upload.updateProgress(GuacUI.Client.getSizeString(0), 0);
 
             GuacUI.Client.notification_area.appendChild(upload.getElement());
 
@@ -1513,7 +1520,7 @@ GuacUI.Client.attach = function(guac) {
 
                 // Otherwise, update progress
                 else
-                    upload.updateProgress(getSizeString(offset), offset / bytes.length * 100);
+                    upload.updateProgress(GuacUI.Client.getSizeString(offset), offset / bytes.length * 100);
 
             };
 
