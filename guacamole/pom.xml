@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
-    <version>0.8.3</version>
+    <version>0.9.0</version>
     <name>guacamole</name>
     <url>http://guac-dev.org/</url>
 
@@ -115,21 +115,21 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.8.1</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!-- Guacamole JavaScript API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>0.7.4</version>
+            <version>0.9.0</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>

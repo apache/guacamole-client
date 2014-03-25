@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-mysql</artifactId>
     <packaging>jar</packaging>
-    <version>0.8.2</version>
+    <version>0.9.0</version>
     <name>guacamole-auth-mysql</name>
     <url>http://guac-dev.org/</url>
 
@@ -83,14 +83,14 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.8.0</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.8.1</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!-- SLF4J - logging -->
