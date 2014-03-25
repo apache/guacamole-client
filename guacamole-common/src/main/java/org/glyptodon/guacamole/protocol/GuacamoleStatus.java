@@ -81,9 +81,11 @@ public enum GuacamoleStatus {
 
     /**
      * Permission was denied to perform the operation, as the user is not yet
-     * authorized (not yet logged in, for example).
+     * authorized (not yet logged in, for example). As HTTP 401 has implications
+     * for HTTP-specific authorization schemes, this status continues to map to
+     * HTTP 403 ("Forbidden"). To do otherwise would risk unintended effects.
      */
-    CLIENT_UNAUTHORIZED(401, 1008, 0x0301),
+    CLIENT_UNAUTHORIZED(403, 1008, 0x0301),
 
     /**
      * Permission was denied to perform the operation, and this operation will
