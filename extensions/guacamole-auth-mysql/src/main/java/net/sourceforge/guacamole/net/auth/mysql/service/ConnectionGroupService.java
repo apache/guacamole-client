@@ -176,7 +176,7 @@ public class ConnectionGroupService {
      * Connect to the connection within the given group with the lowest number
      * of currently active users.
      *
-     * @param connection The group to load balance across.
+     * @param group The group to load balance across.
      * @param info The information to use when performing the connection
      *             handshake.
      * @param userID The ID of the user who is connecting to the socket.
@@ -186,36 +186,41 @@ public class ConnectionGroupService {
      */
     public GuacamoleSocket connect(MySQLConnectionGroup group, 
             GuacamoleClientInformation info, int userID) throws GuacamoleException {
-        
+       
         // Get all connections in the group.
         List<Integer> connectionIDs = connectionService.getAllConnectionIDs
                 (group.getConnectionGroupID());
         
-        // Get the least used connection.
-        Integer leastUsedConnectionID = 
-                activeConnectionMap.getLeastUsedConnection(connectionIDs);
-        
-        if(leastUsedConnectionID == null)
-            throw new GuacamoleResourceNotFoundException("No connections found in group.");
-        
-        if(GuacamoleProperties.getProperty(
-                MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
-                && activeConnectionMap.isActive(leastUsedConnectionID))
-            throw new GuacamoleServerBusyException
-                    ("Cannot connect. All connections are in use.");
-        
-        if(GuacamoleProperties.getProperty(
-                MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
-                && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), userID))
-            throw new GuacamoleClientTooManyException
-                    ("Cannot connect. Connection group already in use by this user.");
-        
-        // Get the connection 
-        MySQLConnection connection = connectionService
-                .retrieveConnection(leastUsedConnectionID, userID);
-        
-        // Connect to the connection
-        return connectionService.connect(connection, info, userID, group.getConnectionGroupID());
+        synchronized (activeConnectionMap) {
+
+            // Get the least used connection.
+            Integer leastUsedConnectionID = 
+                    activeConnectionMap.getLeastUsedConnection(connectionIDs);
+            
+            if(leastUsedConnectionID == null)
+                throw new GuacamoleResourceNotFoundException("No connections found in group.");
+            
+            if(GuacamoleProperties.getProperty(
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false)
+                    && activeConnectionMap.isActive(leastUsedConnectionID))
+                throw new GuacamoleServerBusyException
+                        ("Cannot connect. All connections are in use.");
+            
+            if(GuacamoleProperties.getProperty(
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
+                    && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), userID))
+                throw new GuacamoleClientTooManyException
+                        ("Cannot connect. Connection group already in use by this user.");
+
+            // Get the connection 
+            MySQLConnection connection = connectionService
+                    .retrieveConnection(leastUsedConnectionID, userID);
+            
+            // Connect to the connection
+            return connectionService.connect(connection, info, userID, group.getConnectionGroupID());
+
+        }
+            
     }
     
     /**
