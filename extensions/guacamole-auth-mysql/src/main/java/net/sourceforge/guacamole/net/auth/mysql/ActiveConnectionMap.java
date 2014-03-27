@@ -312,7 +312,7 @@ public class ActiveConnectionMap {
      * @param userID The user ID that this ConnectionUser refers to.
      */
     private void incrementConnectionUserCount(int connectionID, int userID) {
-        int currentCount = getConnectionGroupUserCount(connectionID, userID);
+        int currentCount = getConnectionUserCount(connectionID, userID);
         
         activeConnectionUserMap.put
                 (new ConnectionUser(connectionID, userID), currentCount + 1);
@@ -326,7 +326,7 @@ public class ActiveConnectionMap {
      * @param userID The user ID that this ConnectionUser refers to.
      */
     private void decrementConnectionUserCount(int connectionID, int userID) {
-        int currentCount = getConnectionGroupUserCount(connectionID, userID);
+        int currentCount = getConnectionUserCount(connectionID, userID);
         
         activeConnectionUserMap.put
                 (new ConnectionUser(connectionID, userID), currentCount - 1);
