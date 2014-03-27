@@ -87,12 +87,15 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
     @Override
     public void close() throws GuacamoleException {
 
-        // Close socket
-        socket.close();
-
         // Mark this connection as inactive
         synchronized (activeConnectionMap) {
-            activeConnectionMap.closeConnection(historyID, connectionGroupID);
+
+            if (isOpen())
+                activeConnectionMap.closeConnection(historyID, connectionGroupID);
+
+            // Close socket
+            socket.close();
+
         }
 
     }
