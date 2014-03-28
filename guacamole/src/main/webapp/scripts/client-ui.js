@@ -254,7 +254,9 @@ GuacUI.Client = {
 
     "connectionName"  : "Guacamole",
     "overrideAutoFit" : false,
-    "attachedClient"  : null
+    "attachedClient"  : null,
+
+    "clipboard_integration_enabled" : undefined,
 
 };
 
@@ -1310,25 +1312,61 @@ GuacUI.Client.attach = function(guac) {
 
     };
 
+    /**
+     * Returns the contents of the remote clipboard if clipboard integration is
+     * enabled, and null otherwise.
+     */
+    function get_clipboard_data() {
+
+        // If integration not enabled, do not attempt retrieval
+        if (GuacUI.Client.clipboard_integration_enabled === false)
+            return null;
+
+        // Otherwise, attempt retrieval and update integration status
+        try {
+            var data = GuacamoleService.Clipboard.get();
+            GuacUI.Client.clipboard_integration_enabled = true;
+            return data;
+        }
+        catch (status) {
+            GuacUI.Client.clipboard_integration_enabled = false;
+            return null;
+        }
+
+    }
+
     // Set local clipboard contents on cut 
     document.body.addEventListener("cut", function handle_cut(e) {
-        e.preventDefault();
-        var data = GuacamoleService.Clipboard.get();
-        e.clipboardData.setData("text/plain", data);
+        var data = get_clipboard_data();
+        if (data !== null) {
+            e.preventDefault();
+            e.clipboardData.setData("text/plain", data);
+        }
     }, false);
 
     // Set local clipboard contents on copy 
     document.body.addEventListener("copy", function handle_copy(e) {
-        e.preventDefault();
-        var data = GuacamoleService.Clipboard.get();
-        e.clipboardData.setData("text/plain", data);
+        var data = get_clipboard_data();
+        if (data !== null) {
+            e.preventDefault();
+            e.clipboardData.setData("text/plain", data);
+        }
     }, false);
 
     // Set remote clipboard contents on paste
     document.body.addEventListener("paste", function handle_paste(e) {
-        e.preventDefault();
-        if (GuacUI.Client.attachedClient)
-            GuacUI.Client.attachedClient.setClipboard(e.clipboardData.getData("text/plain"));
+
+        // If status of clipboard integration is unknown, attempt to define it
+        if (GuacUI.Client.clipboard_integration_enabled === undefined)
+            get_clipboard_data();
+
+        // Override and handle paste only if integration is enabled
+        if (GuacUI.Client.clipboard_integration_enabled) {
+            e.preventDefault();
+            if (GuacUI.Client.attachedClient)
+                GuacUI.Client.attachedClient.setClipboard(e.clipboardData.getData("text/plain"));
+        }
+
     }, false);
 
     /*

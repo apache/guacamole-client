@@ -325,19 +325,22 @@ GuacamoleService.PermissionSet = function() {
 GuacamoleService.handleResponse = function(xhr) {
 
     // For HTTP Forbidden, just return permission denied
-    if (xhr.status == 403)
-        throw new Error("Permission denied.");
+    if (xhr.status === 403)
+        throw new Guacamole.Status(Guacamole.Status.Code.CLIENT_FORBIDDEN, "Permission denied.");
 
     // Otherwise, if unsuccessful, throw error with message derived from
     // response
-    if (xhr.status != 200) {
+    if (xhr.status !== 200) {
+
+        // Retrieve error code
+        var code = parseInt(xhr.getResponseHeader("Guacamole-Status-Code"));
 
         // Retrieve error message
         var message =    xhr.getResponseHeader("Guacamole-Error-Message")
                       || xhr.statusText;
 
         // Throw error with derived message
-        throw new Error(message);
+        throw new Guacamole.Status(code, message);
 
     }
 

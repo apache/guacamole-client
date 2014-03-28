@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
@@ -78,6 +79,10 @@ public class CaptureClipboard extends AuthenticatingHttpServlet {
             }
 
         }
+
+        // Otherwise, inform not supported
+        else
+            throw new GuacamoleUnsupportedException("Clipboard integration not supported");
 
     }
 
