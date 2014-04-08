@@ -45,13 +45,14 @@ Guacamole.ArrayBufferWriter = function(stream) {
     };
 
     /**
-     * Sends the given data.
+     * Encodes the given data as base64, sending it as a blob. The data must
+     * be small enough to fit into a single blob instruction.
      * 
-     * @param {ArrayBuffer} data The data to send.
+     * @private
+     * @param {Uint8Array} bytes The data to send.
      */
-    this.sendData = function(data) {
+    function __send_blob(bytes) {
 
-        var bytes = new Uint8Array(data);
         var binary = "";
 
         // Produce binary string from bytes in buffer
@@ -60,6 +61,27 @@ Guacamole.ArrayBufferWriter = function(stream) {
 
         // Send as base64
         stream.sendBlob(window.btoa(binary));
+
+    }
+
+    /**
+     * Sends the given data.
+     * 
+     * @param {ArrayBuffer|TypedArray} data The data to send.
+     */
+    this.sendData = function(data) {
+
+        var bytes = new Uint8Array(data);
+
+        // If small enough to fit into single instruction, send as-is
+        if (bytes.length <= 8064)
+            __send_blob(bytes);
+
+        // Otherwise, send as multiple instructions
+        else {
+            for (var offset=0; offset<bytes.length; offset += 8064)
+                __send_blob(bytes.subarray(offset, offset + 8094));
+        }
 
     };
 
