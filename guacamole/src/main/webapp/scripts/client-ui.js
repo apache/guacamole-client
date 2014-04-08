@@ -1112,8 +1112,28 @@ GuacUI.Client.attach = function(guac) {
     };
 
     // Server copy handler
-    guac.onclipboard = function(data) {
-        GuacUI.sessionState.setProperty("clipboard", data);
+    guac.onclipboard = function(stream, mimetype) {
+
+        // Only text/plain is supported for now
+        if (mimetype !== "text/plain") {
+            stream.sendAck("Only text/plain supported", Guacamole.Status.Code.UNSUPPORTED);
+            return;
+        }
+
+        var reader = new Guacamole.StringReader(stream);
+        var data = "";
+
+        // Append any received data to buffer
+        reader.ontext = function clipboard_text_received(text) {
+            data += text;
+            stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
+        };
+
+        // Set contents when done
+        reader.onend = function clipboard_text_end() {
+            GuacUI.sessionState.setProperty("clipboard", data);
+        };
+
     };
 
     /*
