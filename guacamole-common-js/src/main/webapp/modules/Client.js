@@ -249,7 +249,8 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * Sets the clipboard of the remote client to the given text data.
-     * 
+     *
+     * @deprecated Use createClipboardStream() instead. 
      * @param {String} data The data to send as the clipboard contents.
      */
     this.setClipboard = function(data) {
@@ -258,12 +259,22 @@ Guacamole.Client = function(tunnel) {
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("clipboard", data);
+        // Open stream
+        var stream = guac_client.createClipboardStream("text/plain");
+        var writer = new Guacamole.StringWriter(stream);
+
+        // Send text chunks
+        for (var i=0; i<data.length; i += 4096)
+            writer.sendText(data.substring(i, i+4096));
+
+        // Close stream
+        writer.sendEnd();
+
     };
 
     /**
      * Opens a new file for writing, having the given index, mimetype and
-     * filename. The stream to associate with this file must already exist.
+     * filename.
      * 
      * @param {String} mimetype The mimetype of the file being sent.
      * @param {String} filename The filename of the file being sent.
@@ -292,8 +303,7 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
-     * Opens a new pipe for writing, having the given name and mimetype. The
-     * stream to associate with this pipe must already exist.
+     * Opens a new pipe for writing, having the given name and mimetype. 
      * 
      * @param {String} mimetype The mimetype of the data being sent.
      * @param {String} name The name of the pipe.
@@ -306,6 +316,35 @@ Guacamole.Client = function(tunnel) {
 
         // Create new stream
         tunnel.sendMessage("pipe", index, mimetype, name);
+        var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
+
+        // Override sendEnd() of stream to automatically free index
+        var old_end = stream.sendEnd;
+        stream.sendEnd = function() {
+            old_end();
+            stream_indices.free(index);
+            delete output_streams[index];
+        };
+
+        // Return new, overridden stream
+        return stream;
+
+    };
+
+    /**
+     * Opens a new clipboard object for writing, having the given mimetype.
+     * 
+     * @param {String} mimetype The mimetype of the data being sent.
+     * @param {String} name The name of the pipe.
+     * @return {Guacamole.OutputStream} The created file stream.
+     */
+    this.createClipboardStream = function(mimetype) {
+
+        // Allocate index
+        var index = stream_indices.next();
+
+        // Create new stream
+        tunnel.sendMessage("clipboard", index, mimetype);
         var stream = output_streams[index] = new Guacamole.OutputStream(guac_client, index);
 
         // Override sendEnd() of stream to automatically free index
@@ -398,7 +437,9 @@ Guacamole.Client = function(tunnel) {
      * Fired when the clipboard of the remote client is changing.
      * 
      * @event
-     * @param {String} data The new text data of the remote clipboard.
+     * @param {Guacamole.InputStream} stream The stream that will receive
+     *                                       clipboard data from the server.
+     * @param {String} mimetype The mimetype of the data which will be received.
      */
     this.onclipboard = null;
 
@@ -645,7 +686,20 @@ Guacamole.Client = function(tunnel) {
         },
 
         "clipboard": function(parameters) {
-            if (guac_client.onclipboard) guac_client.onclipboard(parameters[0]);
+
+            var stream_index = parseInt(parameters[0]);
+            var mimetype = parameters[1];
+
+            // Create stream 
+            if (guac_client.onclipboard) {
+                var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
+                guac_client.onclipboard(stream, mimetype);
+            }
+
+            // Otherwise, unsupported
+            else
+                guac_client.sendAck(stream_index, "Clipboard unsupported", 0x0100);
+
         },
 
         "close": function(parameters) {
