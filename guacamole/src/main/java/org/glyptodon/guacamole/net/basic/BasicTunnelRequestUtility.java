@@ -42,6 +42,7 @@ import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
 import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
 import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
 import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -329,8 +330,19 @@ public class BasicTunnelRequestUtility {
 
             @Override
             public GuacamoleReader acquireReader() {
-                // Monitor instructions which pertain to server-side events
-                return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
+
+                // Monitor instructions which pertain to server-side events, if necessary
+                try {
+                    if (GuacamoleProperties.getProperty(CaptureClipboard.INTEGRATION_ENABLED, false))
+                        return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
+                }
+                catch (GuacamoleException e) {
+                    logger.warn("Clipboard integration disabled due to error.", e);
+                }
+
+                // Pass through by default.
+                return super.acquireReader();
+                
             }
 
             @Override

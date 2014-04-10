@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic;
 
 import java.util.List;
+import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.protocol.GuacamoleInstruction;
@@ -45,6 +46,11 @@ public class MonitoringGuacamoleReader implements GuacamoleReader {
      */
     private final ClipboardState clipboard;
 
+    /**
+     * The index of the clipboard stream, if any.
+     */
+    private String clipboard_stream_index = null;
+    
     /**
      * Creates a new MonitoringGuacamoleReader which watches the instructions
      * read by the given GuacamoleReader, firing events when specific
@@ -84,11 +90,31 @@ public class MonitoringGuacamoleReader implements GuacamoleReader {
         if (instruction == null)
             return null;
 
-        // If clipboard changed, notify listeners
+        // If clipboard changing, reset clipboard state
         if (instruction.getOpcode().equals("clipboard")) {
             List<String> args = instruction.getArgs();
-            if (args.size() >= 1)
-                clipboard.setContents(args.get(0));
+            if (args.size() >= 2) {
+                clipboard_stream_index = args.get(0);
+                clipboard.begin(args.get(1));
+            }
+        }
+
+        // Add clipboard blobs to existing streams
+        else if (instruction.getOpcode().equals("blob")) {
+            List<String> args = instruction.getArgs();
+            if (args.size() >= 2 && args.get(0).equals(clipboard_stream_index)) {
+                String base64 = args.get(1);
+                clipboard.append(DatatypeConverter.parseBase64Binary(base64));
+            }
+        }
+        
+        // Terminate and update clipboard at end of stream
+        else if (instruction.getOpcode().equals("end")) {
+            List<String> args = instruction.getArgs();
+            if (args.size() >= 1 && args.get(0).equals(clipboard_stream_index)) {
+                clipboard.commit();
+                clipboard_stream_index = null;
+            }
         }
         
         return instruction;

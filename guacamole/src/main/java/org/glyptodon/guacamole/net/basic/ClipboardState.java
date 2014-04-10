@@ -32,10 +32,35 @@ package org.glyptodon.guacamole.net.basic;
 public class ClipboardState {
 
     /**
+     * The maximum number of bytes to track.
+     */
+    private static final int MAXIMUM_LENGTH = 262144;
+
+     /**
+     * The mimetype of the current contents.
+     */
+    private String mimetype = "text/plain";
+
+    /**
+     * The mimetype of the pending contents.
+     */
+    private String pending_mimetype = "text/plain";
+    
+    /**
      * The current contents.
      */
-    private String contents = "";
+    private byte[] contents = new byte[0];
 
+    /**
+     * The pending clipboard contents.
+     */
+    private final byte[] pending = new byte[MAXIMUM_LENGTH];
+
+    /**
+     * The length of the pending data, in bytes.
+     */
+    private int pending_length = 0;
+    
     /**
      * The timestamp of the last contents update.
      */
@@ -45,38 +70,84 @@ public class ClipboardState {
      * Returns the current clipboard contents.
      * @return The current clipboard contents
      */
-    public synchronized String getContents() {
+    public synchronized byte[] getContents() {
         return contents;
     }
 
     /**
-     * Sets the current clipboard contents.
-     * @param contents The contents to assign to the clipboard.
+     * Returns the mimetype of the current clipboard contents.
+     * @return The mimetype of the current clipboard contents.
      */
-    public synchronized void setContents(String contents) {
-        this.contents = contents;
-        last_update = System.currentTimeMillis();
-        this.notifyAll();
+    public synchronized String getMimetype() {
+        return mimetype;
     }
 
     /**
-     * Wait up to the given timeout for new clipboard data. If data more recent
-     * than the timeout period is available, return that.
+     * Begins a new update of the clipboard contents. The actual contents will
+     * not be saved until commit() is called.
+     * 
+     * @param mimetype The mimetype of the contents being added.
+     */
+    public synchronized void begin(String mimetype) {
+        pending_length = 0;
+        this.pending_mimetype = mimetype;
+    }
+
+    /**
+     * Appends the given data to the clipboard contents.
+     * 
+     * @param data The raw data to append.
+     */
+    public synchronized void append(byte[] data) {
+
+        // Calculate size of copy
+        int length = data.length;
+        int remaining = pending.length - pending_length;
+        if (remaining < length)
+            length = remaining;
+    
+        // Append data
+        System.arraycopy(data, 0, pending, pending_length, length);
+        pending_length += length;
+
+    }
+
+    /**
+     * Commits the pending contents to the clipboard, notifying any threads
+     * waiting for clipboard updates.
+     */
+    public synchronized void commit() {
+
+        // Commit contents
+        mimetype = pending_mimetype;
+        contents = new byte[pending_length];
+        System.arraycopy(pending, 0, contents, 0, pending_length);
+
+        // Notify of update
+        last_update = System.currentTimeMillis();
+        this.notifyAll();
+
+    }
+    
+    /**
+     * Wait up to the given timeout for new clipboard data.
      * 
      * @param timeout The amount of time to wait, in milliseconds.
-     * @return The current clipboard contents.
+     * @return true if the contents were updated within the timeframe given,
+     *         false otherwise.
      */
-    public synchronized String waitForContents(int timeout) {
+    public synchronized boolean waitForContents(int timeout) {
 
         // Wait for new contents if it's been a while
         if (System.currentTimeMillis() - last_update > timeout) {
             try {
                 this.wait(timeout);
+                return true;
             }
             catch (InterruptedException e) { /* ignore */ }
         }
 
-        return getContents();
+        return false;
 
     }
     

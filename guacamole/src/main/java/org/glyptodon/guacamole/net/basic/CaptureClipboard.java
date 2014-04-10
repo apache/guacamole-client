@@ -71,8 +71,11 @@ public class CaptureClipboard extends AuthenticatingHttpServlet {
 
             // Send clipboard contents
             try {
-                response.setContentType("text/plain");
-                response.getWriter().print(clipboard.waitForContents(CLIPBOARD_TIMEOUT));
+                synchronized (clipboard) {
+                    clipboard.waitForContents(CLIPBOARD_TIMEOUT);
+                    response.setContentType(clipboard.getMimetype());
+                    response.getOutputStream().write(clipboard.getContents());
+                }
             }
             catch (IOException e) {
                 throw new GuacamoleServerException("Unable to send clipboard contents", e);
