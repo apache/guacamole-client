@@ -116,6 +116,8 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         myBatisProperties.setProperty("JDBC.username", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME));
         myBatisProperties.setProperty("JDBC.password", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
+        myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
+        myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
         driverProperties.setProperty("characterEncoding","UTF-8");
 
         // Set up Guice injector.
