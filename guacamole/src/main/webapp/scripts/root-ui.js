@@ -423,24 +423,17 @@ if (GuacamoleRootUI.session_state.getProperty("clipboard"))
         GuacamoleRootUI.session_state.getProperty("clipboard");
 
 /*
- * Default to true if auto-fit not specified
- */
-
-if (GuacamoleRootUI.session_state.getProperty("auto-fit") === undefined)
-    GuacamoleRootUI.session_state.setProperty("auto-fit", true);
-
-/*
  * Initialize auto-fit setting in UI
  */
 
 GuacamoleRootUI.settings.auto_fit.checked =
-    GuacamoleRootUI.session_state.getProperty("auto-fit");
+    GuacamoleRootUI.session_state.getProperty("auto-fit", true);
 
 /*
  * Initialize disable-sound setting in UI
  */
 GuacamoleRootUI.settings.disable_sound.checked =
-    GuacamoleRootUI.session_state.getProperty("disable-sound");
+    GuacamoleRootUI.session_state.getProperty("disable-sound", false);
 
 /*
  * Set handler for logout

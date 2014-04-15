@@ -182,7 +182,7 @@ GuacUI.Audio = new (function() {
     this.supported = [];
 
     // If sound disabled, we're done now.
-    if (GuacUI.sessionState.getProperty("disable-sound"))
+    if (GuacUI.sessionState.getProperty("disable-sound", false))
         return;
     
     // Build array of supported audio formats
