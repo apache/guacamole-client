@@ -816,8 +816,10 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             start.textContent = GuacAdmin.formatDate(record.start);
             if (record.duration !== null)
                 duration.textContent = GuacAdmin.formatSeconds(record.duration);
-            else
+            else if (record.active)
                 duration.textContent = "Active now";
+            else
+                duration.textContent = "-";
 
             // Add record to pager
             history_pager.addElement(row);

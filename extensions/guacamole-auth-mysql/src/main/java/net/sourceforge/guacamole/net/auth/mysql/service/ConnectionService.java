@@ -302,16 +302,34 @@ public class ConnectionService {
             userIDSet.add(history.getUser_id());
         }
 
+        // Determine whether connection is currently active
+        int user_count = activeConnectionMap.getCurrentUserCount(connectionID);
+
         // Get all the usernames for the users who are in the history
         Map<Integer, String> usernameMap = userService.retrieveUsernames(userIDSet);
 
         // Create the new ConnectionRecords
         for(ConnectionHistory history : connectionHistories) {
+
             Date startDate = history.getStart_date();
             Date endDate = history.getEnd_date();
             String username = usernameMap.get(history.getUser_id());
-            MySQLConnectionRecord connectionRecord = new MySQLConnectionRecord(startDate, endDate, username);
+
+            // If there are active users, list the top N not-ended connections
+            // as active (best guess)
+            MySQLConnectionRecord connectionRecord;
+            if (user_count > 0 && endDate == null) {
+                connectionRecord = new MySQLConnectionRecord(startDate, endDate, username, true);
+                user_count--;
+            }
+
+            // If no active users, or end date is recorded, connection is not
+            // active.
+            else
+                connectionRecord = new MySQLConnectionRecord(startDate, endDate, username, false);
+
             connectionRecords.add(connectionRecord);
+
         }
 
         return connectionRecords;
