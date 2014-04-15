@@ -72,7 +72,7 @@ function GuacamoleSessionState() {
      * Sets the given property to the given value.
      * 
      * @param {String} name The name of the property to change.
-     * @param value An arbitrary value.
+     * @param [value] An arbitrary value.
      */
     this.setProperty = function(name, value) {
         state[name] = value;
@@ -83,10 +83,16 @@ function GuacamoleSessionState() {
      * Returns the value stored under the property having the given name.
      * 
      * @param {String} name The name of the property to read.
+     * @param value The default value, if any.
      * @return The value of the given property.
      */
-    this.getProperty = function(name) {
-        return state[name];
+    this.getProperty = function(name, value) {
+
+        var current = state[name];
+        if (current === undefined)
+            return value;
+
+        return current;
     };
 
     /**

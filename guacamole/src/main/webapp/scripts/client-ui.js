@@ -841,7 +841,7 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // If auto-fit is enabled, scale display
     if (!GuacUI.Client.overrideAutoFit
-         && GuacUI.sessionState.getProperty("auto-fit")) {
+         && GuacUI.sessionState.getProperty("auto-fit", true)) {
 
         // Calculate scale to fit screen
         var fit_scale = Math.min(
