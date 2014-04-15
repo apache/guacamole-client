@@ -49,18 +49,25 @@ public class MySQLConnectionRecord implements ConnectionRecord {
     private String username;
 
     /**
+     * Whether this connection is currently active.
+     */
+    private boolean active;
+    
+    /**
      * Initialize this MySQLConnectionRecord with the start/end dates,
      * and the name of the user it represents.
      *
      * @param startDate The start date of the connection history.
      * @param endDate The end date of the connection history.
      * @param username The name of the user that used the connection.
+     * @param active Whether the connection is currently active.
      */
     public MySQLConnectionRecord(Date startDate, Date endDate,
-            String username) {
+            String username, boolean active) {
         if (startDate != null) this.startDate = new Date(startDate.getTime());
         if (endDate != null) this.endDate = new Date(endDate.getTime());
         this.username = username;
+        this.active = active;
     }
 
     @Override
@@ -82,8 +89,7 @@ public class MySQLConnectionRecord implements ConnectionRecord {
 
     @Override
     public boolean isActive() {
-        // If the end date hasn't been stored yet, the connection is still open.
-        return endDate == null;
+        return active;
     }
 
 }
