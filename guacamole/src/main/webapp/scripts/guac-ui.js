@@ -27,11 +27,6 @@
 var GuacUI = GuacUI || {};
 
 /**
- * Current session state, including settings.
- */
-GuacUI.sessionState = new GuacamoleSessionState();
-
-/**
  * Creates a new element having the given tagname and CSS class.
  */
 GuacUI.createElement = function(tagname, classname) {
@@ -186,7 +181,7 @@ GuacUI.Audio = new (function() {
     this.supported = [];
 
     // If sound disabled, we're done now.
-    if (GuacUI.sessionState.getProperty("disable-sound", false))
+    if (GuacamoleSessionStorage.getItem("disable-sound", false))
         return;
     
     // Build array of supported audio formats

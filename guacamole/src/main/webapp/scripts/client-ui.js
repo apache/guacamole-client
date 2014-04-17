@@ -841,7 +841,7 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // If auto-fit is enabled, scale display
     if (!GuacUI.Client.overrideAutoFit
-         && GuacUI.sessionState.getProperty("auto-fit", true)) {
+         && GuacamoleSessionStorage.getItem("auto-fit", true)) {
 
         // Calculate scale to fit screen
         var fit_scale = Math.min(
@@ -1065,8 +1065,9 @@ GuacUI.Client.attach = function(guac) {
                 GuacUI.Client.titlePrefix = null;
 
                 // Update clipboard with current data
-                if (GuacUI.sessionState.getProperty("clipboard"))
-                    guac.setClipboard(GuacUI.sessionState.getProperty("clipboard"));
+                var clipboard = GuacamoleSessionStorage.getItem("clipboard");
+                if (clipboard)
+                    guac.setClipboard(clipboard);
 
                 break;
 
@@ -1131,7 +1132,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Set contents when done
         reader.onend = function clipboard_text_end() {
-            GuacUI.sessionState.setProperty("clipboard", data);
+            GuacamoleSessionStorage.setItem("clipboard", data);
         };
 
     };
@@ -1417,12 +1418,12 @@ GuacUI.Client.attach = function(guac) {
 
     };
 
-    GuacUI.sessionState.onchange = function(old_state, new_state, name) {
+    GuacamoleSessionStorage.addChangeListener(function(name, value) {
         if (name === "clipboard" && GuacUI.Client.attachedClient)
-            GuacUI.Client.attachedClient.setClipboard(new_state[name]);
+            GuacUI.Client.attachedClient.setClipboard(value);
         else if (name === "auto-fit")
             GuacUI.Client.updateDisplayScale();
-    };
+    });
 
     var long_press_start_x = 0;
     var long_press_start_y = 0;

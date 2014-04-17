@@ -59,7 +59,6 @@ var GuacamoleRootUI = {
         "connections" : document.getElementById("connection-list-ui")
     },
 
-    "session_state" :  new GuacamoleSessionState(),
     "parameters"    :  null
 
 };
@@ -363,7 +362,7 @@ window.name = "";
 GuacamoleRootUI.settings.auto_fit.onchange =
 GuacamoleRootUI.settings.auto_fit.onclick  = function() {
 
-    GuacamoleRootUI.session_state.setProperty(
+    GuacamoleSessionStorage.setItem(
         "auto-fit", GuacamoleRootUI.settings.auto_fit.checked);
 
 };
@@ -375,7 +374,7 @@ GuacamoleRootUI.settings.auto_fit.onclick  = function() {
 GuacamoleRootUI.settings.disable_sound.onchange =
 GuacamoleRootUI.settings.disable_sound.onclick  = function() {
 
-    GuacamoleRootUI.session_state.setProperty(
+    GuacamoleSessionStorage.setItem(
         "disable-sound", GuacamoleRootUI.settings.disable_sound.checked);
 
 };
@@ -389,8 +388,7 @@ GuacamoleRootUI.fields.clipboard.onchange = function() {
 
     // Set value if changed
     var new_value = GuacamoleRootUI.fields.clipboard.value;
-    if (GuacamoleRootUI.session_state.getProperty("clipboard") != new_value)
-        GuacamoleRootUI.session_state.setProperty("clipboard", new_value);
+    GuacamoleSessionStorage.setItem("clipboard", new_value);
 
 };
 
@@ -398,43 +396,39 @@ GuacamoleRootUI.fields.clipboard.onchange = function() {
  * Update element states when session state changes
  */
 
-GuacamoleRootUI.session_state.onchange =
-function(old_state, new_state, name) {
+
+GuacamoleSessionStorage.addChangeListener(function(name, value) {
 
     // Clipboard
-    if (name == "clipboard")
-        GuacamoleRootUI.fields.clipboard.value = new_state[name];
+    if (name === "clipboard")
+        GuacamoleRootUI.fields.clipboard.value = value;
 
     // Auto-fit display
-    else if (name == "auto-fit")
-        GuacamoleRootUI.fields.auto_fit.checked = new_state[name];
+    else if (name === "auto-fit")
+        GuacamoleRootUI.fields.auto_fit.checked = value;
 
     // Disable Sound
-    else if (name == "disable-sound")
-        GuacamoleRootUI.fields.disable_sound.checked = new_state[name];
+    else if (name === "disable-sound")
+        GuacamoleRootUI.fields.disable_sound.checked = value;
 
-};
+});
 
 /*
  * Initialize clipboard with current data
  */
 
-if (GuacamoleRootUI.session_state.getProperty("clipboard"))
-    GuacamoleRootUI.fields.clipboard.value =
-        GuacamoleRootUI.session_state.getProperty("clipboard");
+GuacamoleRootUI.fields.clipboard.value = GuacamoleSessionStorage.getItem("clipboard", "");
 
 /*
  * Initialize auto-fit setting in UI
  */
 
-GuacamoleRootUI.settings.auto_fit.checked =
-    GuacamoleRootUI.session_state.getProperty("auto-fit", true);
+GuacamoleRootUI.settings.auto_fit.checked = GuacamoleSessionStorage.getItem("auto-fit", true);
 
 /*
  * Initialize disable-sound setting in UI
  */
-GuacamoleRootUI.settings.disable_sound.checked =
-    GuacamoleRootUI.session_state.getProperty("disable-sound", false);
+GuacamoleRootUI.settings.disable_sound.checked = GuacamoleSessionStorage.getItem("disable-sound", false);
 
 /*
  * Set handler for logout
