@@ -86,6 +86,10 @@ GuacamoleHistory = new (function() {
      */
     this.update = function(id, thumbnail) {
 
+        /* Do nothing if localStorage not present */
+        if (!localStorage)
+            return;
+
         // Create updated entry
         var entry = new GuacamoleHistory.Entry(
             id,
@@ -97,8 +101,11 @@ GuacamoleHistory = new (function() {
         history[id] = entry;
         truncate();
 
-        // Save updated history
-        localStorage.setItem("GUAC_HISTORY", JSON.stringify(history));
+        // Save updated history, ignore inability to use localStorage
+        try {
+            localStorage.setItem("GUAC_HISTORY", JSON.stringify(history));
+        }
+        catch (ignore) {}
 
     };
 
@@ -107,9 +114,18 @@ GuacamoleHistory = new (function() {
      */
     this.reload = function() {
 
-        // Get old and new for comparison
+        /* Do nothing if localStorage not present */
+        if (!localStorage)
+            return;
+
+        // Get old and new for comparison, ignore inability to use localStorage
         var old_history = history;
-        var new_history = JSON.parse(localStorage.getItem("GUAC_HISTORY") || "{}");
+        try {
+            var new_history = JSON.parse(localStorage.getItem("GUAC_HISTORY") || "{}");
+        }
+        catch (ignore) {
+            return;
+        }
 
         // Update history
         history = new_history;
