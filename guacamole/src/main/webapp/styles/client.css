@@ -113,6 +113,15 @@ div.dialog p {
     margin: 0;
 }
 
+div#main {
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
 div.displayOuter {
     height: 100%;
     width: 100%;
@@ -489,4 +498,18 @@ p.hint {
     width: 0;
     height: 0;
     overflow: hidden;
+}
+
+/* Menu */
+
+#menu {
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    max-width: 100%;
+    width: 320px;
+    padding: 1em;
+    background: red;
 }

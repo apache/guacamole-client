@@ -30,7 +30,7 @@
         <link rel="stylesheet" type="text/css" href="styles/ui.css"/>
         <link rel="stylesheet" type="text/css" href="styles/client.css"/>
         <link rel="stylesheet" type="text/css" href="styles/keyboard.css"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi"/>
         <meta name="apple-mobile-web-app-capable" content="yes"/>
         <title>Guacamole ${project.version}</title>
     </head>
@@ -38,9 +38,11 @@
     <body>
 
         <!-- Display -->
-        <div class="displayOuter">
-            <div class="displayMiddle">
-                <div id="display">
+        <div id="main">
+            <div class="displayOuter">
+                <div class="displayMiddle">
+                    <div id="display">
+                    </div>
                 </div>
             </div>
         </div>
@@ -51,6 +53,15 @@
         <!-- Notification area -->
         <div id="notificationArea"/>
 
+        <!-- Menu -->
+        <div id="menu">
+            <h1>Guacamole ${project.version}</h1>
+            <button>Test button</button>
+            <button>Test button</button>
+            <button>Test button</button>
+            <button>Test button</button>
+        </div>
+        
         <!-- Images which should be preloaded -->
         <div id="preload">
             <img src="images/action-icons/guac-close.png"/>

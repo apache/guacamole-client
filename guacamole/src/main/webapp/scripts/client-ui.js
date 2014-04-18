@@ -219,6 +219,7 @@ GuacUI.Client = {
     /* UI Components */
 
     "viewport"          : document.getElementById("viewportClone"),
+    "main"              : document.getElementById("main"),
     "display"           : document.getElementById("display"),
     "notification_area" : document.getElementById("notificationArea"),
 
@@ -430,7 +431,7 @@ GuacUI.Client.Pan = function(element) {
      * @private
      */
     var guac_pan = this;
-
+    
     /**
      * The starting X location of the pan gesture.
      * @private
@@ -567,11 +568,25 @@ GuacUI.Client.Pinch = function(element) {
     this.ratio = 1;
 
     /**
+     * The X-coordinate of the current center of the pinch gesture.
+     * @type Number
+     */
+    this.centerX = 0;
+
+    /**
+     * The Y-coordinate of the current center of the pinch gesture.
+     * @type Number
+     */
+    this.centerY = 0;
+
+    /**
      * Called when a zoom gesture begins.
      *
      * @event
      * @param {Number} ratio The relative value of the starting zoom. This will
      *                       ALWAYS be 1.
+     * @param {Number} x The X-coordinate of the center of the pinch gesture.
+     * @param {Number} y The Y-coordinate of the center of the pinch gesture.
      */
     this.onzoomstart = null;
 
@@ -581,6 +596,8 @@ GuacUI.Client.Pinch = function(element) {
      * @event
      * @param {Number} ratio The relative value of the changed zoom, with 1
      *                       being no change.
+     * @param {Number} x The X-coordinate of the center of the pinch gesture.
+     * @param {Number} y The Y-coordinate of the center of the pinch gesture.
      */
     this.onzoomchange = null;
 
@@ -590,6 +607,8 @@ GuacUI.Client.Pinch = function(element) {
      * @event
      * @param {Number} ratio The relative value of the final zoom, with 1
      *                       being no change.
+     * @param {Number} x The X-coordinate of the center of the pinch gesture.
+     * @param {Number} y The Y-coordinate of the center of the pinch gesture.
      */
     this.onzoomend = null;
 
@@ -613,6 +632,40 @@ GuacUI.Client.Pinch = function(element) {
 
     }
 
+    /**
+     * Given a touch event, calculates the center between the first two
+     * touches in pixels, returning the X coordinate of this center.
+     *
+     * @param {TouchEvent} e The touch event to use when performing center 
+     *                       calculation.
+     * @return {Number} The X-coordinate of the center of the first two touches.
+     */
+    function pinch_center_x(e) {
+
+        var touch_a = e.touches[0];
+        var touch_b = e.touches[1];
+
+        return (touch_a.clientX + touch_b.clientX) / 2;
+
+    }
+
+    /**
+     * Given a touch event, calculates the center between the first two
+     * touches in pixels, returning the Y coordinate of this center.
+     *
+     * @param {TouchEvent} e The touch event to use when performing center 
+     *                       calculation.
+     * @return {Number} The Y-coordinate of the center of the first two touches.
+     */
+    function pinch_center_y(e) {
+
+        var touch_a = e.touches[0];
+        var touch_b = e.touches[1];
+
+        return (touch_a.clientY + touch_b.clientY) / 2;
+
+    }
+
     // When there are exactly two touches, monitor the distance between
     // them, firing zoom events as appropriate
     element.addEventListener("touchmove", function(e) {
@@ -624,19 +677,23 @@ GuacUI.Client.Pinch = function(element) {
             // Calculate current zoom level
             var current = pinch_distance(e);
 
+            // Calculate center
+            guac_zoom.centerX = pinch_center_x(e);
+            guac_zoom.centerY = pinch_center_y(e);
+
             // If gesture just starting, fire zoom start
             if (!start_length) {
                 start_length = current;
                 guac_zoom.ratio = 1;
                 if (guac_zoom.onzoomstart)
-                    guac_zoom.onzoomstart(guac_zoom.ratio);
+                    guac_zoom.onzoomstart(guac_zoom.ratio, guac_zoom.centerX, guac_zoom.centerY);
             }
 
             // Otherwise, notify of zoom change
             else {
                 guac_zoom.ratio = current / start_length;
                 if (guac_zoom.onzoomchange)
-                    guac_zoom.onzoomchange(guac_zoom.ratio);
+                    guac_zoom.onzoomchange(guac_zoom.ratio, guac_zoom.centerX, guac_zoom.centerY);
             }
 
         }
@@ -652,7 +709,7 @@ GuacUI.Client.Pinch = function(element) {
 
             start_length = null;
             if (guac_zoom.onzoomend)
-                guac_zoom.onzoomend(guac_zoom.ratio);
+                guac_zoom.onzoomend(guac_zoom.ratio, guac_zoom.centerX, guac_zoom.centerY);
             guac_zoom.ratio = 1;
         }
 
@@ -1065,6 +1122,64 @@ GuacUI.Client.attach = function(guac) {
             
         };
 
+    /*
+     * Pinch-to-zoom
+     */
+
+    var guac_pinch = new GuacUI.Client.Pinch(document.body);
+    var initial_scale = null;
+    var initial_center_x = null;
+    var initial_center_y = null;
+
+    guac_pinch.onzoomstart = function(ratio, x, y) {
+        initial_scale = guac.getScale();
+        initial_center_x = (x + GuacUI.Client.main.scrollLeft) / initial_scale;
+        initial_center_y = (y + GuacUI.Client.main.scrollTop) / initial_scale;
+    };
+
+    guac_pinch.onzoomchange = function(ratio, x, y) {
+
+        // Rescale based on new ratio
+        var new_scale = initial_scale * ratio;
+        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
+        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
+        guac.scale(new_scale);
+
+        // Calculate point at currently at center of touch
+        var point_at_center_x = (x + GuacUI.Client.main.scrollLeft) / new_scale;
+        var point_at_center_y = (y + GuacUI.Client.main.scrollTop) / new_scale;
+
+        // Correct position to keep point-of-interest within center of pinch
+        GuacUI.Client.main.scrollLeft += (initial_center_x - point_at_center_x) * new_scale;
+        GuacUI.Client.main.scrollTop += (initial_center_y - point_at_center_y) * new_scale;
+
+    };
+
+    /*
+     * Touch panning
+     */
+
+    var guac_pan = new GuacUI.Client.Pan(document.body);
+
+    var last_pan_dx = 0;
+    var last_pan_dy = 0;
+
+    guac_pan.onpanstart = function(dx, dy) {
+        last_pan_dx = dx;
+        last_pan_dy = dy;
+    };
+
+    guac_pan.onpanchange = function(dx, dy) {
+        if (!touch.currentState.left) {
+            var change_pan_dx = dx - last_pan_dx;
+            var change_pan_dy = dy - last_pan_dy;
+            GuacUI.Client.main.scrollLeft -= change_pan_dx;
+            GuacUI.Client.main.scrollTop -= change_pan_dy;
+            last_pan_dx = dx;
+            last_pan_dy = dy;
+        }
+    };
+
     // Hide any existing status notifications
     GuacUI.Client.hideStatus();
 
@@ -1214,48 +1329,6 @@ GuacUI.Client.attach = function(guac) {
         }
 
     }, false);
-
-    /*
-     * Pinch-to-zoom
-     */
-
-    var guac_pinch = new GuacUI.Client.Pinch(document.body);
-    var initial_scale = null;
-
-    guac_pinch.onzoomstart = function() {
-        initial_scale = guac.getScale();
-    };
-
-    guac_pinch.onzoomchange = function(ratio) {
-        var new_scale = initial_scale * ratio;
-        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
-        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
-        guac.scale(new_scale);
-    };
-
-    /*
-     * Touch panning
-     */
-
-    var guac_pan = new GuacUI.Client.Pan(document.body);
-
-    var last_pan_dx = 0;
-    var last_pan_dy = 0;
-
-    guac_pan.onpanstart = function(dx, dy) {
-        last_pan_dx = dx;
-        last_pan_dy = dy;
-    };
-
-    guac_pan.onpanchange = function(dx, dy) {
-        if (!touch.currentState.left) {
-            var change_pan_dx = dx - last_pan_dx;
-            var change_pan_dy = dy - last_pan_dy;
-            window.scrollBy(-change_pan_dx, -change_pan_dy);
-            last_pan_dx = dx;
-            last_pan_dy = dy;
-        }
-    };
 
     /*
      * Disconnect and update thumbnail on close
@@ -1415,6 +1488,11 @@ GuacUI.Client.attach = function(guac) {
         for (var i=0; i<files.length; i++)
             _upload_file(files[i]);
 
+    }, false);
+
+    // Prevent default on all touch events
+    document.addEventListener("touchstart", function(e) {
+        e.preventDefault();
     }, false);
 
 })();
