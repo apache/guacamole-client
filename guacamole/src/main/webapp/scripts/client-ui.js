@@ -220,6 +220,8 @@ GuacUI.Client = {
 
     "viewport"          : document.getElementById("viewportClone"),
     "main"              : document.getElementById("main"),
+    "menu"              : document.getElementById("menu"),
+    "menu_title"        : document.getElementById("menu-title"),
     "display"           : document.getElementById("display"),
     "notification_area" : document.getElementById("notificationArea"),
 
@@ -782,6 +784,30 @@ GuacUI.Client.updateTitle = function () {
     else
         document.title = GuacUI.Client.connectionName;
 
+    GuacUI.Client.menu_title.textContent = GuacUI.Client.connectionName;
+
+};
+
+/**
+ * Sets whether the menu is currently visible.
+ *
+ * @param {Boolean} [shown] Whether the menu should be shown. If omitted, this
+ *                          function will cause the menu to be shown by default.
+ */
+GuacUI.Client.showMenu = function(shown) {
+    if (shown === false)
+        GuacUI.Client.menu.className = "closed";
+    else
+        GuacUI.Client.menu.className = "open";
+};
+
+/**
+ * Returns whether the menu is currently shown.
+ *
+ * @returns {Boolean} true if the menu is shown, false otherwise.
+ */
+GuacUI.Client.isMenuShown = function() {
+    return GuacUI.Client.menu.className === "open";
 };
 
 /**
