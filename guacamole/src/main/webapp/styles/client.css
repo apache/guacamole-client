@@ -542,7 +542,12 @@ p.hint {
     bottom: 0;
     max-width: 100%;
     width: 320px;
-    background: red;
+    background: #EEE;
+    box-shadow: inset -1px 0 2px white, 1px 0 2px black; 
+}
+
+#menu .content {
+    padding: 1em;
 }
 
 #menu.closed {
