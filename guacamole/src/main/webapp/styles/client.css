@@ -553,19 +553,19 @@ p.hint {
 #menu.closed {
     animation-name: hide-menu;
     animation-timing-function: linear;
-    animation-duration: 0.125s;
+    animation-duration: 0.03125s;
     -webkit-animation-name: hide-menu;
     -webkit-animation-timing-function: linear;
-    -webkit-animation-duration: 0.125s;
+    -webkit-animation-duration: 0.03125s;
     left: -320px;
 }
 
 #menu.open {
     animation-name: show-menu;
     animation-timing-function: linear;
-    animation-duration: 0.125s;
+    animation-duration: 0.03125s;
     -webkit-animation-name: show-menu;
     -webkit-animation-timing-function: linear;
-    -webkit-animation-duration: 0.125s;
+    -webkit-animation-duration: 0.03125s;
     left: 0px;
 }
