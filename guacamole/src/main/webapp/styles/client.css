@@ -502,14 +502,65 @@ p.hint {
 
 /* Menu */
 
+/**
+ * show-menu: Animation for showing the menu
+ */
+@keyframes show-menu {
+    from { left: -320px; }
+    to   { left: 0; }
+}
+@-moz-keyframes show-menu {
+    from { left: -320px; }
+    to   { left: 0; }
+}
+@-webkit-keyframes show-menu {
+    from { left: -320px; }
+    to   { left: 0; }
+}
+
+/**
+ * hide-menu: Animation for hiding the menu
+ */
+@keyframes hide-menu {
+    from { left: 0; }
+    to   { left: -320px; }
+}
+@-moz-keyframes hide-menu {
+    from { left: 0; }
+    to   { left: -320px; }
+}
+@-webkit-keyframes hide-menu {
+    from { left: 0; }
+    to   { left: -320px; }
+}
+
 #menu {
     overflow: auto;
     position: fixed;
     top: 0;
-    left: 0;
+    left: -320px;
     bottom: 0;
     max-width: 100%;
     width: 320px;
-    padding: 1em;
     background: red;
+}
+
+#menu.closed {
+    animation-name: hide-menu;
+    animation-timing-function: linear;
+    animation-duration: 0.125s;
+    -webkit-animation-name: hide-menu;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-duration: 0.125s;
+    left: -320px;
+}
+
+#menu.open {
+    animation-name: show-menu;
+    animation-timing-function: linear;
+    animation-duration: 0.125s;
+    -webkit-animation-name: show-menu;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-duration: 0.125s;
+    left: 0px;
 }
