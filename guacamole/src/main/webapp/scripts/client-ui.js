@@ -420,74 +420,72 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
 GuacUI.Client.ModalStatus.prototype = new GuacUI.Component();
 
 /**
- * Monitors a given element for touch events, firing pan-specific events
+ * Monitors a given element for touch events, firing drag-specific events
  * based on pre-defined gestures.
  * 
  * @constructor
  * @param {Element} element The element to monitor for touch events. 
  */
-GuacUI.Client.Pan = function(element) {
+GuacUI.Client.Drag = function(element) {
 
     /**
-     * Reference to this pan instance.
+     * Reference to this drag instance.
      * @private
      */
-    var guac_pan = this;
+    var guac_drag = this;
     
     /**
-     * The starting X location of the pan gesture.
-     * @private
+     * The starting X location of the drag gesture.
      */
-    var start_x = null;
+    this.start_x = null;
 
     /**
-     * The starting Y location of the pan gesture.
-     * @private
+     * The starting Y location of the drag gesture.
      */
-    var start_y = null;
+    this.start_y = null;
 
     /**
-     * The change in X relative to pan start.
+     * The change in X relative to drag start.
      */
     this.delta_x = 0;
 
     /**
-     * The change in X relative to pan start.
+     * The change in X relative to drag start.
      */
     this.delta_y = 0;
 
     /**
-     * Called when a pan gesture begins.
+     * Called when a drag gesture begins.
      *
      * @event
      * @param {Number} x The relative change in X location relative to
-     *                   pan start. For pan start, this will ALWAYS be 0.
+     *                   drag start. For drag start, this will ALWAYS be 0.
      * @param {Number} y The relative change in Y location relative to
-     *                   pan start. For pan start, this will ALWAYS be 0.
+     *                   drag start. For drag start, this will ALWAYS be 0.
      */
-    this.onpanstart = null;
+    this.ondragstart = null;
 
     /**
-     * Called when the pan amount changes.
+     * Called when the drag amount changes.
      *
      * @event
      * @param {Number} x The relative change in X location relative to
-     *                   pan start.
+     *                   drag start.
      * @param {Number} y The relative change in Y location relative to
-     *                   pan start.
+     *                   drag start.
      */
-    this.onpanchange = null;
+    this.ondragchange = null;
 
     /**
-     * Called when a pan gesture ends.
+     * Called when a drag gesture ends.
      *
      * @event
      * @param {Number} x The relative change in X location relative to
-     *                   pan start.
+     *                   drag start.
      * @param {Number} y The relative change in Y location relative to
-     *                   pan start.
+     *                   drag start.
      */
-    this.onpanend = null;
+    this.ondragend = null;
 
     // When there is exactly one touch, monitor the change in location
     element.addEventListener("touchmove", function(e) {
@@ -501,20 +499,20 @@ GuacUI.Client.Pan = function(element) {
             var y = e.touches[0].clientY;
 
             // If gesture just starting, fire zoom start
-            if (!start_x || !start_y) {
-                start_x = x;
-                start_y = y;
-                guac_pan.delta_x = 0;
-                guac_pan.delta_y = 0;
-                if (guac_pan.onpanstart)
-                    guac_pan.onpanstart(guac_pan.delta_x, guac_pan.delta_y);
+            if (!guac_drag.start_x || !guac_drag.start_y) {
+                guac_drag.start_x = x;
+                guac_drag.start_y = y;
+                guac_drag.delta_x = 0;
+                guac_drag.delta_y = 0;
+                if (guac_drag.ondragstart)
+                    guac_drag.ondragstart(guac_drag.delta_x, guac_drag.delta_y);
             }
 
             // Otherwise, notify of zoom change
-            else if (guac_pan.onpanchange) {
-                guac_pan.delta_x = x - start_x;
-                guac_pan.delta_y = y - start_y;
-                guac_pan.onpanchange(guac_pan.delta_x, guac_pan.delta_y);
+            else if (guac_drag.ondragchange) {
+                guac_drag.delta_x = x - guac_drag.start_x;
+                guac_drag.delta_y = y - guac_drag.start_y;
+                guac_drag.ondragchange(guac_drag.delta_x, guac_drag.delta_y);
             }
 
         }
@@ -523,18 +521,18 @@ GuacUI.Client.Pan = function(element) {
     // Reset monitoring and fire end event when done
     element.addEventListener("touchend", function(e) {
 
-        if (start_x && start_y && e.touches.length === 0) {
+        if (guac_drag.start_x && guac_drag.start_y && e.touches.length === 0) {
 
             e.preventDefault();
             e.stopPropagation();
 
-            if (guac_pan.onpanend)
-                guac_pan.onpanend();
+            if (guac_drag.ondragend)
+                guac_drag.ondragend();
 
-            start_x = null;
-            start_y = null;
-            guac_pan.delta_x = 0;
-            guac_pan.delta_y = 0;
+            guac_drag.start_x = null;
+            guac_drag.start_y = null;
+            guac_drag.delta_x = 0;
+            guac_drag.delta_y = 0;
 
         }
 
@@ -1182,27 +1180,44 @@ GuacUI.Client.attach = function(guac) {
     };
 
     /*
-     * Touch panning
+     * Touch panning/swiping
      */
 
-    var guac_pan = new GuacUI.Client.Pan(document.body);
+    var guac_drag = new GuacUI.Client.Drag(document.body);
 
-    var last_pan_dx = 0;
-    var last_pan_dy = 0;
+    var is_swipe = false;
+    var last_drag_dx = 0;
+    var last_drag_dy = 0;
 
-    guac_pan.onpanstart = function(dx, dy) {
-        last_pan_dx = dx;
-        last_pan_dy = dy;
+    guac_drag.ondragstart = function(dx, dy) {
+
+        last_drag_dx = dx;
+        last_drag_dy = dy;
+
+        // If dragging from far left, consider gesture to be a swipe
+        is_swipe = (guac_drag.start_x <= 32 && !touch.currentState.left);
+
     };
 
-    guac_pan.onpanchange = function(dx, dy) {
+    guac_drag.ondragchange = function(dx, dy) {
         if (!touch.currentState.left) {
-            var change_pan_dx = dx - last_pan_dx;
-            var change_pan_dy = dy - last_pan_dy;
-            GuacUI.Client.main.scrollLeft -= change_pan_dx;
-            GuacUI.Client.main.scrollTop -= change_pan_dy;
-            last_pan_dx = dx;
-            last_pan_dy = dy;
+
+            // If swiping, show menu when swiped far enough
+            if (is_swipe) {
+                if (!GuacUI.Client.isMenuShown() && dx >= 64)
+                    GuacUI.Client.showMenu();
+            }
+
+            // Otherwise, drag UI
+            else {
+                var change_drag_dx = dx - last_drag_dx;
+                var change_drag_dy = dy - last_drag_dy;
+                GuacUI.Client.main.scrollLeft -= change_drag_dx;
+                GuacUI.Client.main.scrollTop -= change_drag_dy;
+                last_drag_dx = dx;
+                last_drag_dy = dy;
+            }
+
         }
     };
 
