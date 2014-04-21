@@ -238,6 +238,7 @@ GuacUI.Client = {
     "connectionName"  : "Guacamole",
     "overrideAutoFit" : false,
     "attachedClient"  : null,
+    "touch"           : null,
 
     "clipboard_integration_enabled" : undefined,
 
@@ -433,6 +434,11 @@ GuacUI.Client.Drag = function(element) {
      * @private
      */
     var guac_drag = this;
+
+    /**
+     * Whether a drag gestures is in progress.
+     */
+    var in_progress = false;
     
     /**
      * The starting X location of the drag gesture.
@@ -487,6 +493,14 @@ GuacUI.Client.Drag = function(element) {
      */
     this.ondragend = null;
 
+    /**
+     * Cancels the current drag gesture, if any. Drag events will cease to fire
+     * until a new gesture begins.
+     */
+    this.cancel = function() {
+        in_progress = false;
+    };
+
     // When there is exactly one touch, monitor the change in location
     element.addEventListener("touchmove", function(e) {
         if (e.touches.length === 1) {
@@ -504,6 +518,7 @@ GuacUI.Client.Drag = function(element) {
                 guac_drag.start_y = y;
                 guac_drag.delta_x = 0;
                 guac_drag.delta_y = 0;
+                in_progress = true;
                 if (guac_drag.ondragstart)
                     guac_drag.ondragstart(guac_drag.delta_x, guac_drag.delta_y);
             }
@@ -512,7 +527,9 @@ GuacUI.Client.Drag = function(element) {
             else if (guac_drag.ondragchange) {
                 guac_drag.delta_x = x - guac_drag.start_x;
                 guac_drag.delta_y = y - guac_drag.start_y;
-                guac_drag.ondragchange(guac_drag.delta_x, guac_drag.delta_y);
+
+                if (in_progress)
+                    guac_drag.ondragchange(guac_drag.delta_x, guac_drag.delta_y);
             }
 
         }
@@ -526,13 +543,14 @@ GuacUI.Client.Drag = function(element) {
             e.preventDefault();
             e.stopPropagation();
 
-            if (guac_drag.ondragend)
+            if (in_progress && guac_drag.ondragend)
                 guac_drag.ondragend();
 
             guac_drag.start_x = null;
             guac_drag.start_y = null;
             guac_drag.delta_x = 0;
             guac_drag.delta_y = 0;
+            in_progress = false;
 
         }
 
@@ -1146,80 +1164,7 @@ GuacUI.Client.attach = function(guac) {
             
         };
 
-    /*
-     * Pinch-to-zoom
-     */
-
-    var guac_pinch = new GuacUI.Client.Pinch(document.body);
-    var initial_scale = null;
-    var initial_center_x = null;
-    var initial_center_y = null;
-
-    guac_pinch.onzoomstart = function(ratio, x, y) {
-        initial_scale = guac.getScale();
-        initial_center_x = (x + GuacUI.Client.main.scrollLeft) / initial_scale;
-        initial_center_y = (y + GuacUI.Client.main.scrollTop) / initial_scale;
-    };
-
-    guac_pinch.onzoomchange = function(ratio, x, y) {
-
-        // Rescale based on new ratio
-        var new_scale = initial_scale * ratio;
-        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
-        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
-        guac.scale(new_scale);
-
-        // Calculate point at currently at center of touch
-        var point_at_center_x = (x + GuacUI.Client.main.scrollLeft) / new_scale;
-        var point_at_center_y = (y + GuacUI.Client.main.scrollTop) / new_scale;
-
-        // Correct position to keep point-of-interest within center of pinch
-        GuacUI.Client.main.scrollLeft += (initial_center_x - point_at_center_x) * new_scale;
-        GuacUI.Client.main.scrollTop += (initial_center_y - point_at_center_y) * new_scale;
-
-    };
-
-    /*
-     * Touch panning/swiping
-     */
-
-    var guac_drag = new GuacUI.Client.Drag(document.body);
-
-    var is_swipe = false;
-    var last_drag_dx = 0;
-    var last_drag_dy = 0;
-
-    guac_drag.ondragstart = function(dx, dy) {
-
-        last_drag_dx = dx;
-        last_drag_dy = dy;
-
-        // If dragging from far left, consider gesture to be a swipe
-        is_swipe = (guac_drag.start_x <= 32 && !touch.currentState.left);
-
-    };
-
-    guac_drag.ondragchange = function(dx, dy) {
-        if (!touch.currentState.left) {
-
-            // If swiping, show menu when swiped far enough
-            if (is_swipe) {
-                if (!GuacUI.Client.isMenuShown() && dx >= 64)
-                    GuacUI.Client.showMenu();
-            }
-
-            // Otherwise, drag UI
-            else {
-                var change_drag_dx = dx - last_drag_dx;
-                var change_drag_dy = dy - last_drag_dy;
-                GuacUI.Client.main.scrollLeft -= change_drag_dx;
-                GuacUI.Client.main.scrollTop -= change_drag_dy;
-                last_drag_dx = dx;
-                last_drag_dy = dy;
-            }
-
-        }
-    };
+    GuacUI.Client.touch = touch;
 
     // Hide any existing status notifications
     GuacUI.Client.hideStatus();
@@ -1520,6 +1465,105 @@ GuacUI.Client.attach = function(guac) {
             _upload_file(files[i]);
 
     }, false);
+
+    /*
+     * Pinch-to-zoom
+     */
+
+    var guac_pinch = new GuacUI.Client.Pinch(document.body);
+    var initial_scale = null;
+    var initial_center_x = null;
+    var initial_center_y = null;
+
+    guac_pinch.onzoomstart = function(ratio, x, y) {
+
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac)
+            return;
+
+        initial_scale = guac.getScale();
+        initial_center_x = (x + GuacUI.Client.main.scrollLeft) / initial_scale;
+        initial_center_y = (y + GuacUI.Client.main.scrollTop) / initial_scale;
+    };
+
+    guac_pinch.onzoomchange = function(ratio, x, y) {
+
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac)
+            return;
+
+        // Rescale based on new ratio
+        var new_scale = initial_scale * ratio;
+        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
+        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
+        guac.scale(new_scale);
+
+        // Calculate point at currently at center of touch
+        var point_at_center_x = (x + GuacUI.Client.main.scrollLeft) / new_scale;
+        var point_at_center_y = (y + GuacUI.Client.main.scrollTop) / new_scale;
+
+        // Correct position to keep point-of-interest within center of pinch
+        GuacUI.Client.main.scrollLeft += (initial_center_x - point_at_center_x) * new_scale;
+        GuacUI.Client.main.scrollTop += (initial_center_y - point_at_center_y) * new_scale;
+
+    };
+
+    /*
+     * Touch panning/swiping
+     */
+
+    var guac_drag = new GuacUI.Client.Drag(document.body);
+
+    var is_swipe_right = false;
+    var drag_start = 0;
+    var last_drag_dx = 0;
+    var last_drag_dy = 0;
+
+    guac_drag.ondragstart = function(dx, dy) {
+
+        last_drag_dx = dx;
+        last_drag_dy = dy;
+        drag_start = new Date().getTime();
+
+        // If dragging from far left, consider gesture to be a swipe
+        is_swipe_right = (guac_drag.start_x <= 32 && (!GuacUI.Client.touch || !GuacUI.Client.touch.currentState.left));
+
+    };
+
+    guac_drag.ondragchange = function(dx, dy) {
+        if (!GuacUI.Client.touch || !GuacUI.Client.touch.currentState.left) {
+
+            var duration = new Date().getTime() - drag_start;
+            var change_drag_dx = dx - last_drag_dx;
+            var change_drag_dy = dy - last_drag_dy;
+
+            // Show menu if swiping right
+            if (is_swipe_right && !GuacUI.Client.isMenuShown()) {
+                if (dx >= 64 && Math.abs(dy) < 32 && duration < 250) {
+                    GuacUI.Client.showMenu();
+                    guac_drag.cancel();
+                }
+            }
+
+            // Hide menu if swiping left 
+            else if (GuacUI.Client.isMenuShown()) {
+                if (dx <= -64 && Math.abs(dy) < 32 && duration < 250) {
+                    GuacUI.Client.showMenu(false);
+                    guac_drag.cancel();
+                }
+            }
+
+            // Otherwise, drag UI
+            else {
+                GuacUI.Client.main.scrollLeft -= change_drag_dx;
+                GuacUI.Client.main.scrollTop -= change_drag_dy;
+            }
+
+            last_drag_dx = dx;
+            last_drag_dy = dy;
+
+        }
+    };
 
     // Prevent default on all touch events
     document.addEventListener("touchstart", function(e) {
