@@ -506,15 +506,15 @@ p.hint {
  * show-menu: Animation for showing the menu
  */
 @keyframes show-menu {
-    from { left: -320px; opacity: 0;}
+    from { left: -480px; opacity: 0;}
     to   { left: 0;      opacity: 1;}
 }
 @-moz-keyframes show-menu {
-    from { left: -320px; opacity: 0;}
+    from { left: -480px; opacity: 0;}
     to   { left: 0;      opacity: 1;}
 }
 @-webkit-keyframes show-menu {
-    from { left: -320px; opacity: 0;}
+    from { left: -480px; opacity: 0;}
     to   { left: 0;      opacity: 1;}
 }
 
@@ -523,15 +523,15 @@ p.hint {
  */
 @keyframes hide-menu {
     from { left: 0;      opacity: 1;}
-    to   { left: -320px; opacity: 0;}
+    to   { left: -480px; opacity: 0;}
 }
 @-moz-keyframes hide-menu {
     from { left: 0;      opacity: 1;}
-    to   { left: -320px; opacity: 0;}
+    to   { left: -480px; opacity: 0;}
 }
 @-webkit-keyframes hide-menu {
     from { left: 0;      opacity: 1;}
-    to   { left: -320px; opacity: 0;}
+    to   { left: -480px; opacity: 0;}
 }
 
 #menu {
@@ -540,7 +540,7 @@ p.hint {
     top: 0;
     bottom: 0;
     max-width: 100%;
-    width: 320px;
+    width: 480px;
     background: #EEE;
     box-shadow: inset -1px 0 2px white, 1px 0 2px black;
 }
@@ -550,7 +550,7 @@ p.hint {
 }
 
 #menu, #menu.closed {
-    left: -320px;
+    left: -480px;
     opacity: 0;
 }
 
@@ -579,7 +579,6 @@ p.hint {
 
 div#settings,
 div#clipboardDiv {
-    margin: 1em;
     padding: 0;
 }
 
