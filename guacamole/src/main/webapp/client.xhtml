@@ -56,12 +56,55 @@
         <!-- Menu -->
         <div id="menu">
             <h2 id="menu-title">Guacamole ${project.version}</h2>
+
             <div class="content">
-                <button>Test button</button>
-                <button>Test button</button>
-                <button>Test button</button>
-                <button>Test button</button>
+                <h3>Clipboard</h3>
+                <div id="clipboardDiv">
+                    <p>Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
+                    <textarea rows="10" cols="40" id="clipboard"></textarea>
+                </div>
+                <h3>Settings</h3>
+                <div id="settings">
+
+                    <dl>
+                        <!-- Auto-fit display -->
+                        <dt>
+                            <input type="checkbox" id="auto-fit"/>
+                            Auto-fit display to browser window
+                        </dt>
+                        <dd>
+                            <p>
+                                If checked, remote displays are automatically
+                                scaled to exactly fit within the browser window. If
+                                unchecked, remote displays are always shown at their
+                                natural resolution, even if doing so causes the
+                                display to extend beyond the bounds of the window.
+                            </p>
+                        </dd>
+
+                        <!-- Enable/disable sound -->
+                        <dt>
+                            <input type="checkbox" id="disable-sound"/>
+                            Disable sound
+                        </dt>
+                        <dd>
+                            <p>
+                                If on a device or network where bandwidth usage must
+                                be kept to a minimum, you may wish to check this box
+                                and disable sound. This can also be necessary if a
+                                device doesn't actually support sound, but claims
+                                to, resulting in wasted bandwidth.
+                            </p>
+                            <p>
+                                <strong>Changing this setting will only affect
+                                future connections.</strong>
+                            </p>
+                        </dd>
+                    </dl>
+
+                </div>
             </div>
+
         </div>
         
         <!-- Images which should be preloaded -->
