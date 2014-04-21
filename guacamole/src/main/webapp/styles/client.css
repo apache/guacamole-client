@@ -577,7 +577,7 @@ p.hint {
     -webkit-animation-duration: 0.05s;
 }
 
-div#settings,
+div#mouse-settings,
 div#clipboardDiv {
     padding: 0;
 }
@@ -592,13 +592,23 @@ div#clipboardDiv {
     white-space: pre;
 }
 
-#settings dt {
-    border-bottom: 1px dotted #AAA;
-    padding-bottom: 0.25em;
+#mouse-settings .choice {
+    text-align: center;
 }
 
-#settings dd {
-    margin: 1.5em;
-    margin-left: 2.5em;
-    font-size: 0.75em;
+#mouse-settings .choice .figure {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 80%;
+}
+
+#mouse-settings .figure .caption {
+    text-align: center;
+    font-size: 0.9em;
+}
+
+#mouse-settings .figure img {
+    display: block;
+    max-width: 100%;
+    margin: 1em auto;
 }

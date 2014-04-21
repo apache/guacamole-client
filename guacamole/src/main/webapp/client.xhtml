@@ -63,44 +63,27 @@
                     <p>Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
                     <textarea rows="10" cols="40" id="clipboard"></textarea>
                 </div>
-                <h3>Settings</h3>
-                <div id="settings">
+                <h3>Mouse emulation mode</h3>
+                <div id="mouse-settings">
+                    <p>Determines how the remote mouse behaves with respect to touches.</p>
 
-                    <dl>
-                        <!-- Auto-fit display -->
-                        <dt>
-                            <input type="checkbox" id="auto-fit"/>
-                            Auto-fit display to browser window
-                        </dt>
-                        <dd>
-                            <p>
-                                If checked, remote displays are automatically
-                                scaled to exactly fit within the browser window. If
-                                unchecked, remote displays are always shown at their
-                                natural resolution, even if doing so causes the
-                                display to extend beyond the bounds of the window.
-                            </p>
-                        </dd>
+                    <!-- Touchpad -->
+                    <div class="choice">
+                        <input name="mouse-mode" type="radio" value="relative" id="relative"/>
+                        <div class="figure">
+                            <label for="relative"><img src="images/settings/touchpad.png" alt=""/></label>
+                            <p class="caption"><label for="relative">Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.</label></p>
+                        </div>
+                    </div>
 
-                        <!-- Enable/disable sound -->
-                        <dt>
-                            <input type="checkbox" id="disable-sound"/>
-                            Disable sound
-                        </dt>
-                        <dd>
-                            <p>
-                                If on a device or network where bandwidth usage must
-                                be kept to a minimum, you may wish to check this box
-                                and disable sound. This can also be necessary if a
-                                device doesn't actually support sound, but claims
-                                to, resulting in wasted bandwidth.
-                            </p>
-                            <p>
-                                <strong>Changing this setting will only affect
-                                future connections.</strong>
-                            </p>
-                        </dd>
-                    </dl>
+                    <!-- Touchscreen -->
+                    <div class="choice">
+                        <input name="mouse-mode" type="radio" value="absolute" checked="checked" id="absolute"/>
+                        <div class="figure">
+                            <label for="absolute"><img src="images/settings/touchscreen.png" alt=""/></label>
+                            <p class="caption"><label for="absolute">Tap to click. The click occurs at the location of the touch.</label></p>
+                        </div>
+                    </div>
 
                 </div>
             </div>
