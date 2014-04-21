@@ -813,8 +813,11 @@ GuacUI.Client.updateTitle = function () {
 GuacUI.Client.showMenu = function(shown) {
     if (shown === false)
         GuacUI.Client.menu.className = "closed";
-    else
+    else {
+        GuacUI.Client.menu.scrollLeft = 0;
+        GuacUI.Client.menu.scrollTop = 0;
         GuacUI.Client.menu.className = "open";
+    }
 };
 
 /**
@@ -1547,10 +1550,15 @@ GuacUI.Client.attach = function(guac) {
 
             // Hide menu if swiping left 
             else if (GuacUI.Client.isMenuShown()) {
+
+                GuacUI.Client.menu.scrollLeft -= change_drag_dx;
+                GuacUI.Client.menu.scrollTop -= change_drag_dy;
+
                 if (dx <= -64 && Math.abs(dy) < 32 && duration < 250) {
                     GuacUI.Client.showMenu(false);
                     guac_drag.cancel();
                 }
+
             }
 
             // Otherwise, drag UI
