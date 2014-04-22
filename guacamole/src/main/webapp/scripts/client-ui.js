@@ -817,11 +817,8 @@ GuacUI.Client.showMenu = function(shown) {
         GuacUI.Client.menu.className = "closed";
         GuacUI.Client.commitClipboard();
     }
-    else {
-        GuacUI.Client.menu.scrollLeft = 0;
-        GuacUI.Client.menu.scrollTop = 0;
+    else
         GuacUI.Client.menu.className = "open";
-    }
 };
 
 /**
@@ -1162,28 +1159,29 @@ GuacUI.Client.attach = function(guac) {
      */
 
     // Mouse
-    var mouse = new Guacamole.Mouse(guac_display);
+    function __handle_mouse_state(mouseState) {
+
+        // Scale event by current scale
+        var scaledState = new Guacamole.Mouse.State(
+                mouseState.x / guac.getScale(),
+                mouseState.y / guac.getScale(),
+                mouseState.left,
+                mouseState.middle,
+                mouseState.right,
+                mouseState.up,
+                mouseState.down);
+
+        // Send mouse event
+        guac.sendMouseState(scaledState);
+        
+    };
+
     var touch = new Guacamole.Mouse.Touchscreen(guac_display);
-    touch.onmousedown = touch.onmouseup = touch.onmousemove =
-    mouse.onmousedown = mouse.onmouseup = mouse.onmousemove =
-        function(mouseState) {
-
-            // Scale event by current scale
-            var scaledState = new Guacamole.Mouse.State(
-                    mouseState.x / guac.getScale(),
-                    mouseState.y / guac.getScale(),
-                    mouseState.left,
-                    mouseState.middle,
-                    mouseState.right,
-                    mouseState.up,
-                    mouseState.down);
-
-            // Send mouse event
-            guac.sendMouseState(scaledState);
-            
-        };
-
+    touch.onmousedown = touch.onmouseup = touch.onmousemove = __handle_mouse_state;
     GuacUI.Client.touch = touch;
+
+    var mouse = new Guacamole.Mouse(guac_display);
+    mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = __handle_mouse_state;
 
     // Hide any existing status notifications
     GuacUI.Client.hideStatus();
@@ -1620,7 +1618,25 @@ GuacUI.Client.attach = function(guac) {
 
     // Prevent default on all touch events
     document.addEventListener("touchstart", function(e) {
+
+        // Inspect touch event target to determine whether the touch should
+        // be allowed.
+        if (e.touches.length === 1) {
+
+            var element = e.target;
+            while (element) {
+
+                // Allow single-touch events on the menu
+                if (element === GuacUI.Client.menu)
+                    return;
+
+                element = element.parentNode;
+            }
+
+        }
+
         e.preventDefault();
+
     }, false);
 
 })();
