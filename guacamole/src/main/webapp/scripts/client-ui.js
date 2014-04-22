@@ -224,6 +224,8 @@ GuacUI.Client = {
     "menu_title"        : document.getElementById("menu-title"),
     "display"           : document.getElementById("display"),
     "clipboard"         : document.getElementById("clipboard"),
+    "emulate_relative"  : document.getElementById("relative"),
+    "emulate_absolute"  : document.getElementById("absolute"),
     "notification_area" : document.getElementById("notificationArea"),
 
     /* Expected Input Rectangle */
@@ -240,6 +242,8 @@ GuacUI.Client = {
     "overrideAutoFit" : false,
     "attachedClient"  : null,
     "touch"           : null,
+    "touch_screen"    : null,
+    "touch_pad"       : null,
 
     "clipboard_integration_enabled" : undefined
 
@@ -975,6 +979,58 @@ GuacUI.Client.commitClipboard = function() {
 };
 
 /**
+ * Sets the mouse emulation mode to absolute or relative.
+ *
+ * @param {Boolean} absolute Whether mouse emulation should use absolute
+ *                           (touchscreen) mode.
+ */
+GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
+
+    function __handle_mouse_state(mouseState) {
+
+        // Get client - do nothing if not attached
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac) return;
+
+        // Scale event by current scale
+        var scaledState = new Guacamole.Mouse.State(
+                mouseState.x / guac.getScale(),
+                mouseState.y / guac.getScale(),
+                mouseState.left,
+                mouseState.middle,
+                mouseState.right,
+                mouseState.up,
+                mouseState.down);
+
+        // Send mouse event
+        guac.sendMouseState(scaledState);
+        
+    };
+
+    var new_mode, old_mode;
+
+    // Switch to touchscreen if absolute
+    if (absolute) {
+        new_mode = GuacUI.Client.touch_screen;
+        old_mode = GuacUI.Client.touch;
+    }
+
+    // Switch to touchpad if not absolute (relative)
+    else {
+        new_mode = GuacUI.Client.touch_pad;
+        old_mode = GuacUI.Client.touch;
+    }
+
+    // Perform switch
+    if (old_mode) old_mode.onmousedown = old_mode.onmouseup = old_mode.onmousemove = null;
+    if (new_mode) {
+        new_mode.onmousedown = new_mode.onmouseup = new_mode.onmousemove = __handle_mouse_state;
+        GuacUI.Client.touch = new_mode;
+    }
+
+};
+
+/**
  * Attaches a Guacamole.Client to the client UI, such that Guacamole events
  * affect the UI, and local events affect the Guacamole.Client. If a client
  * is already attached, it is replaced.
@@ -1158,8 +1214,20 @@ GuacUI.Client.attach = function(guac) {
      * Handle mouse and touch events relative to the display element.
      */
 
+    // Touchscreen
+    var touch_screen = new Guacamole.Mouse.Touchscreen(guac_display);
+    GuacUI.Client.touch_screen = touch_screen;
+
+    // Touchpad
+    var touch_pad = new Guacamole.Mouse.Touchpad(guac_display);
+    GuacUI.Client.touch_pad = touch_pad;
+
+    // Init emulation mode for client
+    GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.emulate_absolute.checked);
+
     // Mouse
-    function __handle_mouse_state(mouseState) {
+    var mouse = new Guacamole.Mouse(guac_display);
+    mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
 
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
@@ -1176,12 +1244,6 @@ GuacUI.Client.attach = function(guac) {
         
     };
 
-    var touch = new Guacamole.Mouse.Touchscreen(guac_display);
-    touch.onmousedown = touch.onmouseup = touch.onmousemove = __handle_mouse_state;
-    GuacUI.Client.touch = touch;
-
-    var mouse = new Guacamole.Mouse(guac_display);
-    mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = __handle_mouse_state;
 
     // Hide any existing status notifications
     GuacUI.Client.hideStatus();
@@ -1614,6 +1676,20 @@ GuacUI.Client.attach = function(guac) {
     window.onblur =
     GuacUI.Client.clipboard.onchange = function() {
         GuacUI.Client.commitClipboard();
+    };
+
+    /*
+     * Update emulation mode when changed
+     */
+
+    GuacUI.Client.emulate_absolute.onclick =
+    GuacUI.Client.emulate_absolute.onchange = function() {
+        GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.emulate_absolute.checked);
+    };
+
+    GuacUI.Client.emulate_relative.onclick =
+    GuacUI.Client.emulate_relative.onchange = function() {
+        GuacUI.Client.setMouseEmulationAbsolute(!GuacUI.Client.emulate_relative.checked);
     };
 
     // Prevent default on all touch events
