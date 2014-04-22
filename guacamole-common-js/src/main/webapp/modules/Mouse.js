@@ -507,7 +507,6 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchend", function(e) {
         
-        e.stopPropagation();
         e.preventDefault();
             
         // If we're handling a gesture AND this is the last touch
@@ -569,7 +568,6 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchstart", function(e) {
 
-        e.stopPropagation();
         e.preventDefault();
 
         // Track number of touches, but no more than three
@@ -601,7 +599,6 @@ Guacamole.Mouse.Touchpad = function(element) {
 
     element.addEventListener("touchmove", function(e) {
 
-        e.stopPropagation();
         e.preventDefault();
 
         // Get change in touch location
@@ -983,7 +980,6 @@ Guacamole.Mouse.Touchscreen = function(element) {
         if (guac_touchscreen.currentState.left) {
 
             e.preventDefault();
-            e.stopPropagation();
 
             // Update state
             var touch = e.touches[0];
