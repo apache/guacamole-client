@@ -401,7 +401,7 @@ Guacamole.Keyboard = function(element) {
             }
         }
 
-        return false;
+        return true;
 
     }
 
@@ -492,7 +492,7 @@ Guacamole.Keyboard = function(element) {
         var location = e.location || e.keyLocation || 0;
 
         // Ignore any unknown key events
-        if (!keynum && !identifier) {
+        if (!keynum) {
             e.preventDefault();
             return;
         }
