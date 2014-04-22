@@ -223,6 +223,7 @@ GuacUI.Client = {
     "menu"              : document.getElementById("menu"),
     "menu_title"        : document.getElementById("menu-title"),
     "display"           : document.getElementById("display"),
+    "clipboard"         : document.getElementById("clipboard"),
     "notification_area" : document.getElementById("notificationArea"),
 
     /* Expected Input Rectangle */
@@ -240,7 +241,7 @@ GuacUI.Client = {
     "attachedClient"  : null,
     "touch"           : null,
 
-    "clipboard_integration_enabled" : undefined,
+    "clipboard_integration_enabled" : undefined
 
 };
 
@@ -805,14 +806,17 @@ GuacUI.Client.updateTitle = function () {
 };
 
 /**
- * Sets whether the menu is currently visible.
+ * Sets whether the menu is currently visible. Keyboard is disabled while the
+ * menu is shown.
  *
  * @param {Boolean} [shown] Whether the menu should be shown. If omitted, this
  *                          function will cause the menu to be shown by default.
  */
 GuacUI.Client.showMenu = function(shown) {
-    if (shown === false)
+    if (shown === false) {
         GuacUI.Client.menu.className = "closed";
+        GuacUI.Client.commitClipboard();
+    }
     else {
         GuacUI.Client.menu.scrollLeft = 0;
         GuacUI.Client.menu.scrollTop = 0;
@@ -958,6 +962,18 @@ GuacUI.Client.getSizeString = function(bytes) {
 
     else
         return bytes + " B";
+
+};
+
+/**
+ * Commits the current contents of the clipboard textarea to the remote
+ * clipboard and the local Guacamole clipboard shared across connections.
+ */
+GuacUI.Client.commitClipboard = function() {
+
+    // Set value if changed
+    var new_value = GuacUI.Client.clipboard.value;
+    GuacamoleSessionStorage.setItem("clipboard", new_value);
 
 };
 
@@ -1191,37 +1207,50 @@ GuacUI.Client.attach = function(guac) {
     var keyboard = new Guacamole.Keyboard(document);
     var show_keyboard_gesture_possible = true;
 
+    window.kb = keyboard;
+
+    function __send_key(pressed, keysym) {
+
+        // Do not send key if menu shown
+        if (GuacUI.Client.isMenuShown())
+            return true;
+
+        GuacUI.Client.attachedClient.sendKeyEvent(pressed, keysym);
+        return false;
+
+    }
+
     keyboard.onkeydown = function (keysym) {
 
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
-        if (!guac) return;
+        if (!guac) return true;
 
         // Handle Ctrl-shortcuts specifically
         if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
 
             // Allow event through if Ctrl+C or Ctrl+X
             if (keyboard.pressed[0x63] || keyboard.pressed[0x78]) {
-                guac.sendKeyEvent(1, keysym);
+                __send_key(1, keysym);
                 return true;
             }
 
             // If Ctrl+V, wait until after paste event (next event loop)
             if (keyboard.pressed[0x76]) {
                 window.setTimeout(function after_paste() {
-                    guac.sendKeyEvent(1, keysym);
+                    __send_key(1, keysym);
                 }, 10);
                 return true;
             }
 
         }
 
-        // Just send key for all other cases
-        guac.sendKeyEvent(1, keysym);
-
         // If key is NOT one of the expected keys, gesture not possible
         if (keysym !== 0xFFE3 && keysym !== 0xFFE9 && keysym !== 0xFFE1)
             show_keyboard_gesture_possible = false;
+
+        // Send key event
+        return __send_key(1, keysym);
 
     };
 
@@ -1229,9 +1258,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
-        if (!guac) return;
-
-        guac.sendKeyEvent(0, keysym);
+        if (!guac) return true;
 
         // If lifting up on shift, toggle menu visibility if rest of gesture
         // conditions satisfied
@@ -1249,6 +1276,9 @@ GuacUI.Client.attach = function(guac) {
         // Reset gesture state if possible
         if (reset_gesture)
             show_keyboard_gesture_possible = true;
+
+        // Send key event
+        return __send_key(0, keysym);
 
     };
 
@@ -1338,10 +1368,10 @@ GuacUI.Client.attach = function(guac) {
     };
 
     GuacamoleSessionStorage.addChangeListener(function(name, value) {
-        if (name === "clipboard" && GuacUI.Client.attachedClient)
+        if (name === "clipboard" && GuacUI.Client.attachedClient) {
+            GuacUI.Client.clipboard.value = value;
             GuacUI.Client.attachedClient.setClipboard(value);
-        else if (name === "auto-fit")
-            GuacUI.Client.updateDisplayScale();
+        }
     });
 
     /**
@@ -1571,6 +1601,21 @@ GuacUI.Client.attach = function(guac) {
             last_drag_dy = dy;
 
         }
+    };
+
+    /*
+     * Initialize clipboard with current data
+     */
+
+    GuacUI.Client.clipboard.value = GuacamoleSessionStorage.getItem("clipboard", "");
+
+    /*
+     * Update clipboard contents when changed
+     */
+
+    window.onblur =
+    GuacUI.Client.clipboard.onchange = function() {
+        GuacUI.Client.commitClipboard();
     };
 
     // Prevent default on all touch events

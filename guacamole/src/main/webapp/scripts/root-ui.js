@@ -40,18 +40,12 @@ var GuacamoleRootUI = {
     "fields": {
         "username"  : document.getElementById("username"),
         "password"  : document.getElementById("password"),
-        "clipboard" : document.getElementById("clipboard")
     },
     
     "buttons": {
         "login"  : document.getElementById("login"),
         "logout" : document.getElementById("logout"),
         "manage" : document.getElementById("manage")
-    },
-
-    "settings": {
-        "auto_fit"      : document.getElementById("auto-fit"),
-        "disable_sound" : document.getElementById("disable-sound")
     },
 
     "views": {
@@ -354,81 +348,6 @@ GuacamoleHistory.onchange = function(id, old_entry, new_entry) {
  * connection do not replace the contents of this very window.
  */
 window.name = "";
-
-/*
- * Update session state when auto-fit checkbox is changed
- */
-
-GuacamoleRootUI.settings.auto_fit.onchange =
-GuacamoleRootUI.settings.auto_fit.onclick  = function() {
-
-    GuacamoleSessionStorage.setItem(
-        "auto-fit", GuacamoleRootUI.settings.auto_fit.checked);
-
-};
-
-/*
- * Update session state when disable-sound checkbox is changed
- */
-
-GuacamoleRootUI.settings.disable_sound.onchange =
-GuacamoleRootUI.settings.disable_sound.onclick  = function() {
-
-    GuacamoleSessionStorage.setItem(
-        "disable-sound", GuacamoleRootUI.settings.disable_sound.checked);
-
-};
-
-/*
- * Update clipboard contents when changed
- */
-
-window.onblur =
-GuacamoleRootUI.fields.clipboard.onchange = function() {
-
-    // Set value if changed
-    var new_value = GuacamoleRootUI.fields.clipboard.value;
-    GuacamoleSessionStorage.setItem("clipboard", new_value);
-
-};
-
-/*
- * Update element states when session state changes
- */
-
-
-GuacamoleSessionStorage.addChangeListener(function(name, value) {
-
-    // Clipboard
-    if (name === "clipboard")
-        GuacamoleRootUI.fields.clipboard.value = value;
-
-    // Auto-fit display
-    else if (name === "auto-fit")
-        GuacamoleRootUI.fields.auto_fit.checked = value;
-
-    // Disable Sound
-    else if (name === "disable-sound")
-        GuacamoleRootUI.fields.disable_sound.checked = value;
-
-});
-
-/*
- * Initialize clipboard with current data
- */
-
-GuacamoleRootUI.fields.clipboard.value = GuacamoleSessionStorage.getItem("clipboard", "");
-
-/*
- * Initialize auto-fit setting in UI
- */
-
-GuacamoleRootUI.settings.auto_fit.checked = GuacamoleSessionStorage.getItem("auto-fit", true);
-
-/*
- * Initialize disable-sound setting in UI
- */
-GuacamoleRootUI.settings.disable_sound.checked = GuacamoleSessionStorage.getItem("disable-sound", false);
 
 /*
  * Set handler for logout
