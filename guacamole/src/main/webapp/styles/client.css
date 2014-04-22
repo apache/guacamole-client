@@ -640,3 +640,17 @@ p.hint {
     bottom: 0;
     opacity: 0;
 }
+
+.notification.message {
+    background: #DFD;
+    animation: fadein 0.125s linear, fadeout 2s 3s linear;
+    -webkit-animation: fadein 0.125s linear, fadeout 2s 3s linear;
+}
+
+.notification.message .caption {
+    vertical-align: middle;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+

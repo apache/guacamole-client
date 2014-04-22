@@ -871,6 +871,22 @@ GuacUI.Client.showError = function(title, status, reconnect) {
     GuacUI.Client.visibleStatus.show();
 };
 
+GuacUI.Client.showNotification = function(message) {
+
+    // Create notification
+    var element = GuacUI.createElement("div", "message notification");
+    GuacUI.createChildElement(element, "div", "caption").textContent = message;
+
+    // Add to DOM
+    GuacUI.Client.notification_area.appendChild(element);
+
+    // Remove from DOM after around 5 seconds
+    window.setTimeout(function() {
+        GuacUI.Client.notification_area.removeChild(element);
+    }, 5000);
+
+};
+
 /**
  * Connects to the current Guacamole connection, attaching a new Guacamole
  * client to the user interface. If a Guacamole client is already attached,
@@ -1565,6 +1581,7 @@ GuacUI.Client.attach = function(guac) {
                 if (offset >= bytes.length) {
                     stream.sendEnd();
                     GuacUI.Client.notification_area.removeChild(upload.getElement());
+                    GuacUI.Client.showNotification("Upload of \"" + file.name + "\" complete.");
                 }
 
                 // Otherwise, update progress
@@ -1733,14 +1750,20 @@ GuacUI.Client.attach = function(guac) {
 
     GuacUI.Client.absolute_radio.onclick =
     GuacUI.Client.absolute_radio.onchange = function() {
-        GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.absolute_radio.checked);
-        GuacUI.Client.showMenu(false);
+        if (!GuacUI.Client.emulate_absolute) {
+            GuacUI.Client.showNotification("Absolute mouse emulation selected");
+            GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.absolute_radio.checked);
+            GuacUI.Client.showMenu(false);
+        }
     };
 
     GuacUI.Client.relative_radio.onclick =
     GuacUI.Client.relative_radio.onchange = function() {
-        GuacUI.Client.setMouseEmulationAbsolute(!GuacUI.Client.relative_radio.checked);
-        GuacUI.Client.showMenu(false);
+        if (GuacUI.Client.emulate_absolute) {
+            GuacUI.Client.showNotification("Relative mouse emulation selected");
+            GuacUI.Client.setMouseEmulationAbsolute(!GuacUI.Client.relative_radio.checked);
+            GuacUI.Client.showMenu(false);
+        }
     };
 
     // Prevent default on all touch events
