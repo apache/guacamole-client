@@ -997,6 +997,37 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
         // Get client - do nothing if not attached
         var guac = GuacUI.Client.attachedClient;
         if (!guac) return;
+   
+        // Determine mouse position within view
+        var guac_display = guac.getDisplay();
+        var mouse_view_x = mouseState.x + guac_display.offsetLeft - GuacUI.Client.main.scrollLeft;
+        var mouse_view_y = mouseState.y + guac_display.offsetTop  - GuacUI.Client.main.scrollTop;
+
+        // Determine viewport dimensioins
+        var view_width  = GuacUI.Client.main.offsetWidth;
+        var view_height = GuacUI.Client.main.offsetHeight;
+
+        // Determine scroll amounts based on mouse position relative to document
+
+        var scroll_amount_x;
+        if (mouse_view_x > view_width)
+            scroll_amount_x = mouse_view_x - view_width;
+        else if (mouse_view_x < 0)
+            scroll_amount_x = mouse_view_x;
+        else
+            scroll_amount_x = 0;
+
+        var scroll_amount_y;
+        if (mouse_view_y > view_height)
+            scroll_amount_y = mouse_view_y - view_height;
+        else if (mouse_view_y < 0)
+            scroll_amount_y = mouse_view_y;
+        else
+            scroll_amount_y = 0;
+
+        // Scroll (if necessary) to keep mouse on screen.
+        GuacUI.Client.main.scrollLeft += scroll_amount_x;
+        GuacUI.Client.main.scrollTop  += scroll_amount_y;
 
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
