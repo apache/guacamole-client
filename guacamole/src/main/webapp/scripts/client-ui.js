@@ -224,8 +224,8 @@ GuacUI.Client = {
     "menu_title"        : document.getElementById("menu-title"),
     "display"           : document.getElementById("display"),
     "clipboard"         : document.getElementById("clipboard"),
-    "emulate_relative"  : document.getElementById("relative"),
-    "emulate_absolute"  : document.getElementById("absolute"),
+    "relative_radio"    : document.getElementById("relative"),
+    "absolute_radio"    : document.getElementById("absolute"),
     "notification_area" : document.getElementById("notificationArea"),
 
     /* Expected Input Rectangle */
@@ -241,9 +241,15 @@ GuacUI.Client = {
     "connectionName"  : "Guacamole",
     "overrideAutoFit" : false,
     "attachedClient"  : null,
-    "touch"           : null,
-    "touch_screen"    : null,
-    "touch_pad"       : null,
+
+    /* Mouse emulation */
+
+    "emulate_absolute" : true,
+    "touch"            : null,
+    "touch_screen"     : null,
+    "touch_pad"        : null,
+
+    /* Clipboard */
 
     "clipboard_integration_enabled" : undefined
 
@@ -1008,6 +1014,7 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
     };
 
     var new_mode, old_mode;
+    GuacUI.Client.emulate_absolute = absolute;
 
     // Switch to touchscreen if absolute
     if (absolute) {
@@ -1022,8 +1029,14 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
     }
 
     // Perform switch
-    if (old_mode) old_mode.onmousedown = old_mode.onmouseup = old_mode.onmousemove = null;
     if (new_mode) {
+
+        if (old_mode) {
+            old_mode.onmousedown = old_mode.onmouseup = old_mode.onmousemove = null;
+            new_mode.currentState.x = old_mode.currentState.x;
+            new_mode.currentState.y = old_mode.currentState.y;
+        }
+
         new_mode.onmousedown = new_mode.onmouseup = new_mode.onmousemove = __handle_mouse_state;
         GuacUI.Client.touch = new_mode;
     }
@@ -1223,7 +1236,7 @@ GuacUI.Client.attach = function(guac) {
     GuacUI.Client.touch_pad = touch_pad;
 
     // Init emulation mode for client
-    GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.emulate_absolute.checked);
+    GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.absolute_radio.checked);
 
     // Mouse
     var mouse = new Guacamole.Mouse(guac_display);
@@ -1585,6 +1598,10 @@ GuacUI.Client.attach = function(guac) {
         if (!guac)
             return;
 
+        // Ignore pinch for relative mouse emulation
+        if (!GuacUI.Client.emulate_absolute)
+            return;
+
         // Rescale based on new ratio
         var new_scale = initial_scale * ratio;
         new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
@@ -1651,8 +1668,8 @@ GuacUI.Client.attach = function(guac) {
 
             }
 
-            // Otherwise, drag UI
-            else {
+            // Otherwise, drag UI (if not relative emulation)
+            else if (GuacUI.Client.emulate_absolute) {
                 GuacUI.Client.main.scrollLeft -= change_drag_dx;
                 GuacUI.Client.main.scrollTop -= change_drag_dy;
             }
@@ -1682,14 +1699,16 @@ GuacUI.Client.attach = function(guac) {
      * Update emulation mode when changed
      */
 
-    GuacUI.Client.emulate_absolute.onclick =
-    GuacUI.Client.emulate_absolute.onchange = function() {
-        GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.emulate_absolute.checked);
+    GuacUI.Client.absolute_radio.onclick =
+    GuacUI.Client.absolute_radio.onchange = function() {
+        GuacUI.Client.setMouseEmulationAbsolute(GuacUI.Client.absolute_radio.checked);
+        GuacUI.Client.showMenu(false);
     };
 
-    GuacUI.Client.emulate_relative.onclick =
-    GuacUI.Client.emulate_relative.onchange = function() {
-        GuacUI.Client.setMouseEmulationAbsolute(!GuacUI.Client.emulate_relative.checked);
+    GuacUI.Client.relative_radio.onclick =
+    GuacUI.Client.relative_radio.onchange = function() {
+        GuacUI.Client.setMouseEmulationAbsolute(!GuacUI.Client.relative_radio.checked);
+        GuacUI.Client.showMenu(false);
     };
 
     // Prevent default on all touch events
