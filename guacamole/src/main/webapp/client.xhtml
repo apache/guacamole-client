@@ -37,14 +37,19 @@
 
     <body>
 
-        <!-- Display -->
         <div id="main">
+
+            <!-- Event target -->
+            <textarea id="target"></textarea>
+            
+            <!-- Display -->
             <div class="displayOuter">
                 <div class="displayMiddle">
                     <div id="display">
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!-- Dimensional clone of viewport -->
@@ -57,35 +62,61 @@
         <div id="menu">
             <h2 id="menu-title">Guacamole ${project.version}</h2>
 
-            <div class="content">
-                <h3>Clipboard</h3>
-                <div id="clipboardDiv">
-                    <p>Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
-                    <textarea rows="10" cols="40" id="clipboard"></textarea>
+            <h3>Input method</h3>
+            <div class="content" id="keyboard-settings">
+
+                <!-- No IME -->
+                <div class="choice">
+                    <input name="input-method" type="radio" value="ime-none" checked="checked" id="ime-none"/> None
+                    <p class="caption"><label for="ime-none">No input method is used. Keyboard input is accepted from
+                            a connected, physical keyboard.</label></p>
                 </div>
-                <h3>Mouse emulation mode</h3>
-                <div id="mouse-settings">
-                    <p>Determines how the remote mouse behaves with respect to touches.</p>
 
-                    <!-- Touchscreen -->
-                    <div class="choice">
-                        <input name="mouse-mode" type="radio" value="absolute" checked="checked" id="absolute"/>
-                        <div class="figure">
-                            <label for="absolute"><img src="images/settings/touchscreen.png" alt=""/></label>
-                            <p class="caption"><label for="absolute">Tap to click. The click occurs at the location of the touch.</label></p>
-                        </div>
-                    </div>
-
-                    <!-- Touchpad -->
-                    <div class="choice">
-                        <input name="mouse-mode" type="radio" value="relative" id="relative"/>
-                        <div class="figure">
-                            <label for="relative"><img src="images/settings/touchpad.png" alt=""/></label>
-                            <p class="caption"><label for="relative">Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.</label></p>
-                        </div>
-                    </div>
-
+                <!-- Text input -->
+                <div class="choice">
+                    <input name="input-method" type="radio" value="ime-text" id="ime-text"/> Text input
+                    <p class="caption"><label for="ime-text">Allow typing of text, and emulate keyboard events based on the
+                            typed text. This is necessary for devices such as mobile phones that lack a physical keyboard.</label></p>
                 </div>
+
+                <!-- Guac OSK -->
+                <div class="choice">
+                    <input name="input-method" type="radio" value="ime-osk" id="ime-osk"/> On-screen keyboard
+                    <p class="caption"><label for="ime-osk">Display and accept input from the built-in Guacamole on-screen
+                            keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible
+                            (such as Ctrl-Alt-Del).</label></p>
+                </div>
+
+            </div>
+
+            <h3>Clipboard</h3>
+            <div class="content" id="clipboard-settings">
+                <p class="description">Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
+                <textarea rows="10" cols="40" id="clipboard"></textarea>
+            </div>
+
+            <h3>Mouse emulation mode</h3>
+            <div class="content" id="mouse-settings">
+                <p class="description">Determines how the remote mouse behaves with respect to touches.</p>
+
+                <!-- Touchscreen -->
+                <div class="choice">
+                    <input name="mouse-mode" type="radio" value="absolute" checked="checked" id="absolute"/>
+                    <div class="figure">
+                        <label for="absolute"><img src="images/settings/touchscreen.png" alt=""/></label>
+                        <p class="caption"><label for="absolute">Tap to click. The click occurs at the location of the touch.</label></p>
+                    </div>
+                </div>
+
+                <!-- Touchpad -->
+                <div class="choice">
+                    <input name="mouse-mode" type="radio" value="relative" id="relative"/>
+                    <div class="figure">
+                        <label for="relative"><img src="images/settings/touchpad.png" alt=""/></label>
+                        <p class="caption"><label for="relative">Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.</label></p>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -115,7 +146,7 @@
             // Start connect after control returns from onload (allow browser
             // to consider the page loaded).
             window.onload = function() {
-                window.setTimeout(GuacUI.Client.connect, 0);
+                window.setTimeout(GuacUI.Client.connect, 10);
             };
 
         /* ]]> */ </script>

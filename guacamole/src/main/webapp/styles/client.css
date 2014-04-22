@@ -549,6 +549,10 @@ p.hint {
     padding: 1em;
 }
 
+#menu .content > * {
+    margin: 1em 0;
+}
+
 #menu, #menu.closed {
     left: -480px;
     opacity: 0;
@@ -577,12 +581,7 @@ p.hint {
     -webkit-animation-duration: 0.05s;
 }
 
-div#mouse-settings,
-div#clipboardDiv {
-    padding: 0;
-}
-
-#clipboardDiv textarea {
+#clipboard-settings textarea {
     width: 100%;
     border: 1px solid #AAA;
     -moz-border-radius: 0.25em;
@@ -590,6 +589,7 @@ div#clipboardDiv {
     -khtml-border-radius: 0.25em;
     border-radius: 0.25em;
     white-space: pre;
+    display: block;
 }
 
 #mouse-settings .choice {
@@ -602,6 +602,12 @@ div#clipboardDiv {
     max-width: 80%;
 }
 
+#keyboard-settings .caption {
+    font-size: 0.9em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
 #mouse-settings .figure .caption {
     text-align: center;
     font-size: 0.9em;
@@ -611,4 +617,26 @@ div#clipboardDiv {
     display: block;
     max-width: 100%;
     margin: 1em auto;
+}
+
+#menu h3 {
+
+    background: rgba(0, 0, 0, 0.4);
+
+    padding: 0.25em 0.5em;
+    margin: 0;
+    font-size: 1em;
+
+    color: white;
+    font-weight: bold;
+
+}
+
+#target {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
 }

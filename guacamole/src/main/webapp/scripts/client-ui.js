@@ -223,6 +223,7 @@ GuacUI.Client = {
     "menu"              : document.getElementById("menu"),
     "menu_title"        : document.getElementById("menu-title"),
     "display"           : document.getElementById("display"),
+    "target"            : document.getElementById("target"),
     "clipboard"         : document.getElementById("clipboard"),
     "relative_radio"    : document.getElementById("relative"),
     "absolute_radio"    : document.getElementById("absolute"),
