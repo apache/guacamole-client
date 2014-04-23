@@ -26,23 +26,6 @@
 GuacUI.Client = {
 
     /**
-     * Collection of all Guacamole client UI states.
-     */
-    "states": {
-
-        /**
-         * The normal default Guacamole client UI mode
-         */
-        "INTERACTIVE"      : 0,
-
-        /**
-         * Same as INTERACTIVE except with visible on-screen keyboard.
-         */
-        "OSK"              : 1
-
-    },
-
-    /**
      * Enumeration of all tunnel-specific error messages for each applicable
      * error code.
      */
@@ -261,9 +244,8 @@ GuacUI.Client = {
  * which sends key events to the Guacamole client.
  * 
  * @constructor
- * @augments GuacUI.Component
  */
-GuacUI.Client.OnScreenKeyboard = function() {
+GuacUI.Client.OnScreenKeyboard = new (function() {
 
     /**
      * Event target. This is a hidden textarea element which will receive
@@ -290,14 +272,20 @@ GuacUI.Client.OnScreenKeyboard = function() {
     }
 
     keyboard.onkeydown = function(keysym) {
-        GuacUI.Client.attachedClient.sendKeyEvent(1, keysym);
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.sendKeyEvent(1, keysym);
     };
 
     keyboard.onkeyup = function(keysym) {
-        GuacUI.Client.attachedClient.sendKeyEvent(0, keysym);
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.sendKeyEvent(0, keysym);
     };
 
     this.show = function() {
+
+        // Only add if not already present
+        if (keyboard_container.parentNode === document.body)
+            return;
 
         // Show keyboard
         document.body.appendChild(keyboard_container);
@@ -317,6 +305,10 @@ GuacUI.Client.OnScreenKeyboard = function() {
 
     this.hide = function() {
 
+        // Only remove if present
+        if (keyboard_container.parentNode !== document.body)
+            return;
+
         // Hide keyboard
         document.body.removeChild(keyboard_container);
         window.clearInterval(keyboard_resize_interval);
@@ -324,24 +316,7 @@ GuacUI.Client.OnScreenKeyboard = function() {
 
     };
 
-};
-
-GuacUI.Client.OnScreenKeyboard.prototype = new GuacUI.Component();
-
-/*
- * Show on-screen keyboard during OSK mode only.
- */
-
-GuacUI.StateManager.registerComponent(
-    new GuacUI.Client.OnScreenKeyboard(),
-    GuacUI.Client.states.OSK
-);
-
-/*
- * Set initial state
- */
-
-GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
+})();
 
 /**
  * Modal status display. Displays a message to the user, covering the entire
@@ -351,7 +326,6 @@ GuacUI.StateManager.setState(GuacUI.Client.states.INTERACTIVE);
  * components is impossible.
  * 
  * @constructor
- * @augments GuacUI.Component
  */
 GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
 
@@ -429,8 +403,6 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
     };
 
 };
-
-GuacUI.Client.ModalStatus.prototype = new GuacUI.Component();
 
 /**
  * Monitors a given element for touch events, firing drag-specific events
