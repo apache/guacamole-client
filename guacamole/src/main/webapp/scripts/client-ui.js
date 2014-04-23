@@ -199,18 +199,24 @@ GuacUI.Client = {
     "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
     "RECONNECT_PERIOD"              : 15,  /* seconds */
 
-    /* UI Components */
+    /* Main application area */
 
     "viewport"          : document.getElementById("viewportClone"),
     "main"              : document.getElementById("main"),
+    "display"           : document.getElementById("display"),
+    "notification_area" : document.getElementById("notificationArea"),
+    "target"            : document.getElementById("target"),
+
+    /* Menu */
+
     "menu"              : document.getElementById("menu"),
     "menu_title"        : document.getElementById("menu-title"),
-    "display"           : document.getElementById("display"),
-    "target"            : document.getElementById("target"),
     "clipboard"         : document.getElementById("clipboard"),
     "relative_radio"    : document.getElementById("relative"),
     "absolute_radio"    : document.getElementById("absolute"),
-    "notification_area" : document.getElementById("notificationArea"),
+    "ime_none_radio"    : document.getElementById("ime-none"),
+    "ime_text_radio"    : document.getElementById("ime-text"),
+    "ime_osk_radio"     : document.getElementById("ime-osk"),
 
     /* Expected Input Rectangle */
 
@@ -232,6 +238,11 @@ GuacUI.Client = {
     "touch"            : null,
     "touch_screen"     : null,
     "touch_pad"        : null,
+
+    /* Text input */
+
+    "ime_expected"    : false,
+    "ime_enabled"     : false,
 
     /* Clipboard */
 
@@ -1308,6 +1319,19 @@ GuacUI.Client.attach = function(guac) {
         if (GuacUI.Client.isMenuShown())
             return true;
 
+        // Allow key events for specific keys if IME enabled
+        if (GuacUI.Client.ime_enabled
+            && keysym !== 0x0020  /* Space */
+            && keysym !== 0xFF08  /* Backspace */
+            && keysym !== 0xFF09  /* Tab */
+            && keysym !== 0xFF0D  /* Enter */
+            && keysym !== 0xFF51  /* Left */
+            && keysym !== 0xFF52  /* Up */
+            && keysym !== 0xFF53  /* Right */
+            && keysym !== 0xFF54  /* Down */
+            && keysym !== 0xFFFF) /* Delete */
+            return true;
+
         GuacUI.Client.attachedClient.sendKeyEvent(pressed, keysym);
         return false;
 
@@ -1356,8 +1380,12 @@ GuacUI.Client.attach = function(guac) {
         // If lifting up on shift, toggle menu visibility if rest of gesture
         // conditions satisfied
         if (show_keyboard_gesture_possible && keysym === 0xFFE1 
-            && keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9])
+            && keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9]) {
+                __send_key(0, 0xFFE1);
+                __send_key(0, 0xFFE9);
+                __send_key(0, 0xFFE3);
                 GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
+        }
 
         // Detect if no keys are pressed
         var reset_gesture = true;
@@ -1737,6 +1765,162 @@ GuacUI.Client.attach = function(guac) {
             GuacUI.Client.showMenu(false);
         }
     };
+
+    /*
+     * Update input method mode when changed
+     */
+
+    GuacUI.Client.ime_none_radio.onclick =
+    GuacUI.Client.ime_none_radio.onchange = function() {
+        GuacUI.Client.ime_expected = false;
+        GuacUI.Client.target.blur();
+        GuacUI.Client.OnScreenKeyboard.hide();
+        GuacUI.Client.showMenu(false);
+    };
+
+    GuacUI.Client.ime_text_radio.onclick =
+    GuacUI.Client.ime_text_radio.onchange = function() {
+        GuacUI.Client.ime_expected = true;
+        GuacUI.Client.target.focus();
+        GuacUI.Client.OnScreenKeyboard.hide();
+        GuacUI.Client.showMenu(false);
+    };
+
+    GuacUI.Client.ime_osk_radio.onclick =
+    GuacUI.Client.ime_osk_radio.onchange = function() {
+        GuacUI.Client.ime_expected = false;
+        GuacUI.Client.target.blur();
+        GuacUI.Client.OnScreenKeyboard.show();
+        GuacUI.Client.showMenu(false);
+    };
+
+    /*
+     * Text input
+     */
+
+    function keysym_from_codepoint(codepoint) {
+
+        // Keysyms for control characters
+        if (codepoint <= 0x1F || (codepoint >= 0x7F && codepoint <= 0x9F))
+            return 0xFF00 | codepoint;
+
+        // Keysyms for ASCII chars
+        if (codepoint >= 0x0000 && codepoint <= 0x00FF)
+            return codepoint;
+
+        // Keysyms for Unicode
+        if (codepoint >= 0x0100 && codepoint <= 0x10FFFF)
+            return 0x01000000 | codepoint;
+
+        return null;
+
+    }
+
+    function send_keysym(keysym) {
+
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac)
+            return;
+
+        guac.sendKeyEvent(1, keysym);
+        guac.sendKeyEvent(0, keysym);
+
+    }
+
+    function send_codepoint(codepoint) {
+
+        if (codepoint === 10) {
+            send_keysym(0xFF0D);
+            return;
+        }
+
+        var keysym = keysym_from_codepoint(codepoint);
+        if (keysym)
+            send_keysym(keysym);
+
+    }
+
+    var ime_notify_timeout = null;
+
+    GuacUI.Client.target.onfocus = function() {
+
+        // Acknowledge and synchronize state change
+        GuacUI.Client.OnScreenKeyboard.hide();
+        GuacUI.Client.ime_text_radio.checked = true;
+        GuacUI.Client.ime_enabled = true;
+
+        // If unexpected, try to reset state back
+        if (!GuacUI.Client.ime_expected)
+            GuacUI.Client.target.blur();
+
+        // Reset content
+        GuacUI.Client.target.value = new Array(257).join("\u200B");
+        GuacUI.Client.target.setSelectionRange(128, 128);
+
+        // Notify of change if settled within 50ms
+        window.clearTimeout(ime_notify_timeout);
+        ime_notify_timeout = window.setTimeout(function() {
+            GuacUI.Client.showNotification("Text input mode ON");
+        }, 100);
+
+    };
+
+    GuacUI.Client.target.onblur = function() {
+
+        // Acknowledge and synchronize state change
+        GuacUI.Client.OnScreenKeyboard.hide();
+        GuacUI.Client.ime_none_radio.checked = true;
+        GuacUI.Client.ime_enabled = false;
+
+        // If unexpected, try to reset state back
+        if (GuacUI.Client.ime_expected)
+            GuacUI.Client.target.focus();
+
+        // Notify of change if settled within 50ms
+        window.clearTimeout(ime_notify_timeout);
+        ime_notify_timeout = window.setTimeout(function() {
+            GuacUI.Client.showNotification("Text input mode OFF");
+        }, 100);
+
+    };
+
+    GuacUI.Client.target.addEventListener("input", function(e) {
+
+        var i;
+        var content = GuacUI.Client.target.value;
+
+        // If content removed, update
+        if (content.length < 256) {
+
+            // Calculate number of backspaces and send
+            var backspace_count = 128 - GuacUI.Client.target.selectionStart;
+            for (i=0; i<backspace_count; i++)
+                send_keysym(0xFF08);
+
+            // Calculate number of deletes and send
+            var delete_count = 256 - content.length - backspace_count;
+            for (i=0; i<delete_count; i++)
+                send_keysym(0xFFFF);
+
+        }
+
+        else {
+
+            // Send keys for added content
+            for (i=0; i<content.length; i++) {
+                var codepoint = content.charCodeAt(i);
+                if (codepoint !== 0x200B)
+                    send_codepoint(codepoint);
+            }
+
+        }
+
+        // Reset content
+        GuacUI.Client.target.value = new Array(257).join("\u200B");
+        GuacUI.Client.target.setSelectionRange(128, 128);
+
+    }, false);
+
 
     // Prevent default on all touch events
     document.addEventListener("touchstart", function(e) {

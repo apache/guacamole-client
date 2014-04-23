@@ -543,6 +543,7 @@ p.hint {
     width: 480px;
     background: #EEE;
     box-shadow: inset -1px 0 2px white, 1px 0 2px black;
+    z-index: 10;
 }
 
 #menu .content {
