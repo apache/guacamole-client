@@ -1475,16 +1475,30 @@ GuacUI.Client.attach = function(guac) {
     /*
      * Send size events on resize
      */
+
+    var resize_timeout = null;
+
     window.onresize = function() {
 
-        var pixel_density = window.devicePixelRatio || 1;
-        var width = window.innerWidth * pixel_density;
-        var height = window.innerHeight * pixel_density;
+        // Remove scrollbars during resize
+        GuacUI.Client.main.style.overflow = "hidden";
 
-        if (GuacUI.Client.attachedClient)
-            GuacUI.Client.attachedClient.sendSize(width, height);
+        // Wait for resize to settle before updating
+        window.clearTimeout(resize_timeout);
+        resize_timeout = window.setTimeout(function() {
 
-        GuacUI.Client.updateDisplayScale();
+            var pixel_density = window.devicePixelRatio || 1;
+            var width = window.innerWidth * pixel_density;
+            var height = window.innerHeight * pixel_density;
+
+            GuacUI.Client.main.style.overflow = "auto";
+
+            if (GuacUI.Client.attachedClient)
+                GuacUI.Client.attachedClient.sendSize(width, height);
+
+            GuacUI.Client.updateDisplayScale();
+
+        }, 10);
 
     };
 
