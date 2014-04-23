@@ -633,6 +633,16 @@ p.hint {
 
 }
 
+#keyboard-settings .figure {
+    float: right;
+    max-width: 30%;
+    margin: 1em;
+}
+
+#keyboard-settings .figure img {
+    max-width: 100%;
+}
+
 #target {
     position: fixed;
     left: 0;

@@ -67,21 +67,23 @@
 
                 <!-- No IME -->
                 <div class="choice">
-                    <input name="input-method" type="radio" value="ime-none" checked="checked" id="ime-none"/> None
+                    <label><input name="input-method" type="radio" value="ime-none" checked="checked" id="ime-none"/> None</label>
                     <p class="caption"><label for="ime-none">No input method is used. Keyboard input is accepted from
                             a connected, physical keyboard.</label></p>
                 </div>
 
                 <!-- Text input -->
                 <div class="choice">
-                    <input name="input-method" type="radio" value="ime-text" id="ime-text"/> Text input
-                    <p class="caption"><label for="ime-text">Allow typing of text, and emulate keyboard events based on the
+                    <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
+                    <label><input name="input-method" type="radio" value="ime-text" id="ime-text"/> Text input</label>
+                    <p class="caption"><label for="ime-text">
+                            Allow typing of text, and emulate keyboard events based on the
                             typed text. This is necessary for devices such as mobile phones that lack a physical keyboard.</label></p>
                 </div>
 
                 <!-- Guac OSK -->
                 <div class="choice">
-                    <input name="input-method" type="radio" value="ime-osk" id="ime-osk"/> On-screen keyboard
+                    <label><input name="input-method" type="radio" value="ime-osk" id="ime-osk"/> On-screen keyboard</label>
                     <p class="caption"><label for="ime-osk">Display and accept input from the built-in Guacamole on-screen
                             keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible
                             (such as Ctrl-Alt-Del).</label></p>
