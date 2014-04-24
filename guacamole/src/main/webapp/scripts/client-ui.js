@@ -799,22 +799,25 @@ GuacUI.Client.setScale = function(new_scale) {
  */
 GuacUI.Client.updateDisplayScale = function() {
 
-    // Currently attacched client
+    // Determine whether display is currently fit to the screen
     var guac = GuacUI.Client.attachedClient;
+    var auto_fit = (guac.getScale() === GuacUI.Client.min_zoom);
 
     // Calculate scale to fit screen
-    var min_zoom = Math.min(
-        window.innerWidth  / guac.getWidth(),
-        window.innerHeight / guac.getHeight()
+    GuacUI.Client.min_zoom = Math.min(
+        window.innerWidth  / Math.max(guac.getWidth(), 1),
+        window.innerHeight / Math.max(guac.getHeight(), 1)
     );
 
-    // Clamp scale to minimum zoom level, keep at minimum zoom if at minimum zoom before
-    if (guac.getScale() < min_zoom || guac.getScale() === GuacUI.Client.min_zoom) {
-        GuacUI.Client.min_zoom = min_zoom;
-        GuacUI.Client.setScale(min_zoom);
-    }
-    else
-        GuacUI.Client.min_zoom = min_zoom;
+    // Calculate appropriate maximum zoom level
+    GuacUI.Client.max_zoom = Math.max(GuacUI.Client.min_zoom, 3);
+
+    // Clamp zoom level, maintain auto-fit
+    if (guac.getScale() < GuacUI.Client.min_zoom || auto_fit)
+        GuacUI.Client.setScale(GuacUI.Client.min_zoom);
+
+    else if (guac.getScale() > GuacUI.Client.max_zoom)
+        GuacUI.Client.setScale(GuacUI.Client.max_zoom);
 
 };
 
