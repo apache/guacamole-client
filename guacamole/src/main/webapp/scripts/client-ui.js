@@ -789,7 +789,7 @@ GuacUI.Client.setScale = function(new_scale) {
     GuacUI.Client.auto_fit.checked = (new_scale === GuacUI.Client.min_zoom);
 
     // Disable auto-fit if zoom is required
-    GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1);
+    GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1 && new_scale === GuacUI.Client.min_zoom);
 
 };
 
