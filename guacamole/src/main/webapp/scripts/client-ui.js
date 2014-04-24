@@ -785,11 +785,26 @@ GuacUI.Client.updateDisplayScale = function() {
     );
 
     // Clamp scale to minimum zoom level, keep at minimum zoom if at minimum zoom before
-    if (guac.getScale() < min_zoom || guac.getScale() === GuacUI.Client.min_zoom)
+    if (guac.getScale() < min_zoom || guac.getScale() === GuacUI.Client.min_zoom) {
         guac.scale(min_zoom);
+        GuacUI.Client.zoom_state.textContent = Math.round(min_zoom * 100) + "%";
+    }
 
     GuacUI.Client.min_zoom = min_zoom;
 
+};
+
+/**
+ * Sets the current display scale to the given value, where 1 is 100% (1:1
+ * pixel ratio). Out-of-range values will be clamped in-range.
+ * 
+ * @param {Number} new_scale The new scale to apply
+ */
+GuacUI.Client.setScale = function(new_scale) {
+    new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
+    new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
+    guac.scale(new_scale);
+    GuacUI.Client.zoom_state.textContent = Math.round(new_scale * 100) + "%";
 };
 
 /**
@@ -1686,9 +1701,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Rescale based on new ratio
         var new_scale = initial_scale * ratio;
-        new_scale = Math.max(new_scale, GuacUI.Client.min_zoom);
-        new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
-        guac.scale(new_scale);
+        GuacUI.Client.setScale(new_scale);
 
         // Calculate point at currently at center of touch
         var point_at_center_x = (x + GuacUI.Client.main.scrollLeft) / new_scale;
