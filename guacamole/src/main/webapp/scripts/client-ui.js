@@ -246,6 +246,7 @@ GuacUI.Client = {
 
     /* Clipboard */
 
+    "remote_clipboard" : "",
     "clipboard_integration_enabled" : undefined
 
 };
@@ -973,14 +974,26 @@ GuacUI.Client.getSizeString = function(bytes) {
 };
 
 /**
- * Commits the current contents of the clipboard textarea to the remote
- * clipboard and the local Guacamole clipboard shared across connections.
+ * Commits the current contents of the clipboard textarea to session storage,
+ * and thus to the remote clipboard if the client is connected.
  */
 GuacUI.Client.commitClipboard = function() {
-
-    // Set value if changed
     var new_value = GuacUI.Client.clipboard.value;
     GuacamoleSessionStorage.setItem("clipboard", new_value);
+};
+
+/**
+ * Sets the contents of the remote clipboard, if the contents given are
+ * different.
+ *
+ * @param {String} data The data to assign to the clipboard.
+ */
+GuacUI.Client.setClipboard = function(data) {
+
+    if (data !== GuacUI.Client.remote_clipboard && GuacUI.Client.attachedClient) {
+        GuacUI.Client.remote_clipboard = data;
+        GuacUI.Client.attachedClient.setClipboard(data);
+    }
 
 };
 
@@ -1136,7 +1149,7 @@ GuacUI.Client.attach = function(guac) {
                 // Update clipboard with current data
                 var clipboard = GuacamoleSessionStorage.getItem("clipboard");
                 if (clipboard)
-                    guac.setClipboard(clipboard);
+                    GuacUI.Client.setClipboard(clipboard);
 
                 break;
 
@@ -1201,6 +1214,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Set contents when done
         reader.onend = function clipboard_text_end() {
+            GuacUI.Client.remote_clipboard = data;
             GuacamoleSessionStorage.setItem("clipboard", data);
         };
 
@@ -1454,8 +1468,7 @@ GuacUI.Client.attach = function(guac) {
         // Override and handle paste only if integration is enabled
         if (GuacUI.Client.clipboard_integration_enabled) {
             e.preventDefault();
-            if (GuacUI.Client.attachedClient)
-                GuacUI.Client.attachedClient.setClipboard(e.clipboardData.getData("text/plain"));
+            GuacUI.Client.setClipboard(e.clipboardData.getData("text/plain"));
         }
 
     }, false);
@@ -1503,9 +1516,9 @@ GuacUI.Client.attach = function(guac) {
     };
 
     GuacamoleSessionStorage.addChangeListener(function(name, value) {
-        if (name === "clipboard" && GuacUI.Client.attachedClient) {
+        if (name === "clipboard") {
             GuacUI.Client.clipboard.value = value;
-            GuacUI.Client.attachedClient.setClipboard(value);
+            GuacUI.Client.setClipboard(value);
         }
     });
 
