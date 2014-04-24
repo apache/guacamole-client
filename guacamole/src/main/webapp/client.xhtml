@@ -62,6 +62,12 @@
         <div id="menu">
             <h2 id="menu-title">Guacamole ${project.version}</h2>
 
+            <h3>Clipboard</h3>
+            <div class="content" id="clipboard-settings">
+                <p class="description">Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
+                <textarea rows="10" cols="40" id="clipboard"></textarea>
+            </div>
+
             <h3>Input method</h3>
             <div class="content" id="keyboard-settings">
 
@@ -91,12 +97,6 @@
 
             </div>
 
-            <h3>Clipboard</h3>
-            <div class="content" id="clipboard-settings">
-                <p class="description">Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.</p>
-                <textarea rows="10" cols="40" id="clipboard"></textarea>
-            </div>
-
             <h3>Mouse emulation mode</h3>
             <div class="content" id="mouse-settings">
                 <p class="description">Determines how the remote mouse behaves with respect to touches.</p>
@@ -119,6 +119,16 @@
                     </div>
                 </div>
 
+            </div>
+
+            <h3>Display</h3>
+            <div class="content">
+                <div id="zoom-settings">
+                    <div id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>
+                    <div id="zoom-state">100%</div>
+                    <div id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
+                </div>
+                <div><label><input type="checkbox" id="auto-fit" checked="checked"/> Automatically fit to browser window</label></div>
             </div>
 
         </div>

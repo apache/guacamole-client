@@ -217,6 +217,10 @@ GuacUI.Client = {
     "ime_none_radio"    : document.getElementById("ime-none"),
     "ime_text_radio"    : document.getElementById("ime-text"),
     "ime_osk_radio"     : document.getElementById("ime-osk"),
+    "zoom_state"        : document.getElementById("zoom-state"),
+    "zoom_out"          : document.getElementById("zoom-out"),
+    "zoom_in"           : document.getElementById("zoom-in"),
+    "auto_fit"          : document.getElementById("auto-fit"),
 
     /* Expected Input Rectangle */
 

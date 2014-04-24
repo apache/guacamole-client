@@ -643,6 +643,42 @@ p.hint {
     max-width: 100%;
 }
 
+#zoom-settings {
+    text-align: center;
+}
+
+#zoom-out, #zoom-in, #zoom-state {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#zoom-out, #zoom-in {
+    max-width: 3em;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2em;
+    margin: 0.5em;
+    cursor: pointer;
+}
+
+#zoom-out img, #zoom-in img {
+    max-width: 100%;
+    opacity: 0.5;
+}
+
+#zoom-out:hover, #zoom-in:hover {
+    border: 1px solid rgba(0, 0, 0, 1);
+    background: #CDA;
+}
+
+#zoom-out:hover img, #zoom-in:hover img {
+    opacity: 1;
+}
+
+#zoom-state {
+    font-size: 2em;
+}
+
 #target {
     position: fixed;
     left: 0;
