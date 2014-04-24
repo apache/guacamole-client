@@ -789,6 +789,9 @@ GuacUI.Client.setScale = function(new_scale) {
     if (new_scale === GuacUI.Client.min_zoom)
         GuacUI.Client.auto_fit.checked = true;
 
+    // Disable auto-fit if zoom is required
+    GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1);
+
 };
 
 /**
@@ -2004,6 +2007,22 @@ GuacUI.Client.attach = function(guac) {
 
     }, false);
 
+    /*
+     * Zoom
+     */
+
+    GuacUI.Client.auto_fit.onclick =
+    GuacUI.Client.auto_fit.onchange = function() {
+
+        // If auto-fit enabled, zoom out as far as possible
+        if (GuacUI.Client.auto_fit.checked)
+            GuacUI.Client.setScale(0);
+
+        // Otherwise, zoom to 1:1
+        else
+            GuacUI.Client.setScale(1);
+
+    };
 
     // Prevent default on all touch events
     document.addEventListener("touchstart", function(e) {
