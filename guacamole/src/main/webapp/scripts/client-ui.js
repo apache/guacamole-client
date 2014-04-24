@@ -785,9 +785,8 @@ GuacUI.Client.setScale = function(new_scale) {
 
     GuacUI.Client.zoom_state.textContent = Math.round(new_scale * 100) + "%";
 
-    // Auto-fit is implicitly enabled at minimum zoom level
-    if (new_scale === GuacUI.Client.min_zoom)
-        GuacUI.Client.auto_fit.checked = true;
+    // Auto-fit is enabled iff minimum zoom level
+    GuacUI.Client.auto_fit.checked = (new_scale === GuacUI.Client.min_zoom);
 
     // Disable auto-fit if zoom is required
     GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1);
@@ -2021,6 +2020,24 @@ GuacUI.Client.attach = function(guac) {
         // Otherwise, zoom to 1:1
         else
             GuacUI.Client.setScale(1);
+
+    };
+
+    GuacUI.Client.zoom_in.onclick = function() {
+
+        // Zoom in by 10%
+        var guac = GuacUI.Client.attachedClient;
+        if (guac)
+            GuacUI.Client.setScale(guac.getScale() + 0.1);
+
+    };
+
+    GuacUI.Client.zoom_out.onclick = function() {
+
+        // Zoom out by 10%
+        var guac = GuacUI.Client.attachedClient;
+        if (guac)
+            GuacUI.Client.setScale(guac.getScale() - 0.1);
 
     };
 
