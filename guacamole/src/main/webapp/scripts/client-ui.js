@@ -225,7 +225,7 @@ GuacUI.Client = {
     "expected_input_width"  : 1,
     "expected_input_height" : 1,
 
-    "min_zoom"        : 0,
+    "min_zoom"        : 1,
     "max_zoom"        : 3,
 
     "connectionName"  : "Guacamole",
@@ -773,16 +773,18 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // Currently attacched client
     var guac = GuacUI.Client.attachedClient;
-    var adjusted_scale = 1 / (window.devicePixelRatio || 1);
 
     // Calculate scale to fit screen
-    GuacUI.Client.min_zoom = Math.min(
+    var min_zoom = Math.min(
         window.innerWidth  / guac.getWidth(),
         window.innerHeight / guac.getHeight()
     );
 
-    if (guac.getScale() < GuacUI.Client.min_zoom)
-        guac.scale(GuacUI.Client.min_zoom);
+    // Clamp scale to minimum zoom level, keep at minimum zoom if at minimum zoom before
+    if (guac.getScale() < min_zoom || guac.getScale() === GuacUI.Client.min_zoom)
+        guac.scale(min_zoom);
+
+    GuacUI.Client.min_zoom = min_zoom;
 
 };
 
