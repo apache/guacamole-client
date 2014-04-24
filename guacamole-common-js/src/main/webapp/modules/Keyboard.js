@@ -255,6 +255,14 @@ Guacamole.Keyboard = function(element) {
     this.pressed = {};
 
     /**
+     * The last result of calling the onkeydown handler for each key, indexed
+     * by keysym. This is used to prevent/allow default actions for key events,
+     * even when the onkeydown handler cannot be called again because the key
+     * is (theoretically) still pressed.
+     */
+    var last_keydown_result = {};
+
+    /**
      * The keysym associated with a given keycode when keydown fired.
      * @private
      */
@@ -383,6 +391,7 @@ Guacamole.Keyboard = function(element) {
             // Send key event
             if (guac_keyboard.onkeydown) {
                 var result = guac_keyboard.onkeydown(keysym);
+                last_keydown_result[keysym] = result;
 
                 // Stop any current repeat
                 window.clearTimeout(key_repeat_timeout);
@@ -401,7 +410,8 @@ Guacamole.Keyboard = function(element) {
             }
         }
 
-        return true;
+        // Return the last keydown result by default, resort to false if unknown
+        return last_keydown_result[keysym] || false;
 
     }
 
