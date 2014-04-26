@@ -785,11 +785,19 @@ GuacUI.Client.setScale = function(new_scale) {
 
     GuacUI.Client.zoom_state.textContent = Math.round(new_scale * 100) + "%";
 
-    // Auto-fit is enabled iff minimum zoom level
-    GuacUI.Client.auto_fit.checked = (new_scale === GuacUI.Client.min_zoom);
+    // If at minimum zoom level, auto fit is ON
+    if (new_scale === GuacUI.Client.min_zoom) {
+        GuacUI.Client.main.style.overflow = "hidden";
+        GuacUI.Client.auto_fit.checked = true;
+        GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1);
+    }
 
-    // Disable auto-fit if zoom is required
-    GuacUI.Client.auto_fit.disabled = (GuacUI.Client.min_zoom >= 1 && new_scale === GuacUI.Client.min_zoom);
+    // If at minimum zoom level, auto fit is OFF
+    else {
+        GuacUI.Client.main.style.overflow = "auto";
+        GuacUI.Client.auto_fit.checked = false;
+        GuacUI.Client.auto_fit.disabled = false;
+    }
 
 };
 
@@ -1524,29 +1532,21 @@ GuacUI.Client.attach = function(guac) {
      * Send size events on resize
      */
 
-    var resize_timeout = null;
-
     window.onresize = function() {
 
         // Remove scrollbars during resize
         GuacUI.Client.main.style.overflow = "hidden";
 
-        // Wait for resize to settle before updating
-        window.clearTimeout(resize_timeout);
-        resize_timeout = window.setTimeout(function() {
+        var pixel_density = window.devicePixelRatio || 1;
+        var width = window.innerWidth * pixel_density;
+        var height = window.innerHeight * pixel_density;
 
-            var pixel_density = window.devicePixelRatio || 1;
-            var width = window.innerWidth * pixel_density;
-            var height = window.innerHeight * pixel_density;
+        GuacUI.Client.main.style.overflow = "auto";
 
-            GuacUI.Client.main.style.overflow = "auto";
+        if (GuacUI.Client.attachedClient)
+            GuacUI.Client.attachedClient.sendSize(width, height);
 
-            if (GuacUI.Client.attachedClient)
-                GuacUI.Client.attachedClient.sendSize(width, height);
-
-            GuacUI.Client.updateDisplayScale();
-
-        }, 10);
+        GuacUI.Client.updateDisplayScale();
 
     };
 
