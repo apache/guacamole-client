@@ -422,7 +422,8 @@ div.section {
     opacity: 0.5;
 }
 
-.protocol .icon.ssh {
+.protocol .icon.ssh,
+.protocol .icon.telnet {
     background-image: url('../images/protocol-icons/guac-text.png');
 }
 

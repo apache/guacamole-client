@@ -69,7 +69,7 @@ public class List extends AuthenticatingHttpServlet {
      * Array of all known protocol names.
      */
     private static final String[] KNOWN_PROTOCOLS = new String[]{
-        "vnc", "rdp", "ssh"};
+        "vnc", "rdp", "ssh", "telnet"};
 
     /**
      * Parses the given XML file, returning the parsed ProtocolInfo.
