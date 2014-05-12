@@ -934,7 +934,7 @@ Guacamole.Client = function(tunnel) {
             var x = parseInt(parameters[1]);
             var y = parseInt(parameters[2]);
 
-            layer.moveTo(x, y);
+            display.moveTo(layer, x, y);
 
         },
 
@@ -974,28 +974,13 @@ Guacamole.Client = function(tunnel) {
 
             /* SRC */
             if (function_index === 0x3)
-                dstL.put(
-                    srcL,
-                    srcX,
-                    srcY,
-                    srcWidth, 
-                    srcHeight, 
-                    dstX,
-                    dstY
-                );
+                display.put(srcL, srcX, srcY, srcWidth, srcHeight, 
+                    dstL, dstX, dstY);
 
             /* Anything else that isn't a NO-OP */
             else if (function_index !== 0x5)
-                dstL.transfer(
-                    srcL,
-                    srcX,
-                    srcY,
-                    srcWidth, 
-                    srcHeight, 
-                    dstX,
-                    dstY,
-                    Guacamole.Client.DefaultTransferFunction[function_index]
-                );
+                display.transfer(srcL, srcX, srcY, srcWidth, srcHeight, 
+                    dstL, dstX, dstY, Guacamole.Client.DefaultTransferFunction[function_index]);
 
         },
 
@@ -1009,7 +994,7 @@ Guacamole.Client = function(tunnel) {
             var e = parseFloat(parameters[5]);
             var f = parseFloat(parameters[6]);
 
-            layer.transform(a, b, c, d, e, f);
+            display.transform(layer, a, b, c, d, e, f);
 
         },
 
