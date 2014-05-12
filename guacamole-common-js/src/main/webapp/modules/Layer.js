@@ -49,22 +49,14 @@ Guacamole.Layer = function(width, height) {
      * The canvas element backing this Layer.
      * @private
      */
-    var display = document.createElement("canvas");
+    var canvas = document.createElement("canvas");
 
     /**
      * The 2D display context of the canvas element backing this Layer.
      * @private
      */
-    var displayContext = display.getContext("2d");
-    displayContext.save();
-
-    /**
-     * The queue of all pending Tasks. Tasks will be run in order, with new
-     * tasks added at the end of the queue and old tasks removed from the
-     * front of the queue (FIFO).
-     * @private
-     */
-    var tasks = new Array();
+    var context = canvas.getContext("2d");
+    context.save();
 
     /**
      * Whether a new path should be started with the next path drawing
@@ -120,7 +112,7 @@ Guacamole.Layer = function(width, height) {
 
         // Only preserve old data if width/height are both non-zero
         var oldData = null;
-        if (width != 0 && height != 0) {
+        if (width !== 0 && height !== 0) {
 
             // Create canvas and context for holding old data
             oldData = document.createElement("canvas");
@@ -130,34 +122,34 @@ Guacamole.Layer = function(width, height) {
             var oldDataContext = oldData.getContext("2d");
 
             // Copy image data from current
-            oldDataContext.drawImage(display,
+            oldDataContext.drawImage(canvas,
                     0, 0, width, height,
                     0, 0, width, height);
 
         }
 
         // Preserve composite operation
-        var oldCompositeOperation = displayContext.globalCompositeOperation;
+        var oldCompositeOperation = context.globalCompositeOperation;
 
         // Resize canvas
-        display.width = newWidth;
-        display.height = newHeight;
+        canvas.width = newWidth;
+        canvas.height = newHeight;
 
         // Redraw old data, if any
         if (oldData)
-                displayContext.drawImage(oldData, 
+                context.drawImage(oldData, 
                     0, 0, width, height,
                     0, 0, width, height);
 
         // Restore composite operation
-        displayContext.globalCompositeOperation = oldCompositeOperation;
+        context.globalCompositeOperation = oldCompositeOperation;
 
         width = newWidth;
         height = newHeight;
 
         // Acknowledge reset of stack (happens on resize of canvas)
         stackSize = 0;
-        displayContext.save();
+        context.save();
 
     }
 
@@ -198,190 +190,9 @@ Guacamole.Layer = function(width, height) {
             resizeHeight = height;
 
         // Resize if necessary
-        if (resizeWidth != width || resizeHeight != height)
+        if (resizeWidth !== width || resizeHeight !== height)
             resize(resizeWidth, resizeHeight);
 
-    }
-
-    /**
-     * A container for an task handler. Each operation which must be ordered
-     * is associated with a Task that goes into a task queue. Tasks in this
-     * queue are executed in order once their handlers are set, while Tasks 
-     * without handlers block themselves and any following Tasks from running.
-     *
-     * @constructor
-     * @private
-     * @param {function} taskHandler The function to call when this task 
-     *                               runs, if any.
-     * @param {boolean} blocked Whether this task should start blocked.
-     */
-    function Task(taskHandler, blocked) {
-       
-        var task = this;
-       
-        /**
-         * Whether this Task is blocked.
-         * 
-         * @type boolean
-         */
-        this.blocked = blocked;
-
-        /**
-         * The handler this Task is associated with, if any.
-         * 
-         * @type function
-         */
-        this.handler = taskHandler;
-       
-        /**
-         * Unblocks this Task, allowing it to run.
-         */
-        this.unblock = function() {
-            if (task.blocked) {
-                task.blocked = false;
-
-                // Flush automatically if enabled
-                if (layer.autoflush || !flushComplete)
-                    layer.flush();
-
-            }
-        }
-
-    }
-
-    /**
-     * If no tasks are pending or running, run the provided handler immediately,
-     * if any. Otherwise, schedule a task to run immediately after all currently
-     * running or pending tasks are complete.
-     * 
-     * @private
-     * @param {function} handler The function to call when possible, if any.
-     * @param {boolean} blocked Whether the task should start blocked.
-     * @returns {Task} The Task created and added to the queue for future
-     *                 running, if any, or null if the handler was run
-     *                 immediately and no Task needed to be created.
-     */
-    function scheduleTask(handler, blocked) {
-        
-        // If no pending tasks, just call (if available) and exit
-        if (layer.autoflush && layer.isReady() && !blocked) {
-            if (handler) handler();
-            return null;
-        }
-
-        // If tasks are pending/executing, schedule a pending task
-        // and return a reference to it.
-        var task = new Task(handler, blocked);
-        tasks.push(task);
-        return task;
-        
-    }
-
-    /**
-     * Whether all previous calls to flush() have completed. If a task was
-     * waiting in the queue when flush() was called but still blocked, the
-     * queue will continue to flush outside the original flush() call until
-     * the queue is empty.
-     * 
-     * @private
-     */
-    var flushComplete = true;
-
-    /**
-     * Whether tasks are currently being actively flushed. As flush() is not
-     * reentrant, this flag prevents calls of flush() from overlapping.
-     * @private
-     */
-    var tasksInProgress = false;
-
-    /**
-     * Run any Tasks which were pending but are now ready to run and are not
-     * blocked by other Tasks.
-     */
-    this.flush = function() {
-
-        if (tasksInProgress)
-            return;
-
-        tasksInProgress = true;
-        flushComplete = false;
-
-        // Draw all pending tasks.
-        var task;
-        while ((task = tasks[0]) != null && !task.blocked) {
-            tasks.shift();
-            if (task.handler) task.handler();
-        }
-
-        // If all pending draws have been flushed
-        if (layer.isReady())
-            flushComplete = true;
-
-        tasksInProgress = false;
-
-    };
-
-    /**
-     * Schedules a task within the current layer just as scheduleTast() does,
-     * except that another specified layer will be blocked until this task
-     * completes, and this task will not start until the other layer is
-     * ready.
-     * 
-     * Essentially, a task is scheduled in both layers, and the specified task
-     * will only be performed once both layers are ready, and neither layer may
-     * proceed until this task completes.
-     * 
-     * Note that there is no way to specify whether the task starts blocked,
-     * as whether the task is blocked depends completely on whether the
-     * other layer is currently ready.
-     * 
-     * @private
-     * @param {Guacamole.Layer} otherLayer The other layer which must be blocked
-     *                          until this task completes.
-     * @param {function} handler The function to call when possible.
-     */
-    function scheduleTaskSynced(otherLayer, handler) {
-
-        // If we ARE the other layer, no need to sync.
-        // Syncing would result in deadlock.
-        if (layer === otherLayer)
-            scheduleTask(handler);
-
-        // Otherwise synchronize operation with other layer
-        else {
-
-            var drawComplete = false;
-            var layerLock = null;
-
-            function performTask() {
-
-                // Perform task
-                handler();
-
-                // Unblock the other layer now that draw is complete
-                if (layerLock != null) 
-                    layerLock.unblock();
-
-                // Flag operation as done
-                drawComplete = true;
-
-            }
-
-            // Currently blocked draw task
-            var task = scheduleTask(performTask, true);
-
-            // Unblock draw task once source layer is ready
-            otherLayer.sync(task.unblock);
-
-            // Block other layer until draw completes
-            // Note that the draw MAY have already been performed at this point,
-            // in which case creating a lock on the other layer will lead to
-            // deadlock (the draw task has already run and will thus never
-            // clear the lock)
-            if (!drawComplete)
-                layerLock = otherLayer.sync(null, true);
-
-        }
     }
 
     /**
@@ -406,31 +217,11 @@ Guacamole.Layer = function(width, height) {
     this.autosize = false;
 
     /**
-     * Set to true to allow operations to flush automatically, instantly
-     * affecting the layer. By default, operations are buffered and only
-     * drawn when flush() is called.
-     * 
-     * @type Boolean
-     * @default false
-     */
-    this.autoflush = false;
-
-    /**
      * Returns the canvas element backing this Layer.
      * @returns {Element} The canvas element backing this Layer.
      */
     this.getCanvas = function() {
-        return display;
-    };
-
-    /**
-     * Returns whether this Layer is ready. A Layer is ready if it has no
-     * pending operations and no operations in-progress.
-     * 
-     * @returns {Boolean} true if this Layer is ready, false otherwise.
-     */
-    this.isReady = function() {
-        return tasks.length == 0;
+        return canvas;
     };
 
     /**
@@ -442,10 +233,8 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} newHeight The new height to assign to this Layer.
      */
     this.resize = function(newWidth, newHeight) {
-        scheduleTask(function() {
-            if (newWidth != width || newHeight != height)
-                resize(newWidth, newHeight);
-        });
+        if (newWidth !== width || newHeight !== height)
+            resize(newWidth, newHeight);
     };
 
     /**
@@ -458,93 +247,9 @@ Guacamole.Layer = function(width, height) {
      *                      object - not a URL.
      */
     this.drawImage = function(x, y, image) {
-        scheduleTask(function() {
-            if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
-            displayContext.drawImage(image, x, y);
-        });
+        if (layer.autosize) fitRect(x, y, image.width, image.height);
+        context.drawImage(image, x, y);
     };
-
-    /**
-     * Draws the image at the specified URL at the given coordinates. The image
-     * will be loaded automatically, and this and any future operations will
-     * wait for the image to finish loading.
-     * 
-     * @param {Number} x The destination X coordinate.
-     * @param {Number} y The destination Y coordinate.
-     * @param {String} url The URL of the image to draw.
-     */
-    this.draw = function(x, y, url) {
-
-        var task = scheduleTask(function() {
-            if (layer.autosize != 0) fitRect(x, y, image.width, image.height);
-            displayContext.drawImage(image, x, y);
-        }, true);
-
-        var image = new Image();
-        image.onload = task.unblock;
-        image.src = url;
-
-    };
-
-    /**
-     * Plays the video at the specified URL within this layer. The video
-     * will be loaded automatically, and this and any future operations will
-     * wait for the video to finish loading. Future operations will not be
-     * executed until the video finishes playing.
-     * 
-     * @param {String} mimetype The mimetype of the video to play.
-     * @param {Number} duration The duration of the video in milliseconds.
-     * @param {String} url The URL of the video to play.
-     */
-    this.play = function(mimetype, duration, url) {
-
-        // Start loading the video
-        var video = document.createElement("video");
-        video.type = mimetype;
-        video.src = url;
-
-        // Main task - playing the video
-        var task = scheduleTask(function() {
-            video.play();
-        }, true);
-
-        // Lock which will be cleared after video ends
-        var lock = scheduleTask(null, true);
-
-        // Start copying frames when playing
-        video.addEventListener("play", function() {
-            
-            function render_callback() {
-                displayContext.drawImage(video, 0, 0, width, height);
-                if (!video.ended)
-                    window.setTimeout(render_callback, 20);
-                else
-                    lock.unblock();
-            }
-            
-            render_callback();
-            
-        }, false);
-
-        // Unblock future operations after an error
-        video.addEventListener("error", lock.unblock, false);
-
-        // Play video as soon as current tasks are complete, now that the
-        // lock has been set up.
-        task.unblock();
-
-    };
-
-    /**
-     * Run an arbitrary function as soon as currently pending operations
-     * are complete.
-     *
-     * @function 
-     * @param {function} handler The function to call once all currently
-     *                           pending operations are complete.
-     * @param {boolean} blocked Whether the task should start blocked.
-     */
-    this.sync = scheduleTask;
 
     /**
      * Transfer a rectangle of image data from one Layer to this Layer using the
@@ -568,63 +273,61 @@ Guacamole.Layer = function(width, height) {
      *                                    destination.
      */
     this.transfer = function(srcLayer, srcx, srcy, srcw, srch, x, y, transferFunction) {
-        scheduleTaskSynced(srcLayer, function() {
 
-            var srcCanvas = srcLayer.getCanvas();
+        var srcCanvas = srcLayer.getCanvas();
 
-            // If entire rectangle outside source canvas, stop
-            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+        // If entire rectangle outside source canvas, stop
+        if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
 
-            // Otherwise, clip rectangle to area
-            if (srcx + srcw > srcCanvas.width)
-                srcw = srcCanvas.width - srcx;
+        // Otherwise, clip rectangle to area
+        if (srcx + srcw > srcCanvas.width)
+            srcw = srcCanvas.width - srcx;
 
-            if (srcy + srch > srcCanvas.height)
-                srch = srcCanvas.height - srcy;
+        if (srcy + srch > srcCanvas.height)
+            srch = srcCanvas.height - srcy;
 
-            // Stop if nothing to draw.
-            if (srcw == 0 || srch == 0) return;
+        // Stop if nothing to draw.
+        if (srcw === 0 || srch === 0) return;
 
-            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+        if (layer.autosize) fitRect(x, y, srcw, srch);
 
-            // Get image data from src and dst
-            var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
-            var dst = displayContext.getImageData(x , y, srcw, srch);
+        // Get image data from src and dst
+        var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+        var dst = context.getImageData(x , y, srcw, srch);
 
-            // Apply transfer for each pixel
-            for (var i=0; i<srcw*srch*4; i+=4) {
+        // Apply transfer for each pixel
+        for (var i=0; i<srcw*srch*4; i+=4) {
 
-                // Get source pixel environment
-                var src_pixel = new Guacamole.Layer.Pixel(
-                    src.data[i],
-                    src.data[i+1],
-                    src.data[i+2],
-                    src.data[i+3]
-                );
-                    
-                // Get destination pixel environment
-                var dst_pixel = new Guacamole.Layer.Pixel(
-                    dst.data[i],
-                    dst.data[i+1],
-                    dst.data[i+2],
-                    dst.data[i+3]
-                );
+            // Get source pixel environment
+            var src_pixel = new Guacamole.Layer.Pixel(
+                src.data[i],
+                src.data[i+1],
+                src.data[i+2],
+                src.data[i+3]
+            );
+                
+            // Get destination pixel environment
+            var dst_pixel = new Guacamole.Layer.Pixel(
+                dst.data[i],
+                dst.data[i+1],
+                dst.data[i+2],
+                dst.data[i+3]
+            );
 
-                // Apply transfer function
-                transferFunction(src_pixel, dst_pixel);
+            // Apply transfer function
+            transferFunction(src_pixel, dst_pixel);
 
-                // Save pixel data
-                dst.data[i  ] = dst_pixel.red;
-                dst.data[i+1] = dst_pixel.green;
-                dst.data[i+2] = dst_pixel.blue;
-                dst.data[i+3] = dst_pixel.alpha;
+            // Save pixel data
+            dst.data[i  ] = dst_pixel.red;
+            dst.data[i+1] = dst_pixel.green;
+            dst.data[i+2] = dst_pixel.blue;
+            dst.data[i+3] = dst_pixel.alpha;
 
-            }
+        }
 
-            // Draw image data
-            displayContext.putImageData(dst, x, y);
+        // Draw image data
+        context.putImageData(dst, x, y);
 
-        });
     };
 
     /**
@@ -646,30 +349,28 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The destination Y coordinate.
      */
     this.put = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
-        scheduleTaskSynced(srcLayer, function() {
 
-            var srcCanvas = srcLayer.getCanvas();
+        var srcCanvas = srcLayer.getCanvas();
 
-            // If entire rectangle outside source canvas, stop
-            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+        // If entire rectangle outside source canvas, stop
+        if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
 
-            // Otherwise, clip rectangle to area
-            if (srcx + srcw > srcCanvas.width)
-                srcw = srcCanvas.width - srcx;
+        // Otherwise, clip rectangle to area
+        if (srcx + srcw > srcCanvas.width)
+            srcw = srcCanvas.width - srcx;
 
-            if (srcy + srch > srcCanvas.height)
-                srch = srcCanvas.height - srcy;
+        if (srcy + srch > srcCanvas.height)
+            srch = srcCanvas.height - srcy;
 
-            // Stop if nothing to draw.
-            if (srcw == 0 || srch == 0) return;
+        // Stop if nothing to draw.
+        if (srcw === 0 || srch === 0) return;
 
-            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
+        if (layer.autosize) fitRect(x, y, srcw, srch);
 
-            // Get image data from src and dst
-            var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
-            displayContext.putImageData(src, x, y);
+        // Get image data from src and dst
+        var src = srcLayer.getCanvas().getContext("2d").getImageData(srcx, srcy, srcw, srch);
+        context.putImageData(src, x, y);
 
-        });
     };
 
     /**
@@ -694,27 +395,25 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The destination Y coordinate.
      */
     this.copy = function(srcLayer, srcx, srcy, srcw, srch, x, y) {
-        scheduleTaskSynced(srcLayer, function() {
 
-            var srcCanvas = srcLayer.getCanvas();
+        var srcCanvas = srcLayer.getCanvas();
 
-            // If entire rectangle outside source canvas, stop
-            if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
+        // If entire rectangle outside source canvas, stop
+        if (srcx >= srcCanvas.width || srcy >= srcCanvas.height) return;
 
-            // Otherwise, clip rectangle to area
-            if (srcx + srcw > srcCanvas.width)
-                srcw = srcCanvas.width - srcx;
+        // Otherwise, clip rectangle to area
+        if (srcx + srcw > srcCanvas.width)
+            srcw = srcCanvas.width - srcx;
 
-            if (srcy + srch > srcCanvas.height)
-                srch = srcCanvas.height - srcy;
+        if (srcy + srch > srcCanvas.height)
+            srch = srcCanvas.height - srcy;
 
-            // Stop if nothing to draw.
-            if (srcw == 0 || srch == 0) return;
+        // Stop if nothing to draw.
+        if (srcw === 0 || srch === 0) return;
 
-            if (layer.autosize != 0) fitRect(x, y, srcw, srch);
-            displayContext.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
+        if (layer.autosize) fitRect(x, y, srcw, srch);
+        context.drawImage(srcCanvas, srcx, srcy, srcw, srch, x, y, srcw, srch);
 
-        });
     };
 
     /**
@@ -724,18 +423,16 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The Y coordinate of the point to draw.
      */
     this.moveTo = function(x, y) {
-        scheduleTask(function() {
-            
-            // Start a new path if current path is closed
-            if (pathClosed) {
-                displayContext.beginPath();
-                pathClosed = false;
-            }
-            
-            if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.moveTo(x, y);
-            
-        });
+        
+        // Start a new path if current path is closed
+        if (pathClosed) {
+            context.beginPath();
+            pathClosed = false;
+        }
+        
+        if (layer.autosize) fitRect(x, y, 0, 0);
+        context.moveTo(x, y);
+
     };
 
     /**
@@ -745,18 +442,16 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The Y coordinate of the endpoint of the line to draw.
      */
     this.lineTo = function(x, y) {
-        scheduleTask(function() {
-            
-            // Start a new path if current path is closed
-            if (pathClosed) {
-                displayContext.beginPath();
-                pathClosed = false;
-            }
-            
-            if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.lineTo(x, y);
-            
-        });
+        
+        // Start a new path if current path is closed
+        if (pathClosed) {
+            context.beginPath();
+            pathClosed = false;
+        }
+        
+        if (layer.autosize) fitRect(x, y, 0, 0);
+        context.lineTo(x, y);
+        
     };
 
     /**
@@ -773,18 +468,16 @@ Guacamole.Layer = function(width, height) {
      *                           decreasing angle.
      */
     this.arc = function(x, y, radius, startAngle, endAngle, negative) {
-        scheduleTask(function() {
-            
-            // Start a new path if current path is closed
-            if (pathClosed) {
-                displayContext.beginPath();
-                pathClosed = false;
-            }
-            
-            if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.arc(x, y, radius, startAngle, endAngle, negative);
-            
-        });
+        
+        // Start a new path if current path is closed
+        if (pathClosed) {
+            context.beginPath();
+            pathClosed = false;
+        }
+        
+        if (layer.autosize) fitRect(x, y, 0, 0);
+        context.arc(x, y, radius, startAngle, endAngle, negative);
+        
     };
 
     /**
@@ -798,18 +491,16 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} y The Y coordinate of the endpoint of the curve.
      */
     this.curveTo = function(cp1x, cp1y, cp2x, cp2y, x, y) {
-        scheduleTask(function() {
-            
-            // Start a new path if current path is closed
-            if (pathClosed) {
-                displayContext.beginPath();
-                pathClosed = false;
-            }
-            
-            if (layer.autosize != 0) fitRect(x, y, 0, 0);
-            displayContext.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
-            
-        });
+        
+        // Start a new path if current path is closed
+        if (pathClosed) {
+            context.beginPath();
+            pathClosed = false;
+        }
+        
+        if (layer.autosize) fitRect(x, y, 0, 0);
+        context.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+        
     };
 
     /**
@@ -817,13 +508,8 @@ Guacamole.Layer = function(width, height) {
      * point (if any) with a straight line.
      */
     this.close = function() {
-        scheduleTask(function() {
-            
-            // Close path
-            displayContext.closePath();
-            pathClosed = true;
-            
-        });
+        context.closePath();
+        pathClosed = true;
     };
 
     /**
@@ -837,18 +523,16 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} h The height of the rectangle to draw.
      */
     this.rect = function(x, y, w, h) {
-        scheduleTask(function() {
             
-            // Start a new path if current path is closed
-            if (pathClosed) {
-                displayContext.beginPath();
-                pathClosed = false;
-            }
-            
-            if (layer.autosize != 0) fitRect(x, y, w, h);
-            displayContext.rect(x, y, w, h);
-            
-        });
+        // Start a new path if current path is closed
+        if (pathClosed) {
+            context.beginPath();
+            pathClosed = false;
+        }
+        
+        if (layer.autosize) fitRect(x, y, w, h);
+        context.rect(x, y, w, h);
+        
     };
 
     /**
@@ -858,15 +542,13 @@ Guacamole.Layer = function(width, height) {
      * once a path drawing operation (path() or rect()) is used.
      */
     this.clip = function() {
-        scheduleTask(function() {
 
-            // Set new clipping region
-            displayContext.clip();
+        // Set new clipping region
+        context.clip();
 
-            // Path now implicitly closed
-            pathClosed = true;
+        // Path now implicitly closed
+        pathClosed = true;
 
-        });
     };
 
     /**
@@ -886,19 +568,17 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} a The alpha component of the color to fill.
      */
     this.strokeColor = function(cap, join, thickness, r, g, b, a) {
-        scheduleTask(function() {
 
-            // Stroke with color
-            displayContext.lineCap = cap;
-            displayContext.lineJoin = join;
-            displayContext.lineWidth = thickness;
-            displayContext.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
-            displayContext.stroke();
+        // Stroke with color
+        context.lineCap = cap;
+        context.lineJoin = join;
+        context.lineWidth = thickness;
+        context.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
+        context.stroke();
 
-            // Path now implicitly closed
-            pathClosed = true;
+        // Path now implicitly closed
+        pathClosed = true;
 
-        });
     };
 
     /**
@@ -913,16 +593,14 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} a The alpha component of the color to fill.
      */
     this.fillColor = function(r, g, b, a) {
-        scheduleTask(function() {
 
-            // Fill with color
-            displayContext.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
-            displayContext.fill();
+        // Fill with color
+        context.fillStyle = "rgba(" + r + "," + g + "," + b + "," + a/255.0 + ")";
+        context.fill();
 
-            // Path now implicitly closed
-            pathClosed = true;
+        // Path now implicitly closed
+        pathClosed = true;
 
-        });
     };
 
     /**
@@ -941,22 +619,20 @@ Guacamole.Layer = function(width, height) {
      *                                   within the stroke.
      */
     this.strokeLayer = function(cap, join, thickness, srcLayer) {
-        scheduleTaskSynced(srcLayer, function() {
 
-            // Stroke with image data
-            displayContext.lineCap = cap;
-            displayContext.lineJoin = join;
-            displayContext.lineWidth = thickness;
-            displayContext.strokeStyle = displayContext.createPattern(
-                srcLayer.getCanvas(),
-                "repeat"
-            );
-            displayContext.stroke();
+        // Stroke with image data
+        context.lineCap = cap;
+        context.lineJoin = join;
+        context.lineWidth = thickness;
+        context.strokeStyle = context.createPattern(
+            srcLayer.getCanvas(),
+            "repeat"
+        );
+        context.stroke();
 
-            // Path now implicitly closed
-            pathClosed = true;
+        // Path now implicitly closed
+        pathClosed = true;
 
-        });
     };
 
     /**
@@ -970,47 +646,41 @@ Guacamole.Layer = function(width, height) {
      *                                   within the fill.
      */
     this.fillLayer = function(srcLayer) {
-        scheduleTask(function() {
 
-            // Fill with image data 
-            displayContext.fillStyle = displayContext.createPattern(
-                srcLayer.getCanvas(),
-                "repeat"
-            );
-            displayContext.fill();
+        // Fill with image data 
+        context.fillStyle = context.createPattern(
+            srcLayer.getCanvas(),
+            "repeat"
+        );
+        context.fill();
 
-            // Path now implicitly closed
-            pathClosed = true;
+        // Path now implicitly closed
+        pathClosed = true;
 
-        });
     };
 
     /**
      * Push current layer state onto stack.
      */
     this.push = function() {
-        scheduleTask(function() {
 
-            // Save current state onto stack
-            displayContext.save();
-            stackSize++;
+        // Save current state onto stack
+        context.save();
+        stackSize++;
 
-        });
     };
 
     /**
      * Pop layer state off stack.
      */
     this.pop = function() {
-        scheduleTask(function() {
 
-            // Restore current state from stack
-            if (stackSize > 0) {
-                displayContext.restore();
-                stackSize--;
-            }
+        // Restore current state from stack
+        if (stackSize > 0) {
+            context.restore();
+            stackSize--;
+        }
 
-        });
     };
 
     /**
@@ -1018,23 +688,21 @@ Guacamole.Layer = function(width, height) {
      * matrix.
      */
     this.reset = function() {
-        scheduleTask(function() {
 
-            // Clear stack
-            while (stackSize > 0) {
-                displayContext.restore();
-                stackSize--;
-            }
+        // Clear stack
+        while (stackSize > 0) {
+            context.restore();
+            stackSize--;
+        }
 
-            // Restore to initial state
-            displayContext.restore();
-            displayContext.save();
+        // Restore to initial state
+        context.restore();
+        context.save();
 
-            // Clear path
-            displayContext.beginPath();
-            pathClosed = false;
+        // Clear path
+        context.beginPath();
+        pathClosed = false;
 
-        });
     };
 
     /**
@@ -1049,16 +717,11 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} f The sixth value in the affine transform's matrix.
      */
     this.setTransform = function(a, b, c, d, e, f) {
-        scheduleTask(function() {
-
-            // Set transform
-            displayContext.setTransform(
-                a, b, c,
-                d, e, f
-              /*0, 0, 1*/
-            );
-
-        });
+        context.setTransform(
+            a, b, c,
+            d, e, f
+          /*0, 0, 1*/
+        );
     };
 
     /**
@@ -1073,16 +736,11 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} f The sixth value in the affine transform's matrix.
      */
     this.transform = function(a, b, c, d, e, f) {
-        scheduleTask(function() {
-
-            // Apply transform
-            displayContext.transform(
-                a, b, c,
-                d, e, f
-              /*0, 0, 1*/
-            );
-
-        });
+        context.transform(
+            a, b, c,
+            d, e, f
+          /*0, 0, 1*/
+        );
     };
 
     /**
@@ -1098,9 +756,7 @@ Guacamole.Layer = function(width, height) {
      *                      Layer.
      */
     this.setChannelMask = function(mask) {
-        scheduleTask(function() {
-            displayContext.globalCompositeOperation = compositeOperation[mask];
-        });
+        context.globalCompositeOperation = compositeOperation[mask];
     };
 
     /**
@@ -1113,19 +769,17 @@ Guacamole.Layer = function(width, height) {
      *                       miter join.
      */
     this.setMiterLimit = function(limit) {
-        scheduleTask(function() {
-            displayContext.miterLimit = limit;
-        });
+        context.miterLimit = limit;
     };
 
     // Initialize canvas dimensions
-    display.width = width;
-    display.height = height;
+    canvas.width = width;
+    canvas.height = height;
 
     // Explicitly render canvas below other elements in the layer (such as
     // child layers). Chrome and others may fail to render layers properly
     // without this.
-    display.style.zIndex = -1;
+    canvas.style.zIndex = -1;
 
 };
 
@@ -1237,3 +891,7 @@ Guacamole.Layer.Pixel = function(r, g, b, a) {
     this.alpha = a;
 
 };
+
+
+// FIXME: Declaration order hack
+Guacamole.Display.VisibleLayer.prototype = new Guacamole.Layer(0, 0);

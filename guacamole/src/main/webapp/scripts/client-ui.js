@@ -742,7 +742,7 @@ GuacUI.Client.Pinch = function(element) {
 GuacUI.Client.updateThumbnail = function() {
 
     // Get screenshot
-    var canvas = GuacUI.Client.attachedClient.flatten();
+    var canvas = GuacUI.Client.attachedClient.getDisplay().flatten();
 
     // Calculate scale of thumbnail (max 320x240, max zoom 100%)
     var scale = Math.min(
@@ -781,7 +781,7 @@ GuacUI.Client.setScale = function(new_scale) {
     new_scale = Math.min(new_scale, GuacUI.Client.max_zoom);
 
     if (GuacUI.Client.attachedClient)
-        GuacUI.Client.attachedClient.scale(new_scale);
+        GuacUI.Client.attachedClient.getDisplay().scale(new_scale);
 
     GuacUI.Client.zoom_state.textContent = Math.round(new_scale * 100) + "%";
 
@@ -809,22 +809,22 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // Determine whether display is currently fit to the screen
     var guac = GuacUI.Client.attachedClient;
-    var auto_fit = (guac.getScale() === GuacUI.Client.min_zoom);
+    var auto_fit = (guac.getDisplay().getScale() === GuacUI.Client.min_zoom);
 
     // Calculate scale to fit screen
     GuacUI.Client.min_zoom = Math.min(
-        window.innerWidth  / Math.max(guac.getWidth(), 1),
-        window.innerHeight / Math.max(guac.getHeight(), 1)
+        window.innerWidth  / Math.max(guac.getDisplay().getWidth(), 1),
+        window.innerHeight / Math.max(guac.getDisplay().getHeight(), 1)
     );
 
     // Calculate appropriate maximum zoom level
     GuacUI.Client.max_zoom = Math.max(GuacUI.Client.min_zoom, 3);
 
     // Clamp zoom level, maintain auto-fit
-    if (guac.getScale() < GuacUI.Client.min_zoom || auto_fit)
+    if (guac.getDisplay().getScale() < GuacUI.Client.min_zoom || auto_fit)
         GuacUI.Client.setScale(GuacUI.Client.min_zoom);
 
-    else if (guac.getScale() > GuacUI.Client.max_zoom)
+    else if (guac.getDisplay().getScale() > GuacUI.Client.max_zoom)
         GuacUI.Client.setScale(GuacUI.Client.max_zoom);
 
 };
@@ -1055,7 +1055,7 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
         if (!guac) return;
    
         // Determine mouse position within view
-        var guac_display = guac.getDisplay();
+        var guac_display = guac.getDisplay().getElement();
         var mouse_view_x = mouseState.x + guac_display.offsetLeft - GuacUI.Client.main.scrollLeft;
         var mouse_view_y = mouseState.y + guac_display.offsetTop  - GuacUI.Client.main.scrollTop;
 
@@ -1087,8 +1087,8 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
 
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
-                mouseState.x / guac.getScale(),
-                mouseState.y / guac.getScale(),
+                mouseState.x / guac.getDisplay().getScale(),
+                mouseState.y / guac.getDisplay().getScale(),
                 mouseState.left,
                 mouseState.middle,
                 mouseState.right,
@@ -1147,13 +1147,13 @@ GuacUI.Client.attach = function(guac) {
     GuacUI.Client.attachedClient = guac;
 
     // Get display element
-    var guac_display = guac.getDisplay();
+    var guac_display = guac.getDisplay().getElement();
 
     /*
      * Update the scale of the display when the client display size changes.
      */
 
-    guac.onresize = function(width, height) {
+    guac.getDisplay().onresize = function(width, height) {
         GuacUI.Client.updateDisplayScale();
     };
 
@@ -1332,8 +1332,8 @@ GuacUI.Client.attach = function(guac) {
 
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
-                mouseState.x / guac.getScale(),
-                mouseState.y / guac.getScale(),
+                mouseState.x / guac.getDisplay().getScale(),
+                mouseState.y / guac.getDisplay().getScale(),
                 mouseState.left,
                 mouseState.middle,
                 mouseState.right,
@@ -1353,8 +1353,8 @@ GuacUI.Client.attach = function(guac) {
     GuacUI.Client.display.innerHTML = "";
 
     // Add client to UI
-    guac.getDisplay().className = "software-cursor";
-    GuacUI.Client.display.appendChild(guac.getDisplay());
+    guac.getDisplay().getElement().className = "software-cursor";
+    GuacUI.Client.display.appendChild(guac.getDisplay().getElement());
 
 };
 
@@ -1698,7 +1698,7 @@ GuacUI.Client.attach = function(guac) {
         if (!guac)
             return;
 
-        initial_scale = guac.getScale();
+        initial_scale = guac.getDisplay().getScale();
         initial_center_x = (x + GuacUI.Client.main.scrollLeft) / initial_scale;
         initial_center_y = (y + GuacUI.Client.main.scrollTop) / initial_scale;
     };
@@ -2031,7 +2031,7 @@ GuacUI.Client.attach = function(guac) {
         // Zoom in by 10%
         var guac = GuacUI.Client.attachedClient;
         if (guac)
-            GuacUI.Client.setScale(guac.getScale() + 0.1);
+            GuacUI.Client.setScale(guac.getDisplay().getScale() + 0.1);
 
     };
 
@@ -2040,7 +2040,7 @@ GuacUI.Client.attach = function(guac) {
         // Zoom out by 10%
         var guac = GuacUI.Client.attachedClient;
         if (guac)
-            GuacUI.Client.setScale(guac.getScale() - 0.1);
+            GuacUI.Client.setScale(guac.getDisplay().getScale() - 0.1);
 
     };
 

@@ -23,9 +23,9 @@
 var Guacamole = Guacamole || {};
 
 /**
- * Guacamole protocol client. Given a display element and {@link Guacamole.Tunnel},
+ * Guacamole protocol client. Given a {@link Guacamole.Tunnel},
  * automatically handles incoming and outgoing Guacamole instructions via the
- * provided tunnel, updating the display using one or more canvas elements.
+ * provided tunnel, updating its display using one or more canvas elements.
  * 
  * @constructor
  * @param {Guacamole.Tunnel} tunnel The tunnel to use to send and receive
@@ -47,10 +47,6 @@ Guacamole.Client = function(tunnel) {
     var currentTimestamp = 0;
     var pingInterval = null;
 
-    var displayWidth = 0;
-    var displayHeight = 0;
-    var displayScale = 1;
-
     /**
      * Translation from Guacamole protocol line caps to Layer line caps.
      * @private
@@ -71,62 +67,16 @@ Guacamole.Client = function(tunnel) {
         2: "round"
     };
 
-    // Create bounding div 
-    var bounds = document.createElement("div");
-    bounds.style.position = "relative";
-    bounds.style.width = (displayWidth*displayScale) + "px";
-    bounds.style.height = (displayHeight*displayScale) + "px";
+    /**
+     * The underlying Guacamole display.
+     */
+    var display = new Guacamole.Display();
 
-    // Create display
-    var display = document.createElement("div");
-    display.style.position = "relative";
-    display.style.width = displayWidth + "px";
-    display.style.height = displayHeight + "px";
-
-    // Ensure transformations on display originate at 0,0
-    display.style.transformOrigin =
-    display.style.webkitTransformOrigin =
-    display.style.MozTransformOrigin =
-    display.style.OTransformOrigin =
-    display.style.msTransformOrigin =
-        "0 0";
-
-    // Create default layer
-    var default_layer_container = new Guacamole.Client.LayerContainer(0, displayWidth, displayHeight);
-
-    // Position default layer
-    var default_layer_container_element = default_layer_container.getElement();
-    default_layer_container_element.style.position = "absolute";
-    default_layer_container_element.style.left = "0px";
-    default_layer_container_element.style.top  = "0px";
-    default_layer_container_element.style.overflow = "hidden";
-    default_layer_container_element.style.zIndex = "0";
-
-    // Create cursor layer
-    var cursor = new Guacamole.Client.LayerContainer(null, 0, 0);
-    cursor.getLayer().setChannelMask(Guacamole.Layer.SRC);
-    cursor.getLayer().autoflush = true;
-
-    // Position cursor layer
-    var cursor_element = cursor.getElement();
-    cursor_element.style.position = "absolute";
-    cursor_element.style.left = "0px";
-    cursor_element.style.top  = "0px";
-    cursor_element.style.zIndex = "1";
-
-    // Add default layer and cursor to display
-    display.appendChild(default_layer_container.getElement());
-    display.appendChild(cursor.getElement());
-
-    // Add display to bounds
-    bounds.appendChild(display);
-
-    // Initially, only default layer exists
-    var layers =  [default_layer_container];
-
-    // No initial buffers
-    var buffers = [];
-
+    /**
+     * All available layers and buffers
+     */
+    var layers = {};
+    
     // No initial parsers
     var parsers = [];
 
@@ -155,33 +105,16 @@ Guacamole.Client = function(tunnel) {
             || currentState == STATE_WAITING;
     }
 
-    var cursorHotspotX = 0;
-    var cursorHotspotY = 0;
-
-    var cursorX = 0;
-    var cursorY = 0;
-
-    function moveCursor(x, y) {
-
-        // Move cursor layer
-        cursor.translate(x - cursorHotspotX, y - cursorHotspotY);
-
-        // Update stored position
-        cursorX = x;
-        cursorY = y;
-
-    }
-
     /**
-     * Returns an element containing the display of this Guacamole.Client.
-     * Adding the element returned by this function to an element in the body
-     * of a document will cause the client's display to be visible.
+     * Returns the underlying display of this Guacamole.Client. The display
+     * contains an Element which can be added to the DOM, causing the
+     * display to become visible.
      * 
-     * @return {Element} An element containing ths display of this
-     *                   Guacamole.Client.
+     * @return {Guacamole.Display} The underlying display of this
+     *                             Guacamole.Client.
      */
     this.getDisplay = function() {
-        return bounds;
+        return display;
     };
 
     /**
@@ -230,7 +163,7 @@ Guacamole.Client = function(tunnel) {
             return;
 
         // Update client-side cursor
-        moveCursor(
+        display.moveCursor(
             Math.floor(mouseState.x),
             Math.floor(mouseState.y)
         );
@@ -444,16 +377,6 @@ Guacamole.Client = function(tunnel) {
     this.onclipboard = null;
 
     /**
-     * Fired when the default layer (and thus the entire Guacamole display)
-     * is resized.
-     * 
-     * @event
-     * @param {Number} width The new width of the Guacamole display.
-     * @param {Number} height The new height of the Guacamole display.
-     */
-    this.onresize = null;
-
-    /**
      * Fired when a file stream is created. The stream provided to this event
      * handler will contain its own event handlers for received data.
      * 
@@ -488,57 +411,34 @@ Guacamole.Client = function(tunnel) {
      */
     this.onsync = null;
 
-    // Layers
-    function getBufferLayer(index) {
+    /**
+     * Returns the layer with the given index, creating it if necessary.
+     * Positive indices refer to visible layers, an index of zero refers to
+     * the default layer, and negative indices refer to buffers.
+     * 
+     * @param {Number} index The index of the layer to retrieve.
+     * @return {Guacamole.Display.VisibleLayer|Guacamole.Layer} The layer having the given index.
+     */
+    function getLayer(index) {
 
-        index = -1 - index;
-        var buffer = buffers[index];
-
-        // Create buffer if necessary
-        if (buffer == null) {
-            buffer = new Guacamole.Layer(0, 0);
-            buffer.autoflush = 1;
-            buffer.autosize = 1;
-            buffers[index] = buffer;
-        }
-
-        return buffer;
-
-    }
-
-    function getLayerContainer(index) {
-
+        // Get layer, create if necessary
         var layer = layers[index];
-        if (layer == null) {
+        if (!layer) {
 
+            // Create layer based on index
+            if (index === 0)
+                layer = display.getDefaultLayer();
+            else if (index > 0)
+                layer = display.createLayer();
+            else
+                layer = display.createBuffer();
+                
             // Add new layer
-            layer = new Guacamole.Client.LayerContainer(index, displayWidth, displayHeight);
             layers[index] = layer;
-
-            // Get and position layer
-            var layer_element = layer.getElement();
-            layer_element.style.position = "absolute";
-            layer_element.style.left = "0px";
-            layer_element.style.top = "0px";
-            layer_element.style.overflow = "hidden";
-
-            // Add to default layer container
-            layer.move(default_layer_container, 0, 0, 0);
 
         }
 
         return layer;
-
-    }
-
-    function getLayer(index) {
-       
-        // If buffer, just get layer
-        if (index < 0)
-            return getBufferLayer(index);
-
-        // Otherwise, retrieve layer from layer container
-        return getLayerContainer(index).getLayer();
 
     }
 
@@ -576,7 +476,7 @@ Guacamole.Client = function(tunnel) {
     var layerPropertyHandlers = {
 
         "miter-limit": function(layer, value) {
-            layer.setMiterLimit(parseFloat(value));
+            display.setMiterLimit(layer, parseFloat(value));
         }
 
     };
@@ -622,7 +522,7 @@ Guacamole.Client = function(tunnel) {
             var endAngle = parseFloat(parameters[5]);
             var negative = parseInt(parameters[6]);
 
-            layer.arc(x, y, radius, startAngle, endAngle, negative != 0);
+            display.arc(layer, x, y, radius, startAngle, endAngle, negative != 0);
 
         },
 
@@ -671,9 +571,8 @@ Guacamole.Client = function(tunnel) {
             var b = parseInt(parameters[4]);
             var a = parseInt(parameters[5]);
 
-            layer.setChannelMask(channelMask);
-
-            layer.fillColor(r, g, b, a);
+            display.setChannelMask(layer, channelMask);
+            display.fillColor(layer, r, g, b, a);
 
         },
 
@@ -681,7 +580,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.clip();
+            display.clip(layer);
 
         },
 
@@ -706,7 +605,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.close();
+            display.close(layer);
 
         },
 
@@ -722,17 +621,9 @@ Guacamole.Client = function(tunnel) {
             var dstX = parseInt(parameters[7]);
             var dstY = parseInt(parameters[8]);
 
-            dstL.setChannelMask(channelMask);
-
-            dstL.copy(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                dstX,
-                dstY 
-            );
+            display.setChannelMask(dstL, channelMask);
+            display.copy(srcL, srcX, srcY, srcWidth, srcHeight, 
+                         dstL, dstX, dstY);
 
         },
 
@@ -748,38 +639,23 @@ Guacamole.Client = function(tunnel) {
             var b = parseInt(parameters[7]);
             var a = parseInt(parameters[8]);
 
-            layer.setChannelMask(channelMask);
-
-            layer.strokeColor(cap, join, thickness, r, g, b, a);
+            display.setChannelMask(layer, channelMask);
+            display.strokeColor(layer, cap, join, thickness, r, g, b, a);
 
         },
 
         "cursor": function(parameters) {
 
-            cursorHotspotX = parseInt(parameters[0]);
-            cursorHotspotY = parseInt(parameters[1]);
+            var cursorHotspotX = parseInt(parameters[0]);
+            var cursorHotspotY = parseInt(parameters[1]);
             var srcL = getLayer(parseInt(parameters[2]));
             var srcX = parseInt(parameters[3]);
             var srcY = parseInt(parameters[4]);
             var srcWidth = parseInt(parameters[5]);
             var srcHeight = parseInt(parameters[6]);
 
-            // Reset cursor size
-            cursor.resize(srcWidth, srcHeight);
-
-            // Draw cursor to cursor layer
-            cursor.getLayer().copy(
-                srcL,
-                srcX,
-                srcY,
-                srcWidth, 
-                srcHeight, 
-                0,
-                0 
-            );
-
-            // Update cursor position (hotspot may have changed)
-            moveCursor(cursorX, cursorY);
+            display.setCursor(cursorHotspotX, cursorHotspotY,
+                              srcL, srcX, srcY, srcWidth, srcHeight);
 
         },
 
@@ -793,7 +669,7 @@ Guacamole.Client = function(tunnel) {
             var x = parseInt(parameters[5]);
             var y = parseInt(parameters[6]);
 
-            layer.curveTo(cp1x, cp1y, cp2x, cp2y, x, y);
+            display.curveTo(layer, cp1x, cp1y, cp2x, cp2y, x, y);
 
         },
 
@@ -805,8 +681,8 @@ Guacamole.Client = function(tunnel) {
             if (layer_index > 0) {
 
                 // Remove from parent
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.dispose();
+                var layer = getLayer(layer_index);
+                layer.dispose();
 
                 // Delete reference
                 delete layers[layer_index];
@@ -815,7 +691,7 @@ Guacamole.Client = function(tunnel) {
 
             // If buffer, just delete reference
             else if (layer_index < 0)
-                delete buffers[-1 - layer_index];
+                delete layers[layer_index];
 
             // Attempting to dispose the root layer currently has no effect.
 
@@ -833,12 +709,9 @@ Guacamole.Client = function(tunnel) {
 
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
-
-                // Set layer transform 
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.transform(a, b, c, d, e, f);
-
-             }
+                var layer = getLayer(layer_index);
+                layer.distort(a, b, c, d, e, f);
+            }
 
         },
  
@@ -889,7 +762,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.setTransform(1, 0, 0, 1, 0, 0);
+            display.setTransform(layer, 1, 0, 0, 1, 0, 0);
 
         },
 
@@ -899,9 +772,8 @@ Guacamole.Client = function(tunnel) {
             var layer = getLayer(parseInt(parameters[1]));
             var srcLayer = getLayer(parseInt(parameters[2]));
 
-            layer.setChannelMask(channelMask);
-
-            layer.fillLayer(srcLayer);
+            display.setChannelMask(layer, channelMask);
+            display.fillLayer(layer, srcLayer);
 
         },
 
@@ -911,7 +783,7 @@ Guacamole.Client = function(tunnel) {
             var x = parseInt(parameters[1]);
             var y = parseInt(parameters[2]);
 
-            layer.lineTo(x, y);
+            display.lineTo(layer, x, y);
 
         },
 
@@ -921,9 +793,8 @@ Guacamole.Client = function(tunnel) {
             var layer = getLayer(parseInt(parameters[1]));
             var srcLayer = getLayer(parseInt(parameters[2]));
 
-            layer.setChannelMask(channelMask);
-
-            layer.strokeLayer(srcLayer);
+            display.setChannelMask(layer, channelMask);
+            display.strokeLayer(layer, srcLayer);
 
         },
 
@@ -937,14 +808,9 @@ Guacamole.Client = function(tunnel) {
 
             // Only valid for non-default layers
             if (layer_index > 0 && parent_index >= 0) {
-
-                // Get container element
-                var layer_container = getLayerContainer(layer_index);
-                var parent = getLayerContainer(parent_index);
-
-                // Move layer
-                layer_container.move(parent, x, y, z);
-
+                var layer = getLayer(layer_index);
+                var parent = getLayer(parent_index);
+                layer.move(parent, x, y, z);
             }
 
         },
@@ -984,13 +850,8 @@ Guacamole.Client = function(tunnel) {
             var y = parseInt(parameters[3]);
             var data = parameters[4];
 
-            layer.setChannelMask(channelMask);
-
-            layer.draw(
-                x,
-                y,
-                "data:image/png;base64," + data
-            );
+            display.setChannelMask(layer, channelMask);
+            display.draw(layer, x, y, "data:image/png;base64," + data);
 
         },
 
@@ -998,7 +859,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.pop();
+            display.pop(layer);
 
         },
 
@@ -1006,7 +867,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.push();
+            display.push(layer);
 
         },
  
@@ -1018,7 +879,7 @@ Guacamole.Client = function(tunnel) {
             var w = parseInt(parameters[3]);
             var h = parseInt(parameters[4]);
 
-            layer.rect(x, y, w, h);
+            display.rect(layer, x, y, w, h);
 
         },
         
@@ -1026,7 +887,7 @@ Guacamole.Client = function(tunnel) {
 
             var layer = getLayer(parseInt(parameters[0]));
 
-            layer.reset();
+            display.reset(layer);
 
         },
         
@@ -1050,8 +911,8 @@ Guacamole.Client = function(tunnel) {
 
             // Only valid for visible layers (not buffers)
             if (layer_index >= 0) {
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.shade(a);
+                var layer = getLayer(layer_index);
+                layer.shade(a);
             }
 
         },
@@ -1059,43 +920,11 @@ Guacamole.Client = function(tunnel) {
         "size": function(parameters) {
 
             var layer_index = parseInt(parameters[0]);
+            var layer = getLayer(layer_index);
             var width = parseInt(parameters[1]);
             var height = parseInt(parameters[2]);
 
-            // If not buffer, resize layer and container
-            if (layer_index >= 0) {
-
-                // Resize layer
-                var layer_container = getLayerContainer(layer_index);
-                layer_container.resize(width, height);
-
-                // If layer is default, resize display
-                if (layer_index == 0) {
-
-                    displayWidth = width;
-                    displayHeight = height;
-
-                    // Update (set) display size
-                    display.style.width = displayWidth + "px";
-                    display.style.height = displayHeight + "px";
-
-                    // Update bounds size
-                    bounds.style.width = (displayWidth*displayScale) + "px";
-                    bounds.style.height = (displayHeight*displayScale) + "px";
-
-                    // Call resize event handler if defined
-                    if (guac_client.onresize)
-                        guac_client.onresize(width, height);
-
-                }
-
-            }
-
-            // If buffer, resize layer only
-            else {
-                var layer = getBufferLayer(parseInt(parameters[0]));
-                layer.resize(width, height);
-            }
+            display.resize(layer, width, height);
 
         },
         
@@ -1111,61 +940,18 @@ Guacamole.Client = function(tunnel) {
 
         "sync": function(parameters) {
 
-            var timestamp = parameters[0];
+            var timestamp = parseInt(parameters[0]);
 
-            // When all layers have finished rendering all instructions
-            // UP TO THIS POINT IN TIME, send sync response.
-
-            var layersToSync = 0;
-            function syncLayer() {
-
-                layersToSync--;
-
-                // Send sync response when layers are finished
-                if (layersToSync == 0) {
-                    if (timestamp != currentTimestamp) {
-                        tunnel.sendMessage("sync", timestamp);
-                        currentTimestamp = timestamp;
-                    }
-                }
-
-            }
-
-            // Count active, not-ready layers and install sync tracking hooks
-            for (var i=0; i<layers.length; i++) {
-
-                var layer_container = layers[i];
-                if (layer_container) {
-
-                    var layer = layer_container.getLayer();
-                    if (layer) {
-
-                        // Flush layer
-                        layer.flush();
-
-                        // If still not ready, sync later
-                        if (!layer.isReady()) {
-                            layersToSync++;
-                            layer.sync(syncLayer);
-                        }
-
-                    }
-
-                } // end if layer exists
-
-            } // end for each layer
-
-            // If all layers are ready, then we didn't install any hooks.
-            // Send sync message now,
-            if (layersToSync == 0) {
-                if (timestamp != currentTimestamp) {
+            // Flush display, send sync when done
+            display.flush(function __send_sync_response() {
+                if (timestamp !== currentTimestamp) {
                     tunnel.sendMessage("sync", timestamp);
                     currentTimestamp = timestamp;
                 }
-            }
+            });
 
             // If received first update, no longer waiting.
-            if (currentState == STATE_WAITING)
+            if (currentState === STATE_WAITING)
                 setState(STATE_CONNECTED);
 
             // Call sync handler if defined
@@ -1328,432 +1114,6 @@ Guacamole.Client = function(tunnel) {
         }, 5000);
 
         setState(STATE_WAITING);
-    };
-
-    /**
-     * Sets the scale of the client display element such that it renders at
-     * a relatively smaller or larger size, without affecting the true
-     * resolution of the display.
-     *
-     * @param {Number} scale The scale to resize to, where 1.0 is normal
-     *                       size (1:1 scale).
-     */
-    this.scale = function(scale) {
-
-        display.style.transform =
-        display.style.WebkitTransform =
-        display.style.MozTransform =
-        display.style.OTransform =
-        display.style.msTransform =
-
-            "scale(" + scale + "," + scale + ")";
-
-        displayScale = scale;
-
-        // Update bounds size
-        bounds.style.width = (displayWidth*displayScale) + "px";
-        bounds.style.height = (displayHeight*displayScale) + "px";
-
-    };
-
-    /**
-     * Returns the width of the display.
-     *
-     * @return {Number} The width of the display.
-     */
-    this.getWidth = function() {
-        return displayWidth;
-    };
-
-    /**
-     * Returns the height of the display.
-     *
-     * @return {Number} The height of the display.
-     */
-    this.getHeight = function() {
-        return displayHeight;
-    };
-
-    /**
-     * Returns the scale of the display.
-     *
-     * @return {Number} The scale of the display.
-     */
-    this.getScale = function() {
-        return displayScale;
-    };
-
-    /**
-     * Returns a canvas element containing the entire display, with all child
-     * layers composited within.
-     *
-     * @return {HTMLCanvasElement} A new canvas element containing a copy of
-     *                             the display.
-     */
-    this.flatten = function() {
-       
-        // Get default layer
-        var default_layer = getLayerContainer(0);
-
-        // Get destination canvas
-        var canvas = document.createElement("canvas");
-        canvas.width = default_layer.width;
-        canvas.height = default_layer.height;
-
-        var context = canvas.getContext("2d");
-
-        // Returns sorted array of children
-        function get_children(layer) {
-
-            // Build array of children
-            var children = [];
-            for (var index in layer.children)
-                children.push(layer.children[index]);
-
-            // Sort
-            children.sort(function children_comparator(a, b) {
-
-                // Compare based on Z order
-                var diff = a.z - b.z;
-                if (diff !== 0)
-                    return diff;
-
-                // If Z order identical, use document order
-                var a_element = a.getElement();
-                var b_element = b.getElement();
-                var position = b_element.compareDocumentPosition(a_element);
-
-                if (position & Node.DOCUMENT_POSITION_PRECEDING) return -1;
-                if (position & Node.DOCUMENT_POSITION_FOLLOWING) return  1;
-
-                // Otherwise, assume same
-                return 0;
-
-            });
-
-            // Done
-            return children;
-
-        }
-
-        // Draws the contents of the given layer at the given coordinates
-        function draw_layer(layer, x, y) {
-
-            // Draw layer
-            if (layer.width > 0 && layer.height > 0) {
-
-                // Save and update alpha
-                var initial_alpha = context.globalAlpha;
-                context.globalAlpha *= layer.alpha / 255.0;
-
-                // Copy data
-                context.drawImage(layer.getLayer().getCanvas(), x, y);
-
-                // Draw all children
-                var children = get_children(layer);
-                for (var i=0; i<children.length; i++) {
-                    var child = children[i];
-                    draw_layer(child, x + child.x, y + child.y);
-                }
-
-                // Restore alpha
-                context.globalAlpha = initial_alpha;
-
-            }
-
-        }
-
-        // Draw default layer and all children
-        draw_layer(default_layer, 0, 0);
-
-        // Return new canvas copy
-        return canvas;
-        
-    };
-
-};
-
-/**
- * Simple container for Guacamole.Layer, allowing layers to be easily
- * repositioned and nested. This allows certain operations to be accelerated
- * through DOM manipulation, rather than raster operations.
- * 
- * @constructor
- *
- * @param {Number} index The unique integer which identifies this layer.
- *
- * @param {Number} width The width of the Layer, in pixels. The canvas element
- *                       backing this Layer will be given this width.
- *                       
- * @param {Number} height The height of the Layer, in pixels. The canvas element
- *                        backing this Layer will be given this height.
- */
-Guacamole.Client.LayerContainer = function(index, width, height) {
-
-    /**
-     * Reference to this LayerContainer.
-     * @private
-     */
-    var layer_container = this;
-
-    /**
-     * Unique integer identifying this layer container.
-     * @type Number
-     */
-    this.index = index;
-
-    /**
-     * The opacity of the layer container, where 255 is fully opaque and 0 is
-     * fully transparent.
-     */
-    this.alpha = 0xFF;
-
-    /**
-     * X coordinate of the upper-left corner of this layer container within
-     * its parent, in pixels.
-     * @type Number
-     */
-    this.x = 0;
-
-    /**
-     * Y coordinate of the upper-left corner of this layer container within
-     * its parent, in pixels.
-     * @type Number
-     */
-    this.y = 0;
-
-    /**
-     * Z stacking order of this layer relative to other sibling layers.
-     * @type Number
-     */
-    this.z = 0;
-
-    /**
-     * The affine transformation applied to this layer container. Each element
-     * corresponds to a value from the transformation matrix, with the first
-     * three values being the first row, and the last three values being the
-     * second row. There are six values total.
-     * 
-     * @type Number[]
-     */
-    this.matrix = [1, 0, 0, 1, 0, 0];
-
-    /**
-     * The width of this layer in pixels.
-     * @type Number
-     */
-    this.width = width;
-
-    /**
-     * The height of this layer in pixels.
-     * @type Number
-     */
-    this.height = height;
-
-    /**
-     * The parent layer container of this layer, if any.
-     * @type Guacamole.Client.LayerContainer
-     */
-    this.parent = null;
-
-    /**
-     * Set of all children of this layer, indexed by layer index. This object
-     * will have one property per child.
-     */
-    this.children = {};
-
-    // Create layer with given size
-    var layer = new Guacamole.Layer(width, height);
-
-    // Set layer position
-    var canvas = layer.getCanvas();
-    canvas.style.position = "absolute";
-    canvas.style.left = "0px";
-    canvas.style.top = "0px";
-
-    // Create div with given size
-    var div = document.createElement("div");
-    div.appendChild(canvas);
-    div.style.width = width + "px";
-    div.style.height = height + "px";
-
-    /**
-     * Changes the size of this LayerContainer and the contained Layer to the
-     * given width and height.
-     * 
-     * @param {Number} width The new width to assign to this Layer.
-     * @param {Number} height The new height to assign to this Layer.
-     */
-    this.resize = function(width, height) {
-
-        layer_container.width = width;
-        layer_container.height = height;
-
-        // Resize layer
-        layer.resize(width, height);
-
-        // Resize containing div
-        div.style.width = width + "px";
-        div.style.height = height + "px";
-
-    };
-  
-    /**
-     * Returns the Layer contained within this LayerContainer.
-     * @returns {Guacamole.Layer} The Layer contained within this
-     *                            LayerContainer.
-     */
-    this.getLayer = function() {
-        return layer;
-    };
-
-    /**
-     * Returns the element containing the Layer within this LayerContainer.
-     * @returns {Element} The element containing the Layer within this
-     *                    LayerContainer.
-     */
-    this.getElement = function() {
-        return div;
-    };
-
-    /**
-     * The translation component of this LayerContainer's transform.
-     * @private
-     */
-    var translate = "translate(0px, 0px)"; // (0, 0)
-
-    /**
-     * The arbitrary matrix component of this LayerContainer's transform.
-     * @private
-     */
-    var matrix = "matrix(1, 0, 0, 1, 0, 0)"; // Identity
-
-    /**
-     * Moves the upper-left corner of this LayerContainer to the given X and Y
-     * coordinate.
-     * 
-     * @param {Number} x The X coordinate to move to.
-     * @param {Number} y The Y coordinate to move to.
-     */
-    this.translate = function(x, y) {
-
-        layer_container.x = x;
-        layer_container.y = y;
-
-        // Generate translation
-        translate = "translate("
-                        + x + "px,"
-                        + y + "px)";
-
-        // Set layer transform 
-        div.style.transform =
-        div.style.WebkitTransform =
-        div.style.MozTransform =
-        div.style.OTransform =
-        div.style.msTransform =
-
-            translate + " " + matrix;
-
-    };
-
-    /**
-     * Moves the upper-left corner of this LayerContainer to the given X and Y
-     * coordinate, sets the Z stacking order, and reparents this LayerContainer
-     * to the given LayerContainer.
-     * 
-     * @param {Guacamole.Client.LayerContainer} parent The parent to set.
-     * @param {Number} x The X coordinate to move to.
-     * @param {Number} y The Y coordinate to move to.
-     * @param {Number} z The Z coordinate to move to.
-     */
-    this.move = function(parent, x, y, z) {
-
-        // Set parent if necessary
-        if (layer_container.parent !== parent) {
-
-            // Maintain relationship
-            if (layer_container.parent)
-                delete layer_container.parent.children[layer_container.index];
-            layer_container.parent = parent;
-            parent.children[layer_container.index] = layer_container;
-
-            // Reparent element
-            var parent_element = parent.getElement();
-            parent_element.appendChild(div);
-
-        }
-
-        // Set location
-        layer_container.translate(x, y);
-        layer_container.z = z;
-        div.style.zIndex = z;
-
-    };
-
-    /**
-     * Sets the opacity of this layer to the given value, where 255 is fully
-     * opaque and 0 is fully transparent.
-     * 
-     * @param {Number} a The opacity to set.
-     */
-    this.shade = function(a) {
-        layer_container.alpha = a;
-        div.style.opacity = a/255.0;
-    };
-
-    /**
-     * Removes this layer container entirely, such that it is no longer
-     * contained within its parent layer, if any.
-     */
-    this.dispose = function() {
-
-        // Remove from parent container
-        if (layer_container.parent) {
-            delete layer_container.parent.children[layer_container.index];
-            layer_container.parent = null;
-        }
-
-        // Remove from parent element
-        if (div.parentNode)
-            div.parentNode.removeChild(div);
-        
-    };
-
-    /**
-     * Applies the given affine transform (defined with six values from the
-     * transform's matrix).
-     * 
-     * @param {Number} a The first value in the affine transform's matrix.
-     * @param {Number} b The second value in the affine transform's matrix.
-     * @param {Number} c The third value in the affine transform's matrix.
-     * @param {Number} d The fourth value in the affine transform's matrix.
-     * @param {Number} e The fifth value in the affine transform's matrix.
-     * @param {Number} f The sixth value in the affine transform's matrix.
-     */
-    this.transform = function(a, b, c, d, e, f) {
-
-        // Store matrix
-        layer_container.matrix = [a, b, c, d, e, f];
-
-        // Generate matrix transformation
-        matrix =
-
-            /* a c e
-             * b d f
-             * 0 0 1
-             */
-    
-            "matrix(" + a + "," + b + "," + c + "," + d + "," + e + "," + f + ")";
-
-        // Set layer transform 
-        div.style.transform =
-        div.style.WebkitTransform =
-        div.style.MozTransform =
-        div.style.OTransform =
-        div.style.msTransform =
-
-            translate + " " + matrix;
-
     };
 
 };
