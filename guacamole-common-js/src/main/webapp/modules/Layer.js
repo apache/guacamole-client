@@ -112,19 +112,19 @@ Guacamole.Layer = function(width, height) {
 
         // Only preserve old data if width/height are both non-zero
         var oldData = null;
-        if (width !== 0 && height !== 0) {
+        if (layer.width !== 0 && layer.height !== 0) {
 
             // Create canvas and context for holding old data
             oldData = document.createElement("canvas");
-            oldData.width = width;
-            oldData.height = height;
+            oldData.width = layer.width;
+            oldData.height = layer.height;
 
             var oldDataContext = oldData.getContext("2d");
 
             // Copy image data from current
             oldDataContext.drawImage(canvas,
-                    0, 0, width, height,
-                    0, 0, width, height);
+                    0, 0, layer.width, layer.height,
+                    0, 0, layer.width, layer.height);
 
         }
 
@@ -138,14 +138,14 @@ Guacamole.Layer = function(width, height) {
         // Redraw old data, if any
         if (oldData)
                 context.drawImage(oldData, 
-                    0, 0, width, height,
-                    0, 0, width, height);
+                    0, 0, layer.width, layer.height,
+                    0, 0, layer.width, layer.height);
 
         // Restore composite operation
         context.globalCompositeOperation = oldCompositeOperation;
 
-        width = newWidth;
-        height = newHeight;
+        layer.width = newWidth;
+        layer.height = newHeight;
 
         // Acknowledge reset of stack (happens on resize of canvas)
         stackSize = 0;
@@ -177,21 +177,20 @@ Guacamole.Layer = function(width, height) {
         
         // Determine max width
         var resizeWidth;
-        if (opBoundX > width)
+        if (opBoundX > layer.width)
             resizeWidth = opBoundX;
         else
-            resizeWidth = width;
+            resizeWidth = layer.width;
 
         // Determine max height
         var resizeHeight;
-        if (opBoundY > height)
+        if (opBoundY > layer.height)
             resizeHeight = opBoundY;
         else
-            resizeHeight = height;
+            resizeHeight = layer.height;
 
         // Resize if necessary
-        if (resizeWidth !== width || resizeHeight !== height)
-            resize(resizeWidth, resizeHeight);
+        layer.resize(resizeWidth, resizeHeight);
 
     }
 
@@ -217,6 +216,18 @@ Guacamole.Layer = function(width, height) {
     this.autosize = false;
 
     /**
+     * The current width of this layer.
+     * @type Number
+     */
+    this.width = width;
+
+    /**
+     * The current height of this layer.
+     * @type Number
+     */
+    this.height = height;
+
+    /**
      * Returns the canvas element backing this Layer.
      * @returns {Element} The canvas element backing this Layer.
      */
@@ -233,7 +244,7 @@ Guacamole.Layer = function(width, height) {
      * @param {Number} newHeight The new height to assign to this Layer.
      */
     this.resize = function(newWidth, newHeight) {
-        if (newWidth !== width || newHeight !== height)
+        if (newWidth !== layer.width || newHeight !== layer.height)
             resize(newWidth, newHeight);
     };
 
@@ -891,7 +902,3 @@ Guacamole.Layer.Pixel = function(r, g, b, a) {
     this.alpha = a;
 
 };
-
-
-// FIXME: Declaration order hack
-Guacamole.Display.VisibleLayer.prototype = new Guacamole.Layer(0, 0);

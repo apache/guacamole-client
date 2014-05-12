@@ -23,6 +23,12 @@
 var Guacamole = Guacamole || {};
 
 /**
+ * The Guacamole display. The display does not deal with the Guacamole
+ * protocol, and instead implements a set of graphical operations which
+ * embody the set of operations present in the protocol. The order operations
+ * are executed is guaranteed to be in the same order as their corresponding
+ * functions are called.
+ * 
  * @constructor
  */
 Guacamole.Display = function() {
