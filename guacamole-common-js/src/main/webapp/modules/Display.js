@@ -1302,8 +1302,6 @@ Guacamole.Display.VisibleLayer = function(width, height) {
 
 };
 
-//Guacamole.Display.VisibleLayer.prototype = new Guacamole.Layer(0, 0);
-
 /**
  * The next identifier to be assigned to the layer container. This identifier
  * uniquely identifies each LayerContainer, but is unrelated to the index of
