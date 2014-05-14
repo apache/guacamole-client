@@ -1891,6 +1891,12 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
+    /**
+     * Presses and releases the key corresponding to the given keysym, as if
+     * typed by the user.
+     * 
+     * @param {Number} keysym The keysym of the key to send.
+     */
     function send_keysym(keysym) {
 
         var guac = GuacUI.Client.attachedClient;
@@ -1902,6 +1908,12 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
+    /**
+     * Presses and releases the key having the keysym corresponding to the
+     * Unicode codepoint given, as if typed by the user.
+     * 
+     * @param {Number} codepoint The Unicode codepoint of the key to send.
+     */
     function send_codepoint(codepoint) {
 
         if (codepoint === 10) {
@@ -1912,6 +1924,22 @@ GuacUI.Client.attach = function(guac) {
         var keysym = keysym_from_codepoint(codepoint);
         if (keysym)
             send_keysym(keysym);
+
+    }
+
+    /**
+     * Translates each character within the given string to keysyms and sends
+     * each, in order, as if typed by the user.
+     * 
+     * @param {String} content The string to send.
+     */
+    function send_string(content) {
+
+        for (var i=0; i<content.length; i++) {
+            var codepoint = content.charCodeAt(i);
+            if (codepoint !== 0x200B)
+                send_codepoint(codepoint);
+        }
 
     }
 
@@ -1929,7 +1957,22 @@ GuacUI.Client.attach = function(guac) {
         GuacUI.Client.ime_enabled = false;
     };
 
+    // Track state of composition
+    var composing_text = false;
+
+    GuacUI.Client.target.addEventListener("compositionstart", function(e) {
+        composing_text = true;
+    }, false);
+
+    GuacUI.Client.target.addEventListener("compositionend", function(e) {
+        composing_text = false;
+    }, false);
+
     GuacUI.Client.target.addEventListener("input", function(e) {
+
+        // Ignore input events during text composition
+        if (composing_text)
+            return;
 
         var i;
         var content = GuacUI.Client.target.value;
@@ -1949,16 +1992,8 @@ GuacUI.Client.attach = function(guac) {
 
         }
 
-        else {
-
-            // Send keys for added content
-            for (i=0; i<content.length; i++) {
-                var codepoint = content.charCodeAt(i);
-                if (codepoint !== 0x200B)
-                    send_codepoint(codepoint);
-            }
-
-        }
+        else
+            send_string(content);
 
         // Reset content
         GuacUI.Client.target.value = new Array(257).join("\u200B");
