@@ -679,13 +679,35 @@ p.hint {
     font-size: 2em;
 }
 
-#target {
+#text-input {
+    display: none;
     position: fixed;
     left: 0;
-    top: 0;
-    right: 0;
     bottom: 0;
-    opacity: 0;
+    width: 100%;
+}
+
+#target {
+
+    border: none;
+    border-radius: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+
+    display: inline-block;
+    vertical-align: bottom;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    resize: none;
+
+    margin: 0;
+    opacity: 0.75;
+    background: #CDA;
+
+}
+
+#text-input.open {
+    display: block;
 }
 
 .notification.message {

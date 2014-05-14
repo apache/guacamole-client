@@ -206,6 +206,7 @@ GuacUI.Client = {
     "display"           : document.getElementById("display"),
     "notification_area" : document.getElementById("notificationArea"),
     "target"            : document.getElementById("target"),
+    "text_input"        : document.getElementById("text-input"),
 
     /* Menu */
 
@@ -245,7 +246,6 @@ GuacUI.Client = {
 
     /* Text input */
 
-    "ime_expected"    : false,
     "ime_enabled"     : false,
 
     /* Clipboard */
@@ -857,6 +857,24 @@ GuacUI.Client.showMenu = function(shown) {
     }
     else
         GuacUI.Client.menu.className = "open";
+};
+
+/**
+ * Sets whether the text input box is currently visible.
+ *
+ * @param {Boolean} [shown] Whether the text input box should be shown. If
+ *                          omitted, this function will cause the menu to be
+ *                          shown by default.
+ */
+GuacUI.Client.showTextInput = function(shown) {
+    if (shown === false) {
+        GuacUI.Client.text_input.className = "closed";
+        GuacUI.Client.target.blur();
+    }
+    else {
+        GuacUI.Client.text_input.className = "open";
+        GuacUI.Client.target.focus();
+    }
 };
 
 /**
@@ -1832,44 +1850,23 @@ GuacUI.Client.attach = function(guac) {
 
     GuacUI.Client.ime_none_radio.onclick =
     GuacUI.Client.ime_none_radio.onchange = function() {
-
-        if (GuacUI.Client.ime_enabled) {
-            GuacUI.Client.ime_expected = false;
-            __ime_notify_changed(false);
-            GuacUI.Client.target.blur();
-        }
-
+        GuacUI.Client.showTextInput(false);
         GuacUI.Client.OnScreenKeyboard.hide();
         GuacUI.Client.showMenu(false);
-
     };
 
     GuacUI.Client.ime_text_radio.onclick =
     GuacUI.Client.ime_text_radio.onchange = function() {
-
-        if (!GuacUI.Client.ime_enabled) {
-            GuacUI.Client.ime_expected = true;
-            __ime_notify_changed(true);
-            GuacUI.Client.target.focus();
-        }
-
+        GuacUI.Client.showTextInput(true);
         GuacUI.Client.OnScreenKeyboard.hide();
         GuacUI.Client.showMenu(false);
-
     };
 
     GuacUI.Client.ime_osk_radio.onclick =
     GuacUI.Client.ime_osk_radio.onchange = function() {
-
-        if (GuacUI.Client.ime_enabled) {
-            GuacUI.Client.ime_expected = false;
-            __ime_notify_changed(false);
-            GuacUI.Client.target.blur();
-        }
-
+        GuacUI.Client.showTextInput(false);
         GuacUI.Client.OnScreenKeyboard.show();
         GuacUI.Client.showMenu(false);
-
     };
 
     /*
@@ -1918,58 +1915,18 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
-    var ime_notify_enabled = null;
-    var ime_notify_timeout = null;
-
-    function __ime_notify_changed(new_state) {
-
-        if (ime_notify_enabled === null)
-            ime_notify_enabled = new_state;
-
-        window.clearTimeout(ime_notify_timeout);
-        ime_notify_timeout = window.setTimeout(function() {
-
-            // Only notify if state changed successfully
-            if (ime_notify_enabled === GuacUI.Client.ime_enabled) {
-                if (GuacUI.Client.ime_enabled)
-                    GuacUI.Client.showNotification("Text input mode ON");
-                else
-                    GuacUI.Client.showNotification("Text input mode OFF");
-            }
-
-            // Reset for next change
-            ime_notify_enabled = null;
-
-        }, 100);
-
-    }
-
     GuacUI.Client.target.onfocus = function() {
 
-        // Acknowledge and synchronize state change
-        GuacUI.Client.OnScreenKeyboard.hide();
-        GuacUI.Client.ime_text_radio.checked = true;
         GuacUI.Client.ime_enabled = true;
 
         // Reset content
         GuacUI.Client.target.value = new Array(257).join("\u200B");
         GuacUI.Client.target.setSelectionRange(128, 128);
 
-        // Notify of change after it settles
-        __ime_notify_changed(true);
-
     };
 
     GuacUI.Client.target.onblur = function() {
-
-        // Acknowledge and synchronize state change
-        GuacUI.Client.OnScreenKeyboard.hide();
-        GuacUI.Client.ime_none_radio.checked = true;
         GuacUI.Client.ime_enabled = false;
-
-        // Notify of change after it settles
-        __ime_notify_changed(false);
-
     };
 
     GuacUI.Client.target.addEventListener("input", function(e) {

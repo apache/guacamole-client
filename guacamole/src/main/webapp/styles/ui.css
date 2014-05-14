@@ -24,6 +24,9 @@
  
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 input[type=checkbox], input[type=number], input[type=text], input[type=radio], label, textarea {
