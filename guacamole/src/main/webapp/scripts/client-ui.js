@@ -1379,6 +1379,40 @@ GuacUI.Client.attach = function(guac) {
 // One-time UI initialization
 (function() {
 
+    /**
+     * Keys which should be allowed through to the client when in text input
+     * mode, providing corresponding key events are received. Keys in this
+     * set will be allowed through to the server.
+     */
+    var IME_ALLOWED_KEYS = {
+            0xFF08: true, /* Backspace */
+            0xFF09: true, /* Tab */
+            0xFF0D: true, /* Enter */
+            0xFF1B: true, /* Escape */
+            0xFF50: true, /* Home */
+            0xFF51: true, /* Left */
+            0xFF52: true, /* Up */
+            0xFF53: true, /* Right */
+            0xFF54: true, /* Down */
+            0xFF57: true, /* End */
+            0xFF64: true, /* Insert */
+            0xFFBE: true, /* F1 */
+            0xFFBF: true, /* F2 */
+            0xFFC0: true, /* F3 */
+            0xFFC1: true, /* F4 */
+            0xFFC2: true, /* F5 */
+            0xFFC3: true, /* F6 */
+            0xFFC4: true, /* F7 */
+            0xFFC5: true, /* F8 */
+            0xFFC6: true, /* F9 */
+            0xFFC7: true, /* F10 */
+            0xFFC8: true, /* F11 */
+            0xFFC9: true, /* F12 */
+            0xFFE1: true, /* Left shift */
+            0xFFE2: true, /* Right shift */
+            0xFFFF: true  /* Delete */
+    };
+
     /*
      * Route document-level keyboard events to the client.
      */
@@ -1386,25 +1420,14 @@ GuacUI.Client.attach = function(guac) {
     var keyboard = new Guacamole.Keyboard(document);
     var show_keyboard_gesture_possible = true;
 
-    window.kb = keyboard;
-
     function __send_key(pressed, keysym) {
 
         // Do not send key if menu shown
         if (GuacUI.Client.isMenuShown())
             return true;
 
-        // Allow key events for specific keys if IME enabled
-        if (GuacUI.Client.ime_enabled
-            && keysym !== 0x0020  /* Space */
-            && keysym !== 0xFF08  /* Backspace */
-            && keysym !== 0xFF09  /* Tab */
-            && keysym !== 0xFF0D  /* Enter */
-            && keysym !== 0xFF51  /* Left */
-            && keysym !== 0xFF52  /* Up */
-            && keysym !== 0xFF53  /* Right */
-            && keysym !== 0xFF54  /* Down */
-            && keysym !== 0xFFFF) /* Delete */
+        // Allow all but specific keys through to browser when in IME mode
+        if (GuacUI.Client.ime_enabled && !IME_ALLOWED_KEYS[keysym])
             return true;
 
         GuacUI.Client.attachedClient.sendKeyEvent(pressed, keysym);
@@ -1935,11 +1958,24 @@ GuacUI.Client.attach = function(guac) {
      */
     function send_string(content) {
 
+        var sent_text = "";
+
         for (var i=0; i<content.length; i++) {
             var codepoint = content.charCodeAt(i);
-            if (codepoint !== 0x200B)
+            if (codepoint !== 0x200B) {
+                sent_text += String.fromCharCode(codepoint);
                 send_codepoint(codepoint);
+            }
         }
+
+        // Display the text that was sent
+        var notify_sent = GuacUI.createChildElement(GuacUI.Client.text_input, "div", "sent-text");
+        notify_sent.textContent = sent_text;
+
+        // Remove text after one second
+        window.setTimeout(function __remove_notify_sent() {
+            notify_sent.parentNode.removeChild(notify_sent);
+        }, 1000);
 
     }
 
@@ -1955,6 +1991,7 @@ GuacUI.Client.attach = function(guac) {
 
     GuacUI.Client.target.onblur = function() {
         GuacUI.Client.ime_enabled = false;
+        GuacUI.Client.target.focus();
     };
 
     // Track state of composition

@@ -679,6 +679,22 @@ p.hint {
     font-size: 2em;
 }
 
+/**
+ * off-to-the-ether: Move away and disappear
+ */
+@keyframes off-to-the-ether {
+    from { left: 0;      opacity: 1; }
+    to   { left: -200px; opacity: 0; }
+}
+@-moz-keyframes off-to-the-ether {
+    from { left: 0;      opacity: 1; }
+    to   { left: -200px; opacity: 0; }
+}
+@-webkit-keyframes off-to-the-ether {
+    from { left: 0;      opacity: 1; }
+    to   { left: -200px; opacity: 0; }
+}
+
 #text-input {
     display: none;
     position: fixed;
@@ -696,11 +712,13 @@ p.hint {
     display: inline-block;
     vertical-align: bottom;
     text-align: center;
+    font-size: 12pt;
     width: 100%;
     height: auto;
     resize: none;
 
     margin: 0;
+    padding: 0.25em;
     opacity: 0.75;
     background: #CDA;
 
@@ -708,6 +726,20 @@ p.hint {
 
 #text-input.open {
     display: block;
+}
+
+#text-input .sent-text {
+    position: absolute;
+    bottom: 0;
+    left: -200px;
+    width: 100%;
+    white-space: pre;
+    animation: off-to-the-ether 1s linear;
+    -webkit-animation: off-to-the-ether 1s linear;
+    opacity: 0;
+    text-align: center;
+    font-size: 12pt;
+    padding: 0.25em;
 }
 
 .notification.message {
