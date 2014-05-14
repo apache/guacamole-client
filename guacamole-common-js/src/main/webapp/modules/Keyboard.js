@@ -510,6 +510,11 @@ Guacamole.Keyboard = function(element) {
         // Fix modifier states
         update_modifier_state(e);
 
+        // Ignore (but do not prevent) the "composition" keycode sent by some
+        // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
+        if (keynum === 229)
+            return;
+
         // Try to get keysym from keycode
         var keysym = keysym_from_keycode(keynum, location);
 
