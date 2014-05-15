@@ -207,6 +207,7 @@ GuacUI.Client = {
     "notification_area" : document.getElementById("notificationArea"),
     "target"            : document.getElementById("target"),
     "text_input"        : document.getElementById("text-input"),
+    "sent_history"      : document.getElementById("sent-history"),
 
     /* Menu */
 
@@ -1969,7 +1970,7 @@ GuacUI.Client.attach = function(guac) {
         }
 
         // Display the text that was sent
-        var notify_sent = GuacUI.createChildElement(GuacUI.Client.text_input, "div", "sent-text");
+        var notify_sent = GuacUI.createChildElement(GuacUI.Client.sent_history, "div", "sent-text");
         notify_sent.textContent = sent_text;
 
         // Remove text after one second

@@ -679,46 +679,34 @@ p.hint {
     font-size: 2em;
 }
 
-/**
- * off-to-the-ether: Move away and disappear
- */
-@keyframes off-to-the-ether {
-    from { left: 0;      opacity: 1; }
-    to   { left: -200px; opacity: 0; }
-}
-@-moz-keyframes off-to-the-ether {
-    from { left: 0;      opacity: 1; }
-    to   { left: -200px; opacity: 0; }
-}
-@-webkit-keyframes off-to-the-ether {
-    from { left: 0;      opacity: 1; }
-    to   { left: -200px; opacity: 0; }
-}
-
 #text-input {
     display: none;
     position: fixed;
     left: 0;
     bottom: 0;
     width: 100%;
+
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+    background: #CDA;
+
 }
 
 #target {
 
     border: none;
     border-radius: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.5);
 
     display: inline-block;
     vertical-align: bottom;
-    text-align: center;
     font-size: 12pt;
-    width: 100%;
+    width: 50%;
     height: auto;
     resize: none;
+    outline: none;
 
     margin: 0;
     padding: 0.25em;
+    padding-left: 0;
     opacity: 0.75;
     background: #CDA;
 
@@ -728,18 +716,22 @@ p.hint {
     display: block;
 }
 
-#text-input .sent-text {
-    position: absolute;
-    bottom: 0;
-    left: -200px;
-    width: 100%;
-    white-space: pre;
-    animation: off-to-the-ether 1s linear;
-    -webkit-animation: off-to-the-ether 1s linear;
-    opacity: 0;
-    text-align: center;
-    font-size: 12pt;
+#sent-history {
+    display: inline-block;
+    vertical-align: bottom;
     padding: 0.25em;
+    padding-right: 0;
+}
+
+#sent-history .sent-text {
+    display: inline-block;
+    vertical-align: bottom;
+    white-space: pre;
+    font-size: 12pt;
+
+    animation: fadeout 1s linear;
+    -webkit-animation: fadeout 1s linear;
+    opacity: 0;
 }
 
 .notification.message {
