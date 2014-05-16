@@ -691,15 +691,31 @@ p.hint {
 
 }
 
+#text-input-field,
+#text-input-buttons {
+    width: 50%;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#text-input-field {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#text-input-buttons {
+    text-align: right;
+}
+
 #target {
 
     border: none;
     border-radius: 0;
 
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: middle;
     font-size: 12pt;
-    width: 50%;
+    width: 100%;
     height: auto;
     resize: none;
     outline: none;
@@ -718,20 +734,36 @@ p.hint {
 
 #sent-history {
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: middle;
     padding: 0.25em;
     padding-right: 0;
 }
 
 #sent-history .sent-text {
     display: inline-block;
-    vertical-align: bottom;
+    vertical-align: baseline;
     white-space: pre;
     font-size: 12pt;
 
     animation: fadeout 1s linear;
     -webkit-animation: fadeout 1s linear;
     opacity: 0;
+}
+
+#text-input-buttons button {
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: none;
+    color: black;
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0.25em;
+}
+
+#text-input-buttons button:active,
+#text-input-buttons button.pressed {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
 }
 
 .notification.message {
