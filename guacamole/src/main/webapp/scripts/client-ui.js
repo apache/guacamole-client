@@ -1967,7 +1967,7 @@ GuacUI.Client.attach = function(guac) {
 
         for (var i=0; i<content.length; i++) {
             var codepoint = content.charCodeAt(i);
-            if (codepoint !== 0x200B) {
+            if (codepoint !== GuacUI.Client.TEXT_INPUT_PADDING_CODEPOINT) {
                 sent_text += String.fromCharCode(codepoint);
                 send_codepoint(codepoint);
             }
