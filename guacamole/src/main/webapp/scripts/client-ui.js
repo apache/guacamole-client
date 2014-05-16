@@ -205,9 +205,19 @@ GuacUI.Client = {
     "main"              : document.getElementById("main"),
     "display"           : document.getElementById("display"),
     "notification_area" : document.getElementById("notificationArea"),
-    "target"            : document.getElementById("target"),
-    "text_input"        : document.getElementById("text-input"),
-    "sent_history"      : document.getElementById("sent-history"),
+
+    /* Text input */
+
+    "text_input" : {
+        "container" : document.getElementById("text-input"),
+        "sent"      : document.getElementById("sent-history"),
+        "target"    : document.getElementById("target"),
+        "ctrl"      : document.getElementById("text-ctrl"),
+        "alt"       : document.getElementById("text-alt"),
+        "esc"       : document.getElementById("text-esc"),
+        "tab"       : document.getElementById("text-tab"),
+        "enabled"   : false
+    },
 
     /* Menu */
 
@@ -244,10 +254,6 @@ GuacUI.Client = {
     "touch"            : null,
     "touch_screen"     : null,
     "touch_pad"        : null,
-
-    /* Text input */
-
-    "ime_enabled"     : false,
 
     /* Clipboard */
 
@@ -869,12 +875,12 @@ GuacUI.Client.showMenu = function(shown) {
  */
 GuacUI.Client.showTextInput = function(shown) {
     if (shown === false) {
-        GuacUI.Client.text_input.className = "closed";
-        GuacUI.Client.target.blur();
+        GuacUI.Client.text_input.container.className = "closed";
+        GuacUI.Client.text_input.target.blur();
     }
     else {
-        GuacUI.Client.text_input.className = "open";
-        GuacUI.Client.target.focus();
+        GuacUI.Client.text_input.container.className = "open";
+        GuacUI.Client.text_input.target.focus();
     }
 };
 
@@ -1428,7 +1434,7 @@ GuacUI.Client.attach = function(guac) {
             return true;
 
         // Allow all but specific keys through to browser when in IME mode
-        if (GuacUI.Client.ime_enabled && !IME_ALLOWED_KEYS[keysym])
+        if (GuacUI.Client.text_input.enabled && !IME_ALLOWED_KEYS[keysym])
             return true;
 
         GuacUI.Client.attachedClient.sendKeyEvent(pressed, keysym);
@@ -1898,7 +1904,7 @@ GuacUI.Client.attach = function(guac) {
      */
 
     // Disable automatic capitalization on platforms that support this attribute
-    GuacUI.Client.target.setAttribute("autocapitalize", "off");
+    GuacUI.Client.text_input.target.setAttribute("autocapitalize", "off");
 
     function keysym_from_codepoint(codepoint) {
 
@@ -1973,7 +1979,7 @@ GuacUI.Client.attach = function(guac) {
         }
 
         // Display the text that was sent
-        var notify_sent = GuacUI.createChildElement(GuacUI.Client.sent_history, "div", "sent-text");
+        var notify_sent = GuacUI.createChildElement(GuacUI.Client.text_input.sent, "div", "sent-text");
         notify_sent.textContent = sent_text;
 
         // Remove text after one second
@@ -1983,46 +1989,46 @@ GuacUI.Client.attach = function(guac) {
 
     }
 
-    GuacUI.Client.target.onfocus = function() {
+    GuacUI.Client.text_input.target.onfocus = function() {
 
-        GuacUI.Client.ime_enabled = true;
+        GuacUI.Client.text_input.enabled = true;
 
         // Reset content
-        GuacUI.Client.target.value = new Array(257).join("\u200B");
-        GuacUI.Client.target.setSelectionRange(128, 128);
+        GuacUI.Client.text_input.target.value = new Array(257).join("\u200B");
+        GuacUI.Client.text_input.target.setSelectionRange(128, 128);
 
     };
 
-    GuacUI.Client.target.onblur = function() {
-        GuacUI.Client.ime_enabled = false;
-        GuacUI.Client.target.focus();
+    GuacUI.Client.text_input.target.onblur = function() {
+        GuacUI.Client.text_input.enabled = false;
+        GuacUI.Client.text_input.target.focus();
     };
 
     // Track state of composition
     var composing_text = false;
 
-    GuacUI.Client.target.addEventListener("compositionstart", function(e) {
+    GuacUI.Client.text_input.target.addEventListener("compositionstart", function(e) {
         composing_text = true;
     }, false);
 
-    GuacUI.Client.target.addEventListener("compositionend", function(e) {
+    GuacUI.Client.text_input.target.addEventListener("compositionend", function(e) {
         composing_text = false;
     }, false);
 
-    GuacUI.Client.target.addEventListener("input", function(e) {
+    GuacUI.Client.text_input.target.addEventListener("input", function(e) {
 
         // Ignore input events during text composition
         if (composing_text)
             return;
 
         var i;
-        var content = GuacUI.Client.target.value;
+        var content = GuacUI.Client.text_input.target.value;
 
         // If content removed, update
         if (content.length < 256) {
 
             // Calculate number of backspaces and send
-            var backspace_count = 128 - GuacUI.Client.target.selectionStart;
+            var backspace_count = 128 - GuacUI.Client.text_input.target.selectionStart;
             for (i=0; i<backspace_count; i++)
                 send_keysym(0xFF08);
 
@@ -2037,8 +2043,8 @@ GuacUI.Client.attach = function(guac) {
             send_string(content);
 
         // Reset content
-        GuacUI.Client.target.value = new Array(257).join("\u200B");
-        GuacUI.Client.target.setSelectionRange(128, 128);
+        GuacUI.Client.text_input.target.value = new Array(257).join("\u200B");
+        GuacUI.Client.text_input.target.setSelectionRange(128, 128);
 
     }, false);
 
