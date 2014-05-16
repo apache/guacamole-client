@@ -810,8 +810,8 @@ GuacUI.Client.updateDisplayScale = function() {
 
     // Calculate scale to fit screen
     GuacUI.Client.min_zoom = Math.min(
-        window.innerWidth  / Math.max(guac.getDisplay().getWidth(), 1),
-        window.innerHeight / Math.max(guac.getDisplay().getHeight(), 1)
+        GuacUI.Client.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
+        GuacUI.Client.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
     );
 
     // Calculate appropriate maximum zoom level
@@ -1569,26 +1569,70 @@ GuacUI.Client.attach = function(guac) {
     };
 
     /*
-     * Send size events on resize
+     * Reflow layout and send size events on resize/scroll
      */
 
-    window.onresize = function() {
+    var last_scroll_top  = 0;
+    var last_scroll_left = 0;
+    var last_width = 0;
+    var last_height = 0;
 
-        // Remove scrollbars during resize
-        GuacUI.Client.main.style.overflow = "hidden";
+    function __update_layout() {
 
-        var pixel_density = window.devicePixelRatio || 1;
-        var width = window.innerWidth * pixel_density;
-        var height = window.innerHeight * pixel_density;
+        // Only reflow if size or scroll have changed
+        if (document.body.scrollTop  != last_scroll_top
+         || document.body.scrollLeft != last_scroll_left
+         || window.innerWidth        != last_width
+         || window.innerHeight       != last_height) {
 
-        GuacUI.Client.main.style.overflow = "auto";
+            // Reposition document such that it's back on-screen
+            window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
 
-        if (GuacUI.Client.attachedClient)
-            GuacUI.Client.attachedClient.sendSize(width, height);
+            // Determine height of bottom section (currently only text input)
+            var bottom = GuacUI.Client.text_input.container;
+            var bottom_height = (bottom && bottom.offsetHeight) | 0;
 
-        GuacUI.Client.updateDisplayScale();
+            // Calculate correct height of main section (display)
+            var main_width = window.innerWidth;
+            var main_height = window.innerHeight - bottom_height;
 
-    };
+            // Anchor main to top-left of viewport, sized to fit above bottom
+            var main = GuacUI.Client.main;
+            main.style.top = document.body.scrollTop + "px";
+            main.style.left = document.body.scrollLeft + "px";
+            main.style.width = main_width + "px";
+            main.style.height = main_height + "px";
+
+            // Anchor bottom to bottom of viewport
+            if (bottom) {
+                bottom.style.top = (document.body.scrollTop + main_height) + "px";
+                bottom.style.left = document.body.scrollLeft + "px";
+                bottom.style.width = window.innerWidth + "px";
+            }
+
+            // Send new size
+            if (GuacUI.Client.attachedClient) {
+                var pixel_density = window.devicePixelRatio || 1;
+                var width = main_width * pixel_density;
+                var height = main_height * pixel_density;
+                GuacUI.Client.attachedClient.sendSize(width, height);
+            }
+
+            // Rescale display appropriately
+            GuacUI.Client.updateDisplayScale();
+
+            last_scroll_top  = document.body.scrollTop;
+            last_scroll_left = document.body.scrollLeft;
+            last_width = window.innerWidth;
+            last_height = window.innerHeight;
+
+        }
+
+    }
+
+    window.onresize = __update_layout;
+    window.onscroll = __update_layout;
+    window.setInterval(__update_layout, 10);
 
     GuacamoleSessionStorage.addChangeListener(function(name, value) {
         if (name === "clipboard") {
