@@ -1897,6 +1897,9 @@ GuacUI.Client.attach = function(guac) {
      * Text input
      */
 
+    // Disable automatic capitalization on platforms that support this attribute
+    GuacUI.Client.target.setAttribute("autocapitalize", "off");
+
     function keysym_from_codepoint(codepoint) {
 
         // Keysyms for control characters
