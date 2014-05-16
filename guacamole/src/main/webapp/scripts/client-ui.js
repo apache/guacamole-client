@@ -2121,17 +2121,18 @@ GuacUI.Client.attach = function(guac) {
 
         var i;
         var content = GuacUI.Client.text_input.target.value;
+        var expected_length = GuacUI.Client.TEXT_INPUT_PADDING*2;
 
         // If content removed, update
-        if (content.length < 256) {
+        if (content.length < expected_length) {
 
             // Calculate number of backspaces and send
-            var backspace_count = 128 - GuacUI.Client.text_input.target.selectionStart;
+            var backspace_count = GuacUI.Client.TEXT_INPUT_PADDING - GuacUI.Client.text_input.target.selectionStart;
             for (i=0; i<backspace_count; i++)
                 send_keysym(0xFF08);
 
             // Calculate number of deletes and send
-            var delete_count = 256 - content.length - backspace_count;
+            var delete_count = expected_length - content.length - backspace_count;
             for (i=0; i<delete_count; i++)
                 send_keysym(0xFFFF);
 
