@@ -234,18 +234,10 @@ GuacUI.Client = {
     "zoom_in"           : document.getElementById("zoom-in"),
     "auto_fit"          : document.getElementById("auto-fit"),
 
-    /* Expected Input Rectangle */
-
-    "expected_input_x"      : 0,
-    "expected_input_y"      : 0,
-    "expected_input_width"  : 1,
-    "expected_input_height" : 1,
-
     "min_zoom"        : 1,
     "max_zoom"        : 3,
 
     "connectionName"  : "Guacamole",
-    "overrideAutoFit" : false,
     "attachedClient"  : null,
 
     /* Mouse emulation */
