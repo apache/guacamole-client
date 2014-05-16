@@ -198,6 +198,8 @@ GuacUI.Client = {
     
     "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
     "RECONNECT_PERIOD"              : 15,  /* seconds */
+    "TEXT_INPUT_PADDING"            : 128, /* characters */
+    "TEXT_INPUT_PADDING_CODEPOINT"  : 0x200B,
 
     /* Main application area */
 
@@ -2066,13 +2068,32 @@ GuacUI.Client.attach = function(guac) {
     for (i=0; i<keys.length; i++)
         apply_key_behavior(keys[i]);
 
+    /**
+     * Removes all content from the text input target, replacing it with the
+     * given number of padding characters. Padding of the requested size is
+     * added on both sides of the cursor, thus the overall number of characters
+     * added will be twice the number specified.
+     * 
+     * @param {Number} padding The number of characters to pad the text area
+     *                         with.
+     */
+    function reset_text_input_target(padding) {
+
+        var padding_char = String.fromCharCode(GuacUI.Client.TEXT_INPUT_PADDING_CODEPOINT);
+
+        // Pad text area with an arbitrary, non-typable character (so there is something
+        // to delete with backspace or del), and position cursor in middle.
+        GuacUI.Client.text_input.target.value = new Array(padding*2 + 1).join(padding_char);
+        GuacUI.Client.text_input.target.setSelectionRange(padding, padding);
+
+    }
+
     GuacUI.Client.text_input.target.onfocus = function() {
 
         GuacUI.Client.text_input.enabled = true;
 
         // Reset content
-        GuacUI.Client.text_input.target.value = new Array(257).join("\u200B");
-        GuacUI.Client.text_input.target.setSelectionRange(128, 128);
+        reset_text_input_target(GuacUI.Client.TEXT_INPUT_PADDING);
 
     };
 
@@ -2120,8 +2141,7 @@ GuacUI.Client.attach = function(guac) {
             send_string(content);
 
         // Reset content
-        GuacUI.Client.text_input.target.value = new Array(257).join("\u200B");
-        GuacUI.Client.text_input.target.setSelectionRange(128, 128);
+        reset_text_input_target(GuacUI.Client.TEXT_INPUT_PADDING);
 
     }, false);
 
