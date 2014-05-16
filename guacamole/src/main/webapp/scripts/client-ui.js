@@ -212,10 +212,6 @@ GuacUI.Client = {
         "container" : document.getElementById("text-input"),
         "sent"      : document.getElementById("sent-history"),
         "target"    : document.getElementById("target"),
-        "ctrl"      : document.getElementById("text-ctrl"),
-        "alt"       : document.getElementById("text-alt"),
-        "esc"       : document.getElementById("text-esc"),
-        "tab"       : document.getElementById("text-tab"),
         "enabled"   : false
     },
 
@@ -1378,6 +1374,8 @@ GuacUI.Client.attach = function(guac) {
 // One-time UI initialization
 (function() {
 
+    var i;
+
     /**
      * Keys which should be allowed through to the client when in text input
      * mode, providing corresponding key events are received. Keys in this
@@ -1943,12 +1941,15 @@ GuacUI.Client.attach = function(guac) {
 
         if (codepoint === 10) {
             send_keysym(0xFF0D);
+            release_sticky_keys();
             return;
         }
 
         var keysym = keysym_from_codepoint(codepoint);
-        if (keysym)
+        if (keysym) {
             send_keysym(keysym);
+            release_sticky_keys();
+        }
 
     }
 
@@ -1980,6 +1981,90 @@ GuacUI.Client.attach = function(guac) {
         }, 1000);
 
     }
+
+    /**
+     * Set of all active key elements, indexed by keysym.
+     * 
+     * @private
+     * @type Object.<Number, Element>
+     */
+    var active_sticky_keys = {};
+
+    /**
+     * Presses/releases the keysym defined by the "data-keysym" attribute on
+     * the given element whenever the element is pressed. The "data-sticky"
+     * attribute, if present and set to "true", causes the key to remain
+     * pressed until text is sent.
+     *
+     * @param {Element} key The element which will control its associated key.
+     */
+    function apply_key_behavior(key) {
+
+        function __update_key(e) {
+
+            var guac = GuacUI.Client.attachedClient;
+            if (!guac)
+                return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Pull properties of key
+            var keysym  = parseInt(key.getAttribute("data-keysym"));
+            var sticky  = (key.getAttribute("data-sticky") === "true");
+            var pressed = (key.className.indexOf("pressed") !== -1); 
+
+            // If sticky, toggle pressed state
+            if (sticky) {
+                if (pressed) {
+                    GuacUI.removeClass(key, "pressed");
+                    guac.sendKeyEvent(0, keysym);
+                    delete active_sticky_keys[keysym];
+                }
+                else {
+                    GuacUI.addClass(key, "pressed");
+                    guac.sendKeyEvent(1, keysym);
+                    active_sticky_keys[keysym] = key;
+                }
+            }
+
+            // For all non-sticky keys, press and release key immediately
+            else
+                send_keysym(keysym);
+
+        }
+
+        // Press/release key when clicked
+        key.addEventListener("click",      __update_key, false);
+        key.addEventListener("touchstart", __update_key, false);
+
+    }
+
+    /**
+     * Releases all currently-held sticky keys within the text input UI.
+     */
+    function release_sticky_keys() {
+
+        var guac = GuacUI.Client.attachedClient;
+        if (!guac)
+            return;
+
+        // Release all active sticky keys
+        for (var keysym in active_sticky_keys) {
+            var key = active_sticky_keys[keysym];
+            GuacUI.removeClass(key, "pressed");
+            guac.sendKeyEvent(0, keysym);
+        }
+
+        // Reset set of active keys
+        active_sticky_keys = {};
+
+    }
+
+    // Apply key behavior to all keys within the text input UI
+    var keys = GuacUI.Client.text_input.container.getElementsByClassName("key");
+    for (i=0; i<keys.length; i++)
+        apply_key_behavior(keys[i]);
 
     GuacUI.Client.text_input.target.onfocus = function() {
 
@@ -2085,8 +2170,8 @@ GuacUI.Client.attach = function(guac) {
             var element = e.target;
             while (element) {
 
-                // Allow single-touch events on the menu
-                if (element === GuacUI.Client.menu)
+                // Allow single-touch events on the menu and text input
+                if (element === GuacUI.Client.menu || element === GuacUI.Client.text_input.container)
                     return;
 
                 element = element.parentNode;
