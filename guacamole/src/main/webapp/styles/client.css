@@ -687,17 +687,18 @@ p.hint {
 
 #text-input-field,
 #text-input-buttons {
-    width: 50%;
     display: inline-block;
     vertical-align: middle;
 }
 
 #text-input-field {
+    width: 30%;
     overflow: hidden;
     white-space: nowrap;
 }
 
 #text-input-buttons {
+    width: 70%;
     text-align: right;
 }
 
@@ -717,7 +718,6 @@ p.hint {
     margin: 0;
     padding: 0.25em;
     padding-left: 0;
-    opacity: 0.75;
     background: #CDA;
 
 }
@@ -751,6 +751,9 @@ p.hint {
     box-shadow: none;
     text-shadow: none;
     padding: 0.25em;
+    max-width: 20%;
+    margin: 0.1em;
+    min-width: 3em;
 }
 
 #text-input-buttons button:active,
