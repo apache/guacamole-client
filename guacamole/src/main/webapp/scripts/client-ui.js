@@ -1583,26 +1583,32 @@ GuacUI.Client.attach = function(guac) {
      * Reflow layout and send size events on resize/scroll
      */
 
-    var last_scroll_top  = 0;
-    var last_scroll_left = 0;
-    var last_width = 0;
-    var last_height = 0;
+    var last_scroll_left   = 0;
+    var last_scroll_top    = 0;
+    var last_scroll_width  = 0;
+    var last_scroll_height = 0;
+    var last_window_width  = 0;
+    var last_window_height = 0;
 
     function __update_layout() {
 
-        // Reset scroll and reposition document such that it's on-screen
-        window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
-
         // Only reflow if size or scroll have changed
-        if (document.body.scrollTop  != last_scroll_top
-         || document.body.scrollLeft != last_scroll_left
-         || window.innerWidth        != last_width
-         || window.innerHeight       != last_height) {
+        if (document.body.scrollLeft   !== last_scroll_left
+         || document.body.scrollTop    !== last_scroll_top
+         || document.body.scrollWidth  !== last_scroll_width
+         || document.body.scrollHeight !== last_scroll_height
+         || window.innerWidth          !== last_window_width
+         || window.innerHeight         !== last_window_height) {
 
-            last_scroll_top  = document.body.scrollTop;
-            last_scroll_left = document.body.scrollLeft;
-            last_width = window.innerWidth;
-            last_height = window.innerHeight;
+            last_scroll_top    = document.body.scrollTop;
+            last_scroll_left   = document.body.scrollLeft;
+            last_scroll_width  = document.body.scrollWidth;
+            last_scroll_height = document.body.scrollHeight;
+            last_window_width  = window.innerWidth;
+            last_window_height = window.innerHeight;
+
+            // Reset scroll and reposition document such that it's on-screen
+            window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
 
             // Determine height of bottom section (currently only text input)
             var bottom = GuacUI.Client.text_input.container;
