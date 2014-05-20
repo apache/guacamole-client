@@ -2088,9 +2088,33 @@ GuacUI.Client.attach = function(guac) {
 
         }
 
+        var ignore_mouse = false;
+
         // Press/release key when clicked
-        key.addEventListener("click",      __update_key, false);
-        key.addEventListener("touchstart", __update_key, false);
+        key.addEventListener("click", function __mouse_key(e) {
+
+            // Ignore clicks which follow touches
+            if (ignore_mouse)
+                return;
+
+            __update_key(e);
+
+        }, false);
+
+        // Press/release key when tapped 
+        key.addEventListener("touchstart", function __touch_key(e) {
+
+            // Ignore following clicks
+            ignore_mouse = true;
+
+            __update_key(e);
+
+        }, false);
+
+        // Restore handling of mouse events when mouse is used
+        key.addEventListener("mousemove", function __reset_mouse() {
+            ignore_mouse = false;
+        }, false);
 
     }
 
