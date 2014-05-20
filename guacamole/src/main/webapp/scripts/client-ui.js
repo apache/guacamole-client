@@ -812,8 +812,11 @@ GuacUI.Client.setScale = function(new_scale) {
  */
 GuacUI.Client.updateDisplayScale = function() {
 
-    // Determine whether display is currently fit to the screen
     var guac = GuacUI.Client.attachedClient;
+    if (!guac)
+        return;
+
+    // Determine whether display is currently fit to the screen
     var auto_fit = (guac.getDisplay().getScale() === GuacUI.Client.min_zoom);
 
     // Calculate scale to fit screen
