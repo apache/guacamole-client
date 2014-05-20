@@ -738,8 +738,16 @@ GuacUI.Client.Pinch = function(element) {
  */
 GuacUI.Client.updateThumbnail = function() {
 
+    var guac = GuacUI.Client.attachedClient;
+    if (!guac)
+        return;
+
+    // Do not create empty thumbnails
+    if (guac.getDisplay().getWidth() <= 0 || guac.getDisplay().getHeight() <= 0)
+        return;
+
     // Get screenshot
-    var canvas = GuacUI.Client.attachedClient.getDisplay().flatten();
+    var canvas = guac.getDisplay().flatten();
 
     // Calculate scale of thumbnail (max 320x240, max zoom 100%)
     var scale = Math.min(
