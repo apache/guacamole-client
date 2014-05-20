@@ -1585,6 +1585,11 @@ GuacUI.Client.attach = function(guac) {
          || window.innerWidth        != last_width
          || window.innerHeight       != last_height) {
 
+            last_scroll_top  = document.body.scrollTop;
+            last_scroll_left = document.body.scrollLeft;
+            last_width = window.innerWidth;
+            last_height = window.innerHeight;
+
             // Reposition document such that it's back on-screen
             window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
 
@@ -1620,11 +1625,6 @@ GuacUI.Client.attach = function(guac) {
 
             // Rescale display appropriately
             GuacUI.Client.updateDisplayScale();
-
-            last_scroll_top  = document.body.scrollTop;
-            last_scroll_left = document.body.scrollLeft;
-            last_width = window.innerWidth;
-            last_height = window.innerHeight;
 
         }
 
