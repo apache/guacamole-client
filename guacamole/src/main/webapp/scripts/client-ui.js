@@ -1587,6 +1587,9 @@ GuacUI.Client.attach = function(guac) {
 
     function __update_layout() {
 
+        // Reset scroll and reposition document such that it's on-screen
+        window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
+
         // Only reflow if size or scroll have changed
         if (document.body.scrollTop  != last_scroll_top
          || document.body.scrollLeft != last_scroll_left
@@ -1597,9 +1600,6 @@ GuacUI.Client.attach = function(guac) {
             last_scroll_left = document.body.scrollLeft;
             last_width = window.innerWidth;
             last_height = window.innerHeight;
-
-            // Reposition document such that it's back on-screen
-            window.scrollTo(document.body.scrollWidth, document.body.scrollHeight);
 
             // Determine height of bottom section (currently only text input)
             var bottom = GuacUI.Client.text_input.container;
@@ -1947,8 +1947,11 @@ GuacUI.Client.attach = function(guac) {
      * Text input
      */
 
-    // Disable automatic capitalization on platforms that support this attribute
+    // Disable automatic input features on platforms that support these attributes
     GuacUI.Client.text_input.target.setAttribute("autocapitalize", "off");
+    GuacUI.Client.text_input.target.setAttribute("autocorrect",    "off");
+    GuacUI.Client.text_input.target.setAttribute("autocomplete",   "off");
+    GuacUI.Client.text_input.target.setAttribute("spellcheck",     "off");
 
     function keysym_from_codepoint(codepoint) {
 
@@ -2165,17 +2168,11 @@ GuacUI.Client.attach = function(guac) {
     }
 
     GuacUI.Client.text_input.target.onfocus = function() {
-
         GuacUI.Client.text_input.enabled = true;
-
-        // Reset content
-        reset_text_input_target(GuacUI.Client.TEXT_INPUT_PADDING);
-
     };
 
     GuacUI.Client.text_input.target.onblur = function() {
         GuacUI.Client.text_input.enabled = false;
-        GuacUI.Client.text_input.target.focus();
     };
 
     // Track state of composition
@@ -2219,6 +2216,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Reset content
         reset_text_input_target(GuacUI.Client.TEXT_INPUT_PADDING);
+        e.preventDefault();
 
     }, false);
 
