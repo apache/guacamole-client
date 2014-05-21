@@ -362,6 +362,19 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
 
     // Automatically reconnect after the given time period
     var reconnect_interval = null;
+    var reconnect_forced = false;
+
+    /**
+     * Stops the reconnect countdown and forces a client reconnect.
+     */
+    function force_reconnect() {
+        if (!reconnect_forced) {
+            reconnect_forced = true;
+            window.clearInterval(reconnect_interval);
+            GuacUI.Client.connect();
+        }
+    }
+
     if (reconnect) {
 
         var countdown = GuacUI.createChildElement(dialog, "p", "countdown");
@@ -377,10 +390,8 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
                 countdown.textContent = "Reconnecting in " + reconnect + " seconds...";
 
             // Reconnect if countdown complete
-            if (reconnect === 0) {
-                window.clearInterval(reconnect_interval);
-                GuacUI.Client.connect();
-            }
+            if (reconnect === 0)
+                force_reconnect();
 
         }
 
@@ -401,10 +412,13 @@ GuacUI.Client.ModalStatus = function(title_text, text, classname, reconnect) {
     reconnect_button.textContent = "Reconnect";
 
     // Reconnect if button clicked
-    reconnect_button.onclick = function() {
-        window.clearInterval(reconnect_interval);
-        GuacUI.Client.connect();
-    };
+    reconnect_button.onclick = force_reconnect;
+
+    // Reconnect if button tapped
+    reconnect_button.addEventListener("touchend", function(e) {
+        if (e.touches.length === 0)
+            force_reconnect();
+    }, true);
 
     this.show = function() {
         document.body.appendChild(outer);
