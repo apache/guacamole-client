@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-mysql</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.0</version>
+    <version>0.9.1</version>
     <name>guacamole-auth-mysql</name>
     <url>http://guac-dev.org/</url>
 
