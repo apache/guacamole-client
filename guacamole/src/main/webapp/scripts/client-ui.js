@@ -2197,6 +2197,7 @@ GuacUI.Client.attach = function(guac) {
 
     GuacUI.Client.text_input.target.onblur = function() {
         GuacUI.Client.text_input.enabled = false;
+        GuacUI.Client.text_input.target.focus();
     };
 
     // Track state of composition
