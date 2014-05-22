@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
-    <version>0.8.3</version>
+    <version>0.8.4</version>
     <name>guacamole</name>
     <url>http://guac-dev.org/</url>
 
