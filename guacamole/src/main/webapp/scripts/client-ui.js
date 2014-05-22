@@ -2192,6 +2192,7 @@ GuacUI.Client.attach = function(guac) {
 
     GuacUI.Client.text_input.target.onfocus = function() {
         GuacUI.Client.text_input.enabled = true;
+        reset_text_input_target(GuacUI.Client.TEXT_INPUT_PADDING);
     };
 
     GuacUI.Client.text_input.target.onblur = function() {
