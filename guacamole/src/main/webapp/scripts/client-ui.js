@@ -2244,6 +2244,11 @@ GuacUI.Client.attach = function(guac) {
 
     }, false);
 
+    // Do not allow event target contents to be selected during input
+    GuacUI.Client.text_input.target.addEventListener("selectstart", function(e) {
+        e.preventDefault();
+    }, false);
+
     /*
      * Zoom
      */
