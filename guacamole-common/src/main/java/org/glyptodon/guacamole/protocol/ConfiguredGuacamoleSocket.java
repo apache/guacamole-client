@@ -56,6 +56,39 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
     private GuacamoleConfiguration config;
 
     /**
+     * The unique identifier associated with this connection, as determined
+     * by the "ready" instruction received from the Guacamole proxy.
+     */
+    private String id;
+    
+    /**
+     * Waits for the instruction having the given opcode, returning that
+     * instruction once it has been read. If the instruction is never read,
+     * an exception is thrown.
+     * 
+     * @param reader The reader to read instructions from.
+     * @param opcode The opcode of the instruction we are expecting.
+     * @return The instruction having the given opcode.
+     * @throws GuacamoleException If an error occurs while reading, or if
+     *                            the expected instruction is not read.
+     */
+    private GuacamoleInstruction expect(GuacamoleReader reader, String opcode)
+        throws GuacamoleException {
+
+        // Wait for an instruction
+        GuacamoleInstruction instruction = reader.readInstruction();
+        if (instruction == null)
+            throw new GuacamoleServerException("End of stream while waiting for \"" + opcode + "\".");
+
+        // Ensure instruction has expected opcode
+        if (!instruction.getOpcode().equals(opcode))
+            throw new GuacamoleServerException("Expected \"" + opcode + "\" instruction but instead received \"" + instruction.getOpcode() + "\".");
+
+        return instruction;
+
+    }
+ 
+    /**
      * Creates a new ConfiguredGuacamoleSocket which uses the given
      * GuacamoleConfiguration to complete the initial protocol handshake over
      * the given GuacamoleSocket. A default GuacamoleClientInformation object
@@ -100,18 +133,10 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         writer.writeInstruction(new GuacamoleInstruction("select", config.getProtocol()));
 
         // Wait for server args
-        GuacamoleInstruction instruction;
-        do {
-
-            // Read instruction, fail if end-of-stream
-            instruction = reader.readInstruction();
-            if (instruction == null)
-                throw new GuacamoleServerException("End of stream during initial handshake.");
-
-        } while (!instruction.getOpcode().equals("args"));
+        GuacamoleInstruction args = expect(reader, "args");
 
         // Build args list off provided names and config
-        List<String> arg_names = instruction.getArgs();
+        List<String> arg_names = args.getArgs();
         String[] arg_values = new String[arg_names.size()];
         for (int i=0; i<arg_names.size(); i++) {
 
@@ -156,6 +181,15 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         // Send args
         writer.writeInstruction(new GuacamoleInstruction("connect", arg_values));
 
+        // Wait for ready, store ID
+        GuacamoleInstruction ready = expect(reader, "ready");
+
+        List<String> ready_args = ready.getArgs();
+        if (ready_args.isEmpty())
+            throw new GuacamoleServerException("No connection ID received");
+
+        id = ready.getArgs().get(0);
+
     }
 
     /**
@@ -167,6 +201,17 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
      */
     public GuacamoleConfiguration getConfiguration() {
         return config;
+    }
+
+    /**
+     * Returns the unique ID associated with the Guacamole connection
+     * negotiated by this ConfiguredGuacamoleSocket. The ID is provided by
+     * the "ready" instruction returned by the Guacamole proxy.
+     * 
+     * @return The ID of the negotiated Guacamole connection.
+     */
+    public String getConnectionID() {
+        return id;
     }
 
     @Override
