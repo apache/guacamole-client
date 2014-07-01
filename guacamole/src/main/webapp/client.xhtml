@@ -155,11 +155,16 @@
         <!-- Init -->
         <script type="text/javascript"> /* <![CDATA[ */
 
+            // Sanity check Guacamole JavaScript API version
+            if (Guacamole.API_VERSION !== "0.9.1")
+                GuacUI.Client.showStatus("Clear Your Cache", "An older version of Guacamole has been cached by your browser. Please clear your browser's cache and try again.");
+
             // Start connect after control returns from onload (allow browser
             // to consider the page loaded).
-            window.onload = function() {
-                window.setTimeout(GuacUI.Client.connect, 10);
-            };
+            else
+                window.onload = function() {
+                    window.setTimeout(GuacUI.Client.connect, 10);
+                };
 
         /* ]]> */ </script>
 
