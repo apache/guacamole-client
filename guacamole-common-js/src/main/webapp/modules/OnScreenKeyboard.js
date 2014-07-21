@@ -42,6 +42,15 @@ Guacamole.OnScreenKeyboard = function(url) {
      */
     var modifiers = 0;
 
+    /**
+     * Map of currently-set modifiers to the keysym associated with their
+     * original press. When the modifier is cleared, this keysym must be
+     * released.
+     *
+     * @type Object.<String, Number>
+     */
+    var modifier_keysyms = {};
+
     var scaledElements = [];
     
     var modifier_masks = {};
@@ -357,6 +366,7 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 if (modifiers & modifierMask) {
                                     
                                     addClass(keyboard, modifierClass);
+                                    modifier_keysyms[cap.modifier] = cap.keysym;
                                     
                                     // Send key event
                                     if (on_screen_keyboard.onkeydown && cap.keysym)
@@ -367,11 +377,14 @@ Guacamole.OnScreenKeyboard = function(url) {
                                 // Deactivate if not pressed
                                 else {
 
+                                    var original_keysym = modifier_keysyms[cap.modifier];
+
                                     removeClass(keyboard, modifierClass);
+                                    delete modifier_keysyms[cap.modifier];
                                     
                                     // Send key event
-                                    if (on_screen_keyboard.onkeyup && cap.keysym)
-                                        on_screen_keyboard.onkeyup(cap.keysym);
+                                    if (on_screen_keyboard.onkeyup && original_keysym)
+                                        on_screen_keyboard.onkeyup(original_keysym);
 
                                 }
 
