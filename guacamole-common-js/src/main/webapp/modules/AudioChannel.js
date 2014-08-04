@@ -148,11 +148,15 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         var source = Guacamole.AudioChannel.context.createBufferSource();
         source.connect(Guacamole.AudioChannel.context.destination);
 
+        // Use noteOn() instead of start() if necessary
+        if (!source.start)
+            source.start = source.noteOn;
+
         var play_when;
 
         function playDelayed(buffer) {
             source.buffer = buffer;
-            source.noteOn(play_when / 1000);
+            source.start(play_when / 1000);
         }
 
         /** @ignore */
