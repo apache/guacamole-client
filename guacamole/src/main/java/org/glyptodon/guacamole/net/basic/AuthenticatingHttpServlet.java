@@ -91,15 +91,26 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
      */
     private AuthenticationProvider authProvider;
 
+    /**
+     * Whether HTTP authentication should be used (the "Authorization" header).
+     */
+    private boolean useHttpAuthentication;
+
     @Override
     public void init() throws ServletException {
 
-        // Get auth provider instance
+        // Parse Guacamole configuration
         try {
+
+            // Get auth provider instance
             authProvider = GuacamoleProperties.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+
+            // Enable HTTP auth, if requested
+            useHttpAuthentication = GuacamoleProperties.getProperty(BasicGuacamoleProperties.ENABLE_HTTP_AUTH, false);
+
         }
         catch (GuacamoleException e) {
-            logger.error("Error getting authentication provider from properties.", e);
+            logger.error("Error reading Guacamole configuration.", e);
             throw new ServletException(e);
         }
 
@@ -283,7 +294,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 String password = request.getParameter("password");
 
                 // If no username/password given, try Authorization header
-                if (username == null && password == null) {
+                if (useHttpAuthentication && username == null && password == null) {
 
                     String authorization = request.getHeader("Authorization");
                     if (authorization != null && authorization.startsWith("Basic ")) {
