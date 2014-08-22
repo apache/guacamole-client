@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
@@ -281,6 +282,30 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 String username = request.getParameter("username");
                 String password = request.getParameter("password");
 
+                // If no username/password given, try Authorization header
+                if (username == null && password == null) {
+
+                    String authorization = request.getHeader("Authorization");
+                    if (authorization != null && authorization.startsWith("Basic ")) {
+
+                        // Decode base64 authorization
+                        String basicBase64 = authorization.substring(6);
+                        String basicCredentials = new String(DatatypeConverter.parseBase64Binary(basicBase64), "UTF-8");
+
+                        // Pull username/password from auth data
+                        int colon = basicCredentials.indexOf(':');
+                        if (colon != -1) {
+                            username = basicCredentials.substring(0, colon);
+                            password = basicCredentials.substring(colon+1);
+                        }
+
+                        else
+                            logger.warn("Invalid HTTP Basic \"Authorization\" header received.");
+
+                    }
+
+                } // end Authorization header fallback
+                
                 // Build credentials object
                 Credentials credentials = new Credentials();
                 credentials.setSession(httpSession);
