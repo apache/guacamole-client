@@ -129,8 +129,13 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
         GuacamoleReader reader = socket.getReader();
         GuacamoleWriter writer = socket.getWriter();
 
-        // Send protocol
-        writer.writeInstruction(new GuacamoleInstruction("select", config.getProtocol()));
+        // Get protocol / connection ID
+        String select_arg = config.getConnectionID();
+        if (select_arg == null)
+            select_arg = config.getProtocol();
+
+        // Send requested protocol or connection ID
+        writer.writeInstruction(new GuacamoleInstruction("select", select_arg));
 
         // Wait for server args
         GuacamoleInstruction args = expect(reader, "args");

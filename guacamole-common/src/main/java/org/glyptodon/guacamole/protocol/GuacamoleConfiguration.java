@@ -43,6 +43,12 @@ public class GuacamoleConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * The ID of the connection being joined. If this value is present,
+     * the protocol need not be specified.
+     */
+    private String connectionID;
+    
+    /**
      * The name of the protocol associated with this configuration.
      */
     private String protocol;
@@ -51,6 +57,28 @@ public class GuacamoleConfiguration implements Serializable {
      * Map of all associated parameter values, indexed by parameter name.
      */
     private Map<String, String> parameters = new HashMap<String, String>();
+
+    /**
+     * Returns the ID of the connection being joined, if any. If no connection
+     * is being joined, this returns null, and the protocol must be set.
+     *
+     * @return The ID of the connection being joined, or null if no connection
+     *         is being joined.
+     */
+    public String getConnectionID() {
+        return connectionID;
+    }
+
+    /**
+     * Sets the ID of the connection being joined, if any. If no connection
+     * is being joined, this value must be omitted, and the protocol must be
+     * set instead.
+     *
+     * @param connectionID The ID of the connection being joined.
+     */
+    public void setConnectionID(String connectionID) {
+        this.connectionID = connectionID;
+    }
 
     /**
      * Returns the name of the protocol to be used.
