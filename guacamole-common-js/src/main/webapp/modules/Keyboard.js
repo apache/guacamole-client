@@ -231,6 +231,7 @@ Guacamole.Keyboard = function(element) {
      * @private
      */
     var no_repeat = {
+        0xFE03: true, // ISO Level 3 Shift (AltGr)
         0xFFE1: true, // Left shift
         0xFFE2: true, // Right shift
         0xFFE3: true, // Left ctrl 
@@ -238,7 +239,7 @@ Guacamole.Keyboard = function(element) {
         0xFFE7: true, // Left meta 
         0xFFE8: true, // Right meta 
         0xFFE9: true, // Left alt
-        0xFFEA: true, // Right alt (or AltGr)
+        0xFFEA: true, // Right alt
         0xFFEB: true, // Left hyper
         0xFFEC: true  // Right hyper
     };
