@@ -497,7 +497,7 @@ Guacamole.Keyboard = function(element) {
         var location = e.location || e.keyLocation || 0;
 
         // Ignore any unknown key events
-        if (!keynum) {
+        if (!keynum && !e.key) {
             e.preventDefault();
             return;
         }
@@ -593,11 +593,18 @@ Guacamole.Keyboard = function(element) {
         if (window.event) keynum = window.event.keyCode;
         else if (e.which) keynum = e.which;
         
+        // Get key location
+        var location = e.location || e.keyLocation || 0;
+
         // Fix modifier states
         update_modifier_state(e);
 
-        // Send release event if original key known
+        // Derive keysym from current or past events
         var keysym = keydownChar[keynum];
+        if (e.key)
+            keysym = keysym || keysym_from_key_identifier(e.key, location);
+
+        // Send release event if original key known
         if (keysym !== null)
             release_key(keysym);
 
