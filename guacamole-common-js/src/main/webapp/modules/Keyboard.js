@@ -100,7 +100,8 @@ Guacamole.Keyboard = function(element) {
         122: [0xFFC8], // f11
         123: [0xFFC9], // f12
         144: [0xFF7F], // num lock
-        145: [0xFF14]  // scroll lock
+        145: [0xFF14], // scroll lock
+        225: [0xFE03]  // altgraph (iso_level3_shift)
     };
 
     /**
@@ -114,7 +115,7 @@ Guacamole.Keyboard = function(element) {
         "Alphanumeric": [0xFF30],
         "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
         "Attn": [0xFD0E],
-        "AltGraph": [0xFFEA],
+        "AltGraph": [0xFE03],
         "ArrowDown": [0xFF54],
         "ArrowLeft": [0xFF51],
         "ArrowRight": [0xFF53],
