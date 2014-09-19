@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-common-js</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.2</version>
+    <version>0.9.3</version>
     <name>guacamole-common-js</name>
     <url>http://guac-dev.org/</url>
 
