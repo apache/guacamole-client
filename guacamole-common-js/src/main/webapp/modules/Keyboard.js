@@ -768,6 +768,16 @@ Guacamole.Keyboard = function(element) {
             // If key is known from keyCode or DOM3 alone, use that
             keysym =  keysym_from_key_identifier(first.key, first.location)
                    || keysym_from_keycode(first.keyCode, first.location);
+
+            // We must use the (potentially buggy) keyIdentifier immediately if
+            // keypress will likely not fire, as we need to make a best effort
+            // to prevent default if requested
+            if (guac_keyboard.modifiers.ctrl
+             || guac_keyboard.modifiers.alt
+             || guac_keyboard.modifiers.meta
+             || guac_keyboard.modifiers.hyper)
+                keysym = keysym || keysym_from_key_identifier(first.keyIdentifier, first.location);
+
             if (keysym) {
                 recentKeysym[first.keyCode] = keysym;
                 first.defaultPrevented = !press_key(keysym);
