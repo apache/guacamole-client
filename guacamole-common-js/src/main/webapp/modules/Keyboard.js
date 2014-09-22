@@ -76,8 +76,17 @@ Guacamole.Keyboard = function(element) {
         /**
          * An arbitrary timestamp in milliseconds, indicating this event's
          * position in time relative to other events.
+         *
+         * @type Number
          */
         this.timestamp = new Date().getTime();
+
+        /**
+         * Whether the default action of this key event should be prevented.
+         *
+         * @type Boolean
+         */
+        this.defaultPrevented = false;
 
         /**
          * Returns the number of milliseconds elapsed since this event was
@@ -719,10 +728,37 @@ Guacamole.Keyboard = function(element) {
      */
     function interpret_events() {
 
+        // Do not prevent default if no event could be interpreted
+        var handled_event = interpret_event();
+        if (!handled_event)
+            return false;
+
+        // Interpret as much as possible
+        var last_event;
+        do {
+            last_event = handled_event;
+            handled_event = interpret_event();
+        } while (handled_event !== null);
+
+        return last_event.defaultPrevented;
+
+    }
+
+    /**
+     * Reads through the event log, interpreting the first event, if possible,
+     * and returning that event. If no events can be interpreted, due to a
+     * total lack of events or the need for more events, null is returned. Any
+     * interpreted events are automatically removed from the log.
+     * 
+     * @return {KeyEvent} The first key event in the log, if it can be
+     *                    interpreted, or null otherwise.
+     */
+    function interpret_event() {
+
         // Peek at first event in log
         var first = eventLog[0];
         if (!first)
-            return false;
+            return null;
 
         // Keydown event
         if (first instanceof KeydownEvent) {
@@ -734,8 +770,8 @@ Guacamole.Keyboard = function(element) {
                    || keysym_from_keycode(first.keyCode, first.location);
             if (keysym) {
                 recentKeysym[first.keyCode] = keysym;
-                eventLog.shift();
-                return !press_key(keysym);
+                first.defaultPrevented = !press_key(keysym);
+                return eventLog.shift();
             }
 
             // If keydown is immediately followed by a keypress, use the indicated character
@@ -745,20 +781,20 @@ Guacamole.Keyboard = function(element) {
                 keysym = keysym_from_charcode(next.charCode);
                 if (keysym) {
                     recentKeysym[first.keyCode] = keysym;
-                    eventLog.shift();
-                    return !press_key(keysym);
+                    first.defaultPrevented = !press_key(keysym);
+                    return eventLog.shift();
                 }
 
                 // If keypress cannot be identified, then drop
                 console.log("Warning: Key press was dropped as unidentifiable.", first);
-                eventLog.shift();
+                return eventLog.shift();
 
             }
 
             // Drop event if completely old and uninterpretable
             else if (first.getAge() > 100) {
                 console.log("Warning: Key press was dropped as ambiguous.", first);
-                eventLog.shift();
+                return eventLog.shift();
             }
 
             // Lacking further information, pray for a future keypress event
@@ -775,23 +811,23 @@ Guacamole.Keyboard = function(element) {
                        || keysym_from_keycode(first.keyCode, first.location)
                        || recentKeysym[first.keyCode];
             if (keysym) {
-                eventLog.shift();
                 release_key(keysym);
-                return true;
+                first.defaultPrevented = true;
+                return eventLog.shift();
             }
 
             // Drop if keyup cannot be narrowed to a specific key
             console.log("Warning: Key release was dropped as ambiguous.", first);
-            eventLog.shift();
+            return eventLog.shift();
 
         }
 
         // Dump any other type of event (keypress by itself is invalid)
         else
-            eventLog.shift();
+            return eventLog.shift();
 
-        // Do not prevent anything by default
-        return false;
+        // No event interpreted
+        return null;
 
     }
 
