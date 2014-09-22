@@ -469,10 +469,13 @@ Guacamole.Keyboard = function(element) {
     var last_keydown_result = {};
 
     /**
-     * The keysym associated with a given keycode when keydown fired.
+     * The keysym most recently associated with a given keycode when keydown
+     * fired. This object maps keycodes to keysyms.
+     *
      * @private
+     * @type Object.<Number, Number>
      */
-    var keydownChar = [];
+    var recentKeysym = {};
 
     /**
      * Timeout before key repeat starts.
@@ -730,6 +733,7 @@ Guacamole.Keyboard = function(element) {
             keysym =  keysym_from_key_identifier(first.key, first.location)
                    || keysym_from_keycode(first.keyCode, first.location);
             if (keysym) {
+                recentKeysym[first.keyCode] = keysym;
                 eventLog.shift();
                 return !press_key(keysym);
             }
@@ -740,18 +744,22 @@ Guacamole.Keyboard = function(element) {
 
                 keysym = keysym_from_charcode(next.charCode);
                 if (keysym) {
+                    recentKeysym[first.keyCode] = keysym;
                     eventLog.shift();
                     return !press_key(keysym);
                 }
 
                 // If keypress cannot be identified, then drop
+                console.log("Warning: Key press was dropped as unidentifiable.", first);
                 eventLog.shift();
 
             }
 
             // Drop event if completely old and uninterpretable
-            else if (first.getAge() > 100)
+            else if (first.getAge() > 100) {
+                console.log("Warning: Key press was dropped as ambiguous.", first);
                 eventLog.shift();
+            }
 
             // Lacking further information, pray for a future keypress event
             else
@@ -764,7 +772,8 @@ Guacamole.Keyboard = function(element) {
 
             // If key is known from keyCode or DOM3 alone, use that
             var keysym =  keysym_from_key_identifier(first.key, first.location)
-                       || keysym_from_keycode(first.keyCode, first.location);
+                       || keysym_from_keycode(first.keyCode, first.location)
+                       || recentKeysym[first.keyCode];
             if (keysym) {
                 eventLog.shift();
                 release_key(keysym);
@@ -772,6 +781,7 @@ Guacamole.Keyboard = function(element) {
             }
 
             // Drop if keyup cannot be narrowed to a specific key
+            console.log("Warning: Key release was dropped as ambiguous.", first);
             eventLog.shift();
 
         }
