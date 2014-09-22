@@ -492,6 +492,9 @@ Guacamole.Keyboard = function(element) {
 
     function keysym_from_key_identifier(identifier, location) {
 
+        if (!identifier)
+            return null;
+
         var typedCharacter;
 
         // If identifier is U+xxxx, decode Unicode character 
@@ -690,8 +693,9 @@ Guacamole.Keyboard = function(element) {
         // Keydown event
         if (first instanceof KeydownEvent) {
 
-            // If key is known from keyCode, use that
-            var keysym = keysym_from_keycode(first.keyCode, first.location);
+            // If key is known from keyCode or DOM3 alone, use that
+            var keysym =  keysym_from_key_identifier(first.key, first.location)
+                       || keysym_from_keycode(first.keyCode, first.location);
             if (keysym) {
                 eventLog.shift();
                 return !press_key(keysym);
@@ -702,8 +706,9 @@ Guacamole.Keyboard = function(element) {
         // Keyup event
         else if (first instanceof KeyupEvent) {
 
-            // If key is known from keyCode, use that
-            var keysym = keysym_from_keycode(first.keyCode, first.location);
+            // If key is known from keyCode or DOM3 alone, use that
+            var keysym =  keysym_from_key_identifier(first.key, first.location)
+                       || keysym_from_keycode(first.keyCode, first.location);
             if (keysym) {
                 eventLog.shift();
                 release_key(keysym);
