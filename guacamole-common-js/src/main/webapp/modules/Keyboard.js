@@ -682,9 +682,41 @@ Guacamole.Keyboard = function(element) {
      */
     function interpret_events() {
 
-        // TODO: Implement
-        console.log(eventLog);
+        // Peek at first event in log
+        var first = eventLog[0];
+        if (!first)
+            return false;
 
+        // Keydown event
+        if (first instanceof KeydownEvent) {
+
+            // If key is known from keyCode, use that
+            var keysym = keysym_from_keycode(first.keyCode, first.location);
+            if (keysym) {
+                eventLog.shift();
+                return !press_key(keysym);
+            }
+
+        }
+
+        // Keyup event
+        else if (first instanceof KeyupEvent) {
+
+            // If key is known from keyCode, use that
+            var keysym = keysym_from_keycode(first.keyCode, first.location);
+            if (keysym) {
+                eventLog.shift();
+                release_key(keysym);
+                return true;
+            }
+
+        }
+
+        // Dump any other type of event (keypress by itself is invalid)
+        else
+            eventLog.shift();
+
+        // Do not prevent anything by default
         return false;
 
     }
