@@ -69,10 +69,26 @@ Guacamole.Keyboard = function(element) {
     var KeyEvent = function() {
 
         /**
+         * Reference to this key event.
+         */
+        var key_event = this;
+
+        /**
          * An arbitrary timestamp in milliseconds, indicating this event's
          * position in time relative to other events.
          */
         this.timestamp = new Date().getTime();
+
+        /**
+         * Returns the number of milliseconds elapsed since this event was
+         * received.
+         *
+         * @return {Number} The number of milliseconds elapsed since this
+         *                  event was received.
+         */
+        this.getAge = function() {
+            return new Date().getTime() - key_event.timestamp;
+        };
 
     };
 
@@ -676,6 +692,21 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
+     * The reinterpretation timeout handle returned via window.setTimeout() when
+     * future evaluation is needed, but the necessary event may not actually be
+     * generated.
+     */
+    var reinterpret_timeout;
+
+    /**
+     * Schedules future reinterpretation of logged key events.
+     */
+    function schedule_reinterpret() {
+        window.clearTimeout(reinterpret_timeout);
+        reinterpret_timeout = window.setTimeout(interpret_events, 100);
+    }
+
+    /**
      * Reads through the event log, removing events from the head of the log
      * when the corresponding true key presses are known (or as known as they
      * can be).
@@ -693,13 +724,38 @@ Guacamole.Keyboard = function(element) {
         // Keydown event
         if (first instanceof KeydownEvent) {
 
+            var keysym;
+
             // If key is known from keyCode or DOM3 alone, use that
-            var keysym =  keysym_from_key_identifier(first.key, first.location)
-                       || keysym_from_keycode(first.keyCode, first.location);
+            keysym =  keysym_from_key_identifier(first.key, first.location)
+                   || keysym_from_keycode(first.keyCode, first.location);
             if (keysym) {
                 eventLog.shift();
                 return !press_key(keysym);
             }
+
+            // If keydown is immediately followed by a keypress, use the indicated character
+            var next = eventLog[1];
+            if (next && next instanceof KeypressEvent) {
+
+                keysym = keysym_from_charcode(next.charCode);
+                if (keysym) {
+                    eventLog.shift();
+                    return !press_key(keysym);
+                }
+
+                // If keypress cannot be identified, then drop
+                eventLog.shift();
+
+            }
+
+            // Drop event if completely old and uninterpretable
+            else if (first.getAge() > 100)
+                eventLog.shift();
+
+            // Lacking further information, pray for a future keypress event
+            else
+                schedule_reinterpret();
 
         }
 
@@ -714,6 +770,9 @@ Guacamole.Keyboard = function(element) {
                 release_key(keysym);
                 return true;
             }
+
+            // Drop if keyup cannot be narrowed to a specific key
+            eventLog.shift();
 
         }
 
