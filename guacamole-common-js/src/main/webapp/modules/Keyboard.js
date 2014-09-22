@@ -518,7 +518,7 @@ Guacamole.Keyboard = function(element) {
         return keysyms[location] || keysyms[0];
     }
 
-    function keysym_from_key_identifier(identifier, location) {
+    function keysym_from_key_identifier(identifier, location, shifted) {
 
         if (!identifier)
             return null;
@@ -539,6 +539,12 @@ Guacamole.Keyboard = function(element) {
         // Otherwise, look up corresponding keysym
         else
             return get_keysym(keyidentifier_keysym[identifier], location);
+
+        // Alter case if necessary
+        if (shifted === true)
+            typedCharacter = typedCharacter.toUpperCase();
+        else if (shifted === false)
+            typedCharacter = typedCharacter.toLowerCase();
 
         // Get codepoint
         var codepoint = typedCharacter.charCodeAt(0);
@@ -776,7 +782,7 @@ Guacamole.Keyboard = function(element) {
              || guac_keyboard.modifiers.alt
              || guac_keyboard.modifiers.meta
              || guac_keyboard.modifiers.hyper)
-                keysym = keysym || keysym_from_key_identifier(first.keyIdentifier, first.location);
+                keysym = keysym || keysym_from_key_identifier(first.keyIdentifier, first.location, guac_keyboard.modifiers.shift);
 
             if (keysym) {
                 recentKeysym[first.keyCode] = keysym;
