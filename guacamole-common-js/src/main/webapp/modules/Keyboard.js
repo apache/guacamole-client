@@ -781,7 +781,7 @@ Guacamole.Keyboard = function(element) {
                 keysym = keysym_from_charcode(next.charCode);
                 if (keysym) {
                     recentKeysym[first.keyCode] = keysym;
-                    first.defaultPrevented = !press_key(keysym);
+                    first.defaultPrevented = next.defaultPrevented = !press_key(keysym);
                     return eventLog.shift();
                 }
 
