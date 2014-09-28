@@ -89,6 +89,15 @@ Guacamole.Keyboard = function(element) {
         this.defaultPrevented = false;
 
         /**
+         * The keysym of the key associated with this key event, as determined
+         * by a best-effort guess using available event properties and keyboard
+         * state.
+         *
+         * @type Number
+         */
+        this.keysym = null;
+
+        /**
          * Returns the number of milliseconds elapsed since this event was
          * received.
          *
@@ -156,6 +165,22 @@ Guacamole.Keyboard = function(element) {
          */
         this.location = location;
 
+        // If key is known from keyCode or DOM3 alone, use that
+        this.keysym =  keysym_from_key_identifier(key, location)
+                    || keysym_from_keycode(keyCode, location);
+
+        // We must use the (potentially buggy) keyIdentifier immediately if
+        // keypress will likely not fire, as we need to make a best effort
+        // to prevent default if requested
+        if (guac_keyboard.modifiers.ctrl
+         || guac_keyboard.modifiers.alt
+         || guac_keyboard.modifiers.meta
+         || guac_keyboard.modifiers.hyper)
+            this.keysym = this.keysym || keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
+
+        // Record most recently known keysym by associated key code
+        recentKeysym[keyCode] = this.keysym;
+
     };
 
     KeydownEvent.prototype = new KeyEvent();
@@ -183,6 +208,9 @@ Guacamole.Keyboard = function(element) {
          * @type Number
          */
         this.charCode = charCode;
+
+        // Pull keysym from char code
+        this.keysym = keysym_from_charcode(charCode);
 
     };
 
@@ -242,6 +270,11 @@ Guacamole.Keyboard = function(element) {
          * @type Number
          */
         this.location = location;
+
+        // If key is known from keyCode or DOM3 alone, use that
+        this.keysym =  keysym_from_key_identifier(key, location)
+                    || keysym_from_keycode(keyCode, location)
+                    || recentKeysym[keyCode];
 
     };
 
@@ -769,21 +802,7 @@ Guacamole.Keyboard = function(element) {
         // Keydown event
         if (first instanceof KeydownEvent) {
 
-            var keysym;
-
-            // If key is known from keyCode or DOM3 alone, use that
-            keysym =  keysym_from_key_identifier(first.key, first.location)
-                   || keysym_from_keycode(first.keyCode, first.location);
-
-            // We must use the (potentially buggy) keyIdentifier immediately if
-            // keypress will likely not fire, as we need to make a best effort
-            // to prevent default if requested
-            if (guac_keyboard.modifiers.ctrl
-             || guac_keyboard.modifiers.alt
-             || guac_keyboard.modifiers.meta
-             || guac_keyboard.modifiers.hyper)
-                keysym = keysym || keysym_from_key_identifier(first.keyIdentifier, first.location, guac_keyboard.modifiers.shift);
-
+            var keysym = first.keysym;
             if (keysym) {
                 recentKeysym[first.keyCode] = keysym;
                 first.defaultPrevented = !press_key(keysym);
@@ -794,7 +813,7 @@ Guacamole.Keyboard = function(element) {
             var next = eventLog[1];
             if (next && next instanceof KeypressEvent) {
 
-                keysym = keysym_from_charcode(next.charCode);
+                keysym = next.keysym;
                 if (keysym) {
                     recentKeysym[first.keyCode] = keysym;
                     first.defaultPrevented = next.defaultPrevented = !press_key(keysym);
@@ -822,10 +841,7 @@ Guacamole.Keyboard = function(element) {
         // Keyup event
         else if (first instanceof KeyupEvent) {
 
-            // If key is known from keyCode or DOM3 alone, use that
-            var keysym =  keysym_from_key_identifier(first.key, first.location)
-                       || keysym_from_keycode(first.keyCode, first.location)
-                       || recentKeysym[first.keyCode];
+            var keysym = first.keysym;
             if (keysym) {
                 release_key(keysym);
                 first.defaultPrevented = true;
