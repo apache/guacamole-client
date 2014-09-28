@@ -59,6 +59,20 @@ public class GuacamoleInstruction {
     }
 
     /**
+     * Creates a new GuacamoleInstruction having the given Operation and
+     * list of arguments values. The list given will be used to back the
+     * internal list of arguments and the list returned by getArgs().
+     *
+     * @param opcode The opcode of the instruction to create.
+     * @param args The list of argument values to provide in the new
+     *             instruction if any.
+     */
+    public GuacamoleInstruction(String opcode, List<String> args) {
+        this.opcode = opcode;
+        this.args = Collections.unmodifiableList(args);
+    }
+
+    /**
      * Returns the opcode associated with this GuacamoleInstruction.
      * @return The opcode associated with this GuacamoleInstruction.
      */
