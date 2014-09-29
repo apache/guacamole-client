@@ -186,10 +186,17 @@ Guacamole.Keyboard = function(element) {
         if (!this.keysym && key_identifier_sane(keyCode, keyIdentifier))
             this.keysym = keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
 
+        // Determine whether default action for Alt+combinations must be prevented
+        var prevent_alt =  !guac_keyboard.modifiers.ctrl
+                        && !(navigator && navigator.platform && navigator.platform.match(/^mac/i));
+
+        // Determine whether default action for Ctrl+combinations must be prevented
+        var prevent_ctrl = !guac_keyboard.modifiers.alt;
+
         // We must rely on the (potentially buggy) keyIdentifier if preventing
         // the default action is important
-        if ((guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
-         || (guac_keyboard.modifiers.alt  && !guac_keyboard.modifiers.ctrl)
+        if ((prevent_ctrl && guac_keyboard.modifiers.ctrl)
+         || (prevent_alt  && guac_keyboard.modifiers.alt)
          || guac_keyboard.modifiers.meta
          || guac_keyboard.modifiers.hyper)
             this.reliable = true;
