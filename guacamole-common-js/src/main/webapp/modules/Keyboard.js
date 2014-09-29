@@ -764,21 +764,6 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
-     * The reinterpretation timeout handle returned via window.setTimeout() when
-     * future evaluation is needed, but the necessary event may not actually be
-     * generated.
-     */
-    var reinterpret_timeout;
-
-    /**
-     * Schedules future reinterpretation of logged key events.
-     */
-    function schedule_reinterpret() {
-        window.clearTimeout(reinterpret_timeout);
-        reinterpret_timeout = window.setTimeout(interpret_events, 100);
-    }
-
-    /**
      * Reads through the event log, removing events from the head of the log
      * when the corresponding true key presses are known (or as known as they
      * can be).
@@ -889,16 +874,6 @@ Guacamole.Keyboard = function(element) {
                 first.defaultPrevented = !press_key(keysym);
                 return eventLog.shift();
             }
-
-            // Drop event if completely old and uninterpretable
-            else if (first.getAge() > 100) {
-                console.log("Warning: Key press was dropped as ambiguous.", first);
-                return eventLog.shift();
-            }
-
-            // Lacking further information, pray for a future keypress event
-            else
-                schedule_reinterpret();
 
         }
 
