@@ -182,8 +182,9 @@ Guacamole.Keyboard = function(element) {
         if (this.keysym)
             this.reliable = true;
 
-        // Use legacy keyIdentifier as a last resort
-        this.keysym = this.keysym || keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
+        // Use legacy keyIdentifier as a last resort, if it looks sane
+        if (!this.keysym && key_identifier_sane(keyCode, keyIdentifier))
+            this.keysym = keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
 
         // We must rely on the (potentially buggy) keyIdentifier if preventing
         // the default action is important
@@ -644,6 +645,43 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
+     * Heuristically detects if the legacy keyIdentifier property of
+     * a keydown/keyup event looks incorrectly derived. Chrome, and
+     * presumably others, will produce the keyIdentifier by assuming
+     * the keyCode is the Unicode codepoint for that key. This is not
+     * correct in all cases.
+     *
+     * @param {Number} keyCode The keyCode from a browser keydown/keyup
+     *                         event.
+     * @param {String} keyIdentifier The legacy keyIdentifier from a
+     *                               browser keydown/keyup event.
+     * @returns {Boolean} true if the keyIdentifier looks sane, false if
+     *                    the keyIdentifier appears incorrectly derived.
+     */
+    function key_identifier_sane(keyCode, keyIdentifier) {
+
+        // Assume non-Unicode keyIdentifier values are sane
+        var unicodePrefixLocation = keyIdentifier.indexOf("U+");
+        if (unicodePrefixLocation === -1)
+            return true;
+
+        // If the Unicode codepoint isn't identical to the keyCode,
+        // then the identifier is likely correct
+        var codepoint = parseInt(keyIdentifier.substring(unicodePrefixLocation+2), 16);
+        if (keyCode !== codepoint)
+            return true;
+
+        // The keyCodes for A-Z and 0-9 are actually identical to their
+        // Unicode codepoints
+        if ((keyCode >= 65 && keyCode <= 90) || (keyCode >= 48 && keyCode <= 57))
+            return true;
+
+        // The keyIdentifier does NOT appear sane
+        return false;
+
+    }
+
+    /**
      * Marks a key as pressed, firing the keydown event if registered. Key
      * repeat for the pressed key will start after a delay if that key is
      * not a modifier.
@@ -790,14 +828,16 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
-     * Searches the event log for a keyup event having a given keysym,
-     * returning its index within the log.
+     * Searches the event log for a keyup event corresponding to the given
+     * keydown event, returning its index within the log.
      *
-     * @param {Number} keysym The keysym of the keyup event to search for.
+     * @param {KeydownEvent} keydown The keydown event whose corresponding keyup
+     *                               event we are to search for.
      * @returns {Number} The index of the first keyup event in the event log
-     *                   having the given keysym, or -1 if no such event exists.
+     *                   matching the given keydown event, or -1 if no such
+     *                   event exists.
      */
-    function indexof_keyup(keysym) {
+    function indexof_keyup(keydown) {
 
         var i;
 
@@ -806,13 +846,43 @@ Guacamole.Keyboard = function(element) {
 
             // Return index of key event if found
             var event = eventLog[i];
-            if (event instanceof KeyupEvent && event.keysym === keysym)
+            if (event instanceof KeyupEvent && event.keyCode === keydown.keyCode)
                 return i;
 
         }
 
         // No such keyup found
         return -1;
+
+    }
+
+    /**
+     * Releases Ctrl+Alt, if both are currently pressed and the given keysym
+     * looks like a key that may require AltGr.
+     * 
+     * @param {Number} keysym The key that was just pressed.
+     */
+    function release_simulated_altgr(keysym) {
+
+        // Both Ctrl+Alt must be pressed if simulated AltGr is in use
+        if (!guac_keyboard.modifiers.ctrl || !guac_keyboard.modifiers.alt)
+            return;
+
+        // Assume [A-Z] never require AltGr
+        if (keysym >= 0x0041 && keysym <= 0x005A)
+            return;
+
+        // Assume [a-z] never require AltGr
+        if (keysym >= 0x0061 && keysym <= 0x007A)
+            return;
+
+        // Release Ctrl+Alt if the keysym is printable
+        if (keysym <= 0xFF || (keysym & 0xFF000000) === 0x01000000) {
+            release_key(0xFFE3); // Left ctrl 
+            release_key(0xFFE4); // Right ctrl 
+            release_key(0xFFE9); // Left alt
+            release_key(0xFFEA); // Right alt
+        }
 
     }
 
@@ -835,42 +905,41 @@ Guacamole.Keyboard = function(element) {
         // Keydown event
         if (first instanceof KeydownEvent) {
 
+            // If event itself is reliable, no need to wait for other events
             var keysym = first.keysym;
-            if (first.reliable && keysym) {
-                recentKeysym[first.keyCode] = keysym;
-                first.defaultPrevented = !press_key(keysym);
+            if (first.reliable) {
+
+                if (keysym) {
+                    release_simulated_altgr(keysym);
+                    first.defaultPrevented = !press_key(keysym);
+                    recentKeysym[first.keyCode] = keysym;
+                }
+
                 return eventLog.shift();
+
             }
 
             // If keydown is immediately followed by a keypress, use the indicated character
             var next = eventLog[1];
             if (next && next instanceof KeypressEvent) {
 
-                // Release Ctrl+Alt under the assumption that it's actually AltGr
-                if (guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt) {
-                    release_key(0xFFE3); // Left ctrl 
-                    release_key(0xFFE4); // Right ctrl 
-                    release_key(0xFFE9); // Left alt
-                    release_key(0xFFEA); // Right alt
-                }
-
-                // Press key based on keypress event
                 keysym = next.keysym;
                 if (keysym) {
-                    recentKeysym[first.keyCode] = keysym;
+                    release_simulated_altgr(keysym);
                     first.defaultPrevented = next.defaultPrevented = !press_key(keysym);
-                    return eventLog.shift();
+                    recentKeysym[first.keyCode] = keysym;
                 }
 
-                // If keypress cannot be identified, then drop
                 return eventLog.shift();
 
             }
 
-            // If there is a keyup already, stop waiting for a keypress
-            else if (keysym && indexof_keyup(keysym) !== -1) {
-                recentKeysym[first.keyCode] = keysym;
-                first.defaultPrevented = !press_key(keysym);
+            // If there is a keyup already, the event must be handled now
+            else if (indexof_keyup(first) !== -1) {
+                if (keysym) {
+                    first.defaultPrevented = !press_key(keysym);
+                    recentKeysym[first.keyCode] = keysym;
+                }
                 return eventLog.shift();
             }
 
@@ -883,15 +952,13 @@ Guacamole.Keyboard = function(element) {
             if (keysym) {
                 release_key(keysym);
                 first.defaultPrevented = true;
-                return eventLog.shift();
             }
 
-            // Drop if keyup cannot be narrowed to a specific key
             return eventLog.shift();
 
         }
 
-        // Dump any other type of event (keypress by itself is invalid)
+        // Ignore any other type of event (keypress by itself is invalid)
         else
             return eventLog.shift();
 
