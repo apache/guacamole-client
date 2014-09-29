@@ -98,6 +98,15 @@ Guacamole.Keyboard = function(element) {
         this.keysym = null;
 
         /**
+         * Whether the keysym value of this key event is known to be reliable.
+         * If false, the keysym may still be valid, but it's only a best guess,
+         * and future key events may be a better source of information.
+         *
+         * @type Boolean
+         */
+        this.reliable = false;
+
+        /**
          * Returns the number of milliseconds elapsed since this event was
          * received.
          *
@@ -169,6 +178,10 @@ Guacamole.Keyboard = function(element) {
         this.keysym =  keysym_from_key_identifier(key, location)
                     || keysym_from_keycode(keyCode, location);
 
+        // DOM3 and keyCode are reliable sources
+        if (this.keysym)
+            this.reliable = true;
+
         // We must use the (potentially buggy) keyIdentifier immediately if
         // keypress will likely not fire, as we need to make a best effort
         // to prevent default if requested
@@ -211,6 +224,9 @@ Guacamole.Keyboard = function(element) {
 
         // Pull keysym from char code
         this.keysym = keysym_from_charcode(charCode);
+
+        // Keypress is always reliable
+        this.reliable = true;
 
     };
 
@@ -275,6 +291,9 @@ Guacamole.Keyboard = function(element) {
         this.keysym =  keysym_from_key_identifier(key, location)
                     || keysym_from_keycode(keyCode, location)
                     || recentKeysym[keyCode];
+
+        // Keyup is as reliable as it will ever be
+        this.reliable = true;
 
     };
 
