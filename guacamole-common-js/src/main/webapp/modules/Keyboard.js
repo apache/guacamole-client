@@ -291,9 +291,9 @@ Guacamole.Keyboard = function(element) {
         this.location = location;
 
         // If key is known from keyCode or DOM3 alone, use that
-        this.keysym =  keysym_from_key_identifier(key, location)
-                    || keysym_from_keycode(keyCode, location)
-                    || recentKeysym[keyCode];
+        this.keysym =  keysym_from_keycode(keyCode, location)
+                    || recentKeysym[keyCode]
+                    || keysym_from_key_identifier(key, location); // keyCode is still more reliable for keyup when dead keys are in use
 
         // Keyup is as reliable as it will ever be
         this.reliable = true;
