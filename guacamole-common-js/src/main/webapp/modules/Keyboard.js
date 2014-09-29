@@ -182,14 +182,16 @@ Guacamole.Keyboard = function(element) {
         if (this.keysym)
             this.reliable = true;
 
-        // We must use the (potentially buggy) keyIdentifier immediately if
-        // keypress will likely not fire, as we need to make a best effort
-        // to prevent default if requested
-        if (guac_keyboard.modifiers.ctrl
-         || guac_keyboard.modifiers.alt
+        // Use legacy keyIdentifier as a last resort
+        this.keysym = this.keysym || keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
+
+        // We must rely on the (potentially buggy) keyIdentifier if preventing
+        // the default action is important
+        if ((guac_keyboard.modifiers.ctrl && !guac_keyboard.modifiers.alt)
+         || (guac_keyboard.modifiers.alt  && !guac_keyboard.modifiers.ctrl)
          || guac_keyboard.modifiers.meta
          || guac_keyboard.modifiers.hyper)
-            this.keysym = this.keysym || keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
+            this.reliable = true;
 
         // Record most recently known keysym by associated key code
         recentKeysym[keyCode] = this.keysym;
@@ -803,6 +805,33 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
+     * Searches the event log for a keyup event having a given keysym,
+     * returning its index within the log.
+     *
+     * @param {Number} keysym The keysym of the keyup event to search for.
+     * @returns {Number} The index of the first keyup event in the event log
+     *                   having the given keysym, or -1 if no such event exists.
+     */
+    function indexof_keyup(keysym) {
+
+        var i;
+
+        // Search event log for keyup events having the given keysym
+        for (i=0; i<eventLog.length; i++) {
+
+            // Return index of key event if found
+            var event = eventLog[i];
+            if (event instanceof KeyupEvent && event.keysym === keysym)
+                return i;
+
+        }
+
+        // No such keyup found
+        return -1;
+
+    }
+
+    /**
      * Reads through the event log, interpreting the first event, if possible,
      * and returning that event. If no events can be interpreted, due to a
      * total lack of events or the need for more events, null is returned. Any
@@ -822,7 +851,7 @@ Guacamole.Keyboard = function(element) {
         if (first instanceof KeydownEvent) {
 
             var keysym = first.keysym;
-            if (keysym) {
+            if (first.reliable && keysym) {
                 recentKeysym[first.keyCode] = keysym;
                 first.defaultPrevented = !press_key(keysym);
                 return eventLog.shift();
@@ -832,6 +861,15 @@ Guacamole.Keyboard = function(element) {
             var next = eventLog[1];
             if (next && next instanceof KeypressEvent) {
 
+                // Release Ctrl+Alt under the assumption that it's actually AltGr
+                if (guac_keyboard.modifiers.ctrl && guac_keyboard.modifiers.alt) {
+                    release_key(0xFFE3); // Left ctrl 
+                    release_key(0xFFE4); // Right ctrl 
+                    release_key(0xFFE9); // Left alt
+                    release_key(0xFFEA); // Right alt
+                }
+
+                // Press key based on keypress event
                 keysym = next.keysym;
                 if (keysym) {
                     recentKeysym[first.keyCode] = keysym;
@@ -843,6 +881,13 @@ Guacamole.Keyboard = function(element) {
                 console.log("Warning: Key press was dropped as unidentifiable.", first);
                 return eventLog.shift();
 
+            }
+
+            // If there is a keyup already, stop waiting for a keypress
+            else if (keysym && indexof_keyup(keysym) !== -1) {
+                recentKeysym[first.keyCode] = keysym;
+                first.defaultPrevented = !press_key(keysym);
+                return eventLog.shift();
             }
 
             // Drop event if completely old and uninterpretable
