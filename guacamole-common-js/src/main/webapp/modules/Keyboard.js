@@ -988,6 +988,11 @@ Guacamole.Keyboard = function(element) {
         // Fix modifier states
         update_modifier_state(e);
 
+        // Ignore (but do not prevent) the "composition" keycode sent by some
+        // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
+        if (keyCode === 229)
+            return;
+
         // Log event
         var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, e.location || e.keyLocation);
         eventLog.push(keydownEvent);
