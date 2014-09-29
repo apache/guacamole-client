@@ -863,7 +863,6 @@ Guacamole.Keyboard = function(element) {
                 }
 
                 // If keypress cannot be identified, then drop
-                console.log("Warning: Key press was dropped as unidentifiable.", first);
                 return eventLog.shift();
 
             }
@@ -888,7 +887,6 @@ Guacamole.Keyboard = function(element) {
             }
 
             // Drop if keyup cannot be narrowed to a specific key
-            console.log("Warning: Key release was dropped as ambiguous.", first);
             return eventLog.shift();
 
         }
