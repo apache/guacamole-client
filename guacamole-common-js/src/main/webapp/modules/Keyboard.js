@@ -328,7 +328,7 @@ Guacamole.Keyboard = function(element) {
         13:  [0xFF0D], // enter
         16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
         17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
-        18:  [0xFFE9, 0xFFE9, 0xFFEA], // alt
+        18:  [0xFFE9, 0xFFE9, 0xFE03], // alt
         19:  [0xFF13], // pause/break
         20:  [0xFFE5], // caps lock
         27:  [0xFF1B], // escape
@@ -372,7 +372,7 @@ Guacamole.Keyboard = function(element) {
         "Again": [0xFF66],
         "AllCandidates": [0xFF3D],
         "Alphanumeric": [0xFF30],
-        "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
+        "Alt": [0xFFE9, 0xFFE9, 0xFE03],
         "Attn": [0xFD0E],
         "AltGraph": [0xFE03],
         "ArrowDown": [0xFF54],
@@ -776,7 +776,7 @@ Guacamole.Keyboard = function(element) {
         // Release alt if implicitly released
         if (guac_keyboard.modifiers.alt && state.alt === false) {
             release_key(0xFFE9); // Left alt
-            release_key(0xFFEA); // Right alt (or AltGr)
+            release_key(0xFFEA); // Right alt
         }
 
         // Release shift if implicitly released
