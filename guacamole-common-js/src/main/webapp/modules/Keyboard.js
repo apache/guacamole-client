@@ -457,7 +457,7 @@ Guacamole.Keyboard = function(element) {
         "KanjiMode": [0xFF21],
         "Katakana": [0xFF26],
         "Left": [0xFF51],
-        "Meta": [0xFFE7],
+        "Meta": [0xFFE7, 0xFFE7, 0xFFE8],
         "ModeChange": [0xFF7E],
         "NumLock": [0xFF7F],
         "PageDown": [0xFF55],
@@ -905,45 +905,53 @@ Guacamole.Keyboard = function(element) {
         // Keydown event
         if (first instanceof KeydownEvent) {
 
+            var keysym = null;
+            var accepted_events = [];
+
             // If event itself is reliable, no need to wait for other events
-            var keysym = first.keysym;
             if (first.reliable) {
-
-                if (keysym) {
-                    release_simulated_altgr(keysym);
-                    first.defaultPrevented = !press_key(keysym);
-                    recentKeysym[first.keyCode] = keysym;
-                }
-
-                return eventLog.shift();
-
+                keysym = first.keysym;
+                accepted_events = eventLog.splice(0, 1);
             }
 
             // If keydown is immediately followed by a keypress, use the indicated character
-            var next = eventLog[1];
-            if (next && next instanceof KeypressEvent) {
-
-                keysym = next.keysym;
-                if (keysym) {
-                    release_simulated_altgr(keysym);
-                    first.defaultPrevented = next.defaultPrevented = !press_key(keysym);
-                    recentKeysym[first.keyCode] = keysym;
-                }
-
-                return eventLog.shift();
-
+            else if (eventLog[1] instanceof KeypressEvent) {
+                keysym = eventLog[1].keysym;
+                accepted_events = eventLog.splice(0, 2);
             }
 
             // If there is a keyup already, the event must be handled now
             else if (indexof_keyup(first) !== -1) {
-                if (keysym) {
-                    first.defaultPrevented = !press_key(keysym);
-                    recentKeysym[first.keyCode] = keysym;
-                }
-                return eventLog.shift();
+                keysym = first.keysym;
+                accepted_events = eventLog.splice(0, 1);
             }
 
-        }
+            // Fire a key press if valid events were found
+            if (accepted_events.length > 0) {
+
+                if (keysym) {
+
+                    // Fire event
+                    release_simulated_altgr(keysym);
+                    var defaultPrevented = !press_key(keysym);
+                    recentKeysym[first.keyCode] = keysym;
+
+                    // If a key is pressed while meta is held down, the keyup will
+                    // never be sent in Chrome, so send it now. (bug #108404)
+                    if (guac_keyboard.modifiers.meta && keysym !== 0xFFE7 && keysym !== 0xFFE8)
+                        release_key(keysym);
+
+                    // Record whether default was prevented
+                    for (var i=0; i<accepted_events.length; i++)
+                        accepted_events[i].defaultPrevented = defaultPrevented;
+
+                }
+
+                return first;
+
+            }
+
+        } // end if keydown
 
         // Keyup event
         else if (first instanceof KeyupEvent) {
@@ -956,7 +964,7 @@ Guacamole.Keyboard = function(element) {
 
             return eventLog.shift();
 
-        }
+        } // end if keyup
 
         // Ignore any other type of event (keypress by itself is invalid)
         else
