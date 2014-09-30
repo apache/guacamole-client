@@ -319,10 +319,10 @@ Guacamole.Keyboard = function(element) {
 
     /**
      * Map of known JavaScript keycodes which do not map to typable characters
-     * to their unshifted X11 keysym equivalents.
+     * to their X11 keysym equivalents.
      * @private
      */
-    var unshiftedKeysym = {
+    var keycodeKeysyms = {
         8:   [0xFF08], // backspace
         9:   [0xFF09], // tab
         13:  [0xFF0D], // enter
@@ -491,17 +491,6 @@ Guacamole.Keyboard = function(element) {
     };
 
     /**
-     * Map of known JavaScript keycodes which do not map to typable characters
-     * to their shifted X11 keysym equivalents. Keycodes must only be listed
-     * here if their shifted X11 keysym equivalents differ from their unshifted
-     * equivalents.
-     * @private
-     */
-    var shiftedKeysym = {
-        18:  [0xFFE7, 0xFFE7, 0xFFEA]  // alt
-    };
-
-    /**
      * All keysyms which should not repeat when held down.
      * @private
      */
@@ -636,19 +625,7 @@ Guacamole.Keyboard = function(element) {
     }
 
     function keysym_from_keycode(keyCode, location) {
-
-        var keysyms;
-
-        // If not shifted, just return unshifted keysym
-        if (!guac_keyboard.modifiers.shift)
-            keysyms = unshiftedKeysym[keyCode];
-
-        // Otherwise, return shifted keysym, if defined
-        else
-            keysyms = shiftedKeysym[keyCode] || unshiftedKeysym[keyCode];
-
-        return get_keysym(keysyms, location);
-
+        return get_keysym(keycodeKeysyms[keyCode], location);
     }
 
     /**
@@ -777,6 +754,7 @@ Guacamole.Keyboard = function(element) {
         if (guac_keyboard.modifiers.alt && state.alt === false) {
             release_key(0xFFE9); // Left alt
             release_key(0xFFEA); // Right alt
+            release_key(0xFE03); // AltGr
         }
 
         // Release shift if implicitly released
