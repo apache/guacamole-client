@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
@@ -71,6 +72,19 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
         byte[] message = Integer.toString(guac_status.getGuacamoleStatusCode()).getBytes("UTF-8");
         outbound.close(guac_status.getWebSocketCode(), ByteBuffer.wrap(message));
+
+    }
+
+    @Override
+    protected String selectSubProtocol(List<String> subProtocols) {
+
+        // Search for expected protocol
+        for (String protocol : subProtocols)
+            if ("guacamole".equals(protocol))
+                return "guacamole";
+        
+        // Otherwise, fail
+        return null;
 
     }
 

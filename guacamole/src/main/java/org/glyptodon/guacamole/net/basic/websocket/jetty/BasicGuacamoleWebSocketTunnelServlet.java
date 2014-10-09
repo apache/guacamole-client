@@ -25,36 +25,19 @@ package org.glyptodon.guacamole.net.basic.websocket.jetty;
 import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.auth.UserContext;
-import org.eclipse.jetty.websocket.WebSocket;
 import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
 
 /**
- * Authenticating tunnel servlet implementation which uses WebSocket as a
- * tunnel backend, rather than HTTP.
+ * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
+ * rather than HTTP, properly parsing connection IDs included in the connection
+ * request.
  */
-public class BasicGuacamoleWebSocketTunnelServlet extends AuthenticatingWebSocketServlet {
-
-    /**
-     * Wrapped GuacamoleHTTPTunnelServlet which will handle all authenticated
-     * requests.
-     */
-    private GuacamoleWebSocketTunnelServlet tunnelServlet =
-            new GuacamoleWebSocketTunnelServlet() {
-
-        @Override
-        protected GuacamoleTunnel doConnect(HttpServletRequest request)
-                throws GuacamoleException {
-            return BasicTunnelRequestUtility.createTunnel(request);
-        }
-
-    };
+public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
 
     @Override
-    protected WebSocket authenticatedConnect(UserContext context,
-        HttpServletRequest request, String protocol) {
-        return tunnelServlet.doWebSocketConnect(request, protocol);
+    protected GuacamoleTunnel doConnect(HttpServletRequest request)
+            throws GuacamoleException {
+        return BasicTunnelRequestUtility.createTunnel(request);
     }
 
 }
-
