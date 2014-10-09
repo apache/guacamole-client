@@ -28,17 +28,17 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 
 /**
  * Simple HttpServlet which handles moving connection groups.
  *
  * @author James Muehlner
  */
-public class Move extends AuthenticatingHttpServlet {
+public class Move extends RestrictedHttpServlet {
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {

@@ -38,7 +38,7 @@ import javax.xml.stream.XMLStreamWriter;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 import org.glyptodon.guacamole.net.basic.ProtocolInfo;
 import org.glyptodon.guacamole.net.basic.ProtocolParameter;
 import org.glyptodon.guacamole.net.basic.ProtocolParameterOption;
@@ -58,7 +58,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * @author Michael Jumper
  */
-public class List extends AuthenticatingHttpServlet {
+public class List extends RestrictedHttpServlet {
 
     /**
      * Logger for this class.
@@ -201,7 +201,7 @@ public class List extends AuthenticatingHttpServlet {
     }
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {

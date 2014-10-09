@@ -61,7 +61,7 @@ public class BasicTunnelRequestUtility {
     /**
      * Logger for this class.
      */
-    private static Logger logger = LoggerFactory.getLogger(BasicTunnelRequestUtility.class);
+    private static final Logger logger = LoggerFactory.getLogger(BasicTunnelRequestUtility.class);
 
     /**
      * All supported identifier types.
@@ -235,17 +235,17 @@ public class BasicTunnelRequestUtility {
         id = id.substring(id_type.PREFIX.length());
 
         // Get credentials
-        final Credentials credentials = AuthenticatingHttpServlet.getCredentials(httpSession);
+        final Credentials credentials = AuthenticatingFilter.getCredentials(httpSession);
 
         // Get context
-        final UserContext context = AuthenticatingHttpServlet.getUserContext(httpSession);
+        final UserContext context = AuthenticatingFilter.getUserContext(httpSession);
 
         // If no context or no credentials, not logged in
         if (context == null || credentials == null)
             throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
         // Get clipboard 
-        final ClipboardState clipboard = AuthenticatingHttpServlet.getClipboardState(httpSession);
+        final ClipboardState clipboard = AuthenticatingFilter.getClipboardState(httpSession);
 
         // Get client information
         GuacamoleClientInformation info = new GuacamoleClientInformation();

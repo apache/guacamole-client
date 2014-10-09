@@ -22,13 +22,9 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +35,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Jumper
  */
-public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
+public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
     /**
      * Logger for this class.
      */
-    private static Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
+    private static final Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
 
     /**
      * All supported identifier types.
@@ -104,52 +100,8 @@ public class BasicGuacamoleTunnelServlet extends AuthenticatingHttpServlet {
     };
     
     @Override
-    protected void authenticatedService(
-            UserContext context,
-            HttpServletRequest request, HttpServletResponse response)
-    throws GuacamoleException {
-
-        try {
-
-            // If authenticated, respond as tunnel
-            tunnelServlet.service(request, response);
-        }
-
-        catch (ServletException e) {
-            logger.info("Error from tunnel (see previous log messages): {}",
-                    e.getMessage());
-        }
-
-        catch (IOException e) {
-            logger.info("I/O error from tunnel (see previous log messages): {}",
-                    e.getMessage());
-        }
-
-    }
-
-    /**
-     * Wrapped GuacamoleHTTPTunnelServlet which will handle all authenticated
-     * requests.
-     */
-    private GuacamoleHTTPTunnelServlet tunnelServlet = new GuacamoleHTTPTunnelServlet() {
-
-        @Override
-        protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
-            return BasicTunnelRequestUtility.createTunnel(request);
-        }
-
-    };
-
-    @Override
-    protected boolean hasNewCredentials(HttpServletRequest request) {
-
-        String query = request.getQueryString();
-        if (query == null)
-            return false;
-
-        // Only connections are given new credentials
-        return query.equals("connect");
-
+    protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
+        return BasicTunnelRequestUtility.createTunnel(request);
     }
 
 }

@@ -31,9 +31,10 @@ import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
+import org.glyptodon.guacamole.net.basic.AuthenticatingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,16 +48,15 @@ public abstract class AuthenticatingWebSocketServlet extends WebSocketServlet {
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(AuthenticatingWebSocketServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticatingWebSocketServlet.class);
 
     /**
      * Wrapped authenticating servlet.
      */
-    private AuthenticatingHttpServlet auth_servlet =
-            new AuthenticatingHttpServlet() {
+    private final RestrictedHttpServlet auth_servlet = new RestrictedHttpServlet() {
 
         @Override
-        protected void authenticatedService(UserContext context,
+        protected void restrictedService(UserContext context,
             HttpServletRequest request, HttpServletResponse response)
             throws GuacamoleException {
 
@@ -131,7 +131,7 @@ public abstract class AuthenticatingWebSocketServlet extends WebSocketServlet {
 
         // Get session and user context
         HttpSession session = request.getSession(true);
-        UserContext context = AuthenticatingHttpServlet.getUserContext(session);
+        UserContext context = AuthenticatingFilter.getUserContext(session);
 
         // Ensure user logged in
         if (context == null) {
@@ -152,6 +152,7 @@ public abstract class AuthenticatingWebSocketServlet extends WebSocketServlet {
      * @param context The current UserContext.
      * @param request The HttpServletRequest being serviced.
      * @param protocol The protocol being used over the WebSocket connection.
+     * @return A completed WebSocket connection.
      */
     protected abstract StreamInbound authenticatedConnect(
             UserContext context,

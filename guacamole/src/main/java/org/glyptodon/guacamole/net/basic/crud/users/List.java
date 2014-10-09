@@ -34,17 +34,17 @@ import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all visible users.
  *
  * @author Michael Jumper
  */
-public class List extends AuthenticatingHttpServlet {
+public class List extends RestrictedHttpServlet {
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {

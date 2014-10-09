@@ -29,7 +29,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -37,7 +37,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public class Create extends AuthenticatingHttpServlet {
+public class Create extends RestrictedHttpServlet {
 
     /**
      * Prefix given to a parameter name when that parameter is a protocol-
@@ -46,7 +46,7 @@ public class Create extends AuthenticatingHttpServlet {
     public static final String PARAMETER_PREFIX = "_";
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {

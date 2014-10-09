@@ -36,7 +36,17 @@
     <listener>
         <listener-class>org.glyptodon.guacamole.net.basic.WebSocketSupportLoader</listener-class>
     </listener>
-    
+
+    <!-- Authenticate against all requests -->
+    <filter>
+        <filter-name>AuthenticatingFilter</filter-name>
+        <filter-class>org.glyptodon.guacamole.net.basic.AuthenticatingFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthenticatingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <!-- Basic Login Servlet -->
     <servlet>
         <description>Login servlet.</description>

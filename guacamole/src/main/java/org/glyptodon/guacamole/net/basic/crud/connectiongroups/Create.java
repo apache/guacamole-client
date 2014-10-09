@@ -28,17 +28,17 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 
 /**
  * Simple HttpServlet which handles connection group creation.
  *
  * @author James Muehlner
  */
-public class Create extends AuthenticatingHttpServlet {
+public class Create extends RestrictedHttpServlet {
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {

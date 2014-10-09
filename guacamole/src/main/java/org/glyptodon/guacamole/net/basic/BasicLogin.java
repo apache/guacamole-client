@@ -34,19 +34,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Jumper
  */
-public class BasicLogin extends AuthenticatingHttpServlet {
+public class BasicLogin extends RestrictedHttpServlet {
 
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(BasicLogin.class);
+    private final Logger logger = LoggerFactory.getLogger(BasicLogin.class);
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response) {
         logger.info("Login was successful.");
     }
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,39 +20,9 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.crud.users;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.Directory;
-import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
-
 /**
- * Simple HttpServlet which handles user deletion.
- *
- * @author Michael Jumper
+ * Standard WebSocket tunnel implementation. The classes here require a recent
+ * servlet container that supports JSR 356.
  */
-public class Delete extends RestrictedHttpServlet {
-
-    @Override
-    protected void restrictedService(
-            UserContext context,
-            HttpServletRequest request, HttpServletResponse response)
-    throws GuacamoleException {
-
-        // Get username
-        String username = request.getParameter("name");
-
-        // Attempt to get user directory
-        Directory<String, User> directory = context.getUserDirectory();
-
-        // Remove user
-        directory.remove(username);
-
-    }
-
-}
+package org.glyptodon.guacamole.net.basic.websocket.jsr;
 

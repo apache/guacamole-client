@@ -38,7 +38,7 @@ import org.glyptodon.guacamole.properties.GuacamoleProperties;
  *
  * @author Michael Jumper
  */
-public class CaptureClipboard extends AuthenticatingHttpServlet {
+public class CaptureClipboard extends RestrictedHttpServlet {
 
     /**
      * The amount of time to wait for clipboard changes, in milliseconds.
@@ -57,7 +57,7 @@ public class CaptureClipboard extends AuthenticatingHttpServlet {
 
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
@@ -67,7 +67,7 @@ public class CaptureClipboard extends AuthenticatingHttpServlet {
         
             // Get clipboard
             final HttpSession session = request.getSession(true);
-            final ClipboardState clipboard = getClipboardState(session);
+            final ClipboardState clipboard = AuthenticatingFilter.getClipboardState(session);
 
             // Send clipboard contents
             try {

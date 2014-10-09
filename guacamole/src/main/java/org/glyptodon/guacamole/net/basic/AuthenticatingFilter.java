@@ -25,15 +25,18 @@ package org.glyptodon.guacamole.net.basic;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -49,9 +52,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract servlet which provides an authenticatedService() function that
- * is only called if the HTTP request is authenticated, or the current
- * HTTP session has already been authenticated.
+ * Filter which provides watches requests for credentials, authenticating the
+ * user against the configured AuthenticationProvider if credentials are
+ * present. Note that if authentication fails, the request is still allowed. To
+ * restrict access based on the result of authentication, use
+ * RestrictedHttpServlet or RestrictedFilter.
  *
  * The user context is retrieved using the authentication provider defined in
  * guacamole.properties. The authentication provider has access to the request
@@ -64,12 +69,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Jumper
  */
-public abstract class AuthenticatingHttpServlet extends HttpServlet {
+public class AuthenticatingFilter implements Filter {
 
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(AuthenticatingHttpServlet.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticatingFilter.class);
 
     /**
      * The session attribute holding the current UserContext.
@@ -97,7 +102,7 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     private boolean useHttpAuthentication;
 
     @Override
-    public void init() throws ServletException {
+    public void init(FilterConfig config) throws ServletException {
 
         // Parse Guacamole configuration
         try {
@@ -266,10 +271,13 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
     protected boolean hasNewCredentials(HttpServletRequest request) {
         return true;
     }
-    
+
     @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response)
+    public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
     throws IOException, ServletException {
+       
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
         
         // Set character encoding to UTF-8 if it's not already set
         if(request.getCharacterEncoding() == null) {
@@ -351,10 +359,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
                 }
 
                 // If auth succeeded, notify and check with listeners
-                else if (!notifySuccess(listeners, context, credentials)) {
+                else if (!notifySuccess(listeners, context, credentials))
                     logger.info("Successful authentication canceled by hook.");
-                    context = null;
-                }
 
                 // If auth still OK, associate context with session
                 else {
@@ -364,12 +370,8 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
             } // end if credentials present
 
-            // If no context, no authorizaton present
-            if (context == null)
-                throw new GuacamoleUnauthorizedException("Not authenticated");
-
             // Allow servlet to run now that authentication has been validated
-            authenticatedService(context, request, response);
+            chain.doFilter(request, response);
 
         }
 
@@ -386,22 +388,9 @@ public abstract class AuthenticatingHttpServlet extends HttpServlet {
 
     }
 
-    /**
-     * Function called after the credentials given in the request (if any)
-     * are authenticated. If the current session is not associated with
-     * valid credentials, this function will not be called.
-     *
-     * @param context The current UserContext.
-     * @param request The HttpServletRequest being serviced.
-     * @param response An HttpServletResponse which controls the HTTP response
-     *                 of this servlet.
-     *
-     * @throws GuacamoleException If an error occurs that interferes with the
-     *                            normal operation of this servlet.
-     */
-    protected abstract void authenticatedService(
-            UserContext context,
-            HttpServletRequest request, HttpServletResponse response)
-            throws GuacamoleException;
+    @Override
+    public void destroy() {
+        // No destruction needed
+    }
 
 }

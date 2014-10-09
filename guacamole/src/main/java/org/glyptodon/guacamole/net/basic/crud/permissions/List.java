@@ -41,7 +41,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.UserPermission;
-import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
+import org.glyptodon.guacamole.net.basic.RestrictedHttpServlet;
 
 /**
  * Simple HttpServlet which outputs XML containing a list of all visible
@@ -49,7 +49,7 @@ import org.glyptodon.guacamole.net.basic.AuthenticatingHttpServlet;
  *
  * @author Michael Jumper
  */
-public class List extends AuthenticatingHttpServlet {
+public class List extends RestrictedHttpServlet {
 
     /**
      * Returns the XML attribute value representation of the given
@@ -100,7 +100,7 @@ public class List extends AuthenticatingHttpServlet {
     }
 
     @Override
-    protected void authenticatedService(
+    protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response)
     throws GuacamoleException {
