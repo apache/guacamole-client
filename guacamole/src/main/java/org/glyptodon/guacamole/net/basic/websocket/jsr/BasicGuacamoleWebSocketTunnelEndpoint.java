@@ -32,6 +32,7 @@ import javax.websocket.server.ServerEndpointConfig;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
+import org.glyptodon.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
 
 /**
  * Tunnel implementation which uses WebSocket as a tunnel backend, rather than

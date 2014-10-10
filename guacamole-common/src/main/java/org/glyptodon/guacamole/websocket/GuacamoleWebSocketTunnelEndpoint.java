@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jsr;
+package org.glyptodon.guacamole.websocket;
 
 import java.io.IOException;
 import javax.websocket.CloseReason;
@@ -100,7 +100,8 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
      * @throws GuacamoleException If an error occurs while retrieving the
      *                            tunnel, or if access to the tunnel is denied.
      */
-    protected abstract GuacamoleTunnel createTunnel(Session session, EndpointConfig config) throws GuacamoleException;
+    protected abstract GuacamoleTunnel createTunnel(Session session, EndpointConfig config)
+            throws GuacamoleException;
 
     @Override
     @OnOpen
