@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +20,36 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty;
+package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 
-import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.eclipse.jetty.websocket.api.UpgradeRequest;
+import org.eclipse.jetty.websocket.api.UpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * WebSocketCreator which selects the appropriate WebSocketListener
+ * implementation if the "guacamole" subprotocol is in use.
+ * 
+ * @author Michael Jumper
  */
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
+public class BasicGuacamoleWebSocketCreator implements WebSocketCreator {
 
     @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
+    public Object createWebSocket(UpgradeRequest request, UpgradeResponse response) {
+
+        // Validate and use "guacamole" subprotocol
+        for (String subprotocol : request.getSubProtocols()) {
+
+            if ("guacamole".equals(subprotocol)) {
+                response.setAcceptedSubProtocol(subprotocol);
+                return new BasicGuacamoleWebSocketTunnelListener();
+            }
+
+        }
+
+        // Invalid protocol
+        return null;
+
     }
 
 }

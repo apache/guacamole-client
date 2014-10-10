@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,24 @@
  * THE SOFTWARE.
  */
 
-/**
- * Jetty WebSocket tunnel implementation. The classes here require at least
- * Jetty 8, and may change significantly as there is no common WebSocket
- * API for Java yet.
- */
-package org.glyptodon.guacamole.net.basic.websocket.jetty;
+package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 
+import org.eclipse.jetty.websocket.api.Session;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
+
+/**
+ * WebSocket listener implementation which properly parses connection IDs
+ * included in the connection request.
+ * 
+ * @author Michael Jumper
+ */
+public class BasicGuacamoleWebSocketTunnelListener extends GuacamoleWebSocketTunnelListener {
+
+    @Override
+    protected GuacamoleTunnel createTunnel(Session session) throws GuacamoleException {
+        return BasicTunnelRequestUtility.createTunnel(new WebSocketTunnelRequest(session.getUpgradeRequest()));
+    }
+
+}

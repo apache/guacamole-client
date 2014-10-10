@@ -56,6 +56,7 @@ public class WebSocketSupportLoader implements ServletContextListener {
      */
     private static final String[] WEBSOCKET_CLASSES = {
         "org.glyptodon.guacamole.net.basic.websocket.jetty8.BasicGuacamoleWebSocketTunnelServlet",
+        "org.glyptodon.guacamole.net.basic.websocket.jetty9.BasicGuacamoleWebSocketTunnelServlet",
         "org.glyptodon.guacamole.net.basic.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet"
     };
 

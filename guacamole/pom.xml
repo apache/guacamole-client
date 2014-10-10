@@ -150,6 +150,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Jetty 9.0 servlet API (websocket)  -->
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-servlet</artifactId>
+            <version>9.0.3.v20130506</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Tomcat servlet API (websocket)  -->
         <dependency>
             <groupId>org.apache.tomcat</groupId>
