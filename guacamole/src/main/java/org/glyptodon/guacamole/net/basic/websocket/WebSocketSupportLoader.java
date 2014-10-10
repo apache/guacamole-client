@@ -62,18 +62,8 @@ public class WebSocketSupportLoader implements ServletContextListener {
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
+    private final Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
 
-    private static final BooleanGuacamoleProperty ENABLE_WEBSOCKET =
-            new BooleanGuacamoleProperty() {
-
-        @Override
-        public String getName() {
-            return "enable-websocket";
-        }
-
-    };
-    
     /**
      * Classname of the Jetty-specific WebSocket tunnel implementation.
      */
@@ -134,13 +124,10 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
         }
 
-        // If no such servlet class, WebSocket support not present
-        catch (ClassNotFoundException e) {
-            logger.info("WebSocket support not found.");
-        }
-        catch (NoClassDefFoundError e) {
-            logger.info("WebSocket support not found.");
-        }
+        // If no such servlet class, this particular WebSocket support
+        // is not present
+        catch (ClassNotFoundException e) {}
+        catch (NoClassDefFoundError e) {}
 
         // Log all GuacamoleExceptions
         catch (GuacamoleException e) {
@@ -159,31 +146,12 @@ public class WebSocketSupportLoader implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
-        try {
-
-            // Stop if WebSocket not explicitly enabled.
-            if (!GuacamoleProperties.getProperty(ENABLE_WEBSOCKET, false)) {
-                logger.info("WebSocket support not enabled.");
-                return;
-            }
-
-        }
-        catch (GuacamoleException e) {
-            logger.error("Error parsing enable-websocket property.", e);
-        }
-        
         // Try to load websocket support for Jetty
-        logger.info("Attempting to load Jetty-specific WebSocket support...");
         if (loadWebSocketTunnel(sce.getServletContext(), JETTY_WEBSOCKET))
             return;
 
-        // Try to load websocket support for Tomcat
-        logger.info("Attempting to load Tomcat-specific WebSocket support...");
-        if (loadWebSocketTunnel(sce.getServletContext(), TOMCAT_WEBSOCKET))
-            return;
-
-        // Inform of lack of support
-        logger.info("No WebSocket support could be loaded. Only HTTP will be used.");
+        // Failing that, try to load websocket support for Tomcat
+        loadWebSocketTunnel(sce.getServletContext(), TOMCAT_WEBSOCKET);
 
     }
 
