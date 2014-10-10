@@ -30,8 +30,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
-import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,17 +42,6 @@ import org.slf4j.LoggerFactory;
  * not be available or needed if WebSocket is not desired, the 3.0 API is
  * detected and invoked dynamically via reflection.
  * 
- * Tests have shown that while WebSocket is negligibly more responsive than
- * Guacamole's native HTTP tunnel, downstream performance is not yet a match.
- * This may be because browser WebSocket implementations are not optimized for
- * throughput, or it may be because servlet container WebSocket implementations
- * are in their infancy, or it may be that OUR WebSocket-backed tunnel
- * implementations are not efficient. Because of this, WebSocket support is
- * disabled by default. To enable it, add the following property to
- * your guacamole.properties:
- * 
- *     enable-websocket: true
- *
  * @author Michael Jumper
  */
 public class WebSocketSupportLoader implements ServletContextListener {
@@ -65,16 +52,12 @@ public class WebSocketSupportLoader implements ServletContextListener {
     private final Logger logger = LoggerFactory.getLogger(WebSocketSupportLoader.class);
 
     /**
-     * Classname of the Jetty-specific WebSocket tunnel implementation.
+     * Classnames of all legacy (non-JSR) WebSocket tunnel implementations.
      */
-    private static final String JETTY_WEBSOCKET =
-        "org.glyptodon.guacamole.net.basic.websocket.jetty.BasicGuacamoleWebSocketTunnelServlet";
-
-    /**
-     * Classname of the Tomcat-specific WebSocket tunnel implementation.
-     */
-    private static final String TOMCAT_WEBSOCKET =
-        "org.glyptodon.guacamole.net.basic.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet";
+    private static final String[] WEBSOCKET_CLASSES = {
+        "org.glyptodon.guacamole.net.basic.websocket.jetty8.BasicGuacamoleWebSocketTunnelServlet",
+        "org.glyptodon.guacamole.net.basic.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet"
+    };
 
     private boolean loadWebSocketTunnel(ServletContext context, String classname) {
 
@@ -101,7 +84,6 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
                 // If we succesfully load and register the WebSocket tunnel servlet,
                 // WebSocket is supported.
-                logger.info("WebSocket support found and loaded.");
                 return true;
 
             }
@@ -146,12 +128,16 @@ public class WebSocketSupportLoader implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
-        // Try to load websocket support for Jetty
-        if (loadWebSocketTunnel(sce.getServletContext(), JETTY_WEBSOCKET))
-            return;
+        // Try to load each WebSocket tunnel in sequence
+        for (String classname : WEBSOCKET_CLASSES) {
+            if (loadWebSocketTunnel(sce.getServletContext(), classname)) {
+                logger.info("Legacy (non-JSR) WebSocket support loaded: {}", classname);
+                return;
+            }
+        }
 
-        // Failing that, try to load websocket support for Tomcat
-        loadWebSocketTunnel(sce.getServletContext(), TOMCAT_WEBSOCKET);
+        // No legacy WebSocket support found (usually good)
+        logger.debug("Legacy WebSocket support NOT loaded.");
 
     }
 

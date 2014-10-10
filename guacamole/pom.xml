@@ -142,7 +142,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Jetty servlet API (websocket)  -->
+        <!-- Jetty 8 servlet API (websocket)  -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-websocket</artifactId>
