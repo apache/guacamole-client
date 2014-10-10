@@ -22,9 +22,8 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import java.util.Arrays;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -63,63 +62,6 @@ public class BasicTunnelRequestUtility {
      */
     private static final Logger logger = LoggerFactory.getLogger(BasicTunnelRequestUtility.class);
 
-    /**
-     * All supported identifier types.
-     */
-    private static enum IdentifierType {
-
-        /**
-         * The unique identifier of a connection.
-         */
-        CONNECTION("c/"),
-
-        /**
-         * The unique identifier of a connection group.
-         */
-        CONNECTION_GROUP("g/");
-        
-        /**
-         * The prefix which precedes an identifier of this type.
-         */
-        final String PREFIX;
-        
-        /**
-         * Defines an IdentifierType having the given prefix.
-         * @param prefix The prefix which will precede any identifier of this
-         *               type, thus differentiating it from other identifier
-         *               types.
-         */
-        IdentifierType(String prefix) {
-            PREFIX = prefix;
-        }
-
-        /**
-         * Given an identifier, determines the corresponding identifier type.
-         * 
-         * @param identifier The identifier whose type should be identified.
-         * @return The identified identifier type.
-         */
-        static IdentifierType getType(String identifier) {
-
-            // If null, no known identifier
-            if (identifier == null)
-                return null;
-
-            // Connection identifiers
-            if (identifier.startsWith(CONNECTION.PREFIX))
-                return CONNECTION;
-            
-            // Connection group identifiers
-            if (identifier.startsWith(CONNECTION_GROUP.PREFIX))
-                return CONNECTION_GROUP;
-            
-            // Otherwise, unknown
-            return null;
-            
-        }
-        
-    };
-    
     /**
      * Notifies all listeners in the given collection that a tunnel has been
      * connected.
@@ -200,18 +142,21 @@ public class BasicTunnelRequestUtility {
 
     }
 
+    
     /**
      * Creates a new tunnel using the parameters and credentials present in
      * the given request.
      * 
-     * @param request The HttpServletRequest describing the tunnel to create.
+     * @param request The request describing the tunnel to create.
      * @return The created tunnel, or null if the tunnel could not be created.
      * @throws GuacamoleException If an error occurs while creating the tunnel.
      */
-    public static GuacamoleTunnel createTunnel(HttpServletRequest request)
+    public static GuacamoleTunnel createTunnel(TunnelRequest request)
             throws GuacamoleException {
 
-        HttpSession httpSession = request.getSession(true);
+        HttpSession httpSession = request.getSession();
+        if (httpSession == null)
+            throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
 
         // Get listeners
         final SessionListenerCollection listeners;
@@ -225,7 +170,7 @@ public class BasicTunnelRequestUtility {
 
         // Get ID of connection
         String id = request.getParameter("id");
-        IdentifierType id_type = IdentifierType.getType(id);
+        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
 
         // Do not continue if unable to determine type
         if (id_type == null)
@@ -266,14 +211,14 @@ public class BasicTunnelRequestUtility {
             info.setOptimalResolution(Integer.parseInt(dpi));
 
         // Add audio mimetypes
-        String[] audio_mimetypes = request.getParameterValues("audio");
+        List<String> audio_mimetypes = request.getParameterValues("audio");
         if (audio_mimetypes != null)
-            info.getAudioMimetypes().addAll(Arrays.asList(audio_mimetypes));
+            info.getAudioMimetypes().addAll(audio_mimetypes);
 
         // Add video mimetypes
-        String[] video_mimetypes = request.getParameterValues("video");
+        List<String> video_mimetypes = request.getParameterValues("video");
         if (video_mimetypes != null)
-            info.getVideoMimetypes().addAll(Arrays.asList(video_mimetypes));
+            info.getVideoMimetypes().addAll(video_mimetypes);
 
         // Create connected socket from identifier
         GuacamoleSocket socket;
@@ -295,7 +240,7 @@ public class BasicTunnelRequestUtility {
 
                 // Connect socket
                 socket = connection.connect(info);
-                logger.info("Successful connection from {} to \"{}\".", request.getRemoteAddr(), id);
+                logger.info("Successful connection from to \"{}\".", id);
                 break;
             }
 
@@ -315,7 +260,7 @@ public class BasicTunnelRequestUtility {
 
                 // Connect socket
                 socket = group.connect(info);
-                logger.info("Successful connection from {} to group \"{}\".", request.getRemoteAddr(), id);
+                logger.info("Successful connection to group \"{}\".", id);
                 break;
             }
 

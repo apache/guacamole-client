@@ -42,66 +42,9 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
      */
     private static final Logger logger = LoggerFactory.getLogger(BasicGuacamoleTunnelServlet.class);
 
-    /**
-     * All supported identifier types.
-     */
-    public static enum IdentifierType {
-
-        /**
-         * The unique identifier of a connection.
-         */
-        CONNECTION("c/"),
-
-        /**
-         * The unique identifier of a connection group.
-         */
-        CONNECTION_GROUP("g/");
-        
-        /**
-         * The prefix which precedes an identifier of this type.
-         */
-        final String PREFIX;
-        
-        /**
-         * Defines an IdentifierType having the given prefix.
-         * @param prefix The prefix which will precede any identifier of this
-         *               type, thus differentiating it from other identifier
-         *               types.
-         */
-        IdentifierType(String prefix) {
-            PREFIX = prefix;
-        }
-
-        /**
-         * Given an identifier, determines the corresponding identifier type.
-         * 
-         * @param identifier The identifier whose type should be identified.
-         * @return The identified identifier type.
-         */
-        static IdentifierType getType(String identifier) {
-
-            // If null, no known identifier
-            if (identifier == null)
-                return null;
-
-            // Connection identifiers
-            if (identifier.startsWith(CONNECTION.PREFIX))
-                return CONNECTION;
-            
-            // Connection group identifiers
-            if (identifier.startsWith(CONNECTION_GROUP.PREFIX))
-                return CONNECTION_GROUP;
-            
-            // Otherwise, unknown
-            return null;
-            
-        }
-        
-    };
-    
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
-        return BasicTunnelRequestUtility.createTunnel(request);
+        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
     }
 
 }

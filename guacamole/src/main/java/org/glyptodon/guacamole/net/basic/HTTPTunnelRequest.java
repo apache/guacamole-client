@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,25 +20,48 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty;
+package org.glyptodon.guacamole.net.basic;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import javax.servlet.http.HttpSession;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * HTTP-specific implementation of TunnelRequest.
+ *
+ * @author Michael Jumper
  */
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
+public class HTTPTunnelRequest implements TunnelRequest {
 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
+    /**
+     * The wrapped HttpServletRequest.
+     */
+    private final HttpServletRequest request;
+
+    /**
+     * Creates a TunnelRequest implementation which delegates parameter and
+     * session retrieval to the given HttpServletRequest.
+     *
+     * @param request The HttpServletRequest to wrap.
+     */
+    public HTTPTunnelRequest(HttpServletRequest request) {
+        this.request = request;
     }
 
+    @Override
+    public HttpSession getSession() {
+        return request.getSession();
+    }
+
+    @Override
+    public String getParameter(String name) {
+        return request.getParameter(name);
+    }
+
+    @Override
+    public List<String> getParameterValues(String name) {
+        return Arrays.asList(request.getParameterValues(name));
+    }
+    
 }

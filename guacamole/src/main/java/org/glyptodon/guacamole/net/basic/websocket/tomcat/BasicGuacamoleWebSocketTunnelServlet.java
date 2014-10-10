@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
+import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
 
 /**
  * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
@@ -37,7 +38,7 @@ public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunn
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException {
-        return BasicTunnelRequestUtility.createTunnel(request);
+        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
     };
 
 }
