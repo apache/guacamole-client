@@ -28,6 +28,9 @@ import javax.websocket.CloseReason.CloseCode;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
 import javax.websocket.MessageHandler;
+import javax.websocket.OnClose;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
 import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -100,6 +103,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
     protected abstract GuacamoleTunnel createTunnel(Session session, EndpointConfig config) throws GuacamoleException;
 
     @Override
+    @OnOpen
     public void onOpen(final Session session, EndpointConfig config) {
 
         try {
@@ -118,27 +122,17 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
             return;
         }
 
-        // Return new WebSocket which communicates through tunnel
+        // Manually register message handler
         session.addMessageHandler(new MessageHandler.Whole<String>() {
 
             @Override
             public void onMessage(String message) {
-
-                GuacamoleWriter writer = tunnel.acquireWriter();
-
-                // Write received message
-                try {
-                    writer.write(message.toCharArray());
-                }
-                catch (GuacamoleException e) {
-                    logger.debug("Tunnel write failed.", e);
-                }
-
-                tunnel.releaseWriter();
+                GuacamoleWebSocketTunnelEndpoint.this.onMessage(message);
             }
 
         });
 
+        // Prepare read transfer thread
         Thread readThread = new Thread() {
 
             /**
@@ -201,7 +195,25 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
 
     }
 
+    @OnMessage
+    public void onMessage(String message) {
+
+        GuacamoleWriter writer = tunnel.acquireWriter();
+
+        try {
+            // Write received message
+            writer.write(message.toCharArray());
+        }
+        catch (GuacamoleException e) {
+            logger.debug("Tunnel write failed.", e);
+        }
+
+        tunnel.releaseWriter();
+
+    }
+    
     @Override
+    @OnClose
     public void onClose(Session session, CloseReason closeReason) {
 
         try {
