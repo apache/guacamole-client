@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jsr;
+package org.glyptodon.guacamole.net.basic.websocket;
 
 import java.util.Map;
 import javax.websocket.EndpointConfig;

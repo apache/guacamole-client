@@ -24,5 +24,5 @@
  * Standard WebSocket tunnel implementation. The classes here require a recent
  * servlet container that supports JSR 356.
  */
-package org.glyptodon.guacamole.net.basic.websocket.jsr;
+package org.glyptodon.guacamole.net.basic.websocket;
 

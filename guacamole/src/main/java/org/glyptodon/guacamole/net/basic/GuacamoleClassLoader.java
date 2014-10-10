@@ -158,7 +158,7 @@ public class GuacamoleClassLoader extends ClassLoader {
     }
 
     @Override
-    protected Class<?> findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
 
         // If no classloader, use default loader
         if (classLoader == null)

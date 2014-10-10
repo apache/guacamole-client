@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic.websocket;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,6 +29,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;

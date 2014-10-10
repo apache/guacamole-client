@@ -34,7 +34,7 @@
 
     <!-- Automatically detect and load WebSocket support -->
     <listener>
-        <listener-class>org.glyptodon.guacamole.net.basic.WebSocketSupportLoader</listener-class>
+        <listener-class>org.glyptodon.guacamole.net.basic.websocket.WebSocketSupportLoader</listener-class>
     </listener>
 
     <!-- Authenticate against service calls and pages -->
