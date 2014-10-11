@@ -152,10 +152,22 @@
 
         <!-- Jetty 9.0 servlet API (websocket)  -->
         <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-parent</artifactId>
+            <version>20</version>
+            <scope>provided</scope>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty.websocket</groupId>
+            <artifactId>websocket-api</artifactId>
+            <version>9.0.7.v20131107</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-servlet</artifactId>
-            <version>9.0.3.v20130506</version>
-            <scope>provided</scope>
+            <version>9.0.7.v20131107</version>
         </dependency>
 
         <!-- Tomcat servlet API (websocket)  -->
