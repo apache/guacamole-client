@@ -77,7 +77,12 @@ public class WebSocketTunnelRequest implements TunnelRequest {
 
     @Override
     public List<String> getParameterValues(String name) {
-        return Arrays.asList(handshakeParameters.get(name));
+
+        String[] values = handshakeParameters.get(name);
+        if (values == null)
+            return null;
+
+        return Arrays.asList(values);
     }
     
 }

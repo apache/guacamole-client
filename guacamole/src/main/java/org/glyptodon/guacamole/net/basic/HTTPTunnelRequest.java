@@ -61,7 +61,12 @@ public class HTTPTunnelRequest implements TunnelRequest {
 
     @Override
     public List<String> getParameterValues(String name) {
-        return Arrays.asList(request.getParameterValues(name));
+
+        String[] values = request.getParameterValues(name);
+        if (values == null)
+            return null;
+        
+        return Arrays.asList(values);
     }
     
 }
