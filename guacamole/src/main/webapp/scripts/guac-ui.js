@@ -187,7 +187,18 @@ GuacUI.Audio = new (function() {
     // Build array of supported audio formats
     codecs.forEach(function(mimetype) {
 
-        var audio = new Audio();
+        // Attempt to get audio element for mimetype testing
+        var audio = null;
+        try {
+            audio = new Audio();
+        }
+        catch (e) {
+
+            // Skip testing if audio is not available
+            return;
+
+        }
+
         var support_level = audio.canPlayType(mimetype);
 
         // Trim semicolon and trailer

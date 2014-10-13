@@ -121,7 +121,7 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
      * @param {Number} when The time this packet should be played, in
      *                      milliseconds.
      */
-    this.play = undefined; // Defined conditionally depending on support
+    this.play = function(when) { /* NOP */ }; // Defined conditionally depending on support
 
     // If audio API available, use it.
     if (Guacamole.AudioChannel.context) {
@@ -181,57 +181,63 @@ Guacamole.AudioChannel.Packet = function(mimetype, data) {
         var play_on_load = false;
 
         // Create audio element to house and play the data
-        var audio = new Audio();
+        var audio = null;
+        try { audio = new Audio(); }
+        catch (e) {}
 
-        // Read data and start decoding
-        var reader = new FileReader();
-        reader.onload = function() {
+        if (audio) {
 
-            var binary = "";
-            var bytes = new Uint8Array(reader.result);
+            // Read data and start decoding
+            var reader = new FileReader();
+            reader.onload = function() {
 
-            // Produce binary string from bytes in buffer
-            for (var i=0; i<bytes.byteLength; i++)
-                binary += String.fromCharCode(bytes[i]);
+                var binary = "";
+                var bytes = new Uint8Array(reader.result);
 
-            // Convert to data URI 
-            audio.src = "data:" + mimetype + ";base64," + window.btoa(binary);
+                // Produce binary string from bytes in buffer
+                for (var i=0; i<bytes.byteLength; i++)
+                    binary += String.fromCharCode(bytes[i]);
 
-            // Play if play was attempted but packet wasn't loaded yet
-            if (play_on_load)
-                audio.play();
+                // Convert to data URI 
+                audio.src = "data:" + mimetype + ";base64," + window.btoa(binary);
 
-        };
-        reader.readAsArrayBuffer(data);
-   
-        function play() {
+                // Play if play was attempted but packet wasn't loaded yet
+                if (play_on_load)
+                    audio.play();
 
-            // If audio data is ready, play now
-            if (audio.src)
-                audio.play();
+            };
+            reader.readAsArrayBuffer(data);
+       
+            function play() {
 
-            // Otherwise, play when loaded
-            else
-                play_on_load = true;
+                // If audio data is ready, play now
+                if (audio.src)
+                    audio.play();
+
+                // Otherwise, play when loaded
+                else
+                    play_on_load = true;
+
+            }
+            
+            /** @ignore */
+            this.play = function(when) {
+                
+                // Calculate time until play
+                var now = Guacamole.AudioChannel.getTimestamp();
+                var delay = when - now;
+                
+                // Play now if too late
+                if (delay < 0)
+                    play();
+
+                // Otherwise, schedule later playback
+                else
+                    window.setTimeout(play, delay);
+
+            };
 
         }
-        
-        /** @ignore */
-        this.play = function(when) {
-            
-            // Calculate time until play
-            var now = Guacamole.AudioChannel.getTimestamp();
-            var delay = when - now;
-            
-            // Play now if too late
-            if (delay < 0)
-                play();
-
-            // Otherwise, schedule later playback
-            else
-                window.setTimeout(play, delay);
-
-        };
 
     }
 
