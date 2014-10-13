@@ -60,6 +60,39 @@ public class WebSocketSupportLoader implements ServletContextListener {
         "org.glyptodon.guacamole.net.basic.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet"
     };
 
+    /**
+     * Checks for JSR 356 support, returning true if such support is found, and
+     * false otherwise.
+     *
+     * @return true if support for JSR 356 is found, false otherwise.
+     */
+    private boolean implementsJSR_356() {
+
+        try {
+
+            // Attempt to find WebSocket servlet
+            GuacamoleClassLoader.getInstance().findClass("javax.websocket.Endpoint");
+
+            // JSR 356 found
+            return true;
+
+        }
+
+        // If no such servlet class, this particular WebSocket support
+        // is not present
+        catch (ClassNotFoundException e) {}
+        catch (NoClassDefFoundError e) {}
+
+        // Log all GuacamoleExceptions
+        catch (GuacamoleException e) {
+            logger.error("Unable to load/detect WebSocket support.", e);
+        }
+        
+        // JSR 356 not found
+        return false;
+        
+    }
+    
     private boolean loadWebSocketTunnel(ServletContext context, String classname) {
 
         try {
@@ -129,6 +162,12 @@ public class WebSocketSupportLoader implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
 
+        // Check for JSR 356 support
+        if (implementsJSR_356()) {
+            logger.info("JSR-356 WebSocket support present.");
+            return;
+        }
+        
         // Try to load each WebSocket tunnel in sequence
         for (String classname : WEBSOCKET_CLASSES) {
             if (loadWebSocketTunnel(sce.getServletContext(), classname)) {
@@ -137,8 +176,8 @@ public class WebSocketSupportLoader implements ServletContextListener {
             }
         }
 
-        // No legacy WebSocket support found (usually good)
-        logger.debug("Legacy WebSocket support NOT loaded.");
+        // Warn of lack of WebSocket
+        logger.debug("WebSocket support NOT present. Only HTTP will be used.");
 
     }
 
