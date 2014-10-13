@@ -1015,7 +1015,7 @@ GuacUI.Client.connect = function() {
         connect_string += "&video=" + encodeURIComponent(mimetype);
     });
 
-    // Ping server every 10 seconds
+    // Ping server occasionally to keep HTTP session alive
     var session_keep_alive = window.setInterval(function _session_keep_alive() {
         GuacamoleService.KeepAlive.ping();
     }, GuacUI.Client.KEEP_ALIVE_INTERVAL);
