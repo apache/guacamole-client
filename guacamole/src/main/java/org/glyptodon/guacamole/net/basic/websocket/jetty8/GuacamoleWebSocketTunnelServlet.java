@@ -103,6 +103,12 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             @Override
             public void onOpen(final Connection connection) {
 
+                // Do not start connection if tunnel does not exist
+                if (tunnel == null) {
+                    closeConnection(connection, GuacamoleStatus.RESOURCE_NOT_FOUND);
+                    return;
+                }
+
                 Thread readThread = new Thread() {
 
                     @Override
@@ -163,7 +169,8 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             @Override
             public void onClose(int i, String string) {
                 try {
-                    tunnel.close();
+                    if (tunnel != null)
+                        tunnel.close();
                 }
                 catch (GuacamoleException e) {
                     logger.debug("Unable to close WebSocket tunnel.", e);
@@ -174,6 +181,22 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
     }
 
+    /**
+     * Called whenever the JavaScript Guacamole client makes a connection
+     * request. It it up to the implementor of this function to define what
+     * conditions must be met for a tunnel to be configured and returned as a
+     * result of this connection request (whether some sort of credentials must
+     * be specified, for example).
+     *
+     * @param request The HttpServletRequest associated with the connection
+     *                request received. Any parameters specified along with
+     *                the connection request can be read from this object.
+     * @return A newly constructed GuacamoleTunnel if successful,
+     *         null otherwise.
+     * @throws GuacamoleException If an error occurs while constructing the
+     *                            GuacamoleTunnel, or if the conditions
+     *                            required for connection are not met.
+     */
     protected abstract GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException;
 
