@@ -146,13 +146,17 @@ GuacUI.openObject = function(id, parameters) {
     if (parameters)
         url += "&" + parameters;
 
-    // Attempt to focus existing window
-    var current = window.open(null, id);
+    // Attempt to pull existing window
+    var current = window.open("", id);
 
     // If window did not already exist, set up as
     // Guacamole client
-    if (!current.GuacUI)
-        window.open(url, id);
+    if (!current || !current.GuacUI)
+        current = window.open(url, id);
+
+    // Focus (possibly) existing window
+    if (current)
+        current.focus();
 
 };
 
