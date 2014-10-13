@@ -168,6 +168,7 @@
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>websocket-servlet</artifactId>
             <version>9.0.7.v20131107</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Tomcat servlet API (websocket)  -->
