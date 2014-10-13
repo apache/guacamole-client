@@ -640,9 +640,14 @@ Guacamole.Keyboard = function(element) {
      * @param {String} keyIdentifier The legacy keyIdentifier from a
      *                               browser keydown/keyup event.
      * @returns {Boolean} true if the keyIdentifier looks sane, false if
-     *                    the keyIdentifier appears incorrectly derived.
+     *                    the keyIdentifier appears incorrectly derived or
+     *                    is missing entirely.
      */
     function key_identifier_sane(keyCode, keyIdentifier) {
+
+        // Missing identifier is not sane
+        if (!keyIdentifier)
+            return false;
 
         // Assume non-Unicode keyIdentifier values are sane
         var unicodePrefixLocation = keyIdentifier.indexOf("U+");
