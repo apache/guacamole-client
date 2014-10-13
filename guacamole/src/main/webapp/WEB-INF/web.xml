@@ -86,6 +86,17 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
+    <!-- Session Keep-Alive Servlet -->
+    <servlet>
+        <description>Session keep-alive servlet.</description>
+        <servlet-name>SessionKeepAlive</servlet-name>
+        <servlet-class>org.glyptodon.guacamole.net.basic.SessionKeepAlive</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SessionKeepAlive</servlet-name>
+        <url-pattern>/keep-alive</url-pattern>
+    </servlet-mapping>
+
     <!-- Clipboard State Servlet -->
     <servlet>
         <description>Clipboard state servlet.</description>

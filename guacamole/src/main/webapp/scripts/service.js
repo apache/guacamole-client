@@ -1438,3 +1438,26 @@ GuacamoleService.Clipboard = {
     }
     
 };
+
+/**
+ * Collection of service functions which deal with the session keep-alive. Each
+ * function makes an explicit HTTP query to the server. In the case of the
+ * keep-alive ping, no response is expected, and any received response is
+ * ignored.
+ */
+GuacamoleService.KeepAlive = {
+    
+    "ping" : function(parameters) {
+        
+        // Construct request URL
+        var ping_url = "keep-alive";
+        if (parameters) ping_url += "?" + parameters;
+        
+        // Send keep-alive "ping"
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", ping_url, true);
+        xhr.send(null);
+        
+    }
+    
+};

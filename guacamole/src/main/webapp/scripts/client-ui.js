@@ -195,10 +195,11 @@ GuacUI.Client = {
     },
 
     /* Constants */
-    
-    "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
-    "RECONNECT_PERIOD"              : 15,  /* seconds */
-    "TEXT_INPUT_PADDING"            : 128, /* characters */
+
+    "KEEP_ALIVE_INTERVAL"           : 60000, /* milliseconds */
+    "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,    /* milliseconds */
+    "RECONNECT_PERIOD"              : 15,    /* seconds */
+    "TEXT_INPUT_PADDING"            : 128,   /* characters */
     "TEXT_INPUT_PADDING_CODEPOINT"  : 0x200B,
 
     /* Main application area */
@@ -1014,6 +1015,11 @@ GuacUI.Client.connect = function() {
         connect_string += "&video=" + encodeURIComponent(mimetype);
     });
 
+    // Ping server every 10 seconds
+    var session_keep_alive = window.setInterval(function _session_keep_alive() {
+        GuacamoleService.KeepAlive.ping();
+    }, GuacUI.Client.KEEP_ALIVE_INTERVAL);
+
     // Show connection errors from tunnel
     tunnel.onerror = function(status) {
         var message = GuacUI.Client.tunnel_errors[status.code] || GuacUI.Client.tunnel_errors.DEFAULT;
@@ -1021,10 +1027,20 @@ GuacUI.Client.connect = function() {
             GuacUI.Client.tunnel_auto_reconnect[status.code] && GuacUI.Client.RECONNECT_PERIOD);
     };
 
-    // Notify of disconnections (if not already notified of something else)
     tunnel.onstatechange = function(state) {
-        if (state === Guacamole.Tunnel.State.CLOSED && !GuacUI.Client.visibleStatus)
-            GuacUI.Client.showStatus("Disconnected", "You have been disconnected. Reload the page to reconnect.");
+
+        // Handle disconnect
+        if (state === Guacamole.Tunnel.State.CLOSED) {
+
+            // No need for a keep-alive ping if the tunnel is closed
+            window.clearInterval(session_keep_alive);
+
+            // Notify of disconnections (if not already notified of something else)
+            if (!GuacUI.Client.visibleStatus)
+                GuacUI.Client.showStatus("Disconnected",
+                                         "You have been disconnected. Reload the page to reconnect.");
+        }
+
     };
 
     // Connect
