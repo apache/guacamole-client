@@ -246,6 +246,10 @@ GuacUI.Client = {
     "touch_screen"     : null,
     "touch_pad"        : null,
 
+    /* Keyboard shortcuts */
+
+    "shortcuts" : [],
+
     /* Clipboard */
 
     "remote_clipboard" : "",
@@ -744,6 +748,167 @@ GuacUI.Client.Pinch = function(element) {
         }
 
     }, false);
+
+};
+
+/**
+ * An object for handling keyboard shortcuts. The pattern for the shortcut is
+ * generic, consisting of an array of all required keys, where each "required
+ * key" is itself an array of allowed keysyms for that key. For the shortcut
+ * to match, at least one keysym from each array in the pattern must be
+ * pressed.
+ *
+ * @constructor
+ * @param Array.<Array.<Number>> pattern An array of required keys, where each
+ *                                       "required key" is itself an array of
+ *                                       allowed keysyms for that key.
+ */
+GuacUI.Client.KeyboardShortcut = function(pattern) {
+
+    /**
+     * Reference to this keyboard shortcut.
+     */
+    var guac_shortcut = this;
+
+    /**
+     * Array of objects, where each object corresponds to a required key in the
+     * given pattern, and each property corresponds to a currently-pressed
+     * keysym which matches that required key.
+     * 
+     * @type Object.<Number, Boolean>[]
+     */
+    var matchedKeysyms = [];
+
+    /**
+     * Object whose properties are the currently-pressed keysyms which do not
+     * match any required key of the given pattern.
+     * 
+     * @type Object.<Number, Boolean>
+     */
+    var unmatchedKeysyms = {};
+
+    // Initialize with zero matched keysyms
+    for (var i=0; i<pattern.length; i++)
+        matchedKeysyms[i] = {};
+
+    /**
+     * Tests whether the given object has no properties at all.
+     *
+     * @private
+     * @param {Object} obj The object to test.
+     * @returns {Boolean} true if the given object has no properties, false
+     *                    otherwise.
+     */
+    function isEmpty(obj) {
+
+        // If any properties are present, the object is not empty
+        for (var dummy in obj)
+            return false;
+
+        return true;
+
+    }
+
+    /**
+     * Tests whether the current keyboard state matches this shortcut.
+     *
+     * @returns {Boolean} true if this keyboard shortcut matches the currently
+     *                    pressed keys, false otherwise.
+     */
+    this.matches = function() {
+
+        // No match if there are unmatched keys
+        if (!isEmpty(unmatchedKeysyms))
+            return false;
+
+        // Verify that each set of matched keysyms is non-empty
+        for (var i=0; i<matchedKeysyms.length; i++) {
+            if (isEmpty(matchedKeysyms[i]))
+                return false;
+        }
+
+        // Shortcut is matched
+        return true;
+
+    };
+
+    /**
+     * Marks the given keysym as either pressed or released. If the shortcut
+     * pattern matches, the onmatch event is fired.
+     *
+     * @param {Number} keysym The keysym which was either pressed or released.
+     * @param {Boolean} pressed true if the keysym was pressed, false if the
+     *                          keysym was released.
+     */
+    this.update = function(keysym, pressed) {
+
+        // Default to unmatched set
+        var keysymSet = unmatchedKeysyms;
+
+        // Locating proper set of matched keysyms
+        for (var i=0; i<pattern.length; i++) {
+            if (pattern[i].indexOf(keysym) !== -1) {
+                keysymSet = matchedKeysyms[i];
+                break;
+            }
+        }
+
+        // If pressed, add to set and handle any matches
+        if (pressed) {
+            keysymSet[keysym] = true;
+
+            // Fire "match" event if the shortcut matches
+            if (guac_shortcut.onmatch && guac_shortcut.matches())
+                guac_shortcut.onmatch();
+        }
+
+        // If not pressed, remove from set
+        else
+            delete keysymSet[keysym];
+
+    };
+
+    /**
+     * Marks the given keysym as pressed. If the shortcut pattern matches,
+     * the onmatch event is fired.
+     *
+     * @param {Number} keysym The keysym which was pressed.
+     */
+    this.press = function(keysym) {
+        guac_shortcut.update(keysym, true);
+    };
+
+    /**
+     * Marks the given keysym as released.
+     *
+     * @param {Number} keysym The keysym which was released.
+     */
+    this.release = function(keysym) {
+        guac_shortcut.updateKeysym(keysym, false);
+    };
+
+    /**
+     * Fired whenever this keyboard shortcut is matched.
+     * 
+     * @event
+     */
+    this.onmatch = null;
+
+};
+
+/**
+ * Marks the given keysym as either pressed or released within all registered
+ * shortcuts. If any shortcut pattern matches, its onmatch event fires.
+ *
+ * @param {Number} keysym The keysym which was either pressed or released.
+ * @param {Boolean} pressed true if the keysym was pressed, false if the
+ *                          keysym was released.
+ */
+GuacUI.Client.updateShortcuts = function(keysym, pressed) {
+
+    // Update tracking of registered shortcuts
+    for (var i=0; i<GuacUI.Client.shortcuts.length; i++)
+        GuacUI.Client.shortcuts[i].update(keysym, pressed);
 
 };
 
@@ -1458,7 +1623,6 @@ GuacUI.Client.attach = function(guac) {
      */
 
     var keyboard = new Guacamole.Keyboard(document);
-    var show_keyboard_gesture_possible = true;
 
     function __send_key(pressed, keysym) {
 
@@ -1476,6 +1640,9 @@ GuacUI.Client.attach = function(guac) {
     }
 
     keyboard.onkeydown = function (keysym) {
+
+        // Update tracking of registered shortcuts
+        GuacUI.Client.updateShortcuts(keysym, true);
 
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
@@ -1500,10 +1667,6 @@ GuacUI.Client.attach = function(guac) {
 
         }
 
-        // If key is NOT one of the expected keys, gesture not possible
-        if (keysym !== 0xFFE3 && keysym !== 0xFFE9 && keysym !== 0xFFE1)
-            show_keyboard_gesture_possible = false;
-
         // Send key event
         return __send_key(1, keysym);
 
@@ -1511,30 +1674,12 @@ GuacUI.Client.attach = function(guac) {
 
     keyboard.onkeyup = function (keysym) {
 
+        // Update tracking of registered shortcuts
+        GuacUI.Client.updateShortcuts(keysym, false);
+
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
         if (!guac) return true;
-
-        // If lifting up on shift, toggle menu visibility if rest of gesture
-        // conditions satisfied
-        if (show_keyboard_gesture_possible && keysym === 0xFFE1 
-            && keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9]) {
-                __send_key(0, 0xFFE1);
-                __send_key(0, 0xFFE9);
-                __send_key(0, 0xFFE3);
-                GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
-        }
-
-        // Detect if no keys are pressed
-        var reset_gesture = true;
-        for (var pressed in keyboard.pressed) {
-            reset_gesture = false;
-            break;
-        }
-
-        // Reset gesture state if possible
-        if (reset_gesture)
-            show_keyboard_gesture_possible = true;
 
         // Send key event
         return __send_key(0, keysym);
@@ -1919,6 +2064,23 @@ GuacUI.Client.attach = function(guac) {
 
         }
     };
+
+    /*
+     * Show/hide menu gesture
+     */
+
+    var toggleMenu = new GuacUI.Client.KeyboardShortcut([
+       [0xFFE1, 0xFFE2],        // Shift
+       [0xFFE3, 0xFFE4],        // Ctrl
+       [0xFFE9, 0xFFEA, 0xFE03] // Alt / AltGr
+    ]);
+
+    // Toggle menu when shortcut is pressed
+    toggleMenu.onmatch = function() {
+        GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
+    };
+
+    GuacUI.Client.shortcuts.push(toggleMenu);
 
     /*
      * Initialize clipboard with current data
