@@ -841,6 +841,7 @@ GuacUI.Client.KeyboardShortcut = function(pattern, onmatch) {
      * @param {Number} keysym The keysym which was either pressed or released.
      * @param {Boolean} pressed true if the keysym was pressed, false if the
      *                          keysym was released.
+     * @param {Boolean} true if the shortcut matched, false otherwise.
      */
     this.update = function(keysym, pressed) {
 
@@ -860,13 +861,19 @@ GuacUI.Client.KeyboardShortcut = function(pattern, onmatch) {
             keysymSet[keysym] = true;
 
             // Fire "match" event if the shortcut matches
-            if (guac_shortcut.onmatch && guac_shortcut.matches())
+            if (guac_shortcut.onmatch && guac_shortcut.matches()) {
                 guac_shortcut.onmatch();
+                return true;
+            }
+
         }
 
         // If not pressed, remove from set
         else
             delete keysymSet[keysym];
+
+        // No match yet
+        return false;
 
     };
 
@@ -875,9 +882,10 @@ GuacUI.Client.KeyboardShortcut = function(pattern, onmatch) {
      * the onmatch event is fired.
      *
      * @param {Number} keysym The keysym which was pressed.
+     * @param {Boolean} true if the shortcut matched, false otherwise.
      */
     this.press = function(keysym) {
-        guac_shortcut.update(keysym, true);
+        return guac_shortcut.update(keysym, true);
     };
 
     /**
@@ -905,12 +913,17 @@ GuacUI.Client.KeyboardShortcut = function(pattern, onmatch) {
  * @param {Number} keysym The keysym which was either pressed or released.
  * @param {Boolean} pressed true if the keysym was pressed, false if the
  *                          keysym was released.
+ * @return true if any shortcut was matched and handled, false otherwise.
  */
 GuacUI.Client.updateShortcuts = function(keysym, pressed) {
 
+    var shortcutHandled = false;
+
     // Update tracking of registered shortcuts
     for (var i=0; i<GuacUI.Client.shortcuts.length; i++)
-        GuacUI.Client.shortcuts[i].update(keysym, pressed);
+        shortcutHandled |= GuacUI.Client.shortcuts[i].update(keysym, pressed);
+
+    return shortcutHandled;
 
 };
 
@@ -1644,7 +1657,8 @@ GuacUI.Client.attach = function(guac) {
     keyboard.onkeydown = function (keysym) {
 
         // Update tracking of registered shortcuts
-        GuacUI.Client.updateShortcuts(keysym, true);
+        if (GuacUI.Client.updateShortcuts(keysym, true))
+            return false;
 
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
@@ -1677,7 +1691,8 @@ GuacUI.Client.attach = function(guac) {
     keyboard.onkeyup = function (keysym) {
 
         // Update tracking of registered shortcuts
-        GuacUI.Client.updateShortcuts(keysym, false);
+        if (GuacUI.Client.updateShortcuts(keysym, false))
+            return false;
 
         // Only handle key events if client is attached
         var guac = GuacUI.Client.attachedClient;
@@ -2078,6 +2093,7 @@ GuacUI.Client.attach = function(guac) {
 
         // Toggle menu when shortcut is pressed
         function() {
+            keyboard.reset();
             GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
         });
 
