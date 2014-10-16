@@ -253,7 +253,11 @@ GuacUI.Client = {
     /* Clipboard */
 
     "remote_clipboard" : "",
-    "clipboard_integration_enabled" : undefined
+    "clipboard_integration_enabled" : undefined,
+
+    /* Local (hardware) cursor */
+
+    "local_cursor" : false
 
 };
 
@@ -1289,7 +1293,10 @@ GuacUI.Client.setMouseEmulationAbsolute = function(absolute) {
         // Get client - do nothing if not attached
         var guac = GuacUI.Client.attachedClient;
         if (!guac) return;
-   
+
+        // Ensure software cursor is shown
+        guac.getDisplay().showCursor(true);
+
         // Determine mouse position within view
         var guac_display = guac.getDisplay().getElement();
         var mouse_view_x = mouseState.x + guac_display.offsetLeft - GuacUI.Client.main.scrollLeft;
@@ -1566,6 +1573,10 @@ GuacUI.Client.attach = function(guac) {
     var mouse = new Guacamole.Mouse(guac_display);
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
 
+        // Hide software cursor if local cursor is in use
+        if (GuacUI.Client.local_cursor)
+            guac.getDisplay().showCursor(false);
+
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
                 mouseState.x / guac.getDisplay().getScale(),
@@ -1591,6 +1602,14 @@ GuacUI.Client.attach = function(guac) {
     // Add client to UI
     guac.getDisplay().getElement().className = "software-cursor";
     GuacUI.Client.display.appendChild(guac.getDisplay().getElement());
+
+    /*
+     * Use local cursor if possible.
+     */
+
+    guac.getDisplay().oncursor = function(canvas, x, y) {
+        GuacUI.Client.local_cursor = mouse.setCursor(canvas, x, y);
+    };
 
 };
 
