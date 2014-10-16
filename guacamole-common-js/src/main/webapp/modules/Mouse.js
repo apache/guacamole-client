@@ -303,6 +303,45 @@ Guacamole.Mouse = function(element) {
     element.addEventListener('mousewheel',     mousewheel_handler, false);
     element.addEventListener('wheel',          mousewheel_handler, false);
 
+    /**
+     * Whether the browser supports CSS3 cursor styling, including hotspot
+     * coordinates.
+     *
+     * @private
+     * @type Boolean
+     */
+    var CSS3_CURSOR_SUPPORTED = true;
+
+    /**
+     * Changes the local mouse cursor to the given canvas, having the given
+     * hotspot coordinates. This affects styling of the element backing this
+     * Guacamole.Mouse only, and may fail depending on browser support for
+     * setting the mouse cursor.
+     * 
+     * If setting the local cursor is desired, it is up to the implementation
+     * to do something else, such as use the software cursor built into
+     * Guacamole.Display, if the local cursor cannot be set.
+     *
+     * @param {HTMLCanvasElement} canvas The cursor image.
+     * @param {Number} x The X-coordinate of the cursor hotspot.
+     * @param {Number} y The Y-coordinate of the cursor hotspot.
+     * @return {Boolean} true if the cursor was successfully set, false if the
+     *                   cursor could not be set for any reason.
+     */
+    this.setCursor = function(canvas, x, y) {
+
+        // Attempt to set via CSS3 cursor styling
+        if (CSS3_CURSOR_SUPPORTED) {
+            var dataURL = canvas.toDataURL('image/png');
+            element.style.cursor = "url(" + dataURL + ") " + x + " " + y;
+            return true;
+        }
+
+        // Otherwise, setting cursor failed
+        return false;
+
+    };
+
 };
 
 /**
