@@ -759,11 +759,13 @@ GuacUI.Client.Pinch = function(element) {
  * pressed.
  *
  * @constructor
- * @param Array.<Array.<Number>> pattern An array of required keys, where each
- *                                       "required key" is itself an array of
- *                                       allowed keysyms for that key.
+ * @param {Array.<Array.<Number>>} pattern An array of required keys, where each
+ *                                         "required key" is itself an array of
+ *                                         allowed keysyms for that key.
+ * @param {Function} [onmatch] The function to call when the shortcut is
+ *                             matched, if any.
  */
-GuacUI.Client.KeyboardShortcut = function(pattern) {
+GuacUI.Client.KeyboardShortcut = function(pattern, onmatch) {
 
     /**
      * Reference to this keyboard shortcut.
@@ -892,7 +894,7 @@ GuacUI.Client.KeyboardShortcut = function(pattern) {
      * 
      * @event
      */
-    this.onmatch = null;
+    this.onmatch = onmatch;
 
 };
 
@@ -2069,16 +2071,15 @@ GuacUI.Client.attach = function(guac) {
      * Show/hide menu gesture
      */
 
-    var toggleMenu = new GuacUI.Client.KeyboardShortcut([
-       [0xFFE1, 0xFFE2],        // Shift
-       [0xFFE3, 0xFFE4],        // Ctrl
-       [0xFFE9, 0xFFEA, 0xFE03] // Alt / AltGr
-    ]);
+    var toggleMenu = new GuacUI.Client.KeyboardShortcut(
+        [[0xFFE1, 0xFFE2],          // Shift
+         [0xFFE3, 0xFFE4],          // Ctrl
+         [0xFFE9, 0xFFEA, 0xFE03]], // Alt / AltGr
 
-    // Toggle menu when shortcut is pressed
-    toggleMenu.onmatch = function() {
-        GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
-    };
+        // Toggle menu when shortcut is pressed
+        function() {
+            GuacUI.Client.showMenu(!GuacUI.Client.isMenuShown());
+        });
 
     GuacUI.Client.shortcuts.push(toggleMenu);
 
