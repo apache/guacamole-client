@@ -673,13 +673,13 @@ Guacamole.Keyboard = function(element) {
     /**
      * Marks a key as pressed, firing the keydown event if registered. Key
      * repeat for the pressed key will start after a delay if that key is
-     * not a modifier.
+     * not a modifier. The return value of this function depends on the
+     * return value of the keydown event handler, if any.
      * 
-     * @private
-     * @param keysym The keysym of the key to press.
+     * @param {Number} keysym The keysym of the key to press.
      * @return {Boolean} true if event should NOT be canceled, false otherwise.
      */
-    function press_key(keysym) {
+    this.press = function(keysym) {
 
         // Don't bother with pressing the key if the key is unknown
         if (keysym === null) return;
@@ -715,15 +715,14 @@ Guacamole.Keyboard = function(element) {
         // Return the last keydown result by default, resort to false if unknown
         return last_keydown_result[keysym] || false;
 
-    }
+    };
 
     /**
      * Marks a key as released, firing the keyup event if registered.
      * 
-     * @private
-     * @param keysym The keysym of the key to release.
+     * @param {Number} keysym The keysym of the key to release.
      */
-    function release_key(keysym) {
+    this.release = function(keysym) {
 
         // Only release if pressed
         if (guac_keyboard.pressed[keysym]) {
@@ -741,7 +740,19 @@ Guacamole.Keyboard = function(element) {
 
         }
 
-    }
+    };
+
+    /**
+     * Resets the state of this keyboard, releasing all keys, and firing keyup
+     * events for each released key.
+     */
+    this.reset = function() {
+
+        // Release all pressed keys
+        for (var keysym in guac_keyboard.pressed)
+            guac_keyboard.release(parseInt(keysym));
+
+    };
 
     /**
      * Given a keyboard event, updates the local modifier state and remote
@@ -757,33 +768,33 @@ Guacamole.Keyboard = function(element) {
 
         // Release alt if implicitly released
         if (guac_keyboard.modifiers.alt && state.alt === false) {
-            release_key(0xFFE9); // Left alt
-            release_key(0xFFEA); // Right alt
-            release_key(0xFE03); // AltGr
+            guac_keyboard.release(0xFFE9); // Left alt
+            guac_keyboard.release(0xFFEA); // Right alt
+            guac_keyboard.release(0xFE03); // AltGr
         }
 
         // Release shift if implicitly released
         if (guac_keyboard.modifiers.shift && state.shift === false) {
-            release_key(0xFFE1); // Left shift
-            release_key(0xFFE2); // Right shift
+            guac_keyboard.release(0xFFE1); // Left shift
+            guac_keyboard.release(0xFFE2); // Right shift
         }
 
         // Release ctrl if implicitly released
         if (guac_keyboard.modifiers.ctrl && state.ctrl === false) {
-            release_key(0xFFE3); // Left ctrl 
-            release_key(0xFFE4); // Right ctrl 
+            guac_keyboard.release(0xFFE3); // Left ctrl 
+            guac_keyboard.release(0xFFE4); // Right ctrl 
         }
 
         // Release meta if implicitly released
         if (guac_keyboard.modifiers.meta && state.meta === false) {
-            release_key(0xFFE7); // Left meta 
-            release_key(0xFFE8); // Right meta 
+            guac_keyboard.release(0xFFE7); // Left meta 
+            guac_keyboard.release(0xFFE8); // Right meta 
         }
 
         // Release hyper if implicitly released
         if (guac_keyboard.modifiers.hyper && state.hyper === false) {
-            release_key(0xFFEB); // Left hyper
-            release_key(0xFFEC); // Right hyper
+            guac_keyboard.release(0xFFEB); // Left hyper
+            guac_keyboard.release(0xFFEC); // Right hyper
         }
 
         // Update state
@@ -868,10 +879,10 @@ Guacamole.Keyboard = function(element) {
 
         // Release Ctrl+Alt if the keysym is printable
         if (keysym <= 0xFF || (keysym & 0xFF000000) === 0x01000000) {
-            release_key(0xFFE3); // Left ctrl 
-            release_key(0xFFE4); // Right ctrl 
-            release_key(0xFFE9); // Left alt
-            release_key(0xFFEA); // Right alt
+            guac_keyboard.release(0xFFE3); // Left ctrl 
+            guac_keyboard.release(0xFFE4); // Right ctrl 
+            guac_keyboard.release(0xFFE9); // Left alt
+            guac_keyboard.release(0xFFEA); // Right alt
         }
 
     }
@@ -923,13 +934,13 @@ Guacamole.Keyboard = function(element) {
 
                     // Fire event
                     release_simulated_altgr(keysym);
-                    var defaultPrevented = !press_key(keysym);
+                    var defaultPrevented = !guac_keyboard.press(keysym);
                     recentKeysym[first.keyCode] = keysym;
 
                     // If a key is pressed while meta is held down, the keyup will
                     // never be sent in Chrome, so send it now. (bug #108404)
                     if (guac_keyboard.modifiers.meta && keysym !== 0xFFE7 && keysym !== 0xFFE8)
-                        release_key(keysym);
+                        guac_keyboard.release(keysym);
 
                     // Record whether default was prevented
                     for (var i=0; i<accepted_events.length; i++)
@@ -948,7 +959,7 @@ Guacamole.Keyboard = function(element) {
 
             var keysym = first.keysym;
             if (keysym) {
-                release_key(keysym);
+                guac_keyboard.release(keysym);
                 first.defaultPrevented = true;
             }
 
