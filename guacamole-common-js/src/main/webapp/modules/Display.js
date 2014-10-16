@@ -126,6 +126,18 @@ Guacamole.Display = function() {
     this.onresize = null;
 
     /**
+     * Fired whenever the local cursor image is changed. This can be used to
+     * implement special handling of the client-side cursor, or to override
+     * the default use of a software cursor layer.
+     * 
+     * @event
+     * @param {HTMLCanvasElement} canvas The cursor image.
+     * @param {Number} x The X-coordinate of the cursor hotspot.
+     * @param {Number} y The Y-coordinate of the cursor hotspot.
+     */
+    this.oncursor = null;
+
+    /**
      * The queue of all pending Tasks. Tasks will be run in order, with new
      * tasks added at the end of the queue and old tasks removed from the
      * front of the queue (FIFO). These tasks will eventually be grouped
@@ -282,7 +294,6 @@ Guacamole.Display = function() {
         return task;
     }
 
-
     /**
      * Returns the element which contains the Guacamole display.
      * 
@@ -413,7 +424,35 @@ Guacamole.Display = function() {
             cursor.copy(layer, srcx, srcy, srcw, srch, 0, 0);
             guac_display.moveCursor(guac_display.cursorX, guac_display.cursorY);
 
+            // Fire cursor change event
+            if (guac_display.oncursor)
+                guac_display.oncursor(cursor.getCanvas(), hotspotX, hotspotY);
+
         });
+    };
+
+    /**
+     * Sets whether the software-rendered cursor is shown. This cursor differs
+     * from the hardware cursor in that it is built into the Guacamole.Display,
+     * and relies on its own Guacamole layer to render.
+     *
+     * @param {Boolean} [shown=true] Whether to show the software cursor.
+     */
+    this.showCursor = function(shown) {
+
+        var element = cursor.getElement();
+        var parent = element.parentNode;
+
+        // Remove from DOM if hidden
+        if (shown === false) {
+            if (parent)
+                parent.removeChild(element);
+        }
+
+        // Otherwise, ensure cursor is child of display
+        else if (parent !== display)
+            display.appendChild(element);
+
     };
 
     /**
