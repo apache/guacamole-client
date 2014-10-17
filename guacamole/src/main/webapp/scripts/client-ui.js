@@ -1574,8 +1574,7 @@ GuacUI.Client.attach = function(guac) {
     mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
 
         // Hide software cursor if local cursor is in use
-        if (GuacUI.Client.local_cursor)
-            guac.getDisplay().showCursor(false);
+        guac.getDisplay().showCursor(!GuacUI.Client.local_cursor);
 
         // Scale event by current scale
         var scaledState = new Guacamole.Mouse.State(
@@ -1590,6 +1589,11 @@ GuacUI.Client.attach = function(guac) {
         // Send mouse event
         guac.sendMouseState(scaledState);
         
+    };
+
+    // Hide software cursor when mouse leaves display
+    mouse.onmouseout = function() {
+        guac.getDisplay().showCursor(false);
     };
 
 
