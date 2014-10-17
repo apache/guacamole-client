@@ -310,7 +310,30 @@ Guacamole.Mouse = function(element) {
      * @private
      * @type Boolean
      */
-    var CSS3_CURSOR_SUPPORTED = true;
+    var CSS3_CURSOR_SUPPORTED = (function() {
+
+        var div = document.createElement("div");
+
+        // If no cursor property at all, then no support
+        if (!("cursor" in div.style))
+            return false;
+
+        try {
+            // Apply simple 1x1 PNG
+            div.style.cursor = "url(data:image/png;base64,"
+                             + "iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB"
+                             + "AQMAAAAl21bKAAAAA1BMVEX///+nxBvI"
+                             + "AAAACklEQVQI12NgAAAAAgAB4iG8MwAA"
+                             + "AABJRU5ErkJggg==) 0 0, auto";
+        }
+        catch (e) {
+            return false;
+        }
+
+        // Verify cursor property is set to URL with hotspot
+        return /\burl\([^()]*\)\s+0\s+0\b/.test(div.style.cursor || "");
+
+    })();
 
     /**
      * Changes the local mouse cursor to the given canvas, having the given
