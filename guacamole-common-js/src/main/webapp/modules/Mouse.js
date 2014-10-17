@@ -333,7 +333,7 @@ Guacamole.Mouse = function(element) {
         // Attempt to set via CSS3 cursor styling
         if (CSS3_CURSOR_SUPPORTED) {
             var dataURL = canvas.toDataURL('image/png');
-            element.style.cursor = "url(" + dataURL + ") " + x + " " + y;
+            element.style.cursor = "url(" + dataURL + ") " + x + " " + y + ", auto";
             return true;
         }
 
