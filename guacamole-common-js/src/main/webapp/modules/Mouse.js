@@ -101,6 +101,14 @@ Guacamole.Mouse = function(element) {
 	this.onmousemove = null;
 
     /**
+     * Fired whenever the mouse leaves the boundaries of the element associated
+     * with this Guacamole.Mouse.
+     * 
+     * @event
+     */
+	this.onmouseout = null;
+
+    /**
      * Counter of mouse events to ignore. This decremented by mousemove, and
      * while non-zero, mouse events will have no effect.
      * @private
@@ -199,7 +207,7 @@ Guacamole.Mouse = function(element) {
 
         // Check that mouseout is due to actually LEAVING the element
         var target = e.relatedTarget || e.toElement;
-        while (target !== null) {
+        while (target) {
             if (target === element)
                 return;
             target = target.parentNode;
@@ -219,6 +227,10 @@ Guacamole.Mouse = function(element) {
             if (guac_mouse.onmouseup)
                 guac_mouse.onmouseup(guac_mouse.currentState);
         }
+
+        // Fire onmouseout event
+        if (guac_mouse.onmouseout)
+            guac_mouse.onmouseout();
 
     }, false);
 
