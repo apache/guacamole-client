@@ -35,9 +35,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
@@ -287,7 +287,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 // data yet.
                 char[] message = reader.read();
                 if (message == null)
-                    throw new GuacamoleResourceNotFoundException("Tunnel reached end of stream.");
+                    throw new GuacamoleConnectionClosedException("Tunnel reached end of stream.");
 
                 // For all messages, until another stream is ready (we send at least one message)
                 do {
@@ -317,19 +317,27 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 response.flushBuffer();
             }
 
+            // Send end-of-stream marker if connection is closed
+            catch (GuacamoleConnectionClosedException e) {
+                out.write("0.;");
+                out.flush();
+                response.flushBuffer();
+            }
+
+            catch (GuacamoleException e) {
+
+                // Detach and close
+                session.detachTunnel(tunnel);
+                tunnel.close();
+
+                throw e;
+            }
+
             // Always close output stream
             finally {
                 out.close();
             }
 
-        }
-        catch (GuacamoleException e) {
-
-            // Detach and close
-            session.detachTunnel(tunnel);
-            tunnel.close();
-
-            throw e;
         }
         catch (IOException e) {
 
@@ -410,6 +418,9 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 input.close();
             }
 
+        }
+        catch (GuacamoleConnectionClosedException e) {
+            logger.debug("Connection closed.", e);
         }
         catch (IOException e) {
 

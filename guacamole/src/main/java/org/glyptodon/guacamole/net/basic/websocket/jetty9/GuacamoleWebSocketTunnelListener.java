@@ -28,6 +28,7 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
@@ -164,6 +165,10 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                         logger.warn("Client request rejected: {}", e.getMessage());
                         closeConnection(session, e.getStatus());
                     }
+                    catch (GuacamoleConnectionClosedException e) {
+                        logger.debug("Connection closed.", e);
+                        closeConnection(session, GuacamoleStatus.SUCCESS);
+                    }
                     catch (GuacamoleException e) {
                         logger.error("Internal server error.", e);
                         closeConnection(session, e.getStatus());
@@ -190,6 +195,9 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
         try {
             // Write received message
             writer.write(message.toCharArray());
+        }
+        catch (GuacamoleConnectionClosedException e) {
+            logger.debug("Connection closed.", e);
         }
         catch (GuacamoleException e) {
             logger.debug("Tunnel write failed.", e);

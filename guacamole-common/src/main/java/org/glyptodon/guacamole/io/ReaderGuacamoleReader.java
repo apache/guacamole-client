@@ -25,9 +25,11 @@ package org.glyptodon.guacamole.io;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Deque;
 import java.util.LinkedList;
+import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.GuacamoleUpstreamTimeoutException;
@@ -181,6 +183,9 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         }
         catch (SocketTimeoutException e) {
             throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
+        }
+        catch (SocketException e) {
+            throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
         }
         catch (IOException e) {
             throw new GuacamoleServerException(e);

@@ -32,6 +32,7 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.glyptodon.guacamole.GuacamoleClientException;
+import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
 import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +94,9 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                 try {
                     writer.write(string.toCharArray());
                 }
+                catch (GuacamoleConnectionClosedException e) {
+                    logger.debug("Connection closed.", e);
+                }
                 catch (GuacamoleException e) {
                     logger.debug("Tunnel write failed.", e);
                 }
@@ -147,6 +151,10 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                             catch (GuacamoleClientException e) {
                                 logger.warn("Client request rejected: {}", e.getMessage());
                                 closeConnection(connection, e.getStatus());
+                            }
+                            catch (GuacamoleConnectionClosedException e) {
+                                logger.debug("Connection closed.", e);
+                                closeConnection(connection, GuacamoleStatus.SUCCESS);
                             }
                             catch (GuacamoleException e) {
                                 logger.error("Internal server error.", e);

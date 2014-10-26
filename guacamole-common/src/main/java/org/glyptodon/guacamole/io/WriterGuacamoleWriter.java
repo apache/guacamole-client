@@ -25,8 +25,12 @@ package org.glyptodon.guacamole.io;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.GuacamoleUpstreamTimeoutException;
 import org.glyptodon.guacamole.protocol.GuacamoleInstruction;
 
 /**
@@ -57,6 +61,12 @@ public class WriterGuacamoleWriter implements GuacamoleWriter {
         try {
             output.write(chunk, off, len);
             output.flush();
+        }
+        catch (SocketTimeoutException e) {
+            throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
+        }
+        catch (SocketException e) {
+            throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
         }
         catch (IOException e) {
             throw new GuacamoleServerException(e);
