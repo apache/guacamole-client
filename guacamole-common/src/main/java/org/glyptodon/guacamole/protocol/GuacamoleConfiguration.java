@@ -56,7 +56,33 @@ public class GuacamoleConfiguration implements Serializable {
     /**
      * Map of all associated parameter values, indexed by parameter name.
      */
-    private Map<String, String> parameters = new HashMap<String, String>();
+    private final Map<String, String> parameters = new HashMap<String, String>();
+
+    /**
+     * Creates a new, blank GuacamoleConfiguration with its protocol, connection
+     * ID, and parameters unset.
+     */
+    public GuacamoleConfiguration() {
+    }
+
+    /**
+     * Copies the given GuacamoleConfiguration, creating a new, indepedent
+     * GuacamoleConfiguration containing the same protocol, connection ID,
+     * and parameter values, if any.
+     *
+     * @param config The GuacamoleConfiguration to copy.
+     */
+    public GuacamoleConfiguration(GuacamoleConfiguration config) {
+
+        // Copy protocol and connection ID
+        protocol = config.getProtocol();
+        connectionID = config.getConnectionID();
+
+        // Copy parameter values
+        for (String name : config.getParameterNames())
+            parameters.put(name, config.getParameter(name));
+
+    }
 
     /**
      * Returns the ID of the connection being joined, if any. If no connection
