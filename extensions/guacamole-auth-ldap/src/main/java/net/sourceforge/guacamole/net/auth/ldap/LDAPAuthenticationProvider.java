@@ -35,6 +35,7 @@ import java.util.TreeMap;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.ldap.properties.LDAPGuacamoleProperties;
+import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -126,42 +127,50 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
     @Override
     public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
 
+        // Require username
+        if (credentials.getUsername() == null) {
+            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
+            return null;
+        }
+
+        // Require password, and do not allow anonymous binding
+        if (credentials.getPassword() == null
+                || credentials.getPassword().length() == 0) {
+            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
+            return null;
+        }
+
+        // Connect to LDAP server
+        LDAPConnection ldapConnection;
         try {
 
-            // Require username
-            if (credentials.getUsername() == null) {
-                logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-                return null;
-            }
-
-            // Require password, and do not allow anonymous binding
-            if (credentials.getPassword() == null
-                    || credentials.getPassword().length() == 0) {
-                logger.info("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-                return null;
-            }
-
-            // Connect to LDAP server
-            LDAPConnection ldapConnection = new LDAPConnection();
+            ldapConnection = new LDAPConnection();
             ldapConnection.connect(
                     GuacamoleProperties.getRequiredProperty(LDAPGuacamoleProperties.LDAP_HOSTNAME),
                     GuacamoleProperties.getRequiredProperty(LDAPGuacamoleProperties.LDAP_PORT)
             );
 
-            // Get username attribute
-            String username_attribute = GuacamoleProperties.getRequiredProperty(
-                LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE
-            );
+        }
+        catch (LDAPException e) {
+            throw new GuacamoleServerException("Unable to connect to LDAP server.", e);
+        }
 
-            // Get user base DN
-            String user_base_dn = GuacamoleProperties.getRequiredProperty(
-                    LDAPGuacamoleProperties.LDAP_USER_BASE_DN
-            );
+        // Get username attribute
+        String username_attribute = GuacamoleProperties.getRequiredProperty(
+            LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE
+        );
 
-            // Construct user DN
-            String user_dn =
-                escapeDN(username_attribute) + "=" + escapeDN(credentials.getUsername())
-                + "," + user_base_dn;
+        // Get user base DN
+        String user_base_dn = GuacamoleProperties.getRequiredProperty(
+                LDAPGuacamoleProperties.LDAP_USER_BASE_DN
+        );
+
+        // Construct user DN
+        String user_dn =
+            escapeDN(username_attribute) + "=" + escapeDN(credentials.getUsername())
+            + "," + user_base_dn;
+
+        try {
 
             // Bind as user
             try {
@@ -175,10 +184,19 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
                 throw new GuacamoleException(e);
             }
 
-            // Get config base DN
-            String config_base_dn = GuacamoleProperties.getRequiredProperty(
-                    LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
-            );
+        }
+        catch (LDAPException e) {
+            logger.debug("LDAP bind failed.", e);
+            return null;
+        }
+
+        // Get config base DN
+        String config_base_dn = GuacamoleProperties.getRequiredProperty(
+                LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
+        );
+
+        // Pull all connections
+        try {
 
             // Find all guac configs for this user
             LDAPSearchResults results = ldapConnection.search(
@@ -248,7 +266,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
 
         }
         catch (LDAPException e) {
-            throw new GuacamoleException(e);
+            throw new GuacamoleServerException("Error while querying for connections.", e);
         }
 
     }
