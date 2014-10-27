@@ -115,7 +115,8 @@ public class AuthenticatingFilter implements Filter {
 
         }
         catch (GuacamoleException e) {
-            logger.error("Error reading Guacamole configuration.", e);
+            logger.error("Unable to read Guacamole configuration: {}", e.getMessage());
+            logger.debug("Error reading Guacamole configuration.", e);
             throw new ServletException(e);
         }
 
@@ -141,7 +142,7 @@ public class AuthenticatingFilter implements Filter {
                     ((AuthenticationFailureListener) listener).authenticationFailed(event);
             }
             catch (GuacamoleException e) {
-                logger.error("Error notifying AuthenticationFailureListener.", e);
+                logger.debug("Error notifying AuthenticationFailureListener: {}", e);
             }
         }
 
@@ -382,7 +383,8 @@ public class AuthenticatingFilter implements Filter {
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
-            logger.error("Internal server error.", e);
+            logger.error("Authentication failed internally: {}", e.getMessage());
+            logger.debug("Internal server error.", e);
             sendError(response, e.getStatus(), "Internal server error.");
         }
 

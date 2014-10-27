@@ -126,7 +126,8 @@ public abstract class RestrictedHttpServlet extends HttpServlet {
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
-            logger.error("Internal server error.", e);
+            logger.error("Request failed: {}", e.getMessage());
+            logger.debug("Internal server error.", e);
             sendError(response, e.getStatus(), "Internal server error.");
         }
 

@@ -84,7 +84,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
             session.close(new CloseReason(code, message));
         }
         catch (IOException e) {
-            logger.error("Unable to close WebSocket connection.", e);
+            logger.debug("Unable to close WebSocket connection.", e);
         }
 
     }
@@ -119,7 +119,8 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
 
         }
         catch (GuacamoleException e) {
-            logger.error("Error connecting WebSocket tunnel.", e);
+            logger.error("Connection failed: {}", e.getMessage());
+            logger.debug("Error connecting WebSocket tunnel.", e);
             closeConnection(session, e.getStatus());
             return;
         }
@@ -184,7 +185,8 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
                         closeConnection(session, GuacamoleStatus.SUCCESS);
                     }
                     catch (GuacamoleException e) {
-                        logger.error("Internal server error.", e);
+                        logger.error("Connection terminated abnormally: {}", e.getMessage());
+                        logger.debug("Internal error during connection.", e);
                         closeConnection(session, e.getStatus());
                     }
 

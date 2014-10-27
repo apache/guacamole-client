@@ -75,7 +75,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
             session.close(new CloseStatus(code, message));
         }
         catch (IOException e) {
-            logger.error("Unable to close WebSocket connection.", e);
+            logger.debug("Unable to close WebSocket connection.", e);
         }
 
     }
@@ -107,7 +107,8 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
 
         }
         catch (GuacamoleException e) {
-            logger.error("Error connecting WebSocket tunnel.", e);
+            logger.error("Connection failed: {}", e.getMessage());
+            logger.debug("Error connecting WebSocket tunnel.", e);
             closeConnection(session, e.getStatus());
             return;
         }
@@ -170,7 +171,8 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                         closeConnection(session, GuacamoleStatus.SUCCESS);
                     }
                     catch (GuacamoleException e) {
-                        logger.error("Internal server error.", e);
+                        logger.error("Connection terminated abnormally: {}", e.getMessage());
+                        logger.debug("Internal error during connection.", e);
                         closeConnection(session, e.getStatus());
                     }
 

@@ -85,7 +85,8 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
         // Log all GuacamoleExceptions
         catch (GuacamoleException e) {
-            logger.error("Unable to load/detect WebSocket support.", e);
+            logger.error("Unable to load/detect WebSocket support: {}", e.getMessage());
+            logger.debug("Error loading/detecting WebSocket support.", e);
         }
         
         // JSR 356 not found
@@ -132,10 +133,12 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
             // Servlet API 3.0 found, but errors during use
             catch (IllegalAccessException e) {
-                logger.error("Unable to load WebSocket tunnel servlet.", e);
+                logger.error("Unable to load WebSocket tunnel servlet: {}", e.getMessage());
+                logger.debug("Error loading WebSocket tunnel servlet.", e);
             }
             catch (InvocationTargetException e) {
-                logger.error("Internal error loading WebSocket tunnel servlet.", e);
+                logger.error("Unable to load WebSocket tunnel servlet: {}", e.getMessage());
+                logger.debug("Error loading WebSocket tunnel servlet.", e);
             }
 
         }
@@ -147,7 +150,8 @@ public class WebSocketSupportLoader implements ServletContextListener {
 
         // Log all GuacamoleExceptions
         catch (GuacamoleException e) {
-            logger.error("Unable to load/detect WebSocket support.", e);
+            logger.error("Unable to load/detect WebSocket support: {}", e.getMessage());
+            logger.debug("Error loading/detecting WebSocket support.", e);
         }
 
         // Load attempt failed

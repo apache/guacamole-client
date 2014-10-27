@@ -206,11 +206,12 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
         // Catch any thrown guacamole exception and attempt to pass within the
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
-            logger.warn("Client request rejected: {}", e.getMessage());
+            logger.warn("HTTP tunnel request rejected: {}", e.getMessage());
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
-            logger.error("Internal server error.", e);
+            logger.error("HTTP tunnel request failed: {}", e.getMessage());
+            logger.debug("Internal error in HTTP tunnel.", e);
             sendError(response, e.getStatus(), "Internal server error.");
         }
 

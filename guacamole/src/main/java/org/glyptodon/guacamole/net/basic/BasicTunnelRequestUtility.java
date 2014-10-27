@@ -164,7 +164,8 @@ public class BasicTunnelRequestUtility {
             listeners = new SessionListenerCollection(httpSession);
         }
         catch (GuacamoleException e) {
-            logger.error("Failed to retrieve listeners. Authentication canceled.", e);
+            logger.error("Authentication canceled: failed to retrieve listeners: {}", e.getMessage());
+            logger.debug("Error retrieving listeners.", e);
             throw e;
         }
 

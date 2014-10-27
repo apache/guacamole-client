@@ -99,7 +99,8 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             tunnel = doConnect(request);
         }
         catch (GuacamoleException e) {
-            logger.error("Error connecting WebSocket tunnel.", e);
+            logger.error("Connection failed: {}", e.getMessage());
+            logger.debug("Error connecting WebSocket tunnel.", e);
             return null;
         }
 
@@ -189,7 +190,8 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                                 closeConnection(outbound, GuacamoleStatus.SUCCESS);
                             }
                             catch (GuacamoleException e) {
-                                logger.error("Internal server error.", e);
+                                logger.error("Connection terminated abnormally: {}", e.getMessage());
+                                logger.debug("Internal error during connection.", e);
                                 closeConnection(outbound, e.getStatus());
                             }
 
