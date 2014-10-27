@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.net.basic;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.regex.Pattern;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -273,6 +274,49 @@ public class AuthenticatingFilter implements Filter {
         return true;
     }
 
+    /**
+     * Regular expression which matches any IPv4 address.
+     */
+    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
+
+    /**
+     * Regular expression which matches any IPv6 address.
+     */
+    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
+
+    /**
+     * Regular expression which matches any IP address, regardless of version.
+     */
+    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
+    
+    /**
+     * Pattern which matches valid values of the de-facto standard
+     * "X-Forwarded-For" header.
+     */
+    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
+
+    /**
+     * Returns a formatted string containing an IP address, or list of IP
+     * addresses, which represent the HTTP client and any involved proxies. As
+     * the headers used to determine proxies can easily be forged, this data is
+     * superficially validated to ensure that it at least looks like a list of
+     * IPs.
+     *
+     * @param request The HTTP request to format.
+     * @return A formatted string containing one or more IP addresses.
+     */
+    private String getLoggableAddress(HttpServletRequest request) {
+
+        // Log X-Forwarded-For, if present and valid
+        String header = request.getHeader("X-Forwarded-For");
+        if (header != null && X_FORWARDED_FOR.matcher(header).matches())
+            return "[" + header + ", " + request.getRemoteAddr() + "]";
+
+        // If header absent or invalid, just use source IP
+        return request.getRemoteAddr();
+        
+    }
+    
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
     throws IOException, ServletException {
@@ -341,9 +385,9 @@ public class AuthenticatingFilter implements Filter {
                     context = authProvider.getUserContext(credentials);
 
                     // Log successful authentication
-                    if (context != null)
+                    if (context != null && logger.isInfoEnabled())
                         logger.info("User \"{}\" successfully authenticated from {}.",
-                                context.self().getUsername(), request.getRemoteAddr());
+                                context.self().getUsername(), getLoggableAddress(request));
                     
                 }
 
@@ -353,8 +397,10 @@ public class AuthenticatingFilter implements Filter {
 
                 // If auth failed, notify listeners
                 if (context == null) {
-                    logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                            request.getRemoteAddr(), credentials.getUsername());
+
+                    if (logger.isWarnEnabled())
+                        logger.warn("Authentication attempt from {} for user \"{}\" failed.",
+                                getLoggableAddress(request), credentials.getUsername());
 
                     notifyFailed(listeners, credentials);
                 }

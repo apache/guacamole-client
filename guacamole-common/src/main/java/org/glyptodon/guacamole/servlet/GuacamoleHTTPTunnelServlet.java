@@ -161,8 +161,6 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                     // Attach tunnel to session
                     session.attachTunnel(tunnel);
 
-                    logger.info("Connection from {} succeeded.", request.getRemoteAddr());
-
                     try {
                         // Ensure buggy browsers do not cache response
                         response.setHeader("Cache-Control", "no-cache");
@@ -177,10 +175,8 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 }
 
                 // Failed to connect
-                else {
-                    logger.info("Connection from {} failed.", request.getRemoteAddr());
+                else
                     throw new GuacamoleResourceNotFoundException("No tunnel created.");
-                }
 
             }
 

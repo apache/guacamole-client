@@ -241,7 +241,7 @@ public class BasicTunnelRequestUtility {
 
                 // Connect socket
                 socket = connection.connect(info);
-                logger.info("Successful connection from to \"{}\".", id);
+                logger.info("Successful connection to \"{}\".", id);
                 break;
             }
 
