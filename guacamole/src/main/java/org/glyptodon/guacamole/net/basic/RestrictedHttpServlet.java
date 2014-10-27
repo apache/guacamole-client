@@ -32,6 +32,7 @@ import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
@@ -118,6 +119,10 @@ public abstract class RestrictedHttpServlet extends HttpServlet {
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
             logger.warn("Client request rejected: {}", e.getMessage());
+            sendError(response, e.getStatus(), e.getMessage());
+        }
+        catch (GuacamoleUnsupportedException e) {
+            logger.debug("Unsupported operation.", e);
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
