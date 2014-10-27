@@ -73,7 +73,7 @@ public abstract class SimpleAuthenticationProvider
             return null;
 
         // Return user context restricted to authorized configs
-        return new SimpleUserContext(configs);
+        return new SimpleUserContext(credentials.getUsername(), configs);
 
     }
 

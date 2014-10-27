@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.auth.simple;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -60,12 +61,26 @@ public class SimpleUserContext implements UserContext {
 
     /**
      * Creates a new SimpleUserContext which provides access to only those
-     * configurations within the given Map.
+     * configurations within the given Map. The username is assigned
+     * arbitrarily.
      * 
      * @param configs A Map of all configurations for which the user associated
      *                with this UserContext has read access.
      */
     public SimpleUserContext(Map<String, GuacamoleConfiguration> configs) {
+        this(UUID.randomUUID().toString(), configs);
+    }
+
+    /**
+     * Creates a new SimpleUserContext for the user with the given username
+     * which provides access to only those configurations within the given Map.
+      * 
+     * @param username The username of the user associated with this
+     *                 UserContext.
+     * @param configs A Map of all configurations for which the user associated
+     *                with this UserContext has read access.
+     */
+    public SimpleUserContext(String username, Map<String, GuacamoleConfiguration> configs) {
 
         // Add root group that contains only configurations
         this.connectionGroup = new SimpleConnectionGroup("ROOT", "ROOT",
@@ -73,7 +88,7 @@ public class SimpleUserContext implements UserContext {
                 new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST));
 
         // Build new user from credentials, giving the user an arbitrary name
-        this.self = new SimpleUser("user",
+        this.self = new SimpleUser(username,
                 configs, Collections.singleton(connectionGroup));
 
         // Create user directory for new user
