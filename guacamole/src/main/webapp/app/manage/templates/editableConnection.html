@@ -71,21 +71,8 @@ THE SOFTWARE.
                 <!-- All the different possible editable field types -->
                 <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
                   <th>{{'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.label' | translate}}:</th>
-
-                  <td ng-show="parameter.type === 'TEXT'">
-                      <input type="text" ng-model="connection.parameters[parameter.name]"/>
-                  </td>
-                  <td ng-show="parameter.type === 'NUMERIC'">
-                      <input type="number" ng-model="connection.parameters[parameter.name]"/>
-                  </td>
-                  <td ng-show="parameter.type === 'PASSWORD'">
-                      <input type="password" ng-model="connection.parameters[parameter.name]"/>
-                  </td>
-                  <td ng-show="parameter.type === 'BOOLEAN'">
-                      <input type="checkbox" ng-model="connection.parameters[parameter.name]"/>
-                  </td>
-                  <td ng-show="parameter.type === 'ENUM'">
-                      <select ng-model="connection.parameters[parameter.name]" ng-options="option.value as 'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.options.' + (option.value || 'empty') | translate for option in parameter.options | orderBy: value"></select>
+                  <td>
+                      <guac-connection-parameter parameter="parameter" connection="connection" />
                   </td>
                 </tr>
               </table>
@@ -110,8 +97,9 @@ THE SOFTWARE.
                         <tr ng-repeat="record in connection.history">
                             <td class="username">{{record.username}}</td>
                             <td class="start">{{record.startDate | date:'short'}}</td>
-                            <td ng-show="record.endDate" class="duration">{{record.endDate}}</td>
-                            <td ng-hide="record.endDate" class="duration">{{'manage.edit.connection.history.activeNow' | translate}}</td>
+                            <td ng-show="record.endDate && !record.active" class="duration">{{record.endDate - record.startDate}}</td>
+                            <td ng-show="!record.endDate && !record.active" class="duration">{{'manage.edit.connection.history.unknownEnd' | translate}}</td>
+                            <td ng-show="record.active" class="duration">{{'manage.edit.connection.history.activeNow' | translate}}</td>
                         </tr>
                     </tbody>
                 </table>

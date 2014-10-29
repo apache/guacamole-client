@@ -95,11 +95,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     }
     
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
-        keysCurrentlyPressed[keysym] = true;
-    });
-
-    // Listen for broadcasted keyup events and fire the appropriate listeners
-    $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
+        keysCurrentlyPressed[keysym] = true;   
+        
         /* 
          * If only menu keys are pressed, and we have one keysym from each group,
          * and one of the keys is being released, show the menu. 
@@ -125,7 +122,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 keysCurrentlyPressed = {};
             }
         }
-        
+    });
+
+    // Listen for broadcasted keyup events and fire the appropriate listeners
+    $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
         delete keysCurrentlyPressed[keysym];
     });
     

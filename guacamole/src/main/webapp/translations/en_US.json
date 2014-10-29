@@ -52,7 +52,8 @@
                     "username"          : "Username",
                     "startTime"         : "Start Time",
                     "duration"          : "Duration",
-                    "activeNow"         : "Active Now"
+                    "activeNow"         : "Active Now",
+                    "unknownEnd"        : "--"
                 }
             },
             "connectionGroup": {
