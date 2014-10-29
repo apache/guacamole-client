@@ -31,7 +31,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
         replace: true,
         scope: {
             // Parameters for controlling client state
-            clientParameters        : '=',
+            clientProperties        : '=',
             
             // Parameters for initially connecting
             id                      : '=',
@@ -41,6 +41,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
         },
         templateUrl: 'app/client/templates/guacClient.html',
         controller: ['$scope', '$injector', '$element', function guacClientController($scope, $injector, $element) {
+    
+            /*
+             * Safe $apply implementation from Alex Vanston:
+             * https://coderwall.com/p/ngisma
+             */
+            $scope.safeApply = function(fn) {
+                var phase = this.$root.$$phase;
+                if(phase === '$apply' || phase === '$digest') {
+                    if(fn && (typeof(fn) === 'function')) {
+                        fn();
+                    }
+                } else {
+                    this.$apply(fn);
+                }
+            };
                 
             var $window             = $injector.get('$window'),
                 guacAudio           = $injector.get('guacAudio'),
@@ -86,10 +101,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 "TEXT_INPUT_PADDING"            : 128, /* characters */
                 "TEXT_INPUT_PADDING_CODEPOINT"  : 0x200B,
 
-                /* Settings for zoom */
-                "min_zoom"        : 1,
-                "max_zoom"        : 3,
-
                 /* Current connection parameters */
 
                 /* The user defined named for this connection */
@@ -111,6 +122,19 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 "clipboard_integration_enabled" : undefined 
             });
             
+            var CLIENT_PROPERTY_DEFAULTS = {
+                scale: 1
+            };
+            
+            for (var propertyName in CLIENT_PROPERTY_DEFAULTS) {
+                if (!(propertyName in $scope.clientProperties))
+                    $scope.clientProperties[propertyName] = CLIENT_PROPERTY_DEFAULTS[propertyName];
+            }
+            
+            // Maximum and minimum zoom levels
+            $scope.clientProperties.minZoom = 1;
+            $scope.clientProperties.maxZoom = 3;
+            
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
@@ -122,23 +146,23 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     return;
 
                 // Determine whether display is currently fit to the screen
-                var auto_fit = (guac.getDisplay().getScale() === $scope.min_zoom);
+                var auto_fit = (guac.getDisplay().getScale() === $scope.clientProperties.minZoom);
 
                 // Calculate scale to fit screen
-                $scope.min_zoom = Math.min(
+                $scope.clientProperties.minZoom = Math.min(
                     $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
                     $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
                 );
 
                 // Calculate appropriate maximum zoom level
-                $scope.max_zoom = Math.max($scope.min_zoom, 3);
+                $scope.clientProperties.maxZoom = Math.max($scope.clientProperties.minZoom, 3);
 
                 // Clamp zoom level, maintain auto-fit
-                if (guac.getDisplay().getScale() < $scope.min_zoom || auto_fit)
-                    $scope.setScale($scope.min_zoom);
+                if (guac.getDisplay().getScale() < $scope.clientProperties.minZoom || auto_fit)
+                    $scope.clientProperties.scale = $scope.clientProperties.minZoom;
 
-                else if (guac.getDisplay().getScale() > $scope.max_zoom)
-                    $scope.setScale($scope.max_zoom);
+                else if (guac.getDisplay().getScale() > $scope.clientProperties.maxZoom)
+                    $scope.clientProperties.scale = $scope.clientProperties.maxZoom;
 
             };
             
@@ -166,7 +190,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 */
 
                guac.getDisplay().onresize = function() {
-                   $scope.updateDisplayScale();
+                   $scope.safeApply($scope.updateDisplayScale);
                };
 
                /*
@@ -531,45 +555,30 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Connect
                 $scope.guac.connect(connectString);
             };
+            
+            // Adjust scale if modified externally
+            $scope.$watch('clientProperties.scale', function changeScale(scale) {
 
-            /**
-             * Sets the current display scale to the given value, where 1 is 100% (1:1
-             * pixel ratio). Out-of-range values will be clamped in-range.
-             * 
-             * @param {Number} scale The new scale to apply
-             */
-            $scope.setScale = function setScale(scale) {
+                // Fix scale within limits
+                scale = Math.max(scale, $scope.clientProperties.minZoom);
+                scale = Math.min(scale, $scope.clientProperties.maxZoom);
 
-                scale = Math.max(scale, $scope.min_zoom);
-                scale = Math.min(scale, $scope.max_zoom);
+                // If at minimum zoom level, hide scroll bars
+                if (scale === $scope.clientProperties.minZoom)
+                    $scope.main.style.overflow = "hidden";
 
+                // If not at minimum zoom level, show scroll bars
+                else
+                    $scope.main.style.overflow = "auto";
+
+                // Apply scale if client attached
                 if ($scope.attachedClient)
                     $scope.attachedClient.getDisplay().scale(scale);
+                
+                if (scale !== $scope.clientProperties.scale)
+                    $scope.clientProperties.scale = scale;
 
-                return scale;
-            };
-
-            // Adjust scale if modified externally
-            $scope.$watch('clientParameters.scale', function changeScale(scale) {
-                $scope.setScale(scale);
-                checkScale();
             });
-
-            // Verify that the scale is within acceptable bounds, and adjust if needed
-            function checkScale() {
-
-                // If at minimum zoom level, auto fit is ON
-                if ($scope.scale === $scope.min_zoom) {
-                    $scope.main.style.overflow = "hidden";
-                    $scope.autoFitEnabled = true;
-                }
-
-                // If at minimum zoom level, auto fit is OFF
-                else {
-                    $scope.main.style.overflow = "auto";
-                    $scope.autoFitEnabled = false;
-                }
-            }
             
             var show_keyboard_gesture_possible = true;
             

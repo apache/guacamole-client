@@ -24,7 +24,7 @@
     
     <!-- Client -->
     <guac-client 
-        client-parameters="clientParameters"
+        client-properties="clientProperties"
         type="type"
         id="id"
         connection-name="connectionName"
@@ -41,7 +41,7 @@
     <div id="notificationArea"/>
 
     <!-- Menu -->
-    <div ng-class="{closed: menuHasBeenShown && !menuShown, open: menuShown}" id="menu">
+    <div ng-class="{open: menuShown}" id="menu">
         <h2 id="menu-title">Guacamole ${project.version}</h2>
 
         <h3>{{'client.clipboard' | translate}}</h3>
@@ -102,12 +102,12 @@
         <div class="content">
             <div id="zoom-settings">
                 <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>
-                <div id="zoom-state">{{formattedScale()}}</div>
+                <div id="zoom-state">{{formattedScale()}}%</div>
                 <div ng-click="zoomIn()" id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
             </div>
-            <div><label><input ng-model="autoFitEnabled" ng-change="autoFit(autoFitEnabled)" type="checkbox" id="auto-fit" checked="checked"/> {{'client.autoFit' | translate}}</label></div>
+            <div><label><input ng-model="autoFit" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'client.autoFit' | translate}}</label></div>
         </div>
-
+        
     </div>
 
     <!-- Images which should be preloaded -->

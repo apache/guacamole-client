@@ -41,11 +41,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     var connectionDAO      = $injector.get('connectionDAO');
 
     // Client settings and state
-    $scope.clientParameters = {scale: 1};
+    $scope.clientProperties = {scale: 1};
     
     // Hide menu by default
-    $scope.menuShown        = false;
-    $scope.menuHasBeenShown = false;
+    $scope.menuShown        = true;
             
     /*
      * Parse the type, name, and id out of the url paramteres, 
@@ -113,9 +112,6 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 // Toggle the menu
                 $scope.safeApply(function() {
                     $scope.menuShown = !$scope.menuShown;
-                    
-                    // The menu has been shown at least once before
-                    $scope.menuHasBeenShown = true;
                 });
                 
                 // Reset the keys pressed
@@ -128,5 +124,31 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
         delete keysCurrentlyPressed[keysym];
     });
+    
+    $scope.formattedScale = function formattedScale() {
+        return Math.round($scope.clientProperties.scale * 100);
+    };
+    
+    $scope.zoomIn = function zoomIn() {
+        $scope.clientProperties.scale += 0.1;
+    };
+    
+    $scope.zoomOut = function zoomOut() {
+        $scope.clientProperties.scale -= 0.1;
+    };
+    
+    $scope.autoFit = true;
+    
+    $scope.$watch('autoFit', function changeAutoFit(autoFit) {
+        if(autoFit && $scope.clientProperties.minZoom) {
+            $scope.clientProperties.scale = $scope.clientProperties.minZoom;
+        } else {
+            $scope.clientProperties.scale = 1; 
+        }
+    });
+    
+    $scope.autoFitDisabled = function() {
+        return $scope.clientProperties.minZoom >= 1;
+    };
     
 }]);
