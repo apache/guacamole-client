@@ -1726,6 +1726,14 @@ GuacUI.Client.attach = function(guac) {
 
     };
 
+    /*
+     * Release all keys if window focus is lost.
+     */
+
+    window.onblur = function() {
+        keyboard.reset();
+    };
+
     /**
      * Returns the contents of the remote clipboard if clipboard integration is
      * enabled, and null otherwise.
@@ -2132,7 +2140,6 @@ GuacUI.Client.attach = function(guac) {
      * Update clipboard contents when changed
      */
 
-    window.onblur =
     GuacUI.Client.clipboard.onchange = function() {
         GuacUI.Client.commitClipboard();
     };
