@@ -37,6 +37,11 @@
         <listener-class>org.glyptodon.guacamole.net.basic.websocket.WebSocketSupportLoader</listener-class>
     </listener>
 
+    <!-- Init logging on startup -->
+    <listener>
+        <listener-class>org.glyptodon.guacamole.net.basic.log.LogbackInitializer</listener-class>
+    </listener>
+
     <!-- Authenticate against service calls and pages -->
     <filter>
         <filter-name>AuthenticatingFilter</filter-name>
