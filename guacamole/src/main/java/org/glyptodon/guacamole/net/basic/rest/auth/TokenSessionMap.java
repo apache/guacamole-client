@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,35 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty8;
+package org.glyptodon.guacamole.net.basic.rest.auth;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * Represents a mapping of auth token to Guacamole session for the REST 
+ * authentication system.
+ * 
+ * @author James Muehlner
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
-
+public interface TokenSessionMap {
+    
     /**
-     * Service for handling tunnel requests.
+     * Registers that a user has just logged in with the specified authToken and
+     * GuacamoleSession.
+     * 
+     * @param authToken The authentication token for the logged in user.
+     * @param session The GuacamoleSession for the logged in user.
      */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
-    }
+    public void put(String authToken, GuacamoleSession session);
+    
+    /**
+     * Get the GuacamoleSession for a logged in user. If the auth token does not
+     * represent a user who is currently logged in, returns null. 
+     * 
+     * @param authToken The authentication token for the logged in user.
+     * @return The GuacamoleSession for the given auth token, if the auth token
+     *         represents a currently logged in user, null otherwise.
+     */
+    public GuacamoleSession get(String authToken);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,33 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty8;
+package org.glyptodon.guacamole.net.basic;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.servlet.GuiceServletContextListener;
+import org.glyptodon.guacamole.net.basic.log.LogModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * A ServletContextListener to listen for initialization of the servlet context
+ * in order to set up dependency injection.
+ * 
+ * @author James Muehlner
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
+public class BasicServletContextListener extends GuiceServletContextListener {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
     @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
-    }
+    protected Injector getInjector() {
 
+        return Guice.createInjector(
+            new LogModule(),
+            new RESTServletModule(), 
+            new RESTModule(),
+            new TunnelModule()
+        );
+        
+    }
+    
 }

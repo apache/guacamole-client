@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,9 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty8;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
-
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * Classes related to the connection group manipulation aspect
+ * of the Guacamole REST API.
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
+package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
-    }
-
-}

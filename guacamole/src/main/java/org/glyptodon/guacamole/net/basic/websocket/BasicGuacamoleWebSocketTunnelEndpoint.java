@@ -22,25 +22,22 @@
 
 package org.glyptodon.guacamole.net.basic.websocket;
 
+import com.google.inject.Provider;
 import java.util.Map;
 import javax.websocket.EndpointConfig;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
+import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 import org.glyptodon.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
 
 /**
  * Tunnel implementation which uses WebSocket as a tunnel backend, rather than
  * HTTP, properly parsing connection IDs included in the connection request.
  */
-@ServerEndpoint(value        = "/websocket-tunnel",
-                subprotocols = {"guacamole"},
-                configurator = BasicGuacamoleWebSocketTunnelEndpoint.Configurator.class)
 public class BasicGuacamoleWebSocketTunnelEndpoint extends GuacamoleWebSocketTunnelEndpoint {
 
     /**
@@ -62,6 +59,25 @@ public class BasicGuacamoleWebSocketTunnelEndpoint extends GuacamoleWebSocketTun
      */
     public static class Configurator extends ServerEndpointConfig.Configurator {
 
+        /**
+         * Provider which provides instances of a service for handling
+         * tunnel requests.
+         */
+        private final Provider<TunnelRequestService> tunnelRequestServiceProvider;
+         
+        /**
+         * Creates a new Configurator which uses the given tunnel request
+         * service provider to retrieve the necessary service to handle new
+         * connections requests.
+         * 
+         * @param tunnelRequestServiceProvider The tunnel request service
+         *                                     provider to use for all new
+         *                                     connections.
+         */
+        public Configurator(Provider<TunnelRequestService> tunnelRequestServiceProvider) {
+            this.tunnelRequestServiceProvider = tunnelRequestServiceProvider;
+        }
+        
         @Override
         public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
 
@@ -72,8 +88,11 @@ public class BasicGuacamoleWebSocketTunnelEndpoint extends GuacamoleWebSocketTun
             userProperties.clear();
             try {
 
+                // Get tunnel request service
+                TunnelRequestService tunnelRequestService = tunnelRequestServiceProvider.get();
+                
                 // Store new tunnel within user properties
-                GuacamoleTunnel tunnel = BasicTunnelRequestUtility.createTunnel(new WebSocketTunnelRequest(request));
+                GuacamoleTunnel tunnel = tunnelRequestService.createTunnel(new WebSocketTunnelRequest(request));
                 if (tunnel != null)
                     userProperties.put(TUNNEL_USER_PROPERTY, tunnel);
 

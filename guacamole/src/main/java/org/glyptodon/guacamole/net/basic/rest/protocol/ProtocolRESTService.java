@@ -20,49 +20,54 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic.rest.protocol;
 
 import com.google.inject.Inject;
+import java.util.Map;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.ProtocolInfo;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * REST service which updates the last access time of the Guacamole session,
- * preventing the session from becoming invalid.
- *
- * @author Michael Jumper
+ * A REST Service for handling the listing of protocols.
+ * 
+ * @author James Muehlner
  */
-@Path("/keep-alive")
-public class SessionKeepAlive {
-
-    /**
-     * A service for authenticating users from auth tokens.
-     */
-    @Inject
-    private AuthenticationService authenticationService;
+@Path("/protocol")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class ProtocolRESTService {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(SessionKeepAlive.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProtocolRESTService.class);
+    
+    /**
+     * Service for retrieving protocol definitions.
+     */
+    @Inject
+    private ProtocolRetrievalService protocolRetrievalservice;
 
+    /**
+     * Gets a map of protocols defined in the system - protocol name to protocol.
+     * 
+     * @return The protocol map.
+     * @throws GuacamoleException If a problem is encountered while listing protocols.
+     */
     @GET
     @AuthProviderRESTExposure
-    public void updateSession(@QueryParam("token") String authToken) throws GuacamoleException {
-
-        // Tickle the session
-        UserContext context = authenticationService.getUserContext(authToken);
-
-        // Do nothing
-        logger.debug("Keep-alive signal received from user \"{}\".", context.self().getUsername());
+    public Map<String, ProtocolInfo> getProtocols() throws GuacamoleException {
         
+        // Get and return a map of all protocols.
+        return protocolRetrievalservice.getProtocolMap();
     }
 
 }

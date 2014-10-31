@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,40 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty8;
+package org.glyptodon.guacamole.net.basic.rest.user;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.User;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * A service for performing useful manipulations on REST Users.
+ * 
+ * @author James Muehlner
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
-
+public class UserService {
+    
     /**
-     * Service for handling tunnel requests.
+     * Converts a user directory to a list of APIUser objects for 
+     * exposing with the REST endpoints.
+     * 
+     * @param userDirectory The user directory to convert for REST endpoint use.
+     * @return A List of APIUser objects for use with the REST endpoint.
+     * @throws GuacamoleException If an error occurs while converting the 
+     *                            user directory.
      */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
+    public List<APIUser> convertUserList(Directory<String, User> userDirectory) 
             throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
-    }
 
+        List<APIUser> restUsers = new ArrayList<APIUser>();
+        
+        for(String username : userDirectory.getIdentifiers())
+            restUsers.add(new APIUser(userDirectory.get(username)));
+            
+        return restUsers;
+
+    }
+    
 }

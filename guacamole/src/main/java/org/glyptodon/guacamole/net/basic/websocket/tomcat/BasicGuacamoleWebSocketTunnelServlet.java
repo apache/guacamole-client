@@ -22,10 +22,12 @@
 
 package org.glyptodon.guacamole.net.basic.websocket.tomcat;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.BasicTunnelRequestUtility;
+import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
 
 /**
@@ -33,12 +35,19 @@ import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
  * rather than HTTP, properly parsing connection IDs included in the connection
  * request.
  */
+@Singleton
 public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
 
+    /**
+     * Service for handling tunnel requests.
+     */
+    @Inject
+    private TunnelRequestService tunnelRequestService;
+ 
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
             throws GuacamoleException {
-        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
+        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
     };
 
 }

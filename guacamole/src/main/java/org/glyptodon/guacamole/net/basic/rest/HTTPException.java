@@ -20,33 +20,39 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty9;
+package org.glyptodon.guacamole.net.basic.rest;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.eclipse.jetty.websocket.api.Session;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
- * WebSocket listener implementation which properly parses connection IDs
- * included in the connection request.
+ * An exception that will result in the given HTTP Status and message or entity 
+ * being returned from the API layer.
  * 
- * @author Michael Jumper
+ * @author James Muehlner
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelListener extends GuacamoleWebSocketTunnelListener {
-
+public class HTTPException extends WebApplicationException {
+    
     /**
-     * Service for handling tunnel requests.
+     * Construct a new HTTPException with the given HTTP status and entity.
+     * 
+     * @param status The HTTP Status to use for the response.
+     * @param entity The entity to use as the body of the response.
      */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel createTunnel(Session session) throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new WebSocketTunnelRequest(session.getUpgradeRequest()));
+    public HTTPException(Status status, Object entity) {
+        super(Response.status(status).entity(entity).build());
     }
-
+    
+    /**
+     * Construct a new HTTPException with the given HTTP status and message. The
+     * message will be wrapped in an APIError container.
+     * 
+     * @param status The HTTP Status to use for the response.
+     * @param message The message to build the response entity with.
+     */
+    public HTTPException(Status status, String message) {
+        super(Response.status(status).entity(new APIError(message)).build());
+    }
+    
 }

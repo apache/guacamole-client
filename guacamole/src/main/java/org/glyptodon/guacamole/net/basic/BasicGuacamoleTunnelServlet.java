@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole.net.basic;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -35,8 +37,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Jumper
  */
+@Singleton
 public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
+    /**
+     * Service for handling tunnel requests.
+     */
+    @Inject
+    private TunnelRequestService tunnelRequestService;
+    
     /**
      * Logger for this class.
      */
@@ -46,8 +55,8 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
         // Attempt to create HTTP tunnel
-        GuacamoleTunnel tunnel = BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
-        
+        GuacamoleTunnel tunnel = tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
+
         // If successful, warn of lack of WebSocket
         logger.info("Using HTTP tunnel (not WebSocket). Performance may be sub-optimal.");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,29 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.websocket.jetty8;
+package org.glyptodon.guacamole.net.basic.rest.auth;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import java.security.SecureRandom;
+import org.apache.commons.codec.binary.Hex;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * An implementation of the AuthTokenGenerator based around SecureRandom.
+ * 
+ * @author James Muehlner
  */
-@Singleton
-public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
+public class SecureRandomAuthTokenGenerator implements AuthTokenGenerator {
 
     /**
-     * Service for handling tunnel requests.
+     * Instance of SecureRandom for generating the auth token.
      */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
-            throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
-    }
+    private final SecureRandom secureRandom = new SecureRandom();
 
+    @Override
+    public String getToken() {
+        byte[] bytes = new byte[32];
+        secureRandom.nextBytes(bytes);
+        
+        return Hex.encodeHexString(bytes);
+    }
+    
 }
