@@ -141,36 +141,6 @@ GuacamoleRootUI.RecentConnection = function(id, name) {
 };
 
 /**
- * Attempts to login the given user using the given password, throwing an
- * error if the process fails.
- * 
- * @param {String} username The name of the user to login as.
- * @param {String} password The password to use to authenticate the user.
- */
-GuacamoleRootUI.login = function(username, password) {
-
-    // Get username and password from form
-    var data =
-           "username=" + encodeURIComponent(username)
-        + "&password=" + encodeURIComponent(password)
-
-    // Include query parameters in submission data
-    if (GuacamoleRootUI.parameters)
-        data += "&" + GuacamoleRootUI.parameters;
-
-    // Log in
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "login", false);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.send(data);
-
-    // Handle failures
-    if (xhr.status != 200)
-        throw new Error("Invalid login");
-
-};
-
-/**
  * Set of all thumbnailed connections, indexed by ID. Here, each connection
  * is a GuacamoleRootUI.RecentConnection.
  */
@@ -376,7 +346,7 @@ GuacamoleRootUI.sections.login_form.onsubmit = function() {
         GuacUI.removeClass(GuacamoleRootUI.views.login, "error");
 
         // Attempt login
-        GuacamoleRootUI.login(
+        GuacamoleService.Auth.login(
             GuacamoleRootUI.fields.username.value,
             GuacamoleRootUI.fields.password.value
         );

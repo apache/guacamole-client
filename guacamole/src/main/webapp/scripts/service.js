@@ -363,156 +363,17 @@ GuacamoleService.Connections = {
      * Returns the root connection group, containing a hierarchy of all other
      * groups and connections for which the current user has access.
      * 
-     * @param {String} parameters Any parameters which should be passed to the
-     *                            server for the sake of authentication
-     *                            (optional).
      * @return {GuacamoleService.ConnectionGroup} The root group, containing
      *                                            a hierarchy of all other
      *                                            groups and connections to
      *                                            which the current user has
      *                                            access.
      */   
-    "list" : function(parameters) {
-
-        /**
-         * Parse the contents of the given connection element within XML,
-         * returning a corresponding GuacamoleService.Connection.
-         * 
-         * @param {GuacamoleService.ConnectionGroup} The connection group
-         *                                           containing this connection.
-         * @param {Element} element The element being parsed.
-         * @return {GuacamoleService.Connection} The connection represented by
-         *                                       the element just parsed.
-         */
-        function parseConnection(parent, element) {
-
-            var i;
-
-            var connection = new GuacamoleService.Connection(
-                element.getAttribute("protocol"),
-                element.getAttribute("id"),
-                element.getAttribute("name")
-            );
-
-            // Set parent
-            connection.parent = parent;
-
-            // Add parameter values for each parmeter received
-            var paramElements = element.getElementsByTagName("param");
-            for (i=0; i<paramElements.length; i++) {
-
-                var paramElement = paramElements[i];
-                var name = paramElement.getAttribute("name");
-
-                connection.parameters[name] = paramElement.textContent;
-
-            }
-
-            // Parse history, if available
-            var historyElements = element.getElementsByTagName("history");
-            if (historyElements.length === 1) {
-
-                // For each record in history
-                var history = historyElements[0];
-                var recordElements = history.getElementsByTagName("record");
-                for (i=0; i<recordElements.length; i++) {
-
-                    // Get record
-                    var recordElement = recordElements[i];
-                    var record = new GuacamoleService.Connection.Record(
-                        recordElement.textContent,
-                        parseInt(recordElement.getAttribute("start")),
-                        parseInt(recordElement.getAttribute("end")),
-                        recordElement.getAttribute("active") === "yes"
-                    );
-
-                    // Append to connection history
-                    connection.history.push(record);
-
-                }
-
-            }
-
-            // Return parsed connection
-            return connection;
-
-        }
-
-        /**
-         * Recursively parse the contents of the given group element within XML,
-         * returning a corresponding GuacamoleService.ConnectionGroup.
-         * 
-         * @param {GuacamoleService.ConnectionGroup} The connection group
-         *                                           containing this group.
-         * @param {Element} element The element being parsed.
-         * @return {GuacamoleService.ConnectionGroup} The connection group
-         *                                            represented by the element
-         *                                            just parsed.
-         */
-        function parseGroup(parent, element) {
-
-            var id   = element.getAttribute("id");
-            var name = element.getAttribute("name");
-            var type_string = element.getAttribute("type");
-
-            // Translate type name
-            var type;
-            if (type_string === "organizational")
-                type = GuacamoleService.ConnectionGroup.Type.ORGANIZATIONAL;
-            else if (type_string === "balancing")
-                type = GuacamoleService.ConnectionGroup.Type.BALANCING;
-
-            // Create corresponding group
-            var group = new GuacamoleService.ConnectionGroup(type, id, name);
-
-            // Set parent
-            group.parent = parent;
-
-            // For each child element
-            var current = element.firstChild;
-            while (current !== null) {
-
-                var i, child;
-                var children = current.childNodes;
-
-                if (current.localName === "connections") {
-
-                    // Parse all child connections
-                    for (i=0; i<children.length; i++) {
-                        var child = children[i];
-                        if (child.localName === "connection")
-                            group.connections.push(parseConnection(group, child));
-                    }
-                    
-                }
-                else if (current.localName === "groups") {
-
-                    // Parse all child groups 
-                    for (i=0; i<children.length; i++) {
-                        var child = children[i];
-                        if (child.localName === "group")
-                            group.groups.push(parseGroup(group, child));
-                    }
- 
-                }
-
-                // Next element
-                current = current.nextSibling;
-
-            }
-
-            // Sort groups and connections
-            group.groups.sort(GuacamoleService.Connections.comparator);
-            group.connections.sort(GuacamoleService.Connections.comparator);
-
-            // Return created group
-            return group;
-            
-        }
+    "list" : function() {
 
         // Construct request URL
-        var list_url = "connections";
-        if (parameters) list_url += "?" + parameters;
+        var list_url = "api/connection"
+                     + "?token=" + GuacamoleService.Auth.current().authToken;
 
         // Get connection list
         var xhr = new XMLHttpRequest();
@@ -521,7 +382,7 @@ GuacamoleService.Connections = {
 
         // Handle response
         GuacamoleService.handleResponse(xhr);
-        return parseGroup(null, xhr.responseXML.documentElement);
+        return JSON.parse(xhr.responseText);
  
     },
 
@@ -962,22 +823,19 @@ GuacamoleService.Users = {
     },
 
     /**
-     * Deletes the user having the given username.
+     * Deletes the user having the given user ID.
      * 
-     * @param {String} username The username of the user to delete.
-     * @param {String} parameters Any parameters which should be passed to the
-     *                            server for the sake of authentication
-     *                            (optional).
+     * @param {String} userID The ID of the user to delete.
      */
-    "remove" : function(username, parameters) {
+    "remove" : function(userID) {
 
         // Construct request URL
-        var users_url = "users/delete?name=" + encodeURIComponent(username);
-        if (parameters) users_url += "&" + parameters;
+        var users_url = "api/user/" + encodeURIComponent(userID)
+                      + "?token=" + GuacamoleService.Auth.current().authToken;
 
         // Add user
         var xhr = new XMLHttpRequest();
-        xhr.open("GET", users_url, false);
+        xhr.open("DELETE", users_url, false);
         xhr.send(null);
 
         // Handle response
@@ -997,176 +855,31 @@ GuacamoleService.Permissions = {
       * Returns a PermissionSet describing the permissions given to a
       * specified user.
       *
-      * @param {String} username The username of the user to list permissions
-      *                          of. 
-      * @param {String} parameters Any parameters which should be passed to the
-      *                            server for the sake of authentication
-      *                            (optional).
+      * @param {String} userID The user ID of the user whose permissions should
+      *                        be retrieved. If no user ID is provided, the
+      *                        user ID of the current user will be used.
       * @return {GuacamoleService.PermissionSet} A PermissionSet describing the
       *                                          permissions given to the
       *                                          specified user.
       */   
-    "list" : function(username, parameters) {
+    "list" : function(userID) {
+
+        // Use current user ID if none provided
+        userID = userID || GuacamoleService.Auth.current().userID;
 
         // Construct request URL
-        var list_url = "permissions";
-        if (parameters) list_url += "?" + parameters;
-
-        // Init POST data
-        var data;
-        if (username)
-            data = "user=" + encodeURIComponent(username);
-        else
-            data = null;
+        var list_url = "api/permission"
+                     + "/" + encodeURIComponent(userID)
+                     + "?token=" + GuacamoleService.Auth.current().authToken;
 
         // Get permission list
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", list_url, false);
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
-        xhr.send(data);
+        xhr.open("GET", list_url, false);
+        xhr.send(null);
 
         // Handle response
         GuacamoleService.handleResponse(xhr);
-
-        // Otherwise, build PermissionSet
-        var i, type, name;
-        var permissions = new GuacamoleService.PermissionSet();
-
-        // Read system permissions
-        var connectionsElements = xhr.responseXML.getElementsByTagName("system");
-        for (i=0; i<connectionsElements.length; i++) {
-
-            // Get type
-            type = connectionsElements[i].getAttribute("type");
-            switch (type) {
-
-                // Create connection permission
-                case "create-connection":
-                    permissions.create_connection = true;
-                    break;
-
-                // Create connection group permission
-                case "create-connection-group":
-                    permissions.create_connection_group = true;
-                    break;
-
-                // Create user permission
-                case "create-user":
-                    permissions.create_user = true;
-                    break;
-
-                // System admin permission
-                case "admin":
-                    permissions.administer = true;
-                    break;
-
-            }
-
-        }
-
-        // Read connection permissions
-        var connectionElements = xhr.responseXML.getElementsByTagName("connection");
-        for (i=0; i<connectionElements.length; i++) {
-
-            // Get name and type
-            type = connectionElements[i].getAttribute("type");
-            name = connectionElements[i].getAttribute("name");
-
-            switch (type) {
-
-                // Read permission
-                case "read":
-                    permissions.read_connection[name] = true;
-                    break;
-
-                // Update permission
-                case "update":
-                    permissions.update_connection[name] = true;
-                    break;
-
-                // Admin permission
-                case "admin":
-                    permissions.administer_connection[name] = true;
-                    break;
-
-                // Delete permission
-                case "delete":
-                    permissions.remove_connection[name] = true;
-                    break;
-
-            }
-
-        }
-
-        // Read connection group permissions
-        var connectionGroupElements = xhr.responseXML.getElementsByTagName("connection-group");
-        for (i=0; i<connectionGroupElements.length; i++) {
-
-            // Get name and type
-            type = connectionGroupElements[i].getAttribute("type");
-            name = connectionGroupElements[i].getAttribute("name");
-
-            switch (type) {
-
-                // Read permission
-                case "read":
-                    permissions.read_connection_group[name] = true;
-                    break;
-
-                // Update permission
-                case "update":
-                    permissions.update_connection_group[name] = true;
-                    break;
-
-                // Admin permission
-                case "admin":
-                    permissions.administer_connection_group[name] = true;
-                    break;
-
-                // Delete permission
-                case "delete":
-                    permissions.remove_connection_group[name] = true;
-                    break;
-
-            }
-
-        }
-
-        // Read user permissions
-        var userElements = xhr.responseXML.getElementsByTagName("user");
-        for (i=0; i<userElements.length; i++) {
-
-            // Get name and type
-            type = userElements[i].getAttribute("type");
-            name = userElements[i].getAttribute("name");
-
-            switch (type) {
-
-                // Read permission
-                case "read":
-                    permissions.read_user[name] = true;
-                    break;
-
-                // Update permission
-                case "update":
-                    permissions.update_user[name] = true;
-                    break;
-
-                // Admin permission
-                case "admin":
-                    permissions.administer_user[name] = true;
-                    break;
-
-                // Delete permission
-                case "delete":
-                    permissions.remove_user[name] = true;
-                    break;
-
-            }
-
-        }
-
-        return permissions;
+        return JSON.parse(xhr.responseText);
  
     }
 
@@ -1257,32 +970,32 @@ GuacamoleService.Protocol.Parameter.Option = function(value, title) {
 /**
  * A free-form text field.
  */
-GuacamoleService.Protocol.Parameter.TEXT = 0;
+GuacamoleService.Protocol.Parameter.TEXT = "TEXT";
 
 /**
  * A password field.
  */
-GuacamoleService.Protocol.Parameter.PASSWORD = 1;
+GuacamoleService.Protocol.Parameter.PASSWORD = "PASSWORD";
 
 /**
  * A numeric field.
  */
-GuacamoleService.Protocol.Parameter.NUMERIC = 2;
+GuacamoleService.Protocol.Parameter.NUMERIC = "NUMERIC";
 
 /**
  * A boolean (checkbox) field.
  */
-GuacamoleService.Protocol.Parameter.BOOLEAN = 3;
+GuacamoleService.Protocol.Parameter.BOOLEAN = "BOOLEAN";
 
 /**
  * An enumerated (select) field.
  */
-GuacamoleService.Protocol.Parameter.ENUM = 4;
+GuacamoleService.Protocol.Parameter.ENUM = "ENUM";
 
 /**
  * A free-form, multi-line text field. 
  */
-GuacamoleService.Protocol.Parameter.MULTILINE = 5;
+GuacamoleService.Protocol.Parameter.MULTILINE = "MULTILINE";
 
 /**
  * Collection of service functions which deal with protocols. Each function
@@ -1291,24 +1004,19 @@ GuacamoleService.Protocol.Parameter.MULTILINE = 5;
 GuacamoleService.Protocols = {
 
      /**
-      * Returns an array containing all available protocols and all
+      * Returns an object containing all available protocols and all
       * corresponding parameters, as well as hints regarding expected datatype
       * and allowed/default values.
       * 
-      * Note that this function is a stub returning a simple object until the
-      * corresponding server-side component is created.
-      *
-      * @param {String} parameters Any parameters which should be passed to the
-      *                            server for the sake of authentication
-      *                            (optional).
-      * @return {GuacamoleService.Protocol[]} An array containing all available
-      *                                     protocols.
+      * @return {Object.<String, GuacamoleService.Protocol>}
+      *             An object mapping the names of all available protocols to
+      *             their corresponding details.
       */   
-    "list" : function(parameters) {
+    "list" : function() {
 
         // Construct request URL
-        var list_url = "protocols";
-        if (parameters) list_url += "?" + parameters;
+        var list_url = "api/protocol"
+                     + "?token=" + GuacamoleService.Auth.current().authToken;
 
         // Get permission list
         var xhr = new XMLHttpRequest();
@@ -1317,98 +1025,7 @@ GuacamoleService.Protocols = {
 
         // Handle response
         GuacamoleService.handleResponse(xhr);
-
-        // Array of all protocols
-        var protocols = [];
-
-        // Parse all protocols
-        var protocolElements = xhr.responseXML.getElementsByTagName("protocol");
-        for (var i=0; i<protocolElements.length; i++) {
-
-            // Get protocol element
-            var protocolElement = protocolElements[i];
-
-            // Create corresponding protocol
-            var protocol = new GuacamoleService.Protocol(
-                protocolElement.getAttribute("name"),
-                protocolElement.getAttribute("title")
-            );
-
-            // Parse all parameters
-            var paramElements = protocolElement.getElementsByTagName("param");
-            for (var j=0; j<paramElements.length; j++) {
-
-                // Get parameter element
-                var paramElement = paramElements[j];
-
-                // Create corresponding parameter
-                var parameter = new GuacamoleService.Protocol.Parameter(
-                    paramElement.getAttribute("name"),
-                    paramElement.getAttribute("title")
-                );
-
-                // Parse type
-                switch (paramElement.getAttribute("type")) {
-
-                    // Text parameter
-                    case "text":
-                        parameter.type = GuacamoleService.Protocol.Parameter.TEXT;
-                        break;
-
-                    // Password parameter
-                    case "password":
-                        parameter.type = GuacamoleService.Protocol.Parameter.PASSWORD;
-                        break;
-
-                    // Numeric parameter
-                    case "numeric":
-                        parameter.type = GuacamoleService.Protocol.Parameter.NUMERIC;
-                        break;
-
-                    // Boolean parameter
-                    case "boolean":
-                        parameter.type = GuacamoleService.Protocol.Parameter.BOOLEAN;
-                        parameter.value = paramElement.getAttribute("value");
-                        break;
-
-                    // Enumerated parameter
-                    case "enum":
-                        parameter.type = GuacamoleService.Protocol.Parameter.ENUM;
-                        break;
-
-                    // Multiline text parameter
-                    case "multiline":
-                        parameter.type = GuacamoleService.Protocol.Parameter.MULTILINE;
-                        break;
-
-                }
-
-                // Parse all options
-                var optionElements = paramElement.getElementsByTagName("option");
-                for (var k=0; k<optionElements.length; k++) {
-
-                    // Get option element
-                    var optionElement = optionElements[k];
-
-                    parameter.options.push(
-                        new GuacamoleService.Protocol.Parameter.Option(
-                            optionElement.getAttribute("value"),
-                            optionElement.textContent
-                        ));
-
-                } // end for each option
-
-                // Add parameter 
-                protocol.parameters.push(parameter);
-
-            } // end for each parameter
-
-            // Add protocol
-            protocols.push(protocol);
-
-        } // end for each protocol
-
-        return protocols;
+        return JSON.parse(xhr.responseText);
 
     }
 
@@ -1420,11 +1037,11 @@ GuacamoleService.Protocols = {
  */
 GuacamoleService.Clipboard = {
     
-    "get" : function(parameters) {
+    "get" : function() {
         
         // Construct request URL
-        var list_url = "clipboard";
-        if (parameters) list_url += "?" + parameters;
+        var list_url = "api/clipboard"
+                     + "?token=" + GuacamoleService.Auth.current().authToken;
         
         // Get permission list
         var xhr = new XMLHttpRequest();
@@ -1447,11 +1064,11 @@ GuacamoleService.Clipboard = {
  */
 GuacamoleService.KeepAlive = {
     
-    "ping" : function(parameters) {
+    "ping" : function() {
         
         // Construct request URL
-        var ping_url = "keep-alive";
-        if (parameters) ping_url += "?" + parameters;
+        var ping_url = "api/keep-alive"
+                     + "?token=" + GuacamoleService.Auth.current().authToken;
         
         // Send keep-alive "ping"
         var xhr = new XMLHttpRequest();
@@ -1460,4 +1077,66 @@ GuacamoleService.KeepAlive = {
         
     }
     
+};
+
+/**
+ * Collection of service functions which deal with authentication. Note that,
+ * unlike everything else here, not all functions in GuacamoleService.Auth
+ * make explicit HTTP queries.
+ */
+GuacamoleService.Auth = {
+
+     /**
+     * Attempts to login the given user using the given password, throwing an
+     * error if the process fails. The resulting token, if successful, is
+     * automatically stored locally within a cookie called "GUAC_TOKEN". This
+     * token can be later retrieved via GuacamoleService.current().authToken.
+     * 
+     * @param {String} username The name of the user to login as.
+     * @param {String} password The password to use to authenticate the user.
+     */       
+    "login" : function(username, password) {
+
+        // Populate data with username and password
+        var data =
+               "username=" + encodeURIComponent(username)
+            + "&password=" + encodeURIComponent(password)
+
+        // Include query parameters in submission data
+        if (GuacamoleRootUI.parameters)
+            data += "&" + GuacamoleRootUI.parameters;
+
+        // Log in
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "api/login", false);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.send(data);
+
+        // Handle failures
+        if (xhr.status !== 200)
+            throw new Error("Invalid login");
+
+        // Store auth token in cookie
+        var response = JSON.parse(xhr.responseText);
+        document.cookie = "GUAC_AUTH=" + encodeURIComponent(JSON.stringify(response));
+
+    },
+
+    /**
+     * Returns the current auth result received via login. This result will
+     * contain, among other things, the authToken.
+     *
+     * @returns {Object} The result of the most recent login, if any. If no such
+     *                   result exists, an empty object is returned.
+     */
+    "current" : function() {
+
+        var guacAuth = document.cookie.replace(/(?:(?:^|.*;\s*)GUAC_AUTH\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        if (!guacAuth)
+            return {};
+
+        return JSON.parse(decodeURIComponent(guacAuth));
+
+    }
+
 };
