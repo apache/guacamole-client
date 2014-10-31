@@ -249,7 +249,7 @@ public class List extends RestrictedHttpServlet {
 
                 }
                 catch (IOException e) {
-                    logger.error("Unable to read \"{}\": {}", file.getAbsolutePath(), e.getMessage());
+                    logger.error("Unable to read connection parameter information from \"{}\": {}", file.getAbsolutePath(), e.getMessage());
                     logger.debug("Error reading protocol XML.", e);
                 }
 

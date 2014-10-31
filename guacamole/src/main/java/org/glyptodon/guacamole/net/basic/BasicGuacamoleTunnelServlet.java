@@ -45,11 +45,14 @@ public class BasicGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
-        // Warn of lack of WebSocket
-        logger.warn("Using HTTP tunnel (not WebSocket). Performance may be sub-optimal.");
+        // Attempt to create HTTP tunnel
+        GuacamoleTunnel tunnel = BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
         
-        return BasicTunnelRequestUtility.createTunnel(new HTTPTunnelRequest(request));
+        // If successful, warn of lack of WebSocket
+        logger.info("Using HTTP tunnel (not WebSocket). Performance may be sub-optimal.");
+
+        return tunnel;
+
     }
 
 }
-

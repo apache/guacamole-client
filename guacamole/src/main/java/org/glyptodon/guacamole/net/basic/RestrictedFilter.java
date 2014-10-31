@@ -77,7 +77,7 @@ public class RestrictedFilter implements Filter {
             final GuacamoleStatus status = GuacamoleStatus.CLIENT_UNAUTHORIZED;
             final String message = "Not authenticated";
 
-            logger.warn("Client request rejected: {}", message);
+            logger.info("HTTP request rejected: {}", message);
             response.addHeader("Guacamole-Status-Code", Integer.toString(status.getGuacamoleStatusCode()));
             response.addHeader("Guacamole-Error-Message", message);
             response.sendError(status.getHttpStatusCode());

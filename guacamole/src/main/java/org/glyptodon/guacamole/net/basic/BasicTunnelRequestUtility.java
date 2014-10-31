@@ -164,7 +164,7 @@ public class BasicTunnelRequestUtility {
             listeners = new SessionListenerCollection(httpSession);
         }
         catch (GuacamoleException e) {
-            logger.error("Authentication canceled: failed to retrieve listeners: {}", e.getMessage());
+            logger.error("Creation of tunnel to guacd aborted: Failed to retrieve listeners: {}", e.getMessage());
             logger.debug("Error retrieving listeners.", e);
             throw e;
         }
@@ -235,13 +235,13 @@ public class BasicTunnelRequestUtility {
                 // Get authorized connection
                 Connection connection = directory.get(id);
                 if (connection == null) {
-                    logger.warn("Connection id={} not found.", id);
+                    logger.info("Connection \"{}\" does not exist for user \"{}\".", id, context.self().getUsername());
                     throw new GuacamoleSecurityException("Requested connection is not authorized.");
                 }
 
                 // Connect socket
                 socket = connection.connect(info);
-                logger.info("Successful connection to \"{}\".", id);
+                logger.info("User \"{}\" successfully connected to \"{}\".", context.self().getUsername(), id);
                 break;
             }
 
@@ -255,13 +255,13 @@ public class BasicTunnelRequestUtility {
                 // Get authorized connection group
                 ConnectionGroup group = directory.get(id);
                 if (group == null) {
-                    logger.warn("Connection group id={} not found.", id);
+                    logger.info("Connection group \"{}\" does not exist for user \"{}\".", id, context.self().getUsername());
                     throw new GuacamoleSecurityException("Requested connection group is not authorized.");
                 }
 
                 // Connect socket
                 socket = group.connect(info);
-                logger.info("Successful connection to group \"{}\".", id);
+                logger.info("User \"{}\" successfully connected to group \"{}\".", context.self().getUsername(), id);
                 break;
             }
 
@@ -283,7 +283,8 @@ public class BasicTunnelRequestUtility {
                         return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
                 }
                 catch (GuacamoleException e) {
-                    logger.warn("Clipboard integration disabled due to error.", e);
+                    logger.warn("Clipboard integration failed to initialize: {}", e.getMessage());
+                    logger.debug("Error setting up clipboard integration.", e);
                 }
 
                 // Pass through by default.
@@ -307,7 +308,7 @@ public class BasicTunnelRequestUtility {
 
         // Notify listeners about connection
         if (!notifyConnect(listeners, context, credentials, tunnel)) {
-            logger.info("Connection canceled by listener.");
+            logger.info("Successful connection canceled by hook.");
             return null;
         }
 

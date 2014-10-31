@@ -417,7 +417,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
 
         }
         catch (GuacamoleConnectionClosedException e) {
-            logger.debug("Connection closed.", e);
+            logger.debug("Connection to guacd closed.", e);
         }
         catch (IOException e) {
 

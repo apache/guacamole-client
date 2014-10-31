@@ -113,7 +113,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 
         // Get configuration file
         File configFile = getConfigurationFile();
-        logger.info("Reading configuration file: {}", configFile);
+        logger.debug("Reading configuration file: \"{}\"", configFile);
 
         // Parse document
         try {
@@ -135,10 +135,10 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
 
         }
         catch (IOException e) {
-            throw new GuacamoleServerException("Error reading configuration file: " + e.getMessage(), e);
+            throw new GuacamoleServerException("Error reading configuration file.", e);
         }
         catch (SAXException e) {
-            throw new GuacamoleServerException("Error parsing XML file: " + e.getMessage(), e);
+            throw new GuacamoleServerException("Error parsing XML file.", e);
         }
 
     }
@@ -153,7 +153,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
             // If modified recently, gain exclusive access and recheck
             synchronized (this) {
                 if (configFile.exists() && configTime < configFile.lastModified()) {
-                    logger.info("Config file {} has been modified.", configFile);
+                    logger.debug("Configuration file \"{}\" has been modified.", configFile);
                     init(); // If still not up to date, re-init
                 }
             }

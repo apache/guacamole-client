@@ -47,7 +47,7 @@ public class SessionKeepAlive extends RestrictedHttpServlet {
             HttpServletRequest request, HttpServletResponse response) {
 
         // Do nothing
-        logger.trace("Keep-alive signal received.");
+        logger.debug("Keep-alive signal received from user \"{}\".", context.self().getUsername());
         
     }
 

@@ -101,7 +101,7 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
                 (user_mapping_file.exists()
                  && mod_time < user_mapping_file.lastModified())) {
 
-            logger.info("Reading user mapping file: {}", user_mapping_file);
+            logger.debug("Reading user mapping file: \"{}\"", user_mapping_file);
 
             // Parse document
             try {

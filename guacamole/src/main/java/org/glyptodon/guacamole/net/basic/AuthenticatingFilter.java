@@ -116,8 +116,8 @@ public class AuthenticatingFilter implements Filter {
 
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to read Guacamole configuration: {}", e.getMessage());
-            logger.debug("Error reading Guacamole configuration.", e);
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
+            logger.debug("Error reading guacamole.properties.", e);
             throw new ServletException(e);
         }
 
@@ -364,7 +364,7 @@ public class AuthenticatingFilter implements Filter {
                         }
 
                         else
-                            logger.warn("Invalid HTTP Basic \"Authorization\" header received.");
+                            logger.info("Invalid HTTP Basic \"Authorization\" header received.");
 
                     }
 
@@ -398,9 +398,16 @@ public class AuthenticatingFilter implements Filter {
                 // If auth failed, notify listeners
                 if (context == null) {
 
-                    if (logger.isWarnEnabled())
-                        logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                                getLoggableAddress(request), credentials.getUsername());
+                    if (logger.isWarnEnabled()) {
+
+                        // Only bother logging failures involving usernames
+                        if (credentials.getUsername() != null)
+                            logger.info("Authentication attempt from {} for user \"{}\" failed.",
+                                    getLoggableAddress(request), credentials.getUsername());
+                        else
+                            logger.debug("Authentication attempt from {} without username failed.",
+                                    getLoggableAddress(request));
+                    }
 
                     notifyFailed(listeners, credentials);
                 }
@@ -425,12 +432,13 @@ public class AuthenticatingFilter implements Filter {
         // Catch any thrown guacamole exception and attempt to pass within the
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
-            logger.warn("Client request rejected: {}", e.getMessage());
+            logger.info("HTTP request rejected: {}", e.getMessage());
+            logger.debug("HTTP request rejected by AuthenticatingFilter.", e);
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
             logger.error("Authentication failed internally: {}", e.getMessage());
-            logger.debug("Internal server error.", e);
+            logger.debug("Internal server error during authentication.", e);
             sendError(response, e.getStatus(), "Internal server error.");
         }
 

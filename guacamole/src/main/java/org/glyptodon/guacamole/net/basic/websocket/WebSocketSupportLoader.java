@@ -181,7 +181,7 @@ public class WebSocketSupportLoader implements ServletContextListener {
         }
 
         // Warn of lack of WebSocket
-        logger.debug("WebSocket support NOT present. Only HTTP will be used.");
+        logger.info("WebSocket support NOT present. Only HTTP will be used.");
 
     }
 

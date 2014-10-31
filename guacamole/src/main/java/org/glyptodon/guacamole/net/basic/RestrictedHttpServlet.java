@@ -118,7 +118,7 @@ public abstract class RestrictedHttpServlet extends HttpServlet {
         // Catch any thrown guacamole exception and attempt to pass within the
         // HTTP response, logging each error appropriately.
         catch (GuacamoleClientException e) {
-            logger.warn("Client request rejected: {}", e.getMessage());
+            logger.debug("HTTP request rejected by RestrictedHttpServlet.", e);
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleUnsupportedException e) {
@@ -126,8 +126,8 @@ public abstract class RestrictedHttpServlet extends HttpServlet {
             sendError(response, e.getStatus(), e.getMessage());
         }
         catch (GuacamoleException e) {
-            logger.error("Request failed: {}", e.getMessage());
-            logger.debug("Internal server error.", e);
+            logger.error("HTTP request failed: {}", e.getMessage());
+            logger.debug("Internal server error while handling HTTP request to restricted resource.", e);
             sendError(response, e.getStatus(), "Internal server error.");
         }
 

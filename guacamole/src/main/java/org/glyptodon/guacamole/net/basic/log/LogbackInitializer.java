@@ -66,6 +66,8 @@ public class LogbackInitializer implements ServletContextListener {
         logger.info("Loading logback configuration from \"{}\".", logbackConfiguration);
         
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        context.reset();
+
         try {
 
             // Initialize logback

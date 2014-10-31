@@ -45,7 +45,7 @@ public class BasicLogin extends RestrictedHttpServlet {
     protected void restrictedService(
             UserContext context,
             HttpServletRequest request, HttpServletResponse response) {
-        logger.info("Login was successful.");
+        logger.debug("Login was successful for user \"{}\".", context.self().getUsername());
     }
 
 }
