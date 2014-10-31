@@ -24,10 +24,10 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -88,8 +88,8 @@ public class LoginRESTService {
      */
     @POST
     @AuthProviderRESTExposure
-    public APIAuthToken login(@QueryParam("username") String username,
-            @QueryParam("password") String password, 
+    public APIAuthToken login(@FormParam("username") String username,
+            @FormParam("password") String password, 
             @Context HttpServletRequest request) throws GuacamoleException {
         
         Credentials credentials = new Credentials();
