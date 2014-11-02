@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.net.basic;
 
 import java.util.List;
-import javax.servlet.http.HttpSession;
 
 /**
  * Request interface which provides only the functions absolutely required
@@ -89,13 +88,6 @@ public interface TunnelRequest {
         }
         
     };
-
-    /**
-     * Returns the current HTTP session, or null if no session yet exists.
-     *
-     * @return The current HTTP session, or null if no session yet exists.
-     */
-    public HttpSession getSession();
 
     /**
      * Returns the value of the parameter having the given name.

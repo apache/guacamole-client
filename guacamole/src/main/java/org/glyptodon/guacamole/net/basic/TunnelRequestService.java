@@ -27,7 +27,6 @@ import com.google.inject.Singleton;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import java.util.Collection;
 import java.util.List;
-import javax.servlet.http.HttpSession;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -39,7 +38,6 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.event.SessionListenerCollection;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
 import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
@@ -165,21 +163,6 @@ public class TunnelRequestService {
     public GuacamoleTunnel createTunnel(TunnelRequest request)
             throws GuacamoleException {
 
-        HttpSession httpSession = request.getSession();
-        if (httpSession == null)
-            throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
-
-        // Get listeners
-        final SessionListenerCollection listeners;
-        try {
-            listeners = new SessionListenerCollection(httpSession);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Creation of tunnel to guacd aborted: Failed to retrieve listeners: {}", e.getMessage());
-            logger.debug("Error retrieving listeners.", e);
-            throw e;
-        }
-
         // Get auth token and session
         String authToken = request.getParameter("authToken");
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
@@ -195,11 +178,10 @@ public class TunnelRequestService {
         // Remove prefix
         id = id.substring(id_type.PREFIX.length());
 
-        // Get credentials
+        // Get session-specific elements
         final Credentials credentials = session.getCredentials();
-
-        // Get context
         final UserContext context = session.getUserContext();
+        final Collection listeners = session.getListeners();
         
         // If no context or no credentials, not logged in
         if (context == null || credentials == null)

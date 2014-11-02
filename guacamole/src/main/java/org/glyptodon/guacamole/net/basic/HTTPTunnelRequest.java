@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * HTTP-specific implementation of TunnelRequest.
@@ -47,11 +46,6 @@ public class HTTPTunnelRequest implements TunnelRequest {
      */
     public HTTPTunnelRequest(HttpServletRequest request) {
         this.request = request;
-    }
-
-    @Override
-    public HttpSession getSession() {
-        return request.getSession();
     }
 
     @Override

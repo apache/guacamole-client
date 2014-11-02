@@ -24,7 +24,6 @@ package org.glyptodon.guacamole.net.basic.websocket;
 
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import javax.websocket.server.HandshakeRequest;
 import org.glyptodon.guacamole.net.basic.TunnelRequest;
 
@@ -34,11 +33,6 @@ import org.glyptodon.guacamole.net.basic.TunnelRequest;
  * @author Michael Jumper
  */
 public class WebSocketTunnelRequest implements TunnelRequest {
-
-    /**
-     * The wrapped HandshakeRequest.
-     */
-    private final HandshakeRequest request;
 
     /**
      * All parameters passed via HTTP to the WebSocket handshake.
@@ -52,13 +46,7 @@ public class WebSocketTunnelRequest implements TunnelRequest {
      * @param request The HandshakeRequest to wrap.
      */
     public WebSocketTunnelRequest(HandshakeRequest request) {
-        this.request = request;
         this.handshakeParameters = request.getParameterMap();
-    }
-
-    @Override
-    public HttpSession getSession() {
-        return (HttpSession) request.getHttpSession();
     }
 
     @Override

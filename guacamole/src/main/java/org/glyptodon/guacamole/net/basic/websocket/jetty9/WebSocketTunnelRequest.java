@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.glyptodon.guacamole.net.basic.TunnelRequest;
 
@@ -35,11 +34,6 @@ import org.glyptodon.guacamole.net.basic.TunnelRequest;
  * @author Michael Jumper
  */
 public class WebSocketTunnelRequest implements TunnelRequest {
-
-    /**
-     * The wrapped UpgradeRequest.
-     */
-    private final UpgradeRequest request;
 
     /**
      * All parameters passed via HTTP to the WebSocket handshake.
@@ -53,13 +47,7 @@ public class WebSocketTunnelRequest implements TunnelRequest {
      * @param request The UpgradeRequest to wrap.
      */
     public WebSocketTunnelRequest(UpgradeRequest request) {
-        this.request = request;
         this.handshakeParameters = request.getParameterMap();
-    }
-
-    @Override
-    public HttpSession getSession() {
-        return (HttpSession) request.getSession();
     }
 
     @Override

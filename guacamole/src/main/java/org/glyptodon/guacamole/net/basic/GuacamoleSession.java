@@ -149,10 +149,7 @@ public class GuacamoleSession {
      * Returns a collection which iterates over instances of all listeners
      * defined in guacamole.properties. For each listener defined in
      * guacamole.properties, a new instance is created and stored in this
-     * collection. The contents of this collection is stored within the
-     * HttpSession, and will be reused if available. Each listener is
-     * instantiated once per session. Listeners are singleton classes within the
-     * session, but not globally.
+     * collection.
      *
      * @return A collection which iterates over instances of all listeners
      *         defined in guacamole.properties.
