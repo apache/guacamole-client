@@ -104,8 +104,16 @@ public class BasicTokenSessionMap implements TokenSessionMap {
      * @param authToken The auth token for the session.
      * @return True if the session has timed out, false otherwise.
      */
-    private boolean sessionHasTimedOut(String authToken) {
+    private boolean isSessionActive(String authToken) {
 
+        GuacamoleSession session = sessionMap.get(authToken);
+        if (session == null)
+            return false;
+
+        // A session is active if it has any active tunnels
+        if (session.hasTunnels())
+            return true;
+        
         if (!lastAccessTimeMap.containsKey(authToken))
             return true;
         
@@ -120,7 +128,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
     public GuacamoleSession get(String authToken) {
         
         // If the session has timed out, evict the token and force the user to log in again
-        if (sessionHasTimedOut(authToken)) {
+        if (isSessionActive(authToken)) {
             evict(authToken);
             return null;
         }

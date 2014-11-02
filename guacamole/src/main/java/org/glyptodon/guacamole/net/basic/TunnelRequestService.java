@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
-import java.util.Collection;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -35,7 +34,6 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -72,12 +70,10 @@ public class TunnelRequestService {
     private AuthenticationService authenticationService;
 
     /**
-     * Notifies all listeners in the given collection that a tunnel has been
+     * Notifies all listeners in the given session that a tunnel has been
      * connected.
      *
-     * @param listeners A collection of all listeners that should be notified.
-     * @param context The UserContext associated with the current session.
-     * @param credentials The credentials associated with the current session.
+     * @param session The session associated with the listeners to be notified.
      * @param tunnel The tunnel being connected.
      * @return true if all listeners are allowing the tunnel to connect,
      *         or if there are no listeners, and false if any listener is
@@ -88,16 +84,17 @@ public class TunnelRequestService {
      *                            error, the connect is canceled, and no other
      *                            listeners will run.
      */
-    private boolean notifyConnect(Collection listeners, UserContext context,
-            Credentials credentials, GuacamoleTunnel tunnel)
+    private boolean notifyConnect(GuacamoleSession session, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
         // Build event for auth success
-        TunnelConnectEvent event = new TunnelConnectEvent(context,
-                credentials, tunnel);
+        TunnelConnectEvent event = new TunnelConnectEvent(
+                session.getUserContext(),
+                session.getCredentials(),
+                tunnel);
 
         // Notify all listeners
-        for (Object listener : listeners) {
+        for (Object listener : session.getListeners()) {
             if (listener instanceof TunnelConnectListener) {
 
                 // Cancel immediately if hook returns false
@@ -112,12 +109,10 @@ public class TunnelRequestService {
     }
 
     /**
-     * Notifies all listeners in the given collection that a tunnel has been
+     * Notifies all listeners in the given session that a tunnel has been
      * closed.
      *
-     * @param listeners A collection of all listeners that should be notified.
-     * @param context The UserContext associated with the current session.
-     * @param credentials The credentials associated with the current session.
+     * @param session The session associated with the listeners to be notified.
      * @param tunnel The tunnel being closed.
      * @return true if all listeners are allowing the tunnel to close,
      *         or if there are no listeners, and false if any listener is
@@ -128,16 +123,17 @@ public class TunnelRequestService {
      *                            error, the close is canceled, and no other
      *                            listeners will run.
      */
-    private boolean notifyClose(Collection listeners, UserContext context,
-            Credentials credentials, GuacamoleTunnel tunnel)
+    private boolean notifyClose(GuacamoleSession session, GuacamoleTunnel tunnel)
             throws GuacamoleException {
 
         // Build event for auth success
-        TunnelCloseEvent event = new TunnelCloseEvent(context,
-                credentials, tunnel);
+        TunnelCloseEvent event = new TunnelCloseEvent(
+                session.getUserContext(),
+                session.getCredentials(),
+                tunnel);
 
         // Notify all listeners
-        for (Object listener : listeners) {
+        for (Object listener : session.getListeners()) {
             if (listener instanceof TunnelCloseListener) {
 
                 // Cancel immediately if hook returns false
@@ -165,8 +161,8 @@ public class TunnelRequestService {
 
         // Get auth token and session
         String authToken = request.getParameter("authToken");
-        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        
+        final GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+
         // Get ID of connection
         String id = request.getParameter("id");
         TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
@@ -177,18 +173,6 @@ public class TunnelRequestService {
 
         // Remove prefix
         id = id.substring(id_type.PREFIX.length());
-
-        // Get session-specific elements
-        final Credentials credentials = session.getCredentials();
-        final UserContext context = session.getUserContext();
-        final Collection listeners = session.getListeners();
-        
-        // If no context or no credentials, not logged in
-        if (context == null || credentials == null)
-            throw new GuacamoleSecurityException("Cannot connect - user not logged in.");
-
-        // Get clipboard 
-        final ClipboardState clipboard = session.getClipboardState();
 
         // Get client information
         GuacamoleClientInformation info = new GuacamoleClientInformation();
@@ -225,6 +209,8 @@ public class TunnelRequestService {
             // Connection identifiers
             case CONNECTION: {
 
+                UserContext context = session.getUserContext();
+
                 // Get connection directory
                 Directory<String, Connection> directory =
                     context.getRootConnectionGroup().getConnectionDirectory();
@@ -244,6 +230,8 @@ public class TunnelRequestService {
 
             // Connection group identifiers
             case CONNECTION_GROUP: {
+
+                UserContext context = session.getUserContext();
 
                 // Get connection group directory
                 Directory<String, ConnectionGroup> directory =
@@ -271,6 +259,11 @@ public class TunnelRequestService {
         // Associate socket with tunnel
         GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {
 
+            /**
+             * The current clipboard state.
+             */
+            private final ClipboardState clipboard = session.getClipboardState();
+            
             @Override
             public GuacamoleReader acquireReader() {
 
@@ -293,9 +286,11 @@ public class TunnelRequestService {
             public void close() throws GuacamoleException {
 
                 // Only close if not canceled
-                if (!notifyClose(listeners, context, credentials, this))
+                if (!notifyClose(session, this))
                     throw new GuacamoleException("Tunnel close canceled by listener.");
 
+                session.removeTunnel(getUUID().toString());
+                
                 // Close if no exception due to listener
                 super.close();
 
@@ -304,7 +299,7 @@ public class TunnelRequestService {
         };
 
         // Notify listeners about connection
-        if (!notifyConnect(listeners, context, credentials, tunnel)) {
+        if (!notifyConnect(session, tunnel)) {
             logger.info("Successful connection canceled by hook.");
             return null;
         }

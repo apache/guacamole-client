@@ -26,7 +26,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
@@ -59,6 +62,11 @@ public class GuacamoleSession {
      * The current clipboard state.
      */
     private final ClipboardState clipboardState = new ClipboardState();
+
+    /**
+     * All currently-active tunnels, indexed by tunnel UUID.
+     */
+    private final Map<String, GuacamoleTunnel> tunnels = new ConcurrentHashMap<String, GuacamoleTunnel>();
 
     /**
      * Creates a new Guacamole session associated with the given user context.
@@ -157,5 +165,49 @@ public class GuacamoleSession {
     public Collection<Object> getListeners() {
         return Collections.unmodifiableCollection(listeners);
     }
-    
+
+    /**
+     * Returns whether this session has any associated active tunnels.
+     *
+     * @return true if this session has any associated active tunnels,
+     *         false otherwise.
+     */
+    public boolean hasTunnels() {
+        return !tunnels.isEmpty();
+    }
+
+    /**
+     * Returns a map of all active tunnels associated with this session, where
+     * each key is the String representation of the tunnel's UUID. Changes to
+     * this map immediately affect the set of tunnels associated with this
+     * session. A tunnel need not be present here to be used by the user
+     * associated with this session, but tunnels not in this set will not
+     * be taken into account when determining whether a session is in use.
+     *
+     * @return A map of all active tunnels associated with this session.
+     */
+    public Map<String, GuacamoleTunnel> getTunnels() {
+        return tunnels;
+    }
+
+    /**
+     * Associates the given tunnel with this session, such that it is taken
+     * into account when determining session activity.
+     *
+     * @param tunnel The tunnel to associate with this session.
+     */
+    public void addTunnel(GuacamoleTunnel tunnel) {
+        tunnels.put(tunnel.getUUID().toString(), tunnel);
+    }
+
+    /**
+     * Disassociates the tunnel having the given UUID from this session.
+     *
+     * @param uuid The UUID of the tunnel to disassociate from this session.
+     * @return true if the tunnel existed and was removed, false otherwise.
+     */
+    public boolean removeTunnel(String uuid) {
+        return tunnels.remove(uuid) != null;
+    }
+
 }

@@ -1199,11 +1199,6 @@ GuacUI.Client.connect = function() {
         connect_string += "&video=" + encodeURIComponent(mimetype);
     });
 
-    // Ping server occasionally to keep HTTP session alive
-    var session_keep_alive = window.setInterval(function _session_keep_alive() {
-        GuacamoleService.KeepAlive.ping();
-    }, GuacUI.Client.KEEP_ALIVE_INTERVAL);
-
     // Show connection errors from tunnel
     tunnel.onerror = function(status) {
         var message = GuacUI.Client.tunnel_errors[status.code] || GuacUI.Client.tunnel_errors.DEFAULT;
@@ -1216,13 +1211,11 @@ GuacUI.Client.connect = function() {
         // Handle disconnect
         if (state === Guacamole.Tunnel.State.CLOSED) {
 
-            // No need for a keep-alive ping if the tunnel is closed
-            window.clearInterval(session_keep_alive);
-
             // Notify of disconnections (if not already notified of something else)
             if (!GuacUI.Client.visibleStatus)
                 GuacUI.Client.showStatus("Disconnected",
                                          "You have been disconnected. Reload the page to reconnect.");
+
         }
 
     };

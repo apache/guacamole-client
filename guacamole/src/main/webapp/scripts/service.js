@@ -1057,29 +1057,6 @@ GuacamoleService.Clipboard = {
 };
 
 /**
- * Collection of service functions which deal with the session keep-alive. Each
- * function makes an explicit HTTP query to the server. In the case of the
- * keep-alive ping, no response is expected, and any received response is
- * ignored.
- */
-GuacamoleService.KeepAlive = {
-    
-    "ping" : function() {
-        
-        // Construct request URL
-        var ping_url = "api/keep-alive"
-                     + "?token=" + GuacamoleService.Auth.current().authToken;
-        
-        // Send keep-alive "ping"
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", ping_url, true);
-        xhr.send(null);
-        
-    }
-    
-};
-
-/**
  * Collection of service functions which deal with authentication. Note that,
  * unlike everything else here, not all functions in GuacamoleService.Auth
  * make explicit HTTP queries.
