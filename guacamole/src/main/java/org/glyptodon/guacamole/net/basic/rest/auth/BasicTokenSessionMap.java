@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
+import com.google.inject.Singleton;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
+@Singleton
 public class BasicTokenSessionMap implements TokenSessionMap {
 
     /**

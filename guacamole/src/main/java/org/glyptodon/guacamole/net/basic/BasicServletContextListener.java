@@ -25,9 +25,13 @@ package org.glyptodon.guacamole.net.basic;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+import javax.servlet.ServletContextEvent;
 import org.glyptodon.guacamole.net.basic.log.LogModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTAuthModule;
 import org.glyptodon.guacamole.net.basic.rest.RESTModule;
 import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
+import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenSessionMap;
+import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 
 /**
  * A ServletContextListener to listen for initialization of the servlet context
@@ -37,15 +41,29 @@ import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
  */
 public class BasicServletContextListener extends GuiceServletContextListener {
 
+    /**
+     * Singleton instance of a TokenSessionMap.
+     */
+    private final TokenSessionMap sessionMap = new BasicTokenSessionMap();
+ 
     @Override
     protected Injector getInjector() {
-
         return Guice.createInjector(
             new LogModule(),
             new RESTServletModule(), 
+            new RESTAuthModule(sessionMap),
             new RESTModule(),
             new TunnelModule()
         );
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent servletContextEvent) {
+
+        // Shutdown TokenSessionMap
+        sessionMap.shutdown();
+
+        super.contextDestroyed(servletContextEvent);
         
     }
     

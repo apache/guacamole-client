@@ -23,23 +23,11 @@
 package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.matcher.Matchers;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
-import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
-import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenSessionMap;
-import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
-import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupService;
 import org.glyptodon.guacamole.net.basic.rest.permission.PermissionService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserService;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A Guice Module for setting up dependency injection for the 
@@ -49,41 +37,16 @@ import org.slf4j.LoggerFactory;
  */
 public class RESTModule extends AbstractModule {
 
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(RESTModule.class);
-
-    /**
-     * The AuthenticationProvider to use to authenticate all requests.
-     */
-    private AuthenticationProvider authProvider;
-
     @Override
     protected void configure() {
 
-        // Get auth provider instance
-        try {
-            authProvider = GuacamoleProperties.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Unable to read authentication provider from guacamole.properties: {}", e.getMessage());
-            logger.debug("Error reading authentication provider from guacamole.properties.", e);
-            throw new RuntimeException(e);
-        }
-        
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(TokenSessionMap.class).toInstance(new BasicTokenSessionMap());
+        // Bind generic low-level services
         bind(ConnectionService.class);
         bind(ConnectionGroupService.class);
         bind(PermissionService.class);
         bind(UserService.class);
-        bind(AuthenticationService.class);
         bind(ProtocolRetrievalService.class);
         
-        bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
-        
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(AuthProviderRESTExposure.class), new AuthProviderRESTExceptionWrapper());
     }
     
 }
