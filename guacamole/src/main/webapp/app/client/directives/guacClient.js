@@ -341,6 +341,16 @@ angular.module('client').directive('guacClient', [function guacClient() {
                  * Handle mouse and touch events relative to the display element.
                  */
 
+                var localCursor = false;
+
+                // Ensure software cursor is shown
+                guac.getDisplay().showCursor(true);
+
+                // Use local cursor if possible.
+                guac.getDisplay().oncursor = function(canvas, x, y) {
+                    localCursor = mouse.setCursor(canvas, x, y);
+                };
+
                 // Touchscreen
                 var touch_screen = new Guacamole.Mouse.Touchscreen(guac_display);
                 $scope.touch_screen = touch_screen;
@@ -352,6 +362,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Mouse
                 var mouse = new Guacamole.Mouse(guac_display);
                 mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
+
+                    // Hide software cursor if local cursor is in use
+                    guac.getDisplay().showCursor(!localCursor);
 
                     // Scale event by current scale
                     var scaledState = new Guacamole.Mouse.State(
@@ -368,6 +381,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 };
 
+                // Hide software cursor when mouse leaves display
+                mouse.onmouseout = function() {
+                    guac.getDisplay().showCursor(false);
+                };
+
                 // Hide any existing status notifications
                 $scope.$emit('guacClientStatusChange', guac, null);
                 
@@ -377,8 +395,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 $display.html("");
 
                 // Add client to UI
-                guac.getDisplay().getElement().className = "software-cursor";
-                $display.append(guac.getDisplay().getElement());
+                guac_display.className = "software-cursor";
+                $display.append(guac_display);
 
             };
             
