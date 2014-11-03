@@ -36,7 +36,17 @@ angular.module('index').factory('authenticationService', ['$http',
      * @returns {promise} A promise for the HTTP call.
      */
     service.login = function login(username, password) {
-        return $http.post("api/login?username=" + username +"&password=" + password);
+        return $http({
+            method: 'POST',
+            url: 'api/login',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: $.param({
+                username: username,
+                password: password
+            })
+        });
     };
     
     return service;
