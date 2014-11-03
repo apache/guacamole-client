@@ -63,26 +63,102 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <configuration>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <phase>process-resources</phase>
+                        <configuration>
 
-                    <!-- Filter webapp dir --> 
-                    <webResources>
-                        <resource>
-                            <directory>src/main/webapp</directory>
-                            <filtering>true</filtering>
-                        </resource>
-                    </webResources>
-                    
-                    <!-- Add files from guacamole-common-js -->
-                    <overlays>
-                        <overlay>
-                            <groupId>org.glyptodon.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
-                    
-                </configuration>
+                            <!-- Filter webapp dir --> 
+                            <webResources>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </webResources>
+                            
+                            <!-- Add files from guacamole-common-js -->
+                            <overlays>
+                                <overlay>
+                                    <groupId>org.glyptodon.guacamole</groupId>
+                                    <artifactId>guacamole-common-js</artifactId>
+                                    <type>zip</type>
+                                </overlay>
+                            </overlays>
+                            
+                        </configuration>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- JS/CSS Minification Plugin -->
+            <plugin>
+                <groupId>com.samaxes.maven</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <version>1.6.1</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <charset>UTF-8</charset>
+
+                            <webappSourceDir>${project.build.directory}/${project.build.finalName}</webappSourceDir>
+
+                            <cssSourceDir>/</cssSourceDir>
+                            <cssTargetDir>/</cssTargetDir>
+                            <cssFinalFile>guacamole.css</cssFinalFile>
+
+                            <cssSourceFiles>
+                                <cssSourceFile>license.txt</cssSourceFile>
+                            </cssSourceFiles>
+                            
+                            <cssSourceIncludes>
+                                <cssSourceInclude>app/**/*.css</cssSourceInclude>
+                                <cssSourceInclude>styles/**/*.css</cssSourceInclude>
+                            </cssSourceIncludes>
+
+                            <jsSourceDir>/</jsSourceDir>
+                            <jsTargetDir>/</jsTargetDir>
+                            <jsFinalFile>guacamole.js</jsFinalFile>
+                            
+                            <jsSourceFiles>
+                                <jsSourceFile>lib/jquery.js</jsSourceFile>
+                                <jsSourceFile>lib/lodash.js</jsSourceFile>
+                                <jsSourceFile>lib/angular.js</jsSourceFile>
+                                <jsSourceFile>lib/angular-module-shim.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/angular-cookies.min.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/angular-route.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/angular-translate.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/angular-translate-loader-static-files.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/modal.js</jsSourceFile>
+                                <jsSourceFile>lib/blob/blob.js</jsSourceFile>
+                                <jsSourceFile>lib/filesaver/filesaver.js</jsSourceFile>
+                                <jsSourceFile>license.txt</jsSourceFile>
+                                <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
+                                <jsSourceFile>scripts/session.js</jsSourceFile>
+                                <jsSourceFile>scripts/history.js</jsSourceFile>
+                            </jsSourceFiles>
+
+                            <jsSourceIncludes>
+                                <jsSourceInclude>app/**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+
+                            <!-- Do not minify and include tests -->
+                            <jsSourceExcludes>
+                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
+                            </jsSourceExcludes>
+                            <jsEngine>CLOSURE</jsEngine>
+                            
+                            <skipMinify>true</skipMinify>
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>

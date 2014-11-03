@@ -1,0 +1,120 @@
+<!--
+   Copyright (C) 2014 Glyptodon LLC
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+-->
+
+<div id="clientContainer">
+    
+    <!-- Client -->
+    <guac-client 
+        client-parameters="clientParameters"
+        type="type"
+        id="id"
+        connection-name="connectionName"
+        connection-parameters="connectionParameters"
+    ></guac-client>
+
+    <!-- Text input target -->
+    <div id="text-input"><div id="text-input-field"><div id="sent-history"></div><textarea rows="1" id="target"></textarea></div><div id="text-input-buttons"><button class="key" data-keysym="0xFFE3" data-sticky="true">{{'client.ctrl' | translate}}</button><button class="key" data-keysym="0xFFE9" data-sticky="true">{{'client.alt' | translate}}</button><button class="key" data-keysym="0xFF1B">{{'client.esc' | translate}}</button><button class="key" data-keysym="0xFF09">{{'client.tab' | translate}}</button></div></div>
+
+    <!-- Dimensional clone of viewport -->
+    <div id="viewportClone"/>
+
+    <!-- Notification area -->
+    <div id="notificationArea"/>
+
+    <!-- Menu -->
+    <div ng-class="{closed: menuHasBeenShown && !menuShown, open: menuShown}" id="menu">
+        <h2 id="menu-title">Guacamole ${project.version}</h2>
+
+        <h3>{{'client.clipboard' | translate}}</h3>
+        <div class="content" id="clipboard-settings">
+            <p class="description"></p>
+            <textarea rows="10" cols="40" id="clipboard">{{'client.copiedText' | translate}}</textarea>
+        </div>
+
+        <h3></h3>
+        <div class="content" id="keyboard-settings">
+
+            <!-- No IME -->
+            <div class="choice">
+                <label><input name="input-method" type="radio" value="ime-none" checked="checked" id="ime-none"/> {{'client.none' | translate}}</label>
+                <p class="caption"><label for="ime-none">{{'client.noneDesc' | translate}}</label></p>
+            </div>
+
+            <!-- Text input -->
+            <div class="choice">
+                <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
+                <label><input name="input-method" type="radio" value="ime-text" id="ime-text"/> {{'client.textInput' | translate}}</label>
+                <p class="caption"><label for="ime-text">{{'client.textInputDesc' | translate}} </label></p>
+            </div>
+
+            <!-- Guac OSK -->
+            <div class="choice">
+                <label><input name="input-method" type="radio" value="ime-osk" id="ime-osk"/> {{'client.osk' | translate}}</label>
+                <p class="caption"><label for="ime-osk">{{'client.oskDesc' | translate}}</label></p>
+            </div>
+
+        </div>
+
+        <h3>{{'client.mouseMode' | translate}}</h3>
+        <div class="content" id="mouse-settings">
+            <p class="description">{{'client.mouseModeDesc' | translate}}</p>
+
+            <!-- Touchscreen -->
+            <div class="choice">
+                <input name="mouse-mode" type="radio" value="absolute" checked="checked" id="absolute"/>
+                <div class="figure">
+                    <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'client.touchscreen' | translate}}"/></label>
+                    <p class="caption"><label for="absolute">{{'client.touchscreenDesc' | translate}}</label></p>
+                </div>
+            </div>
+
+            <!-- Touchpad -->
+            <div class="choice">
+                <input name="mouse-mode" type="radio" value="relative" id="relative"/>
+                <div class="figure">
+                    <label for="relative"><img src="images/settings/touchpad.png" alt="{{'client.touchpad' | translate}}"/></label>
+                    <p class="caption"><label for="relative">{{'client.touchpadDesc' | translate}}</label></p>
+                </div>
+            </div>
+
+        </div>
+
+        <h3>{{'client.display' | translate}}</h3>
+        <div class="content">
+            <div id="zoom-settings">
+                <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>
+                <div id="zoom-state">{{formattedScale()}}</div>
+                <div ng-click="zoomIn()" id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
+            </div>
+            <div><label><input ng-model="autoFitEnabled" ng-change="autoFit(autoFitEnabled)" type="checkbox" id="auto-fit" checked="checked"/> {{'client.autoFit' | translate}}</label></div>
+        </div>
+
+    </div>
+
+    <!-- Images which should be preloaded -->
+    <div id="preload">
+        <img src="images/action-icons/guac-close.png"/>
+        <img src="images/progress.png"/>
+    </div>
+    
+    <ng-include src="app/client/template/clientError.html"/>
+</div>

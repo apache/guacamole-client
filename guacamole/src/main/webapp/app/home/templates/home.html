@@ -1,0 +1,78 @@
+<!--
+   Copyright (C) 2014 Glyptodon LLC
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+-->
+
+<script type="text/ng-template" id="nestedGroup.html">
+    <div class="connection" ng-show="item.isConnection">
+        <a ng-href="#/client/c/{{item.identifier}}">
+            <div class="caption">
+                <div class="protocol">
+                    <div class="icon type" ng-class="item.protocol"></div>
+                </div>
+                <span class="name">{{item.name}}</span>
+            </div>
+        </a>
+    </div>
+    <div" class="group" ng-show="!item.isConnection">
+        <div class="caption">
+            <div class="icon group type" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
+            <span class="name">
+                <a ng-show="item.balancer" ng-href="#/client/cg/{{item.identifier}}">{{item.name}}</a>
+                <span ng-show="!item.balancer">{{item.name}}</span>
+            </span>
+        </div>
+        <div class="children" ng-show="item.expanded">
+            <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedGroup.html'">
+        </div>
+    </div>
+</script>
+
+<div class="connection-list-ui">
+
+    <div class="logout-panel">
+        <a class="manage button" ng-show="currentUserHasUpdate" href="#/manage">{{'home.manage' | translate}}</a>
+        <a class="logout button" href="#/login">{{'home.logout' | translate}}</a>
+    </div>
+
+    <!-- The recent connections for this user -->
+    <h2>{{'home.recentConnections' | translate}}</h2>
+    <div class="recent-connections" ng-hide="recentConnections.length">
+        <p class="no-recent">{{'home.noRecentConnections' | translate}}</p>
+    </div>
+    <div class="recent-connections" ng-show="recentConnections.length">
+        <div ng-repeat="recentConnection in recentConnections" class="connection">
+            <a href="#/client/{{recentConnection.type}}/{{recentConnection.id}}/{{recentConnection.name}}">
+                <div class="thumbnail">
+                    <img alt="{{recentConnection.name}}" src="{{recentConnection.thumbnail}}"/>
+                </div>
+                <div class="caption">
+                    <span class="name">{{recentConnection.name}}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- All connections for this user -->
+    <h2>{{'home.allConnections' | translate}}</h2>
+    <div class="all-connections">
+        <div class="list-item" ng-repeat="item in connectionsAndGroups | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
+    </div>
+</div>

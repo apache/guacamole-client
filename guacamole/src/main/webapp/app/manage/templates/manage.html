@@ -1,0 +1,92 @@
+<!--
+Copyright 2014 Glyptodon LLC.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<script type="text/ng-template" id="nestedGroup.html">
+    <div class="connection" ng-click="editConnection(item)" ng-show="item.isConnection">
+        <div class="caption">
+            <div class="protocol">
+                <div class="icon type" ng-class="item.protocol"></div>
+            </div>
+            <span class="name">{{item.name}}</span>
+        </div>
+    </div>
+    <div class="group" ng-show="!item.isConnection">
+        <div class="caption">
+            <div class="icon group type" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
+            <span ng-click="editConnectionGroup(item)" class="name">
+                <span>{{item.name}}</span>
+            </span>
+        </div>
+        <div class="children" ng-show="item.expanded">
+            <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedGroup.html'">
+        </div>
+    </div>
+</script>
+
+<div class="logout-panel">
+    <a class="back button" href="#/">{{'manage.back' | translate}}</a>
+    <a class="logout button" href="#/login">{{'home.logout' | translate}}</a>
+</div>
+
+<h2>{{'manage.administration' | translate}}</h2>
+<div ng-show="currentUserHasUpdate" class="settings section">
+
+    <h3 class="require-manage-users">{{'manage.users' | translate}}</h3>
+    <div class="require-manage-users users">
+
+        <p>{{'manage.usersDescription' | translate}}</p>
+
+        <!-- Control to create a new user -->
+        <div class="user-add-form">
+            <input type="text" ng-model="newUsername" class="name username"/>
+            <button class="add-user" ng-click="newUser()">{{'manage.addUser' | translate}}</button>
+        </div>
+
+        <!-- List of users this user has access to -->
+        <div class="user-list">
+            <div ng-click="editUser(user)" ng-repeat="user in users | orderBy : 'username'" class="list-item">
+                <div class="caption">
+                    <div class="icon user"></div>
+                    <span class="name">{{user.username}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="require-manage-connections">{{'manage.connections' | translate}}</h3>
+    <div class="require-manage-connections connections">
+
+        <p>{{'manage.connectionsDescription' | translate}}</p>
+
+        <!-- Control to create a new connection or group -->
+        <div class="connection-add-form">
+            <button ng-click="newConnection()" class="add-connection">{{'manage.newConnection' | translate}}</button>
+            <button ng-click="newConnectionGroup()" class="add-connection-group">{{'manage.newGroup' | translate}}</button>
+        </div>
+
+        <!-- List of connections and groups this user has access to -->
+        <div class="connection-list">
+            <div class="list-item" ng-repeat="item in connectionsAndGroups | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
+        </div>
+    </div>
+
+</div>

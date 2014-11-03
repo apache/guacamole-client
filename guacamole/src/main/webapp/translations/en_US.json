@@ -1,0 +1,245 @@
+{
+    "index": {
+        "title" : "Guacamole 0.9.1"
+    },
+    
+    "login": {
+        "loginError" : "Invalid Login",
+        "username"   : "Username",
+        "password"   : "Password",
+        "login"      : "Login"
+    },
+    
+    "home": {
+        "manage"                  : "Manage",
+        "logout"                  : "Logout",
+        "recentConnections"       : "Recent Connections",
+        "noRecentConnections"     : "No recent Connections.",
+        "allConnections"          : "All Connections",
+        "clipboard"               : "Clipboard",
+        "clipboardDescription"    : "Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.",
+        "settings"                : "Settings",
+        "autoFitDisplay"          : "Auto-fit display to browser window",
+        "autoFitDescription"      : "If checked, remote displays are automatically scaled to exactly fit within the browser window. If unchecked, remote displays are always shown at their natural resolution, even if doing so causes the display to extend beyond the bounds of the window.",
+        "disableSound"            : "Disable Sound",
+        "disableSoundDescription" : "If on a device or network where bandwidth usage must be kept to a minimum, you may wish to check this box and disable sound. This can also be necessary if a device doesn't actually support sound, but claims to, resulting in wasted bandwidth.",
+        "disableSoundNote"        : "Changing this setting will only affect future connections."
+    },
+            
+    "manage": {
+        "back"                   : "Back",
+        "logout"                 : "Logout",
+        "administration"         : "Administration",
+        "users"                  : "Users",
+        "usersDescription"       : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
+        "addUser"                : "Add User",
+        "connections"            : "Connections",
+        "connectionsDescription" : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
+        "newConnection"          : "New Connection",
+        "newGroup"               : "New Group",
+        "edit": {
+            "connection": {
+                "cancel"            : "Cancel",
+                "save"              : "Save",
+                "delete"            : "Delete",
+                "protocol"          : "Protocol:",
+                "root"              : "ROOT",
+                "location"          : "Location:",
+                "name"              : "Name:",
+                "history"           : {
+                    "connectionNotUsed" : "This connection has not yet been used.",
+                    "usageHistory"      : "Usage History:",
+                    "username"          : "Username",
+                    "startTime"         : "Start Time",
+                    "duration"          : "Duration",
+                    "activeNow"         : "Active Now"
+                }
+            },
+            "connectionGroup": {
+                "cancel"            : "Cancel",
+                "save"              : "Save",
+                "delete"            : "Delete",
+                "usageHistory"      : "Usage History:",
+                "type"              : {
+                    "label"             : "Type",
+                    "organizational"    : "Organizational",
+                    "balancing"         : "Balancing"
+                },
+                "root"              : "ROOT",
+                "location"          : "Location:",
+                "name"              : "Name:"
+            },
+            "user": {
+                "cancel"                    : "Cancel",
+                "save"                      : "Save",
+                "delete"                    : "Delete",
+                "properties"                : "Properties:",
+                "password"                  : "Password:",
+                "passwordMatch"             : "Re-enter Password:",
+                "permissions"               : "Permissions:",
+                "administerSystem"          : "Administer system:",
+                "createUser"                : "Create new users:",
+                "createConnection"          : "Create new connections:",
+                "createConnectionGroup"     : "Create new connection groups:",
+                "connections"               : "Connections:"
+            }
+        }
+    },
+    "protocol": {
+        "vnc": {
+            "label": "VNC",
+            "parameters": {
+                "hostname"          : {"label": "Hostname"},
+                "port"              : {"label": "Port"},
+                "password"          : {"label": "Password"},
+                "read-only"         : {"label": "Read-only"},
+                "swap-red-blue"     : {"label": "Swap red/blue components"},
+                "cursor"            : {
+                    "label": "Cursor",
+                    "options": {
+                        "local"     : "Local",
+                        "remote"    : "Remote"
+                    }
+                },
+                "color-depth"       : {
+                    "label": "Color Depth",
+                    "options": {
+                        "8"    : "256 color",
+                        "16"    : "Low color (16-bit)",
+                        "24"    : "True color (24-bit)",
+                        "32"    : "True color (32-bit)"
+                    }
+                },
+                "dest-host"         : {"label": "Repeater destination host"},
+                "dest-port"         : {"label": "Repeater destination port"},
+                "enable-audio"      : {"label": "Enable audio"},
+                "audio-servername"  : {"label": "Audio server name"}
+            }
+        },
+        "rdp": {
+            "label": "RDP",
+            "parameters": {
+                "hostname"          : {"label": "Hostname"},
+                "port"              : {"label": "Port"},
+                "username"          : {"label": "Username"},
+                "password"          : {"label": "Password"},
+                "domain"            : {"label": "Domain"},
+                "initial-program"   : {"label": "Initial Program"},
+                "width"             : {"label": "Width"},
+                "height"            : {"label": "Height"},
+                "color-depth"       : {
+                    "label": "Color Depth",
+                    "options": {
+                        "8"    : "256 color",
+                        "16"    : "Low color (16-bit)",
+                        "24"    : "True color (24-bit)",
+                        "32"    : "True color (32-bit)"
+                    }
+                },
+                "server-layout"     : {
+                    "label": "Keyboard layout",
+                    "options": {
+                        "empty"         : "(default)",
+                        "en-us-qwerty"  : "US English (Qwerty)",
+                        "fr-fr-azerty"  : "French (Azerty)",
+                        "de-de-qwertz"  : "German (Qwertz)",
+                        "failsafe"      : "Unicode"
+                    }
+                },
+                "console"           : {"label": "Administrator console"},
+                "console-audio"     : {"label": "Support audio in console"},
+                "disable-audio"     : {"label": "Disable audio"},
+                "enable-printing"   : {"label": "Enable printing"},
+                "enable-drive"      : {"label": "Enable drive"},
+                "drive-path"        : {"label": "Drive path"},
+                "security"          : {
+                    "label": "Security mode",
+                    "options": {
+                        "empty" : "(default)",
+                        "rdp"   : "RDP encryption",
+                        "tls"   : "TLS encryption",
+                        "nla"   : "NLA (Network Level Authentication)",
+                        "any"   : "Any"
+                    }
+                },
+                "disable-auth"      : {"label": "Disable authentication"},
+                "ignore-cert"       : {"label": "Ignore server certificate"},
+                "remote-app"        : {"label": "RemoteApp program"},
+                "remote-app-dir"    : {"label": "RemoteApp working directory"},
+                "remote-app-args"   : {"label": "RemoteApp parameters"}
+            }
+        },
+        "ssh": {
+            "label": "SSH",
+            "parameters": {
+                "hostname"          : {"label": "Hostname"},
+                "port"              : {"label": "Port"},
+                "username"          : {"label": "Username"},
+                "password"          : {"label": "Password"},
+                "font-name"         : {"label": "Font name"},
+                "font-size"         : {
+                    "label": "Font size",
+                    "options": {
+                        "empty" : "",
+                        "8"     : "8",
+                        "9"     : "9",
+                        "10"    : "10",
+                        "11"    : "11",
+                        "12"    : "12",
+                        "14"    : "14",
+                        "18"    : "18",
+                        "24"    : "24",
+                        "30"    : "30",
+                        "36"    : "36",
+                        "48"    : "48",
+                        "60"    : "60",
+                        "72"    : "72",
+                        "96"    : "96"
+                    }
+                 },
+                "enable-sftp"       : {"label": "Enable SFTP"},
+                "private-key"       : {"label": "Private key"},
+                "passphrase"        : {"label": "Passphrase"}
+            }
+        }
+    },
+    "client": {
+        "ctrl"              : "Ctrl",
+        "alt"               : "Alt",
+        "esc"               : "Esc",
+        "tab"               : "Tab",
+        "clipboard"         : "Clipboard",
+        "copiedText"        : "Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.",
+        "inputMethod"       : "Input method",
+        "none"              : "None",
+        "noneDesc"          : "No input method is used. Keyboard input is accepted from a connected, physical keyboard.",
+        "textInput"         : "Text input",
+        "textInputDesc"     : "Allow typing of text, and emulate keyboard events based on the typed text. This is necessary for devices such as mobile phones that lack a physical keyboard.",
+        "osk"               : "On-screen keyboard",
+        "oskDesc"           : "Display and accept input from the built-in Guacamole on-screen keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible (such as Ctrl-Alt-Del).",
+        "mouseMode"         : "Mouse emulation mode",
+        "mouseModeDesc"     : "Determines how the remote mouse behaves with respect to touches.",
+        "touchscreen"       : "Touchscreen",
+        "touchscreenDesc"   : "Tap to click. The click occurs at the location of the touch.",
+        "touchpad"          : "Touchpad",
+        "touchpadDesc"      : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
+        "display"           : "Display",
+        "oneHundredPercent" : "100%",
+        "autoFit"           : "Automatically fit to browser window",
+        "error"             : {
+            "reconnect"             : "Reconnect",
+            "connectionErrorTitle"  : "Connection Error",
+            "clientErrors"          : {
+                "0x0201"    : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
+                "0x0202"    : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
+                "0x0203"    : "The remote desktop server encountered an error and has closed the connection. Please try again or contact your system administrator.",
+                "0x0205"    : "This connection has been closed because it conflicts with another connection. Please try again later.",
+                "0x0301"    : "Log in failed. Please reconnect and try again.",
+                "0x0303"    : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
+                "0x0308"    : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
+                "0x031D"    : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
+                "DEFAULT"   : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
+            }
+        }
+    }
+}
