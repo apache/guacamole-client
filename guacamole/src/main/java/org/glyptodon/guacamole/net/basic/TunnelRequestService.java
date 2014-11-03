@@ -160,8 +160,8 @@ public class TunnelRequestService {
             throws GuacamoleException {
 
         // Get auth token and session
-        String authToken = request.getParameter("authToken");
-        final GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        final String authToken = request.getParameter("authToken");
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
         // Get ID of connection
         String id = request.getParameter("id");
@@ -259,18 +259,19 @@ public class TunnelRequestService {
         // Associate socket with tunnel
         GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {
 
-            /**
-             * The current clipboard state.
-             */
-            private final ClipboardState clipboard = session.getClipboardState();
-            
             @Override
             public GuacamoleReader acquireReader() {
 
                 // Monitor instructions which pertain to server-side events, if necessary
                 try {
-                    if (GuacamoleProperties.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false))
+                    if (GuacamoleProperties.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
+
+                        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+                        ClipboardState clipboard = session.getClipboardState();
+
                         return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
+
+                    }
                 }
                 catch (GuacamoleException e) {
                     logger.warn("Clipboard integration failed to initialize: {}", e.getMessage());
@@ -284,6 +285,8 @@ public class TunnelRequestService {
 
             @Override
             public void close() throws GuacamoleException {
+
+                GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
                 // Only close if not canceled
                 if (!notifyClose(session, this))

@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -69,6 +70,11 @@ public class GuacamoleSession {
     private final Map<String, GuacamoleTunnel> tunnels = new ConcurrentHashMap<String, GuacamoleTunnel>();
 
     /**
+     * The last time this session was accessed.
+     */
+    private long lastAccessedTime;
+    
+    /**
      * Creates a new Guacamole session associated with the given user context.
      *
      * @param credentials The credentials provided by the user during login.
@@ -78,6 +84,7 @@ public class GuacamoleSession {
      */
     public GuacamoleSession(Credentials credentials, UserContext userContext) throws GuacamoleException {
 
+        this.lastAccessedTime = System.currentTimeMillis();
         this.credentials = credentials;
         this.userContext = userContext;
 
@@ -210,4 +217,22 @@ public class GuacamoleSession {
         return tunnels.remove(uuid) != null;
     }
 
+    /**
+     * Updates this session, marking it as accessed.
+     */
+    public void access() {
+        lastAccessedTime = System.currentTimeMillis();
+    }
+
+    /**
+     * Returns the time this session was last accessed, as the number of
+     * milliseconds since midnight January 1, 1970 GMT. Session access must
+     * be explicitly marked through calls to the access() function.
+     *
+     * @return The time this session was last accessed.
+     */
+    public long getLastAccessedTime() {
+        return lastAccessedTime;
+    }
+    
 }

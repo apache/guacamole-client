@@ -22,9 +22,13 @@
 
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
@@ -44,108 +48,120 @@ public class BasicTokenSessionMap implements TokenSessionMap {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(BasicTokenSessionMap.class);
-    
+
     /**
-     * The last time a user with a specific auth token accessed the API. 
+     * Executor service which runs the period session eviction task.
      */
-    private final Map<String, Long> lastAccessTimeMap = new HashMap<String, Long>();
+    private final ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
     
     /**
      * Keeps track of the authToken to GuacamoleSession mapping.
      */
-    private final Map<String, GuacamoleSession> sessionMap = new HashMap<String, GuacamoleSession>();
-    
-    /**
-     * The session timeout configuration for an API session, in milliseconds.
-     */
-    private final long SESSION_TIMEOUT;
-    
+    private final Map<String, GuacamoleSession> sessionMap =
+            Collections.synchronizedMap(new LinkedHashMap<String, GuacamoleSession>(16, 0.75f, true));
+
     /**
      * Create a new BasicTokenGuacamoleSessionMap and initialize the session timeout value.
      */
     public BasicTokenSessionMap() {
         
-        // Set up the SESSION_TIMEOUT value, with a one hour default.
         long sessionTimeoutValue;
+
+        // Read session timeout from guacamole.properties
         try {
             sessionTimeoutValue = GuacamoleProperties.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 3600000l);
         }
         catch (GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while reading API_SESSION_TIMEOUT property. Defaulting to 1 hour.", e);
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
+            logger.debug("Error while reading session timeout value.", e);
             sessionTimeoutValue = 3600000l;
         }
         
-        SESSION_TIMEOUT = sessionTimeoutValue;
+        // Check for expired sessions every minute
+        executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue), 1, 1, TimeUnit.MINUTES);
         
     }
-    
-    /**
-     * Evict an authentication token from the map of logged in users and last
-     * access times.
-     * 
-     * @param authToken The authentication token to evict.
-     */
-    private void evict(String authToken) {
-        sessionMap.remove(authToken);
-        lastAccessTimeMap.remove(authToken);
-    }
-    
-    /**
-     * Log that the user represented by this auth token has just used the API.
-     * 
-     * @param authToken The authentication token to record access time for.
-     */
-    private void logAccessTime(String authToken) {
-        lastAccessTimeMap.put(authToken, new Date().getTime());
-    }
-    
-    /**
-     * Check if a session has timed out.
-     * @param authToken The auth token for the session.
-     * @return True if the session has timed out, false otherwise.
-     */
-    private boolean isSessionActive(String authToken) {
 
-        GuacamoleSession session = sessionMap.get(authToken);
-        if (session == null)
-            return false;
+    /**
+     * Task which iterates through all active sessions, evicting those sessions
+     * which are beyond the session timeout. This is a fairly easy thing to do,
+     * since the session storage structure guarantees that sessions are always
+     * in descending order of age.
+     */
+    private class SessionEvictionTask implements Runnable {
 
-        // A session is active if it has any active tunnels
-        if (session.hasTunnels())
-            return true;
+        /**
+         * The maximum allowed age of any session, in milliseconds.
+         */
+        private final long sessionTimeout;
+
+        /**
+         * Creates a new task which automatically evicts sessions which are
+         * older than the specified timeout.
+         * 
+         * @param sessionTimeout The maximum age of any session, in
+         *                       milliseconds.
+         */
+        public SessionEvictionTask(long sessionTimeout) {
+            this.sessionTimeout = sessionTimeout;
+        }
         
-        if (!lastAccessTimeMap.containsKey(authToken))
-            return true;
-        
-        long lastAccessTime = lastAccessTimeMap.get(authToken);
-        long currentTime = new Date().getTime();
-        
-        return currentTime - lastAccessTime > SESSION_TIMEOUT;
+        @Override
+        public void run() {
+
+            // Get current time
+            long now = System.currentTimeMillis();
+
+            logger.debug("Checking for expired sessions...");
+            
+            // For each session, remove sesions which have expired
+            Iterator<Map.Entry<String, GuacamoleSession>> entries = sessionMap.entrySet().iterator();
+            while (entries.hasNext()) {
+
+                Map.Entry<String, GuacamoleSession> entry = entries.next();
+                GuacamoleSession session = entry.getValue();
+
+                // Get elapsed time since last access
+                long age = now - session.getLastAccessedTime();
+
+                // If session is too old, evict it and check the next one
+                if (age >= sessionTimeout) {
+                    logger.debug("Session \"{}\" has timed out.", entry.getKey());
+                    entries.remove();
+                }
+
+                // Otherwise, no other sessions can possibly be old enough
+                else
+                    break;
+                
+            }
+
+            logger.debug("Session check complete.");
+            
+        }
 
     }
 
     @Override
     public GuacamoleSession get(String authToken) {
         
-        // If the session has timed out, evict the token and force the user to log in again
-        if (isSessionActive(authToken)) {
-            evict(authToken);
-            return null;
-        }
-        
         // Update the last access time and return the GuacamoleSession
-        logAccessTime(authToken);
-        return sessionMap.get(authToken);
+        GuacamoleSession session = sessionMap.get(authToken);
+        if (session != null)
+            session.access();
+
+        return session;
 
     }
 
     @Override
     public void put(String authToken, GuacamoleSession session) {
-        
-        // Update the last access time, and create the token/GuacamoleSession mapping
-        logAccessTime(authToken);
         sessionMap.put(authToken, session);
+    }
 
+    @Override
+    public void shutdown() {
+        executor.shutdownNow();
     }
     
 }

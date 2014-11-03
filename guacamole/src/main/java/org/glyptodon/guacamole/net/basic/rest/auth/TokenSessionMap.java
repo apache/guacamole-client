@@ -51,4 +51,10 @@ public interface TokenSessionMap {
      */
     public GuacamoleSession get(String authToken);
 
+    /**
+     * Shuts down this session map, disallowing future sessions and reclaiming
+     * any resources.
+     */
+    public void shutdown();
+    
 }
