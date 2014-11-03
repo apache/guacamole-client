@@ -65,20 +65,21 @@ public class BasicTokenSessionMap implements TokenSessionMap {
      */
     public BasicTokenSessionMap() {
         
-        long sessionTimeoutValue;
+        int sessionTimeoutValue;
 
         // Read session timeout from guacamole.properties
         try {
-            sessionTimeoutValue = GuacamoleProperties.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 3600000l);
+            sessionTimeoutValue = GuacamoleProperties.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 60);
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage());
             logger.debug("Error while reading session timeout value.", e);
-            sessionTimeoutValue = 3600000l;
+            sessionTimeoutValue = 60;
         }
         
         // Check for expired sessions every minute
-        executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue), 1, 1, TimeUnit.MINUTES);
+        logger.info("Sessions will expire after {} minutes of inactivity.", sessionTimeoutValue);
+        executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue * 60000l), 1, 1, TimeUnit.MINUTES);
         
     }
 

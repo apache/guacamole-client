@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.net.basic.properties;
 
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
-import org.glyptodon.guacamole.properties.LongGuacamoleProperty;
+import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 
 /**
  * Properties used by the default Guacamole web application.
@@ -82,9 +82,9 @@ public class BasicGuacamoleProperties {
     };
 
     /**
-     * The session timeout for the API, in milliseconds.
+     * The session timeout for the API, in minutes.
      */
-    public static final LongGuacamoleProperty API_SESSION_TIMEOUT = new LongGuacamoleProperty() {
+    public static final IntegerGuacamoleProperty API_SESSION_TIMEOUT = new IntegerGuacamoleProperty() {
 
         @Override
         public String getName() { return "api-session-timeout"; }
