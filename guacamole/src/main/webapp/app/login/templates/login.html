@@ -27,8 +27,13 @@ THE SOFTWARE.
 
             <p class="login-error">{{'login.loginError' | translate}}</p>
 
-            <form ng-submit="login()">
-                <div class="login-form login-fields">
+            <form class="login-form" ng-submit="login()">
+
+                <div class="version">
+                    {{'application.title' | translate}}
+                </div>
+
+                <div class="login-fields">
                     <table>
                         <tr>
                             <th>{{'login.username' | translate}}</th>
