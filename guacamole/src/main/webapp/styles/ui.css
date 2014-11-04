@@ -33,10 +33,6 @@ input[type=checkbox], input[type=number], input[type=text], input[type=radio], l
     -webkit-tap-highlight-color: rgba(128,192,128,0.5);
 }
 
-input[type=submit], button, a.button {
-    -webkit-appearance: none;
-}
-
 div.location, input[type=text], input[type=number], input[type=password], textarea {
     border: 1px solid #777;
     -moz-border-radius: 0.2em;
@@ -61,6 +57,7 @@ textarea {
 
 input[type="submit"], button, a.button {
     
+    -webkit-appearance: none;
     text-decoration: none;
 
     background-color: #3C3C3C;
@@ -111,6 +108,10 @@ button.danger:hover, a.button.danger:hover {
 
 button.danger:active, a.button.danger:active {
     background: #932;
+}
+
+a.button {
+    display: inline-block;
 }
 
 body {
@@ -588,14 +589,21 @@ div.logout-panel {
     margin: 1em;
 }
 
-button.logout, a.button {
-
-    background-image: url('images/action-icons/guac-logout.png');
+.button.logout, .button.manage, .button.back {
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.5em 0.45em;
-
     padding-left: 1.8em;
-
 }
 
+.button.logout {
+    background-image: url('images/action-icons/guac-logout.png');
+}
+
+.button.manage {
+    background-image: url('images/action-icons/guac-config.png');
+}
+
+.button.back {
+    background-image: url('images/action-icons/guac-back.png');
+}
