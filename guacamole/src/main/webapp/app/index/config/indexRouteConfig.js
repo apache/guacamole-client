@@ -31,17 +31,17 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
     
     $routeProvider.
         when('/', {
-            title: 'index.title',
+            title: 'application.title',
             templateUrl: 'app/home/templates/home.html',
             controller: 'homeController'
         }).
         when('/manage/', {
-            title: 'index.title',
+            title: 'application.title',
             templateUrl: 'app/manage/templates/manage.html',
             controller: 'manageController'
         }).
         when('/login/', {
-            title: 'index.title',
+            title: 'application.title',
             templateUrl: 'app/login/templates/login.html',
             controller: 'loginController'
         }).

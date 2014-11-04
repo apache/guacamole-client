@@ -63,29 +63,35 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+
+                    <!-- Filter translation strings -->
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>translations/*.json</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+
+                    <!-- Add files from guacamole-common-js -->
+                    <overlays>
+                        <overlay>
+                            <groupId>org.glyptodon.guacamole</groupId>
+                            <artifactId>guacamole-common-js</artifactId>
+                            <type>zip</type>
+                        </overlay>
+                    </overlays>
+            
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-cli</id>
                         <phase>process-resources</phase>
                         <configuration>
-
-                            <!-- Filter webapp dir --> 
-                            <webResources>
-                                <resource>
-                                    <directory>src/main/webapp</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </webResources>
-                            
-                            <!-- Add files from guacamole-common-js -->
-                            <overlays>
-                                <overlay>
-                                    <groupId>org.glyptodon.guacamole</groupId>
-                                    <artifactId>guacamole-common-js</artifactId>
-                                    <type>zip</type>
-                                </overlay>
-                            </overlays>
-                            
+                            <webappDirectory>${project.build.directory}/minify</webappDirectory>
                         </configuration>
                         <goals>
                             <goal>exploded</goal>
@@ -105,7 +111,7 @@
                         <configuration>
                             <charset>UTF-8</charset>
 
-                            <webappSourceDir>${project.build.directory}/${project.build.finalName}</webappSourceDir>
+                            <webappSourceDir>${project.build.directory}/minify</webappSourceDir>
 
                             <cssSourceDir>/</cssSourceDir>
                             <cssTargetDir>/</cssTargetDir>

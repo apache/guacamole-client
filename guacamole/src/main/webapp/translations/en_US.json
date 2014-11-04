@@ -1,6 +1,6 @@
 {
-    "index": {
-        "title" : "Guacamole 0.9.1"
+    "application": {
+        "title" : "Guacamole ${project.version}"
     },
     
     "login": {
