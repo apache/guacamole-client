@@ -22,7 +22,7 @@
 
 <script type="text/ng-template" id="nestedGroup.html">
     <div class="connection" ng-show="item.isConnection">
-        <a ng-href="#/client/c/{{item.identifier}}">
+        <a ng-href="#/client/c/{{item.identifier}}" target="_blank">
             <div class="caption">
                 <div class="protocol">
                     <div class="icon type" ng-class="item.protocol"></div>
@@ -31,11 +31,11 @@
             </div>
         </a>
     </div>
-    <div" class="group" ng-show="!item.isConnection">
+    <div class="group" ng-show="!item.isConnection">
         <div class="caption">
             <div class="icon group type" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
             <span class="name">
-                <a ng-show="item.balancer" ng-href="#/client/cg/{{item.identifier}}">{{item.name}}</a>
+                <a ng-show="item.balancer" ng-href="#/client/cg/{{item.identifier}}" target="_blank">{{item.name}}</a>
                 <span ng-show="!item.balancer">{{item.name}}</span>
             </span>
         </div>
