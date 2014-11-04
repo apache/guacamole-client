@@ -25,14 +25,17 @@ THE SOFTWARE.
 
         <div class="login-dialog">
 
+            <!-- Login error message -->
             <p class="login-error">{{'login.loginError' | translate}}</p>
 
             <form class="login-form" ng-submit="login()">
 
+                <!-- Guacamole version -->
                 <div class="version">
                     {{'application.title' | translate}}
                 </div>
 
+                <!-- Login fields (username + password) -->
                 <div class="login-fields">
                     <table>
                         <tr>
@@ -48,9 +51,11 @@ THE SOFTWARE.
                     <img class="logo" src="images/guac-mono-192.png" alt=""/>
                 </div>
 
+                <!-- Submit button -->
                 <div class="buttons">
                     <input type="submit" name="login" class="login" value="{{'login.login' | translate}}"/>
                 </div>
+
             </form>
 
         </div>
