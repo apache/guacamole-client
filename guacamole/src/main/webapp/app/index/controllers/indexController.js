@@ -89,7 +89,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Provide simple mechanism for logging out the current user
     $scope.logout = function logout() {
-        authenticationService.logout().success(function logoutSuccess() {
+        authenticationService.logout()['finally'](function logoutComplete() {
             $location.path('/login');
         });
     };
