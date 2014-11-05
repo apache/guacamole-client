@@ -29,7 +29,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Get the dependencies commonJS style
     var permissionDAO           = $injector.get("permissionDAO"),
         permissionCheckService  = $injector.get("permissionCheckService"),
-        localStorageUtility     = $injector.get("localStorageUtility"),
+        authenticationService   = $injector.get("authenticationService"),
         $q                      = $injector.get("$q"),
         $document               = $injector.get("$document"),
         $window                 = $injector.get("$window"),
@@ -64,7 +64,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var permissionsLoaded= $q.defer();
     $scope.basicPermissionsLoaded = permissionsLoaded.promise;
     
-    $scope.currentUserID = localStorageUtility.get('userID');
+    $scope.currentUserID = authenticationService.getCurrentUserID();
     
     // If the user is unknown, force a login
     if(!$scope.currentUserID)
@@ -84,6 +84,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
                     permissionCheckService.checkPermission($scope.currentUserPermissions, undefined, undefined, "UPDATE");
             
             permissionsLoaded.resolve();
+        });
+    };
+
+    // Provide simple mechanism for logging out the current user
+    $scope.logout = function logout() {
+        authenticationService.logout().success(function logoutSuccess() {
+            $location.path('/login');
         });
     };
     

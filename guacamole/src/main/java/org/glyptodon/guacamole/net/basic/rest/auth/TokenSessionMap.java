@@ -52,6 +52,15 @@ public interface TokenSessionMap {
     public GuacamoleSession get(String authToken);
 
     /**
+     * Removes the GuacamoleSession associated with the given auth token.
+     *
+     * @param authToken The token to remove.
+     * @return The GuacamoleSession for the given auth token, if the auth token
+     *         represents a currently logged in user, null otherwise.
+     */
+    public GuacamoleSession remove(String authToken);
+    
+    /**
      * Shuts down this session map, disallowing future sessions and reclaiming
      * any resources.
      */

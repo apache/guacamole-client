@@ -24,9 +24,11 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -42,16 +44,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A service for authenticating to the Guacamole REST API. Given valid
- * credentials, the service will return an auth token. Invalid credentials will
- * result in a permission error.
+ * A service for managing auth tokens via the Guacamole REST API.
  * 
  * @author James Muehlner
  */
-
-@Path("/login")
+@Path("/token")
 @Produces(MediaType.APPLICATION_JSON)
-public class LoginRESTService {
+public class TokenRESTService {
     
     /**
      * The authentication provider used to authenticate this user.
@@ -74,7 +73,7 @@ public class LoginRESTService {
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(LoginRESTService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TokenRESTService.class);
     
     /**
      * Authenticates a user, generates an auth token, associates that auth token
@@ -88,7 +87,7 @@ public class LoginRESTService {
      */
     @POST
     @AuthProviderRESTExposure
-    public APIAuthToken login(@FormParam("username") String username,
+    public APIAuthToken createToken(@FormParam("username") String username,
             @FormParam("password") String password, 
             @Context HttpServletRequest request) throws GuacamoleException {
         
@@ -120,5 +119,24 @@ public class LoginRESTService {
         return new APIAuthToken(authToken, username);
 
     }
-    
+
+    /**
+     * Invalidates a specific auth token, effectively logging out the associated
+     * user.
+     * 
+     * @param authToken The token being invalidated.
+     */
+    @DELETE
+    @Path("/{token}")
+    @AuthProviderRESTExposure
+    public void invalidateToken(@PathParam("token") String authToken) {
+        
+        GuacamoleSession session = tokenSessionMap.remove(authToken);
+        if (session == null)
+            throw new HTTPException(Status.NOT_FOUND, "No such token.");
+
+        session.invalidate();
+
+    }
+
 }

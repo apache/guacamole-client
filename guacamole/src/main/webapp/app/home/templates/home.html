@@ -49,7 +49,7 @@
 
     <div class="logout-panel">
         <a class="manage button" ng-show="currentUserHasUpdate" href="#/manage">{{'home.manage' | translate}}</a>
-        <a class="logout button" href="#/login">{{'home.logout' | translate}}</a>
+        <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
     </div>
 
     <!-- The recent connections for this user -->

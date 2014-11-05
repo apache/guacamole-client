@@ -131,6 +131,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
                 if (age >= sessionTimeout) {
                     logger.debug("Session \"{}\" has timed out.", entry.getKey());
                     entries.remove();
+                    session.invalidate();
                 }
 
                 // Otherwise, no other sessions can possibly be old enough
@@ -163,8 +164,13 @@ public class BasicTokenSessionMap implements TokenSessionMap {
     }
 
     @Override
+    public GuacamoleSession remove(String authToken) {
+        return sessionMap.remove(authToken);
+    }
+
+    @Override
     public void shutdown() {
         executor.shutdownNow();
     }
-    
+
 }

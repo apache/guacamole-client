@@ -26,7 +26,7 @@ import com.google.inject.Scopes;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.glyptodon.guacamole.net.basic.rest.auth.LoginRESTService;
+import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
@@ -51,7 +51,7 @@ public class RESTServletModule extends ServletModule {
         bind(PermissionRESTService.class);
         bind(ProtocolRESTService.class);
         bind(UserRESTService.class);
-        bind(LoginRESTService.class);
+        bind(TokenRESTService.class);
         
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);

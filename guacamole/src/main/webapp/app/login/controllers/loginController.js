@@ -24,22 +24,14 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
         function loginController($scope, $injector) {
             
     // Get the dependencies commonJS style
-    var authenticationService   = $injector.get("authenticationService");
-    var localStorageUtility     = $injector.get("localStorageUtility");
-    var $location               = $injector.get("$location");
+    var authenticationService = $injector.get("authenticationService");
+    var $location             = $injector.get("$location");
             
-    // Clear the auth token and userID to log out the user
-    localStorageUtility.clear("authToken");
-    localStorageUtility.clear("userID");
-        
     $scope.loginError = false;
     
     $scope.login = function login() {
         authenticationService.login($scope.username, $scope.password)
             .success(function success(data, status, headers, config) {
-                localStorageUtility.set('authToken', data.authToken);
-                localStorageUtility.set('userID', data.userID);
-                
                 // Set up the basic permissions for the user
                 $scope.loadBasicPermissions();
                 $location.path('/');
@@ -47,4 +39,5 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
                 $scope.loginError = true;
             });
     };
+
 }]);
