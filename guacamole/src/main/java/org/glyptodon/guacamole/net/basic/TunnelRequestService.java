@@ -29,6 +29,7 @@ import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -286,9 +287,18 @@ public class TunnelRequestService {
             @Override
             public void close() throws GuacamoleException {
 
-                GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+                // Get session - just close if session does not exist
+                GuacamoleSession session;
+                try {
+                    session = authenticationService.getGuacamoleSession(authToken);
+                }
+                catch (GuacamoleUnauthorizedException e) {
+                    logger.debug("Session destroyed prior to tunnel closure.", e);
+                    super.close();
+                    return;
+                }
 
-                // Only close if not canceled
+                // If we have a session, signal listeners
                 if (!notifyClose(session, this))
                     throw new GuacamoleException("Tunnel close canceled by listener.");
 
@@ -307,6 +317,7 @@ public class TunnelRequestService {
             return null;
         }
 
+        session.addTunnel(tunnel);
         return tunnel;
 
     }
