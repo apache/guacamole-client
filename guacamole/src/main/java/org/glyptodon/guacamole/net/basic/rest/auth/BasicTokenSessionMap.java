@@ -124,6 +124,10 @@ public class BasicTokenSessionMap implements TokenSessionMap {
                 Map.Entry<String, GuacamoleSession> entry = entries.next();
                 GuacamoleSession session = entry.getValue();
 
+                // Do not expire sessions which are active
+                if (session.hasTunnels())
+                    continue;
+
                 // Get elapsed time since last access
                 long age = now - session.getLastAccessedTime();
 
