@@ -32,20 +32,24 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
     $routeProvider.
         when('/', {
             title: 'application.title',
+            bodyClassName: 'home',
             templateUrl: 'app/home/templates/home.html',
             controller: 'homeController'
         }).
         when('/manage/', {
             title: 'application.title',
+            bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manage.html',
             controller: 'manageController'
         }).
         when('/login/', {
             title: 'application.title',
+            bodyClassName: 'login',
             templateUrl: 'app/login/templates/login.html',
             controller: 'loginController'
         }).
         when('/client/:type/:id/:params?', {
+            bodyClassName: 'client',
             templateUrl: 'app/client/templates/client.html',
             controller: 'clientController'
         }).

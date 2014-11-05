@@ -51,7 +51,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     };
 
     // Put some useful variables in the top level scope
-    $scope.page = { title: '' };
+    $scope.page = {
+        title: '',
+        bodyClassName: ''
+    };
     $scope.currentUserID = null;
     $scope.currentUserIsAdmin = false;
     $scope.currentUserHasUpdate = false;
@@ -106,11 +109,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         keyboard.reset();
     };
 
-    // Update title upon navigation
+    // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
+
         var title = current.$$route.title;
         if (title)
             $scope.page.title = title;
+
+        $scope.page.bodyClassName = current.$$route.bodyClassName || '';
+
     });
 
 }]);

@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-body {
+body.client {
     background: black;
     font-family: FreeSans, Helvetica, Arial, sans-serif;
     padding: 0;
