@@ -26,7 +26,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -35,6 +34,8 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Contains Guacamole-specific user information which is tied to the current
@@ -43,6 +44,11 @@ import org.glyptodon.guacamole.properties.GuacamoleProperties;
  * @author Michael Jumper
  */
 public class GuacamoleSession {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
     /**
      * The credentials provided when the user logged in.
@@ -233,6 +239,24 @@ public class GuacamoleSession {
      */
     public long getLastAccessedTime() {
         return lastAccessedTime;
+    }
+
+    /**
+     * Closes all associated tunnels and prevents any further use of this
+     * session.
+     */
+    public void invalidate() {
+
+        // Close all associated tunnels, if possible
+        for (GuacamoleTunnel tunnel : tunnels.values()) {
+            try {
+                tunnel.close();
+            }
+            catch (GuacamoleException e) {
+                logger.debug("Unable to close tunnel.", e);
+            }
+        }
+
     }
     
 }
