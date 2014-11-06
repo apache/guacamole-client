@@ -120,7 +120,6 @@
                             
                             <cssSourceIncludes>
                                 <cssSourceInclude>app/**/*.css</cssSourceInclude>
-                                <cssSourceInclude>styles/**/*.css</cssSourceInclude>
                             </cssSourceIncludes>
 
                             <jsSourceDir>/</jsSourceDir>
@@ -155,7 +154,6 @@
                             </jsSourceExcludes>
                             <jsEngine>CLOSURE</jsEngine>
                             
-                            <skipMinify>true</skipMinify>
                         </configuration>
                         <goals>
                             <goal>minify</goal>
