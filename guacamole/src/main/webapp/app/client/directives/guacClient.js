@@ -136,27 +136,27 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * size and "auto-fit" setting.
              */
             $scope.updateDisplayScale = function() {
-                $scope.safeApply(function() {
-                    var guac = $scope.attachedClient;
-                    if (!guac)
-                        return;
 
-                    // Calculate scale to fit screen
-                    $scope.clientProperties.minScale = Math.min(
-                        $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
-                        $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
-                    );
+                var guac = $scope.attachedClient;
+                if (!guac)
+                    return;
 
-                    // Calculate appropriate maximum zoom level
-                    $scope.clientProperties.maxScale = Math.max($scope.clientProperties.minScale, 3);
+                // Calculate scale to fit screen
+                $scope.clientProperties.minScale = Math.min(
+                    $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
+                    $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
+                );
 
-                    // Clamp zoom level, maintain auto-fit
-                    if (guac.getDisplay().getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
-                        $scope.clientProperties.scale = $scope.clientProperties.minScale;
+                // Calculate appropriate maximum zoom level
+                $scope.clientProperties.maxScale = Math.max($scope.clientProperties.minScale, 3);
 
-                    else if (guac.getDisplay().getScale() > $scope.clientProperties.maxScale)
-                        $scope.clientProperties.scale = $scope.clientProperties.maxScale;
-                });
+                // Clamp zoom level, maintain auto-fit
+                if (guac.getDisplay().getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
+                    $scope.clientProperties.scale = $scope.clientProperties.minScale;
+
+                else if (guac.getDisplay().getScale() > $scope.clientProperties.maxScale)
+                    $scope.clientProperties.scale = $scope.clientProperties.maxScale;
+
             };
             
             /**
@@ -599,7 +599,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // If the window is resized, attempt to resize client
             $window.addEventListener('resize', function onResizeWindow() {
-                $scope.updateDisplayScale();
+                $scope.safeApply($scope.updateDisplayScale());
             });
             
             var show_keyboard_gesture_possible = true;
