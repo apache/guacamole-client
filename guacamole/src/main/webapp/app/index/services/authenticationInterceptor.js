@@ -31,7 +31,7 @@ angular.module('index').factory('authenticationInterceptor', ['$location', '$q',
         'responseError': function(rejection) {
             // Do not redirect failed login requests to the login page.
             if ((rejection.status === 401 || rejection.status === 403)
-                    && rejection.config.url.search('api/login') === -1) {
+                    && rejection.config.url.search('api/token') === -1) {
                 $location.path('/login');
             }
             return $q.reject(rejection);

@@ -44,7 +44,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.clientProperties = {scale: 1};
     
     // Hide menu by default
-    $scope.menuShown        = true;
+    $scope.menuShown        = false;
             
     /*
      * Parse the type, name, and id out of the url paramteres, 

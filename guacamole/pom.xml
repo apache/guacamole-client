@@ -90,9 +90,6 @@
                     <execution>
                         <id>default-cli</id>
                         <phase>process-resources</phase>
-                        <configuration>
-                            <webappDirectory>${project.build.directory}/minify</webappDirectory>
-                        </configuration>
                         <goals>
                             <goal>exploded</goal>
                         </goals>
@@ -111,7 +108,7 @@
                         <configuration>
                             <charset>UTF-8</charset>
 
-                            <webappSourceDir>${project.build.directory}/minify</webappSourceDir>
+                            <webappSourceDir>${project.build.directory}/${project.build.finalName}</webappSourceDir>
 
                             <cssSourceDir>/</cssSourceDir>
                             <cssTargetDir>/</cssTargetDir>
