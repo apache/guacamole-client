@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 
 /**
  * WebSocketCreator which selects the appropriate WebSocketListener
@@ -34,6 +35,22 @@ import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
  */
 public class BasicGuacamoleWebSocketCreator implements WebSocketCreator {
 
+    /**
+     * Service for handling tunnel requests.
+     */
+    private final TunnelRequestService tunnelRequestService;
+
+    /**
+     * Creates a new WebSocketCreator which uses the given TunnelRequestService
+     * to create new GuacamoleTunnels for inbound requests.
+     *
+     * @param tunnelRequestService The service to use for inbound tunnel
+     *                             requests.
+     */
+    public BasicGuacamoleWebSocketCreator(TunnelRequestService tunnelRequestService) {
+        this.tunnelRequestService = tunnelRequestService;
+    }
+
     @Override
     public Object createWebSocket(UpgradeRequest request, UpgradeResponse response) {
 
@@ -42,7 +59,7 @@ public class BasicGuacamoleWebSocketCreator implements WebSocketCreator {
 
             if ("guacamole".equals(subprotocol)) {
                 response.setAcceptedSubProtocol(subprotocol);
-                return new BasicGuacamoleWebSocketTunnelListener();
+                return new BasicGuacamoleWebSocketTunnelListener(tunnelRequestService);
             }
 
         }

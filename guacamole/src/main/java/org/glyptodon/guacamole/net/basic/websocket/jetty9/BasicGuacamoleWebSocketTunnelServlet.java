@@ -22,21 +22,31 @@
 
 package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 
 /**
  * A WebSocketServlet partial re-implementation of GuacamoleTunnelServlet.
  *
  * @author Michael Jumper
  */
+@Singleton
 public class BasicGuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
+    /**
+     * Service for handling tunnel requests.
+     */
+    @Inject
+    private TunnelRequestService tunnelRequestService;
+ 
     @Override
     public void configure(WebSocketServletFactory factory) {
 
         // Register WebSocket implementation
-        factory.setCreator(new BasicGuacamoleWebSocketCreator());
+        factory.setCreator(new BasicGuacamoleWebSocketCreator(tunnelRequestService));
         
     }
     

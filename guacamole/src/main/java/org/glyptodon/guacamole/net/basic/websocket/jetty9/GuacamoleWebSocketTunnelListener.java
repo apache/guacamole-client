@@ -113,14 +113,6 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
             return;
         }
 
-        // Set accepted subprotocol
-        for (String subprotocol : session.getUpgradeRequest().getSubProtocols()) {
-            if ("guacamole".equals(subprotocol)) {
-                session.getUpgradeResponse().setAcceptedSubProtocol(subprotocol);
-                break;
-            }
-        }
-
         // Prepare read transfer thread
         Thread readThread = new Thread() {
 

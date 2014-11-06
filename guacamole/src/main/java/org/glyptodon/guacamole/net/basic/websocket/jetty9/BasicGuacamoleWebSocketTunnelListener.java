@@ -22,8 +22,6 @@
 
 package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import org.eclipse.jetty.websocket.api.Session;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -35,15 +33,24 @@ import org.glyptodon.guacamole.net.basic.TunnelRequestService;
  * 
  * @author Michael Jumper
  */
-@Singleton
 public class BasicGuacamoleWebSocketTunnelListener extends GuacamoleWebSocketTunnelListener {
 
     /**
      * Service for handling tunnel requests.
      */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
+    private final TunnelRequestService tunnelRequestService;
+
+    /**
+     * Creates a new WebSocketListener which uses the given TunnelRequestService
+     * to create new GuacamoleTunnels for inbound requests.
+     *
+     * @param tunnelRequestService The service to use for inbound tunnel
+     *                             requests.
+     */
+    public BasicGuacamoleWebSocketTunnelListener(TunnelRequestService tunnelRequestService) {
+        this.tunnelRequestService = tunnelRequestService;
+    }
+
     @Override
     protected GuacamoleTunnel createTunnel(Session session) throws GuacamoleException {
         return tunnelRequestService.createTunnel(new WebSocketTunnelRequest(session.getUpgradeRequest()));
