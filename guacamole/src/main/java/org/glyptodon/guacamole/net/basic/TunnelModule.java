@@ -22,15 +22,9 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import com.google.inject.Provider;
 import com.google.inject.servlet.ServletModule;
-import java.util.Arrays;
-import javax.servlet.http.HttpServlet;
-import javax.websocket.DeploymentException;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
+import java.lang.reflect.InvocationTargetException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.basic.websocket.BasicGuacamoleWebSocketTunnelEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,66 +41,50 @@ public class TunnelModule extends ServletModule {
     private final Logger logger = LoggerFactory.getLogger(TunnelModule.class);
 
     /**
-     * Classnames of all legacy (non-JSR) WebSocket tunnel implementations.
+     * Classnames of all implementation-specific WebSocket tunnel modules.
      */
-    private static final String[] WEBSOCKET_CLASSES = {
-        "org.glyptodon.guacamole.net.basic.websocket.jetty8.BasicGuacamoleWebSocketTunnelServlet",
-        "org.glyptodon.guacamole.net.basic.websocket.jetty9.BasicGuacamoleWebSocketTunnelServlet",
-        "org.glyptodon.guacamole.net.basic.websocket.tomcat.BasicGuacamoleWebSocketTunnelServlet"
+    private static final String[] WEBSOCKET_MODULES = {
+        "org.glyptodon.guacamole.net.basic.websocket.WebSocketTunnelModule",
+        "org.glyptodon.guacamole.net.basic.websocket.jetty8.WebSocketTunnelModule",
+        "org.glyptodon.guacamole.net.basic.websocket.jetty9.WebSocketTunnelModule",
+        "org.glyptodon.guacamole.net.basic.websocket.tomcat.WebSocketTunnelModule"
     };
 
-    /**
-     * Checks for JSR 356 support, returning true if such support is found, and
-     * false otherwise.
-     *
-     * @return true if support for JSR 356 is found, false otherwise.
-     */
-    private boolean implementsJSR_356() {
+    private boolean loadWebSocketModule(String classname) {
 
         try {
 
-            // Attempt to find WebSocket servlet
-            GuacamoleClassLoader.getInstance().findClass("javax.websocket.Endpoint");
-
-            // JSR 356 found
-            return true;
-
-        }
-
-        // If no such servlet class, this particular WebSocket support
-        // is not present
-        catch (ClassNotFoundException e) {}
-        catch (NoClassDefFoundError e) {}
-
-        // Log all GuacamoleExceptions
-        catch (GuacamoleException e) {
-            logger.error("Unable to load/detect WebSocket support: {}", e.getMessage());
-            logger.debug("Error loading/detecting WebSocket support.", e);
-        }
-        
-        // JSR 356 not found
-        return false;
-        
-    }
-    
-    private boolean loadWebSocketTunnel(String classname) {
-
-        try {
-
-            // Attempt to find WebSocket servlet
-            Class<HttpServlet> servlet = (Class<HttpServlet>)
+            // Attempt to find WebSocket module 
+            Class<TunnelLoader> module = (Class<TunnelLoader>)
                     GuacamoleClassLoader.getInstance().findClass(classname);
 
-            // Add WebSocket servlet
-            serve("/websocket-tunnel").with(servlet);
-            return true;
+            // Create loader
+            TunnelLoader loader = module.getConstructor().newInstance();
+
+            // Install module, if supported
+            if (loader.isSupported()) {
+                install(loader);
+                return true;
+            }
 
         }
 
-        // If no such servlet class, this particular WebSocket support
-        // is not present
+        // If no such class or constructor, etc., then this particular
+        // WebSocket support is not present
         catch (ClassNotFoundException e) {}
         catch (NoClassDefFoundError e) {}
+        catch (NoSuchMethodException e) {}
+
+        // Log errors which indicate bugs
+        catch (InstantiationException e) {
+            logger.debug("Error instantiating WebSocket module.", e);
+        }
+        catch (IllegalAccessException e) {
+            logger.debug("Error instantiating WebSocket module.", e);
+        }
+        catch (InvocationTargetException e) {
+            logger.debug("Error instantiating WebSocket module.", e);
+        }
 
         // Log all GuacamoleExceptions
         catch (GuacamoleException e) {
@@ -127,44 +105,10 @@ public class TunnelModule extends ServletModule {
         // Set up HTTP tunnel
         serve("/tunnel").with(BasicGuacamoleTunnelServlet.class);
 
-        // Check for JSR 356 support
-        if (implementsJSR_356()) {
-
-            logger.info("JSR-356 WebSocket support present.");
-
-            // Get container
-            ServerContainer container = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer"); 
-            if (container == null) {
-                logger.warn("ServerContainer attribute required by JSR-356 is missing. Cannot load JSR-356 WebSocket support.");
-                return;
-            }
-
-            Provider<TunnelRequestService> tunnelRequestServiceProvider = getProvider(TunnelRequestService.class);
-
-            // Build configuration for WebSocket tunnel
-            ServerEndpointConfig config =
-                    ServerEndpointConfig.Builder.create(BasicGuacamoleWebSocketTunnelEndpoint.class, "/websocket-tunnel")
-                                                .configurator(new BasicGuacamoleWebSocketTunnelEndpoint.Configurator(tunnelRequestServiceProvider))
-                                                .subprotocols(Arrays.asList(new String[]{"guacamole"}))
-                                                .build();
-
-            try {
-
-                // Add configuration to container
-                container.addEndpoint(config);
-
-            }
-            catch (DeploymentException e) {
-                logger.error("Unable to deploy WebSocket tunnel.", e);
-            }
-            
-            return;
-        }
-        
         // Try to load each WebSocket tunnel in sequence
-        for (String classname : WEBSOCKET_CLASSES) {
-            if (loadWebSocketTunnel(classname)) {
-                logger.info("Legacy (non-JSR) WebSocket support loaded: {}", classname);
+        for (String classname : WEBSOCKET_MODULES) {
+            if (loadWebSocketModule(classname)) {
+                logger.debug("WebSocket module loaded: {}", classname);
                 return;
             }
         }
