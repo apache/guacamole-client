@@ -599,7 +599,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // If the window is resized, attempt to resize client
             $window.addEventListener('resize', function onResizeWindow() {
-                $scope.safeApply($scope.updateDisplayScale());
+                $scope.safeApply($scope.updateDisplayScale);
             });
             
             var show_keyboard_gesture_possible = true;
