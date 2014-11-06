@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2013 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ body.client {
     font-family: FreeSans, Helvetica, Arial, sans-serif;
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 
 img {
@@ -111,6 +112,15 @@ button#reconnect {
 
 div.dialog p {
     margin: 0;
+}
+
+div.main {
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
 }
 
 div.displayOuter {
@@ -283,9 +293,19 @@ div#viewportClone {
     margin-bottom: 0.5em;
 }
 
-.dialog .status {
+.dialog .status, .dialog .countdown, .dialog .reconnect {
+    margin: 0;
     padding: 0.5em;
     font-size: 0.8em;
+}
+
+.dialog .reconnect {
+    display: none;
+}
+
+.guac-error .dialog .reconnect {
+    display: block;
+    text-align: center;
 }
 
 p.hint {
