@@ -105,7 +105,7 @@
                 <div id="zoom-state">{{formattedScale()}}%</div>
                 <div ng-click="zoomIn()" id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
             </div>
-            <div><label><input ng-model="autoFit" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'client.autoFit' | translate}}</label></div>
+            <div><label><input ng-model="autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'client.autoFit' | translate}}</label></div>
         </div>
         
     </div>

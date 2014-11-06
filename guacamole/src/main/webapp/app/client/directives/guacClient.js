@@ -131,39 +131,32 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     $scope.clientProperties[propertyName] = CLIENT_PROPERTY_DEFAULTS[propertyName];
             }
             
-            // Maximum and minimum zoom levels
-            $scope.clientProperties.minZoom = 1;
-            $scope.clientProperties.maxZoom = 3;
-            
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
              */
             $scope.updateDisplayScale = function() {
+                $scope.safeApply(function() {
+                    var guac = $scope.attachedClient;
+                    if (!guac)
+                        return;
 
-                var guac = $scope.attachedClient;
-                if (!guac)
-                    return;
+                    // Calculate scale to fit screen
+                    $scope.clientProperties.minScale = Math.min(
+                        $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
+                        $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
+                    );
 
-                // Determine whether display is currently fit to the screen
-                var auto_fit = (guac.getDisplay().getScale() === $scope.clientProperties.minZoom);
+                    // Calculate appropriate maximum zoom level
+                    $scope.clientProperties.maxScale = Math.max($scope.clientProperties.minScale, 3);
 
-                // Calculate scale to fit screen
-                $scope.clientProperties.minZoom = Math.min(
-                    $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
-                    $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
-                );
+                    // Clamp zoom level, maintain auto-fit
+                    if (guac.getDisplay().getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
+                        $scope.clientProperties.scale = $scope.clientProperties.minScale;
 
-                // Calculate appropriate maximum zoom level
-                $scope.clientProperties.maxZoom = Math.max($scope.clientProperties.minZoom, 3);
-
-                // Clamp zoom level, maintain auto-fit
-                if (guac.getDisplay().getScale() < $scope.clientProperties.minZoom || auto_fit)
-                    $scope.clientProperties.scale = $scope.clientProperties.minZoom;
-
-                else if (guac.getDisplay().getScale() > $scope.clientProperties.maxZoom)
-                    $scope.clientProperties.scale = $scope.clientProperties.maxZoom;
-
+                    else if (guac.getDisplay().getScale() > $scope.clientProperties.maxScale)
+                        $scope.clientProperties.scale = $scope.clientProperties.maxScale;
+                });
             };
             
             /**
@@ -578,11 +571,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
             $scope.$watch('clientProperties.scale', function changeScale(scale) {
 
                 // Fix scale within limits
-                scale = Math.max(scale, $scope.clientProperties.minZoom);
-                scale = Math.min(scale, $scope.clientProperties.maxZoom);
+                scale = Math.max(scale, $scope.clientProperties.minScale);
+                scale = Math.min(scale, $scope.clientProperties.maxScale);
 
                 // If at minimum zoom level, hide scroll bars
-                if (scale === $scope.clientProperties.minZoom)
+                if (scale === $scope.clientProperties.minScale)
                     $scope.main.style.overflow = "hidden";
 
                 // If not at minimum zoom level, show scroll bars
@@ -596,6 +589,17 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 if (scale !== $scope.clientProperties.scale)
                     $scope.clientProperties.scale = scale;
 
+            });
+            
+            // If autofit is set, the scale should be set to the minimum scale, filling the screen
+            $scope.$watch('clientProperties.autoFit', function changeAutoFit(autoFit) {
+                if(autoFit)
+                    $scope.clientProperties.scale = $scope.clientProperties.minScale;
+            });
+            
+            // If the window is resized, attempt to resize client
+            $window.addEventListener('resize', function onResizeWindow() {
+                $scope.updateDisplayScale();
             });
             
             var show_keyboard_gesture_possible = true;

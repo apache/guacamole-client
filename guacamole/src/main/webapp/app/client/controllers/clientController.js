@@ -39,9 +39,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Get DAO for reading connections and groups
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
+    var ClientProperties   = $injector.get('clientProperties');
 
     // Client settings and state
-    $scope.clientProperties = {scale: 1};
+    $scope.clientProperties = new ClientProperties();
     
     // Hide menu by default
     $scope.menuShown        = false;
@@ -130,22 +131,26 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     };
     
     $scope.zoomIn = function zoomIn() {
+        $scope.autoFit = false;
+        $scope.clientProperties.autoFit = false;
         $scope.clientProperties.scale += 0.1;
     };
     
     $scope.zoomOut = function zoomOut() {
+        $scope.clientProperties.autoFit = false;
         $scope.clientProperties.scale -= 0.1;
     };
     
     $scope.autoFit = true;
     
-    $scope.$watch('autoFit', function changeAutoFit(autoFit) {
-        if(autoFit && $scope.clientProperties.minZoom) {
-            $scope.clientProperties.scale = $scope.clientProperties.minZoom;
+    $scope.changeAutoFit = function changeAutoFit() {
+        if ($scope.autoFit && $scope.clientProperties.minScale) {
+            $scope.clientProperties.autoFit = true;
         } else {
+            $scope.clientProperties.autoFit = false;
             $scope.clientProperties.scale = 1; 
         }
-    });
+    };
     
     $scope.autoFitDisabled = function() {
         return $scope.clientProperties.minZoom >= 1;
