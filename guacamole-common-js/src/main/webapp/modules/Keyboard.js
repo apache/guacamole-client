@@ -752,6 +752,9 @@ Guacamole.Keyboard = function(element) {
         for (var keysym in guac_keyboard.pressed)
             guac_keyboard.release(parseInt(keysym));
 
+        // Clear event log
+        eventLog = [];
+
     };
 
     /**
@@ -829,35 +832,6 @@ Guacamole.Keyboard = function(element) {
     }
 
     /**
-     * Searches the event log for a keyup event corresponding to the given
-     * keydown event, returning its index within the log.
-     *
-     * @param {KeydownEvent} keydown The keydown event whose corresponding keyup
-     *                               event we are to search for.
-     * @returns {Number} The index of the first keyup event in the event log
-     *                   matching the given keydown event, or -1 if no such
-     *                   event exists.
-     */
-    function indexof_keyup(keydown) {
-
-        var i;
-
-        // Search event log for keyup events having the given keysym
-        for (i=0; i<eventLog.length; i++) {
-
-            // Return index of key event if found
-            var event = eventLog[i];
-            if (event instanceof KeyupEvent && event.keyCode === keydown.keyCode)
-                return i;
-
-        }
-
-        // No such keyup found
-        return -1;
-
-    }
-
-    /**
      * Releases Ctrl+Alt, if both are currently pressed and the given keysym
      * looks like a key that may require AltGr.
      * 
@@ -921,8 +895,10 @@ Guacamole.Keyboard = function(element) {
                 accepted_events = eventLog.splice(0, 2);
             }
 
-            // If there is a keyup already, the event must be handled now
-            else if (indexof_keyup(first) !== -1) {
+            // If keydown is immediately followed by anything else, then no
+            // keypress can possibly occur to clarify this event, and we must
+            // handle it now
+            else if (eventLog[1]) {
                 keysym = first.keysym;
                 accepted_events = eventLog.splice(0, 1);
             }
