@@ -47,6 +47,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Hide menu by default
     $scope.menuShown        = false;
     
+    // Convenience method for closing the menu
+    $scope.closeMenu = function closeMenu() {
+        $scope.menuShown = false;
+    };
+    
     // Update the model when clipboard data received from client
     $scope.$on('guacClientClipboard', function clipboardDataReceived(clipboardData) {
        $scope.guacClipboard = clipboardData; 

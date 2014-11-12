@@ -55,20 +55,20 @@
 
             <!-- No IME -->
             <div class="choice">
-                <label><input name="input-method" type="radio" value="ime-none" checked="checked" id="ime-none"/> {{'client.none' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-none" checked="checked" id="ime-none"/> {{'client.none' | translate}}</label>
                 <p class="caption"><label for="ime-none">{{'client.noneDesc' | translate}}</label></p>
             </div>
 
             <!-- Text input -->
             <div class="choice">
                 <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
-                <label><input name="input-method" type="radio" value="ime-text" id="ime-text"/> {{'client.textInput' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-text" id="ime-text"/> {{'client.textInput' | translate}}</label>
                 <p class="caption"><label for="ime-text">{{'client.textInputDesc' | translate}} </label></p>
             </div>
 
             <!-- Guac OSK -->
             <div class="choice">
-                <label><input name="input-method" type="radio" value="ime-osk" id="ime-osk"/> {{'client.osk' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-osk" id="ime-osk"/> {{'client.osk' | translate}}</label>
                 <p class="caption"><label for="ime-osk">{{'client.oskDesc' | translate}}</label></p>
             </div>
 
@@ -80,7 +80,7 @@
 
             <!-- Touchscreen -->
             <div class="choice">
-                <input name="mouse-mode" type="radio" value="absolute" checked="checked" id="absolute"/>
+                <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
                 <div class="figure">
                     <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'client.touchscreen' | translate}}"/></label>
                     <p class="caption"><label for="absolute">{{'client.touchscreenDesc' | translate}}</label></p>
@@ -89,7 +89,7 @@
 
             <!-- Touchpad -->
             <div class="choice">
-                <input name="mouse-mode" type="radio" value="relative" id="relative"/>
+                <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
                 <div class="figure">
                     <label for="relative"><img src="images/settings/touchpad.png" alt="{{'client.touchpad' | translate}}"/></label>
                     <p class="caption"><label for="relative">{{'client.touchpadDesc' | translate}}</label></p>

@@ -68,6 +68,15 @@ angular.module('client').factory('clientProperties', [function clientProperties(
          * @type Boolean
          */
         this.keyboardEnabled = true;
+        
+        /**
+         * Whether translation of touch to mouse events should emulate an
+         * absolute pointer device, or a relative pointer device.
+         * 
+         * @type Boolean
+         */
+        this.emulateAbsoluteMouse = true;
+
     };
 
 }]);

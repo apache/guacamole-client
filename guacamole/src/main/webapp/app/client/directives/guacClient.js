@@ -339,14 +339,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     localCursor = mouse.setCursor(canvas, x, y);
                 };
 
-                // Touchscreen
-                var touch_screen = new Guacamole.Mouse.Touchscreen(guac_display);
-                $scope.touch_screen = touch_screen;
-
-                // Touchpad
-                var touch_pad = new Guacamole.Mouse.Touchpad(guac_display);
-                $scope.touch_pad = touch_pad;
-
                 // Mouse
                 var mouse = new Guacamole.Mouse(guac_display);
                 mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
@@ -386,102 +378,95 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 guac_display.className = "software-cursor";
                 $display.append(guac_display);
 
-            };
-            
-            // Watch for changes to mouse emulation mode
-            $scope.$watch('parameters.emulateAbsolute', function(emulateAbsolute) {
-                $scope.setMouseEmulationAbsolute(emulateAbsolute);
-            });
-            
-            /**
-             * Sets the mouse emulation mode to absolute or relative.
-             *
-             * @param {Boolean} absolute Whether mouse emulation should use absolute
-             *                           (touchscreen) mode.
-             */
-            $scope.setMouseEmulationAbsolute = function(absolute) {
+                // Mouse emulation objects
+                var touchScreen = new Guacamole.Mouse.Touchscreen(guac_display);
+                var touchPad    = new Guacamole.Mouse.Touchpad(guac_display);
 
-                function __handle_mouse_state(mouseState) {
+                // Watch for changes to mouse emulation mode
+                $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
 
-                    // Get client - do nothing if not attached
-                    var guac = $scope.attachedClient;
-                    if (!guac) return;
+                    var handleMouseState = function handleMouseState(mouseState) {
 
-                    // Determine mouse position within view
-                    var guac_display = guac.getDisplay().getElement();
-                    var mouse_view_x = mouseState.x + guac_display.offsetLeft - $scope.main.scrollLeft;
-                    var mouse_view_y = mouseState.y + guac_display.offsetTop  - $scope.main.scrollTop;
+                        // Ensure software cursor is shown
+                        guac.getDisplay().showCursor(true);
 
-                    // Determine viewport dimensioins
-                    var view_width  = $scope.main.offsetWidth;
-                    var view_height = $scope.main.offsetHeight;
+                        // Determine mouse position within view
+                        var guac_display = guac.getDisplay().getElement();
+                        var mouse_view_x = mouseState.x + guac_display.offsetLeft - $scope.main.scrollLeft;
+                        var mouse_view_y = mouseState.y + guac_display.offsetTop  - $scope.main.scrollTop;
 
-                    // Determine scroll amounts based on mouse position relative to document
+                        // Determine viewport dimensions
+                        var view_width  = $scope.main.offsetWidth;
+                        var view_height = $scope.main.offsetHeight;
 
-                    var scroll_amount_x;
-                    if (mouse_view_x > view_width)
-                        scroll_amount_x = mouse_view_x - view_width;
-                    else if (mouse_view_x < 0)
-                        scroll_amount_x = mouse_view_x;
-                    else
-                        scroll_amount_x = 0;
+                        // Determine scroll amounts based on mouse position relative to document
 
-                    var scroll_amount_y;
-                    if (mouse_view_y > view_height)
-                        scroll_amount_y = mouse_view_y - view_height;
-                    else if (mouse_view_y < 0)
-                        scroll_amount_y = mouse_view_y;
-                    else
-                        scroll_amount_y = 0;
+                        var scroll_amount_x;
+                        if (mouse_view_x > view_width)
+                            scroll_amount_x = mouse_view_x - view_width;
+                        else if (mouse_view_x < 0)
+                            scroll_amount_x = mouse_view_x;
+                        else
+                            scroll_amount_x = 0;
 
-                    // Scroll (if necessary) to keep mouse on screen.
-                    $scope.main.scrollLeft += scroll_amount_x;
-                    $scope.main.scrollTop  += scroll_amount_y;
+                        var scroll_amount_y;
+                        if (mouse_view_y > view_height)
+                            scroll_amount_y = mouse_view_y - view_height;
+                        else if (mouse_view_y < 0)
+                            scroll_amount_y = mouse_view_y;
+                        else
+                            scroll_amount_y = 0;
 
-                    // Scale event by current scale
-                    var scaledState = new Guacamole.Mouse.State(
-                            mouseState.x / guac.getDisplay().getScale(),
-                            mouseState.y / guac.getDisplay().getScale(),
-                            mouseState.left,
-                            mouseState.middle,
-                            mouseState.right,
-                            mouseState.up,
-                            mouseState.down);
+                        // Scroll (if necessary) to keep mouse on screen.
+                        $scope.main.scrollLeft += scroll_amount_x;
+                        $scope.main.scrollTop  += scroll_amount_y;
 
-                    // Send mouse event
-                    guac.sendMouseState(scaledState);
+                        // Scale event by current scale
+                        var scaledState = new Guacamole.Mouse.State(
+                                mouseState.x / guac.getDisplay().getScale(),
+                                mouseState.y / guac.getDisplay().getScale(),
+                                mouseState.left,
+                                mouseState.middle,
+                                mouseState.right,
+                                mouseState.up,
+                                mouseState.down);
 
-                };
+                        // Send mouse event
+                        guac.sendMouseState(scaledState);
 
-                var new_mode, old_mode;
-                $scope.emulate_absolute = absolute;
+                    };
 
-                // Switch to touchscreen if absolute
-                if (absolute) {
-                    new_mode = $scope.touch_screen;
-                    old_mode = $scope.touch;
-                }
+                    var newMode, oldMode;
 
-                // Switch to touchpad if not absolute (relative)
-                else {
-                    new_mode = $scope.touch_pad;
-                    old_mode = $scope.touch;
-                }
-
-                // Perform switch
-                if (new_mode) {
-
-                    if (old_mode) {
-                        old_mode.onmousedown = old_mode.onmouseup = old_mode.onmousemove = null;
-                        new_mode.currentState.x = old_mode.currentState.x;
-                        new_mode.currentState.y = old_mode.currentState.y;
+                    // Switch to touchscreen if absolute
+                    if (emulateAbsoluteMouse) {
+                        newMode = touchScreen;
+                        oldMode = touchPad;
                     }
 
-                    new_mode.onmousedown = new_mode.onmouseup = new_mode.onmousemove = __handle_mouse_state;
-                    $scope.touch = new_mode;
-                }
+                    // Switch to touchpad if not absolute (relative)
+                    else {
+                        newMode = touchPad;
+                        oldMode = touchScreen;
+                    }
+
+                    // Set applicable mouse emulation object, unset the old one
+                    if (newMode) {
+
+                        if (oldMode) {
+                            oldMode.onmousedown = oldMode.onmouseup = oldMode.onmousemove = null;
+                            newMode.currentState.x = oldMode.currentState.x;
+                            newMode.currentState.y = oldMode.currentState.y;
+                        }
+
+                        newMode.onmousedown = newMode.onmouseup = newMode.onmousemove = handleMouseState;
+
+                    }
+
+                });
 
             };
+
 
             /**
              * Connects to the current Guacamole connection, attaching a new Guacamole
