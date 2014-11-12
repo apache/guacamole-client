@@ -114,12 +114,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 "emulate_absolute" : true,
                 "touch"            : null,
                 "touch_screen"     : null,
-                "touch_pad"        : null,
-
-                /* Clipboard */
-
-                "remote_clipboard" : "",
-                "clipboard_integration_enabled" : undefined 
+                "touch_pad"        : null
             });
             
             var CLIENT_PROPERTY_DEFAULTS = {
@@ -680,17 +675,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // Listen for broadcasted keydown events and fire the appropriate listeners
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
-                var preventDefault = $scope.keydown(keysym, keyboard);
-                if(preventDefault) {
-                    event.preventDefault();
+                if ($scope.clientProperties.keyboardEnabled) {
+                    var preventDefault = $scope.keydown(keysym, keyboard);
+                    if (preventDefault) {
+                        event.preventDefault();
+                    }
                 }
             });
             
             // Listen for broadcasted keyup events and fire the appropriate listeners
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-                var preventDefault = $scope.keyup(keysym, keyboard);
-                if(preventDefault) {
-                    event.preventDefault();
+                if ($scope.clientProperties.keyboardEnabled) {
+                    var preventDefault = $scope.keyup(keysym, keyboard);
+                    if(preventDefault) {
+                        event.preventDefault();
+                    }
                 }
             });
             

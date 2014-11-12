@@ -61,6 +61,13 @@ angular.module('client').factory('clientProperties', [function clientProperties(
          * @type Number
          */
         this.maxScale = 3;
+
+        /**
+         * Whether or not the client should listen to keyboard events.
+         * 
+         * @type Boolean
+         */
+        this.keyboardEnabled = true;
     };
 
 }]);

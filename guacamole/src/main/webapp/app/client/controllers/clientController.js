@@ -46,6 +46,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     
     // Hide menu by default
     $scope.menuShown        = false;
+    
+    // Update the model when clipboard data received from client
+    $scope.$on('guacClientClipboard', function clipboardDataReceived(clipboardData) {
+       $scope.guacClipboard = clipboardData; 
+    });
             
     /*
      * Parse the type, name, and id out of the url paramteres, 
@@ -93,6 +98,17 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         
         return true;
     }
+    
+    $scope.$watch('menuShown', function setKeyboardEnabled(menuShown, menuShownPreviousState) {
+        
+        // Send clipboard data if menu is hidden
+        if (!menuShown && menuShownPreviousState) {
+            $scope.$broadcast('guacClipboard', $scope.clipboardData); 
+        }
+        
+        // Disable client keyboard if the menu is shown
+        $scope.clientProperties.keyboardEnabled = !menuShown;
+    });
     
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
         keysCurrentlyPressed[keysym] = true;   

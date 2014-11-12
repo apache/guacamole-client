@@ -46,8 +46,8 @@
 
         <h3>{{'client.clipboard' | translate}}</h3>
         <div class="content" id="clipboard-settings">
-            <p class="description"></p>
-            <textarea rows="10" cols="40" id="clipboard">{{'client.copiedText' | translate}}</textarea>
+            <p class="description">{{'client.copiedText' | translate}}</p>
+            <textarea ng-model="clipboardData" rows="10" cols="40" id="clipboard"></textarea>
         </div>
 
         <h3></h3>
