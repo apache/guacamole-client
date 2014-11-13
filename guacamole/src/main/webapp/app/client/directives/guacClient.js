@@ -192,25 +192,25 @@ angular.module('client').directive('guacClient', [function guacClient() {
                        // Idle
                        case 0:
                            
-                           $scope.$emit('guacClientStatusChange', guac, "idle");
+                           $scope.$emit('guacClientStateChange', guac, "idle");
                            break;
 
                        // Connecting
                        case 1:
                            
-                           $scope.$emit('guacClientStatusChange', guac, "connecting");
+                           $scope.$emit('guacClientStateChange', guac, "connecting");
                            break;
 
                        // Connected + waiting
                        case 2:
                            
-                           $scope.$emit('guacClientStatusChange', guac, "waiting");
+                           $scope.$emit('guacClientStateChange', guac, "waiting");
                            break;
 
                        // Connected
                        case 3:
 
-                           $scope.$emit('guacClientStatusChange', guac, "connected");
+                           $scope.$emit('guacClientStateChange', guac, "connected");
 
                            // Update server clipboard with current data
                            var clipboard = localStorageUtility.get("clipboard");
@@ -224,9 +224,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                        case 5:
                            break;
 
-                       // Unknown status code
-                       default:
-                           $scope.$emit('guacClientError', guac, "unknown");
                    }
                 };
                 
@@ -252,9 +249,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     // Disconnect, if connected
                     guac.disconnect();
                     
-                    $scope.$emit('guacClientError', guac, status.code, {operations: {reconnect: function reconnect () {
-                        $scope.connect();
-                    }}});
+                    $scope.$emit('guacClientError', guac, status.code, $scope.connect);
 
                 };
 
@@ -525,19 +520,31 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 });
 
 
-                // Show connection errors from tunnel
+                // Fire events for tunnel errors
                 $scope.tunnel.onerror = function onerror(status) {
-                    
-                    //FIXME: Needs to auto reconnect - should that be here, or in the error handler further up?
-                    $scope.$emit('guacTunnelError', $scope.guac, status.code);
+                    $scope.$emit('guacTunnelError', $scope.guac, status.code, $scope.connect);
                 };
 
 
-                // Notify of disconnections (if not already notified of something else)
+                // Fire events for tunnel state changes
                 $scope.tunnel.onstatechange = function onstatechange(state) {
-                    if (state === Guacamole.Tunnel.State.CLOSED) {
-                        $scope.$emit('guacTunnelError', $scope.guac, "disconnected", state);
+
+                    switch (state) {
+
+                        case Guacamole.Tunnel.State.CONNECTING:
+                            $scope.$emit('guacTunnelStateChange', $scope.guac, "connecting");
+                            break;
+
+                        case Guacamole.Tunnel.State.OPEN:
+                            $scope.$emit('guacTunnelStateChange', $scope.guac, "open");
+                            break;
+
+                        case Guacamole.Tunnel.State.CLOSED:
+                            $scope.$emit('guacTunnelStateChange', $scope.guac, "closed");
+                            break;
+
                     }
+
                 };
 
                 // Connect
