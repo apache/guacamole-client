@@ -23,8 +23,8 @@
 /**
  * The controller for the status modal.
  */
-angular.module('manage').controller('statusController', ['$scope', '$injector', 
-        function statusController($scope, $injector) {
+angular.module('manage').controller('statusController', ['$scope', '$rootScope', '$injector', 
+        function statusController($scope, $rootScope, $injector) {
             
     var statusModal = $injector.get('statusModal');
 
@@ -38,7 +38,7 @@ angular.module('manage').controller('statusController', ['$scope', '$injector',
     $scope.fireAction = function fireAction(action) {
 
         // Fire action event
-        var actionEvent = $scope.$broadcast('guacStatusAction', action);
+        var actionEvent = $rootScope.$broadcast('guacStatusAction', action);
 
         // Close modal unless default is prevented
         if (!actionEvent.defaultPrevented)
