@@ -210,7 +210,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                        // Connected
                        case 3:
 
-                           $scope.$emit('guacClientStatusChange', guac, null);
+                           $scope.$emit('guacClientStatusChange', guac, "connected");
 
                            // Update server clipboard with current data
                            var clipboard = localStorageUtility.get("clipboard");
@@ -366,9 +366,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     guac.getDisplay().showCursor(false);
                 };
 
-                // Hide any existing status notifications
-                $scope.$emit('guacClientStatusChange', guac, null);
-                
                 var $display = $element.find('.display');
 
                 // Remove old client from UI, if any

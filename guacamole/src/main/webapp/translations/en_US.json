@@ -241,6 +241,11 @@
                 "0x031D"    : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
                 "DEFAULT"   : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
             }
+        },
+        "status"            : {
+            "idle"       : "Idle.",
+            "connecting" : "Connecting to Guacamole...",
+            "waiting"    : "Connected to Guacamole. Waiting for response..."
         }
     }
 }

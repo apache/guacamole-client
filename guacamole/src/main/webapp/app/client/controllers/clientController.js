@@ -40,6 +40,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
     var ClientProperties   = $injector.get('clientProperties');
+    var statusModal        = $injector.get('statusModal');
 
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
@@ -146,7 +147,22 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
         delete keysCurrentlyPressed[keysym];
     });
-    
+
+    // Show status dialog when status changes
+    $scope.$on('guacClientStatusChange', function clientStatusChangeListener(event, client, status) {
+
+        // Hide previous status, if any
+        statusModal.deactivate();
+
+        // Show new status if not yet connected
+        if (status !== "connected") {
+            statusModal.activate({
+                text: "client.status." + status
+            });
+        }
+
+    });
+
     $scope.formattedScale = function formattedScale() {
         return Math.round($scope.clientProperties.scale * 100);
     };
