@@ -209,7 +209,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         statusModal.activate({
             className: "error",
             title: "client.error.connectionErrorTitle",
-            text: "client.error.clientErrors." + errorName
+            text: "client.error.clientErrors." + errorName,
+            actions: [ "client.action.reconnect" ]
         });
 
     });
@@ -243,8 +244,18 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         statusModal.activate({
             className: "error",
             title: "client.error.connectionErrorTitle",
-            text: "client.error.tunnelErrors." + errorName
+            text: "client.error.tunnelErrors." + errorName,
+            actions: [ "client.action.reconnect" ]
         });
+
+    });
+
+    // Handle reconnect action
+    $scope.$on('guacStatusAction', function actionListener(event, action) {
+
+        // TODO: Implement reconnect
+        if (action === "client.action.reconnect")
+            console.log("(Reconnect placeholder)");
 
     });
 

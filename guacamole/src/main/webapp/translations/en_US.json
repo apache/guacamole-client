@@ -265,6 +265,9 @@
             "tunnelStates"          : {
                 "closed"     : "You have been disconnected. Reload the page to reconnect."
             }
+        },
+        "action" : {
+            "reconnect" : "Reconnect"
         }
     }
 }
