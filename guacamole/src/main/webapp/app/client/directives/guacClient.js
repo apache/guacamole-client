@@ -62,61 +62,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 guacVideo           = $injector.get('guacVideo'),
                 localStorageUtility = $injector.get('localStorageUtility');
                 
-            var authToken = localStorageUtility.get('authToken'),
-                uniqueId  = encodeURIComponent($scope.type + '/' + $scope.id);
-                
             // Get elements for DOM manipulation
-            $scope.main   = $element[0];
+            var main = $element[0];
                 
-            // Settings and constants
-            $.extend(true, $scope, {
-                
-                /**
-                 * All error codes for which automatic reconnection is appropriate when a
-                 * tunnel error occurs.
-                 */
-                "tunnel_auto_reconnect": {
-                    0x0200: true,
-                    0x0202: true,
-                    0x0203: true,
-                    0x0308: true
-                },
-
-                /**
-                 * All error codes for which automatic reconnection is appropriate when a
-                 * client error occurs.
-                 */
-                "client_auto_reconnect": {
-                    0x0200: true,
-                    0x0202: true,
-                    0x0203: true,
-                    0x0301: true,
-                    0x0308: true
-                },
-
-                /* Constants */
-
-                "KEYBOARD_AUTO_RESIZE_INTERVAL" : 30,  /* milliseconds */
-                "RECONNECT_PERIOD"              : 15,  /* seconds */
-                "TEXT_INPUT_PADDING"            : 128, /* characters */
-                "TEXT_INPUT_PADDING_CODEPOINT"  : 0x200B,
-
-                /* Current connection parameters */
-
-                /* The user defined named for this connection */
-                "connectionName"        : "Guacamole", 
-
-                /* The attached client instance */
-                "attachedClient"        : null,
-
-                /* Mouse emulation */
-
-                "emulate_absolute" : true,
-                "touch"            : null,
-                "touch_screen"     : null,
-                "touch_pad"        : null
-            });
-            
             var CLIENT_PROPERTY_DEFAULTS = {
                 scale: 1
             };
@@ -138,8 +86,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Calculate scale to fit screen
                 $scope.clientProperties.minScale = Math.min(
-                    $scope.main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
-                    $scope.main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
+                    main.offsetWidth / Math.max(guac.getDisplay().getWidth(), 1),
+                    main.offsetHeight / Math.max(guac.getDisplay().getHeight(), 1)
                 );
 
                 // Calculate appropriate maximum zoom level
@@ -230,14 +178,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Listen for clipboard events not sent by the client
                 $scope.$on('guacClipboard', function onClipboardChange(event, data) {
                     // Update server clipboard with current data
-                    $scope.guac.setClipboard(data);
+                    $scope.attachedClient.setClipboard(data);
                 });
 
                 /*
                  * Emit a name change event
                  */
                 guac.onname = function(name) {
-                    $scope.connectionDisplayName = name;
                     $scope.$emit('name', guac, name);
                 };
 
@@ -249,7 +196,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     // Disconnect, if connected
                     guac.disconnect();
                     
-                    $scope.$emit('guacClientError', guac, status.code, $scope.connect);
+                    $scope.$emit('guacClientError', guac, status.code);
 
                 };
 
@@ -384,12 +331,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                         // Determine mouse position within view
                         var guac_display = guac.getDisplay().getElement();
-                        var mouse_view_x = mouseState.x + guac_display.offsetLeft - $scope.main.scrollLeft;
-                        var mouse_view_y = mouseState.y + guac_display.offsetTop  - $scope.main.scrollTop;
+                        var mouse_view_x = mouseState.x + guac_display.offsetLeft - main.scrollLeft;
+                        var mouse_view_y = mouseState.y + guac_display.offsetTop  - main.scrollTop;
 
                         // Determine viewport dimensions
-                        var view_width  = $scope.main.offsetWidth;
-                        var view_height = $scope.main.offsetHeight;
+                        var view_width  = main.offsetWidth;
+                        var view_height = main.offsetHeight;
 
                         // Determine scroll amounts based on mouse position relative to document
 
@@ -410,8 +357,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                             scroll_amount_y = 0;
 
                         // Scroll (if necessary) to keep mouse on screen.
-                        $scope.main.scrollLeft += scroll_amount_x;
-                        $scope.main.scrollTop  += scroll_amount_y;
+                        main.scrollLeft += scroll_amount_x;
+                        main.scrollTop  += scroll_amount_y;
 
                         // Scale event by current scale
                         var scaledState = new Guacamole.Mouse.State(
@@ -467,22 +414,24 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             $scope.connect = function connect() {
                 
+                var tunnel;
+                
                 // If WebSocket available, try to use it.
                 if ($window.WebSocket)
-                    $scope.tunnel = new Guacamole.ChainedTunnel(
+                    tunnel = new Guacamole.ChainedTunnel(
                         new Guacamole.WebSocketTunnel("websocket-tunnel"),
                         new Guacamole.HTTPTunnel("tunnel")
                     );
 
                 // If no WebSocket, then use HTTP.
                 else
-                    $scope.tunnel = new Guacamole.HTTPTunnel("tunnel");
+                    tunnel = new Guacamole.HTTPTunnel("tunnel");
 
                 // Instantiate client
-                $scope.guac = new Guacamole.Client($scope.tunnel);
+                var guac = new Guacamole.Client(tunnel);
 
                 // Tie UI to client
-                $scope.attach($scope.guac);
+                $scope.attach(guac);
 
                 // Calculate optimal width/height for display
                 var pixel_density = $window.devicePixelRatio || 1;
@@ -502,6 +451,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // all parameters should be preserved and passed on for
                 // the sake of authentication.
 
+                var authToken = localStorageUtility.get('authToken'),
+                    uniqueId  = encodeURIComponent($scope.type + '/' + $scope.id);
+                    
                 var connectString =
                     "id=" + uniqueId + ($scope.connectionParameters ? '&' + $scope.connectionParameters : '')
                     + "&authToken="+ authToken
@@ -521,26 +473,26 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
 
                 // Fire events for tunnel errors
-                $scope.tunnel.onerror = function onerror(status) {
-                    $scope.$emit('guacTunnelError', $scope.guac, status.code, $scope.connect);
+                tunnel.onerror = function onerror(status) {
+                    $scope.$emit('guacTunnelError', guac, status.code);
                 };
 
 
                 // Fire events for tunnel state changes
-                $scope.tunnel.onstatechange = function onstatechange(state) {
+                tunnel.onstatechange = function onstatechange(state) {
 
                     switch (state) {
 
                         case Guacamole.Tunnel.State.CONNECTING:
-                            $scope.$emit('guacTunnelStateChange', $scope.guac, "connecting");
+                            $scope.$emit('guacTunnelStateChange', guac, "connecting");
                             break;
 
                         case Guacamole.Tunnel.State.OPEN:
-                            $scope.$emit('guacTunnelStateChange', $scope.guac, "open");
+                            $scope.$emit('guacTunnelStateChange', guac, "open");
                             break;
 
                         case Guacamole.Tunnel.State.CLOSED:
-                            $scope.$emit('guacTunnelStateChange', $scope.guac, "closed");
+                            $scope.$emit('guacTunnelStateChange', guac, "closed");
                             break;
 
                     }
@@ -548,7 +500,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 };
 
                 // Connect
-                $scope.guac.connect(connectString);
+                guac.connect(connectString);
+
             };
             
             // Adjust scale if modified externally
@@ -560,11 +513,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // If at minimum zoom level, hide scroll bars
                 if (scale === $scope.clientProperties.minScale)
-                    $scope.main.style.overflow = "hidden";
+                    main.style.overflow = "hidden";
 
                 // If not at minimum zoom level, show scroll bars
                 else
-                    $scope.main.style.overflow = "auto";
+                    main.style.overflow = "auto";
 
                 // Apply scale if client attached
                 if ($scope.attachedClient)
