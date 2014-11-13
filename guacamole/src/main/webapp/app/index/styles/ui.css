@@ -81,6 +81,7 @@ input[type="submit"], button, a.button {
     padding-right: 1em;
     padding-left: 1em;
     min-width: 5em;
+    margin: 0.25em;
 
 }
 
@@ -171,6 +172,23 @@ div.section {
     padding: 1em;
 }
 
+.dialog-outer {
+    display: table;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-middle {
+    width: 100%;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
 .dialog.edit {
     max-height: 100%;
 }
@@ -236,6 +254,14 @@ div.section {
 .dialog .footer {
     text-align: center;
 }
+
+.dialog.status {
+    width: 3in;
+}
+
+.dialog.status > * {
+    margin: 0.25em;
+};
 
 /*
  * List elements
