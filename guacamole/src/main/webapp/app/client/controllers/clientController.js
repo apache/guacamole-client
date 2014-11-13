@@ -20,22 +20,54 @@
  * THE SOFTWARE.
  */
 
-/*
- * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
- * several possible keysysms for each key.
- */
-
-var SHIFT_KEYS  = {0xFFE1 : true, 0xFFE2: true},
-    ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03: true},
-    CTRL_KEYS   = {0xFFE3 : true, 0xFFE4: true},
-    MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
-
 /**
  * The controller for the page used to connect to a connection or balancing group.
  */
 angular.module('home').controller('clientController', ['$scope', '$routeParams', 'localStorageUtility', '$injector',
         function clientController($scope, $routeParams, localStorageUtility, $injector) {
-      
+
+    /*
+     * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
+     * several possible keysysms for each key.
+     */
+    var SHIFT_KEYS  = {0xFFE1 : true, 0xFFE2: true},
+        ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03: true},
+        CTRL_KEYS   = {0xFFE3 : true, 0xFFE4: true},
+        MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
+
+    /**
+     * All client error codes handled and passed off for translation. Any error
+     * code not present in this list will be represented by the "DEFAULT"
+     * translation.
+     */
+    var CLIENT_ERRORS = {
+        0x0201: true,
+        0x0202: true,
+        0x0203: true,
+        0x0205: true,
+        0x0301: true,
+        0x0303: true,
+        0x0308: true,
+        0x031D: true
+    };
+
+    /**
+     * All tunnel error codes handled and passed off for translation. Any error
+     * code not present in this list will be represented by the "DEFAULT"
+     * translation.
+     */
+    var TUNNEL_ERRORS = {
+        0x0201: true,
+        0x0202: true,
+        0x0203: true,
+        0x0204: true,
+        0x0205: true,
+        0x0301: true,
+        0x0303: true,
+        0x0308: true,
+        0x031D: true
+    };
+
     // Get DAO for reading connections and groups
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
@@ -148,8 +180,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         delete keysCurrentlyPressed[keysym];
     });
 
-    // Show status dialog when status changes
-    $scope.$on('guacClientStatusChange', function clientStatusChangeListener(event, client, status) {
+    // Show status dialog when client status changes
+    $scope.$on('guacClientStateChange', function clientStateChangeListener(event, client, status) {
 
         // Hide previous status, if any
         statusModal.deactivate();
@@ -157,9 +189,62 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Show new status if not yet connected
         if (status !== "connected") {
             statusModal.activate({
-                text: "client.status." + status
+                title: "client.status.connectingStatusTitle",
+                text: "client.status.clientStates." + status
             });
         }
+
+    });
+
+    // Show status dialog when client errors occur
+    $scope.$on('guacClientError', function clientErrorListener(event, client, status, reconnect) {
+
+        // Hide any existing status
+        statusModal.deactivate();
+
+        // Determine translation name of error
+        var errorName = (status in CLIENT_ERRORS) ? status.toString(16) : "DEFAULT";
+
+        // Show error status
+        statusModal.activate({
+            className: "error",
+            title: "client.error.connectionErrorTitle",
+            text: "client.error.clientErrors." + errorName
+        });
+
+    });
+
+    // Show status dialog when tunnel status changes
+    $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, client, status) {
+
+        // Hide previous status, if any
+        statusModal.deactivate();
+
+        // Show new status only if disconnected
+        if (status === "closed") {
+            statusModal.activate({
+                title: "client.status.closedStatusTitle",
+                text: "client.status.tunnelStates." + status
+            });
+        }
+
+    });
+
+    // Show status dialog when tunnel errors occur
+    $scope.$on('guacTunnelError', function tunnelErrorListener(event, client, status, reconnect) {
+
+        // Hide any existing status
+        statusModal.deactivate();
+
+        // Determine translation name of error
+        var errorName = (status in TUNNEL_ERRORS) ? status.toString(16) : "DEFAULT";
+
+        // Show error status
+        statusModal.activate({
+            className: "error",
+            title: "client.error.connectionErrorTitle",
+            text: "client.error.tunnelErrors." + errorName
+        });
 
     });
 
@@ -192,5 +277,5 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.autoFitDisabled = function() {
         return $scope.clientProperties.minZoom >= 1;
     };
-    
+
 }]);
