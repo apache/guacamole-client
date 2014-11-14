@@ -35,7 +35,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // Parameters for initially connecting
             id                      : '=',
-            type                    : '=',
             connectionName          : '=', 
             connectionParameters    : '='
         },
@@ -56,10 +55,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     this.$apply(fn);
                 }
             };
-                
+
+            $scope.guac = null;
+            $scope.clipboard = "";
+
             var $window             = $injector.get('$window'),
                 guacAudio           = $injector.get('guacAudio'),
                 guacVideo           = $injector.get('guacVideo'),
+                guacTunnelFactory   = $injector.get('guacTunnelFactory'),
+                guacClientFactory   = $injector.get('guacClientFactory'),
                 localStorageUtility = $injector.get('localStorageUtility');
                 
             // Get elements for DOM manipulation
@@ -78,9 +82,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
              */
-            $scope.updateDisplayScale = function() {
+            var updateDisplayScale = function updateDisplayScale() {
 
-                var guac = $scope.attachedClient;
+                var guac = $scope.guac;
                 if (!guac)
                     return;
 
@@ -101,162 +105,39 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     $scope.clientProperties.scale = $scope.clientProperties.maxScale;
 
             };
-            
-            /**
-             * Attaches a Guacamole.Client to the client UI, such that Guacamole events
-             * affect the UI, and local events affect the Guacamole.Client. If a client
-             * is already attached, it is replaced.
-             * 
-             * @param {Guacamole.Client} guac The Guacamole.Client to attach to the UI.
-             */
-            $scope.attach = function(guac) {
 
-               // If a client is already attached, ensure it is disconnected
-               if ($scope.attachedClient)
-                   $scope.attachedClient.disconnect();
+            // Update active client if clipboard changes
+            $scope.$watch('clipboard', function clipboardChange(data) {
+                if ($scope.guac)
+                    $scope.guac.setClipboard(data);
+            });
 
-               // Store attached client
-               $scope.attachedClient = guac;
+            // Connect to given ID whenever ID changes
+            $scope.$watch('id', function(id) {
 
-               // Get display element
-               var guac_display = guac.getDisplay().getElement();
+                // If a client is already attached, ensure it is disconnected
+                if ($scope.guac)
+                    $scope.guac.disconnect();
 
-               /*
-                * Update the scale of the display when the client display size changes.
-                */
+                // Only proceed if a new client is attached
+                if (!id)
+                    return;
 
-               guac.getDisplay().onresize = function() {
-                   $scope.safeApply($scope.updateDisplayScale);
-               };
-
-               /*
-                * Update UI when the state of the Guacamole.Client changes.
-                */
-
-               guac.onstatechange = function(clientState) {
-
-                   switch (clientState) {
-
-                       // Idle
-                       case 0:
-                           
-                           $scope.$emit('guacClientStateChange', guac, "idle");
-                           break;
-
-                       // Connecting
-                       case 1:
-                           
-                           $scope.$emit('guacClientStateChange', guac, "connecting");
-                           break;
-
-                       // Connected + waiting
-                       case 2:
-                           
-                           $scope.$emit('guacClientStateChange', guac, "waiting");
-                           break;
-
-                       // Connected
-                       case 3:
-
-                           $scope.$emit('guacClientStateChange', guac, "connected");
-
-                           // Update server clipboard with current data
-                           var clipboard = localStorageUtility.get("clipboard");
-                           if (clipboard)
-                               guac.setClipboard(clipboard);
-
-                           break;
-
-                       // Disconnecting / disconnected are handled by tunnel instead
-                       case 4:
-                       case 5:
-                           break;
-
-                   }
-                };
-                
-                // Listen for clipboard events not sent by the client
-                $scope.$on('guacClipboard', function onClipboardChange(event, data) {
-                    // Update server clipboard with current data
-                    $scope.attachedClient.setClipboard(data);
-                });
+                // Get new client instance
+                var tunnel = guacTunnelFactory.getInstance();
+                var guac = guacClientFactory.getInstance(tunnel);
+                $scope.guac = guac;
 
                 /*
-                 * Emit a name change event
-                 */
-                guac.onname = function(name) {
-                    $scope.$emit('name', guac, name);
-                };
-
-                /*
-                 * Disconnect and emits an error when the client receives an error
-                 */
-                guac.onerror = function(status) {
-
-                    // Disconnect, if connected
-                    guac.disconnect();
-                    
-                    $scope.$emit('guacClientError', guac, status.code);
-
-                };
-
-                // Server copy handler
-                guac.onclipboard = function(stream, mimetype) {
-
-                    // Only text/plain is supported for now
-                    if (mimetype !== "text/plain") {
-                        stream.sendAck("Only text/plain supported", Guacamole.Status.Code.UNSUPPORTED);
-                        return;
-                    }
-
-                    var reader = new Guacamole.StringReader(stream);
-                    var data = "";
-
-                    // Append any received data to buffer
-                    reader.ontext = function clipboard_text_received(text) {
-                        data += text;
-                        stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-                    };
-
-                    // Emit event when done
-                    reader.onend = function clipboard_text_end() {
-                        $scope.$emit('guacClientClipboard', guac, data);
-                    };
-
-                };
-
-                /*
-                 * Prompt to download file when file received.
+                 * Update the scale of the display when the client display size changes.
                  */
 
-                guac.onfile = function onfile(stream, mimetype, filename) {
-
-                    // Begin file download
-                    var guacFileStartEvent = $scope.$emit('guacFileStart', guac, stream.index, mimetype, filename);
-                    if (!guacFileStartEvent.defaultPrevented) {
-
-                        var blob_reader = new Guacamole.BlobReader(stream, mimetype);
-
-                        // Update progress as data is received
-                        blob_reader.onprogress = function onprogress() {
-                            $scope.$emit('guacFileProgress', guac, stream.index, mimetype, filename);
-                            stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-                        };
-
-                        // When complete, prompt for download
-                        blob_reader.onend = function onend() {
-                            $scope.$emit('guacFileEnd', guac, stream.index, mimetype, filename);
-                        };
-
-                        stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
-                        
-                    }
-                    
-                    // Respond with UNSUPPORTED if download (default action) canceled within event handler
-                    else
-                        stream.sendAck("Download canceled", Guacamole.Status.Code.UNSUPPORTED);
-
+                guac.getDisplay().onresize = function() {
+                    $scope.safeApply(updateDisplayScale);
                 };
+
+                // Get display element
+                var guac_display = guac.getDisplay().getElement();
 
                 /*
                  * Do nothing when the display element is clicked on.
@@ -404,35 +285,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 });
 
-            };
-
-
-            /**
-             * Connects to the current Guacamole connection, attaching a new Guacamole
-             * client to the user interface. If a Guacamole client is already attached,
-             * it is replaced.
-             */
-            $scope.connect = function connect() {
-                
-                var tunnel;
-                
-                // If WebSocket available, try to use it.
-                if ($window.WebSocket)
-                    tunnel = new Guacamole.ChainedTunnel(
-                        new Guacamole.WebSocketTunnel("websocket-tunnel"),
-                        new Guacamole.HTTPTunnel("tunnel")
-                    );
-
-                // If no WebSocket, then use HTTP.
-                else
-                    tunnel = new Guacamole.HTTPTunnel("tunnel");
-
-                // Instantiate client
-                var guac = new Guacamole.Client(tunnel);
-
-                // Tie UI to client
-                $scope.attach(guac);
-
                 // Calculate optimal width/height for display
                 var pixel_density = $window.devicePixelRatio || 1;
                 var optimal_dpi = pixel_density * 96;
@@ -451,15 +303,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // all parameters should be preserved and passed on for
                 // the sake of authentication.
 
-                var authToken = localStorageUtility.get('authToken'),
-                    uniqueId  = encodeURIComponent($scope.type + '/' + $scope.id);
-                    
                 var connectString =
-                    "id=" + uniqueId + ($scope.connectionParameters ? '&' + $scope.connectionParameters : '')
-                    + "&authToken="+ authToken
-                    + "&width="    + Math.floor(optimal_width)
-                    + "&height="   + Math.floor(optimal_height)
-                    + "&dpi="      + Math.floor(optimal_dpi);
+                      "id="         + encodeURIComponent($scope.id)
+                    + "&authToken=" + encodeURIComponent(localStorageUtility.get('authToken'))
+                    + "&width="     + Math.floor(optimal_width)
+                    + "&height="    + Math.floor(optimal_height)
+                    + "&dpi="       + Math.floor(optimal_dpi)
+                    + ($scope.connectionParameters ? '&' + $scope.connectionParameters : '');
 
                 // Add audio mimetypes to connect_string
                 guacAudio.supported.forEach(function(mimetype) {
@@ -471,39 +321,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     connectString += "&video=" + encodeURIComponent(mimetype);
                 });
 
-
-                // Fire events for tunnel errors
-                tunnel.onerror = function onerror(status) {
-                    $scope.$emit('guacTunnelError', guac, status.code);
-                };
-
-
-                // Fire events for tunnel state changes
-                tunnel.onstatechange = function onstatechange(state) {
-
-                    switch (state) {
-
-                        case Guacamole.Tunnel.State.CONNECTING:
-                            $scope.$emit('guacTunnelStateChange', guac, "connecting");
-                            break;
-
-                        case Guacamole.Tunnel.State.OPEN:
-                            $scope.$emit('guacTunnelStateChange', guac, "open");
-                            break;
-
-                        case Guacamole.Tunnel.State.CLOSED:
-                            $scope.$emit('guacTunnelStateChange', guac, "closed");
-                            break;
-
-                    }
-
-                };
-
                 // Connect
                 guac.connect(connectString);
 
-            };
-            
+            });
+
             // Adjust scale if modified externally
             $scope.$watch('clientProperties.scale', function changeScale(scale) {
 
@@ -520,8 +342,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     main.style.overflow = "auto";
 
                 // Apply scale if client attached
-                if ($scope.attachedClient)
-                    $scope.attachedClient.getDisplay().scale(scale);
+                if ($scope.guac)
+                    $scope.guac.getDisplay().scale(scale);
                 
                 if (scale !== $scope.clientProperties.scale)
                     $scope.clientProperties.scale = scale;
@@ -536,21 +358,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // If the window is resized, attempt to resize client
             $window.addEventListener('resize', function onResizeWindow() {
-                $scope.safeApply($scope.updateDisplayScale);
+                $scope.safeApply(updateDisplayScale);
             });
             
             var show_keyboard_gesture_possible = true;
             
             // Handle Keyboard events
             function __send_key(pressed, keysym) {
-                $scope.attachedClient.sendKeyEvent(pressed, keysym);
+                $scope.guac.sendKeyEvent(pressed, keysym);
                 return false;
             }
 
             $scope.keydown = function keydown (keysym, keyboard) {
 
                 // Only handle key events if client is attached
-                var guac = $scope.attachedClient;
+                var guac = $scope.guac;
                 if (!guac) return true;
 
                 // Handle Ctrl-shortcuts specifically
@@ -584,7 +406,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             $scope.keyup = function keyup(keysym, keyboard) {
 
                 // Only handle key events if client is attached
-                var guac = $scope.attachedClient;
+                var guac = $scope.guac;
                 if (!guac) return true;
 
                 // If lifting up on shift, toggle menu visibility if rest of gesture
@@ -635,8 +457,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 }
             });
             
-            // Connect!
-            $scope.connect();
         }]
     };
 }]);

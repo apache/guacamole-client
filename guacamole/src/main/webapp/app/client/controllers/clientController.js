@@ -94,8 +94,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
      * Parse the type, name, and id out of the url paramteres, 
      * as well as any extra parameters if set.
      */
-    $scope.type                 = $routeParams.type;
-    $scope.id                   = $routeParams.id;
+    $scope.id                   = $routeParams.type + '/' + $routeParams.id;
     $scope.connectionParameters = $routeParams.params || '';
 
     // Keep title in sync with connection state
@@ -197,7 +196,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     });
 
     // Show status dialog when client errors occur
-    $scope.$on('guacClientError', function clientErrorListener(event, client, status, reconnect) {
+    $scope.$on('guacClientError', function clientErrorListener(event, client, status) {
 
         // Hide any existing status
         statusModal.deactivate();
@@ -216,7 +215,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     });
 
     // Show status dialog when tunnel status changes
-    $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, client, status) {
+    $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, tunnel, status) {
 
         // Hide previous status, if any
         statusModal.deactivate();
@@ -232,7 +231,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     });
 
     // Show status dialog when tunnel errors occur
-    $scope.$on('guacTunnelError', function tunnelErrorListener(event, client, status, reconnect) {
+    $scope.$on('guacTunnelError', function tunnelErrorListener(event, tunnel, status) {
 
         // Hide any existing status
         statusModal.deactivate();
