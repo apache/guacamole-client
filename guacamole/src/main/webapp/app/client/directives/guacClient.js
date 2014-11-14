@@ -87,16 +87,51 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             var displayElement = null;
 
+            /**
+             * The element which must contain the Guacamole display element.
+             *
+             * @type Element
+             */
+            var displayContainer = $element.find('.display')[0];
+
+            /**
+             * The main containing element for the entire directive.
+             * 
+             * @type Element
+             */
+            var main = $element[0];
+
+            /**
+             * Guacamole mouse event object, wrapped around the main client
+             * display.
+             *
+             * @type Guacamole.Mouse
+             */
+            var mouse = new Guacamole.Mouse(displayContainer);
+
+            /**
+             * Guacamole absolute mouse emulation object, wrapped around the
+             * main client display.
+             *
+             * @type Guacamole.Mouse.Touchscreen
+             */
+            var touchScreen = new Guacamole.Mouse.Touchscreen(displayContainer);
+
+            /**
+             * Guacamole relative mouse emulation object, wrapped around the
+             * main client display.
+             *
+             * @type Guacamole.Mouse.Touchpad
+             */
+            var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
+
             var $window             = $injector.get('$window'),
                 guacAudio           = $injector.get('guacAudio'),
                 guacVideo           = $injector.get('guacVideo'),
                 guacTunnelFactory   = $injector.get('guacTunnelFactory'),
                 guacClientFactory   = $injector.get('guacClientFactory'),
                 localStorageUtility = $injector.get('localStorageUtility');
-                
-            // Get elements for DOM manipulation
-            var main = $element[0];
-
+ 
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
@@ -163,6 +198,37 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
+            // Send all received mouse events to the client
+            mouse.onmousedown =
+            mouse.onmouseup   =
+            mouse.onmousemove = function(mouseState) {
+
+                if (!client || !display) return;
+
+                // Hide or show software cursor depending on local cursor state
+                display.showCursor(!localCursor);
+
+                // Scale event by current scale
+                var scaledState = new Guacamole.Mouse.State(
+                        mouseState.x / display.getScale(),
+                        mouseState.y / display.getScale(),
+                        mouseState.left,
+                        mouseState.middle,
+                        mouseState.right,
+                        mouseState.up,
+                        mouseState.down);
+
+                // Send mouse event
+                client.sendMouseState(scaledState);
+
+            };
+
+            // Hide software cursor when mouse leaves display
+            mouse.onmouseout = function() {
+                if (!display) return;
+                display.showCursor(false);
+            };
+
             // Update active client if clipboard changes
             $scope.$watch('clipboard', function clipboardChange(data) {
                 if (client)
@@ -193,9 +259,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     $scope.safeApply(updateDisplayScale);
                 };
 
+                // Use local cursor if possible, update localCursor flag
+                display.oncursor = function(canvas, x, y) {
+                    localCursor = mouse.setCursor(canvas, x, y);
+                };
+
                 // Add display element
                 displayElement = display.getElement();
-                $element.find('.display').html("").append(displayElement);
+                displayContainer.innerHTML = "";
+                displayContainer.appendChild(displayElement);
 
                 // Do nothing when the display element is clicked on.
                 displayElement.onclick = function(e) {
@@ -206,16 +278,47 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Connect
                 client.connect(getConnectString());
 
-                // Directly handle mouse events on client display
-                var mouse = new Guacamole.Mouse(displayElement);
-                mouse.onmousedown =
-                mouse.onmouseup   =
-                mouse.onmousemove = function(mouseState) {
+            });
 
-                    if (!client || !display) return;
+            // Watch for changes to mouse emulation mode
+            $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
 
-                    // Hide or show software cursor depending on local cursor state
-                    display.showCursor(!localCursor);
+                if (!client || !display) return;
+
+                var handleMouseState = function handleMouseState(mouseState) {
+
+                    // Ensure software cursor is shown
+                    display.showCursor(true);
+
+                    // Determine mouse position within view
+                    var mouse_view_x = mouseState.x + displayContainer.offsetLeft - main.scrollLeft;
+                    var mouse_view_y = mouseState.y + displayContainer.offsetTop  - main.scrollTop;
+
+                    // Determine viewport dimensions
+                    var view_width  = main.offsetWidth;
+                    var view_height = main.offsetHeight;
+
+                    // Determine scroll amounts based on mouse position relative to document
+
+                    var scroll_amount_x;
+                    if (mouse_view_x > view_width)
+                        scroll_amount_x = mouse_view_x - view_width;
+                    else if (mouse_view_x < 0)
+                        scroll_amount_x = mouse_view_x;
+                    else
+                        scroll_amount_x = 0;
+
+                    var scroll_amount_y;
+                    if (mouse_view_y > view_height)
+                        scroll_amount_y = mouse_view_y - view_height;
+                    else if (mouse_view_y < 0)
+                        scroll_amount_y = mouse_view_y;
+                    else
+                        scroll_amount_y = 0;
+
+                    // Scroll (if necessary) to keep mouse on screen.
+                    main.scrollLeft += scroll_amount_x;
+                    main.scrollTop  += scroll_amount_y;
 
                     // Scale event by current scale
                     var scaledState = new Guacamole.Mouse.State(
@@ -232,102 +335,32 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 };
 
-                // Hide software cursor when mouse leaves display
-                mouse.onmouseout = function() {
-                    if (!display) return;
-                    display.showCursor(false);
-                };
+                var newMode, oldMode;
 
-                // Use local cursor if possible, update localCursor flag
-                display.oncursor = function(canvas, x, y) {
-                    localCursor = mouse.setCursor(canvas, x, y);
-                };
+                // Switch to touchscreen if absolute
+                if (emulateAbsoluteMouse) {
+                    newMode = touchScreen;
+                    oldMode = touchPad;
+                }
 
-                // Mouse emulation objects
-                var touchScreen = new Guacamole.Mouse.Touchscreen(displayElement);
-                var touchPad    = new Guacamole.Mouse.Touchpad(displayElement);
+                // Switch to touchpad if not absolute (relative)
+                else {
+                    newMode = touchPad;
+                    oldMode = touchScreen;
+                }
 
-                // Watch for changes to mouse emulation mode
-                $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
+                // Set applicable mouse emulation object, unset the old one
+                if (newMode) {
 
-                    var handleMouseState = function handleMouseState(mouseState) {
-
-                        // Ensure software cursor is shown
-                        display.showCursor(true);
-
-                        // Determine mouse position within view
-                        var mouse_view_x = mouseState.x + displayElement.offsetLeft - main.scrollLeft;
-                        var mouse_view_y = mouseState.y + displayElement.offsetTop  - main.scrollTop;
-
-                        // Determine viewport dimensions
-                        var view_width  = main.offsetWidth;
-                        var view_height = main.offsetHeight;
-
-                        // Determine scroll amounts based on mouse position relative to document
-
-                        var scroll_amount_x;
-                        if (mouse_view_x > view_width)
-                            scroll_amount_x = mouse_view_x - view_width;
-                        else if (mouse_view_x < 0)
-                            scroll_amount_x = mouse_view_x;
-                        else
-                            scroll_amount_x = 0;
-
-                        var scroll_amount_y;
-                        if (mouse_view_y > view_height)
-                            scroll_amount_y = mouse_view_y - view_height;
-                        else if (mouse_view_y < 0)
-                            scroll_amount_y = mouse_view_y;
-                        else
-                            scroll_amount_y = 0;
-
-                        // Scroll (if necessary) to keep mouse on screen.
-                        main.scrollLeft += scroll_amount_x;
-                        main.scrollTop  += scroll_amount_y;
-
-                        // Scale event by current scale
-                        var scaledState = new Guacamole.Mouse.State(
-                                mouseState.x / display.getScale(),
-                                mouseState.y / display.getScale(),
-                                mouseState.left,
-                                mouseState.middle,
-                                mouseState.right,
-                                mouseState.up,
-                                mouseState.down);
-
-                        // Send mouse event
-                        client.sendMouseState(scaledState);
-
-                    };
-
-                    var newMode, oldMode;
-
-                    // Switch to touchscreen if absolute
-                    if (emulateAbsoluteMouse) {
-                        newMode = touchScreen;
-                        oldMode = touchPad;
+                    if (oldMode) {
+                        oldMode.onmousedown = oldMode.onmouseup = oldMode.onmousemove = null;
+                        newMode.currentState.x = oldMode.currentState.x;
+                        newMode.currentState.y = oldMode.currentState.y;
                     }
 
-                    // Switch to touchpad if not absolute (relative)
-                    else {
-                        newMode = touchPad;
-                        oldMode = touchScreen;
-                    }
+                    newMode.onmousedown = newMode.onmouseup = newMode.onmousemove = handleMouseState;
 
-                    // Set applicable mouse emulation object, unset the old one
-                    if (newMode) {
-
-                        if (oldMode) {
-                            oldMode.onmousedown = oldMode.onmouseup = oldMode.onmousemove = null;
-                            newMode.currentState.x = oldMode.currentState.x;
-                            newMode.currentState.y = oldMode.currentState.y;
-                        }
-
-                        newMode.onmousedown = newMode.onmouseup = newMode.onmousemove = handleMouseState;
-
-                    }
-
-                });
+                }
 
             });
 

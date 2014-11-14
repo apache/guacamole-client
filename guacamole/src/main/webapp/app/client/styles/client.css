@@ -76,6 +76,10 @@ div.displayMiddle {
     text-align: center;
 }
 
+div.display {
+    display: inline-block;
+}
+
 div.display * {
     position: relative;
 }
