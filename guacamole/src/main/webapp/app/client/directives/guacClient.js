@@ -424,117 +424,19 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * KEYBOARD
              */
                 
-            var show_keyboard_gesture_possible = true;
-            
-            // Handle Keyboard events
-            function __send_key(pressed, keysym) {
-                client.sendKeyEvent(pressed, keysym);
-                return true;
-            }
-
-            /**
-             * Handles a keydown event from the given Guacamole.Keyboard,
-             * sending the corresponding key event to the Guacamole client.
-             *
-             * @param {Number} keysym The keysym that was pressed.
-             * @param {Guacamole.Keyboard} keyboard The source of the keyboard
-             *                                      event.
-             * @returns {Boolean} true if the default action of the key should
-             *                    be prevented, false otherwise.
-             */
-            var handleKeydown = function handleKeydown(keysym, keyboard) {
-
-                // Only handle key events if client is attached
-                if (!client) return false;
-
-                // Handle Ctrl-shortcuts specifically
-                if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
-
-                    // Allow event through if Ctrl+C or Ctrl+X
-                    if (keyboard.pressed[0x63] || keyboard.pressed[0x78]) {
-                        __send_key(1, keysym);
-                        return false;
-                    }
-
-                    // If Ctrl+V, wait until after paste event (next event loop)
-                    if (keyboard.pressed[0x76]) {
-                        window.setTimeout(function after_paste() {
-                            __send_key(1, keysym);
-                        }, 10);
-                        return false;
-                    }
-
-                }
-
-                // If key is NOT one of the expected keys, gesture not possible
-                if (keysym !== 0xFFE3 && keysym !== 0xFFE9 && keysym !== 0xFFE1)
-                    show_keyboard_gesture_possible = false;
-
-                // Send key event
-                return __send_key(1, keysym);
-
-            };
-
-            /**
-             * Handles a keyup event from the given Guacamole.Keyboard,
-             * sending the corresponding key event to the Guacamole client.
-             *
-             * @param {Number} keysym The keysym that was released.
-             * @param {Guacamole.Keyboard} keyboard The source of the keyboard
-             *                                      event.
-             * @returns {Boolean} true if the default action of the key should
-             *                    be prevented, false otherwise.
-             */
-            var handleKeyup = function handleKeyup(keysym, keyboard) {
-
-                // Only handle key events if client is attached
-                if (!client) return true;
-
-                // If lifting up on shift, toggle menu visibility if rest of gesture
-                // conditions satisfied
-                if (show_keyboard_gesture_possible && keysym === 0xFFE1 
-                    && keyboard.pressed[0xFFE3] && keyboard.pressed[0xFFE9]) {
-                        __send_key(0, 0xFFE1);
-                        __send_key(0, 0xFFE9);
-                        __send_key(0, 0xFFE3);
-                        
-                        // Emit an event to show the menu
-                        $scope.$emit('guacClientMenu', true);
-                }
-
-                // Detect if no keys are pressed
-                var reset_gesture = true;
-                for (var pressed in keyboard.pressed) {
-                    reset_gesture = false;
-                    break;
-                }
-
-                // Reset gesture state if possible
-                if (reset_gesture)
-                    show_keyboard_gesture_possible = true;
-
-                // Send key event
-                return __send_key(0, keysym);
-
-            };
-            
             // Listen for broadcasted keydown events and fire the appropriate listeners
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
                 if ($scope.clientProperties.keyboardEnabled) {
-                    var preventDefault = handleKeydown(keysym, keyboard);
-                    if (preventDefault) {
-                        event.preventDefault();
-                    }
+                    client.sendKeyEvent(1, keysym);
+                    event.preventDefault();
                 }
             });
             
             // Listen for broadcasted keyup events and fire the appropriate listeners
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
                 if ($scope.clientProperties.keyboardEnabled) {
-                    var preventDefault = handleKeyup(keysym, keyboard);
-                    if(preventDefault) {
-                        event.preventDefault();
-                    }
+                    client.sendKeyEvent(0, keysym);
+                    event.preventDefault();
                 }
             });
 
