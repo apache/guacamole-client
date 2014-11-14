@@ -23,8 +23,8 @@
 /**
  * The controller for the page used to connect to a connection or balancing group.
  */
-angular.module('home').controller('clientController', ['$scope', '$routeParams', 'localStorageUtility', '$injector',
-        function clientController($scope, $routeParams, localStorageUtility, $injector) {
+angular.module('home').controller('clientController', ['$scope', '$routeParams', '$injector',
+        function clientController($scope, $routeParams, $injector) {
 
     /*
      * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
@@ -97,25 +97,20 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.id                   = $routeParams.type + '/' + $routeParams.id;
     $scope.connectionParameters = $routeParams.params || '';
 
-    // Keep title in sync with connection state
-    $scope.$watch('connectionName', function updateTitle() {
-        $scope.page.title = $scope.connectionName;
-    });
-
     // Pull connection name from server
     switch ($scope.type) {
 
         // Connection
         case 'c':
             connectionDAO.getConnection($scope.id).success(function (connection) {
-                $scope.connectionName = connection.name;
+                $scope.page.title = connection.name;
             });
             break;
 
         // Connection group
         case 'g':
             connectionGroupDAO.getConnectionGroup($scope.id).success(function (group) {
-                $scope.connectionName = group.name;
+                $scope.page.title = group.name;
             });
             break;
 
