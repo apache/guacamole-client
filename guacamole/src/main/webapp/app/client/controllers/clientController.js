@@ -94,7 +94,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
      * Parse the type, name, and id out of the url paramteres, 
      * as well as any extra parameters if set.
      */
-    $scope.id                   = $routeParams.type + '/' + $routeParams.id;
+    var uniqueId = $routeParams.type + '/' + $routeParams.id;
+    $scope.id = uniqueId;
     $scope.connectionParameters = $routeParams.params || '';
 
     // Pull connection name from server
@@ -193,6 +194,9 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show status dialog when client errors occur
     $scope.$on('guacClientError', function clientErrorListener(event, client, status) {
 
+        // Disconnect
+        $scope.id = null;
+
         // Hide any existing status
         statusModal.deactivate();
 
@@ -228,6 +232,9 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show status dialog when tunnel errors occur
     $scope.$on('guacTunnelError', function tunnelErrorListener(event, tunnel, status) {
 
+        // Disconnect
+        $scope.id = null;
+
         // Hide any existing status
         statusModal.deactivate();
 
@@ -247,9 +254,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Handle reconnect action
     $scope.$on('guacStatusAction', function actionListener(event, action) {
 
-        // TODO: Implement reconnect
         if (action === "client.action.reconnect")
-            console.log("(Reconnect placeholder)");
+            $scope.id = uniqueId;
 
     });
 
