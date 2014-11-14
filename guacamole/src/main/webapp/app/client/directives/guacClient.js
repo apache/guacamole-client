@@ -198,20 +198,53 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
-            /*
-             * MOUSE
+            /**
+             * Scrolls the client view such that the mouse cursor is visible.
+             *
+             * @param {Guacamole.Mouse.State} mouseState The current mouse
+             *                                           state.
              */
-                
-            // Watch for changes to mouse emulation mode
-            // Send all received mouse events to the client
-            mouse.onmousedown =
-            mouse.onmouseup   =
-            mouse.onmousemove = function(mouseState) {
+            var scrollToMouse = function scrollToMouse(mouseState) {
 
-                if (!client || !display) return;
+                // Determine mouse position within view
+                var mouse_view_x = mouseState.x + displayContainer.offsetLeft - main.scrollLeft;
+                var mouse_view_y = mouseState.y + displayContainer.offsetTop  - main.scrollTop;
 
-                // Hide or show software cursor depending on local cursor state
-                display.showCursor(!localCursor);
+                // Determine viewport dimensions
+                var view_width  = main.offsetWidth;
+                var view_height = main.offsetHeight;
+
+                // Determine scroll amounts based on mouse position relative to document
+
+                var scroll_amount_x;
+                if (mouse_view_x > view_width)
+                    scroll_amount_x = mouse_view_x - view_width;
+                else if (mouse_view_x < 0)
+                    scroll_amount_x = mouse_view_x;
+                else
+                    scroll_amount_x = 0;
+
+                var scroll_amount_y;
+                if (mouse_view_y > view_height)
+                    scroll_amount_y = mouse_view_y - view_height;
+                else if (mouse_view_y < 0)
+                    scroll_amount_y = mouse_view_y;
+                else
+                    scroll_amount_y = 0;
+
+                // Scroll (if necessary) to keep mouse on screen.
+                main.scrollLeft += scroll_amount_x;
+                main.scrollTop  += scroll_amount_y;
+
+            };
+
+            /**
+             * Sends the given mouse state to the current client.
+             *
+             * @param {Guacamole.Mouse.State} mouseState The mouse state to
+             *                                           send.
+             */
+            var sendScaledMouseState = function sendScaledMouseState(mouseState) {
 
                 // Scale event by current scale
                 var scaledState = new Guacamole.Mouse.State(
@@ -225,6 +258,25 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Send mouse event
                 client.sendMouseState(scaledState);
+
+            };
+
+            /*
+             * MOUSE
+             */
+
+            // Watch for changes to mouse emulation mode
+            // Send all received mouse events to the client
+            mouse.onmousedown =
+            mouse.onmouseup   =
+            mouse.onmousemove = function(mouseState) {
+
+                if (!client || !display)
+                    return;
+
+                // Send mouse state, show cursor if necessary
+                display.showCursor(!localCursor);
+                sendScaledMouseState(mouseState);
 
             };
 
@@ -307,48 +359,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     // Ensure software cursor is shown
                     display.showCursor(true);
 
-                    // Determine mouse position within view
-                    var mouse_view_x = mouseState.x + displayContainer.offsetLeft - main.scrollLeft;
-                    var mouse_view_y = mouseState.y + displayContainer.offsetTop  - main.scrollTop;
-
-                    // Determine viewport dimensions
-                    var view_width  = main.offsetWidth;
-                    var view_height = main.offsetHeight;
-
-                    // Determine scroll amounts based on mouse position relative to document
-
-                    var scroll_amount_x;
-                    if (mouse_view_x > view_width)
-                        scroll_amount_x = mouse_view_x - view_width;
-                    else if (mouse_view_x < 0)
-                        scroll_amount_x = mouse_view_x;
-                    else
-                        scroll_amount_x = 0;
-
-                    var scroll_amount_y;
-                    if (mouse_view_y > view_height)
-                        scroll_amount_y = mouse_view_y - view_height;
-                    else if (mouse_view_y < 0)
-                        scroll_amount_y = mouse_view_y;
-                    else
-                        scroll_amount_y = 0;
-
-                    // Scroll (if necessary) to keep mouse on screen.
-                    main.scrollLeft += scroll_amount_x;
-                    main.scrollTop  += scroll_amount_y;
-
-                    // Scale event by current scale
-                    var scaledState = new Guacamole.Mouse.State(
-                            mouseState.x / display.getScale(),
-                            mouseState.y / display.getScale(),
-                            mouseState.left,
-                            mouseState.middle,
-                            mouseState.right,
-                            mouseState.up,
-                            mouseState.down);
-
-                    // Send mouse event
-                    client.sendMouseState(scaledState);
+                    // Send mouse state, ensure cursor is visible
+                    scrollToMouse(mouseState);
+                    sendScaledMouseState(mouseState);
 
                 };
 
