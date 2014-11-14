@@ -198,6 +198,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
+            /*
+             * MOUSE
+             */
+                
+            // Watch for changes to mouse emulation mode
             // Send all received mouse events to the client
             mouse.onmousedown =
             mouse.onmouseup   =
@@ -229,11 +234,19 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 display.showCursor(false);
             };
 
+            /*
+             * CLIPBOARD
+             */
+
             // Update active client if clipboard changes
             $scope.$watch('clipboard', function clipboardChange(data) {
                 if (client)
                     client.setClipboard(data);
             });
+
+            /*
+             * CONNECT / RECONNECT
+             */
 
             // Connect to given ID whenever ID changes
             $scope.$watch('id', function(id) {
@@ -280,6 +293,10 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             });
 
+            /*
+             * MOUSE EMULATION
+             */
+                
             // Watch for changes to mouse emulation mode
             $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
 
@@ -364,6 +381,10 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             });
 
+            /*
+             * DISPLAY SCALE / SIZE
+             */
+                
             // Adjust scale if modified externally
             $scope.$watch('clientProperties.scale', function changeScale(scale) {
 
@@ -399,18 +420,32 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 $scope.safeApply(updateDisplayScale);
             });
             
+            /*
+             * KEYBOARD
+             */
+                
             var show_keyboard_gesture_possible = true;
             
             // Handle Keyboard events
             function __send_key(pressed, keysym) {
                 client.sendKeyEvent(pressed, keysym);
-                return false;
+                return true;
             }
 
-            $scope.keydown = function keydown (keysym, keyboard) {
+            /**
+             * Handles a keydown event from the given Guacamole.Keyboard,
+             * sending the corresponding key event to the Guacamole client.
+             *
+             * @param {Number} keysym The keysym that was pressed.
+             * @param {Guacamole.Keyboard} keyboard The source of the keyboard
+             *                                      event.
+             * @returns {Boolean} true if the default action of the key should
+             *                    be prevented, false otherwise.
+             */
+            var handleKeydown = function handleKeydown(keysym, keyboard) {
 
                 // Only handle key events if client is attached
-                if (!client) return true;
+                if (!client) return false;
 
                 // Handle Ctrl-shortcuts specifically
                 if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
@@ -418,7 +453,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     // Allow event through if Ctrl+C or Ctrl+X
                     if (keyboard.pressed[0x63] || keyboard.pressed[0x78]) {
                         __send_key(1, keysym);
-                        return true;
+                        return false;
                     }
 
                     // If Ctrl+V, wait until after paste event (next event loop)
@@ -426,7 +461,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                         window.setTimeout(function after_paste() {
                             __send_key(1, keysym);
                         }, 10);
-                        return true;
+                        return false;
                     }
 
                 }
@@ -440,7 +475,17 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
-            $scope.keyup = function keyup(keysym, keyboard) {
+            /**
+             * Handles a keyup event from the given Guacamole.Keyboard,
+             * sending the corresponding key event to the Guacamole client.
+             *
+             * @param {Number} keysym The keysym that was released.
+             * @param {Guacamole.Keyboard} keyboard The source of the keyboard
+             *                                      event.
+             * @returns {Boolean} true if the default action of the key should
+             *                    be prevented, false otherwise.
+             */
+            var handleKeyup = function handleKeyup(keysym, keyboard) {
 
                 // Only handle key events if client is attached
                 if (!client) return true;
@@ -476,7 +521,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // Listen for broadcasted keydown events and fire the appropriate listeners
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
                 if ($scope.clientProperties.keyboardEnabled) {
-                    var preventDefault = $scope.keydown(keysym, keyboard);
+                    var preventDefault = handleKeydown(keysym, keyboard);
                     if (preventDefault) {
                         event.preventDefault();
                     }
@@ -486,13 +531,17 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // Listen for broadcasted keyup events and fire the appropriate listeners
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
                 if ($scope.clientProperties.keyboardEnabled) {
-                    var preventDefault = $scope.keyup(keysym, keyboard);
+                    var preventDefault = handleKeyup(keysym, keyboard);
                     if(preventDefault) {
                         event.preventDefault();
                     }
                 }
             });
-            
+
+            /*
+             * END CLIENT DIRECTIVE                                           
+             */
+                
         }]
     };
 }]);
