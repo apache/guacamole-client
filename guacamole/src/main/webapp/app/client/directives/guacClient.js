@@ -24,7 +24,7 @@
  * A directive for the guacamole client.
  */
 angular.module('client').directive('guacClient', [function guacClient() {
-    
+
     return {
         // Element only
         restrict: 'E',
@@ -56,8 +56,36 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 }
             };
 
-            $scope.guacClient = null;
             $scope.clipboard = "";
+
+            /**
+             * Whether the local, hardware mouse cursor is in use.
+             * 
+             * @type Boolean
+             */
+            var localCursor = false;
+
+            /**
+             * The current Guacamole client instance.
+             * 
+             * @type Guacamole.Client 
+             */
+            var client = null;
+
+            /**
+             * The display of the current Guacamole client instance.
+             * 
+             * @type Guacamole.Display
+             */
+            var display = null;
+
+            /**
+             * The element associated with the display of the current
+             * Guacamole client instance.
+             *
+             * @type Element
+             */
+            var displayElement = null;
 
             var $window             = $injector.get('$window'),
                 guacAudio           = $injector.get('guacAudio'),
@@ -75,25 +103,22 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             var updateDisplayScale = function updateDisplayScale() {
 
-                var guacClient = $scope.guacClient;
-                if (!guacClient) return;
-
-                var guacDisplay = guacClient.getDisplay();
+                if (!display) return;
 
                 // Calculate scale to fit screen
                 $scope.clientProperties.minScale = Math.min(
-                    main.offsetWidth  / Math.max(guacDisplay.getWidth(),  1),
-                    main.offsetHeight / Math.max(guacDisplay.getHeight(), 1)
+                    main.offsetWidth  / Math.max(display.getWidth(),  1),
+                    main.offsetHeight / Math.max(display.getHeight(), 1)
                 );
 
                 // Calculate appropriate maximum zoom level
                 $scope.clientProperties.maxScale = Math.max($scope.clientProperties.minScale, 3);
 
                 // Clamp zoom level, maintain auto-fit
-                if (guacDisplay.getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
+                if (display.getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
                     $scope.clientProperties.scale = $scope.clientProperties.minScale;
 
-                else if (guacDisplay.getScale() > $scope.clientProperties.maxScale)
+                else if (display.getScale() > $scope.clientProperties.maxScale)
                     $scope.clientProperties.scale = $scope.clientProperties.maxScale;
 
             };
@@ -140,16 +165,16 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             // Update active client if clipboard changes
             $scope.$watch('clipboard', function clipboardChange(data) {
-                if ($scope.guacClient)
-                    $scope.guacClient.setClipboard(data);
+                if (client)
+                    client.setClipboard(data);
             });
 
             // Connect to given ID whenever ID changes
             $scope.$watch('id', function(id) {
 
                 // If a client is already attached, ensure it is disconnected
-                if ($scope.guacClient)
-                    $scope.guacClient.disconnect();
+                if (client)
+                    client.disconnect();
 
                 // Only proceed if a new client is attached
                 if (!id)
@@ -157,40 +182,45 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Get new client instance
                 var tunnel = guacTunnelFactory.getInstance();
-                var guacClient = guacClientFactory.getInstance(tunnel);
-                var guacDisplay = guacClient.getDisplay();
-                var guacDisplayElement = guacDisplay.getElement();
+                client = guacClientFactory.getInstance(tunnel);
 
-                $scope.guacClient = guacClient;
+                // Init display
+                display = client.getDisplay();
+                display.scale($scope.clientProperties.scale);
 
-                // Replace any existing display with the current display
-                $element.find('.display').html("").append(guacDisplayElement);
+                // Update the scale of the display when the client display size changes.
+                display.onresize = function() {
+                    $scope.safeApply(updateDisplayScale);
+                };
+
+                // Add display element
+                displayElement = display.getElement();
+                $element.find('.display').html("").append(displayElement);
 
                 // Do nothing when the display element is clicked on.
-                guacDisplayElement.onclick = function(e) {
+                displayElement.onclick = function(e) {
                     e.preventDefault();
                     return false;
                 };
 
-                // Update the scale of the display when the client display size changes.
-                guacDisplay.onresize = function() {
-                    $scope.safeApply(updateDisplayScale);
-                };
-
-                // Whether the local, hardware mouse cursor is in use
-                var localCursor = false;
+                // Connect
+                client.connect(getConnectString());
 
                 // Directly handle mouse events on client display
-                var mouse = new Guacamole.Mouse(guacDisplayElement);
-                mouse.onmousedown = mouse.onmouseup = mouse.onmousemove = function(mouseState) {
+                var mouse = new Guacamole.Mouse(displayElement);
+                mouse.onmousedown =
+                mouse.onmouseup   =
+                mouse.onmousemove = function(mouseState) {
+
+                    if (!client || !display) return;
 
                     // Hide or show software cursor depending on local cursor state
-                    guacDisplay.showCursor(!localCursor);
+                    display.showCursor(!localCursor);
 
                     // Scale event by current scale
                     var scaledState = new Guacamole.Mouse.State(
-                            mouseState.x / guacDisplay.getScale(),
-                            mouseState.y / guacDisplay.getScale(),
+                            mouseState.x / display.getScale(),
+                            mouseState.y / display.getScale(),
                             mouseState.left,
                             mouseState.middle,
                             mouseState.right,
@@ -198,23 +228,24 @@ angular.module('client').directive('guacClient', [function guacClient() {
                             mouseState.down);
 
                     // Send mouse event
-                    guacClient.sendMouseState(scaledState);
+                    client.sendMouseState(scaledState);
 
                 };
 
                 // Hide software cursor when mouse leaves display
                 mouse.onmouseout = function() {
-                    guacDisplay.showCursor(false);
+                    if (!display) return;
+                    display.showCursor(false);
                 };
 
-                // Use local cursor if possible.
-                guacDisplay.oncursor = function(canvas, x, y) {
+                // Use local cursor if possible, update localCursor flag
+                display.oncursor = function(canvas, x, y) {
                     localCursor = mouse.setCursor(canvas, x, y);
                 };
 
                 // Mouse emulation objects
-                var touchScreen = new Guacamole.Mouse.Touchscreen(guacDisplayElement);
-                var touchPad    = new Guacamole.Mouse.Touchpad(guacDisplayElement);
+                var touchScreen = new Guacamole.Mouse.Touchscreen(displayElement);
+                var touchPad    = new Guacamole.Mouse.Touchpad(displayElement);
 
                 // Watch for changes to mouse emulation mode
                 $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
@@ -222,11 +253,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     var handleMouseState = function handleMouseState(mouseState) {
 
                         // Ensure software cursor is shown
-                        guacDisplay.showCursor(true);
+                        display.showCursor(true);
 
                         // Determine mouse position within view
-                        var mouse_view_x = mouseState.x + guacDisplayElement.offsetLeft - main.scrollLeft;
-                        var mouse_view_y = mouseState.y + guacDisplayElement.offsetTop  - main.scrollTop;
+                        var mouse_view_x = mouseState.x + displayElement.offsetLeft - main.scrollLeft;
+                        var mouse_view_y = mouseState.y + displayElement.offsetTop  - main.scrollTop;
 
                         // Determine viewport dimensions
                         var view_width  = main.offsetWidth;
@@ -256,8 +287,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                         // Scale event by current scale
                         var scaledState = new Guacamole.Mouse.State(
-                                mouseState.x / guacDisplay.getScale(),
-                                mouseState.y / guacDisplay.getScale(),
+                                mouseState.x / display.getScale(),
+                                mouseState.y / display.getScale(),
                                 mouseState.left,
                                 mouseState.middle,
                                 mouseState.right,
@@ -265,7 +296,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                                 mouseState.down);
 
                         // Send mouse event
-                        guacClient.sendMouseState(scaledState);
+                        client.sendMouseState(scaledState);
 
                     };
 
@@ -298,9 +329,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 });
 
-                // Connect
-                guacClient.connect(getConnectString());
-
             });
 
             // Adjust scale if modified externally
@@ -319,8 +347,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     main.style.overflow = "auto";
 
                 // Apply scale if client attached
-                if ($scope.guacClient)
-                    $scope.guacClient.getDisplay().scale(scale);
+                if (display)
+                    display.scale(scale);
                 
                 if (scale !== $scope.clientProperties.scale)
                     $scope.clientProperties.scale = scale;
@@ -342,14 +370,14 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // Handle Keyboard events
             function __send_key(pressed, keysym) {
-                $scope.guacClient.sendKeyEvent(pressed, keysym);
+                client.sendKeyEvent(pressed, keysym);
                 return false;
             }
 
             $scope.keydown = function keydown (keysym, keyboard) {
 
                 // Only handle key events if client is attached
-                if (!$scope.guacClient) return true;
+                if (!client) return true;
 
                 // Handle Ctrl-shortcuts specifically
                 if (keyboard.modifiers.ctrl && !keyboard.modifiers.alt && !keyboard.modifiers.shift) {
@@ -382,7 +410,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             $scope.keyup = function keyup(keysym, keyboard) {
 
                 // Only handle key events if client is attached
-                if (!$scope.guacClient) return true;
+                if (!client) return true;
 
                 // If lifting up on shift, toggle menu visibility if rest of gesture
                 // conditions satisfied
