@@ -33,9 +33,14 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
      * provided tunnel.
      *
      * @param {Guacamole.Tunnel} tunnel The tunnel to connect through.
+     * @param {Scope} [$scope] The current scope. If ommitted, the root scope
+     *                         will be used.
      * @returns {Guacamole.Client} A new Guacamole client instance.
      */
-    service.getInstance = function getClientInstance(tunnel) {
+    service.getInstance = function getClientInstance(tunnel, $scope) {
+
+        // Use root scope if no other scope provided
+        $scope = $scope || $rootScope;
 
         // Instantiate client
         var guacClient  = new Guacamole.Client(tunnel);

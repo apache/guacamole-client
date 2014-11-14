@@ -32,9 +32,14 @@ angular.module('client').factory('guacTunnelFactory', ['$rootScope', '$window',
      * Returns a new Guacamole tunnel instance, using an implementation that is
      * supported by the web browser.
      *
+     * @param {Scope} [$scope] The current scope. If ommitted, the root scope
+     *                         will be used.
      * @returns {Guacamole.Tunnel} A new Guacamole tunnel instance.
      */
-    service.getInstance = function getTunnelInstance() {
+    service.getInstance = function getTunnelInstance($scope) {
+
+        // Use root scope if no other scope provided
+        $scope = $scope || $rootScope;
 
         var tunnel;
         
