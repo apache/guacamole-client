@@ -38,37 +38,37 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
     service.getInstance = function getClientInstance(tunnel) {
 
         // Instantiate client
-        var guac = new Guacamole.Client(tunnel);
+        var guacClient  = new Guacamole.Client(tunnel);
 
         /*
          * Fire guacClientStateChange events when client state changes.
          */
-        guac.onstatechange = function onClientStateChange(clientState) {
+        guacClient.onstatechange = function onClientStateChange(clientState) {
 
             switch (clientState) {
 
                 // Idle
                 case 0:
-                    $rootScope.$broadcast('guacClientStateChange', guac, "idle");
+                    $rootScope.$broadcast('guacClientStateChange', guacClient, "idle");
                     break;
 
                 // Connecting
                 case 1:
-                    $rootScope.$broadcast('guacClientStateChange', guac, "connecting");
+                    $rootScope.$broadcast('guacClientStateChange', guacClient, "connecting");
                     break;
 
                 // Connected + waiting
                 case 2:
-                    $rootScope.$broadcast('guacClientStateChange', guac, "waiting");
+                    $rootScope.$broadcast('guacClientStateChange', guacClient, "waiting");
                     break;
 
                 // Connected
                 case 3:
-                    $rootScope.$broadcast('guacClientStateChange', guac, "connected");
+                    $rootScope.$broadcast('guacClientStateChange', guacClient, "connected");
 
                     // Update server clipboard with current data
                     if ($rootScope.clipboard)
-                        guac.setClipboard($rootScope.clipboard);
+                        guacClient.setClipboard($rootScope.clipboard);
 
                     break;
 
@@ -83,27 +83,27 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
         /*
          * Fire guacClientName events when a new name is received.
          */
-        guac.onname = function onClientName(name) {
-            $rootScope.$broadcast('guacClientName', guac, name);
+        guacClient.onname = function onClientName(name) {
+            $rootScope.$broadcast('guacClientName', guacClient, name);
         };
 
         /*
          * Disconnect and fire guacClientError when the client receives an
          * error.
          */
-        guac.onerror = function onClientError(status) {
+        guacClient.onerror = function onClientError(status) {
 
             // Disconnect, if connected
-            guac.disconnect();
+            guacClient.disconnect();
             
-            $rootScope.$broadcast('guacClientError', guac, status.code);
+            $rootScope.$broadcast('guacClientError', guacClient, status.code);
 
         };
 
         /*
          * Fire guacClientClipboard events after new clipboard data is received.
          */
-        guac.onclipboard = function onClientClipboard(stream, mimetype) {
+        guacClient.onclipboard = function onClientClipboard(stream, mimetype) {
 
             // Only text/plain is supported for now
             if (mimetype !== "text/plain") {
@@ -122,7 +122,7 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
 
             // Emit event when done
             reader.onend = function clipboard_text_end() {
-                $rootScope.$broadcast('guacClientClipboard', guac, data);
+                $rootScope.$broadcast('guacClientClipboard', guacClient, data);
             };
 
         };
@@ -131,23 +131,23 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
          * Fire guacFileStart, guacFileProgress, and guacFileEnd events during
          * the receipt of files.
          */
-        guac.onfile = function onClientFile(stream, mimetype, filename) {
+        guacClient.onfile = function onClientFile(stream, mimetype, filename) {
 
             // Begin file download
-            var guacFileStartEvent = $rootScope.$broadcast('guacFileStart', guac, stream.index, mimetype, filename);
+            var guacFileStartEvent = $rootScope.$broadcast('guacFileStart', guacClient, stream.index, mimetype, filename);
             if (!guacFileStartEvent.defaultPrevented) {
 
                 var blob_reader = new Guacamole.BlobReader(stream, mimetype);
 
                 // Update progress as data is received
                 blob_reader.onprogress = function onprogress() {
-                    $rootScope.$broadcast('guacFileProgress', guac, stream.index, mimetype, filename);
+                    $rootScope.$broadcast('guacFileProgress', guacClient, stream.index, mimetype, filename);
                     stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
                 };
 
                 // When complete, prompt for download
                 blob_reader.onend = function onend() {
-                    $rootScope.$broadcast('guacFileEnd', guac, stream.index, mimetype, filename);
+                    $rootScope.$broadcast('guacFileEnd', guacClient, stream.index, mimetype, filename);
                 };
 
                 stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
@@ -160,7 +160,7 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
 
         };
 
-        return guac;
+        return guacClient;
         
     };
 
