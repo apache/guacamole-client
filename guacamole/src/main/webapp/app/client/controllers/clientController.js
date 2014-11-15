@@ -78,13 +78,13 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.clientProperties = new ClientProperties();
     
     // Hide menu by default
-    $scope.menuShown        = false;
+    $scope.menuShown = false;
     
     // Convenience method for closing the menu
     $scope.closeMenu = function closeMenu() {
         $scope.menuShown = false;
     };
-    
+
     // Update the model when clipboard data received from client
     $scope.$on('guacClientClipboard', function clipboardDataReceived(clipboardData) {
        $scope.guacClipboard = clipboardData; 
@@ -99,19 +99,19 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.connectionParameters = $routeParams.params || '';
 
     // Pull connection name from server
-    switch ($scope.type) {
+    switch ($routeParams.type) {
 
         // Connection
         case 'c':
-            connectionDAO.getConnection($scope.id).success(function (connection) {
-                $scope.page.title = connection.name;
+            connectionDAO.getConnection($routeParams.id).success(function (connection) {
+                $scope.connectionName = $scope.page.title = connection.name;
             });
             break;
 
         // Connection group
         case 'g':
-            connectionGroupDAO.getConnectionGroup($scope.id).success(function (group) {
-                $scope.page.title = group.name;
+            connectionGroupDAO.getConnectionGroup($routeParams.id).success(function (group) {
+                $scope.connectionName = $scope.page.title = group.name;
             });
             break;
 

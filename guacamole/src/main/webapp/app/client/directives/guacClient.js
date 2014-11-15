@@ -35,7 +35,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // Parameters for initially connecting
             id                      : '=',
-            connectionName          : '=', 
             connectionParameters    : '='
         },
         templateUrl: 'app/client/templates/guacClient.html',
