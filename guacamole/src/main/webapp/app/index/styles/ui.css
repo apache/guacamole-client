@@ -255,14 +255,6 @@ div.section {
     text-align: center;
 }
 
-.dialog.status {
-    width: 3in;
-}
-
-.dialog.status > * {
-    margin: 0.25em;
-};
-
 /*
  * List elements
  */

@@ -190,65 +190,6 @@ div#viewportClone {
     visibility: hidden;
 }
 
-@keyframes show-dialog {
-    0%   {transform: scale(0.75); }
-    100% {transform: scale(1); }
-}
-
-@-webkit-keyframes show-dialog {
-    0%   {-webkit-transform: scale(0.75); }
-    100% {-webkit-transform: scale(1); }
-}
-
-.dialog {
-
-    animation-name: show-dialog;
-    animation-timing-function: linear;
-    animation-duration: 0.125s;
-    -webkit-animation-name: show-dialog;
-    -webkit-animation-timing-function: linear;
-    -webkit-animation-duration: 0.125s;
-    
-    max-width: 75%;
-    max-height: none;
-    width: 4in;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-
-    padding: 0.5em;
-    text-align: left;
-    
-}
-
-.guac-error .dialog {
-    background: #FDD;
-    border: 1px solid #964040;
-}
-
-.dialog .title {
-    font-size: 1.1em;
-    font-weight: bold;
-    border-bottom: 1px solid black;
-    margin-bottom: 0.5em;
-}
-
-.dialog .status, .dialog .countdown, .dialog .reconnect {
-    margin: 0;
-    padding: 0.5em;
-    font-size: 0.8em;
-}
-
-.dialog .reconnect {
-    display: none;
-}
-
-.guac-error .dialog .reconnect {
-    display: block;
-    text-align: center;
-}
-
 p.hint {
     
     border: 0.25em solid rgba(255, 255, 255, 0.25);
