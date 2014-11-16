@@ -32,14 +32,10 @@ angular.module('client').factory('guacTunnelFactory', ['$rootScope', '$window',
      * Returns a new Guacamole tunnel instance, using an implementation that is
      * supported by the web browser.
      *
-     * @param {Scope} [$scope] The current scope. If ommitted, the root scope
-     *                         will be used.
+     * @param {Scope} $scope The current scope.
      * @returns {Guacamole.Tunnel} A new Guacamole tunnel instance.
      */
     service.getInstance = function getTunnelInstance($scope) {
-
-        // Use root scope if no other scope provided
-        $scope = $scope || $rootScope;
 
         var tunnel;
         
@@ -56,32 +52,36 @@ angular.module('client').factory('guacTunnelFactory', ['$rootScope', '$window',
         
         // Fire events for tunnel errors
         tunnel.onerror = function onTunnelError(status) {
-            $rootScope.$broadcast('guacTunnelError', tunnel, status.code);
+            $scope.safeApply(function() {
+                $scope.$emit('guacTunnelError', tunnel, status.code);
+            });
         };
         
         // Fire events for tunnel state changes
         tunnel.onstatechange = function onTunnelStateChange(state) {
+            $scope.safeApply(function() {
+                
+                switch (state) {
+                    
+                    case Guacamole.Tunnel.State.CONNECTING:
+                        $scope.$emit('guacTunnelStateChange', tunnel, 'connecting');
+                        break;
+                    
+                    case Guacamole.Tunnel.State.OPEN:
+                        $scope.$emit('guacTunnelStateChange', tunnel, 'open');
+                        break;
+                    
+                    case Guacamole.Tunnel.State.CLOSED:
+                        $scope.$emit('guacTunnelStateChange', tunnel, 'closed');
+                        break;
+                    
+                }
             
-            switch (state) {
-                
-                case Guacamole.Tunnel.State.CONNECTING:
-                    $rootScope.$broadcast('guacTunnelStateChange', tunnel, 'connecting');
-                    break;
-                
-                case Guacamole.Tunnel.State.OPEN:
-                    $rootScope.$broadcast('guacTunnelStateChange', tunnel, 'open');
-                    break;
-                
-                case Guacamole.Tunnel.State.CLOSED:
-                    $rootScope.$broadcast('guacTunnelStateChange', tunnel, 'closed');
-                    break;
-                
-            }
-            
+            });
         };
         
         return tunnel;
-        
+
     };
 
     return service;

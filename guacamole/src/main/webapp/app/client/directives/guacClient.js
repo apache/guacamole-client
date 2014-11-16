@@ -312,7 +312,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Get new client instance
                 var tunnel = guacTunnelFactory.getInstance($scope);
-                client = guacClientFactory.getInstance(tunnel, $scope);
+                client = guacClientFactory.getInstance($scope, tunnel);
 
                 // Init display
                 display = client.getDisplay();

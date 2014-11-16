@@ -32,15 +32,11 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
      * Returns a new Guacamole client instance which connects using the
      * provided tunnel.
      *
+     * @param {Scope} $scope The current scope.
      * @param {Guacamole.Tunnel} tunnel The tunnel to connect through.
-     * @param {Scope} [$scope] The current scope. If ommitted, the root scope
-     *                         will be used.
      * @returns {Guacamole.Client} A new Guacamole client instance.
      */
-    service.getInstance = function getClientInstance(tunnel, $scope) {
-
-        // Use root scope if no other scope provided
-        $scope = $scope || $rootScope;
+    service.getInstance = function getClientInstance($scope, tunnel) {
 
         // Instantiate client
         var guacClient  = new Guacamole.Client(tunnel);
@@ -49,47 +45,52 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
          * Fire guacClientStateChange events when client state changes.
          */
         guacClient.onstatechange = function onClientStateChange(clientState) {
+            $scope.safeApply(function() {
 
-            switch (clientState) {
+                switch (clientState) {
 
-                // Idle
-                case 0:
-                    $rootScope.$broadcast('guacClientStateChange', guacClient, "idle");
-                    break;
+                    // Idle
+                    case 0:
+                        $scope.$emit('guacClientStateChange', guacClient, "idle");
+                        break;
 
-                // Connecting
-                case 1:
-                    $rootScope.$broadcast('guacClientStateChange', guacClient, "connecting");
-                    break;
+                    // Connecting
+                    case 1:
+                        $scope.$emit('guacClientStateChange', guacClient, "connecting");
+                        break;
 
-                // Connected + waiting
-                case 2:
-                    $rootScope.$broadcast('guacClientStateChange', guacClient, "waiting");
-                    break;
+                    // Connected + waiting
+                    case 2:
+                        $scope.$emit('guacClientStateChange', guacClient, "waiting");
+                        break;
 
-                // Connected
-                case 3:
-                    $rootScope.$broadcast('guacClientStateChange', guacClient, "connected");
+                    // Connected
+                    case 3:
+                        $scope.$emit('guacClientStateChange', guacClient, "connected");
 
-                    // Update server clipboard with current data
-                    if ($rootScope.clipboard)
-                        guacClient.setClipboard($rootScope.clipboard);
+                        // Update server clipboard with current data
+                        if ($scope.clipboard)
+                            guacClient.setClipboard($scope.clipboard);
 
-                    break;
+                        break;
 
-                // Disconnecting / disconnected are handled by tunnel instead
-                case 4:
-                case 5:
-                    break;
+                    // Disconnecting / disconnected are handled by tunnel instead
+                    case 4:
+                    case 5:
+                        break;
 
-            }
+                }
+
+            });
         };
         
         /*
          * Fire guacClientName events when a new name is received.
          */
         guacClient.onname = function onClientName(name) {
-            $rootScope.$broadcast('guacClientName', guacClient, name);
+            $scope.safeApply(function() {
+                $scope.$emit('guacClientName', guacClient, name);
+            });
         };
 
         /*
@@ -97,39 +98,43 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
          * error.
          */
         guacClient.onerror = function onClientError(status) {
+            $scope.safeApply(function() {
 
-            // Disconnect, if connected
-            guacClient.disconnect();
-            
-            $rootScope.$broadcast('guacClientError', guacClient, status.code);
+                // Disconnect, if connected
+                guacClient.disconnect();
+                
+                $scope.$emit('guacClientError', guacClient, status.code);
 
+            });
         };
 
         /*
          * Fire guacClientClipboard events after new clipboard data is received.
          */
         guacClient.onclipboard = function onClientClipboard(stream, mimetype) {
+            $scope.safeApply(function() {
 
-            // Only text/plain is supported for now
-            if (mimetype !== "text/plain") {
-                stream.sendAck("Only text/plain supported", Guacamole.Status.Code.UNSUPPORTED);
-                return;
-            }
+                // Only text/plain is supported for now
+                if (mimetype !== "text/plain") {
+                    stream.sendAck("Only text/plain supported", Guacamole.Status.Code.UNSUPPORTED);
+                    return;
+                }
 
-            var reader = new Guacamole.StringReader(stream);
-            var data = "";
+                var reader = new Guacamole.StringReader(stream);
+                var data = "";
 
-            // Append any received data to buffer
-            reader.ontext = function clipboard_text_received(text) {
-                data += text;
-                stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-            };
+                // Append any received data to buffer
+                reader.ontext = function clipboard_text_received(text) {
+                    data += text;
+                    stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
+                };
 
-            // Emit event when done
-            reader.onend = function clipboard_text_end() {
-                $rootScope.$broadcast('guacClientClipboard', guacClient, data);
-            };
+                // Emit event when done
+                reader.onend = function clipboard_text_end() {
+                    $scope.$emit('guacClientClipboard', guacClient, data);
+                };
 
+            });
         };
 
         /*
@@ -137,32 +142,34 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
          * the receipt of files.
          */
         guacClient.onfile = function onClientFile(stream, mimetype, filename) {
+            $scope.safeApply(function() {
 
-            // Begin file download
-            var guacFileStartEvent = $rootScope.$broadcast('guacFileStart', guacClient, stream.index, mimetype, filename);
-            if (!guacFileStartEvent.defaultPrevented) {
+                // Begin file download
+                var guacFileStartEvent = $scope.$emit('guacFileStart', guacClient, stream.index, mimetype, filename);
+                if (!guacFileStartEvent.defaultPrevented) {
 
-                var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+                    var blob_reader = new Guacamole.BlobReader(stream, mimetype);
 
-                // Update progress as data is received
-                blob_reader.onprogress = function onprogress() {
-                    $rootScope.$broadcast('guacFileProgress', guacClient, stream.index, mimetype, filename);
-                    stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-                };
+                    // Update progress as data is received
+                    blob_reader.onprogress = function onprogress() {
+                        $scope.$emit('guacFileProgress', guacClient, stream.index, mimetype, filename);
+                        stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
+                    };
 
-                // When complete, prompt for download
-                blob_reader.onend = function onend() {
-                    $rootScope.$broadcast('guacFileEnd', guacClient, stream.index, mimetype, filename);
-                };
+                    // When complete, prompt for download
+                    blob_reader.onend = function onend() {
+                        $scope.$emit('guacFileEnd', guacClient, stream.index, mimetype, filename);
+                    };
 
-                stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
+                    stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
+                    
+                }
                 
-            }
-            
-            // Respond with UNSUPPORTED if download (default action) canceled within event handler
-            else
-                stream.sendAck("Download canceled", Guacamole.Status.Code.UNSUPPORTED);
+                // Respond with UNSUPPORTED if download (default action) canceled within event handler
+                else
+                    stream.sendAck("Download canceled", Guacamole.Status.Code.UNSUPPORTED);
 
+            });
         };
 
         return guacClient;
