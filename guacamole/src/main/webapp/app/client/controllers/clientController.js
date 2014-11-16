@@ -178,16 +178,17 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show status dialog when client status changes
     $scope.$on('guacClientStateChange', function clientStateChangeListener(event, client, status) {
 
-        // Hide previous status, if any
-        statusModal.deactivate();
-
         // Show new status if not yet connected
         if (status !== "connected") {
-            statusModal.activate({
+            statusModal.showStatus({
                 title: "client.status.connectingStatusTitle",
                 text: "client.status.clientStates." + status
             });
         }
+
+        // Hide status upon connecting
+        else
+            statusModal.showStatus(false);
 
     });
 
@@ -197,14 +198,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Disconnect
         $scope.id = null;
 
-        // Hide any existing status
-        statusModal.deactivate();
-
         // Determine translation name of error
         var errorName = (status in CLIENT_ERRORS) ? status.toString(16) : "DEFAULT";
 
         // Show error status
-        statusModal.activate({
+        statusModal.showStatus({
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.clientErrors." + errorName,
@@ -216,12 +214,9 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show status dialog when tunnel status changes
     $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, tunnel, status) {
 
-        // Hide previous status, if any
-        statusModal.deactivate();
-
         // Show new status only if disconnected
         if (status === "closed") {
-            statusModal.activate({
+            statusModal.showStatus({
                 title: "client.status.closedStatusTitle",
                 text: "client.status.tunnelStates." + status
             });
@@ -235,14 +230,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Disconnect
         $scope.id = null;
 
-        // Hide any existing status
-        statusModal.deactivate();
-
         // Determine translation name of error
         var errorName = (status in TUNNEL_ERRORS) ? status.toString(16) : "DEFAULT";
 
         // Show error status
-        statusModal.activate({
+        statusModal.showStatus({
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.tunnelErrors." + errorName,

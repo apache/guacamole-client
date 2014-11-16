@@ -29,20 +29,18 @@ angular.module('manage').controller('statusController', ['$scope', '$rootScope',
     var statusModal = $injector.get('statusModal');
 
     /**
-     * Fires a guacStatusAction event signalling a chosen action. By default,
-     * the status modal will be closed, but this can be prevented by calling
-     * preventDefault() on the event.
+     * Fires a guacStatusAction event signalling a chosen action. The status
+     * modal will be cloased prior to firing the action event.
      *
      * @param {String} action The name of the action.
      */
     $scope.fireAction = function fireAction(action) {
 
-        // Fire action event
-        var actionEvent = $rootScope.$broadcast('guacStatusAction', action);
+        // Hide status modal
+        statusModal.showStatus(false);
 
-        // Close modal unless default is prevented
-        if (!actionEvent.defaultPrevented)
-            statusModal.deactivate();
+        // Fire action event
+        $rootScope.$broadcast('guacStatusAction', action);
 
     };
 

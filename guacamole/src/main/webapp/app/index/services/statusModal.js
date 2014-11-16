@@ -26,11 +26,53 @@
 angular.module('manage').factory('statusModal', ['btfModal', 
         function statusModal(btfModal) {
 
+    var service = {};
+
     // Create the modal object to be used later to actually create the modal
-    return btfModal({
+    var modalService = btfModal({
         controller: 'statusController',
         controllerAs: 'modal',
         templateUrl: 'app/index/templates/status.html'
     });
+
+    /**
+     * Whether the status modal is currently displayed.
+     *
+     * @type Boolean
+     */
+    service.shown = false;
+
+    /**
+     * Shows or hides the status modal.
+     *
+     * @param {Boolean|Object} status The status to show, or false to hide the
+     *                                current status.
+     * @param {String} [status.title] The title of the status modal.
+     * @param {String} [status.text] The body text of the status modal.
+     * @param {String} [status.className] The CSS class name to apply to the
+     *                                    modal, in addition to the default
+     *                                    "dialog" and "status" classes.
+     * @param {String[]} [status.actions] Array of action names which
+     *                                    correspond to button captions. Each
+     *                                    action will be displayed as a button
+     *                                    within the status modal. Clickin a
+     *                                    button will fire a guacStatusAction
+     *                                    event.
+     */
+    service.showStatus = function showStatus(status) {
+
+        // Hide any existing status
+        modalService.deactivate();
+        service.shown = false;
+
+        // Show new status if requested
+        if (status) {
+            modalService.activate(status);
+            service.shown = true;
+        }
+
+    };
+
+    return service;
 
 }]);
