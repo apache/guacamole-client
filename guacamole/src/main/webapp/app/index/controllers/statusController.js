@@ -40,7 +40,7 @@ angular.module('manage').controller('statusController', ['$scope', '$rootScope',
         statusModal.showStatus(false);
 
         // Fire action event
-        $rootScope.$broadcast('guacStatusAction', action);
+        $rootScope.$broadcast('guacAction', action);
 
     };
 

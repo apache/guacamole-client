@@ -244,7 +244,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     });
 
     // Handle reconnect action
-    $scope.$on('guacStatusAction', function actionListener(event, action) {
+    $scope.$on('guacAction', function actionListener(event, action) {
 
         if (action === "client.action.reconnect")
             $scope.id = uniqueId;
