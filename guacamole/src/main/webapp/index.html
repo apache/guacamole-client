@@ -30,8 +30,28 @@ THE SOFTWARE.
         <link rel="stylesheet" type="text/css" href="guacamole.min.css">
     </head>
     <body ng-class="page.bodyClassName">
+
+        <!-- Global status/error dialog -->
+        <div ng-class="{shown: status}" class="status-outer">
+            <div class="status-middle">
+                <div class="status" ng-class="status.className">
+                    
+                    <!-- Status title -->
+                    <p ng-show="status.title" class="title">{{status.title | translate}}</p>
+                
+                    <!-- Status text -->
+                    <p ng-show="status.text" class="text">{{status.text | translate}}</p>
+                
+                    <!-- All action buttons, if any -->
+                    <div ng-show="status.actions && status.actions.length" class="buttons">
+                        <button ng-repeat="action in status.actions" ng-click="fireAction(action)">{{action | translate}}</button>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+        
         <div id="content" ng-view>
-            
         </div>
         
         <script type="text/javascript" src="guacamole.min.js"></script>

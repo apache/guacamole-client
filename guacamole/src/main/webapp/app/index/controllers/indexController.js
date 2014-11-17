@@ -69,7 +69,47 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // If the user is unknown, force a login
     if(!$scope.currentUserID)
         $location.path('/login');
-    
+
+    /**
+     * Shows or hides the status modal. If a status modal is currently shown,
+     * no further status modals will be shown until the current status is
+     * hidden.
+     *
+     * @param {Boolean|Object} status The status to show, or false to hide the
+     *                                current status.
+     * @param {String} [status.title] The title of the status modal.
+     * @param {String} [status.text] The body text of the status modal.
+     * @param {String} [status.className] The CSS class name to apply to the
+     *                                    modal, in addition to the default
+     *                                    "dialog" and "status" classes.
+     * @param {String[]} [status.actions] Array of action names which
+     *                                    correspond to button captions. Each
+     *                                    action will be displayed as a button
+     *                                    within the status modal. Clickin a
+     *                                    button will fire a guacStatusAction
+     *                                    event.
+     */
+    $scope.showStatus = function showStatus(status) {
+        if (!$scope.status || !status)
+            $scope.status = status;
+    };
+
+    /**
+     * Fires a guacStatusAction event signalling a chosen action. The status
+     * modal will be cloased prior to firing the action event.
+     *
+     * @param {String} action The name of the action.
+     */
+    $scope.fireAction = function fireAction(action) {
+
+        // Hide status modal
+        $scope.status = false;
+
+        // Fire action event
+        $scope.$broadcast('guacAction', action);
+
+    };
+           
     // Allow the permissions to be reloaded elsewhere if needed
     $scope.loadBasicPermissions = function loadBasicPermissions() {
         

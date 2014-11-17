@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-.dialog-container {
+.status-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -30,7 +30,7 @@
     padding: 1em;
 }
 
-.dialog-outer {
+.status-outer {
     display: table;
     height: 100%;
     width: 100%;
@@ -38,34 +38,17 @@
     left: 0;
     top: 0;
     background: rgba(0, 0, 0, 0.5);
+    z-index: 1;
 }
 
-.dialog-middle {
+.status-middle {
     width: 100%;
     text-align: center;
     display: table-cell;
     vertical-align: middle;
 }
 
-@keyframes show-dialog {
-    0%   {transform: scale(0.75); }
-    100% {transform: scale(1); }
-}
-
-@-webkit-keyframes show-dialog {
-    0%   {-webkit-transform: scale(0.75); }
-    100% {-webkit-transform: scale(1); }
-}
-
-.dialog.status {
-
-    animation-name: show-dialog;
-    animation-timing-function: linear;
-    animation-duration: 0.125s;
-    -webkit-animation-name: show-dialog;
-    -webkit-animation-timing-function: linear;
-    -webkit-animation-duration: 0.125s;
- 
+.status {
     max-width: 75%;
     width: 4in;
     margin-left: auto;
@@ -87,18 +70,42 @@
     
 }
 
-.dialog.status .title {
+.status .title {
     font-size: 1.1em;
     font-weight: bold;
     border-bottom: 1px solid black;
     margin-bottom: 0.5em;
 }
 
-.dialog.status.error {
+.status.error {
     background: #FDD;
     border: 1px solid #964040;
 }
 
-.dialog.status > * {
+.status > * {
     margin: 0.75em;
+}
+
+/* Fade entire status area in/out based on shown status */
+
+.status-outer {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity, visibility;
+    transition-duration: 0.25s;
+}
+
+.shown.status-outer {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Hide dialog immediately based on status */
+
+.status {
+    visibility: hidden;
+}
+
+.shown .status {
+    visibility: visible;
 }

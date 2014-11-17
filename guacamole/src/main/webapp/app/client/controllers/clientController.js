@@ -72,7 +72,6 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
     var ClientProperties   = $injector.get('clientProperties');
-    var statusModal        = $injector.get('statusModal');
 
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
@@ -180,7 +179,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
         // Show new status if not yet connected
         if (status !== "connected") {
-            statusModal.showStatus({
+            $scope.showStatus({
                 title: "client.status.connectingStatusTitle",
                 text: "client.status.clientStates." + status
             });
@@ -188,7 +187,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
         // Hide status upon connecting
         else
-            statusModal.showStatus(false);
+            $scope.showStatus(false);
 
     });
 
@@ -201,8 +200,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Determine translation name of error
         var errorName = (status in CLIENT_ERRORS) ? status.toString(16) : "DEFAULT";
 
+        // Override any existing status
+        $scope.showStatus(false);
+
         // Show error status
-        statusModal.showStatus({
+        $scope.showStatus({
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.clientErrors." + errorName,
@@ -216,7 +218,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
         // Show new status only if disconnected
         if (status === "closed") {
-            statusModal.showStatus({
+            $scope.showStatus({
                 title: "client.status.closedStatusTitle",
                 text: "client.status.tunnelStates." + status
             });
@@ -233,8 +235,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Determine translation name of error
         var errorName = (status in TUNNEL_ERRORS) ? status.toString(16) : "DEFAULT";
 
+        // Override any existing status
+        $scope.showStatus(false);
+
         // Show error status
-        statusModal.showStatus({
+        $scope.showStatus({
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.tunnelErrors." + errorName,
