@@ -55,8 +55,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 }
             };
 
-            $scope.clipboard = "";
-
             /**
              * Whether the local, hardware mouse cursor is in use.
              * 
@@ -290,7 +288,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
 
             // Update active client if clipboard changes
-            $scope.$watch('clipboard', function clipboardChange(data) {
+            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
                 if (client)
                     client.setClipboard(data);
             });

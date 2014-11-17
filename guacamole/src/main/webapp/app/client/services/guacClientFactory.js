@@ -67,11 +67,6 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
                     // Connected
                     case 3:
                         $scope.$emit('guacClientStateChange', guacClient, "connected");
-
-                        // Update server clipboard with current data
-                        if ($scope.clipboard)
-                            guacClient.setClipboard($scope.clipboard);
-
                         break;
 
                     // Disconnecting / disconnected are handled by tunnel instead
@@ -131,7 +126,7 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
 
                 // Emit event when done
                 reader.onend = function clipboard_text_end() {
-                    $scope.$emit('guacClientClipboard', guacClient, data);
+                    $scope.$emit('guacClientClipboard', guacClient, mimetype, data);
                 };
 
             });

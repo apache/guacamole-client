@@ -86,8 +86,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     };
 
     // Update the model when clipboard data received from client
-    $scope.$on('guacClientClipboard', function clipboardDataReceived(clipboardData) {
-       $scope.guacClipboard = clipboardData; 
+    $scope.$on('guacClientClipboard', function clientClipboardListener(event, client, mimetype, clipboardData) {
+       $scope.clipboardData = clipboardData; 
     });
             
     /*
@@ -135,12 +135,12 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.$watch('menuShown', function setKeyboardEnabled(menuShown, menuShownPreviousState) {
         
         // Send clipboard data if menu is hidden
-        if (!menuShown && menuShownPreviousState) {
-            $scope.$broadcast('guacClipboard', $scope.clipboardData); 
-        }
+        if (!menuShown && menuShownPreviousState)
+            $scope.$broadcast('guacClipboard', 'text/plain', $scope.clipboardData); 
         
         // Disable client keyboard if the menu is shown
         $scope.clientProperties.keyboardEnabled = !menuShown;
+
     });
     
     $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
