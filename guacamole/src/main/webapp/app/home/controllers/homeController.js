@@ -58,7 +58,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         // Figure out which recent connection entries are valid
         $scope.connectionsAndGroups.forEach(function findValidEntries (connectionOrGroup) {
             
-            var type = connectionOrGroup.isConnection ? "c" : "cg";
+            var type = connectionOrGroup.isConnection ? "c" : "g";
             
             // Find the unique ID to index into the recent connections
             var uniqueId = encodeURIComponent(

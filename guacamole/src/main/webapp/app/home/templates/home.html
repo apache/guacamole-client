@@ -35,7 +35,7 @@
         <div class="caption">
             <div class="icon group type" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
             <span class="name">
-                <a ng-show="item.balancer" ng-href="#/client/cg/{{item.identifier}}">{{item.name}}</a>
+                <a ng-show="item.balancer" ng-href="#/client/g/{{item.identifier}}">{{item.name}}</a>
                 <span ng-show="!item.balancer">{{item.name}}</span>
             </span>
         </div>
