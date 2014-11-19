@@ -436,7 +436,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 
             // Listen for broadcasted keydown events and fire the appropriate listeners
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
-                if ($scope.clientProperties.keyboardEnabled) {
+                if ($scope.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(1, keysym);
                     event.preventDefault();
                 }
@@ -444,7 +444,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // Listen for broadcasted keyup events and fire the appropriate listeners
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-                if ($scope.clientProperties.keyboardEnabled) {
+                if ($scope.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(0, keysym);
                     event.preventDefault();
                 }

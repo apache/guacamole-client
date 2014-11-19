@@ -76,6 +76,9 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
     
+    // Initialize clipboard data to an empty string
+    $scope.clipboardData = ""; 
+    
     // Hide menu by default
     $scope.menuShown = false;
     
@@ -158,13 +161,17 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                !_.isEmpty(_.pick(CTRL_KEYS, currentKeysPressedKeys))
             ) {
         
+                // Don't send this key event through to the client
+                event.preventDefault();
+                
+                // Reset the keys pressed
+                keysCurrentlyPressed = {};
+                keyboard.reset();
+                
                 // Toggle the menu
                 $scope.safeApply(function() {
                     $scope.menuShown = !$scope.menuShown;
                 });
-                
-                // Reset the keys pressed
-                keysCurrentlyPressed = {};
             }
         }
     });
