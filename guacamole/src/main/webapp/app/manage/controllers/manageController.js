@@ -35,11 +35,26 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var userDAO                     = $injector.get('userDAO');
     var userService                 = $injector.get('userService');
     
+    // Set status to loading until we have all the connections, groups, and users have loaded
+    $scope.showStatus({
+        title : 'status.loadingTitle',
+        text  : 'status.loadingText'
+    });
+    
     // All the connections and connection groups in root
     $scope.connectionsAndGroups = [];
     
     // All users that the current user has permission to edit
     $scope.users = [];
+    
+    // Hide the status message once users, groups, and connections have fully loaded
+    var usersLoaded                 = false;
+    var connectionsAndGroupsLoaded  = false;
+    function checkLoadStatus() {
+        if(usersLoaded && connectionsAndGroupsLoaded) {
+            $scope.showStatus(false);
+        }
+    }
     
     $scope.basicPermissionsLoaded.then(function basicPermissionsHaveBeenLoaded() {
         connectionGroupService.getAllGroupsAndConnections([], undefined, true, true).then(function filterConnectionsAndGroups(rootGroupList) {
@@ -57,6 +72,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
                     }
                 );
             }
+            
+            connectionsAndGroupsLoaded = true; 
+            checkLoadStatus();
         });
         
         userDAO.getUsers().success(function filterEditableUsers(users) {
@@ -70,6 +88,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
                     'UPDATE'
                 );
             }
+            
+            usersLoaded = true;
+            checkLoadStatus();
         });
     });
     

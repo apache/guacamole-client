@@ -39,6 +39,12 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     // All valid recent connections
     $scope.recentConnections = [];
     
+    // Set status to loading until we have all the connections and groups loaded
+    $scope.showStatus({
+        title : 'status.loadingTitle',
+        text  : 'status.loadingText'
+    });
+    
     /* Fetch all connections and groups, then find which recent connections
      * still refer to valid connections and groups.
      */
@@ -76,6 +82,8 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
                 $scope.recentConnections.push(recentConnection);
             }
         });
+        
+        $scope.showStatus(false);
     });
     
     /**
