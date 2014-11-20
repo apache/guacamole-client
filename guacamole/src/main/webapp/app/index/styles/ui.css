@@ -625,3 +625,14 @@ div.logout-panel {
 .button.back {
     background-image: url('images/action-icons/guac-back.png');
 }
+
+.loading {
+    background-image: url(images/spinner.gif);
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 200px;
+}
+
+.loading * {
+    visibility: hidden;
+}

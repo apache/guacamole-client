@@ -109,14 +109,3 @@
 .shown .status {
     visibility: visible;
 }
-
-.loading {
-    background-image: url(images/spinner.gif);
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 200px;
-}
-
-.loading * {
-    visibility: hidden;
-}
