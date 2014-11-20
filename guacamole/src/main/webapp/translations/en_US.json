@@ -3,11 +3,6 @@
         "title" : "Guacamole ${project.version}"
     },
     
-    "status" : {
-        "loadingTitle"  : "Loading",
-        "loadingText"   : "Guacamole is loading; please wait..."
-    },
-    
     "login": {
         "loginError" : "Invalid Login",
         "username"   : "Username",

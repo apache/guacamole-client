@@ -40,10 +40,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.recentConnections = [];
     
     // Set status to loading until we have all the connections and groups loaded
-    $scope.showStatus({
-        title : 'status.loadingTitle',
-        text  : 'status.loadingText'
-    });
+    $scope.loading = true;
     
     /* Fetch all connections and groups, then find which recent connections
      * still refer to valid connections and groups.
@@ -83,7 +80,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
             }
         });
         
-        $scope.showStatus(false);
+        $scope.loading = false;
     });
     
     /**

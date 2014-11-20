@@ -72,7 +72,7 @@
 
     <!-- All connections for this user -->
     <h2>{{'home.allConnections' | translate}}</h2>
-    <div class="all-connections">
+    <div class="all-connections" ng-class="{loading: loading}">
         <div class="list-item" ng-repeat="item in connectionsAndGroups | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
     </div>
 </div>

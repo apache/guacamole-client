@@ -62,7 +62,7 @@ THE SOFTWARE.
         </div>
 
         <!-- List of users this user has access to -->
-        <div class="user-list">
+        <div class="user-list" ng-class="{loading: loadingUsers}">
             <div ng-click="editUser(user)" ng-repeat="user in users | orderBy : 'username'" class="list-item">
                 <div class="caption">
                     <div class="icon user"></div>
@@ -84,7 +84,7 @@ THE SOFTWARE.
         </div>
 
         <!-- List of connections and groups this user has access to -->
-        <div class="connection-list">
+        <div class="connection-list" ng-class="{loading: loadingConnections}">
             <div class="list-item" ng-repeat="item in connectionsAndGroups | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
         </div>
     </div>
