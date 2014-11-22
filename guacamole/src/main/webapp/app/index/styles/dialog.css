@@ -20,31 +20,95 @@
  * THE SOFTWARE.
  */
 
-body.client {
-    background: black;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+.dialog-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 1em;
 }
 
-/* Viewport Clone */
-
-#viewportClone {
+.dialog-outer {
     display: table;
     height: 100%;
     width: 100%;
     position: fixed;
     left: 0;
     top: 0;
-    visibility: hidden;
+    background: rgba(0, 0, 0, 0.5);
 }
 
-#preload {
-    visibility: hidden;
-    position: absolute;
+.dialog-middle {
+    width: 100%;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.dialog.edit {
+    max-height: 100%;
+}
+
+.dialog {
+
+    max-width: 100%;
+    width: 8in;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: #E7E7E7;
+
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
+    
+}
+
+.dialog > * {
+    margin: 1em;
+}
+
+.dialog .header {
+    margin: 0;
+}
+
+.dialog td {
+    position: relative;
+}
+
+.dialog .overlay {
+    position: fixed;
+    top: 0;
     left: 0;
+    bottom: 0;
     right: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
+    z-index: 1;
+}
+
+.dialog .dropdown {
+
+    position: absolute;
+    z-index: 2;
+    margin-top: -1px;
+
+    width: 3in;
+    max-height: 2in;
+    overflow: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: white;
+
+    font-size: 10pt;
+
+}
+
+.dialog .footer {
+    text-align: center;
 }

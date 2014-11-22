@@ -1,0 +1,109 @@
+/*
+ * Copyright (C) 2013 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+#text-input {
+    display: none;
+    position: absolute;
+
+    border-top: 1px solid rgba(0, 0, 0, 0.5);
+    background: #CDA;
+
+}
+
+#text-input #text-input-field,
+#text-input #text-input-buttons {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+#text-input #text-input-field {
+    width: 30%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#text-input #text-input-buttons {
+    width: 70%;
+    text-align: right;
+}
+
+#text-input #target {
+
+    border: none;
+    border-radius: 0;
+
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 12pt;
+    width: 100%;
+    height: auto;
+    resize: none;
+    outline: none;
+
+    margin: 0;
+    padding: 0.25em;
+    padding-left: 0;
+    background: #CDA;
+    overflow: hidden;
+
+}
+
+#text-input.open {
+    display: block;
+}
+
+#text-input #sent-history {
+    display: inline-block;
+    vertical-align: middle;
+    padding: 0.25em;
+    padding-right: 0;
+}
+
+#text-input #sent-history .sent-text {
+    display: inline-block;
+    vertical-align: baseline;
+    white-space: pre;
+    font-size: 12pt;
+
+    animation: fadeout 1s linear;
+    -webkit-animation: fadeout 1s linear;
+    opacity: 0;
+}
+
+#text-input #text-input-buttons button {
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: none;
+    color: black;
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0.25em;
+    max-width: 20%;
+    margin: 0.1em;
+    min-width: 3em;
+}
+
+#text-input #text-input-buttons button:active,
+#text-input #text-input-buttons button.pressed {
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+}

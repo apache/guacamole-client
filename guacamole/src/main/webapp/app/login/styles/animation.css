@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,18 @@
  * THE SOFTWARE.
  */
 
-body.client {
-    background: black;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+@keyframes shake-head {
+    0%   { margin-left:  0.25em; margin-right: -0.25em; }
+    25%  { margin-left: -0.25em; margin-right:  0.25em; }
+    50%  { margin-left:  0.25em; margin-right: -0.25em; }
+    75%  { margin-left: -0.25em; margin-right:  0.25em; }
+    100% { margin-left:  0.00em; margin-right:  0.00em; }
 }
 
-/* Viewport Clone */
-
-#viewportClone {
-    display: table;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-}
-
-#preload {
-    visibility: hidden;
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
+@-webkit-keyframes shake-head {
+    0%   { margin-left:  0.25em; margin-right: -0.25em; }
+    25%  { margin-left: -0.25em; margin-right:  0.25em; }
+    50%  { margin-left:  0.25em; margin-right: -0.25em; }
+    75%  { margin-left: -0.25em; margin-right:  0.25em; }
+    100% { margin-left:  0.00em; margin-right:  0.00em; }
 }

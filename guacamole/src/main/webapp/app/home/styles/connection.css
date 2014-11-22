@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,60 @@
  * THE SOFTWARE.
  */
 
-body.client {
-    background: black;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+.group,
+.connection {
+    cursor: pointer;
 }
 
-/* Viewport Clone */
-
-#viewportClone {
-    display: table;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    visibility: hidden;
+.connection a,
+.group a {
+    text-decoration:none;
+    color: black;
 }
 
-#preload {
-    visibility: hidden;
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
+.connection a:hover,
+.group a:hover {
+    text-decoration:none;
+    color: black;
 }
+
+.connection a:visited,
+.group a:visited {
+    text-decoration:none;
+    color: black;
+}
+
+.group .connection .bears {
+    display: none;
+}
+
+.connection:hover {
+    background: #CDA;
+}
+
+.connection .thumbnail {
+    margin: 0.5em;
+}
+
+.connection .thumbnail img {
+    border: 1px solid black;
+    box-shadow: 1px 1px 5px black;
+    max-width: 75%;
+}
+
+div.recent-connections .connection .thumbnail {
+    display: block;
+}
+
+div.recent-connections .protocol {
+    display: none;
+}
+
+.caption * {
+    vertical-align: middle;
+}
+
+.caption .name {
+    margin-left: 0.25em;
+}
+

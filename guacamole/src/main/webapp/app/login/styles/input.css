@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,31 +20,23 @@
  * THE SOFTWARE.
  */
 
-body.client {
-    background: black;
-    padding: 0;
-    margin: 0;
-    overflow: hidden;
+input[type="submit"].login,
+button.login {
+
+    background-image: url('images/guacamole-logo-64.png');
+    background-repeat: no-repeat;
+    background-size: 1.5em;
+    background-position: 0.5em 0.25em;
+
+    padding-left: 2.5em;
+
 }
 
-/* Viewport Clone */
-
-#viewportClone {
-    display: table;
-    height: 100%;
+div.login-dialog .login-fields input {
+    border: 1px solid #777;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
     width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-}
-
-#preload {
-    visibility: hidden;
-    position: absolute;
-    left: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
 }

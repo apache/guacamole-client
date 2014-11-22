@@ -20,31 +20,50 @@
  * THE SOFTWARE.
  */
 
-body.client {
-    background: black;
-    padding: 0;
-    margin: 0;
+.software-cursor {
+    cursor: url('images/mouse/blank.gif'),url('images/mouse/blank.cur'),default;
     overflow: hidden;
+    cursor: none;
 }
 
-/* Viewport Clone */
+.guac-error .software-cursor {
+    cursor: default;
+}
 
-#viewportClone {
-    display: table;
+div.main {
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+div.displayOuter {
     height: 100%;
     width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-}
-
-#preload {
-    visibility: hidden;
     position: absolute;
     left: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    overflow: hidden;
+    top: 0;
+    display: table;
+}
+
+div.displayMiddle {
+    width: 100%;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+div.display {
+    display: inline-block;
+}
+
+div.display * {
+    position: relative;
+}
+
+div.display > * {
+    margin-left: auto;
+    margin-right: auto;
 }
