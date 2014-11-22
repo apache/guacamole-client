@@ -1171,13 +1171,6 @@ GuacUI.Client.connect = function() {
     var optimal_width = window.innerWidth * pixel_density;
     var optimal_height = window.innerHeight * pixel_density;
 
-    // Scale width/height to be at least 600x600
-    if (optimal_width < 600 || optimal_height < 600) {
-        var scale = Math.max(600 / optimal_width, 600 / optimal_height);
-        optimal_width = optimal_width * scale;
-        optimal_height = optimal_height * scale;
-    }
-
     // Get entire query string, and pass to connect().
     // Normally, only the "id" parameter is required, but
     // all parameters should be preserved and passed on for
