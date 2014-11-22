@@ -10,6 +10,7 @@
 
     <param name="width"           type="numeric"  title="Display width"/>
     <param name="height"          type="numeric"  title="Display height"/>
+    <param name="dpi"             type="numeric"  title="Display resolution (DPI)"/>
     <param name="color-depth"     type="enum" title="Color depth">
         <option value="8">256 color</option>
         <option value="16">Low color (16-bit)</option>
