@@ -3,7 +3,7 @@
     <param name="hostname" title="Hostname" type="text"/>
     <param name="port"     title="Port"     type="numeric"/>
 
-    <param name="username" title="Username" type="text"/>
+    <param name="username" title="Username" type="username"/>
     <param name="password" title="Password" type="password"/>
 
     <param name="password-regex"

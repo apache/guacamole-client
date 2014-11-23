@@ -3,7 +3,7 @@
     <param name="hostname"        type="text"     title="Hostname"/>
     <param name="port"            type="numeric"  title="Port"/>
 
-    <param name="username"        type="text"     title="Username"/>
+    <param name="username"        type="username" title="Username"/>
     <param name="password"        type="password" title="Password"/>
     <param name="domain"          type="text"     title="Domain"/>
     <param name="initial-program" type="text"     title="Initial program"/>

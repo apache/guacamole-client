@@ -149,6 +149,11 @@ public class List extends RestrictedHttpServlet {
                     xml.writeAttribute("type", "text");
                     break;
 
+                // Username parameter
+                case USERNAME:
+                    xml.writeAttribute("type", "username");
+                    break;
+
                 // Password parameter
                 case PASSWORD:
                     xml.writeAttribute("type", "password");

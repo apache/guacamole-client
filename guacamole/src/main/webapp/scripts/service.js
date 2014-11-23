@@ -1285,6 +1285,11 @@ GuacamoleService.Protocol.Parameter.ENUM = 4;
 GuacamoleService.Protocol.Parameter.MULTILINE = 5;
 
 /**
+ * A username field.
+ */
+GuacamoleService.Protocol.Parameter.USERNAME = 6;
+
+/**
  * Collection of service functions which deal with protocols. Each function
  * makes an explicit HTTP query to the server, and parses the response.
  */
@@ -1353,6 +1358,11 @@ GuacamoleService.Protocols = {
                     // Text parameter
                     case "text":
                         parameter.type = GuacamoleService.Protocol.Parameter.TEXT;
+                        break;
+
+                    // Username parameter
+                    case "username":
+                        parameter.type = GuacamoleService.Protocol.Parameter.USERNAME;
                         break;
 
                     // Password parameter

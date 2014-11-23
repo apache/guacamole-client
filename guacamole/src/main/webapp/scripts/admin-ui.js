@@ -885,8 +885,9 @@ GuacAdmin.ConnectionEditor = function(connection, parameters) {
             var field;
             switch (parameter.type) {
 
-                // Text field
+                // Text or username field
                 case GuacamoleService.Protocol.Parameter.TEXT:
+                case GuacamoleService.Protocol.Parameter.USERNAME:
                     field = new GuacAdmin.Field.TEXT();
                     break;
 

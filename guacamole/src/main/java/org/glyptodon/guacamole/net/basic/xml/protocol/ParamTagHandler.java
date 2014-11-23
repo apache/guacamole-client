@@ -57,6 +57,10 @@ public class ParamTagHandler implements TagHandler {
         else if ("numeric".equals(type))
             protocolParameter.setType(ProtocolParameter.Type.NUMERIC);
 
+        // Username field
+        else if ("username".equals(type))
+            protocolParameter.setType(ProtocolParameter.Type.USERNAME);
+
         // Password field
         else if ("password".equals(type))
             protocolParameter.setType(ProtocolParameter.Type.PASSWORD);
