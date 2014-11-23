@@ -33,7 +33,7 @@ div.location, input[type=text], input[type=number], input[type=password], textar
     width: 100%;
     max-width: 16em;
     padding: 0.25em;
-    font-size: 10pt;
+    font-size: 0.8em;
     background: white;
     cursor: text;
 }
@@ -44,83 +44,4 @@ textarea {
     height: 10em;
     white-space: nowrap;
     overflow: auto;
-}
-
-input[type="submit"], button, a.button {
-    
-    -webkit-appearance: none;
-    text-decoration: none;
-
-    background-color: #3C3C3C;
-
-    border: 1px solid rgba(0, 0, 0, 0.4);
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
-
-    color: white;
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
-    font-size: 1em;
-
-    box-shadow: inset -1px -1px 0.1em rgba(0, 0, 0, 0.25),
-                inset 1px 1px 0.1em rgba(255, 255, 255, 0.25),
-                -1px -1px 0.1em rgba(0, 0, 0, 0.25),
-                1px 1px 0.1em rgba(255, 255, 255, 0.25);
-    
-    padding: 0.35em;
-    padding-right: 1em;
-    padding-left: 1em;
-    min-width: 5em;
-    margin: 0.25em;
-
-}
-
-input[type="submit"]:hover, button:hover, a.button:hover {
-    background-color: #5A5A5A;
-}
-
-input[type="submit"]:active, button:active, a.button:active {
-
-    background-color: #2C2C2C;
-    
-    box-shadow: 
-                inset 1px 1px 0.25em rgba(0, 0, 0, 0.25),
-                -1px -1px 0.25em rgba(0, 0, 0, 0.25),
-                1px 1px 0.25em rgba(255, 255, 255, 0.25);
-}
-
-button.danger, a.button.danger {
-    background: #A43;
-}
-
-button.danger:hover, a.button.danger:hover {
-    background: #C54;
-}
-
-button.danger:active, a.button.danger:active {
-    background: #932;
-}
-
-a.button {
-    display: inline-block;
-}
-
-.button.logout, .button.manage, .button.back {
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: 0.5em 0.45em;
-    padding-left: 1.8em;
-}
-
-.button.logout {
-    background-image: url('images/action-icons/guac-logout.png');
-}
-
-.button.manage {
-    background-image: url('images/action-icons/guac-config.png');
-}
-
-.button.back {
-    background-image: url('images/action-icons/guac-back.png');
 }

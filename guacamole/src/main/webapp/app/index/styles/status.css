@@ -49,32 +49,29 @@
 }
 
 .status {
-    max-width: 75%;
-    width: 4in;
+
+    width: 75%;
+    max-width: 5in;
     margin-left: auto;
     margin-right: auto;
     overflow: auto;
 
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: #E7E7E7;
-
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-
-    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
  
     text-align: left;
-    font-size: 0.8em;
     
 }
 
 .status .title {
-    font-size: 1.1em;
+    font-size: 1.25em;
     font-weight: bold;
-    border-bottom: 1px solid black;
-    margin-bottom: 0.5em;
+    background: rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    margin: 0;
+    padding: 0.5em 1em;
 }
 
 .status.error {
@@ -83,7 +80,7 @@
 }
 
 .status > * {
-    margin: 0.75em;
+    margin: 1.25em;
 }
 
 /* Fade entire status area in/out based on shown status */

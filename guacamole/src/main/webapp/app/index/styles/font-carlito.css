@@ -20,52 +20,24 @@
  * THE SOFTWARE.
  */
 
-div.logout-panel {
-    padding: 0.45em;
-    text-align: right;
-    float: right;
+/*
+ * The Carlito font is licensed under the SIL Open Font License, and thus is
+ * freely redistributable so long as it is distributed with software.
+ *
+ * The SIL OFL license can be found at http://scripts.sil.org/OFL or in the
+ * "LICENSE" file within the same directory as the Carlito-*.woff font files.
+ */
+
+@font-face {
+    font-family: 'Carlito';
+    font-weight: normal;
+    font-style: normal;
+    src: url('fonts/carlito/Carlito-Regular.woff') format('woff');
 }
 
-.history-unavailable div.recent-connections {
-    display: none;
-}
-
-div.recent-connections,
-div.clipboardDiv,
-div.settings,
-div.all-connections {
-    margin: 1em;
-    padding: 0;
-}
-
-.all-connections .list-buttons {
-    text-align: center;
-    padding: 0;
-}
-
-div.recent-connections {
-    text-align: center;
-}
-
-.no-recent {
-
-    color: black;
-    text-shadow: 1px 1px white;
-    opacity: 0.5;
-    
-    font-size: 2em;
-    font-weight: bolder;
-}
-
-div.recent-connections div.connection {
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-    display: inline-block;
-    padding: 1em;
-    margin: 1em;
-    text-align: center;
-    max-width: 75%;
-    overflow: hidden;
+@font-face {
+    font-family: 'Carlito';
+    font-weight: bold;
+    font-style: normal;
+    src: url('fonts/carlito/Carlito-Bold.woff') format('woff');
 }
