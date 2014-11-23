@@ -72,11 +72,11 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
     margin: 0;
     padding: 0.5em 1em;
+    text-transform: uppercase;
 }
 
 .status.error {
     background: #FDD;
-    border: 1px solid #964040;
 }
 
 .status > * {

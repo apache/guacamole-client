@@ -94,17 +94,9 @@
     margin: 1em auto;
 }
 
-#menu h3 {
-
-    background: rgba(0, 0, 0, 0.4);
-
+#menu h2 {
     padding: 0.25em 0.5em;
-    margin: 0;
     font-size: 1em;
-
-    color: white;
-    font-weight: bold;
-
 }
 
 #menu #keyboard-settings .figure {

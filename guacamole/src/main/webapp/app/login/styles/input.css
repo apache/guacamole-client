@@ -26,10 +26,13 @@
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
     -khtml-border-radius: 0.2em;
+    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
     border-radius: 0.2em;
     width: 100%;
     margin: 0;
     margin-bottom: 0.5em;
+    padding: 0.5em 0.75em;
+    max-width: none;
 }
 
 input[type="submit"].login {

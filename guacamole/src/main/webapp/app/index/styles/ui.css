@@ -34,10 +34,6 @@ body {
     margin: 0;
 }
 
-input[type="submit"], button {
-    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
-}
-
 img {
     border: none;
     vertical-align: middle;

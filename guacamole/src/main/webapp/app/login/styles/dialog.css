@@ -42,7 +42,8 @@ div.login-dialog {
     -moz-animation: fadein 0.125s linear;
     -webkit-animation: fadein 0.125s linear;
 
-    max-width: 75%;
+    width: 100%;
+    max-width: 3in;
     text-align: left;
     padding: 1em;
     border: 1px solid rgba(0, 0, 0, 0.25);

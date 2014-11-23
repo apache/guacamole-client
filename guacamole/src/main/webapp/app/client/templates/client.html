@@ -40,15 +40,13 @@
 
     <!-- Menu -->
     <div ng-class="{open: menuShown}" id="menu">
-        <h2 id="menu-title">{{connectionName}}</h2>
-
-        <h3>{{'client.clipboard' | translate}}</h3>
+        <h2>{{'client.clipboard' | translate}}</h2>
         <div class="content" id="clipboard-settings">
             <p class="description">{{'client.copiedText' | translate}}</p>
             <textarea ng-model="clipboardData" rows="10" cols="40" id="clipboard"></textarea>
         </div>
 
-        <h3></h3>
+        <h2>{{'client.inputMethod' | translate}}</h2>
         <div class="content" id="keyboard-settings">
 
             <!-- No IME -->
@@ -72,7 +70,7 @@
 
         </div>
 
-        <h3>{{'client.mouseMode' | translate}}</h3>
+        <h2>{{'client.mouseMode' | translate}}</h2>
         <div class="content" id="mouse-settings">
             <p class="description">{{'client.mouseModeDesc' | translate}}</p>
 
@@ -96,7 +94,7 @@
 
         </div>
 
-        <h3>{{'client.display' | translate}}</h3>
+        <h2>{{'client.display' | translate}}</h2>
         <div class="content">
             <div id="zoom-settings">
                 <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>

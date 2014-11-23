@@ -33,6 +33,7 @@ input[type="submit"], button, a.button {
     text-shadow: -1px -1px rgba(0, 0, 0, 0.3);
     font-size: 1em;
     font-weight: bold;
+    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
 
     padding: 0.35em 1em;
     min-width: 5em;
