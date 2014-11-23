@@ -22,6 +22,7 @@
     -->
     <input ng-show="parameterType === 'TEXT'" type="text" ng-model="connectionParameters[parameterName]"/>
     <input ng-show="parameterType === 'NUMERIC'" type="number" ng-model="connectionParameters[parameterName]"/>
+    <input ng-show="parameterType === 'USERNAME'" type="text" ng-model="connectionParameters[parameterName]"/>
     <input ng-show="parameterType === 'PASSWORD'" type="password" ng-model="connectionParameters[parameterName]"/>
     <input ng-show="parameterType === 'BOOLEAN'" type="checkbox" ng-model="connectionParameters[parameterName]"/>
     <select ng-show="parameterType === 'ENUM'" ng-model="connectionParameters[parameterName]" ng-options="option.value as 'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.options.' + (option.value || 'empty') | translate for option in parameter.options | orderBy: value"></select>

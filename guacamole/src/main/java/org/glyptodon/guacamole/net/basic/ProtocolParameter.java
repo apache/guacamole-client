@@ -43,7 +43,19 @@ public class ProtocolParameter {
         TEXT,
 
         /**
-         * A password parameter, whose value is sensitive and must be hidden.
+         * A username parameter. This parameter type generally behaves
+         * identically to arbitrary text parameters, but has semantic
+         * differences. If credential pass-through is in use, the value for this
+         * parameter may be automatically provided using the credentials
+         * originally used by the user to authenticate.
+         */
+        USERNAME,
+
+        /**
+         * A password parameter, whose value is sensitive and must be hidden. If
+         * credential pass-through is in use, the value for this parameter may
+         * be automatically provided using the credentials originally used by
+         * the user to authenticate.
          */
         PASSWORD,
 
