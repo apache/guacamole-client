@@ -99,7 +99,6 @@ div.section {
     -khtml-background-size: 16px 16px;
     background-repeat: no-repeat;
     background-position: center center;
-    opacity: 0.5;
     display: inline-block;
     vertical-align: middle;
 }
@@ -139,10 +138,6 @@ div.section {
 
 .list-item.selected {
     background: #DEB;
-}
-
-.list-item.selected > .icon {
-    opacity: 1.0;
 }
 
 .list-item:not(.selected) .caption:hover {
@@ -240,7 +235,6 @@ div.section {
     -khtml-background-size: 16px 16px;
     background-repeat: no-repeat;
     background-position: center center;
-    opacity: 0.5;
 }
 
 .protocol .icon.ssh,
