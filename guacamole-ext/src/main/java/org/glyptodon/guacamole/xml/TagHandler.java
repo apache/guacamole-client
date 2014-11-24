@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.xml;
+package org.glyptodon.guacamole.xml;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

@@ -22,14 +22,27 @@
 
 package org.glyptodon.guacamole.environment;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.properties.GuacamoleProperty;
+import org.glyptodon.guacamole.protocols.ProtocolInfo;
+import org.glyptodon.guacamole.xml.DocumentHandler;
+import org.glyptodon.guacamole.xml.protocol.ProtocolTagHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The environment of the locally-running Guacamole instance, describing
@@ -39,6 +52,17 @@ import org.glyptodon.guacamole.properties.GuacamoleProperty;
  * @author Michael Jumper
  */
 public class LocalEnvironment implements Environment {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(LocalEnvironment.class);
+
+    /**
+     * Array of all known protocol names.
+     */
+    private static final String[] KNOWN_PROTOCOLS = new String[]{
+        "vnc", "rdp", "ssh", "telnet"};
 
     /**
      * All properties read from guacamole.properties.
@@ -51,6 +75,11 @@ public class LocalEnvironment implements Environment {
     private final File guacHome;
 
     /**
+     * The map of all available protocols.
+     */
+    private final Map<String, ProtocolInfo> availableProtocols;
+
+    /**
      * Creates a new Environment, initializing that environment based on the
      * location of GUACAMOLE_HOME and the contents of guacamole.properties.
      * 
@@ -59,9 +88,11 @@ public class LocalEnvironment implements Environment {
      */
     public LocalEnvironment() throws GuacamoleException {
 
-        properties = new Properties();
+        // Determine location of GUACAMOLE_HOME
         guacHome = findGuacamoleHome();
 
+        // Read properties
+        properties = new Properties();
         try {
 
             InputStream stream;
@@ -91,6 +122,9 @@ public class LocalEnvironment implements Environment {
         catch (IOException e) {
             throw new GuacamoleServerException("Error reading guacamole.properties", e);
         }
+
+        // Read all protocols
+        availableProtocols = readProtocols();
 
     }
 
@@ -127,6 +161,130 @@ public class LocalEnvironment implements Environment {
 
     }
 
+    /**
+     * Parses the given XML file, returning the parsed ProtocolInfo.
+     *
+     * @param input An input stream containing XML describing the parameters
+     *              associated with a protocol supported by Guacamole.
+     * @return A new ProtocolInfo object which contains the parameters described
+     *         by the XML file parsed.
+     * @throws GuacamoleException If an error occurs while parsing the XML file.
+     */
+    private ProtocolInfo readProtocol(InputStream input)
+            throws GuacamoleException {
+
+        // Parse document
+        try {
+
+            // Get handler for root element
+            ProtocolTagHandler protocolTagHandler =
+                    new ProtocolTagHandler();
+
+            // Set up document handler
+            DocumentHandler contentHandler = new DocumentHandler(
+                    "protocol", protocolTagHandler);
+
+            // Set up XML parser
+            XMLReader parser = XMLReaderFactory.createXMLReader();
+            parser.setContentHandler(contentHandler);
+
+            // Read and parse file
+            InputStream xml = new BufferedInputStream(input);
+            parser.parse(new InputSource(xml));
+            xml.close();
+
+            // Return parsed protocol
+            return protocolTagHandler.asProtocolInfo();
+
+        }
+        catch (IOException e) {
+            throw new GuacamoleException("Error reading basic user mapping file.", e);
+        }
+        catch (SAXException e) {
+            throw new GuacamoleException("Error parsing basic user mapping XML.", e);
+        }
+
+    }
+
+    /**
+     * Reads through all pre-defined protocols and any protocols within the
+     * "protocols" subdirectory of GUACAMOLE_HOME, returning a map containing
+     * each of these protocols. The key of each entry will be the name of that
+     * protocol, as would be passed to guacd during connection.
+     *
+     * @return A map of all available protocols.
+     * @throws GuacamoleException If an error occurs while reading the various
+     *                            protocol XML files.
+     */
+    private Map<String, ProtocolInfo> readProtocols() throws GuacamoleException {
+
+        // Map of all available protocols
+        Map<String, ProtocolInfo> protocols = new HashMap<String, ProtocolInfo>();
+
+        // Get protcols directory
+        File protocol_directory = new File(getGuacamoleHome(), "protocols");
+
+        // Read protocols from directory if it exists
+        if (protocol_directory.isDirectory()) {
+
+            // Get all XML files
+            File[] files = protocol_directory.listFiles(
+                new FilenameFilter() {
+
+                    @Override
+                    public boolean accept(File file, String string) {
+                        return string.endsWith(".xml");
+                    }
+
+                }
+            );
+
+            // Load each protocol from each file
+            for (File file : files) {
+
+                try {
+
+                    // Parse protocol
+                    FileInputStream stream = new FileInputStream(file);
+                    ProtocolInfo protocol = readProtocol(stream);
+                    stream.close();
+
+                    // Store protocol
+                    protocols.put(protocol.getName(), protocol);
+
+                }
+                catch (IOException e) {
+                    logger.error("Unable to read connection parameter information from \"{}\": {}", file.getAbsolutePath(), e.getMessage());
+                    logger.debug("Error reading protocol XML.", e);
+                }
+
+            }
+
+        }
+
+        // If known protocols are not already defined, read from classpath
+        for (String protocol : KNOWN_PROTOCOLS) {
+
+            // If protocol not defined yet, attempt to load from classpath
+            if (!protocols.containsKey(protocol)) {
+
+                InputStream stream = LocalEnvironment.class.getResourceAsStream(
+                        "/org/glyptodon/guacamole/protocols/"
+                        + protocol + ".xml");
+
+                // Parse XML if available
+                if (stream != null)
+                    protocols.put(protocol, readProtocol(stream));
+
+            }
+
+        }
+
+        // Protocols map now fully populated
+        return protocols;
+
+    }
+
     @Override
     public File getGuacamoleHome() {
         return guacHome;
@@ -159,6 +317,16 @@ public class LocalEnvironment implements Environment {
 
         return value;
 
+    }
+
+    @Override
+    public Map<String, ProtocolInfo> getProtocols() {
+        return availableProtocols;
+    }
+
+    @Override
+    public ProtocolInfo getProtocol(String name) {
+        return availableProtocols.get(name);
     }
 
 }

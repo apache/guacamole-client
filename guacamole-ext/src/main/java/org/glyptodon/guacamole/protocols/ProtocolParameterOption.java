@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.protocols;
 
 /**
  * Describes an available legal value for an enumerated protocol parameter.

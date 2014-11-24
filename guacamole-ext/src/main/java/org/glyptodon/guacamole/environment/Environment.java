@@ -23,11 +23,13 @@
 package org.glyptodon.guacamole.environment;
 
 import java.io.File;
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.GuacamoleProperty;
 import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
+import org.glyptodon.guacamole.protocols.ProtocolInfo;
 
 /**
  * The environment of an arbitrary Guacamole instance, describing available
@@ -79,6 +81,24 @@ public interface Environment {
      *         or may not exist, and may turn out to not be a directory.
      */
     public File getGuacamoleHome();
+
+    /**
+     * Returns a map of all available protocols, where each key is the name of
+     * that protocol as would be passed to guacd during connection.
+     *
+     * @return A map of all available protocols.
+     */
+    public Map<String, ProtocolInfo> getProtocols();
+
+    /**
+     * Returns the protocol having the given name. The name must be the
+     * protocol name as would be passed to guacd during connection.
+     *
+     * @param name The name of the protocol.
+     * @return The protocol having the given name, or null if no such
+     *         protocol is registered.
+     */
+    public ProtocolInfo getProtocol(String name);
 
     /**
      * Given a GuacamoleProperty, parses and returns the value set for that

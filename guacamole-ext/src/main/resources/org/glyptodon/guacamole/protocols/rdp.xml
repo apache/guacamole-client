@@ -40,10 +40,10 @@
         <option value="nla">NLA (Network Level Authentication)</option>
         <option value="any">Any</option>
     </param>
-    
+
     <param name="disable-auth" type="boolean" title="Disable authentication" value="true"/>
     <param name="ignore-cert" type="boolean" title="Ignore server certificate" value="true"/>
-    
+
     <param name="remote-app" type="text" title="RemoteApp program"/>
     <param name="remote-app-dir" type="text" title="RemoteApp working directory"/>
     <param name="remote-app-args" type="text" title="RemoteApp parameters"/>

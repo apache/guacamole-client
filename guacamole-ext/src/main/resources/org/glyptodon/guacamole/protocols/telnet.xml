@@ -8,7 +8,7 @@
 
     <param name="password-regex"
            title="Password regular expression" type="text"/>
-    
+
     <param name="font-name" title="Font name" type="text"/>
     <param name="font-size" title="Font size" type="enum">
         <option value=""></option>
