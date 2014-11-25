@@ -147,13 +147,13 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
 
                     // Update progress as data is received
                     blob_reader.onprogress = function onprogress() {
-                        $scope.$emit('guacClientFileProgress', guacClient, stream.index, mimetype, filename);
+                        $scope.$emit('guacClientFileProgress', guacClient, stream.index, mimetype, filename, blob_reader.getLength());
                         stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
                     };
 
                     // When complete, prompt for download
                     blob_reader.onend = function onend() {
-                        $scope.$emit('guacClientFileEnd', guacClient, stream.index, mimetype, filename);
+                        $scope.$emit('guacClientFileEnd', guacClient, stream.index, mimetype, filename, blob_reader.getBlob());
                     };
 
                     stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);

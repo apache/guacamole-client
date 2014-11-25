@@ -59,6 +59,8 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.currentUserIsAdmin = false;
     $scope.currentUserHasUpdate = false;
     $scope.currentUserPermissions = null;
+    $scope.notifications = [];
+    var notificationUniqueID = 0;
     
     // A promise to be fulfilled when all basic user permissions are loaded.
     var permissionsLoaded= $q.defer();
@@ -71,43 +73,93 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $location.path('/login');
 
     /**
-     * Shows or hides the status modal. If a status modal is currently shown,
-     * no further status modals will be shown until the current status is
+     * Shows or hides the status. If a status is currently shown,
+     * no further statuses will be shown until the current status is
      * hidden.
      *
      * @param {Boolean|Object} status The status to show, or false to hide the
      *                                current status.
-     * @param {String} [status.title] The title of the status modal.
-     * @param {String} [status.text] The body text of the status modal.
-     * @param {String} [status.className] The CSS class name to apply to the
-     *                                    modal, in addition to the default
-     *                                    "dialog" and "status" classes.
-     * @param {String[]} [status.actions] Array of action names which
-     *                                    correspond to button captions. Each
-     *                                    action will be displayed as a button
-     *                                    within the status modal. Clickin a
-     *                                    button will fire a guacStatusAction
-     *                                    event.
+     * @param {String} [status.title] The title of the status.
+     * @param {String} [status.text] The body text of the status.
+     * @param {String} [status.className] The CSS class name to apply.
+     * @param {Object[]} [status.actions] Array of action objects which
+     *                                    contain an action name and callback to
+     *                                    be executed when that action is
+     *                                    invoked. 
+     *                                    
+     * @example
+     * 
+     * // To show a status message with actions
+     * $scope.showStatus({
+     *     'title'      : 'Disconnected',
+     *     'text'       : 'You have been disconnected!',
+     *     'actions'    : {
+     *         'name'       : 'reconnect',
+     *         'callback'   : function () {
+     *             // Reconnection code goes here
+     *         }
+     *     }
+     * });
+     * 
+     * // To hide the status message
+     * $scope.showStatus(false);
      */
     $scope.showStatus = function showStatus(status) {
         if (!$scope.status || !status)
             $scope.status = status;
     };
-
+    
     /**
-     * Fires a guacStatusAction event signalling a chosen action. The status
-     * modal will be cloased prior to firing the action event.
-     *
-     * @param {String} action The name of the action.
+     * Adds a notification to the the list of notifications shown.
+     * 
+     * @param {Object} notification The notification to add.
+     * @param {String} [notification.title] The title of the notification.
+     * @param {String} [notification.text] The body text of the status modal.
+     * @param {String} [notification.className] The CSS class name to apply.
+     * @param {Object[]} [notification.actions] Array of action objects which
+     *                                    contain an action name and callback to
+     *                                    be executed when that action is
+     *                                    invoked. 
+     * @returns {Number} A unique ID for the notification that's just been added.
+     * 
+     *                        
+     * @example
+     * 
+     * var id = $scope.addNotification({
+     *     'title'      : 'Download',
+     *     'text'       : 'You have a file ready for download!',
+     *     'actions'    : {
+     *         'name'       : 'download',
+     *         'callback'   : function () {
+     *             // download the file and remove the notification here
+     *         }
+     *     }
+     * });
      */
-    $scope.fireAction = function fireAction(action) {
-
-        // Hide status modal
-        $scope.status = false;
-
-        // Fire action event
-        $scope.$broadcast('guacAction', action);
-
+    $scope.addNotification = function addNotification(notification) {
+        var id = ++notificationUniqueID;
+        
+        $scope.notifications.push({
+            notification    : notification,
+            id              : id
+        });
+        
+        return id;
+    };
+    
+    /**
+     * Remove a notification by unique ID.
+     * 
+     * @param {type} id The unique ID of the notification to remove. This ID is
+     *                  retrieved from the initial call to addNotification.
+     */
+    $scope.removeNotification = function removeNotification(id) {
+        for(var i = 0; i < $scope.notifications.length; i++) {
+            if($scope.notifications[i].id === id) {
+                $scope.notifications.splice(i, 1);
+                return;
+            }
+        }
     };
            
     // Allow the permissions to be reloaded elsewhere if needed

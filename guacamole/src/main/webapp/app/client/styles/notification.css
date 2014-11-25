@@ -33,56 +33,21 @@
     font-size: 0.7em;
     text-align: center;
     
-    border: 1px solid rgba(0, 0, 0, 0.75);
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.125);
     background: white;
 
     color: black;
 
     padding: 0.5em;
     margin: 1em;
+    width: 2in;
+    max-width: 75%;
     overflow: hidden;
-
-    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.25);
- 
 }
 
-.notification div {
-    display: inline-block;
-    text-align: left;
-}
-
-.notification .title-bar {
-    display: block;
-    white-space: nowrap;
-    font-weight: bold;
-
-    border-bottom: 1px solid black;
-    padding-bottom: 0.5em;
-    margin-bottom: 0.5em;
-}
-
-.notification .title-bar * {
-    vertical-align: middle;
-}
-
-.notification .close {
-
-    background: url('images/action-icons/guac-close.png');
-    background-size: 10px 10px;
-    -moz-background-size: 10px 10px;
-    -webkit-background-size: 10px 10px;
-    -khtml-background-size: 10px 10px;
-
-    width: 10px;
-    height: 10px;
-
-    float: right;
-    cursor: pointer;
-
+.notification .buttons {
+    margin: 0;
 }
 
 @keyframes notification-progress {
@@ -95,41 +60,23 @@
     to   {background-position: 64px 0px;}
 }
 
-.notification .caption,
-.notification.download .caption {
+.notification .title-bar {
+    font-size: 1.25em;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    margin-bottom: 1em;
+}
+
+.notification .text {
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.notification.upload .status,
-.notification.download .status {
-    color: red;
-    font-size: 1em;
-    padding: 1em;
-}
-
-.notification.download .progress,
-.notification.upload .progress,
-.notification.download .download {
-
-    margin-top: 1em;
-    margin-left: 0.75em;
-    padding: 0.25em;
-    min-width: 5em;
-    
-    border: 1px solid gray;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-
-    text-align: center;
-    float: right;
-
-    position: relative;
-    
 }
 
 .notification.upload .progress {
@@ -160,6 +107,7 @@
 .notification.upload .progress,
 .notification.download .progress {
 
+    width: 100%;
     background: #C2C2C2 url('images/progress.png');
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;
@@ -176,6 +124,20 @@
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite;
 
+    padding: 0.25em;
+    min-width: 5em;
+    
+    border: 1px solid gray;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    text-align: center;
+    float: right;
+
+    position: relative;
+    
 }
 
 .notification.download .download {
