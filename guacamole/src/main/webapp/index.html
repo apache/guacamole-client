@@ -47,7 +47,7 @@ THE SOFTWARE.
                 
                     <!-- All action buttons, if any -->
                     <div ng-show="status.actions && status.actions.length" class="buttons">
-                        <button ng-repeat="action in status.actions" ng-click="fireAction(action)">{{action | translate}}</button>
+                        <button ng-repeat="action in status.actions" ng-click="action.callback()">{{action.name | translate}}</button>
                     </div>
                 
                 </div>
@@ -55,6 +55,28 @@ THE SOFTWARE.
         </div>
         
         <div id="content" ng-view>
+        </div>
+        
+        <!-- Notification area -->
+        <div id="notificationArea">
+            <div ng-repeat="wrapper in notifications" ng-class="wrapper.notification.className" class="notification">
+                
+                <!-- Notification title -->
+                <div ng-show="wrapper.notification.title" class="title-bar">
+                    <div class="title">{{wrapper.notification.title | translate}}</div>
+                </div>
+                
+                <!-- Notification text -->
+                <p ng-show="wrapper.notification.text" class="text">{{wrapper.notification.text}}</p>
+                
+                <div ng-show="wrapper.notification.progress" class="progress">
+                    {{wrapper.notification.progress}}
+                </div>
+                
+                <div ng-show="wrapper.notification.actions && wrapper.notification.actions.length" class="buttons">
+                    <button ng-repeat="action in wrapper.notification.actions" ng-click="action.callback()">{{action.name | translate}}</button>
+                </div>
+            </div>
         </div>
         
         <script type="text/javascript" src="guacamole.min.js"></script>

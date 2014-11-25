@@ -67,6 +67,19 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         0x0308: true,
         0x031D: true
     };
+    
+    /**
+     * The reconnect action to be provided along with the object sent to
+     * showStatus.
+     */
+    var RECONNECT_ACTION = {
+        name        : "client.action.reconnect",
+        // Handle reconnect action
+        callback    : function reconnectCallback() {
+            $scope.id = uniqueId;
+            $scope.showStatus(false);
+        }
+    };
 
     // Get DAO for reading connections and groups
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
@@ -215,7 +228,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.clientErrors." + errorName,
-            actions: [ "client.action.reconnect" ]
+            actions: [ RECONNECT_ACTION ]
         });
 
     });
@@ -250,16 +263,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.tunnelErrors." + errorName,
-            actions: [ "client.action.reconnect" ]
+            actions: [ RECONNECT_ACTION ]
         });
-
-    });
-
-    // Handle reconnect action
-    $scope.$on('guacAction', function actionListener(event, action) {
-
-        if (action === "client.action.reconnect")
-            $scope.id = uniqueId;
 
     });
 
@@ -292,5 +297,66 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.autoFitDisabled = function() {
         return $scope.clientProperties.minZoom >= 1;
     };
+    
+    // Mapping of stream index to notification object
+    var downloadNotifications = {};
+    
+    // Mapping of stream index to notification ID
+    var downloadNotificationIDs = {};
+    
+    $scope.$on('guacClientFileStart', function handleClientFileStart(event, guacClient, streamIndex, mimetype, filename) {
+        $scope.safeApply(function() {
+            
+            var notification = {
+                className  : 'download',
+                title      : 'client.fileTransfer.title',
+                text       : filename
+            };
+            
+            downloadNotifications[streamIndex]   = notification;
+            downloadNotificationIDs[streamIndex] = $scope.addNotification(notification);
+            
+        });
+    });
+
+    $scope.$on('guacClientFileProgress', function handleClientFileProgress(event, guacClient, streamIndex, mimetype, filename, length) {
+        $scope.safeApply(function() {
+            
+            var notification = downloadNotifications[streamIndex];
+            if (notification)
+                notification.progress = length;
+            
+        });
+    });
+    
+    $scope.$on('guacClientFileEnd', function handleClientFileEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
+        $scope.safeApply(function() {
+
+            var notification = downloadNotifications[streamIndex];
+            var notificationID = downloadNotificationIDs[streamIndex];
+            
+            /**
+             * Saves the current file.
+             */
+            var saveFile = function saveFile() {
+                saveAs(blob, filename);
+                $scope.removeNotification(notificationID);
+                delete downloadNotifications[streamIndex];
+                delete downloadNotificationIDs[streamIndex];
+            };
+            
+            // Add download action and remove progress indicator
+            if (notificationID && notification) {
+                delete notification.progress;
+                notification.actions = [
+                    {
+                        name       : 'client.fileTransfer.save',
+                        callback   : saveFile
+                    }
+                ];
+            }
+
+        });
+    });
 
 }]);
