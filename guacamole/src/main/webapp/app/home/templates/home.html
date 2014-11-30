@@ -61,7 +61,7 @@
         <div ng-repeat="recentConnection in recentConnections" class="connection">
             <a href="#/client/{{recentConnection.type}}/{{recentConnection.id}}/{{recentConnection.name}}">
                 <div class="thumbnail">
-                    <img alt="{{recentConnection.name}}" src="{{recentConnection.thumbnail}}"/>
+                    <img alt="{{recentConnection.name}}" ng-src="{{recentConnection.thumbnail}}"/>
                 </div>
                 <div class="caption">
                     <span class="name">{{recentConnection.name}}</span>
