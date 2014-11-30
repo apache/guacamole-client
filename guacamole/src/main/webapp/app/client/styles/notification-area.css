@@ -20,68 +20,24 @@
  * THE SOFTWARE.
  */
 
-.status-outer {
-    display: table;
-    height: 100%;
-    width: 100%;
+#notificationArea {
     position: fixed;
-    left: 0;
-    top: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1;
+    right: 0.5em;
+    bottom: 0.5em;
+    max-width: 25%;
+    width: 2in;
 }
 
-.status-middle {
-    width: 100%;
+#notificationArea .notification {
+    font-size: 0.7em;
     text-align: center;
-    display: table-cell;
-    vertical-align: middle;
+    width: 100%;
+    overflow: hidden;
 }
 
-.status-middle .notification {
-
-    width: 75%;
-    max-width: 5in;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: auto;
-
-    text-align: left;
-    
-}
-
-.status-middle .notification .body {
-    margin: 1.25em;
-}
-
-.status-middle .notification .buttons {
-    margin: 1em;
-}
-
-.status-middle .notification.error {
-    background: #FDD;
-}
-
-/* Fade entire status area in/out based on shown status */
-
-.status-outer {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity, visibility;
-    transition-duration: 0.25s;
-}
-
-.shown.status-outer {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* Hide dialog immediately based on status */
-
-.status-middle .notification {
-    visibility: hidden;
-}
-
-.shown .status-middle .notification {
-    visibility: visible;
+#notificationArea .notification .text {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

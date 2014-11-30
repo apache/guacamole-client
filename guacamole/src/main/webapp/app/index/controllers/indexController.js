@@ -73,20 +73,30 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $location.path('/login');
 
     /**
-     * Shows or hides the status. If a status is currently shown,
-     * no further statuses will be shown until the current status is
-     * hidden.
+     * Shows or hides the given notification as a modal status. If a status
+     * notification is currently shown, no further statuses will be shown
+     * until the current status is hidden.
      *
-     * @param {Boolean|Object} status The status to show, or false to hide the
-     *                                current status.
-     * @param {String} [status.title] The title of the status.
-     * @param {String} [status.text] The body text of the status.
+     * @param {Object} status The status notification to show.
+     * @param {String} [status.title] The title of the notification.
+     * @param {String} [status.text] The body text of the notification.
      * @param {String} [status.className] The CSS class name to apply.
-     * @param {Object[]} [status.actions] Array of action objects which
-     *                                    contain an action name and callback to
-     *                                    be executed when that action is
-     *                                    invoked. 
-     *                                    
+     *
+     * @param {String} [status.countdown.text]
+     *     In the case that a countdown applies to the notification, the text to
+     *     display while the countdown is active.
+     *
+     * @param {Function} [status.countdown.callback]
+     *     The callback to call when the countdown expires.
+     *
+     * @param {String} [status.countdown.remaining]
+     *     The number of seconds remaining before the countdown callback is
+     *     called.
+     *
+     * @param {Object[]} [status.actions]
+     *     Array of action objects which contain an action name and callback to
+     *     be executed when that action is invoked. 
+     *
      * @example
      * 
      * // To show a status message with actions
@@ -114,15 +124,26 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * 
      * @param {Object} notification The notification to add.
      * @param {String} [notification.title] The title of the notification.
-     * @param {String} [notification.text] The body text of the status modal.
+     * @param {String} [notification.text] The body text of the notification.
      * @param {String} [notification.className] The CSS class name to apply.
-     * @param {Object[]} [notification.actions] Array of action objects which
-     *                                    contain an action name and callback to
-     *                                    be executed when that action is
-     *                                    invoked. 
+     *
+     * @param {String} [notification.countdown.text]
+     *     In the case that a countdown applies to the notification, the text to
+     *     display while the countdown is active.
+     *
+     * @param {Function} [notification.countdown.callback]
+     *     The callback to call when the countdown expires.
+     *
+     * @param {String} [notification.countdown.remaining]
+     *     The number of seconds remaining before the countdown callback is
+     *     called.
+     *
+     * @param {Object[]} [notification.actions]
+     *     Array of action objects which contain an action name and callback to
+     *     be executed when that action is invoked. 
+     *                                    
      * @returns {Number} A unique ID for the notification that's just been added.
      * 
-     *                        
      * @example
      * 
      * var id = $scope.addNotification({
@@ -138,7 +159,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      */
     $scope.addNotification = function addNotification(notification) {
         var id = ++notificationUniqueID;
-        
+
         $scope.notifications.push({
             notification    : notification,
             id              : id
