@@ -20,4 +20,7 @@
  * THE SOFTWARE.
  */
 
-angular.module('home', ['connection', 'connectionGroup', 'history', 'user', 'permission']);
+/**
+ * The module for code relating to connection history.
+ */
+angular.module('history', []);

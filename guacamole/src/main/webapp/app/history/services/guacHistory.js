@@ -21,9 +21,9 @@
  */
 
 /**
- * A service for creating Guacamole clients.
+ * A service for reading and manipulating the Guacamole connection history.
  */
-angular.module('home').factory('guacHistory', [function guacHistory() {
+angular.module('history').factory('guacHistory', ['HistoryEntry', function guacHistory(HistoryEntry) {
 
     var service = {};
 
@@ -35,30 +35,6 @@ angular.module('home').factory('guacHistory', [function guacHistory() {
      * cutoff.
      */
     var IDEAL_LENGTH = 6;
-
-    /**
-     * A single entry in the connection history.
-     * 
-     * @constructor
-     * @param {String} id The ID of the connection.
-     * 
-     * @param {String} thumbnail
-     *     The URL of the thumbnail to use to represent the connection.
-     */
-    var HistoryEntry = function HistoryEntry(id, thumbnail) {
-
-        /**
-         * The ID of the connection associated with this history entry.
-         */
-        this.id = id;
-
-        /**
-         * The thumbnail associated with the connection associated with this
-         * history entry.
-         */
-        this.thumbnail = thumbnail;
-
-    };
 
     /**
      * The top few recent connections, sorted in order of most recent access.
