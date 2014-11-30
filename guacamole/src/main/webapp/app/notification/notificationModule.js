@@ -21,7 +21,6 @@
  */
 
 /**
- * The module for the root of the application.
+ * The module for code used to display arbitrary notifications.
  */
-angular.module('index', ['ngRoute', 'pascalprecht.translate',
-    'auth', 'home', 'manage', 'login', 'client', 'notification']);
+angular.module('notification', []);

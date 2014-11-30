@@ -267,7 +267,8 @@
             }
         },
         "action" : {
-            "reconnect" : "Reconnect"
+            "reconnect"             : "Reconnect",
+            "reconnectCountdown"    : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}..."
         },
         "fileTransfer" : {
             "title"     : "File Transfer",

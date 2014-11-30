@@ -20,16 +20,6 @@
  * THE SOFTWARE.
  */
 
-.status-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 1em;
-}
-
 .status-outer {
     display: table;
     height: 100%;
@@ -48,7 +38,7 @@
     vertical-align: middle;
 }
 
-.status {
+.status-middle .notification {
 
     width: 75%;
     max-width: 5in;
@@ -56,31 +46,20 @@
     margin-right: auto;
     overflow: auto;
 
-    background: white;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
- 
     text-align: left;
     
 }
 
-.status .title {
-    font-size: 1.25em;
-    font-weight: bold;
-    background: rgba(0, 0, 0, 0.04);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
-    margin: 0;
-    padding: 0.5em 1em;
-    text-transform: uppercase;
-}
-
-.status.error {
-    background: #FDD;
-}
-
-.status > * {
+.status-middle .notification .body {
     margin: 1.25em;
+}
+
+.status-middle .notification .buttons {
+    margin: 1em;
+}
+
+.status-middle .notification.error {
+    background: #FDD;
 }
 
 /* Fade entire status area in/out based on shown status */
@@ -99,10 +78,10 @@
 
 /* Hide dialog immediately based on status */
 
-.status {
+.status-middle .notification {
     visibility: hidden;
 }
 
-.shown .status {
+.shown .status-middle .notification {
     visibility: visible;
 }

@@ -52,6 +52,18 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     };
 
     /**
+     * All error codes for which automatic reconnection is appropriate when a
+     * client error occurs.
+     */
+    var CLIENT_AUTO_RECONNECT = {
+        0x0200: true,
+        0x0202: true,
+        0x0203: true,
+        0x0301: true,
+        0x0308: true
+    };
+ 
+    /**
      * All tunnel error codes handled and passed off for translation. Any error
      * code not present in this list will be represented by the "DEFAULT"
      * translation.
@@ -67,7 +79,18 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         0x0308: true,
         0x031D: true
     };
-    
+
+    /**
+     * All error codes for which automatic reconnection is appropriate when a
+     * tunnel error occurs.
+     */
+    var TUNNEL_AUTO_RECONNECT = {
+        0x0200: true,
+        0x0202: true,
+        0x0203: true,
+        0x0308: true
+    };
+
     /**
      * The reconnect action to be provided along with the object sent to
      * showStatus.
@@ -79,6 +102,16 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             $scope.id = uniqueId;
             $scope.showStatus(false);
         }
+    };
+
+    /**
+     * The reconnect countdown to display if an error or status warrants an
+     * automatic, timed reconnect.
+     */
+    var RECONNECT_COUNTDOWN = {
+        text: "client.action.reconnectCountdown",
+        callback: RECONNECT_ACTION.callback,
+        remaining: 15
     };
 
     // Get DAO for reading connections and groups
@@ -146,7 +179,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         
         return true;
     }
-    
+
     $scope.$watch('menuShown', function setKeyboardEnabled(menuShown, menuShownPreviousState) {
         
         // Send clipboard data if menu is hidden
@@ -218,7 +251,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         $scope.id = null;
 
         // Determine translation name of error
-        var errorName = (status in CLIENT_ERRORS) ? status.toString(16) : "DEFAULT";
+        var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+        // Determine whether the reconnect countdown applies
+        var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
         // Override any existing status
         $scope.showStatus(false);
@@ -228,6 +264,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.clientErrors." + errorName,
+            countdown: countdown,
             actions: [ RECONNECT_ACTION ]
         });
 
@@ -253,7 +290,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         $scope.id = null;
 
         // Determine translation name of error
-        var errorName = (status in TUNNEL_ERRORS) ? status.toString(16) : "DEFAULT";
+        var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+        // Determine whether the reconnect countdown applies
+        var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
         // Override any existing status
         $scope.showStatus(false);
@@ -263,6 +303,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             className: "error",
             title: "client.error.connectionErrorTitle",
             text: "client.error.tunnelErrors." + errorName,
+            countdown: countdown,
             actions: [ RECONNECT_ACTION ]
         });
 

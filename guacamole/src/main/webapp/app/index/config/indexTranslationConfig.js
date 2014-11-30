@@ -24,10 +24,17 @@
  * The configuration block for setting up everything having to do with i18n.
  */
 angular.module('index').config(['$translateProvider', function($translateProvider) {
+
+    // Use US English by default
     $translateProvider.preferredLanguage('en_US');
 
+    // Load translations from static JSON files
     $translateProvider.useStaticFilesLoader({
         prefix: 'translations/',
         suffix: '.json'
     });
+
+    // Provide pluralization, etc. via messageformat.js
+    $translateProvider.useMessageFormatInterpolation();
+
 }]);

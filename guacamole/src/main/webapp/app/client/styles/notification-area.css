@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2013 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,24 @@
  * THE SOFTWARE.
  */
 
-/**
- * The module for the root of the application.
- */
-angular.module('index', ['ngRoute', 'pascalprecht.translate',
-    'auth', 'home', 'manage', 'login', 'client', 'notification']);
+#notificationArea {
+    position: fixed;
+    right: 0.5em;
+    bottom: 0.5em;
+    max-width: 25%;
+    width: 2in;
+}
+
+#notificationArea .notification {
+    font-size: 0.7em;
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+#notificationArea .notification .text {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
