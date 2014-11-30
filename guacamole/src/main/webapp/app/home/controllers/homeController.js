@@ -31,7 +31,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
                                     
     // Get the dependencies commonJS style
     var connectionGroupService  = $injector.get("connectionGroupService");
-    var localStorageUtility     = $injector.get("localStorageUtility");
+    var guacHistory             = $injector.get("guacHistory");
     
     // All the connections and connection groups in root
     $scope.connectionsAndGroups = [];
@@ -48,14 +48,14 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     connectionGroupService.getAllGroupsAndConnections($scope.connectionsAndGroups)
     .then(function findRecentConnections() {
         
-        // Try to parse out the recent connections from local storage
-        var recentConnections;
-        try {
-            recentConnections = JSON.parse(localStorageUtility.get(GUAC_HISTORY_STORAGE_KEY));
-        } catch(e) {
-            
-            // The recent history is corrupted - clear it
-            localStorageUtility.clear(GUAC_HISTORY_STORAGE_KEY);
+        // TODONT: Munch the guacHistory recentConnections list into a legacy-style object
+        var recentConnections = {};
+        for (var i=0; i < guacHistory.recentConnections.length; i++) {
+            var entry = guacHistory.recentConnections[i];
+            recentConnections[encodeURIComponent(entry.id)] = {
+                id        : entry.id,
+                thumbnail : entry.thumbnail
+            };
         }
         
         // Figure out which recent connection entries are valid
