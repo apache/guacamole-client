@@ -1,0 +1,102 @@
+/*
+ * Copyright (C) 2013 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+.notification {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.125);
+    background: white;
+    color: black;
+}
+
+.notification .body {
+    margin: 0.5em;
+}
+
+.notification .buttons {
+    margin: 0.5em;
+}
+
+@keyframes notification-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+@-webkit-keyframes notification-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+.notification .title-bar {
+    font-size: 1.25em;
+    font-weight: bold;
+
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+.notification .progress .bar {
+    background: #A3D655;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    box-shadow: inset  1px  1px 0 rgba(255, 255, 255, 0.5),
+                inset -1px -1px 0 rgba(  0,   0,   0, 0.1),
+                       1px 1px  0 gray;
+}
+
+.notification .progress {
+
+    width: 100%;
+    background: #C2C2C2 url('images/progress.png');
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+
+    animation-name: notification-progress;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: notification-progress;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    padding: 0.25em;
+    
+    border: 1px solid gray;
+    -moz-border-radius: 0.2em;
+    -webkit-border-radius: 0.2em;
+    -khtml-border-radius: 0.2em;
+    border-radius: 0.2em;
+
+    position: relative;
+    
+}
