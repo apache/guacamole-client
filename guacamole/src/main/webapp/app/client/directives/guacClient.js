@@ -306,7 +306,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     client.disconnect();
 
                 // Update stored thumbnail of previous connection 
-                if (previousID && display && display.getWidth() >= 0 && display.getHeight() >= 0) {
+                if (previousID && display && display.getWidth() > 0 && display.getHeight() > 0) {
 
                     // Get screenshot
                     var canvas = display.flatten();
