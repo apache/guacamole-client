@@ -122,12 +122,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
 
-            var $window             = $injector.get('$window'),
-                guacAudio           = $injector.get('guacAudio'),
-                guacVideo           = $injector.get('guacVideo'),
-                guacTunnelFactory   = $injector.get('guacTunnelFactory'),
-                guacClientFactory   = $injector.get('guacClientFactory'),
-                localStorageUtility = $injector.get('localStorageUtility');
+            var $window               = $injector.get('$window'),
+                guacAudio             = $injector.get('guacAudio'),
+                guacVideo             = $injector.get('guacVideo'),
+                guacTunnelFactory     = $injector.get('guacTunnelFactory'),
+                guacClientFactory     = $injector.get('guacClientFactory'),
+                authenticationService = $injector.get('authenticationService');
  
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
@@ -175,7 +175,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Build base connect string
                 var connectString =
                       "id="         + encodeURIComponent($scope.id)
-                    + "&authToken=" + encodeURIComponent(localStorageUtility.get('authToken'))
+                    + "&authToken=" + encodeURIComponent(authenticationService.getCurrentToken())
                     + "&width="     + Math.floor(optimal_width)
                     + "&height="    + Math.floor(optimal_height)
                     + "&dpi="       + Math.floor(optimal_dpi)

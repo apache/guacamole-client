@@ -23,4 +23,4 @@
 /**
  * The module for code relating to connections.
  */
-angular.module('connection', ['util']);
+angular.module('connection', ['auth']);

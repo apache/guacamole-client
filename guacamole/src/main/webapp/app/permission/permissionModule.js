@@ -23,4 +23,4 @@
 /**
  * A module for code relating to permissions.
  */
-angular.module('permission', []);
+angular.module('permission', ['auth']);

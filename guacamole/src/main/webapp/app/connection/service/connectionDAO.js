@@ -23,8 +23,8 @@
 /**
  * The DAO for connection operations agains the REST API.
  */
-angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUtility',
-        function connectionDAO($http, localStorageUtility) {
+angular.module('connection').factory('connectionDAO', ['$http', 'authenticationService',
+        function connectionDAO($http, authenticationService) {
             
     var service = {};
     
@@ -36,7 +36,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
      * @returns {promise} A promise for the HTTP call.
      */
     service.getConnection = function getConnection(id) {
-        return $http.get("api/connection/" + id + "?token=" + localStorageUtility.get('authToken'));
+        return $http.get("api/connection/" + id + "?token=" + authenticationService.getCurrentToken());
     };
 
     /**
@@ -55,7 +55,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
         if(parentID !== undefined)
             parentIDParam = "&parentID=" + parentID;
         
-        return $http.get("api/connection?token=" + localStorageUtility.get('authToken') + parentIDParam);
+        return $http.get("api/connection?token=" + authenticationService.getCurrentToken() + parentIDParam);
     };
     
     /**
@@ -74,7 +74,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
         
         // This is a new connection
         if(!connectionToSave.identifier) {
-            return $http.post("api/connection/?token=" + localStorageUtility.get('authToken'), connectionToSave).success(
+            return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connectionToSave).success(
                 function setConnectionID(connectionID){
                     // Set the identifier on the new connection
                     connection.identifier = connectionID;
@@ -83,7 +83,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
         } else {
             return $http.post(
                 "api/connection/" + connectionToSave.identifier + 
-                "?token=" + localStorageUtility.get('authToken'), 
+                "?token=" + authenticationService.getCurrentToken(), 
             connectionToSave);
         }
     };
@@ -100,7 +100,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
         
         return $http.put(
             "api/connection/" + connection.identifier + 
-            "?token=" + localStorageUtility.get('authToken') + 
+            "?token=" + authenticationService.getCurrentToken() + 
             "&parentID=" + connection.parentIdentifier, 
         connection);
         
@@ -117,7 +117,7 @@ angular.module('connection').factory('connectionDAO', ['$http', 'localStorageUti
     service.deleteConnection = function deleteConnection(connection) {
         return $http['delete'](
             "api/connection/" + connection.identifier + 
-            "?token=" + localStorageUtility.get('authToken'));
+            "?token=" + authenticationService.getCurrentToken());
     };
     
     return service;

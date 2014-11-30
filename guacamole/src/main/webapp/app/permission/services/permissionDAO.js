@@ -23,8 +23,8 @@
 /**
  * The DAO for permission operations agains the REST API.
  */
-angular.module('permission').factory('permissionDAO', ['$http', 'localStorageUtility',
-        function permissionDAO($http, localStorageUtility) {
+angular.module('permission').factory('permissionDAO', ['$http', 'authenticationService',
+        function permissionDAO($http, authenticationService) {
             
     var service = {};
     
@@ -37,7 +37,7 @@ angular.module('permission').factory('permissionDAO', ['$http', 'localStorageUti
      * @returns {promise} A promise for the HTTP call.
      */
     service.getPermissions = function getPermissions(userID) {
-        return $http.get("api/permission/" + userID + "/?token=" + localStorageUtility.get('authToken'));
+        return $http.get("api/permission/" + userID + "/?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -50,7 +50,7 @@ angular.module('permission').factory('permissionDAO', ['$http', 'localStorageUti
      * @returns {promise} A promise for the HTTP call.
      */
     service.addPermission = function addPermission(userID, permission) {
-        return $http.post("api/permission/" + userID + "/?token=" + localStorageUtility.get('authToken'), permission);
+        return $http.post("api/permission/" + userID + "/?token=" + authenticationService.getCurrentToken(), permission);
     };
     
     
@@ -65,7 +65,7 @@ angular.module('permission').factory('permissionDAO', ['$http', 'localStorageUti
      * @returns {promise} A promise for the HTTP call.
      */
     service.removePermission = function removePermission(userID, permission) {
-        return $http.post("api/permission/remove/" + userID + "/?token=" + localStorageUtility.get('authToken'), permission);
+        return $http.post("api/permission/remove/" + userID + "/?token=" + authenticationService.getCurrentToken(), permission);
     };
     
     
@@ -103,7 +103,7 @@ angular.module('permission').factory('permissionDAO', ['$http', 'localStorageUti
         // Make the HTTP call
         return $http({
             method  : 'PATCH', 
-            url     : "api/permission/?token=" + localStorageUtility.get('authToken'),
+            url     : "api/permission/?token=" + authenticationService.getCurrentToken(),
             data    : permissionPatch
         });
     }

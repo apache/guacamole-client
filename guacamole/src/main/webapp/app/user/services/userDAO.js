@@ -23,8 +23,8 @@
 /**
  * The DAO for connection operations agains the REST API.
  */
-angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
-        function userDAO($http, localStorageUtility) {
+angular.module('user').factory('userDAO', ['$http', 'authenticationService',
+        function userDAO($http, authenticationService) {
             
     var service = {};
     
@@ -35,7 +35,7 @@ angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
      * @returns {promise} A promise for the HTTP call.
      */
     service.getUsers = function getUsers() {
-        return $http.get("api/user?token=" + localStorageUtility.get('authToken'));
+        return $http.get("api/user?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -47,7 +47,7 @@ angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
      * @returns {promise} A promise for the HTTP call.
      */
     service.getUser = function getUser(userID) {
-        return $http.get("api/user/" + userID + "/?token=" + localStorageUtility.get('authToken'));
+        return $http.get("api/user/" + userID + "/?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -61,7 +61,7 @@ angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
     service.deleteUser = function deleteUser(user) {
         return $http['delete'](
             "api/user/" + user.username + 
-            "?token=" + localStorageUtility.get('authToken'));
+            "?token=" + authenticationService.getCurrentToken());
     };
     
     
@@ -76,7 +76,7 @@ angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
     service.createUser = function createUser(user) {
         return $http.post(
             "api/user/" 
-            + "?token=" + localStorageUtility.get('authToken'), 
+            + "?token=" + authenticationService.getCurrentToken(), 
             user
         );
     }
@@ -92,7 +92,7 @@ angular.module('user').factory('userDAO', ['$http', 'localStorageUtility',
     service.saveUser = function saveUser(user) {
         return $http.post(
             "api/user/" + user.username + 
-            "?token=" + localStorageUtility.get('authToken'), 
+            "?token=" + authenticationService.getCurrentToken(), 
         user);
     };
     
