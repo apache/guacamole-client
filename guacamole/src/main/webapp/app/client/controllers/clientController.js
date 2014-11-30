@@ -265,9 +265,6 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show status dialog when client errors occur
     $scope.$on('guacClientError', function clientErrorListener(event, client, status) {
 
-        // Disconnect
-        $scope.id = null;
-
         // Determine translation name of error
         var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
@@ -293,6 +290,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
         // Show new status only if disconnected
         if (status === "closed") {
+
+            // Disconnect
+            $scope.id = null;
+
             $scope.showStatus({
                 title: "client.status.closedStatusTitle",
                 text: "client.status.tunnelStates." + status
@@ -303,9 +304,6 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
     // Show status dialog when tunnel errors occur
     $scope.$on('guacTunnelError', function tunnelErrorListener(event, tunnel, status) {
-
-        // Disconnect
-        $scope.id = null;
 
         // Determine translation name of error
         var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";

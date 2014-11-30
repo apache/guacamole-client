@@ -125,6 +125,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             var $window               = $injector.get('$window'),
                 guacAudio             = $injector.get('guacAudio'),
                 guacVideo             = $injector.get('guacVideo'),
+                guacHistory           = $injector.get('guacHistory'),
                 guacTunnelFactory     = $injector.get('guacTunnelFactory'),
                 guacClientFactory     = $injector.get('guacClientFactory'),
                 authenticationService = $injector.get('authenticationService');
@@ -298,11 +299,36 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
 
             // Connect to given ID whenever ID changes
-            $scope.$watch('id', function(id) {
+            $scope.$watch('id', function(id, previousID) {
 
                 // If a client is already attached, ensure it is disconnected
                 if (client)
                     client.disconnect();
+
+                // Update stored thumbnail of previous connection 
+                if (previousID && display && display.getWidth() >= 0 && display.getHeight() >= 0) {
+
+                    // Get screenshot
+                    var canvas = display.flatten();
+                    
+                    // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+                    var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
+                    
+                    // Create thumbnail canvas
+                    var thumbnail = document.createElement("canvas");
+                    thumbnail.width  = canvas.width*scale;
+                    thumbnail.height = canvas.height*scale;
+                    
+                    // Scale screenshot to thumbnail
+                    var context = thumbnail.getContext("2d");
+                    context.drawImage(canvas,
+                        0, 0, canvas.width, canvas.height,
+                        0, 0, thumbnail.width, thumbnail.height
+                    );
+
+                    guacHistory.updateThumbnail(previousID, thumbnail.toDataURL("image/png"));
+
+                }
 
                 // Only proceed if a new client is attached
                 if (!id)
