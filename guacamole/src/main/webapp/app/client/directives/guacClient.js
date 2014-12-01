@@ -30,12 +30,29 @@ angular.module('client').directive('guacClient', [function guacClient() {
         restrict: 'E',
         replace: true,
         scope: {
-            // Parameters for controlling client state
-            clientProperties        : '=',
+
+            /**
+             * Parameters for controlling client state.
+             * 
+             * @type ClientProperties|Object
+             */
+            clientProperties : '=',
             
-            // Parameters for initially connecting
-            id                      : '=',
-            connectionParameters    : '='
+            /**
+             * The ID of the Guacamole connection to connect to.
+             * 
+             * @type String
+             */
+            id : '=',
+
+            /**
+             * Arbitrary URL-encoded parameters to append to the connection
+             * string when connecting.
+             * 
+             * @type String
+             */
+            connectionParameters : '='
+
         },
         templateUrl: 'app/client/templates/guacClient.html',
         controller: ['$scope', '$injector', '$element', function guacClientController($scope, $injector, $element) {

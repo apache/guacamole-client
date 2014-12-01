@@ -23,14 +23,20 @@
 /**
  * A service for generating new guacClient properties objects.
  */
-angular.module('client').factory('clientProperties', [function clientProperties() {
+angular.module('client').factory('ClientProperties', [function defineClientProperties() {
             
     /**
      * Object used for interacting with a guacClient directive.
      * 
      * @constructor
+     * @param {ClientProperties|Object} [template={}]
+     *     The object whose properties should be copied within the new
+     *     ClientProperties.
      */
-    return function() {
+    var ClientProperties = function ClientProperties(template) {
+
+        // Use empty object by default
+        template = template || {};
 
         /**
          * Whether the display should be scaled automatically to fit within the
@@ -38,7 +44,7 @@ angular.module('client').factory('clientProperties', [function clientProperties(
          * 
          * @type Boolean
          */
-        this.autoFit = true;
+        this.autoFit = template.autoFit || true;
 
         /**
          * The current scale. If autoFit is true, the effect of setting this
@@ -46,28 +52,28 @@ angular.module('client').factory('clientProperties', [function clientProperties(
          * 
          * @type Number
          */
-        this.scale = 1;
+        this.scale = template.scale || 1;
 
         /**
          * The minimum scale value.
          * 
          * @type Number
          */
-        this.minScale = 1;
+        this.minScale = template.minScale || 1;
 
         /**
          * The maximum scale value.
          * 
          * @type Number
          */
-        this.maxScale = 3;
+        this.maxScale = template.maxScale || 3;
 
         /**
          * Whether or not the client should listen to keyboard events.
          * 
          * @type Boolean
          */
-        this.keyboardEnabled = true;
+        this.keyboardEnabled = template.keyboardEnabled || true;
         
         /**
          * Whether translation of touch to mouse events should emulate an
@@ -75,8 +81,10 @@ angular.module('client').factory('clientProperties', [function clientProperties(
          * 
          * @type Boolean
          */
-        this.emulateAbsoluteMouse = true;
+        this.emulateAbsoluteMouse = template.emulateAbsoluteMouse || true;
 
     };
+
+    return ClientProperties;
 
 }]);

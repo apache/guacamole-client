@@ -135,7 +135,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Get DAO for reading connections and groups
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
-    var ClientProperties   = $injector.get('clientProperties');
+    var ClientProperties   = $injector.get('ClientProperties');
 
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
