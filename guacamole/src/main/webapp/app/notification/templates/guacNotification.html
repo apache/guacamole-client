@@ -1,4 +1,4 @@
-<div class="notification" ng-class="className">
+<div class="notification" ng-class="notification.className">
     <!--
        Copyright (C) 2014 Glyptodon LLC
 
@@ -22,26 +22,26 @@
     -->
 
     <!-- Notification title -->
-    <div ng-show="title" class="title-bar">
-        <div class="title">{{title | translate}}</div>
+    <div ng-show="notification.title" class="title-bar">
+        <div class="title">{{notification.title | translate}}</div>
     </div>
 
     <div class="body">
 
         <!-- Notification text -->
-        <p ng-show="text" class="text">{{text | translate}}</p>
+        <p ng-show="notification.text" class="text">{{notification.text | translate}}</p>
 
         <!-- Current progress -->
-        <div ng-show="progressText" class="progress"><div ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}" class="bar"></div><div class="text">{{progressText | translate:"{ PROGRESS: progress, UNIT: progressUnit }"}}</div></div>
+        <div ng-show="notification.progress" class="progress"><div ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}" class="bar"></div><div ng-show="notification.progress.text" class="text">{{notification.progress.text | translate:"{ PROGRESS: notification.progress.value, UNIT: notification.progress.unit}"}}</div></div>
 
         <!-- Default action countdown text -->
-        <p ng-show="countdownText" class="countdown-text">{{countdownText | translate:"{ REMAINING: timeRemaining }"}}</p>
+        <p ng-show="notification.countdown.text" class="countdown-text">{{notification.countdown.text | translate:"{ REMAINING: timeRemaining}"}}</p>
 
     </div>
 
     <!-- Buttons -->
-    <div ng-show="actions && actions.length" class="buttons">
-        <button ng-repeat="action in actions" ng-click="action.callback()">{{action.name | translate}}</button>
+    <div ng-show="notification.actions.length" class="buttons">
+        <button ng-repeat="action in notification.actions" ng-click="action.callback()">{{action.name | translate}}</button>
     </div>
 
 </div>

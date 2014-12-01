@@ -31,110 +31,11 @@ angular.module('notification').directive('guacNotification', [function guacNotif
         scope: {
 
             /**
-             * The CSS class to apply to the notification.
+             * The notification to display.
              *
-             * @type String
+             * @type Notification|Object 
              */
-            className : '=',
-
-            /**
-             * The title of the notification.
-             *
-             * @type String
-             */
-            title : '=',
-
-            /**
-             * The body text of the notification.
-             *
-             * @type String
-             */
-            text : '=',
-
-            /**
-             * The text to use for displaying the countdown. For the sake of
-             * i18n, the variable REMAINING will be applied within the
-             * translation string for formatting plurals, etc.
-             *
-             * @type String
-             * @example
-             * "Only {REMAINING} {REMAINING, plural, one{second} other{seconds}} remain."
-             */
-            countdownText : '=',
-
-            /**
-             * The number of seconds to wait before automatically calling the
-             * default callback.
-             *
-             * @type Number
-             */
-            countdown : '=',
-
-            /**
-             * The function to call when timeRemaining expires. If timeRemaining
-             * is not set, this does not apply.
-             *
-             * @type Function
-             */
-            defaultCallback : '=',
-
-            /**
-             * The text to use for displaying the progress. For the sake of
-             * i18n, the variable PROGRESS will be applied within the
-             * translation string for formatting plurals, etc., while the
-             * variable UNIT will be applied, if needed, for whatever units
-             * are applicable to the progress display.
-             *
-             * @type String
-             * @example
-             * "{PROGRESS} {UNIT, select, b{B} kb{KB}} uploaded."
-             */
-            progressText : '=',
-
-            /**
-             * The unit which applies to the progress indicator, if any. This
-             * will be substituted in the progressText string with the UNIT
-             * variable.
-             *
-             * @type String
-             */
-            progressUnit : '=',
-
-            /**
-             * Arbitrary value denoting how much progress has been made
-             * in some ongoing task that this notification represents.
-             *
-             * @type Number
-             */
-            progress : '=',
-
-            /**
-             * Value between 0 and 1 denoting what proportion of the operation
-             * has completed. If known, this value should be 0 if the operation
-             * has not started, and 1 if the operation is complete.
-             *
-             * @type Number
-             */
-            progressRatio : '=',
-
-            /**
-             * Array of name/callback pairs for each action the user is allowed
-             * to take once the notification is shown.
-             *
-             * @type Array
-             * @example
-             * [
-             *     {
-             *         name     : "Action 1 name",
-             *         callback : actionCallback1
-             *     },
-             *     {
-             *         name     : "Action 2 text",
-             *         callback : actionCallback2
-             *     }
-             * ]
-             */
-            actions : '='
+            notification : '='
 
         },
 
@@ -142,21 +43,22 @@ angular.module('notification').directive('guacNotification', [function guacNotif
         controller: ['$scope', '$interval', function guacNotificationController($scope, $interval) {
 
             // Update progress bar if end known
-            $scope.$watch("progressRatio", function updateProgress(ratio) {
+            $scope.$watch("notification.progress.ratio", function updateProgress(ratio) {
                 $scope.progressPercent = ratio * 100;
             });
 
-            // Set countdown interval when associated property is set
-            $scope.$watch("countdown", function resetTimeRemaining(countdown) {
+            $scope.$watch("notification", function resetTimeRemaining(notification) {
 
-                $scope.timeRemaining = countdown;
+                var countdown = notification.countdown;
 
                 // Clean up any existing interval
                 if ($scope.interval)
                     $interval.cancel($scope.interval);
 
                 // Update and handle countdown, if provided
-                if ($scope.timeRemaining) {
+                if (countdown) {
+
+                    $scope.timeRemaining = countdown.remaining;
 
                     $scope.interval = $interval(function updateTimeRemaining() {
 
@@ -164,8 +66,8 @@ angular.module('notification').directive('guacNotification', [function guacNotif
                         $scope.timeRemaining--;
 
                         // Call countdown callback when time remaining expires
-                        if ($scope.timeRemaining === 0 && $scope.defaultCallback)
-                            $scope.defaultCallback();
+                        if ($scope.timeRemaining === 0)
+                            countdown.performAction();
 
                     }, 1000, $scope.timeRemaining);
 

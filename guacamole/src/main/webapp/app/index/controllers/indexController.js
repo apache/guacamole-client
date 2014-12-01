@@ -50,6 +50,21 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         }
     };
 
+    /**
+     * The current status notification, or false if no status is currently
+     * shown.
+     * 
+     * @type Notification|Boolean
+     */
+    $scope.status = false;
+
+    /**
+     * All currently-visible notifications.
+     * 
+     * @type Notification[]
+     */
+    $scope.notifications = [];
+
     // Put some useful variables in the top level scope
     $scope.page = {
         title: '',
@@ -59,7 +74,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.currentUserIsAdmin = false;
     $scope.currentUserHasUpdate = false;
     $scope.currentUserPermissions = null;
-    $scope.notifications = [];
     var notificationUniqueID = 0;
     
     // A promise to be fulfilled when all basic user permissions are loaded.
@@ -77,41 +91,8 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * notification is currently shown, no further statuses will be shown
      * until the current status is hidden.
      *
-     * @param {Object} status The status notification to show.
-     * @param {String} [status.title] The title of the notification.
-     * @param {String} [status.text] The body text of the notification.
-     * @param {String} [status.className] The CSS class name to apply.
-     *
-     * @param {String} [status.countdown.text]
-     *     In the case that a countdown applies to the notification, the text to
-     *     display while the countdown is active.
-     *
-     * @param {Function} [status.countdown.callback]
-     *     The callback to call when the countdown expires.
-     *
-     * @param {String} [status.countdown.remaining]
-     *     The number of seconds remaining before the countdown callback is
-     *     called.
-     *
-     * @param {String} [status.progress.text]
-     *     If this notification has associated progress, the text to display
-     *     while the operation is occurring.
-     *
-     * @param {String} [status.progress.value]
-     *     The current state of operation progress, as an arbitrary number
-     *     which increases as the operation continues.
-     *
-     * @param {String} [status.progress.unit]
-     *     The unit of the arbitrary status.progress.value, if that value has
-     *     an associated unit.
-     *
-     * @param {String} [status.progress.ratio]
-     *     If known, the current status of the operation as a value between
-     *     0 and 1 inclusive, where 0 is not yet started, and 1 is complete.
-     *
-     * @param {Object[]} [status.actions]
-     *     Array of action objects which contain an action name and callback to
-     *     be executed when that action is invoked. 
+     * @param {Notification|Boolean|Object} status
+     *     The status notification to show.
      *
      * @example
      * 
@@ -138,43 +119,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     /**
      * Adds a notification to the the list of notifications shown.
      * 
-     * @param {Object} notification The notification to add.
-     * @param {String} [notification.title] The title of the notification.
-     * @param {String} [notification.text] The body text of the notification.
-     * @param {String} [notification.className] The CSS class name to apply.
+     * @param {Notification|Object} notification The notification to add.
      *
-     * @param {String} [notification.countdown.text]
-     *     In the case that a countdown applies to the notification, the text to
-     *     display while the countdown is active.
-     *
-     * @param {Function} [notification.countdown.callback]
-     *     The callback to call when the countdown expires.
-     *
-     * @param {String} [notification.countdown.remaining]
-     *     The number of seconds remaining before the countdown callback is
-     *     called.
-     *
-     * @param {String} [notification.progress.text]
-     *     If this notification has associated progress, the text to display
-     *     while the operation is occurring.
-     *
-     * @param {String} [notification.progress.value]
-     *     The current state of operation progress, as an arbitrary number
-     *     which increases as the operation continues.
-     *
-     * @param {String} [notification.progress.unit]
-     *     The unit of the arbitrary notification.progress.value, if that value
-     *     has an associated unit.
-     *
-     * @param {String} [notification.progress.ratio]
-     *     If known, the current status of the operation as a value between
-     *     0 and 1 inclusive, where 0 is not yet started, and 1 is complete.
-     *
-     * @param {Object[]} [notification.actions]
-     *     Array of action objects which contain an action name and callback to
-     *     be executed when that action is invoked. 
-     *                                    
-     * @returns {Number} A unique ID for the notification that's just been added.
+     * @returns {Number}
+     *     A unique ID for the notification that's just been added.
      * 
      * @example
      * 

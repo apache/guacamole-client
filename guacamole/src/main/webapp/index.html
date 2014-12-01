@@ -37,20 +37,7 @@ THE SOFTWARE.
         <!-- Global status/error dialog -->
         <div ng-class="{shown: status}" class="status-outer">
             <div class="status-middle">
-
-                <guac-notification
-                    class-name="status.className"
-                    title="status.title"
-                    text="status.text"
-                    progress-text="status.progress.text"
-                    progress-unit="status.progress.unit"
-                    progress-ratio="status.progress.ratio"
-                    progress="status.progress.value"
-                    actions="status.actions"
-                    countdown-text="status.countdown.text"
-                    countdown="status.countdown.remaining"
-                    default-callback="status.countdown.callback"/>
-
+                <guac-notification notification="status"/>
             </div>
         </div>
         
@@ -60,20 +47,7 @@ THE SOFTWARE.
         <!-- Notification area -->
         <div id="notificationArea">
             <div ng-repeat="wrapper in notifications">
-
-                <guac-notification
-                    class-name="wrapper.notification.className"
-                    title="wrapper.notification.title"
-                    text="wrapper.notification.text"
-                    progress-text="wrapper.notification.progress.text"
-                    progress-unit="wrapper.notification.progress.unit"
-                    progress-ratio="wrapper.notification.progress.ratio"
-                    progress="wrapper.notification.progress.value"
-                    actions="wrapper.notification.actions"
-                    countdown-text="wrapper.notification.countdown.text"
-                    countdown="wrapper.notification.countdown.remaining"
-                    default-callback="wrapper.notification.countdown.callback"/>
-
+                <guac-notification notification="wrapper.notification"/>
             <div>                
         </div>
         
