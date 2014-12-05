@@ -367,17 +367,19 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
      *     returned.
      *
      * @param {Number} bytes The number of bytes.
+     * @param {Number} [length] The file length, in bytes, if known.
      *
      * @returns {Object}
      *     A progress object, as required by $scope.addNotification().
      */
-    var getFileProgress = function getFileProgress(text, bytes) {
+    var getFileProgress = function getFileProgress(text, bytes, length) {
 
         // Gigabytes
         if (bytes > 1000000000)
             return {
                 text  : text,
                 value : (bytes / 1000000000).toFixed(1),
+                ratio : bytes / length,
                 unit  : "gb"
             };
 
@@ -386,6 +388,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             return {
                 text  : text,
                 value : (bytes / 1000000).toFixed(1),
+                ratio : bytes / length,
                 unit  : "mb"
             };
 
@@ -394,6 +397,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             return {
                 text  : text,
                 value : (bytes / 1000).toFixed(1),
+                ratio : bytes / length,
                 unit  : "kb"
             };
 
@@ -401,6 +405,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         return {
             text  : text,
             value : bytes,
+            ratio : bytes / length,
             unit  : "b"
         };
 
@@ -493,7 +498,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             
             var notification = uploadNotifications[streamIndex];
             if (notification)
-                notification.progress = getFileProgress('client.fileTransfer.progressText', offset);
+                notification.progress = getFileProgress('client.fileTransfer.progressText', offset, length);
             
         });
     });

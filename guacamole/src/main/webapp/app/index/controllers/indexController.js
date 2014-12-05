@@ -93,6 +93,22 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      *     The number of seconds remaining before the countdown callback is
      *     called.
      *
+     * @param {String} [status.progress.text]
+     *     If this notification has associated progress, the text to display
+     *     while the operation is occurring.
+     *
+     * @param {String} [status.progress.value]
+     *     The current state of operation progress, as an arbitrary number
+     *     which increases as the operation continues.
+     *
+     * @param {String} [status.progress.unit]
+     *     The unit of the arbitrary status.progress.value, if that value has
+     *     an associated unit.
+     *
+     * @param {String} [status.progress.ratio]
+     *     If known, the current status of the operation as a value between
+     *     0 and 1 inclusive, where 0 is not yet started, and 1 is complete.
+     *
      * @param {Object[]} [status.actions]
      *     Array of action objects which contain an action name and callback to
      *     be executed when that action is invoked. 
@@ -137,6 +153,22 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @param {String} [notification.countdown.remaining]
      *     The number of seconds remaining before the countdown callback is
      *     called.
+     *
+     * @param {String} [notification.progress.text]
+     *     If this notification has associated progress, the text to display
+     *     while the operation is occurring.
+     *
+     * @param {String} [notification.progress.value]
+     *     The current state of operation progress, as an arbitrary number
+     *     which increases as the operation continues.
+     *
+     * @param {String} [notification.progress.unit]
+     *     The unit of the arbitrary notification.progress.value, if that value
+     *     has an associated unit.
+     *
+     * @param {String} [notification.progress.ratio]
+     *     If known, the current status of the operation as a value between
+     *     0 and 1 inclusive, where 0 is not yet started, and 1 is complete.
      *
      * @param {Object[]} [notification.actions]
      *     Array of action objects which contain an action name and callback to

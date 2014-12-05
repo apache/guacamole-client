@@ -104,3 +104,7 @@
     position: relative;
     
 }
+
+.notification .progress .text {
+    position: relative;
+}

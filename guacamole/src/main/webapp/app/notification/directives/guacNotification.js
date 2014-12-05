@@ -109,6 +109,15 @@ angular.module('notification').directive('guacNotification', [function guacNotif
             progress : '=',
 
             /**
+             * Value between 0 and 1 denoting what proportion of the operation
+             * has completed. If known, this value should be 0 if the operation
+             * has not started, and 1 if the operation is complete.
+             *
+             * @type Number
+             */
+            progressRatio : '=',
+
+            /**
              * Array of name/callback pairs for each action the user is allowed
              * to take once the notification is shown.
              *
@@ -131,6 +140,11 @@ angular.module('notification').directive('guacNotification', [function guacNotif
 
         templateUrl: 'app/notification/templates/guacNotification.html',
         controller: ['$scope', '$interval', function guacNotificationController($scope, $interval) {
+
+            // Update progress bar if end known
+            $scope.$watch("progressRatio", function updateProgress(ratio) {
+                $scope.progressPercent = ratio * 100;
+            });
 
             // Set countdown interval when associated property is set
             $scope.$watch("countdown", function resetTimeRemaining(countdown) {
