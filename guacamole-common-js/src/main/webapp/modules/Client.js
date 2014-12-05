@@ -492,7 +492,7 @@ Guacamole.Client = function(tunnel) {
 
             var stream_index = parseInt(parameters[0]);
             var reason = parameters[1];
-            var code = parameters[2];
+            var code = parseInt(parameters[2]);
 
             // Get stream
             var stream = output_streams[stream_index];
@@ -718,7 +718,7 @@ Guacamole.Client = function(tunnel) {
         "error": function(parameters) {
 
             var reason = parameters[0];
-            var code = parameters[1];
+            var code = parseInt(parameters[1]);
 
             // Call handler if defined
             if (guac_client.onerror)
