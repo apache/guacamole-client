@@ -427,7 +427,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
             
             // If the window is resized, attempt to resize client
             $window.addEventListener('resize', function onResizeWindow() {
+
+                // Send new display size, if changed
+                if (client && display) {
+                    if (display.getWidth() !== main.offsetWidth || display.getHeight() !== main.offsetHeight)
+                        client.sendSize(main.offsetWidth, main.offsetHeight);
+                }
+
                 $scope.safeApply(updateDisplayScale);
+
             });
             
             /*
