@@ -79,6 +79,24 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         0x0308: true,
         0x031D: true
     };
+ 
+    /**
+     * All upload error codes handled and passed off for translation. Any error
+     * code not present in this list will be represented by the "DEFAULT"
+     * translation.
+     */
+    var UPLOAD_ERRORS = {
+        0x0100: true,
+        0x0201: true,
+        0x0202: true,
+        0x0203: true,
+        0x0204: true,
+        0x0205: true,
+        0x0301: true,
+        0x0303: true,
+        0x0308: true,
+        0x031D: true
+    };
 
     /**
      * All error codes for which automatic reconnection is appropriate when a
@@ -113,7 +131,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         callback: RECONNECT_ACTION.callback,
         remaining: 15
     };
-
+    
     // Get DAO for reading connections and groups
     var connectionGroupDAO = $injector.get('connectionGroupDAO');
     var connectionDAO      = $injector.get('connectionDAO');
@@ -338,19 +356,68 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.autoFitDisabled = function() {
         return $scope.clientProperties.minZoom >= 1;
     };
-    
-    // Mapping of stream index to notification object
+
+    /**
+     * Returns a progress object, as required by $scope.addNotification(), which
+     * contains the given number of bytes as an appropriate combination of
+     * progress value and associated unit.
+     *
+     * @param {String} text
+     *     The translation string to associate with the progress object
+     *     returned.
+     *
+     * @param {Number} bytes The number of bytes.
+     *
+     * @returns {Object}
+     *     A progress object, as required by $scope.addNotification().
+     */
+    var getFileProgress = function getFileProgress(text, bytes) {
+
+        // Gigabytes
+        if (bytes > 1000000000)
+            return {
+                text  : text,
+                value : (bytes / 1000000000).toFixed(1),
+                unit  : "gb"
+            };
+
+        // Megabytes
+        if (bytes > 1000000)
+            return {
+                text  : text,
+                value : (bytes / 1000000).toFixed(1),
+                unit  : "mb"
+            };
+
+        // Kilobytes
+        if (bytes > 1000)
+            return {
+                text  : text,
+                value : (bytes / 1000).toFixed(1),
+                unit  : "kb"
+            };
+
+        // Bytes
+        return {
+            text  : text,
+            value : bytes,
+            unit  : "b"
+        };
+
+    };
+            
+    // Mapping of download stream index to notification object
     var downloadNotifications = {};
     
-    // Mapping of stream index to notification ID
+    // Mapping of download stream index to notification ID
     var downloadNotificationIDs = {};
     
-    $scope.$on('guacClientFileStart', function handleClientFileStart(event, guacClient, streamIndex, mimetype, filename) {
+    $scope.$on('guacClientFileDownloadStart', function handleClientFileDownloadStart(event, guacClient, streamIndex, mimetype, filename) {
         $scope.safeApply(function() {
             
             var notification = {
                 className  : 'download',
-                title      : 'client.fileTransfer.title',
+                title      : 'client.fileTransfer.downloadTitle',
                 text       : filename
             };
             
@@ -360,17 +427,17 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         });
     });
 
-    $scope.$on('guacClientFileProgress', function handleClientFileProgress(event, guacClient, streamIndex, mimetype, filename, length) {
+    $scope.$on('guacClientFileDownloadProgress', function handleClientFileDownloadProgress(event, guacClient, streamIndex, mimetype, filename, length) {
         $scope.safeApply(function() {
             
             var notification = downloadNotifications[streamIndex];
             if (notification)
-                notification.progress = length;
+                notification.progress = getFileProgress('client.fileTransfer.progressText', length);
             
         });
     });
     
-    $scope.$on('guacClientFileEnd', function handleClientFileEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
+    $scope.$on('guacClientFileDownloadEnd', function handleClientFileDownloadEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
         $scope.safeApply(function() {
 
             var notification = downloadNotifications[streamIndex];
@@ -397,6 +464,100 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 ];
             }
 
+        });
+    });
+
+    // Mapping of upload stream index to notification object
+    var uploadNotifications = {};
+    
+    // Mapping of upload stream index to notification ID
+    var uploadNotificationIDs = {};
+    
+    $scope.$on('guacClientFileUploadStart', function handleClientFileUploadStart(event, guacClient, streamIndex, mimetype, filename, length) {
+        $scope.safeApply(function() {
+            
+            var notification = {
+                className  : 'upload',
+                title      : 'client.fileTransfer.uploadTitle',
+                text       : filename
+            };
+            
+            uploadNotifications[streamIndex]   = notification;
+            uploadNotificationIDs[streamIndex] = $scope.addNotification(notification);
+            
+        });
+    });
+
+    $scope.$on('guacClientFileUploadProgress', function handleClientFileUploadProgress(event, guacClient, streamIndex, mimetype, filename, length, offset) {
+        $scope.safeApply(function() {
+            
+            var notification = uploadNotifications[streamIndex];
+            if (notification)
+                notification.progress = getFileProgress('client.fileTransfer.progressText', offset);
+            
+        });
+    });
+    
+    $scope.$on('guacClientFileUploadEnd', function handleClientFileUploadEnd(event, guacClient, streamIndex, mimetype, filename, length) {
+        $scope.safeApply(function() {
+
+            var notification = uploadNotifications[streamIndex];
+            var notificationID = uploadNotificationIDs[streamIndex];
+            
+            /**
+             * Close the notification.
+             */
+            var closeNotification = function closeNotification() {
+                $scope.removeNotification(notificationID);
+                delete uploadNotifications[streamIndex];
+                delete uploadNotificationIDs[streamIndex];
+            };
+            
+            // Show that the file has uploaded successfully
+            if (notificationID && notification) {
+                delete notification.progress;
+                notification.actions = [
+                    {
+                        name       : 'client.fileTransfer.ok',
+                        callback   : closeNotification
+                    }
+                ];
+            }
+
+        });
+    });
+    
+    $scope.$on('guacClientFileUploadError', function handleClientFileUploadError(event, guacClient, streamIndex, mimetype, fileName, length, status) {
+        $scope.safeApply(function() {
+
+            var notification = uploadNotifications[streamIndex];
+            var notificationID = uploadNotificationIDs[streamIndex];
+
+            // Determine translation name of error
+            var errorName = (status in UPLOAD_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+            /**
+             * Close the notification.
+             */
+            var closeNotification = function closeNotification() {
+                $scope.removeNotification(notificationID);
+                delete uploadNotifications[streamIndex];
+                delete uploadNotificationIDs[streamIndex];
+            };
+
+            // Show that the file upload has failed
+            if (notificationID && notification) {
+                delete notification.progress;
+                notification.actions = [
+                    {
+                        name       : 'client.fileTransfer.ok',
+                        callback   : closeNotification
+                    }
+                ];
+                notification.text = "client.error.uploadErrors." + errorName;
+                notification.className = "upload error";
+            }
+            
         });
     });
 

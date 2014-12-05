@@ -252,6 +252,19 @@
                 "308"       : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
                 "31D"       : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
                 "DEFAULT"   : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
+            },
+            "uploadErrors": {
+                "100": "File transfer is either not supported or not enabled. Please contact your system administrator, or check your system logs.",
+                "201": "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
+                "202": "The file cannot be transferred because the remote desktop server is taking too long to respond. Please try again or or contact your system administrator.",
+                "203": "The remote desktop server encountered an error during transfer. Please try again or contact your system administrator.",
+                "204": "The destination for the file transfer does not exist. Please check that the destionation exists and try again.",
+                "205": "The destination for the file transfer is currently locked. Please wait for any in-progress tasks to complete and try again.",
+                "301": "You do not have permission to upload this file because you are not logged in. Please log in and try again.",
+                "303": "You do not have permission to upload this file. If you require access, please check your system settings, or check with your system administrator.",
+                "308": "The file transfer has stalled. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
+                "31D": "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
+                "DEFAULT": "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
             }
         },
         "status"            : {
@@ -271,8 +284,11 @@
             "reconnectCountdown"    : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}..."
         },
         "fileTransfer" : {
-            "title"     : "File Transfer",
-            "save"      : "Save"
+            "downloadTitle" : "File Transfer",
+            "uploadTitle"   : "File Transfer",
+            "progressText"  : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+            "ok"            : "OK",
+            "save"          : "Save"
         }
     }
 }

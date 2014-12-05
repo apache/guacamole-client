@@ -79,6 +79,28 @@ angular.module('notification').directive('guacNotification', [function guacNotif
             defaultCallback : '=',
 
             /**
+             * The text to use for displaying the progress. For the sake of
+             * i18n, the variable PROGRESS will be applied within the
+             * translation string for formatting plurals, etc., while the
+             * variable UNIT will be applied, if needed, for whatever units
+             * are applicable to the progress display.
+             *
+             * @type String
+             * @example
+             * "{PROGRESS} {UNIT, select, b{B} kb{KB}} uploaded."
+             */
+            progressText : '=',
+
+            /**
+             * The unit which applies to the progress indicator, if any. This
+             * will be substituted in the progressText string with the UNIT
+             * variable.
+             *
+             * @type String
+             */
+            progressUnit : '=',
+
+            /**
              * Arbitrary value denoting how much progress has been made
              * in some ongoing task that this notification represents.
              *

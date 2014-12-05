@@ -41,3 +41,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+#notificationArea .notification.error .text {
+    white-space: normal;
+    text-overflow: clip;
+    text-align: left;
+}
