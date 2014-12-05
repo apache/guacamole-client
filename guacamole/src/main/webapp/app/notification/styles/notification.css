@@ -96,11 +96,11 @@
     padding: 0.25em;
     
     border: 1px solid gray;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
 
     position: relative;
     
+}
+
+.notification .progress .text {
+    position: relative;
 }

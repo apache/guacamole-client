@@ -32,7 +32,7 @@
         <p ng-show="text" class="text">{{text | translate}}</p>
 
         <!-- Current progress -->
-        <div ng-show="progressText" class="progress">{{progressText | translate:"{ PROGRESS: progress, UNIT: progressUnit }"}}</div>
+        <div ng-show="progressText" class="progress"><div ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}" class="bar"></div><div class="text">{{progressText | translate:"{ PROGRESS: progress, UNIT: progressUnit }"}}</div></div>
 
         <!-- Default action countdown text -->
         <p ng-show="countdownText" class="countdown-text">{{countdownText | translate:"{ REMAINING: timeRemaining }"}}</p>
