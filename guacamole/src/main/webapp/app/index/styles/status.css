@@ -58,10 +58,6 @@
     margin: 1em;
 }
 
-.status-middle .notification.error {
-    background: #FDD;
-}
-
 /* Fade entire status area in/out based on shown status */
 
 .status-outer {

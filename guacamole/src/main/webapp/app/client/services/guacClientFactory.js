@@ -140,20 +140,20 @@ angular.module('client').factory('guacClientFactory', ['$rootScope',
             $scope.safeApply(function() {
 
                 // Begin file download
-                var guacFileStartEvent = $scope.$emit('guacClientFileStart', guacClient, stream.index, mimetype, filename);
+                var guacFileStartEvent = $scope.$emit('guacClientFileDownloadStart', guacClient, stream.index, mimetype, filename);
                 if (!guacFileStartEvent.defaultPrevented) {
 
                     var blob_reader = new Guacamole.BlobReader(stream, mimetype);
 
                     // Update progress as data is received
                     blob_reader.onprogress = function onprogress() {
-                        $scope.$emit('guacClientFileProgress', guacClient, stream.index, mimetype, filename, blob_reader.getLength());
+                        $scope.$emit('guacClientFileDownloadProgress', guacClient, stream.index, mimetype, filename, blob_reader.getLength());
                         stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
                     };
 
                     // When complete, prompt for download
                     blob_reader.onend = function onend() {
-                        $scope.$emit('guacClientFileEnd', guacClient, stream.index, mimetype, filename, blob_reader.getBlob());
+                        $scope.$emit('guacClientFileDownloadEnd', guacClient, stream.index, mimetype, filename, blob_reader.getBlob());
                     };
 
                     stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);

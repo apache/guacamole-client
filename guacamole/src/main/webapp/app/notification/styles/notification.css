@@ -27,6 +27,10 @@
     color: black;
 }
 
+.notification.error {
+    background: #FDD;
+}
+
 .notification .body {
     margin: 0.5em;
 }
