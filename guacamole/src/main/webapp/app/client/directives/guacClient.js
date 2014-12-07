@@ -431,9 +431,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Send new display size, if changed
                 if (client && display) {
 
-                    var pixel_density = $window.devicePixelRatio || 1;
-                    var width  = main.offsetWidth  * pixel_density;
-                    var height = main.offsetHeight * pixel_density;
+                    var pixelDensity = $window.devicePixelRatio || 1;
+                    var width  = main.offsetWidth  * pixelDensity;
+                    var height = main.offsetHeight * pixelDensity;
 
                     if (display.getWidth() !== width || display.getHeight() !== height)
                         client.sendSize(width, height);
