@@ -23,12 +23,13 @@
 /**
  * A service for authenticating a user against the REST API.
  */
-angular.module('auth').factory('authenticationService', ['$http', '$injector',
-        function authenticationService($http, $injector) {
+angular.module('auth').factory('authenticationService', ['$http', '$cookieStore',
+        function authenticationService($http, $cookieStore) {
 
-    var localStorageUtility = $injector.get("localStorageUtility");
     var service = {};
-    
+
+    var AUTH_COOKIE_ID = "GUAC_AUTH";
+
     /**
      * Makes a request to authenticate a user using the token REST API endpoint, 
      * returning a promise that can be used for processing the results of the call.
@@ -49,8 +50,10 @@ angular.module('auth').factory('authenticationService', ['$http', '$injector',
                 password: password
             })
         }).success(function success(data, status, headers, config) {
-            localStorageUtility.set('authToken', data.authToken);
-            localStorageUtility.set('userID', data.userID);
+            $cookieStore.put(AUTH_COOKIE_ID, {
+                authToken : data.authToken,
+                userID    : data.userID
+            });
         });
     };
 
@@ -68,22 +71,43 @@ angular.module('auth').factory('authenticationService', ['$http', '$injector',
     };
 
     /**
-     * Returns the user ID of the current user.
+     * Returns the user ID of the current user. If the current user is not
+     * logged in, this ID may not be valid.
      *
-     * @returns {String} The user ID of the current user.
+     * @returns {String}
+     *     The user ID of the current user, or null if no authentication data
+     *     is present.
      */
     service.getCurrentUserID = function getCurrentUserID() {
-        return localStorageUtility.get('userID');
+
+        // Return user ID, if available
+        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        if (authData)
+            return authData.userID;
+
+        // No auth data present
+        return null;
+
     };
 
     /**
      * Returns the auth token associated with the current user. If the current
      * user is not logged in, this token may not be valid.
      *
-     * @returns {String} The auth token associated with the current user.
+     * @returns {String}
+     *     The auth token associated with the current user, or null if no
+     *     authentication data is present.
      */
     service.getCurrentToken = function getCurrentToken() {
-        return localStorageUtility.get('authToken');
+
+        // Return auth token, if available
+        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        if (authData)
+            return authData.authToken;
+
+        // No auth data present
+        return null;
+
     };
     
     return service;

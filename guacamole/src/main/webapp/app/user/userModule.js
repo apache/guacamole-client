@@ -23,4 +23,4 @@
 /**
  * A module for code relating to users.
  */
-angular.module('user', []);
+angular.module('user', ['auth']);

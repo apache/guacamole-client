@@ -142,8 +142,6 @@
                                 <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
                                 <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
-                                <jsSourceFile>scripts/session.js</jsSourceFile>
-                                <jsSourceFile>scripts/history.js</jsSourceFile>
                             </jsSourceFiles>
 
                             <jsSourceIncludes>

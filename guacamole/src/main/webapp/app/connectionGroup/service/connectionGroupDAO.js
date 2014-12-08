@@ -23,8 +23,8 @@
 /**
  * The DAO for connection group operations agains the REST API.
  */
-angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'localStorageUtility',
-        function connectionGrouDAO($http, localStorageUtility) {
+angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'authenticationService',
+        function connectionGrouDAO($http, authenticationService) {
             
     /**
      * The ID of the root connection group.
@@ -49,7 +49,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
         if(parentID !== undefined)
             parentIDParam = "&parentID=" + parentID;
         
-        return $http.get("api/connectionGroup?token=" + localStorageUtility.get('authToken') + parentIDParam);
+        return $http.get("api/connectionGroup?token=" + authenticationService.getCurrentToken() + parentIDParam);
     };
     
     /**
@@ -67,7 +67,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ROOT_CONNECTION_GROUP_ID;
         
-        return $http.get("api/connectionGroup/" + connectionGroupID + "?token=" + localStorageUtility.get('authToken'));
+        return $http.get("api/connectionGroup/" + connectionGroupID + "?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -81,7 +81,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
     service.saveConnectionGroup = function saveConnectionGroup(connectionGroup) {
         // This is a new connection group
         if(!connectionGroup.identifier) {
-            return $http.post("api/connectionGroup/?token=" + localStorageUtility.get('authToken'), connectionGroup).success(
+            return $http.post("api/connectionGroup/?token=" + authenticationService.getCurrentToken(), connectionGroup).success(
                 function setConnectionGroupID(connectionGroupID){
                     // Set the identifier on the new connection
                     connectionGroup.identifier = connectionGroupID;
@@ -90,7 +90,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
         } else {
             return $http.post(
                 "api/connectionGroup/" + connectionGroup.identifier + 
-                "?token=" + localStorageUtility.get('authToken'), 
+                "?token=" + authenticationService.getCurrentToken(), 
             connectionGroup);
         }
     };
@@ -107,7 +107,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
         
         return $http.put(
             "api/connectionGroup/" + connectionGroup.identifier + 
-            "?token=" + localStorageUtility.get('authToken') + 
+            "?token=" + authenticationService.getCurrentToken() + 
             "&parentID=" + connectionGroup.parentIdentifier, 
         connectionGroup);
     };
@@ -123,7 +123,7 @@ angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'local
     service.deleteConnectionGroup = function deleteConnectionGroup(connectionGroup) {
         return $http['delete'](
             "api/connectionGroup/" + connectionGroup.identifier + 
-            "?token=" + localStorageUtility.get('authToken'));
+            "?token=" + authenticationService.getCurrentToken());
     };
     
     return service;

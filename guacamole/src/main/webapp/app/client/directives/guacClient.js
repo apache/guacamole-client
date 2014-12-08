@@ -30,12 +30,29 @@ angular.module('client').directive('guacClient', [function guacClient() {
         restrict: 'E',
         replace: true,
         scope: {
-            // Parameters for controlling client state
-            clientProperties        : '=',
+
+            /**
+             * Parameters for controlling client state.
+             * 
+             * @type ClientProperties|Object
+             */
+            clientProperties : '=',
             
-            // Parameters for initially connecting
-            id                      : '=',
-            connectionParameters    : '='
+            /**
+             * The ID of the Guacamole connection to connect to.
+             * 
+             * @type String
+             */
+            id : '=',
+
+            /**
+             * Arbitrary URL-encoded parameters to append to the connection
+             * string when connecting.
+             * 
+             * @type String
+             */
+            connectionParameters : '='
+
         },
         templateUrl: 'app/client/templates/guacClient.html',
         controller: ['$scope', '$injector', '$element', function guacClientController($scope, $injector, $element) {
@@ -122,12 +139,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
 
-            var $window             = $injector.get('$window'),
-                guacAudio           = $injector.get('guacAudio'),
-                guacVideo           = $injector.get('guacVideo'),
-                guacTunnelFactory   = $injector.get('guacTunnelFactory'),
-                guacClientFactory   = $injector.get('guacClientFactory'),
-                localStorageUtility = $injector.get('localStorageUtility');
+            var $window               = $injector.get('$window'),
+                guacAudio             = $injector.get('guacAudio'),
+                guacVideo             = $injector.get('guacVideo'),
+                guacHistory           = $injector.get('guacHistory'),
+                guacTunnelFactory     = $injector.get('guacTunnelFactory'),
+                guacClientFactory     = $injector.get('guacClientFactory'),
+                authenticationService = $injector.get('authenticationService');
  
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
@@ -175,7 +193,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Build base connect string
                 var connectString =
                       "id="         + encodeURIComponent($scope.id)
-                    + "&authToken=" + encodeURIComponent(localStorageUtility.get('authToken'))
+                    + "&authToken=" + encodeURIComponent(authenticationService.getCurrentToken())
                     + "&width="     + Math.floor(optimal_width)
                     + "&height="    + Math.floor(optimal_height)
                     + "&dpi="       + Math.floor(optimal_dpi)
@@ -298,11 +316,36 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
 
             // Connect to given ID whenever ID changes
-            $scope.$watch('id', function(id) {
+            $scope.$watch('id', function(id, previousID) {
 
                 // If a client is already attached, ensure it is disconnected
                 if (client)
                     client.disconnect();
+
+                // Update stored thumbnail of previous connection 
+                if (previousID && display && display.getWidth() > 0 && display.getHeight() > 0) {
+
+                    // Get screenshot
+                    var canvas = display.flatten();
+                    
+                    // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+                    var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
+                    
+                    // Create thumbnail canvas
+                    var thumbnail = document.createElement("canvas");
+                    thumbnail.width  = canvas.width*scale;
+                    thumbnail.height = canvas.height*scale;
+                    
+                    // Scale screenshot to thumbnail
+                    var context = thumbnail.getContext("2d");
+                    context.drawImage(canvas,
+                        0, 0, canvas.width, canvas.height,
+                        0, 0, thumbnail.width, thumbnail.height
+                    );
+
+                    guacHistory.updateThumbnail(previousID, thumbnail.toDataURL("image/png"));
+
+                }
 
                 // Only proceed if a new client is attached
                 if (!id)

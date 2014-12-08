@@ -23,4 +23,4 @@
 /**
  * A module for miscellaneous services and utilities that don't belong elsewhere.
  */
-angular.module('util', ['ngCookies']);
+angular.module('util', []);
