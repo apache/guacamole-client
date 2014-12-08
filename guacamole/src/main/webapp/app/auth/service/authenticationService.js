@@ -71,24 +71,43 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
     };
 
     /**
-     * Returns the user ID of the current user.
+     * Returns the user ID of the current user. If the current user is not
+     * logged in, this ID may not be valid.
      *
-     * @returns {String} The user ID of the current user.
+     * @returns {String}
+     *     The user ID of the current user, or null if no authentication data
+     *     is present.
      */
     service.getCurrentUserID = function getCurrentUserID() {
+
+        // Return user ID, if available
         var authData = $cookieStore.get(AUTH_COOKIE_ID);
-        return authData && authData.userID;
+        if (authData)
+            return authData.userID;
+
+        // No auth data present
+        return null;
+
     };
 
     /**
      * Returns the auth token associated with the current user. If the current
      * user is not logged in, this token may not be valid.
      *
-     * @returns {String} The auth token associated with the current user.
+     * @returns {String}
+     *     The auth token associated with the current user, or null if no
+     *     authentication data is present.
      */
     service.getCurrentToken = function getCurrentToken() {
+
+        // Return auth token, if available
         var authData = $cookieStore.get(AUTH_COOKIE_ID);
-        return authData && authData.authToken;
+        if (authData)
+            return authData.authToken;
+
+        // No auth data present
+        return null;
+
     };
     
     return service;
