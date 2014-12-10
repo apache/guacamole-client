@@ -94,12 +94,12 @@ THE SOFTWARE.
                         <th>{{'manage.edit.connection.history.duration' | translate}}</th>
                     </tr>
                     <tbody>
-                        <tr ng-repeat="record in connection.history">
-                            <td class="username">{{record.username}}</td>
-                            <td class="start">{{record.startDate | date:'short'}}</td>
-                            <td ng-show="record.endDate && !record.active" class="duration">{{record.endDate - record.startDate}}</td>
-                            <td ng-show="!record.endDate && !record.active" class="duration">{{'manage.edit.connection.history.unknownEnd' | translate}}</td>
-                            <td ng-show="record.active" class="duration">{{'manage.edit.connection.history.activeNow' | translate}}</td>
+                        <tr ng-repeat="wrapper in historyEntryWrappers">
+                            <td class="username">{{wrapper.entry.username}}</td>
+                            <td class="start">{{wrapper.entry.startDate | date:'short'}}</td>
+                            <td ng-show="wrapper.entry.endDate && !wrapper.entry.active" class="duration">{{'manage.edit.connection.history.formattedDuration' | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
+                            <td ng-show="!wrapper.entry.endDate && !wrapper.entry.active" class="duration">{{'manage.edit.connection.history.unknownEnd' | translate}}</td>
+                            <td ng-show="wrapper.entry.active" class="duration">{{'manage.edit.connection.history.activeNow' | translate}}</td>
                         </tr>
                     </tbody>
                 </table>

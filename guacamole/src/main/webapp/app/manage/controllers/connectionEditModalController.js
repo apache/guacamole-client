@@ -29,12 +29,14 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     var connectionEditModal             = $injector.get('connectionEditModal');
     var connectionService               = $injector.get('connectionService');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
+    var Connection                      = $injector.get('Connection');
+    var HistoryEntryWrapper             = $injector.get('HistoryEntryWrapper');
     
     // Make a copy of the old connection so that we can copy over the changes when done
     var oldConnection = $scope.connection;
     
     // Copy data into a new conection object in case the user doesn't want to save
-    $scope.connection = angular.copy($scope.connection);
+    $scope.connection = new Connection($scope.connection);
     
     var newConnection = !$scope.connection.identifier;
     if(newConnection)
@@ -44,6 +46,13 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     // Set it to VNC by default
     if(!$scope.connection.protocol)
         $scope.connection.protocol = "vnc";
+    
+    $scope.historyEntryWrappers = [];
+    
+    // Wrap all the history entries
+    $scope.connection.history.forEach(function wrapHistoryEntry(historyEntry) {
+       $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
+    });
     
     /**
      * Close the modal.
@@ -103,7 +112,8 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
             // Close the modal
             connectionEditModal.deactivate();
         });
-    }
+    };
+
 }]);
 
 
