@@ -21,63 +21,11 @@
  */
 
 /**
- * A service for generating new guacClient properties objects.
+ * A service for defining the HistoryEntryWrapper class.
  */
-angular.module('manage').factory('HistoryEntryWrapper', [function defineHistoryEntryWrapper() {
+angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
+    function defineHistoryEntryWrapper(HistoryEntryDuration) {
 
-    /**
-     * Given a number of milliseconds, returns an object containing a unit and value
-     * for that history entry duration.
-     * 
-     * @param {Number} milliseconds The number of milliseconds.
-     * @return {Object} A unit and value pair representing a history entry duration.
-     */
-    var formatMilliseconds = function formatMilliseconds(milliseconds) {
-
-        var seconds = milliseconds / 1000;
-
-        /**
-         * Rounds the given value to the nearest tenth.
-         *
-         * @param {Number} value The value to round.
-         * @returns {Number} The given value, rounded to the nearest tenth.
-         */
-        var round = function round(value) {
-            return Math.round(value * 10) / 10;
-        };
-
-        // Seconds
-        if (seconds < 60) {
-            return {
-                value : round(seconds),
-                unit  : "second"
-            };
-        }
-
-        // Minutes
-        if (seconds < 3600) {
-            return {
-                value : round(seconds / 60 ),
-                unit  : "minute"
-            };
-        }
-        
-        // Hours
-        if (seconds < 86400) {
-            return {
-                value : round(seconds / 3600),
-                unit  : "hour"
-            };
-        }
-        
-        // Days
-        return {
-            value : round(seconds / 86400),
-            unit  : "day"
-        };
-
-    };
-        
     /**
      * Wrapper for ConnectionHistoryEntry which adds display-specific
      * properties, such as the connection duration.
@@ -99,13 +47,31 @@ angular.module('manage').factory('HistoryEntryWrapper', [function defineHistoryE
          * An object providing value and unit properties, denoting the duration
          * and its corresponding units.
          *
-         * @type Object
+         * @type HistoryEntryDuration
          */
         this.duration = null;
 
-        // Set the duration if the necessary information is present and the entry is not still active
-        if (historyEntry.endDate && historyEntry.startDate && !historyEntry.active)
-            this.duration = formatMilliseconds(historyEntry.endDate - historyEntry.startDate);
+        /**
+         * The string to display as the duration of this history entry. If a
+         * duration is available, its value and unit will be exposed to any
+         * given translation string as the VALUE and UNIT substitution
+         * variables respectively.
+         * 
+         * @type String
+         */
+        this.durationText = 'manage.edit.connection.history.formattedDuration';
+
+        // Notify if connection is active right now
+        if (historyEntry.active)
+            this.durationText = 'manage.edit.connection.history.activeNow';
+
+        // If connection is not active, inform use if end date is not known
+        else if (!historyEntry.endDate)
+            this.durationText = 'manage.edit.connection.history.unknownEnd';
+
+        // Set the duration if the necessary information is present
+        if (historyEntry.endDate && historyEntry.startDate)
+            this.duration = new HistoryEntryDuration(historyEntry.endDate - historyEntry.startDate);
 
     };
 
