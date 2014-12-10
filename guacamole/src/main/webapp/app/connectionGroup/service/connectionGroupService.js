@@ -26,7 +26,7 @@
 angular.module('connectionGroup').factory('connectionGroupService', ['$injector', function connectionGroupService($injector) {
             
     var connectionGroupDAO              = $injector.get('connectionGroupDAO');
-    var connectionDAO                   = $injector.get('connectionDAO');
+    var connectionService               = $injector.get('connectionService');
     var permissionCheckService          = $injector.get('permissionCheckService');
     var $q                              = $injector.get('$q');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
@@ -48,7 +48,7 @@ angular.module('connectionGroup').factory('connectionGroupService', ['$injector'
         if(includeConnections) {
             // Get all connections in the group and add them under this connection group
             context.openRequest();
-            connectionDAO.getConnections(connectionGroup.identifier).success(function fetchConnections(connections) {
+            connectionService.getConnections(connectionGroup.identifier).success(function fetchConnections(connections) {
                 for(var i = 0; i < connections.length; i++) {
                     connections[i].isConnection = true;
                     connectionGroup.children.push(connections[i]);
@@ -148,7 +148,7 @@ angular.module('connectionGroup').factory('connectionGroupService', ['$injector'
                 if(includeConnections) {
                     // Get all connections in the root group and add them under this connection group
                     context.openRequest();
-                    connectionDAO.getConnections().success(function fetchRootConnections(connections) {
+                    connectionService.getConnections().success(function fetchRootConnections(connections) {
                         for(var i = 0; i < connections.length; i++) {
                             
                             // Prepare this connection for display
