@@ -103,8 +103,8 @@ angular.module('manage').factory('HistoryEntryWrapper', [function defineHistoryE
          */
         this.duration = null;
 
-        // Set the duration if the necessary information is present
-        if (historyEntry.endDate && historyEntry.startDate)
+        // Set the duration if the necessary information is present and the entry is not still active
+        if (historyEntry.endDate && historyEntry.startDate && !historyEntry.active)
             this.duration = formatMilliseconds(historyEntry.endDate - historyEntry.startDate);
 
     };

@@ -97,9 +97,11 @@ THE SOFTWARE.
                         <tr ng-repeat="wrapper in historyEntryWrappers">
                             <td class="username">{{wrapper.entry.username}}</td>
                             <td class="start">{{wrapper.entry.startDate | date:'short'}}</td>
-                            <td ng-show="wrapper.entry.endDate && !wrapper.entry.active" class="duration">{{'manage.edit.connection.history.formattedDuration' | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
-                            <td ng-show="!wrapper.entry.endDate && !wrapper.entry.active" class="duration">{{'manage.edit.connection.history.unknownEnd' | translate}}</td>
-                            <td ng-show="wrapper.entry.active" class="duration">{{'manage.edit.connection.history.activeNow' | translate}}</td>
+                            <td class="duration">
+                                <span ng-show="wrapper.duration">{{'manage.edit.connection.history.formattedDuration' | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</span>
+                                <span ng-show="wrapper.entry.active">{{'manage.edit.connection.history.activeNow' | translate}}</span>
+                                <span ng-show="!wrapper.entry.active &amp;&amp; !wrapper.duration">{{'manage.edit.connection.history.unknownEnd' | translate}}</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
