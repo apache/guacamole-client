@@ -27,7 +27,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
         function connectionEditModalController($scope, $injector) {
             
     var connectionEditModal             = $injector.get('connectionEditModal');
-    var connectionDAO                   = $injector.get('connectionDAO');
+    var connectionService               = $injector.get('connectionService');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
     
     // Make a copy of the old connection so that we can copy over the changes when done
@@ -56,7 +56,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
      * Save the connection and close the modal.
      */
     $scope.save = function save() {
-        connectionDAO.saveConnection($scope.connection).success(function successfullyUpdatedConnection() {
+        connectionService.saveConnection($scope.connection).success(function successfullyUpdatedConnection() {
             
             var oldParentID = oldConnection.parentIdentifier;
             var newParentID = $scope.connection.parentIdentifier;
@@ -71,7 +71,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
                 if(newConnection && newParentID === $scope.rootGroup.identifier) {
                     $scope.moveItem($scope.connection, oldParentID, newParentID);
                 } else {
-                    connectionDAO.moveConnection($scope.connection).then(function moveConnection() {
+                    connectionService.moveConnection($scope.connection).then(function moveConnection() {
                         $scope.moveItem($scope.connection, oldParentID, newParentID);
                     });
                 }
@@ -94,7 +94,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
             return;
         }
         
-        connectionDAO.deleteConnection($scope.connection).success(function successfullyDeletedConnection() {
+        connectionService.deleteConnection($scope.connection).success(function successfullyDeletedConnection() {
             var oldParentID = oldConnection.parentIdentifier;
             
             // We have to remove this connection from the heirarchy

@@ -21,19 +21,26 @@
  */
 
 /**
- * The DAO for connection operations agains the REST API.
+ * Service for operating on connections via the REST API.
  */
-angular.module('connection').factory('connectionDAO', ['$http', 'authenticationService',
-        function connectionDAO($http, authenticationService) {
+angular.module('connection').factory('connectionService', ['$http', 'authenticationService',
+        function connectionService($http, authenticationService) {
             
     var service = {};
     
     /**
      * Makes a request to the REST API to get a single connection, returning a
-     * promise that can be used for processing the results of the call.
+     * promise that provides the corresponding @link{Connection} if successful.
      * 
-     * @param {string} id The ID of the connection.
-     * @returns {promise} A promise for the HTTP call.
+     * @param {String} id The ID of the connection.
+     * @returns {Promise.<Connection>}
+     *     A promise which will resolve with a @link{Connection} upon success.
+     * 
+     * @example
+     * 
+     * connectionService.getConnection('myConnection').success(function(connection) {
+     *     // Do something with the connection
+     * });
      */
     service.getConnection = function getConnection(id) {
         return $http.get("api/connection/" + id + "?token=" + authenticationService.getCurrentToken());
@@ -41,13 +48,16 @@ angular.module('connection').factory('connectionDAO', ['$http', 'authenticationS
 
     /**
      * Makes a request to the REST API to get the list of connections,
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise that can be used for processing the results of the
+     * call.
      * 
      * @param {string} parentID The parent ID for the connection.
      *                          If not passed in, it will query a list of the 
      *                          connections in the root group.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<Connection[]>}
+     *     A promise which will resolve with an array of @link{Connection}
+     *     objects upon success.
      */
     service.getConnections = function getConnections(parentID) {
         
@@ -59,15 +69,22 @@ angular.module('connection').factory('connectionDAO', ['$http', 'authenticationS
     };
     
     /**
-     * Makes a request to the REST API to save a connection,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to save a connection, returning a
+     * promise that can be used for processing the results of the call.
      * 
-     * @param {object} connection The connection to update
+     * @param {Connection} connection The connection to update
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     save operation is successful.
      */
     service.saveConnection = function saveConnection(connection) {
         
+        /*
+         * FIXME: This should not be necessary. Perhaps the need for this is a
+         * sign that history should be queried separately, and not reside as
+         * part of the connection object?
+         */
         // Do not try to save the connection history records
         var connectionToSave = angular.copy(connection);
         delete connectionToSave.history;
@@ -77,8 +94,8 @@ angular.module('connection').factory('connectionDAO', ['$http', 'authenticationS
             return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connectionToSave).success(
                 function setConnectionID(connectionID){
                     // Set the identifier on the new connection
-                    connection.identifier = connectionID;
-                    return connectionID;
+                    connection.identifier = connectionID; // FIXME: Functions with side effects = bad
+                    return connectionID; // FIXME: Why? Where does this value go?
                 });
         } else {
             return $http.post(
@@ -89,12 +106,17 @@ angular.module('connection').factory('connectionDAO', ['$http', 'authenticationS
     };
     
     /**
-     * Makes a request to the REST API to move a connection to a different group,
-     * returning a promise that can be used for processing the results of the call.
+     * FIXME: Why is this different from save?
      * 
-     * @param {object} connection The connection to move. 
+     * Makes a request to the REST API to move a connection to a different
+     * group, returning a promise that can be used for processing the results
+     * of the call.
+     * 
+     * @param {Connection} connection The connection to move. 
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     move operation is successful.
      */
     service.moveConnection = function moveConnection(connection) {
         
@@ -110,9 +132,11 @@ angular.module('connection').factory('connectionDAO', ['$http', 'authenticationS
      * Makes a request to the REST API to delete a connection,
      * returning a promise that can be used for processing the results of the call.
      * 
-     * @param {object} connection The connection to delete
+     * @param {Connection} connection The connection to delete
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     delete operation is successful.
      */
     service.deleteConnection = function deleteConnection(connection) {
         return $http['delete'](
