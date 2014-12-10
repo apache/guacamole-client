@@ -53,7 +53,8 @@
                     "startTime"         : "Start Time",
                     "duration"          : "Duration",
                     "activeNow"         : "Active Now",
-                    "unknownEnd"        : "--"
+                    "unknownEnd"        : "--",
+                    "formattedDuration" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
                 }
             },
             "connectionGroup": {

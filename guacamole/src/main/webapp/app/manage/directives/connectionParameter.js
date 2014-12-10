@@ -24,7 +24,7 @@
 /**
  * A directive that allows editing of a connection parameter.
  */
-angular.module('manage').directive('guacConnectionParameter', [function locationChooser() {
+angular.module('manage').directive('guacConnectionParameter', [function connectionParameter() {
     
     return {
         // Element only
@@ -41,14 +41,44 @@ angular.module('manage').directive('guacConnectionParameter', [function location
             $scope.parameterName           = $scope.parameter.name;
                 
             // Coerce numeric strings to numbers
-            if($scope.parameterType === 'NUMERIC') {
-                $scope.connectionParameters[$scope.parameterName] = 
-                        Number($scope.connectionParameters[$scope.parameterName]) || 0;
-            // Coerce boolean strings to boolean values
-            } else if($scope.parameterType === 'BOOLEAN') {
-                $scope.connectionParameters[$scope.parameterName] = 
-                        $scope.connectionParameters[$scope.parameterName] === 'true';
+            if ($scope.parameterType === 'NUMERIC') {
+                
+                // If a value exists, coerce it to a number
+                if ($scope.connectionParameters[$scope.parameterName])
+                    $scope.parameterValue = Number($scope.connectionParameters[$scope.parameterName]);
+                else 
+                    $scope.parameterValue = null;
+                
             }
+            
+            // Coerce boolean strings to boolean values
+            else if ($scope.parameterType === 'BOOLEAN') {
+                // TODO: Use defined checked value from protocol description
+                $scope.parameterValue = $scope.connectionParameters[$scope.parameterName] === 'true';
+            }
+            
+            // All other parameter types are represented internally as strings
+            else
+                $scope.parameterValue = $scope.connectionParameters[$scope.parameterName];
+            
+            // Update internal representation as model is changed
+            $scope.$watch('parameterValue', function parameterValueChanges(value) {
+                
+                // Convert numeric values back into strings
+                if ($scope.parameterType === 'NUMERIC') {
+                    if (value === null || typeof value === 'undefined')
+                        $scope.connectionParameters[$scope.parameterName] = '';
+                    else
+                        $scope.connectionParameters[$scope.parameterName] = value.toString();
+                }
+                
+                // TODO: Transform BOOLEAN input fields back into strings based on protocol description
+                
+                // All other parameter types are already strings
+                else
+                    $scope.connectionParameters[$scope.parameterName] = value;
+                
+            });
         }]
     };
     
