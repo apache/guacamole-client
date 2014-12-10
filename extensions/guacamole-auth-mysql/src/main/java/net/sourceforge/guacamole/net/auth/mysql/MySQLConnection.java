@@ -103,7 +103,13 @@ public class MySQLConnection extends AbstractConnection {
      */
     public void setParentID(Integer parentID) {
         this.parentID = parentID;
-        this.setParentIdentifier(String.valueOf(parentID));
+
+        // Translate to string identifier
+        if (parentID != null)
+            this.setParentIdentifier(String.valueOf(parentID));
+        else
+            this.setParentIdentifier(null);
+
     }
 
     /**
