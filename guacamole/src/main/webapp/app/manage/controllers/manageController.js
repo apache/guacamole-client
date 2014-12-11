@@ -27,13 +27,13 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         function manageController($scope, $injector) {
             
     // Get the dependencies commonJS style
-    var connectionGroupService      = $injector.get('connectionGroupService');
+    var legacyConnectionGroupService      = $injector.get('legacyConnectionGroupService');
     var connectionEditModal         = $injector.get('connectionEditModal');
     var connectionGroupEditModal    = $injector.get('connectionGroupEditModal');
     var userEditModal               = $injector.get('userEditModal');
-    var protocolDAO                 = $injector.get('protocolDAO');
-    var userDAO                     = $injector.get('userDAO');
-    var userService                 = $injector.get('userService');
+    var protocolService                 = $injector.get('protocolService');
+    var userService                     = $injector.get('userService');
+    var legacyUserService                 = $injector.get('legacyUserService');
     
     // Set status to loading until we have all the connections, groups, and users have loaded
     $scope.loadingUsers         = true;
@@ -46,13 +46,13 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.users = [];
     
     $scope.basicPermissionsLoaded.then(function basicPermissionsHaveBeenLoaded() {
-        connectionGroupService.getAllGroupsAndConnections([], undefined, true, true).then(function filterConnectionsAndGroups(rootGroupList) {
+        legacyConnectionGroupService.getAllGroupsAndConnections([], undefined, true, true).then(function filterConnectionsAndGroups(rootGroupList) {
             $scope.rootGroup = rootGroupList[0];
             $scope.connectionsAndGroups = $scope.rootGroup.children;
             
             // Filter the items to only include ones that we have UPDATE for
             if(!$scope.currentUserIsAdmin) {
-                connectionGroupService.filterConnectionsAndGroupByPermission(
+                legacyConnectionGroupService.filterConnectionsAndGroupByPermission(
                     $scope.connectionsAndGroups,
                     $scope.currentUserPermissions,
                     {
@@ -65,12 +65,12 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
             $scope.loadingConnections = false; 
         });
         
-        userDAO.getUsers().success(function filterEditableUsers(users) {
+        userService.getUsers().success(function filterEditableUsers(users) {
             $scope.users = users;
             
             // Filter the users to only include ones that we have UPDATE for
             if(!$scope.currentUserIsAdmin) {
-                userService.filterUsersByPermission(
+                legacyUserService.filterUsersByPermission(
                     $scope.users,
                     $scope.currentUserPermissions,
                     'UPDATE'
@@ -132,7 +132,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.protocols = {};
     
     // Get the protocol information from the server and copy it into the scope
-    protocolDAO.getProtocols().success(function fetchProtocols(protocols) {
+    protocolService.getProtocols().success(function fetchProtocols(protocols) {
         angular.extend($scope.protocols, protocols);
     });
     
@@ -236,7 +236,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
                 username: $scope.newUsername
             };
             
-            userDAO.createUser(newUser).success(function addUserToList() {
+            userService.createUser(newUser).success(function addUserToList() {
                 $scope.users.push(newUser);
             });
             

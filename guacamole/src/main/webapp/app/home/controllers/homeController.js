@@ -30,7 +30,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     var GUAC_HISTORY_STORAGE_KEY = "GUAC_HISTORY";
                                     
     // Get the dependencies commonJS style
-    var connectionGroupService  = $injector.get("connectionGroupService");
+    var legacyConnectionGroupService  = $injector.get("legacyConnectionGroupService");
     var guacHistory             = $injector.get("guacHistory");
     
     // All the connections and connection groups in root
@@ -45,7 +45,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     /* Fetch all connections and groups, then find which recent connections
      * still refer to valid connections and groups.
      */
-    connectionGroupService.getAllGroupsAndConnections($scope.connectionsAndGroups)
+    legacyConnectionGroupService.getAllGroupsAndConnections($scope.connectionsAndGroups)
     .then(function findRecentConnections() {
         
         // TODONT: Munch the guacHistory recentConnections list into a legacy-style object

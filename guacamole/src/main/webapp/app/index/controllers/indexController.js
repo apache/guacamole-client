@@ -27,7 +27,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
             
     // Get the dependencies commonJS style
-    var permissionDAO           = $injector.get("permissionDAO"),
+    var permissionService           = $injector.get("permissionService"),
         permissionCheckService  = $injector.get("permissionCheckService"),
         authenticationService   = $injector.get("authenticationService"),
         $q                      = $injector.get("$q"),
@@ -166,7 +166,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Allow the permissions to be reloaded elsewhere if needed
     $scope.loadBasicPermissions = function loadBasicPermissions() {
         
-        permissionDAO.getPermissions($scope.currentUserID).success(function fetchCurrentUserPermissions(permissions) {
+        permissionService.getPermissions($scope.currentUserID).success(function fetchCurrentUserPermissions(permissions) {
             $scope.currentUserPermissions = permissions;
 
             // Will be true if the user is an admin

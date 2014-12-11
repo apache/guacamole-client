@@ -21,20 +21,36 @@
  */
 
 /**
- * The DAO for protocol operations agains the REST API.
+ * A service for performing useful user related functionaltiy.
  */
-angular.module('rest').factory('protocolDAO', ['$http', function protocolDAO($http) {
+angular.module('rest').factory('legacyUserService', ['$injector', function legacyUserService($injector) {
+            
+    var permissionCheckService          = $injector.get('permissionCheckService');
             
     var service = {};
     
     /**
-     * Makes a request to the REST API to get the list of protocols,
-     * returning a promise that can be used for processing the results of the call.
+     * Filters the list of users using the provided permissions.
+     * 
+     * @param {array} users The user list.
+     * 
+     * @param {object} permissionList The list of permissions to use 
+     *                                when filtering.
+     * 
+     * @param {object} permissionCriteria The required permission for each user.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @return {array} The filtered list.
      */
-    service.getProtocols = function getProtocols() {
-        return $http.get("api/protocol");
+    service.filterUsersByPermission = function filterUsersByPermission(users, permissionList, permissionCriteria) {
+        for(var i = 0; i < users.length; i++) {
+            if(!permissionCheckService.checkPermission(permissionList, 
+                    "USER", user.username, permissionCriteria)) {
+                items.splice(i, 1);
+                continue;
+            } 
+        }
+        
+        return users;
     };
     
     return service;

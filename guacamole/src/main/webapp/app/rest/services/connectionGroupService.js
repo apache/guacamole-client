@@ -21,210 +21,109 @@
  */
 
 /**
- * A service for performing useful connection group related functionaltiy.
+ * Service for operating on connection groups via the REST API.
  */
-angular.module('rest').factory('connectionGroupService', ['$injector', function connectionGroupService($injector) {
+angular.module('rest').factory('connectionGroupService', ['$http', 'authenticationService',
+        function connectionGrouService($http, authenticationService) {
             
-    var connectionGroupDAO              = $injector.get('connectionGroupDAO');
-    var connectionService               = $injector.get('connectionService');
-    var permissionCheckService          = $injector.get('permissionCheckService');
-    var $q                              = $injector.get('$q');
-    var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
+    /**
+     * The ID of the root connection group.
+     */
+    var ROOT_CONNECTION_GROUP_ID = "ROOT";
             
     var service = {};
-        
-    // Add all groups from this group to the parent group child list
-    function addToParent(connectionGroup, parentGroup, context, includeConnections) {
-        
-        // Include connections by default
-        if(typeof includeConnections === 'undefined')
-            includeConnections = true;
-        
-        parentGroup.children.push(connectionGroup);
-        
-        // Prepare this group for display
-        displayObjectPreparationService.prepareConnectionGroup(connectionGroup);
-        
-        if(includeConnections) {
-            // Get all connections in the group and add them under this connection group
-            context.openRequest();
-            connectionService.getConnections(connectionGroup.identifier).success(function fetchConnections(connections) {
-                for(var i = 0; i < connections.length; i++) {
-                    connections[i].isConnection = true;
-                    connectionGroup.children.push(connections[i]);
-                }
-                context.closeRequest();
-            });
-        }
-
-        // Get all connection groups in the group and repeat
-        context.openRequest();
-        connectionGroupDAO.getConnectionGroups(connectionGroup.identifier).success(function fetchConnectionGroups(connectionGroups) {
-            for(var i = 0; i < connectionGroups.length; i++) {
-                addToParent(connectionGroups[i], connectionGroup, context, includeConnections);
-            }
-            context.closeRequest();
-        });
-    }
     
     /**
-     * Queries all connections and connection groups under the connection group 
-     * with the provided parent ID, and returns them in a heirarchical structure
-     * with convinient display properties set on the objects.
-     * 
-     * @param {array} items The root list of connections and groups. Should be an
-     *                      initally empty array that will get filled in as the
-     *                      connections and groups are loaded.
+     * Makes a request to the REST API to get the list of connection groups,
+     * returning a promise that can be used for processing the results of the call.
      * 
      * @param {string} parentID The parent ID for the connection group.
-     *                          If not passed in, it will begin with 
-     *                          the root connection group.
-     * 
-     * @param {boolean} includeConnections Whether or not to include connections
-     *                                     in the structure. Defaults to true.
-     * 
-     * @param {boolean} includeRoot Whether or not to include the root connection group
-     *                              in the structure. Defaults to false.
+     *                          If not passed in, it will query a list of the 
+     *                          connection groups in the root group.
      *                          
-     * @return {promise} A promise that will be fulfilled when all connections
-     *                   and groups have been loaded.
+     * @returns {promise} A promise for the HTTP call.
      */
-    service.getAllGroupsAndConnections = function getAllGroupsAndConnections(items, parentID, includeConnections, includeRoot) {
+    service.getConnectionGroups = function getConnectionGroups(parentID) {
         
-        // Include connections by default
-        if(typeof includeConnections === 'undefined')
-            includeConnections = true;
+        var parentIDParam = "";
+        if(parentID !== undefined)
+            parentIDParam = "&parentID=" + parentID;
         
-        var context = {
-            // The number of requets to the server currently open
-            openRequests        : 0,
-
-            // Create the promise
-            finishedFetching    : $q.defer(),
-            
-            // Notify the caller that the promise has been completed
-            complete            : function complete() {
-                this.finishedFetching.resolve(items);
-            },
-            
-            /**
-             * Indicate that a request has been started.
-             */ 
-            openRequest         : function openRequest() {
-                this.openRequests++;
-            },
-            
-            /**
-             * Indicate that a request has been completed. If this was the last
-             * open request, fulfill the promise.
-             */ 
-            closeRequest        : function closeRequest() {
-                if(--this.openRequests === 0)
-                    this.complete();
-            }
-        };
-        
-        // Include the root only if it was asked for
-        if(includeRoot) {
-            context.openRequest();
-            connectionGroupDAO.getConnectionGroup(parentID).success(function setRootGroup (rootGroup) {
-                items.push(rootGroup);
-                rootGroup.children = [];
-                getChildrenOfRootGroup(rootGroup.children);
-                context.closeRequest();
-            });
-        } else {
-            getChildrenOfRootGroup(items);
-        }
-        
-        // Get the children of the root group
-        function getChildrenOfRootGroup(children) {
-            context.openRequest();
-            connectionGroupDAO.getConnectionGroups(parentID).success(function fetchRootConnectionGroups(connectionGroups) {
-                for(var i = 0; i < connectionGroups.length; i++) {
-                    addToParent(connectionGroups[i], {children: children}, context, includeConnections);
-                }
-
-                if(includeConnections) {
-                    // Get all connections in the root group and add them under this connection group
-                    context.openRequest();
-                    connectionService.getConnections().success(function fetchRootConnections(connections) {
-                        for(var i = 0; i < connections.length; i++) {
-                            
-                            // Prepare this connection for display
-                            displayObjectPreparationService.prepareConnection(connections[i]);
-                            
-                            children.push(connections[i]);
-                        }
-                        context.closeRequest();
-                    });
-                }
-                
-                context.closeRequest();
-            });     
-        }
-        
-        // Return the promise
-        return context.finishedFetching.promise;
+        return $http.get("api/connectionGroup?token=" + authenticationService.getCurrentToken() + parentIDParam);
     };
     
+    /**
+     * Makes a request to the REST API to get an individual connection group,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {string} connectionGroupID The ID for the connection group.
+     *                                   If not passed in, it will query the
+     *                                   root connection group.
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.getConnectionGroup = function getConnectionGroup(connectionGroupID) {
+        
+        // Use the root connection group ID if no ID is passed in
+        connectionGroupID = connectionGroupID || ROOT_CONNECTION_GROUP_ID;
+        
+        return $http.get("api/connectionGroup/" + connectionGroupID + "?token=" + authenticationService.getCurrentToken());
+    };
     
     /**
-     * Filters the list of connections and groups using the provided permissions.
+     * Makes a request to the REST API to save a connection group,
+     * returning a promise that can be used for processing the results of the call.
      * 
-     * @param {array} items The heirarchical list of groups and connections.
-     * 
-     * @param {object} permissionList The list of permissions to use 
-     *                                when filtering.
-     * 
-     * @param {object} permissionCriteria A map of object type to permission type(s)
-     *                                    required for that object type. 
+     * @param {object} connectionGroup The connection group to update
      *                          
-     * @return {array} The filtered list.
+     * @returns {promise} A promise for the HTTP call.
      */
-    service.filterConnectionsAndGroupByPermission = function filterConnectionsAndGroupByPermission(items, permissionList, permissionCriteria) {
-        var requiredConnectionPermission      = permissionCriteria.CONNECTION;
-        var requiredConnectionGroupPermission = permissionCriteria.CONNECTION_GROUP;
-        
-        for(var i = 0; i < items.length; i++) {
-            var item = items[i];
-            
-            if(item.isConnection && requiredConnectionPermission) {
-                
-                /*
-                 * If item is a connection and a permission is required for this
-                 * item, check now to see if the permission exists. If not,
-                 * remove the item.
-                 */
-                if(!permissionCheckService.checkPermission(permissionList, 
-                        "CONNECTION", item.identifier, requiredConnectionPermission)) {
-                    items.splice(i, 1);
-                    continue;
-                } 
-            } 
-            else {
-                
-                /*
-                 * If item is a group and a permission is required for this
-                 * item, check now to see if the permission exists. If not,
-                 * remove the item.
-                 */
-                if(requiredConnectionGroupPermission) {
-                    if(!permissionCheckService.checkPermission(permissionList, 
-                            "CONNECTION_GROUP", item.identifier, requiredConnectionGroupPermission)) {
-                        items.splice(i, 1);
-                        continue;
-                    }    
-                }
-                
-                // Filter the children of this connection group as well
-                if(item.children && item.children.length)
-                    service.filterConnectionsAndGroupByPermission(items.children);
-            }
+    service.saveConnectionGroup = function saveConnectionGroup(connectionGroup) {
+        // This is a new connection group
+        if(!connectionGroup.identifier) {
+            return $http.post("api/connectionGroup/?token=" + authenticationService.getCurrentToken(), connectionGroup).success(
+                function setConnectionGroupID(connectionGroupID){
+                    // Set the identifier on the new connection
+                    connectionGroup.identifier = connectionGroupID;
+                    return connectionGroupID;
+                });
+        } else {
+            return $http.post(
+                "api/connectionGroup/" + connectionGroup.identifier + 
+                "?token=" + authenticationService.getCurrentToken(), 
+            connectionGroup);
         }
+    };
+    
+    /**
+     * Makes a request to the REST API to move a connection group to a different group,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {object} connectionGroup The connection group to move. 
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.moveConnectionGroup = function moveConnectionGroup(connectionGroup) {
         
-        return items;
-        
+        return $http.put(
+            "api/connectionGroup/" + connectionGroup.identifier + 
+            "?token=" + authenticationService.getCurrentToken() + 
+            "&parentID=" + connectionGroup.parentIdentifier, 
+        connectionGroup);
+    };
+    
+    /**
+     * Makes a request to the REST API to delete a connection group,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {object} connectionGroup The connection group to delete
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.deleteConnectionGroup = function deleteConnectionGroup(connectionGroup) {
+        return $http['delete'](
+            "api/connectionGroup/" + connectionGroup.identifier + 
+            "?token=" + authenticationService.getCurrentToken());
     };
     
     return service;

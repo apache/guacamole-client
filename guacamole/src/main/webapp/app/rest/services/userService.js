@@ -21,36 +21,79 @@
  */
 
 /**
- * A service for performing useful user related functionaltiy.
+ * Service for operating on users via the REST API.
  */
-angular.module('rest').factory('userService', ['$injector', function userService($injector) {
-            
-    var permissionCheckService          = $injector.get('permissionCheckService');
+angular.module('rest').factory('userService', ['$http', 'authenticationService',
+        function userService($http, authenticationService) {
             
     var service = {};
     
     /**
-     * Filters the list of users using the provided permissions.
+     * Makes a request to the REST API to get the list of users,
+     * returning a promise that can be used for processing the results of the call.
      * 
-     * @param {array} users The user list.
-     * 
-     * @param {object} permissionList The list of permissions to use 
-     *                                when filtering.
-     * 
-     * @param {object} permissionCriteria The required permission for each user.
-     *                          
-     * @return {array} The filtered list.
+     * @returns {promise} A promise for the HTTP call.
      */
-    service.filterUsersByPermission = function filterUsersByPermission(users, permissionList, permissionCriteria) {
-        for(var i = 0; i < users.length; i++) {
-            if(!permissionCheckService.checkPermission(permissionList, 
-                    "USER", user.username, permissionCriteria)) {
-                items.splice(i, 1);
-                continue;
-            } 
-        }
-        
-        return users;
+    service.getUsers = function getUsers() {
+        return $http.get("api/user?token=" + authenticationService.getCurrentToken());
+    };
+    
+    /**
+     * Makes a request to the REST API to get the list of users,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {string} userID The ID of the user to retrieve.
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.getUser = function getUser(userID) {
+        return $http.get("api/user/" + userID + "/?token=" + authenticationService.getCurrentToken());
+    };
+    
+    /**
+     * Makes a request to the REST API to delete a user,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {object} user The user to delete.
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.deleteUser = function deleteUser(user) {
+        return $http['delete'](
+            "api/user/" + user.username + 
+            "?token=" + authenticationService.getCurrentToken());
+    };
+    
+    
+    /**
+     * Makes a request to the REST API to create a user,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {object} user The user to create.
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.createUser = function createUser(user) {
+        return $http.post(
+            "api/user/" 
+            + "?token=" + authenticationService.getCurrentToken(), 
+            user
+        );
+    }
+    
+    /**
+     * Makes a request to the REST API to save a user,
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {object} user The user to update.
+     *                          
+     * @returns {promise} A promise for the HTTP call.
+     */
+    service.saveUser = function saveUser(user) {
+        return $http.post(
+            "api/user/" + user.username + 
+            "?token=" + authenticationService.getCurrentToken(), 
+        user);
     };
     
     return service;
