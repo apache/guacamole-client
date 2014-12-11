@@ -23,7 +23,7 @@
 /**
  * Service which defines the Connection class.
  */
-angular.module('connection').factory('Connection', [function defineConnection() {
+angular.module('rest').factory('Connection', [function defineConnection() {
             
     /**
      * The object returned by REST API calls when representing the data

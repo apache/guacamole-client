@@ -24,4 +24,4 @@
  * The module for the root of the application.
  */
 angular.module('index', ['ngRoute', 'pascalprecht.translate',
-    'auth', 'home', 'manage', 'login', 'client', 'notification']);
+    'auth', 'home', 'manage', 'login', 'client', 'notification', 'rest']);

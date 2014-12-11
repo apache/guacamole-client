@@ -20,4 +20,4 @@
  * THE SOFTWARE.
  */
 
-angular.module('home', ['connection', 'connectionGroup', 'history', 'user', 'permission']);
+angular.module('home', ['history', 'rest']);

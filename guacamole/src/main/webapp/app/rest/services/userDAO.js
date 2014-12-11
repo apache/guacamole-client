@@ -23,7 +23,7 @@
 /**
  * The DAO for connection operations agains the REST API.
  */
-angular.module('user').factory('userDAO', ['$http', 'authenticationService',
+angular.module('rest').factory('userDAO', ['$http', 'authenticationService',
         function userDAO($http, authenticationService) {
             
     var service = {};

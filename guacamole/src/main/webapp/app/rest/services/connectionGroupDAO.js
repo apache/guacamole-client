@@ -23,7 +23,7 @@
 /**
  * The DAO for connection group operations agains the REST API.
  */
-angular.module('connectionGroup').factory('connectionGroupDAO', ['$http', 'authenticationService',
+angular.module('rest').factory('connectionGroupDAO', ['$http', 'authenticationService',
         function connectionGrouDAO($http, authenticationService) {
             
     /**

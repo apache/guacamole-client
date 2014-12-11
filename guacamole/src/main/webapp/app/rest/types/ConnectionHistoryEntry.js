@@ -23,7 +23,7 @@
 /**
  * Service which defines the ConnectionHistoryEntry class.
  */
-angular.module('connection').factory('ConnectionHistoryEntry', [function defineConnectionHistoryEntry() {
+angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnectionHistoryEntry() {
             
     /**
      * The object returned by REST API calls when representing the data

@@ -23,7 +23,7 @@
 /**
  * Service for operating on connections via the REST API.
  */
-angular.module('connection').factory('connectionService', ['$http', 'authenticationService',
+angular.module('rest').factory('connectionService', ['$http', 'authenticationService',
         function connectionService($http, authenticationService) {
             
     var service = {};

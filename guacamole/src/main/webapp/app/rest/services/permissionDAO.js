@@ -23,7 +23,7 @@
 /**
  * The DAO for permission operations agains the REST API.
  */
-angular.module('permission').factory('permissionDAO', ['$http', 'authenticationService',
+angular.module('rest').factory('permissionDAO', ['$http', 'authenticationService',
         function permissionDAO($http, authenticationService) {
             
     var service = {};

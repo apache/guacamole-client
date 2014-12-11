@@ -23,7 +23,7 @@
 /**
  * A service for performing useful connection group related functionaltiy.
  */
-angular.module('connectionGroup').factory('connectionGroupService', ['$injector', function connectionGroupService($injector) {
+angular.module('rest').factory('connectionGroupService', ['$injector', function connectionGroupService($injector) {
             
     var connectionGroupDAO              = $injector.get('connectionGroupDAO');
     var connectionService               = $injector.get('connectionService');

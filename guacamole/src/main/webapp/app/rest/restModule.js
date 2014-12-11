@@ -21,6 +21,7 @@
  */
 
 /**
- * The module for code relating to connections.
+ * The module for code relating to communication with the REST API of the
+ * Guacamole web application.
  */
-angular.module('connection', ['auth']);
+angular.module('rest', ['auth']);

@@ -24,7 +24,7 @@
  * A service for checking if a specific permission exists 
  * in a given list of permissions.
  */
-angular.module('permission').factory('permissionCheckService', [
+angular.module('rest').factory('permissionCheckService', [
         function permissionCheckService() {
             
     var service = {};
