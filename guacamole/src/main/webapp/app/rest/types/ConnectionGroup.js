@@ -21,26 +21,26 @@
  */
 
 /**
- * Service which defines the Connection class.
+ * Service which defines the ConnectionGroup class.
  */
-angular.module('rest').factory('Connection', [function defineConnection() {
+angular.module('rest').factory('ConnectionGroup', [function defineConnectionGroup() {
             
     /**
      * The object returned by REST API calls when representing the data
-     * associated with a connection.
+     * associated with a connection group.
      * 
      * @constructor
-     * @param {Connection|Object} [template={}]
+     * @param {ConnectionGroup|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     Connection.
+     *     ConnectionGroup.
      */
-    var Connection = function Connection(template) {
+    var ConnectionGroup = function ConnectionGroup(template) {
 
         // Use empty object by default
         template = template || {};
 
         /**
-         * The unique identifier associated with this connection.
+         * The unique identifier associated with this connection group.
          *
          * @type String
          */
@@ -48,51 +48,62 @@ angular.module('rest').factory('Connection', [function defineConnection() {
 
         /**
          * The unique identifier of the connection group that contains this
-         * connection.
+         * connection group.
          * 
          * @type String
+         * @default ConnectionGroup.ROOT_IDENTIFIER
          */
-        this.parentIdentifier = template.parentIdentifier;
+        this.parentIdentifier = template.parentIdentifier || ConnectionGroup.ROOT_IDENTIFIER;
 
         /**
-         * The human-readable name of this connection, which is not necessarily
-         * unique.
+         * The human-readable name of this connection group, which is not
+         * necessarily unique.
          * 
          * @type String
          */
         this.name = template.name;
 
         /**
-         * The name of the protocol associated with this connection, such as
-         * "vnc" or "rdp".
-         *
+         * The type of this connection group, which may be either
+         * ConnectionGroup.Type.ORGANIZATIONAL or
+         * ConnectionGroup.Type.BALANCING.
+         * 
          * @type String
+         * @default ConnectionGroup.Type.ORGANIZATIONAL
          */
-        this.protocol = template.protocol;
-
-        /**
-         * All previous and current usages of this connection, along with
-         * associated users.
-         *
-         * @type ConnectionHistoryEntry[]
-         * @default []
-         */
-        this.history = template.history || [];
-
-        /**
-         * Connection configuration parameters, as dictated by the protocol in
-         * use, arranged as name/value pairs. This information may not be
-         * available if the current user lacks permission to update
-         * connection parameters, even if they otherwise have permission to
-         * read and use the connection.
-         *
-         * @type Object.<String, String>
-         * @default {}
-         */
-        this.parameters = template.parameters || {};
+        this.type = template.type || ConnectionGroup.Type.ORGANIZATIONAL;
 
     };
 
-    return Connection;
+    /**
+     * The reserved identifier which always represents the root connection
+     * group.
+     * 
+     * @type String
+     */
+    ConnectionGroup.ROOT_IDENTIFIER = "ROOT";
+
+    /**
+     * All valid connection group types.
+     */
+    ConnectionGroup.Type = {
+
+        /**
+         * The type string associated with balancing connection groups.
+         *
+         * @type String
+         */
+        BALANCING : "BALANCING",
+
+        /**
+         * The type string associated with organizational connection groups.
+         *
+         * @type String
+         */
+        ORGANIZATIONAL : "ORGANIZATIONAL"
+
+    };
+
+    return ConnectionGroup;
 
 }]);

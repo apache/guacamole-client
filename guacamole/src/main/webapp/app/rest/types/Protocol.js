@@ -21,78 +21,49 @@
  */
 
 /**
- * Service which defines the Connection class.
+ * Service which defines the Protocol class.
  */
-angular.module('rest').factory('Connection', [function defineConnection() {
+angular.module('rest').factory('Protocol', [function defineProtocol() {
             
     /**
      * The object returned by REST API calls when representing the data
-     * associated with a connection.
+     * associated with a supported remote desktop protocol.
      * 
      * @constructor
-     * @param {Connection|Object} [template={}]
+     * @param {Protocol|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     Connection.
+     *     Protocol.
      */
-    var Connection = function Connection(template) {
+    var Protocol = function Protocol(template) {
 
         // Use empty object by default
         template = template || {};
 
         /**
-         * The unique identifier associated with this connection.
+         * The name which uniquely identifies this protocol.
          *
-         * @type String
-         */
-        this.identifier = template.identifier;
-
-        /**
-         * The unique identifier of the connection group that contains this
-         * connection.
-         * 
-         * @type String
-         */
-        this.parentIdentifier = template.parentIdentifier;
-
-        /**
-         * The human-readable name of this connection, which is not necessarily
-         * unique.
-         * 
          * @type String
          */
         this.name = template.name;
 
         /**
-         * The name of the protocol associated with this connection, such as
-         * "vnc" or "rdp".
+         * A human-readable name for this protocol.
          *
          * @type String
          */
-        this.protocol = template.protocol;
+        this.title = template.title;
 
         /**
-         * All previous and current usages of this connection, along with
-         * associated users.
+         * An array of all known parameters for this protocol, their types,
+         * and other information.
          *
-         * @type ConnectionHistoryEntry[]
+         * @type ProtocolParameter[]
          * @default []
          */
-        this.history = template.history || [];
-
-        /**
-         * Connection configuration parameters, as dictated by the protocol in
-         * use, arranged as name/value pairs. This information may not be
-         * available if the current user lacks permission to update
-         * connection parameters, even if they otherwise have permission to
-         * read and use the connection.
-         *
-         * @type Object.<String, String>
-         * @default {}
-         */
-        this.parameters = template.parameters || {};
+        this.parameters = template.parameters || [];
 
     };
 
-    return Connection;
+    return Protocol;
 
 }]);
