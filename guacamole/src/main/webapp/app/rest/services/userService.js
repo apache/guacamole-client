@@ -30,33 +30,40 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
     
     /**
      * Makes a request to the REST API to get the list of users,
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise that provides an array of @link{User} objects if
+     * successful.
      * 
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<User[]>}
+     *     A promise which will resolve with an array of @link{User} objects
+     *     upon success.
      */
     service.getUsers = function getUsers() {
         return $http.get("api/user?token=" + authenticationService.getCurrentToken());
     };
     
     /**
-     * Makes a request to the REST API to get the list of users,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to get the user having the given ID,
+     * returning a promise that provides the corresponding @link{User} if
+     * successful.
      * 
-     * @param {string} userID The ID of the user to retrieve.
+     * @param {String} userID The ID of the user to retrieve.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<User>}
+     *     A promise which will resolve with a @link{User} upon success.
      */
     service.getUser = function getUser(userID) {
         return $http.get("api/user/" + userID + "/?token=" + authenticationService.getCurrentToken());
     };
     
     /**
-     * Makes a request to the REST API to delete a user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to delete a user, returning a promise
+     * that can be used for processing the results of the call.
      * 
-     * @param {object} user The user to delete.
+     * @param {User} user The user to delete.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     delete operation is successful.
      */
     service.deleteUser = function deleteUser(user) {
         return $http['delete'](
@@ -66,12 +73,14 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
     
     
     /**
-     * Makes a request to the REST API to create a user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to create a user, returning a promise
+     * that can be used for processing the results of the call.
      * 
-     * @param {object} user The user to create.
+     * @param {User} user The user to create.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     create operation is successful.
      */
     service.createUser = function createUser(user) {
         return $http.post(
@@ -79,15 +88,17 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
             + "?token=" + authenticationService.getCurrentToken(), 
             user
         );
-    }
+    };
     
     /**
-     * Makes a request to the REST API to save a user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to save a user, returning a promise that
+     * can be used for processing the results of the call.
      * 
-     * @param {object} user The user to update.
+     * @param {User} user The user to update.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     save operation is successful.
      */
     service.saveUser = function saveUser(user) {
         return $http.post(
@@ -97,4 +108,5 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
     };
     
     return service;
+
 }]);
