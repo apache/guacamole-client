@@ -29,61 +29,74 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
     var service = {};
     
     /**
-     * Makes a request to the REST API to get the list of permissions for a given user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to get the list of permissions for a
+     * given user, returning a promise that provides an array of
+     * @link{Permission} objects if successful.
+
      * 
-     * @param {string} userID The ID of the user to retrieve the permissions for.
+     * @param {String} userID
+     *     The ID of the user to retrieve the permissions for.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<Permission[]>}
+     *     A promise which will resolve with an array of @link{Permission}
+     *     objects upon success.
      */
     service.getPermissions = function getPermissions(userID) {
         return $http.get("api/permission/" + userID + "/?token=" + authenticationService.getCurrentToken());
     };
     
     /**
-     * Makes a request to the REST API to add a permission for a given user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to add permissions for a given user,
+     * returning a promise that can be used for processing the results of the
+     * call.
      * 
-     * @param {string} userID The ID of the user to add the permission for.
-     * @param {object} permission The permission to add.
+     * @param {String} userID The ID of the user to add the permission for.
+     * @param {Permission[]} permissions The permissions to add.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     add operation is successful.
      */
-    service.addPermission = function addPermission(userID, permission) {
-        return $http.post("api/permission/" + userID + "/?token=" + authenticationService.getCurrentToken(), permission);
+    service.addPermissions = function addPermissions(userID, permissions) {
+        return service.patchPermissions(userID, permissions, []);
     };
     
-    
-    
     /**
-     * Makes a request to the REST API to remove a permission for a given user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to remove permissions for a given user,
+     * returning a promise that can be used for processing the results of the
+     * call.
      * 
-     * @param {string} userID The ID of the user to remove the permission for.
-     * @param {object} permission The permission to remove.
+     * @param {String} userID The ID of the user to remove the permission for.
+     * @param {Permission[]} permissions The permissions to remove.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     remove operation is successful.
      */
-    service.removePermission = function removePermission(userID, permission) {
-        return $http.post("api/permission/remove/" + userID + "/?token=" + authenticationService.getCurrentToken(), permission);
+    service.removePermissions = function removePermissions(userID, permissions) {
+        return service.patchPermissions(userID, [], permissions);
     };
     
-    
     /**
-     * Makes a request to the REST API to modify the permissions for a given user,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to modify the permissions for a given
+     * user, returning a promise that can be used for processing the results of
+     * the call.
      * 
-     * @param {string} userID The ID of the user to remove the permission for.
-     * @param {array} permissionsToAdd The permissions to add.
-     * @param {array} permissionsToRemove The permissions to remove.
+     * @param {String} userID The ID of the user to remove the permission for.
+     * @param {Permission[]} permissionsToAdd The permissions to add.
+     * @param {Permission[]} permissionsToRemove The permissions to remove.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     patch operation is successful.
      */
     service.patchPermissions = function patchPermissions(userID, permissionsToAdd, permissionsToRemove) {
+
+        var i;
         var permissionPatch = [];
         
         // Add all the add operations to the patch
-        for(var i = 0; i < permissionsToAdd.length; i++ ) {
+        for (i = 0; i < permissionsToAdd.length; i++ ) {
             permissionPatch.push({
                 op      : "add",
                 path    : userID, 
@@ -92,7 +105,7 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
         }
         
         // Add all the remove operations to the patch
-        for(var i = 0; i < permissionsToRemove.length; i++ ) {
+        for (i = 0; i < permissionsToRemove.length; i++ ) {
             permissionPatch.push({
                 op      : "remove",
                 path    : userID, 
@@ -106,10 +119,9 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
             url     : "api/permission/?token=" + authenticationService.getCurrentToken(),
             data    : permissionPatch
         });
-    }
-    
-    
-    
+
+    };
     
     return service;
+
 }]);
