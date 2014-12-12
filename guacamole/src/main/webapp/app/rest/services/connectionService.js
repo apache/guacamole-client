@@ -33,6 +33,7 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      * promise that provides the corresponding @link{Connection} if successful.
      * 
      * @param {String} id The ID of the connection.
+     * 
      * @returns {Promise.<Connection>}
      *     A promise which will resolve with a @link{Connection} upon success.
      * 
@@ -48,12 +49,13 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
 
     /**
      * Makes a request to the REST API to get the list of connections,
-     * returning a promise that can be used for processing the results of the
-     * call.
+     * returning a promise that provides an array of
+     * @link{Connection} objects if successful.
      * 
-     * @param {string} parentID The parent ID for the connection.
-     *                          If not passed in, it will query a list of the 
-     *                          connections in the root group.
+     * @param {String} [parentID=ConnectionGroup.ROOT_IDENTIFIER]
+     *     The ID of the connection group whose child connections should be
+     *     returned. If not provided, the root connection group will be used
+     *     by default.
      *                          
      * @returns {Promise.<Connection[]>}
      *     A promise which will resolve with an array of @link{Connection}
@@ -62,7 +64,7 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
     service.getConnections = function getConnections(parentID) {
         
         var parentIDParam = "";
-        if(parentID !== undefined)
+        if (parentID)
             parentIDParam = "&parentID=" + parentID;
         
         return $http.get("api/connection?token=" + authenticationService.getCurrentToken() + parentIDParam);
@@ -70,9 +72,12 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
     
     /**
      * Makes a request to the REST API to save a connection, returning a
-     * promise that can be used for processing the results of the call.
+     * promise that can be used for processing the results of the call. If the
+     * connection is new, and thus does not yet have an associated identifier,
+     * the identifier will be automatically set in the provided connection
+     * upon success.
      * 
-     * @param {Connection} connection The connection to update
+     * @param {Connection} connection The connection to update.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
@@ -89,20 +94,26 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
         var connectionToSave = angular.copy(connection);
         delete connectionToSave.history;
         
-        // This is a new connection
-        if(!connectionToSave.identifier) {
+        // If connection is new, add it and set the identifier automatically
+        if (!connectionToSave.identifier) {
             return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connectionToSave).success(
+
+                // Set the identifier on the new connection
                 function setConnectionID(connectionID){
-                    // Set the identifier on the new connection
-                    connection.identifier = connectionID; // FIXME: Functions with side effects = bad
-                    return connectionID; // FIXME: Why? Where does this value go?
-                });
-        } else {
+                    connection.identifier = connectionID;
+                }
+
+            );
+        }
+        
+        // Otherwise, update the existing connection
+        else {
             return $http.post(
                 "api/connection/" + connectionToSave.identifier + 
                 "?token=" + authenticationService.getCurrentToken(), 
             connectionToSave);
         }
+
     };
     
     /**
@@ -132,7 +143,7 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      * Makes a request to the REST API to delete a connection,
      * returning a promise that can be used for processing the results of the call.
      * 
-     * @param {Connection} connection The connection to delete
+     * @param {Connection} connection The connection to delete.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the

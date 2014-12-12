@@ -23,30 +23,29 @@
 /**
  * Service for operating on connection groups via the REST API.
  */
-angular.module('rest').factory('connectionGroupService', ['$http', 'authenticationService',
-        function connectionGrouService($http, authenticationService) {
-            
-    /**
-     * The ID of the root connection group.
-     */
-    var ROOT_CONNECTION_GROUP_ID = "ROOT";
+angular.module('rest').factory('connectionGroupService', ['$http', 'authenticationService', 'ConnectionGroup',
+        function connectionGroupService($http, authenticationService, ConnectionGroup) {
             
     var service = {};
     
     /**
      * Makes a request to the REST API to get the list of connection groups,
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise that provides an array of
+     * @link{ConnectionGroup} objects if successful.
      * 
-     * @param {string} parentID The parent ID for the connection group.
-     *                          If not passed in, it will query a list of the 
-     *                          connection groups in the root group.
+     * @param {String} [parentID=ConnectionGroup.ROOT_IDENTIFIER]
+     *     The ID of the connection group whose child connection groups should
+     *     be returned. If not provided, the root connection group will be
+     *     used by default.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<ConnectionGroup[]>}
+     *     A promise which will resolve with an array of @link{ConnectionGroup}
+     *     objects upon success.
      */
     service.getConnectionGroups = function getConnectionGroups(parentID) {
         
         var parentIDParam = "";
-        if(parentID !== undefined)
+        if (parentID)
             parentIDParam = "&parentID=" + parentID;
         
         return $http.get("api/connectionGroup?token=" + authenticationService.getCurrentToken() + parentIDParam);
@@ -54,54 +53,74 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
     
     /**
      * Makes a request to the REST API to get an individual connection group,
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise that provides the corresponding
+     * @link{ConnectionGroup} if successful.
      * 
-     * @param {string} connectionGroupID The ID for the connection group.
-     *                                   If not passed in, it will query the
-     *                                   root connection group.
+     * @param {String} [connectionGroupID=ConnectionGroup.ROOT_IDENTIFIER]
+     *     The ID of the connection group to retrieve. If not provided, the
+     *     root connection group will be retrieved by default.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<ConnectionGroup>} A promise for the HTTP call.
+     *     A promise which will resolve with a @link{ConnectionGroup} upon
+     *     success.
      */
     service.getConnectionGroup = function getConnectionGroup(connectionGroupID) {
         
         // Use the root connection group ID if no ID is passed in
-        connectionGroupID = connectionGroupID || ROOT_CONNECTION_GROUP_ID;
+        connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
         
         return $http.get("api/connectionGroup/" + connectionGroupID + "?token=" + authenticationService.getCurrentToken());
     };
     
     /**
-     * Makes a request to the REST API to save a connection group,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to save a connection group, returning a
+     * promise that can be used for processing the results of the call. If the
+     * connection group is new, and thus does not yet have an associated
+     * identifier, the identifier will be automatically set in the provided
+     * connection group upon success.
      * 
-     * @param {object} connectionGroup The connection group to update
+     * @param {ConnectionGroup} connectionGroup The connection group to update.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     save operation is successful.
      */
     service.saveConnectionGroup = function saveConnectionGroup(connectionGroup) {
-        // This is a new connection group
-        if(!connectionGroup.identifier) {
+
+        // If connection group is new, add it and set the identifier automatically
+        if (!connectionGroup.identifier) {
             return $http.post("api/connectionGroup/?token=" + authenticationService.getCurrentToken(), connectionGroup).success(
+
+                // Set the identifier on the new connection group
                 function setConnectionGroupID(connectionGroupID){
-                    // Set the identifier on the new connection
                     connectionGroup.identifier = connectionGroupID;
-                    return connectionGroupID;
-                });
-        } else {
+                }
+
+            );
+        }
+
+        // Otherwise, update the existing connection group
+        else {
             return $http.post(
                 "api/connectionGroup/" + connectionGroup.identifier + 
                 "?token=" + authenticationService.getCurrentToken(), 
             connectionGroup);
         }
+
     };
     
     /**
-     * Makes a request to the REST API to move a connection group to a different group,
-     * returning a promise that can be used for processing the results of the call.
+     * FIXME: Why is this different from save?
      * 
-     * @param {object} connectionGroup The connection group to move. 
+     * Makes a request to the REST API to move a connection group to a
+     * different group, returning a promise that can be used for processing the
+     * results of the call.
+     * 
+     * @param {ConnectionGroup} connectionGroup The connection group to move. 
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     move operation is successful.
      */
     service.moveConnectionGroup = function moveConnectionGroup(connectionGroup) {
         
@@ -113,12 +132,14 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
     };
     
     /**
-     * Makes a request to the REST API to delete a connection group,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to delete a connection group, returning
+     * a promise that can be used for processing the results of the call.
      * 
-     * @param {object} connectionGroup The connection group to delete
+     * @param {ConnectionGroup} connectionGroup The connection group to delete.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     delete operation is successful.
      */
     service.deleteConnectionGroup = function deleteConnectionGroup(connectionGroup) {
         return $http['delete'](
