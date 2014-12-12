@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.rest.user;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
@@ -39,6 +40,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.permission.UserPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -67,29 +69,47 @@ public class UserRESTService {
     private AuthenticationService authenticationService;
     
     /**
-     * A service for managing the REST endpoint APIPermission objects. 
-     */
-    @Inject
-    private UserService userService;
-    
-    /**
-     * Gets a list of users in the system.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
+     * Gets a list of users in the system, filtering the returned list by the
+     * given permission, if specified.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param permission
+     *     If specified, limit the returned list to only those users for whom
+     *     the current user has the given permission. Otherwise, all visible
+     *     users are returned.
+     * 
      * @return The user list.
-     * @throws GuacamoleException If a problem is encountered while listing users.
+     * 
+     * @throws GuacamoleException
+     *     If an error is encountered while retrieving users.
      */
     @GET
     @AuthProviderRESTExposure
-    public List<APIUser> getUsers(@QueryParam("token") String authToken) throws GuacamoleException {
+    public List<APIUser> getUsers(@QueryParam("token") String authToken,
+            @QueryParam("permission") UserPermission.Type permission)
+            throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
+        User self = userContext.self();
 
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
-        // Convert and return the user directory listing
-        return userService.convertUserList(userDirectory);
+        List<APIUser> users = new ArrayList<APIUser>();
+
+        // Add all users matching the given permission filter
+        for (String username : userDirectory.getIdentifiers()) {
+
+            if (permission == null || self.hasPermission(new UserPermission(permission, username)))
+                users.add(new APIUser(userDirectory.get(username)));
+
+        }
+        
+        // Return the user directory listing
+        return users;
 
     }
     

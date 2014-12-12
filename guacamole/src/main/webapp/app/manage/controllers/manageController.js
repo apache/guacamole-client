@@ -25,15 +25,17 @@
  */
 angular.module('manage').controller('manageController', ['$scope', '$injector', 
         function manageController($scope, $injector) {
-            
-    // Get the dependencies commonJS style
+
+    // Required types
+    var Permission = $injector.get('Permission');
+
+    // Required services
     var legacyConnectionGroupService      = $injector.get('legacyConnectionGroupService');
     var connectionEditModal         = $injector.get('connectionEditModal');
     var connectionGroupEditModal    = $injector.get('connectionGroupEditModal');
     var userEditModal               = $injector.get('userEditModal');
-    var protocolService                 = $injector.get('protocolService');
-    var userService                     = $injector.get('userService');
-    var legacyUserService                 = $injector.get('legacyUserService');
+    var protocolService             = $injector.get('protocolService');
+    var userService                 = $injector.get('userService');
     
     // Set status to loading until we have all the connections, groups, and users have loaded
     $scope.loadingUsers         = true;
@@ -64,21 +66,13 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
             
             $scope.loadingConnections = false; 
         });
-        
-        userService.getUsers().success(function filterEditableUsers(users) {
+
+        // Retrieve all users for whom we have UPDATE permission
+        userService.getUsers(Permission.Type.UPDATE).success(function usersReceived(users) {
             $scope.users = users;
-            
-            // Filter the users to only include ones that we have UPDATE for
-            if(!$scope.currentUserIsAdmin) {
-                legacyUserService.filterUsersByPermission(
-                    $scope.users,
-                    $scope.currentUserPermissions,
-                    'UPDATE'
-                );
-            }
-            
             $scope.loadingUsers = false; 
         });
+
     });
     
     /**

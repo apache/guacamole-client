@@ -27,7 +27,6 @@ import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupService;
 import org.glyptodon.guacamole.net.basic.rest.permission.PermissionService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRetrievalService;
-import org.glyptodon.guacamole.net.basic.rest.user.UserService;
 
 /**
  * A Guice Module for setting up dependency injection for the 
@@ -44,7 +43,6 @@ public class RESTModule extends AbstractModule {
         bind(ConnectionService.class);
         bind(ConnectionGroupService.class);
         bind(PermissionService.class);
-        bind(UserService.class);
         bind(ProtocolRetrievalService.class);
         
     }

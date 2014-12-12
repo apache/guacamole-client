@@ -33,21 +33,42 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      * returning a promise that provides an array of @link{User} objects if
      * successful.
      * 
+     * @param {String} [permissionType]
+     *     The permission type string of the permission that the current user
+     *     must have for a given user to appear within the list. Valid values
+     *     are listed within Permission.Type.
+     *                          
      * @returns {Promise.<User[]>}
      *     A promise which will resolve with an array of @link{User} objects
      *     upon success.
      */
-    service.getUsers = function getUsers() {
-        return $http.get("api/user?token=" + authenticationService.getCurrentToken());
+    service.getUsers = function getUsers(permissionType) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Add permission filter if specified
+        if (permissionType)
+            httpParameters.permission = permissionType;
+
+        // Retrieve users
+        return $http({
+            method  : 'GET',
+            url     : 'api/user',
+            params  : httpParameters
+        });
+
     };
-    
+
     /**
      * Makes a request to the REST API to get the user having the given ID,
      * returning a promise that provides the corresponding @link{User} if
      * successful.
      * 
      * @param {String} userID The ID of the user to retrieve.
-     *                          
+     * 
      * @returns {Promise.<User>}
      *     A promise which will resolve with a @link{User} upon success.
      */
