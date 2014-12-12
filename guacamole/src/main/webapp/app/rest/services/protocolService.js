@@ -28,14 +28,18 @@ angular.module('rest').factory('protocolService', ['$http', function protocolSer
     var service = {};
     
     /**
-     * Makes a request to the REST API to get the list of protocols,
-     * returning a promise that can be used for processing the results of the call.
+     * Makes a request to the REST API to get the list of protocols, returning
+     * a promise that provides an array of @link{Protocol} objects if
+     * successful.
      *                          
-     * @returns {promise} A promise for the HTTP call.
+     * @returns {Promise.<Protocol[]>}
+     *     A promise which will resolve with an array of @link{Protocol}
+     *     objects upon success.
      */
     service.getProtocols = function getProtocols() {
         return $http.get("api/protocol");
     };
     
     return service;
+
 }]);

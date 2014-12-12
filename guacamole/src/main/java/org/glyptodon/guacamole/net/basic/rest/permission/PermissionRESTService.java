@@ -102,65 +102,6 @@ public class PermissionRESTService {
     }
     
     /**
-     * Adds a permissions for a user with the given userID.
-     * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The user ID to add the permission for.
-     * @param permission The permission to add for the user with the given userID.
-     * @throws GuacamoleException If a problem is encountered while adding the permission.
-     */
-    @POST
-    @Path("/{userID}")
-    @AuthProviderRESTExposure
-    public void addPermission(@QueryParam("token") String authToken, 
-            @PathParam("userID") String userID, APIPermission permission) 
-            throws GuacamoleException {
-
-        UserContext userContext = authenticationService.getUserContext(authToken);
-
-        // Get the user
-        User user = userContext.getUserDirectory().get(userID);
-        if (user == null)
-            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
-
-        // Add the new permission
-        user.addPermission(permission.toPermission());
-        userContext.getUserDirectory().update(user);
-
-    }
-    
-    /**
-     * Removes a permissions for a user with the given userID.
-     * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The user ID to remove the permission for.
-     * @param permission The permission to remove for the user with the given userID.
-     * @throws GuacamoleException If a problem is encountered while removing the permission.
-     */
-    @POST
-    @Path("/remove/{userID}/")
-    @AuthProviderRESTExposure
-    public void removePermission(@QueryParam("token") String authToken, 
-            @PathParam("userID") String userID, APIPermission permission) 
-            throws GuacamoleException {
-
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
-        // Get the user
-        User user = userContext.getUserDirectory().get(userID);
-        if (user == null)
-            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
-
-        // Remove the permission
-        user.removePermission(permission.toPermission());
-        userContext.getUserDirectory().update(user);
-
-    }
-    
-    
-    /**
      * Applies a given list of permission patches.
      * 
      * @param authToken The authentication token that is used to authenticate
