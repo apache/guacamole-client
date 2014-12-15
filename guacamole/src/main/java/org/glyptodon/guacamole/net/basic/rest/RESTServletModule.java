@@ -30,7 +30,6 @@ import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
-import org.glyptodon.guacamole.net.basic.rest.permission.PermissionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
 
@@ -48,7 +47,6 @@ public class RESTServletModule extends ServletModule {
         bind(ClipboardRESTService.class);
         bind(ConnectionRESTService.class);
         bind(ConnectionGroupRESTService.class);
-        bind(PermissionRESTService.class);
         bind(ProtocolRESTService.class);
         bind(UserRESTService.class);
         bind(TokenRESTService.class);

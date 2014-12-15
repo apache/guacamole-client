@@ -25,10 +25,12 @@
  */
 angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
-            
-    // Get the dependencies commonJS style
-    var permissionService           = $injector.get("permissionService"),
-        permissionCheckService  = $injector.get("permissionCheckService"),
+
+    // Get class dependencies
+    var PermissionSet = $injector.get("PermissionSet");
+
+    // Get services
+    var permissionService       = $injector.get("permissionService"),
         authenticationService   = $injector.get("authenticationService"),
         $q                      = $injector.get("$q"),
         $document               = $injector.get("$document"),
@@ -169,13 +171,15 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         permissionService.getPermissions($scope.currentUserID).success(function fetchCurrentUserPermissions(permissions) {
             $scope.currentUserPermissions = permissions;
 
-            // Will be true if the user is an admin
-            $scope.currentUserIsAdmin = permissionCheckService.checkPermission($scope.currentUserPermissions, "SYSTEM", undefined, "ADMINISTER");
+            // Whether the user has system-wide admin permission
+            $scope.currentUserIsAdmin = PermissionSet.hasSystemPermission($scope.currentUserPermissions, PermissionSet.SystemPermissionType.ADMINISTER);
 
-            // Will be true if the user is an admin or has update access to any object               
-            $scope.currentUserHasUpdate = $scope.currentUserIsAdmin || 
-                    permissionCheckService.checkPermission($scope.currentUserPermissions, undefined, undefined, "UPDATE");
-            
+            // Whether the user can update at least one object
+            $scope.currentUserHasUpdate = $scope.currentUserIsAdmin
+                                        || PermissionSet.hasConnectionPermission($scope.currentUserPermissions, "UPDATE")
+                                        || PermissionSet.hasConnectionGroupPermission($scope.currentUserPermissions, "UPDATE")
+                                        || PermissionSet.hasUserPermission($scope.currentUserPermissions, "UPDATE");
+
             permissionsLoaded.resolve();
         });
     };

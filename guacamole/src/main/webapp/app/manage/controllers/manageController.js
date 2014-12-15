@@ -27,7 +27,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         function manageController($scope, $injector) {
 
     // Required types
-    var Permission = $injector.get('Permission');
+    var PermissionSet = $injector.get('PermissionSet');
 
     // Required services
     var legacyConnectionGroupService      = $injector.get('legacyConnectionGroupService');
@@ -68,7 +68,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         });
 
         // Retrieve all users for whom we have UPDATE permission
-        userService.getUsers(Permission.Type.UPDATE).success(function usersReceived(users) {
+        userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE).success(function usersReceived(users) {
             $scope.users = users;
             $scope.loadingUsers = false; 
         });

@@ -25,9 +25,12 @@
  */
 angular.module('rest').factory('legacyConnectionGroupService', ['$injector', function legacyConnectionGroupService($injector) {
             
-    var connectionGroupService              = $injector.get('connectionGroupService');
+    // Get class dependencies
+    var PermissionSet = $injector.get("PermissionSet");
+
+    // Get services
+    var connectionGroupService          = $injector.get('connectionGroupService');
     var connectionService               = $injector.get('connectionService');
-    var permissionCheckService          = $injector.get('permissionCheckService');
     var $q                              = $injector.get('$q');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
             
@@ -196,8 +199,7 @@ angular.module('rest').factory('legacyConnectionGroupService', ['$injector', fun
                  * item, check now to see if the permission exists. If not,
                  * remove the item.
                  */
-                if(!permissionCheckService.checkPermission(permissionList, 
-                        "CONNECTION", item.identifier, requiredConnectionPermission)) {
+                if(!PermissionSet.hasConnectionPermission(permissionList, item.identifier, requiredConnectionPermission)) {
                     items.splice(i, 1);
                     continue;
                 } 
@@ -210,8 +212,7 @@ angular.module('rest').factory('legacyConnectionGroupService', ['$injector', fun
                  * remove the item.
                  */
                 if(requiredConnectionGroupPermission) {
-                    if(!permissionCheckService.checkPermission(permissionList, 
-                            "CONNECTION_GROUP", item.identifier, requiredConnectionGroupPermission)) {
+                    if(!PermissionSet.hasConnectionGroupPermission(permissionList, item.identifier, requiredConnectionGroupPermission)) {
                         items.splice(i, 1);
                         continue;
                     }    

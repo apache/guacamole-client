@@ -36,7 +36,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      * @param {String} [permissionType]
      *     The permission type string of the permission that the current user
      *     must have for a given user to appear within the list. Valid values
-     *     are listed within Permission.Type.
+     *     are listed within PermissionSet.ObjectType.
      *                          
      * @returns {Promise.<User[]>}
      *     A promise which will resolve with an array of @link{User} objects

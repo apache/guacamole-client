@@ -37,12 +37,12 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
      * @param {String} userID
      *     The ID of the user to retrieve the permissions for.
      *                          
-     * @returns {Promise.<Permission[]>}
-     *     A promise which will resolve with an array of @link{Permission}
-     *     objects upon success.
+     * @returns {Promise.<PermissionSet>}
+     *     A promise which will resolve with a @link{PermissionSet} upon
+     *     success.
      */
     service.getPermissions = function getPermissions(userID) {
-        return $http.get("api/permission/" + userID + "/?token=" + authenticationService.getCurrentToken());
+        return $http.get("api/user/" + userID + "/permissions?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -51,14 +51,14 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
      * call.
      * 
      * @param {String} userID The ID of the user to add the permission for.
-     * @param {Permission[]} permissions The permissions to add.
+     * @param {PermissionSet} permissions The permissions to add.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     add operation is successful.
      */
     service.addPermissions = function addPermissions(userID, permissions) {
-        return service.patchPermissions(userID, permissions, []);
+        return service.patchPermissions(userID, permissions, null);
     };
     
     /**
@@ -67,14 +67,14 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
      * call.
      * 
      * @param {String} userID The ID of the user to remove the permission for.
-     * @param {Permission[]} permissions The permissions to remove.
+     * @param {PermissionSet} permissions The permissions to remove.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     remove operation is successful.
      */
     service.removePermissions = function removePermissions(userID, permissions) {
-        return service.patchPermissions(userID, [], permissions);
+        return service.patchPermissions(userID, null, permissions);
     };
     
     /**
@@ -83,14 +83,16 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
      * the call.
      * 
      * @param {String} userID The ID of the user to remove the permission for.
-     * @param {Permission[]} permissionsToAdd The permissions to add.
-     * @param {Permission[]} permissionsToRemove The permissions to remove.
+     * @param {PermissionSet} [permissionsToAdd] The permissions to add.
+     * @param {PermissionSet} [permissionsToRemove] The permissions to remove.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     patch operation is successful.
      */
     service.patchPermissions = function patchPermissions(userID, permissionsToAdd, permissionsToRemove) {
+
+        // FIXME: This will NOT work, now that PermissionSet is used
 
         var i;
         var permissionPatch = [];

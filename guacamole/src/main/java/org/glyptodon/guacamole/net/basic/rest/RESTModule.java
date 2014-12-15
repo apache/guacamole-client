@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic.rest;
 import com.google.inject.AbstractModule;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupService;
-import org.glyptodon.guacamole.net.basic.rest.permission.PermissionService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRetrievalService;
 
 /**
@@ -42,7 +41,6 @@ public class RESTModule extends AbstractModule {
         // Bind generic low-level services
         bind(ConnectionService.class);
         bind(ConnectionGroupService.class);
-        bind(PermissionService.class);
         bind(ProtocolRetrievalService.class);
         
     }
