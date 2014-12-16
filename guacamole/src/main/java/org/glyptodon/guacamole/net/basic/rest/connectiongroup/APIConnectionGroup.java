@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup.Type;
-import org.glyptodon.guacamole.net.basic.rest.APIConstants;
 
 /**
  * A simple connection group to expose through the REST endpoints.
@@ -35,6 +34,11 @@ import org.glyptodon.guacamole.net.basic.rest.APIConstants;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class APIConnectionGroup {
 
+    /**
+     * The identifier of the root connection group.
+     */
+    public static final String ROOT_IDENTIFIER = "ROOT";
+ 
     /**
      * The name of this connection group.
      */
@@ -73,7 +77,7 @@ public class APIConnectionGroup {
         
         // Use the explicit ROOT group ID
         if (this.parentIdentifier == null)
-            this.parentIdentifier = APIConstants.ROOT_CONNECTION_GROUP_IDENTIFIER;
+            this.parentIdentifier = ROOT_IDENTIFIER;
         
         this.name = connectionGroup.getName();
         this.type = connectionGroup.getType();
