@@ -27,10 +27,11 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         function manageController($scope, $injector) {
 
     // Required types
-    var PermissionSet = $injector.get('PermissionSet');
+    var PermissionSet   = $injector.get('PermissionSet');
+    var ConnectionGroup = $injector.get('ConnectionGroup');
 
     // Required services
-    var legacyConnectionGroupService      = $injector.get('legacyConnectionGroupService');
+    var connectionGroupService      = $injector.get('connectionGroupService');
     var connectionEditModal         = $injector.get('connectionEditModal');
     var connectionGroupEditModal    = $injector.get('connectionGroupEditModal');
     var userEditModal               = $injector.get('userEditModal');
@@ -41,34 +42,18 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.loadingUsers         = true;
     $scope.loadingConnections   = true;
     
-    // All the connections and connection groups in root
-    $scope.connectionsAndGroups = [];
-    
-    // All users that the current user has permission to edit
-    $scope.users = [];
-    
     $scope.basicPermissionsLoaded.then(function basicPermissionsHaveBeenLoaded() {
-        legacyConnectionGroupService.getAllGroupsAndConnections([], undefined, true, true).then(function filterConnectionsAndGroups(rootGroupList) {
-            $scope.rootGroup = rootGroupList[0];
-            $scope.connectionsAndGroups = $scope.rootGroup.children;
-            
-            // Filter the items to only include ones that we have UPDATE for
-            if(!$scope.currentUserIsAdmin) {
-                legacyConnectionGroupService.filterConnectionsAndGroupByPermission(
-                    $scope.connectionsAndGroups,
-                    $scope.currentUserPermissions,
-                    {
-                        'CONNECTION':       'UPDATE',
-                        'CONNECTION_GROUP': 'UPDATE'
-                    }
-                );
-            }
-            
+
+        // Retrieve all users for whom we have UPDATE permission
+        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+        .success(function connectionGroupReceived(rootGroup) {
+            $scope.rootGroup = rootGroup;
             $scope.loadingConnections = false; 
         });
 
         // Retrieve all users for whom we have UPDATE permission
-        userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE).success(function usersReceived(users) {
+        userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE)
+        .success(function usersReceived(users) {
             $scope.users = users;
             $scope.loadingUsers = false; 
         });
