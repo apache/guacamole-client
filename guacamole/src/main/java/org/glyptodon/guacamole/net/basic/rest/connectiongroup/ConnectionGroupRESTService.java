@@ -42,7 +42,10 @@ import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -84,6 +87,11 @@ public class ConnectionGroupRESTService {
      * @param includeDescendants
      *     Whether the descendant connections and groups of the given
      *     connection group should also be retrieved.
+     * 
+     * @param permission
+     *     The permission the current user must have for a connection or
+     *     connection group to be returned in the results, if any. If null
+     *     is specified, no filtering by permission will be performed.
      *
      * @return
      *     The requested connection group, or null if no such connection group
@@ -94,9 +102,10 @@ public class ConnectionGroupRESTService {
      *     or any of its descendants.
      */
     private APIConnectionGroup retrieveConnectionGroup(UserContext userContext,
-            String identifier, boolean includeDescendants)
+            String identifier, boolean includeDescendants, ObjectPermission.Type permission)
             throws GuacamoleException {
 
+        User self = userContext.self();
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
         
         ConnectionGroup connectionGroup;
@@ -135,7 +144,9 @@ public class ConnectionGroupRESTService {
                 if (childConnection == null)
                     continue;
 
-                apiConnections.add(new APIConnection(childConnection));
+                // Filter based on permission, if requested
+                if (permission == null || self.hasPermission(new ConnectionPermission(permission, childIdentifier)))
+                    apiConnections.add(new APIConnection(childConnection));
 
             }
             
@@ -149,7 +160,7 @@ public class ConnectionGroupRESTService {
             for (String childIdentifier : groupDirectory.getIdentifiers()) {
 
                 // Pull current connection group - silently ignore if connection group was removed prior to read
-                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true);
+                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true, permission);
                 if (childConnectionGroup == null)
                     continue;
 
@@ -170,11 +181,18 @@ public class ConnectionGroupRESTService {
     /**
      * Gets an individual connection group.
      * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param connectionGroupID The ID of the ConnectionGroup.
-     * @return The connection group.
-     * @throws GuacamoleException If a problem is encountered while retrieving the connection group.
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     * 
+     * @param connectionGroupID
+     *     The ID of the connection group to retrieve.
+     * 
+     * @return
+     *     The connection group, without any descendants.
+     *
+     * @throws GuacamoleException
+     *     If a problem is encountered while retrieving the connection group.
      */
     @GET
     @Path("/{connectionGroupID}")
@@ -185,7 +203,7 @@ public class ConnectionGroupRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Retrieve requested connection group only
-        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, false);
+        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, false, null);
         if (connectionGroup == null)
             throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
 
@@ -201,10 +219,16 @@ public class ConnectionGroupRESTService {
      *     performing the operation.
      *
      * @param connectionGroupID
-     *     The ID of the ConnectionGroup.
+     *     The ID of the connection group to retrieve.
      *
+     * @param permission
+     *     If specified, limit the returned list to only those connections and
+     *     connection groups for which the current user has the given
+     *     permission. Otherwise, all visible connections and connection groups
+     *     are returned.
+     * 
      * @return
-     *     The connection group.
+     *     The requested connection group, including all descendants.
      *
      * @throws GuacamoleException
      *     If a problem is encountered while retrieving the connection group or
@@ -214,12 +238,14 @@ public class ConnectionGroupRESTService {
     @Path("/{connectionGroupID}/tree")
     @AuthProviderRESTExposure
     public APIConnectionGroup getConnectionGroupTree(@QueryParam("token") String authToken, 
-            @PathParam("connectionGroupID") String connectionGroupID) throws GuacamoleException {
+            @PathParam("connectionGroupID") String connectionGroupID,
+            @QueryParam("permission") ObjectPermission.Type permission)
+            throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Retrieve requested connection group and all descendants
-        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true);
+        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true, permission);
         if (connectionGroup == null)
             throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
 
