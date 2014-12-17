@@ -20,4 +20,4 @@
  * THE SOFTWARE.
  */
 
-angular.module('home', ['history', 'rest']);
+angular.module('home', ['history', 'groupList', 'rest']);

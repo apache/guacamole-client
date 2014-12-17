@@ -20,31 +20,6 @@
    THE SOFTWARE.
 -->
 
-<script type="text/ng-template" id="nestedGroup.html">
-    <div class="connection" ng-show="item.isConnection">
-        <a ng-href="#/client/c/{{item.identifier}}">
-            <div class="caption">
-                <div class="protocol">
-                    <div class="icon type" ng-class="item.protocol"></div>
-                </div>
-                <span class="name">{{item.name}}</span>
-            </div>
-        </a>
-    </div>
-    <div class="group" ng-show="!item.isConnection">
-        <div class="caption">
-            <div class="icon group type" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
-            <span class="name">
-                <a ng-show="item.balancer" ng-href="#/client/g/{{item.identifier}}">{{item.name}}</a>
-                <span ng-show="!item.balancer">{{item.name}}</span>
-            </span>
-        </div>
-        <div class="children" ng-show="item.expanded">
-            <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedGroup.html'">
-        </div>
-    </div>
-</script>
-
 <div class="connection-list-ui">
 
     <div class="logout-panel">
@@ -73,6 +48,7 @@
     <!-- All connections for this user -->
     <h2>{{'home.allConnections' | translate}}</h2>
     <div class="all-connections" ng-class="{loading: loading}">
-        <div class="list-item" ng-repeat="item in connectionsAndGroups | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
+        <guac-group-list connection-group="rootConnectionGroup"/>
     </div>
+
 </div>
