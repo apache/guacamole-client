@@ -22,13 +22,10 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
@@ -61,14 +58,9 @@ public class APIConnection {
     private String protocol;
     
     /**
-     * The history records associated with this connection.
-     */
-    private List<? extends ConnectionRecord> history;
-
-    /**
      * Map of all associated parameter values, indexed by parameter name.
      */
-    private Map<String, String> parameters = new HashMap<String, String>();
+    private Map<String, String> parameters;
     
     /**
      * Create an empty APIConnection.
@@ -76,7 +68,9 @@ public class APIConnection {
     public APIConnection() {}
     
     /**
-     * Create an APIConnection from a Connection record.
+     * Create an APIConnection from a Connection record. Parameters for the
+     * connection will not be included.
+     *
      * @param connection The connection to create this APIConnection from.
      * @throws GuacamoleException If a problem is encountered while
      *                            instantiating this new APIConnection.
@@ -84,21 +78,18 @@ public class APIConnection {
     public APIConnection(Connection connection) 
             throws GuacamoleException {
 
+        // Set identifying information
         this.name = connection.getName();
         this.identifier = connection.getIdentifier();
-        this.parentIdentifier = connection.getParentIdentifier();
-        this.history = connection.getHistory();
         
-        // Use the explicit ROOT group ID
+        // Set proper parent identifier, using root identifier if needed
+        this.parentIdentifier = connection.getParentIdentifier();
         if (this.parentIdentifier == null)
             this.parentIdentifier = APIConnectionGroup.ROOT_IDENTIFIER;
-        
+
+        // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
-        
         this.protocol = configuration.getProtocol();
-        
-        for (String key: configuration.getParameterNames())
-            this.parameters.put(key, configuration.getParameter(key));
 
     }
 
@@ -149,14 +140,6 @@ public class APIConnection {
      */
     public void setParentIdentifier(String parentIdentifier) {
         this.parentIdentifier = parentIdentifier;
-    }
-
-    /**
-     * Returns the history records associated with this connection.
-     * @return The history records associated with this connection.
-     */
-    public List<? extends ConnectionRecord> getHistory() {
-        return history;
     }
 
     /**

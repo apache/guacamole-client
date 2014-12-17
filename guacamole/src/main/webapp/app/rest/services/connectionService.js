@@ -48,28 +48,37 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
     };
 
     /**
-     * Makes a request to the REST API to get the list of connections,
-     * returning a promise that provides an array of
-     * @link{Connection} objects if successful.
+     * Makes a request to the REST API to get the usage history of a single
+     * connection, returning a promise that provides the corresponding
+     * array of @link{ConnectionHistoryEntry} objects if successful.
      * 
-     * @param {String} [parentID=ConnectionGroup.ROOT_IDENTIFIER]
-     *     The ID of the connection group whose child connections should be
-     *     returned. If not provided, the root connection group will be used
-     *     by default.
-     *                          
-     * @returns {Promise.<Connection[]>}
-     *     A promise which will resolve with an array of @link{Connection}
-     *     objects upon success.
+     * @param {String} id
+     *     The identifier of the connection.
+     * 
+     * @returns {Promise.<ConnectionHistoryEntry[]>}
+     *     A promise which will resolve with an array of
+     *     @link{ConnectionHistoryEntry} objects upon success.
      */
-    service.getConnections = function getConnections(parentID) {
-        
-        var parentIDParam = "";
-        if (parentID)
-            parentIDParam = "&parentID=" + parentID;
-        
-        return $http.get("api/connection?token=" + authenticationService.getCurrentToken() + parentIDParam);
+    service.getConnectionHistory = function getConnectionHistory(id) {
+        return $http.get("api/connection/" + id + "/history?token=" + authenticationService.getCurrentToken());
     };
-    
+
+    /**
+     * Makes a request to the REST API to get the parameters of a single
+     * connection, returning a promise that provides the corresponding
+     * map of parameter name/value pairs if successful.
+     * 
+     * @param {String} id
+     *     The identifier of the connection.
+     * 
+     * @returns {Promise.<Object.<String, String>>}
+     *     A promise which will resolve with an map of parameter name/value
+     *     pairs upon success.
+     */
+    service.getConnectionParameters = function getConnectionParameters(id) {
+        return $http.get("api/connection/" + id + "/parameters?token=" + authenticationService.getCurrentToken());
+    };
+
     /**
      * Makes a request to the REST API to save a connection, returning a
      * promise that can be used for processing the results of the call. If the
@@ -85,18 +94,9 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      */
     service.saveConnection = function saveConnection(connection) {
         
-        /*
-         * FIXME: This should not be necessary. Perhaps the need for this is a
-         * sign that history should be queried separately, and not reside as
-         * part of the connection object?
-         */
-        // Do not try to save the connection history records
-        var connectionToSave = angular.copy(connection);
-        delete connectionToSave.history;
-        
         // If connection is new, add it and set the identifier automatically
-        if (!connectionToSave.identifier) {
-            return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connectionToSave).success(
+        if (!connection.identifier) {
+            return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connection).success(
 
                 // Set the identifier on the new connection
                 function setConnectionID(connectionID){
@@ -109,9 +109,9 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
         // Otherwise, update the existing connection
         else {
             return $http.post(
-                "api/connection/" + connectionToSave.identifier + 
+                "api/connection/" + connection.identifier + 
                 "?token=" + authenticationService.getCurrentToken(), 
-            connectionToSave);
+            connection);
         }
 
     };

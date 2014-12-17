@@ -23,7 +23,9 @@
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import com.google.inject.Inject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -39,11 +41,13 @@ import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,52 +71,6 @@ public class ConnectionRESTService {
      */
     @Inject
     private AuthenticationService authenticationService;
-    
-    /**
-     * A service for managing the REST endpoint APIConnection objects. 
-     */
-    @Inject
-    private ConnectionService connectionService;
-    
-    /**
-     * Gets a list of connections with the given ConnectionGroup parentID.
-     * If no parentID is provided, returns the connections from the root group.
-     * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param parentID The ID of the ConnectionGroup the connections
-     *                 belong to. If null, the root connection group will be used.
-     * @return The connection list.
-     * @throws GuacamoleException If a problem is encountered while listing connections.
-     */
-    @GET
-    @AuthProviderRESTExposure
-    public List<APIConnection> getConnections(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) 
-            throws GuacamoleException {
-
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
-        // If the parent connection group is passed in, try to find it.
-        ConnectionGroup parentConnectionGroup;
-        if (parentID == null)
-            parentConnectionGroup = userContext.getRootConnectionGroup();
-
-        else {
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-            parentConnectionGroup = connectionGroupDirectory.get(parentID);
-        }
-
-        if (parentConnectionGroup == null)
-            throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided parentID.");
-
-        Directory<String, Connection> connectionDirectory = 
-                parentConnectionGroup.getConnectionDirectory();
-
-        // Return the converted connection directory
-        return connectionService.convertConnectionList(connectionDirectory);
-
-    }
     
     /**
      * Gets an individual connection.
@@ -144,7 +102,92 @@ public class ConnectionRESTService {
         return new APIConnection(connection);
 
     }
-    
+
+    /**
+     * Retrieves the parameters associated with a single connection.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param connectionID
+     *     The ID of the connection.
+     *
+     * @return
+     *     A map of parameter name/value pairs.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the connection parameters.
+     */
+    @GET
+    @Path("/{connectionID}/parameters")
+    @AuthProviderRESTExposure
+    public Map<String, String> getConnectionParameters(@QueryParam("token") String authToken, 
+            @PathParam("connectionID") String connectionID) throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Get the connection
+        Connection connection = connectionDirectory.get(connectionID);
+        if (connection == null)
+            throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
+
+        // Retrieve connection configuration
+        GuacamoleConfiguration config = connection.getConfiguration();
+
+        // Convert parameters to map
+        Map<String, String> parameters = new HashMap<String, String>();
+        for (String key : config.getParameterNames())
+            parameters.put(key, config.getParameter(key));
+        
+        return parameters;
+
+    }
+
+    /**
+     * Retrieves the usage history of a single connection.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param connectionID
+     *     The ID of the connection.
+     *
+     * @return
+     *     A list of connection records, describing the start and end times of
+     *     various usages of this connection.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the connection history.
+     */
+    @GET
+    @Path("/{connectionID}/history")
+    @AuthProviderRESTExposure
+    public List<? extends ConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken, 
+            @PathParam("connectionID") String connectionID) throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+        
+        // Get the connection directory
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
+        Directory<String, Connection> connectionDirectory =
+                rootGroup.getConnectionDirectory();
+
+        // Get the connection
+        Connection connection = connectionDirectory.get(connectionID);
+        if (connection == null)
+            throw new HTTPException(Status.NOT_FOUND, "No Connection found with the provided ID.");
+
+        return connection.getHistory();
+
+    }
+
     /**
      * Deletes an individual connection.
      * 

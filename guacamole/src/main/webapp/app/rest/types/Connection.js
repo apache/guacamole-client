@@ -71,25 +71,14 @@ angular.module('rest').factory('Connection', [function defineConnection() {
         this.protocol = template.protocol;
 
         /**
-         * All previous and current usages of this connection, along with
-         * associated users.
-         *
-         * @type ConnectionHistoryEntry[]
-         * @default []
-         */
-        this.history = template.history || [];
-
-        /**
          * Connection configuration parameters, as dictated by the protocol in
          * use, arranged as name/value pairs. This information may not be
-         * available if the current user lacks permission to update
-         * connection parameters, even if they otherwise have permission to
-         * read and use the connection.
+         * available until directly queried. If this information is
+         * unavailable, this property will be null or undefined.
          *
          * @type Object.<String, String>
-         * @default {}
          */
-        this.parameters = template.parameters || {};
+        this.parameters = template.parameters;
 
     };
 
