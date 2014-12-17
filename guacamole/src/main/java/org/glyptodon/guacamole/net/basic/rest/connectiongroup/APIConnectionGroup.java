@@ -22,9 +22,11 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
+import java.util.Collection;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup.Type;
+import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 
 /**
  * A simple connection group to expose through the REST endpoints.
@@ -58,6 +60,18 @@ public class APIConnectionGroup {
      * The type of this connection group.
      */
     private Type type;
+
+    /**
+     * All child connection groups. If children are not being queried, this may
+     * be omitted.
+     */
+    private Collection<APIConnectionGroup> childConnectionGroups;
+
+    /**
+     * All child connections. If children are not being queried, this may be
+     * omitted.
+     */
+    private Collection<APIConnection> childConnections;
     
     /**
      * Create an empty APIConnectionGroup.
@@ -146,6 +160,54 @@ public class APIConnectionGroup {
      */
     public void setType(Type type) {
         this.type = type;
+    }
+
+    /**
+     * Returns a collection of all child connection groups, or null if children
+     * have not been queried.
+     *
+     * @return
+     *     A collection of all child connection groups, or null if children
+     *     have not been queried.
+     */
+    public Collection<APIConnectionGroup> getChildConnectionGroups() {
+        return childConnectionGroups;
+    }
+
+    /**
+     * Sets the collection of all child connection groups to the given
+     * collection, which may be null if children have not been queried.
+     *
+     * @param childConnectionGroups
+     *     The collection containing all child connection groups of this
+     *     connection group, or null if children have not been queried.
+     */
+    public void setChildConnectionGroups(Collection<APIConnectionGroup> childConnectionGroups) {
+        this.childConnectionGroups = childConnectionGroups;
+    }
+
+    /**
+     * Returns a collection of all child connections, or null if children have
+     * not been queried.
+     *
+     * @return
+     *     A collection of all child connections, or null if children have not
+     *     been queried.
+     */
+    public Collection<APIConnection> getChildConnections() {
+        return childConnections;
+    }
+
+    /**
+     * Sets the collection of all child connections to the given collection,
+     * which may be null if children have not been queried.
+     *
+     * @param childConnections
+     *     The collection containing all child connections of this connection
+     *     group, or null if children have not been queried.
+     */
+    public void setChildConnections(Collection<APIConnection> childConnections) {
+        this.childConnections = childConnections;
     }
 
 }

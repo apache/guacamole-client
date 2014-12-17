@@ -29,26 +29,26 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
     var service = {};
     
     /**
-     * Makes a request to the REST API to get the list of connection groups,
-     * returning a promise that provides an array of
-     * @link{ConnectionGroup} objects if successful.
+     * Makes a request to the REST API to get an individual connection group
+     * and all descendants, returning a promise that provides the corresponding
+     * @link{ConnectionGroup} if successful. Descendant groups and connections
+     * will be stored as children of that connection group.
      * 
-     * @param {String} [parentID=ConnectionGroup.ROOT_IDENTIFIER]
-     *     The ID of the connection group whose child connection groups should
-     *     be returned. If not provided, the root connection group will be
-     *     used by default.
+     * @param {String} [connectionGroupID=ConnectionGroup.ROOT_IDENTIFIER]
+     *     The ID of the connection group to retrieve. If not provided, the
+     *     root connection group will be retrieved by default.
      *                          
-     * @returns {Promise.<ConnectionGroup[]>}
-     *     A promise which will resolve with an array of @link{ConnectionGroup}
-     *     objects upon success.
+     * @returns {Promise.ConnectionGroup}
+     *     A promise which will resolve with a @link{ConnectionGroup} upon
+     *     success.
      */
-    service.getConnectionGroups = function getConnectionGroups(parentID) {
+    service.getConnectionGroupTree = function getConnectionGroupTree(connectionGroupID) {
         
-        var parentIDParam = "";
-        if (parentID)
-            parentIDParam = "&parentID=" + parentID;
+        // Use the root connection group ID if no ID is passed in
+        connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
         
-        return $http.get("api/connectionGroup?token=" + authenticationService.getCurrentToken() + parentIDParam);
+        return $http.get("api/connectionGroup/" + connectionGroupID + "/tree?token=" + authenticationService.getCurrentToken());
+
     };
     
     /**
@@ -70,6 +70,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
         
         return $http.get("api/connectionGroup/" + connectionGroupID + "?token=" + authenticationService.getCurrentToken());
+
     };
     
     /**

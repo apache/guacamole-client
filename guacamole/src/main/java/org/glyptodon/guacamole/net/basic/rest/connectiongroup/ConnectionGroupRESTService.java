@@ -23,7 +23,8 @@
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import com.google.inject.Inject;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -37,12 +38,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,55 +72,101 @@ public class ConnectionGroupRESTService {
     private AuthenticationService authenticationService;
     
     /**
-     * A service for managing the REST endpoint APIConnection objects. 
+     * Retrieves the given connection group from the user context, including
+     * all descendant connections and groups if requested.
+     *
+     * @param userContext
+     *     The user context from which to retrieve the connection group.
+     *
+     * @param identifier
+     *     The unique identifier of the connection group to retrieve.
+     *
+     * @param includeDescendants
+     *     Whether the descendant connections and groups of the given
+     *     connection group should also be retrieved.
+     *
+     * @return
+     *     The requested connection group, or null if no such connection group
+     *     exists.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the requested connection group
+     *     or any of its descendants.
      */
-    @Inject
-    private ConnectionGroupService connectionGroupService;
-    
-    /**
-     * The ID that will be guaranteed to refer to the root connection group.
-     */
-    private static final String ROOT_CONNECTION_GROUP_ID = "ROOT";
-    
-    /**
-     * Gets a list of connection groups with the given ConnectionGroup parentID.
-     * If no parentID is provided, returns the connection groups from the root group.
-     * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param parentID The ID of the ConnectionGroup the connection groups
-     *                 belong to. If null, the root connection group will be used.
-     * @return The connection list.
-     * @throws GuacamoleException If a problem is encountered while listing connection groups.
-     */
-    @GET
-    @AuthProviderRESTExposure
-    public List<APIConnectionGroup> getConnectionGroups(@QueryParam("token") String authToken, @QueryParam("parentID") String parentID) 
+    private APIConnectionGroup retrieveConnectionGroup(UserContext userContext,
+            String identifier, boolean includeDescendants)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
         
-        // If the parent connection group is passed in, try to find it.
-        ConnectionGroup parentConnectionGroup;
-        if (parentID == null)
-            parentConnectionGroup = userContext.getRootConnectionGroup();
+        ConnectionGroup connectionGroup;
+        
+        // Use root group if requested
+        if (identifier == null || identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
+            connectionGroup = rootGroup;
 
+        // Otherwise, query requested group using root group directory
         else {
-            ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-            parentConnectionGroup = connectionGroupDirectory.get(parentID);
+
+            Directory<String, ConnectionGroup> connectionGroupDirectory =
+                    rootGroup.getConnectionGroupDirectory();
+
+            // Get the connection group from root directory
+            connectionGroup = connectionGroupDirectory.get(identifier);
+            if (connectionGroup == null)
+                return null;
+
         }
 
-        if (parentConnectionGroup == null)
-            throw new HTTPException(Status.NOT_FOUND, "No connection group found with the provided parentID.");
+        // Wrap queried connection group
+        APIConnectionGroup apiConnectionGroup = new APIConnectionGroup(connectionGroup);
 
-        Directory<String, ConnectionGroup> connectionGroupDirectory = 
-                parentConnectionGroup.getConnectionGroupDirectory();
+        // Recursively query all descendants if necessary
+        if (includeDescendants) {
 
-        // Return the converted connection group list
-        return connectionGroupService.convertConnectionGroupList(connectionGroupDirectory);
+            // Query all child connections
+            Collection<APIConnection> apiConnections = new ArrayList<APIConnection>();
+            Directory<String, Connection> connectionDirectory = connectionGroup.getConnectionDirectory();
+
+            for (String childIdentifier : connectionDirectory.getIdentifiers()) {
+
+                // Pull current connection - silently ignore if connection was removed prior to read
+                Connection childConnection = connectionDirectory.get(childIdentifier);
+                if (childConnection == null)
+                    continue;
+
+                apiConnections.add(new APIConnection(childConnection));
+
+            }
+            
+            // Associate child connections with current connection group
+            apiConnectionGroup.setChildConnections(apiConnections);
+
+            // Query all child connection groups
+            Collection<APIConnectionGroup> apiConnectionGroups = new ArrayList<APIConnectionGroup>();
+            Directory<String, ConnectionGroup> groupDirectory = connectionGroup.getConnectionGroupDirectory();
+
+            for (String childIdentifier : groupDirectory.getIdentifiers()) {
+
+                // Pull current connection group - silently ignore if connection group was removed prior to read
+                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true);
+                if (childConnectionGroup == null)
+                    continue;
+
+                apiConnectionGroups.add(childConnectionGroup);
+
+            }
+            
+            // Associate child groups with current connection group
+            apiConnectionGroup.setChildConnectionGroups(apiConnectionGroups);
+
+        }
+        
+        // Return the connectiion group
+        return apiConnectionGroup;
+
     }
-    
+
     /**
      * Gets an individual connection group.
      * 
@@ -133,27 +183,50 @@ public class ConnectionGroupRESTService {
             @PathParam("connectionGroupID") String connectionGroupID) throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
-        
-        // Get the connection group directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        
-        // Return the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(ROOT_CONNECTION_GROUP_ID))
-            return new APIConnectionGroup(rootGroup);
-        
-        Directory<String, ConnectionGroup> connectionGroupDirectory =
-                rootGroup.getConnectionGroupDirectory();
 
-        // Get the connection group
-        ConnectionGroup connectionGroup = connectionGroupDirectory.get(connectionGroupID);
+        // Retrieve requested connection group only
+        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, false);
         if (connectionGroup == null)
-            throw new HTTPException(Status.NOT_FOUND, "No ConnectionGroup found with the provided ID.");
+            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
 
-        // Return the connectiion group
-        return new APIConnectionGroup(connectionGroup);
+        return connectionGroup;
 
     }
-    
+
+    /**
+     * Gets an individual connection group and all children.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param connectionGroupID
+     *     The ID of the ConnectionGroup.
+     *
+     * @return
+     *     The connection group.
+     *
+     * @throws GuacamoleException
+     *     If a problem is encountered while retrieving the connection group or
+     *     its descendants.
+     */
+    @GET
+    @Path("/{connectionGroupID}/tree")
+    @AuthProviderRESTExposure
+    public APIConnectionGroup getConnectionGroupTree(@QueryParam("token") String authToken, 
+            @PathParam("connectionGroupID") String connectionGroupID) throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+
+        // Retrieve requested connection group and all descendants
+        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true);
+        if (connectionGroup == null)
+            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
+
+        return connectionGroup;
+
+    }
+
     /**
      * Deletes an individual connection group.
      * 
@@ -174,7 +247,7 @@ public class ConnectionGroupRESTService {
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
         
         // Use the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(ROOT_CONNECTION_GROUP_ID))
+        if (connectionGroupID != null && connectionGroupID.equals(APIConnectionGroup.ROOT_IDENTIFIER))
             connectionGroupID = rootGroup.getIdentifier();
         
         Directory<String, ConnectionGroup> connectionGroupDirectory =
@@ -263,7 +336,7 @@ public class ConnectionGroupRESTService {
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
         
         // Use the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(ROOT_CONNECTION_GROUP_ID))
+        if (connectionGroupID != null && connectionGroupID.equals(APIConnectionGroup.ROOT_IDENTIFIER))
             connectionGroupID = rootGroup.getIdentifier();
         
         Directory<String, ConnectionGroup> connectionGroupDirectory =
@@ -300,7 +373,7 @@ public class ConnectionGroupRESTService {
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
         
         // Use the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(ROOT_CONNECTION_GROUP_ID))
+        if (connectionGroupID != null && connectionGroupID.equals(APIConnectionGroup.ROOT_IDENTIFIER))
             connectionGroupID = rootGroup.getIdentifier();
         
         Directory<String, ConnectionGroup> connectionGroupDirectory =

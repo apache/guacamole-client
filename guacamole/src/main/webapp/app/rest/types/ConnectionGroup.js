@@ -73,6 +73,24 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
          */
         this.type = template.type || ConnectionGroup.Type.ORGANIZATIONAL;
 
+        /**
+         * An array of all child connections, if known. This property may be
+         * null or undefined if children have not been queried, and thus the
+         * child connections are unknown.
+         *
+         * @type Connection[]
+         */
+        this.childConnections = template.childConnections;
+
+        /**
+         * An array of all child connection groups, if known. This property may
+         * be null or undefined if children have not been queried, and thus the
+         * child connection groups are unknown.
+         *
+         * @type ConnectionGroup[]
+         */
+        this.childConnectionGroups = template.childConnectionGroups;
+
     };
 
     /**
