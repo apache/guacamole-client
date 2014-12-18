@@ -66,7 +66,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
         // Retrieve connection group 
         return $http({
             method  : 'GET',
-            url     : 'api/connectionGroup/' + encodeURIComponent(connectionGroupID) + '/tree',
+            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             params  : httpParameters
         });
        
@@ -98,7 +98,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
         // Retrieve connection group
         return $http({
             method  : 'GET',
-            url     : 'api/connectionGroup/' + encodeURIComponent(connectionGroupID),
+            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID),
             params  : httpParameters
         });
 
@@ -119,48 +119,36 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
      */
     service.saveConnectionGroup = function saveConnectionGroup(connectionGroup) {
 
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
         // If connection group is new, add it and set the identifier automatically
         if (!connectionGroup.identifier) {
-            return $http.post("api/connectionGroup/?token=" + authenticationService.getCurrentToken(), connectionGroup).success(
+            return $http({
+                method  : 'POST',
+                url     : 'api/connectionGroups',
+                params  : httpParameters,
+                data    : connectionGroup
+            })
 
-                // Set the identifier on the new connection group
-                function setConnectionGroupID(connectionGroupID){
-                    connectionGroup.identifier = connectionGroupID;
-                }
-
-            );
+            // Set the identifier on the new connection group
+            .success(function connectionGroupCreated(identifier){
+                connectionGroup.identifier = identifier;
+            });
         }
 
         // Otherwise, update the existing connection group
         else {
-            return $http.post(
-                "api/connectionGroup/" + connectionGroup.identifier + 
-                "?token=" + authenticationService.getCurrentToken(), 
-            connectionGroup);
+            return $http({
+                method  : 'PUT',
+                url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+                params  : httpParameters,
+                data    : connectionGroup
+            });
         }
 
-    };
-    
-    /**
-     * FIXME: Why is this different from save?
-     * 
-     * Makes a request to the REST API to move a connection group to a
-     * different group, returning a promise that can be used for processing the
-     * results of the call.
-     * 
-     * @param {ConnectionGroup} connectionGroup The connection group to move. 
-     *                          
-     * @returns {Promise}
-     *     A promise for the HTTP call which will succeed if and only if the
-     *     move operation is successful.
-     */
-    service.moveConnectionGroup = function moveConnectionGroup(connectionGroup) {
-        
-        return $http.put(
-            "api/connectionGroup/" + connectionGroup.identifier + 
-            "?token=" + authenticationService.getCurrentToken() + 
-            "&parentID=" + connectionGroup.parentIdentifier, 
-        connectionGroup);
     };
     
     /**
@@ -174,9 +162,19 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
      *     delete operation is successful.
      */
     service.deleteConnectionGroup = function deleteConnectionGroup(connectionGroup) {
-        return $http['delete'](
-            "api/connectionGroup/" + connectionGroup.identifier + 
-            "?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Delete connection group
+        return $http({
+            method  : 'DELETE',
+            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+            params  : httpParameters
+        });
+
     };
     
     return service;

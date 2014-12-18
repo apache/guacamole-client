@@ -44,7 +44,19 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      * });
      */
     service.getConnection = function getConnection(id) {
-        return $http.get("api/connection/" + id + "?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve connection
+        return $http({
+            method  : 'GET',
+            url     : 'api/connections/' + encodeURIComponent(id),
+            params  : httpParameters
+        });
+
     };
 
     /**
@@ -60,7 +72,19 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      *     @link{ConnectionHistoryEntry} objects upon success.
      */
     service.getConnectionHistory = function getConnectionHistory(id) {
-        return $http.get("api/connection/" + id + "/history?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve connection history
+        return $http({
+            method  : 'GET',
+            url     : 'api/connections/' + encodeURIComponent(id) + '/history',
+            params  : httpParameters
+        });
+ 
     };
 
     /**
@@ -76,7 +100,19 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      *     pairs upon success.
      */
     service.getConnectionParameters = function getConnectionParameters(id) {
-        return $http.get("api/connection/" + id + "/parameters?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve connection parameters
+        return $http({
+            method  : 'GET',
+            url     : 'api/connections/' + encodeURIComponent(id) + '/parameters',
+            params  : httpParameters
+        });
+ 
     };
 
     /**
@@ -94,49 +130,36 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      */
     service.saveConnection = function saveConnection(connection) {
         
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
         // If connection is new, add it and set the identifier automatically
         if (!connection.identifier) {
-            return $http.post("api/connection/?token=" + authenticationService.getCurrentToken(), connection).success(
+            return $http({
+                method  : 'POST',
+                url     : 'api/connections',
+                params  : httpParameters,
+                data    : connection
+            })
 
-                // Set the identifier on the new connection
-                function setConnectionID(connectionID){
-                    connection.identifier = connectionID;
-                }
-
-            );
+            // Set the identifier on the new connection
+            .success(function connectionCreated(identifier){
+                connection.identifier = identifier;
+            });
         }
-        
+
         // Otherwise, update the existing connection
         else {
-            return $http.post(
-                "api/connection/" + connection.identifier + 
-                "?token=" + authenticationService.getCurrentToken(), 
-            connection);
+            return $http({
+                method  : 'PUT',
+                url     : 'api/connections/' + encodeURIComponent(connection.identifier),
+                params  : httpParameters,
+                data    : connection
+            });
         }
 
-    };
-    
-    /**
-     * FIXME: Why is this different from save?
-     * 
-     * Makes a request to the REST API to move a connection to a different
-     * group, returning a promise that can be used for processing the results
-     * of the call.
-     * 
-     * @param {Connection} connection The connection to move. 
-     *                          
-     * @returns {Promise}
-     *     A promise for the HTTP call which will succeed if and only if the
-     *     move operation is successful.
-     */
-    service.moveConnection = function moveConnection(connection) {
-        
-        return $http.put(
-            "api/connection/" + connection.identifier + 
-            "?token=" + authenticationService.getCurrentToken() + 
-            "&parentID=" + connection.parentIdentifier, 
-        connection);
-        
     };
     
     /**
@@ -150,9 +173,19 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
      *     delete operation is successful.
      */
     service.deleteConnection = function deleteConnection(connection) {
-        return $http['delete'](
-            "api/connection/" + connection.identifier + 
-            "?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Delete connection
+        return $http({
+            method  : 'DELETE',
+            url     : 'api/connections/' + encodeURIComponent(connection.identifier),
+            params  : httpParameters
+        });
+
     };
     
     return service;
