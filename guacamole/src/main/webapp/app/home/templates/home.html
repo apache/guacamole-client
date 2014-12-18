@@ -29,20 +29,8 @@
 
     <!-- The recent connections for this user -->
     <h2>{{'home.recentConnections' | translate}}</h2>
-    <div class="recent-connections" ng-hide="recentConnections.length">
-        <p class="no-recent">{{'home.noRecentConnections' | translate}}</p>
-    </div>
-    <div class="recent-connections" ng-show="recentConnections.length">
-        <div ng-repeat="recentConnection in recentConnections" class="connection">
-            <a href="#/client/{{recentConnection.type}}/{{recentConnection.id}}/{{recentConnection.name}}">
-                <div class="thumbnail">
-                    <img alt="{{recentConnection.name}}" ng-src="{{recentConnection.thumbnail}}"/>
-                </div>
-                <div class="caption">
-                    <span class="name">{{recentConnection.name}}</span>
-                </div>
-            </a>
-        </div>
+    <div class="recent-connections">
+        <guac-recent-connections root-group="rootConnectionGroup"/>
     </div>
 
     <!-- All connections for this user -->

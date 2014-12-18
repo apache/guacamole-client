@@ -37,7 +37,8 @@ angular.module('history').factory('HistoryEntry', [function defineHistoryEntry()
     var HistoryEntry = function HistoryEntry(id, thumbnail) {
 
         /**
-         * The ID of the connection associated with this history entry.
+         * The ID of the connection associated with this history entry,
+         * including type prefix.
          */
         this.id = id;
 

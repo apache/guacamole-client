@@ -21,27 +21,35 @@
  */
 
 /**
- * The controller for the home page.
+ * Provides the RecentConnection class used by the guacRecentConnections
+ * directive.
  */
-angular.module('home').controller('homeController', ['$scope', '$injector', 
-        function homeController($scope, $injector) {
+angular.module('home').factory('RecentConnection', [function defineRecentConnection() {
 
-    // Get required types
-    var ConnectionGroup = $injector.get("ConnectionGroup");
-            
-    // Get required services
-    var connectionGroupService  = $injector.get("connectionGroupService");
-    
-    // Set status to loading until we have all the connections and groups loaded
-    $scope.loading = true;
+    /**
+     * A recently-user connection, visible to the current user, with an
+     * associated history entry.
+     * 
+     * @constructor
+     */
+    var RecentConnection = function RecentConnection(name, entry) {
 
-    // Retrieve root group and all descendants
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-    .success(function rootGroupRetrieved(rootConnectionGroup) {
+        /**
+         * The human-readable name of this connection.
+         * 
+         * @type String
+         */
+        this.name = name;
 
-        $scope.rootConnectionGroup = rootConnectionGroup;
-        $scope.loading = false;
+        /**
+         * The history entry associated with this recent connection.
+         * 
+         * @type HistoryEntry
+         */
+        this.entry = entry;
 
-    });
-    
+    };
+
+    return RecentConnection;
+
 }]);
