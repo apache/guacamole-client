@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Path("/token")
+@Path("/tokens")
 @Produces(MediaType.APPLICATION_JSON)
 public class TokenRESTService {
     
