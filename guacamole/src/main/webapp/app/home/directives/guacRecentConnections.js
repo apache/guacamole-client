@@ -43,7 +43,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
 
         templateUrl: 'app/home/templates/guacRecentConnections.html',
         controller: ['$scope', '$injector', 'guacHistory', 'RecentConnection',
-            function guacGroupListController($scope, $injector, guacHistory, RecentConnection) {
+            function guacRecentConnectionsController($scope, $injector, guacHistory, RecentConnection) {
 
             var visibleObjects = {};
 
