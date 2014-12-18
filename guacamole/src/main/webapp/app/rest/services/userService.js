@@ -63,69 +63,113 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
     };
 
     /**
-     * Makes a request to the REST API to get the user having the given ID,
-     * returning a promise that provides the corresponding @link{User} if
-     * successful.
+     * Makes a request to the REST API to get the user having the given
+     * username, returning a promise that provides the corresponding
+     * @link{User} if successful.
      * 
-     * @param {String} userID The ID of the user to retrieve.
+     * @param {String} username
+     *     The username of the user to retrieve.
      * 
      * @returns {Promise.<User>}
      *     A promise which will resolve with a @link{User} upon success.
      */
-    service.getUser = function getUser(userID) {
-        return $http.get("api/users/" + userID + "/?token=" + authenticationService.getCurrentToken());
+    service.getUser = function getUser(username) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user
+        return $http({
+            method  : 'GET',
+            url     : 'api/users/' + encodeURIComponent(username),
+            params  : httpParameters
+        });
+
     };
     
     /**
      * Makes a request to the REST API to delete a user, returning a promise
      * that can be used for processing the results of the call.
      * 
-     * @param {User} user The user to delete.
+     * @param {User} user
+     *     The user to delete.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
     service.deleteUser = function deleteUser(user) {
-        return $http['delete'](
-            "api/users/" + user.username + 
-            "?token=" + authenticationService.getCurrentToken());
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user
+        return $http({
+            method  : 'DELETE',
+            url     : 'api/users/' + encodeURIComponent(user.username),
+            params  : httpParameters
+        });
+
     };
-    
     
     /**
      * Makes a request to the REST API to create a user, returning a promise
      * that can be used for processing the results of the call.
      * 
-     * @param {User} user The user to create.
+     * @param {User} user
+     *     The user to create.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     create operation is successful.
      */
     service.createUser = function createUser(user) {
-        return $http.post(
-            "api/users/" 
-            + "?token=" + authenticationService.getCurrentToken(), 
-            user
-        );
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user
+        return $http({
+            method  : 'POST',
+            url     : 'api/users',
+            params  : httpParameters,
+            data    : user
+        });
+
     };
     
     /**
      * Makes a request to the REST API to save a user, returning a promise that
      * can be used for processing the results of the call.
      * 
-     * @param {User} user The user to update.
+     * @param {User} user
+     *     The user to update.
      *                          
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
     service.saveUser = function saveUser(user) {
-        return $http.post(
-            "api/users/" + user.username + 
-            "?token=" + authenticationService.getCurrentToken(), 
-        user);
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user
+        return $http({
+            method  : 'PUT',
+            url     : 'api/users/' + encodeURIComponent(user.username),
+            params  : httpParameters,
+            data    : user
+        });
+
     };
     
     return service;

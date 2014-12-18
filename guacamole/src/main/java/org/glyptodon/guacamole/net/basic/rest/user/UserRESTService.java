@@ -30,6 +30,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -116,7 +118,10 @@ public class UserRESTService {
      *     the current user has the given permission. Otherwise, all visible
      *     users are returned.
      * 
-     * @return The user list.
+     * @return
+     *     A list of all visible users. If a permission was specified, this
+     *     list will contain only those users for whom the current user has
+     *     that permission.
      * 
      * @throws GuacamoleException
      *     If an error is encountered while retrieving users.
@@ -149,17 +154,25 @@ public class UserRESTService {
     }
     
     /**
-     * Gets an individual user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID    The ID of the user to retrieve.
-     * @return user The user.
-     * @throws GuacamoleException If a problem is encountered while retrieving the user.
+     * Retrieves an individual user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to retrieve.
+     *
+     * @return user
+     *     The user having the given username.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user.
      */
     @GET
-    @Path("/{userID}")
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("username") String username) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -168,9 +181,9 @@ public class UserRESTService {
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
-        User user = userDirectory.get(userID);
+        User user = userDirectory.get(username);
         if (user == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Return the user
         return new APIUser(user);
@@ -209,16 +222,25 @@ public class UserRESTService {
     
     /**
      * Updates an individual existing user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The unique identifier of the user to update.
-     * @param user The updated user.
-     * @throws GuacamoleException If a problem is encountered while updating the user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to update.
+     *
+     * @param user
+     *     The data to update the user with.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the user.
      */
-    @POST
-    @Path("/{userID}")
+    @PUT
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public void updateUser(@QueryParam("token") String authToken, @PathParam("userID") String userID, APIUser user) 
+    public void updateUser(@QueryParam("token") String authToken,
+            @PathParam("username") String username, APIUser user) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -226,37 +248,43 @@ public class UserRESTService {
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
-        if (!user.getUsername().equals(userID))
-            throw new HTTPException(Response.Status.BAD_REQUEST, "Username does not match provided userID.");
+        // Validate data and path are sane
+        if (!user.getUsername().equals(username))
+            throw new HTTPException(Response.Status.BAD_REQUEST,
+                    "Username in path does not match username provided JSON data.");
 
         // Get the user
-        User existingUser = userDirectory.get(userID);
+        User existingUser = userDirectory.get(username);
         if (existingUser == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Do not update the user password if no password was provided
-        if (user.getPassword() != null) {
-            /*
-             * Update the user with the permission set from the existing user
-             * since the user REST endpoints do not expose permissions.
-             */
+        if (user.getPassword() != null)
             existingUser.setPassword(user.getPassword());
-            userDirectory.update(existingUser);
-        }
+
+        // Update the user
+        userDirectory.update(existingUser);
 
     }
     
     /**
      * Deletes an individual existing user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The unique identifier of the user to delete.
-     * @throws GuacamoleException If a problem is encountered while deleting the user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to delete.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while deleting the user.
      */
     @DELETE
-    @Path("/{userID}")
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public void deleteUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+    public void deleteUser(@QueryParam("token") String authToken,
+            @PathParam("username") String username) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -265,36 +293,44 @@ public class UserRESTService {
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
-        User existingUser = userDirectory.get(userID);
+        User existingUser = userDirectory.get(username);
         if (existingUser == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Delete the user
-        userDirectory.remove(userID);
+        userDirectory.remove(username);
 
     }
 
     /**
-     * Gets a list of permissions for the user with the given userID.
+     * Gets a list of permissions for the user with the given username.
      * 
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The ID of the user to retrieve permissions for.
-     * @return The permission list.
-     * @throws GuacamoleException If a problem is encountered while listing permissions.
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to retrieve permissions for.
+     *
+     * @return
+     *     A list of all permissions granted to the specified user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions.
      */
     @GET
-    @Path("/{userID}/permissions")
+    @Path("/{username}/permissions")
     @AuthProviderRESTExposure
-    public APIPermissionSet getPermissions(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+    public APIPermissionSet getPermissions(@QueryParam("token") String authToken,
+            @PathParam("username") String username) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Get the user
-        User user = userContext.getUserDirectory().get(userID);
+        User user = userContext.getUserDirectory().get(username);
         if (user == null)
-            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         return new APIPermissionSet(user.getPermissions());
 
@@ -311,8 +347,8 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      * 
-     * @param userID
-     *     The ID of the user to modify the permissions of.
+     * @param username
+     *     The username of the user to modify the permissions of.
      *
      * @param patches
      *     The permission patches to apply for this request.
@@ -321,10 +357,10 @@ public class UserRESTService {
      *     If a problem is encountered while modifying permissions.
      */
     @PATCH
-    @Path("/{userID}/permissions")
+    @Path("/{username}/permissions")
     @AuthProviderRESTExposure
     public void patchPermissions(@QueryParam("token") String authToken,
-            @PathParam("userID") String userID,
+            @PathParam("username") String username,
             List<APIPatch<String>> patches) throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -333,9 +369,9 @@ public class UserRESTService {
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
-        User user = userContext.getUserDirectory().get(userID);
+        User user = userContext.getUserDirectory().get(username);
         if (user == null)
-            throw new HTTPException(Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
@@ -410,7 +446,8 @@ public class UserRESTService {
 
                 // Unsupported patch operation
                 default:
-                    throw new HTTPException(Status.BAD_REQUEST, "Unsupported patch operation: \"" + patch.getOp() + "\"");
+                    throw new HTTPException(Status.BAD_REQUEST,
+                            "Unsupported patch operation: \"" + patch.getOp() + "\"");
 
             }
 
@@ -420,6 +457,5 @@ public class UserRESTService {
         userDirectory.update(user);
 
     }
-
 
 }
