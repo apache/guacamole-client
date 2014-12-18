@@ -145,7 +145,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     
     // Hide menu by default
     $scope.menuShown = false;
-    
+
+    // Use physical keyboard by default
+    $scope.inputMethod = 'none';
+
     // Convenience method for closing the menu
     $scope.closeMenu = function closeMenu() {
         $scope.menuShown = false;
@@ -197,6 +200,14 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         
         return true;
     }
+
+    // Show/hide UI elements depending on input method
+    $scope.$watch('inputMethod', function setInputMethod(inputMethod) {
+
+        // Show on-screen keyboard only if selected
+        $scope.showOSK = (inputMethod === 'osk');
+
+    });
 
     $scope.$watch('menuShown', function setKeyboardEnabled(menuShown, menuShownPreviousState) {
         

@@ -34,5 +34,10 @@
     background: #222;
     opacity: 0.85;
 
+    visibility: hidden;
     z-index: 1;
+}
+
+.keyboard-container.shown {
+    visibility: visible;
 }
