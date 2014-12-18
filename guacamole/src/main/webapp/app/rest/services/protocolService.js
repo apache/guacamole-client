@@ -23,7 +23,8 @@
 /**
  * Service for operating on protocol metadata via the REST API.
  */
-angular.module('rest').factory('protocolService', ['$http', function protocolService($http) {
+angular.module('rest').factory('protocolService', ['$http', 'authenticationService',
+        function protocolService($http, authenticationService) {
             
     var service = {};
     
@@ -37,7 +38,19 @@ angular.module('rest').factory('protocolService', ['$http', function protocolSer
      *     objects upon success.
      */
     service.getProtocols = function getProtocols() {
-        return $http.get("api/protocol");
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve available protocols
+        return $http({
+            method  : 'GET',
+            url     : 'api/protocols',
+            params  : httpParameters
+        });
+
     };
     
     return service;

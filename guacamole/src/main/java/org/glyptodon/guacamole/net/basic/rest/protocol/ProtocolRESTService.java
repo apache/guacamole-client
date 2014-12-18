@@ -24,14 +24,15 @@ package org.glyptodon.guacamole.net.basic.rest.protocol;
 
 import com.google.inject.Inject;
 import java.util.Map;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.basic.ProtocolInfo;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +41,20 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Path("/protocol")
+@Path("/protocols")
 @Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class ProtocolRESTService {
 
     /**
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ProtocolRESTService.class);
+    
+    /**
+     * A service for authenticating users from auth tokens.
+     */
+    @Inject
+    private AuthenticationService authenticationService;
     
     /**
      * Service for retrieving protocol definitions.
@@ -59,15 +65,27 @@ public class ProtocolRESTService {
     /**
      * Gets a map of protocols defined in the system - protocol name to protocol.
      * 
-     * @return The protocol map.
-     * @throws GuacamoleException If a problem is encountered while listing protocols.
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @return
+     *     A map of protocol information, where each key is the unique name
+     *     associated with that protocol.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the available protocols.
      */
     @GET
     @AuthProviderRESTExposure
-    public Map<String, ProtocolInfo> getProtocols() throws GuacamoleException {
+    public Map<String, ProtocolInfo> getProtocols(@QueryParam("token") String authToken) throws GuacamoleException {
         
+        // Verify the given auth token is valid
+        authenticationService.getUserContext(authToken);
+
         // Get and return a map of all protocols.
         return protocolRetrievalservice.getProtocolMap();
+
     }
 
 }
