@@ -56,7 +56,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
         // Retrieve users
         return $http({
             method  : 'GET',
-            url     : 'api/user',
+            url     : 'api/users',
             params  : httpParameters
         });
 
@@ -73,7 +73,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      *     A promise which will resolve with a @link{User} upon success.
      */
     service.getUser = function getUser(userID) {
-        return $http.get("api/user/" + userID + "/?token=" + authenticationService.getCurrentToken());
+        return $http.get("api/users/" + userID + "/?token=" + authenticationService.getCurrentToken());
     };
     
     /**
@@ -88,7 +88,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      */
     service.deleteUser = function deleteUser(user) {
         return $http['delete'](
-            "api/user/" + user.username + 
+            "api/users/" + user.username + 
             "?token=" + authenticationService.getCurrentToken());
     };
     
@@ -105,7 +105,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      */
     service.createUser = function createUser(user) {
         return $http.post(
-            "api/user/" 
+            "api/users/" 
             + "?token=" + authenticationService.getCurrentToken(), 
             user
         );
@@ -123,7 +123,7 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      */
     service.saveUser = function saveUser(user) {
         return $http.post(
-            "api/user/" + user.username + 
+            "api/users/" + user.username + 
             "?token=" + authenticationService.getCurrentToken(), 
         user);
     };

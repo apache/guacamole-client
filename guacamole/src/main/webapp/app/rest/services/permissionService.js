@@ -50,7 +50,7 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
         // Retrieve user permissions
         return $http({
             method  : 'GET',
-            url     : 'api/user/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters
         });
 
@@ -198,7 +198,7 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
         // Patch user permissions
         return $http({
             method  : 'PATCH', 
-            url     : 'api/user/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters,
             data    : permissionPatch
         });
