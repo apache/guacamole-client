@@ -34,7 +34,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     The object whose properties should be copied within the new
      *     PermissionSet.
      */
-    var PermissionSet = function Permission(template) {
+    var PermissionSet = function PermissionSet(template) {
 
         // Use empty object by default
         template = template || {};
