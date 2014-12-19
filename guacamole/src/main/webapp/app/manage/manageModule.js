@@ -23,5 +23,5 @@
 /**
  * The module for the administration functionality.
  */
-angular.module('manage', ['btford.modal', 'protocol', 'connection', 'connectionGroup', 'util']);
+angular.module('manage', ['btford.modal', 'groupList', 'rest', 'util']);
 

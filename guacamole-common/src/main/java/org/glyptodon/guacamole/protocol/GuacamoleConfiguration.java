@@ -162,4 +162,31 @@ public class GuacamoleConfiguration implements Serializable {
         return Collections.unmodifiableSet(parameters.keySet());
     }
 
+    /**
+     * Returns a map which contains parameter name/value pairs as key/value
+     * pairs. Changes to this map will affect the parameters stored within
+     * this configuration.
+     *
+     * @return
+     *     A map which contains all parameter name/value pairs as key/value
+     *     pairs.
+     */
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    /**
+     * Replaces all current parameters with the parameters defined within the
+     * given map. Key/value pairs within the map represent parameter name/value
+     * pairs.
+     *
+     * @param parameters
+     *     A map which contains all parameter name/value pairs as key/value
+     *     pairs.
+     */
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters.clear();
+        this.parameters.putAll(parameters);
+    }
+
 }

@@ -27,7 +27,7 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
         function connectionEditModalController($scope, $injector) {
             
     var connectionGroupEditModal        = $injector.get('connectionGroupEditModal');
-    var connectionGroupDAO              = $injector.get('connectionGroupDAO');
+    var connectionGroupService          = $injector.get('connectionGroupService');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
     
     // Make a copy of the old connection group so that we can copy over the changes when done
@@ -64,7 +64,7 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
      * Save the connection and close the modal.
      */
     $scope.save = function save() {
-        connectionGroupDAO.saveConnectionGroup($scope.connectionGroup).success(function successfullyUpdatedConnectionGroup() {
+        connectionGroupService.saveConnectionGroup($scope.connectionGroup).success(function successfullyUpdatedConnectionGroup() {
             
             // Prepare this connection group for display
             displayObjectPreparationService.prepareConnectionGroup($scope.connectionGroup);
@@ -79,7 +79,7 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
             if(newConnectionGroup && newParentID === $scope.rootGroup.identifier) {
                 $scope.moveItem($scope.connectionGroup, oldParentID, newParentID);
             } else {
-                connectionGroupDAO.moveConnectionGroup($scope.connectionGroup).then(function moveConnectionGroup() {
+                connectionGroupService.moveConnectionGroup($scope.connectionGroup).then(function moveConnectionGroup() {
                     $scope.moveItem($scope.connectionGroup, oldParentID, newParentID);
                 });
             }
@@ -99,7 +99,7 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
             // Close the modal
             connectionGroupEditModal.deactivate();
         
-        connectionGroupDAO.deleteConnectionGroup($scope.connectionGroup).success(function successfullyDeletedConnectionGroup() {
+        connectionGroupService.deleteConnectionGroup($scope.connectionGroup).success(function successfullyDeletedConnectionGroup() {
             var oldParentID = oldConnectionGroup.parentIdentifier;
             
             // We have to remove this connection group from the heirarchy

@@ -28,20 +28,33 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
 
     var service = {};
 
+    /**
+     * The unique identifier of the local cookie which stores the user's
+     * current authentication token and user ID.
+     *
+     * @type String
+     */
     var AUTH_COOKIE_ID = "GUAC_AUTH";
 
     /**
      * Makes a request to authenticate a user using the token REST API endpoint, 
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise that succeeds only if the login operation was
+     * successful. The resulting authentication data can be retrieved later
+     * via getCurrentToken() or getCurrentUserID().
      * 
-     * @param {String} username The username to log in with.
-     * @param {String} password The password to log in with.
-     * @returns {Promise} A promise for the HTTP call.
+     * @param {String} username
+     *     The username to log in with.
+     *
+     * @param {String} password
+     *     The password to log in with.
+     *
+     * @returns {Promise}
+     *     A promise which succeeds only if the login operation was successful.
      */
     service.login = function login(username, password) {
         return $http({
             method: 'POST',
-            url: 'api/token',
+            url: 'api/tokens',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
@@ -59,14 +72,17 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
 
     /**
      * Makes a request to logout a user using the login REST API endpoint, 
-     * returning a promise that can be used for processing the results of the call.
+     * returning a promise succeeds only if the logout operation was
+     * successful.
      * 
-     * @returns {Promise} A promise for the HTTP call.
+     * @returns {Promise}
+     *     A promise which succeeds only if the logout operation was
+     *     successful.
      */
     service.logout = function logout() {
         return $http({
             method: 'DELETE',
-            url: 'api/token/' + encodeURIComponent(service.getCurrentToken())
+            url: 'api/tokens/' + encodeURIComponent(service.getCurrentToken())
         });
     };
 

@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -78,15 +79,14 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public GuacamoleConfiguration getConfiguration() {
         
-        // Create the GuacamoleConfiguration from the parameter map
+        // Create the GuacamoleConfiguration with current protocol
         GuacamoleConfiguration configuration = new GuacamoleConfiguration();
-        
-        Map<String, String> parameters = apiConnection.getParameters();
-        
-        for(Map.Entry<String, String> entry : parameters.entrySet())
-            configuration.setParameter(entry.getKey(), entry.getValue());
-        
         configuration.setProtocol(apiConnection.getProtocol());
+
+        // Add parameters, if available
+        Map<String, String> parameters = apiConnection.getParameters();
+        if (parameters != null)
+            configuration.setParameters(parameters);
         
         return configuration;
     }
@@ -94,13 +94,10 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public void setConfiguration(GuacamoleConfiguration config) {
         
-        // Create a parameter map from the GuacamoleConfiguration
-        Map<String, String> parameters = apiConnection.getParameters();
-        for(String key : config.getParameterNames())
-            parameters.put(key, config.getParameter(key));
-        
-        // Set the protocol
+        // Set protocol and parameters
         apiConnection.setProtocol(config.getProtocol());
+        apiConnection.setParameters(config.getParameters());
+
     }
 
     @Override
@@ -110,7 +107,7 @@ public class APIConnectionWrapper implements Connection {
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return apiConnection.getHistory();
+        return Collections.EMPTY_LIST;
     }
     
 }

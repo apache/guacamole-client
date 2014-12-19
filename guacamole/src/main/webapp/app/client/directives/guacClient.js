@@ -315,15 +315,18 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * CONNECT / RECONNECT
              */
 
-            // Connect to given ID whenever ID changes
-            $scope.$watch('id', function(id, previousID) {
-
-                // If a client is already attached, ensure it is disconnected
-                if (client)
-                    client.disconnect();
+            /**
+             * Store the thumbnail of the currently connected client within
+             * the connection history under the given ID. If the client is not
+             * connected, or if no ID is given, this function has no effect.
+             *
+             * @param {String} id
+             *     The ID of the history entry to update.
+             */
+            var updateHistoryEntry = function updateHistoryEntry(id) {
 
                 // Update stored thumbnail of previous connection 
-                if (previousID && display && display.getWidth() > 0 && display.getHeight() > 0) {
+                if (id && display && display.getWidth() > 0 && display.getHeight() > 0) {
 
                     // Get screenshot
                     var canvas = display.flatten();
@@ -343,9 +346,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
                         0, 0, thumbnail.width, thumbnail.height
                     );
 
-                    guacHistory.updateThumbnail(previousID, thumbnail.toDataURL("image/png"));
+                    guacHistory.updateThumbnail(id, thumbnail.toDataURL("image/png"));
 
                 }
+
+            };
+
+            // Connect to given ID whenever ID changes
+            $scope.$watch('id', function(id, previousID) {
+
+                // If a client is already attached, ensure it is disconnected
+                if (client)
+                    client.disconnect();
+
+                // Update stored thumbnail of previous connection
+                updateHistoryEntry(previousID);
 
                 // Only proceed if a new client is attached
                 if (!id)
@@ -382,6 +397,14 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Connect
                 client.connect(getConnectString());
+
+            });
+
+            // Clean up when client directive is destroyed
+            $scope.$on('$destroy', function destroyClient() {
+
+                // Update stored thumbnail of current connection
+                updateHistoryEntry($scope.id);
 
             });
 

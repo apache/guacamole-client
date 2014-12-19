@@ -26,9 +26,9 @@
 angular.module('manage').controller('userEditModalController', ['$scope', '$injector', 
         function userEditModalController($scope, $injector) {
             
-    var userEditModal                   = $injector.get('userEditModal');
-    var userDAO                         = $injector.get('userDAO');
-    var permissionDAO                   = $injector.get('permissionDAO');
+    var userEditModal     = $injector.get('userEditModal');
+    var userService       = $injector.get('userService');
+    var permissionService = $injector.get('permissionService');
     
     // Make a copy of the old user so that we can copy over the changes when done
     var oldUser = $scope.user;
@@ -73,7 +73,7 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
             return;
         }
         
-        userDAO.saveUser($scope.user).success(function successfullyUpdatedUser() {
+        userService.saveUser($scope.user).success(function successfullyUpdatedUser() {
             
             //Figure out what permissions have changed
             var connectionPermissionsToCreate = [],
@@ -182,7 +182,7 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
             
             if(permissionsToAdd.length || permissionsToRemove.length) {
                 // Make the call to update the permissions
-                permissionDAO.patchPermissions(
+                permissionService.patchPermissions(
                         $scope.user.username, permissionsToAdd, permissionsToRemove)
                         .success(completeSaveProcess).error(handleFailure);
             } else {
@@ -205,7 +205,7 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
         originalSystemPermissions;
     
     // Get the permissions for the user we are editing
-    permissionDAO.getPermissions($scope.user.username).success(function gotPermissions(permissions) {
+    permissionService.getPermissions($scope.user.username).success(function gotPermissions(permissions) {
         $scope.permissions = permissions;
         
         // Figure out if the user has any system level permissions
@@ -239,7 +239,7 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
      * Delete the user and close the modal.
      */
     $scope['delete'] = function deleteUser() {
-        userDAO.deleteUser($scope.user).success(function successfullyDeletedUser() {
+        userService.deleteUser($scope.user).success(function successfullyDeletedUser() {
             
             // Remove the user from the list
             $scope.removeUser($scope.user);

@@ -23,25 +23,40 @@
 package org.glyptodon.guacamole.net.basic.rest.user;
 
 import com.google.inject.Inject;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.basic.rest.APIPatch;
+import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
+import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
+import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.net.basic.rest.permission.APIPermissionSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Path("/user")
+@Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserRESTService {
@@ -59,6 +74,30 @@ public class UserRESTService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(UserRESTService.class);
+
+    /**
+     * The prefix of any path within an operation of a JSON patch which
+     * modifies the permissions of a user regarding a specific connection.
+     */
+    private static final String CONNECTION_PERMISSION_PATCH_PATH_PREFIX = "/connectionPermissions/";
+    
+    /**
+     * The prefix of any path within an operation of a JSON patch which
+     * modifies the permissions of a user regarding a specific connection group.
+     */
+    private static final String CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX = "/connectionGroupPermissions/";
+
+    /**
+     * The prefix of any path within an operation of a JSON patch which
+     * modifies the permissions of a user regarding another, specific user.
+     */
+    private static final String USER_PERMISSION_PATCH_PATH_PREFIX = "/userPermissions/";
+
+    /**
+     * The path of any operation within a JSON patch which modifies the
+     * permissions of a user regarding the entire system.
+     */
+    private static final String SYSTEM_PERMISSION_PATCH_PATH = "/systemPermissions";
     
     /**
      * A service for authenticating users from auth tokens.
@@ -67,44 +106,73 @@ public class UserRESTService {
     private AuthenticationService authenticationService;
     
     /**
-     * A service for managing the REST endpoint APIPermission objects. 
-     */
-    @Inject
-    private UserService userService;
-    
-    /**
-     * Gets a list of users in the system.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @return The user list.
-     * @throws GuacamoleException If a problem is encountered while listing users.
+     * Gets a list of users in the system, filtering the returned list by the
+     * given permission, if specified.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param permission
+     *     If specified, limit the returned list to only those users for whom
+     *     the current user has the given permission. Otherwise, all visible
+     *     users are returned.
+     * 
+     * @return
+     *     A list of all visible users. If a permission was specified, this
+     *     list will contain only those users for whom the current user has
+     *     that permission.
+     * 
+     * @throws GuacamoleException
+     *     If an error is encountered while retrieving users.
      */
     @GET
     @AuthProviderRESTExposure
-    public List<APIUser> getUsers(@QueryParam("token") String authToken) throws GuacamoleException {
+    public List<APIUser> getUsers(@QueryParam("token") String authToken,
+            @QueryParam("permission") UserPermission.Type permission)
+            throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
+        User self = userContext.self();
 
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
-        // Convert and return the user directory listing
-        return userService.convertUserList(userDirectory);
+        List<APIUser> users = new ArrayList<APIUser>();
+
+        // Add all users matching the given permission filter
+        for (String username : userDirectory.getIdentifiers()) {
+
+            if (permission == null || self.hasPermission(new UserPermission(permission, username)))
+                users.add(new APIUser(userDirectory.get(username)));
+
+        }
+        
+        // Return the user directory listing
+        return users;
 
     }
     
     /**
-     * Gets an individual user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID    The ID of the user to retrieve.
-     * @return user The user.
-     * @throws GuacamoleException If a problem is encountered while retrieving the user.
+     * Retrieves an individual user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to retrieve.
+     *
+     * @return user
+     *     The user having the given username.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user.
      */
     @GET
-    @Path("/{userID}")
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("username") String username) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -113,9 +181,9 @@ public class UserRESTService {
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
-        User user = userDirectory.get(userID);
+        User user = userDirectory.get(username);
         if (user == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Return the user
         return new APIUser(user);
@@ -154,16 +222,25 @@ public class UserRESTService {
     
     /**
      * Updates an individual existing user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The unique identifier of the user to update.
-     * @param user The updated user.
-     * @throws GuacamoleException If a problem is encountered while updating the user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to update.
+     *
+     * @param user
+     *     The data to update the user with.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the user.
      */
-    @POST
-    @Path("/{userID}")
+    @PUT
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public void updateUser(@QueryParam("token") String authToken, @PathParam("userID") String userID, APIUser user) 
+    public void updateUser(@QueryParam("token") String authToken,
+            @PathParam("username") String username, APIUser user) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -171,37 +248,43 @@ public class UserRESTService {
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
-        if (!user.getUsername().equals(userID))
-            throw new HTTPException(Response.Status.BAD_REQUEST, "Username does not match provided userID.");
+        // Validate data and path are sane
+        if (!user.getUsername().equals(username))
+            throw new HTTPException(Response.Status.BAD_REQUEST,
+                    "Username in path does not match username provided JSON data.");
 
         // Get the user
-        User existingUser = userDirectory.get(userID);
+        User existingUser = userDirectory.get(username);
         if (existingUser == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Do not update the user password if no password was provided
-        if (user.getPassword() != null) {
-            /*
-             * Update the user with the permission set from the existing user
-             * since the user REST endpoints do not expose permissions.
-             */
+        if (user.getPassword() != null)
             existingUser.setPassword(user.getPassword());
-            userDirectory.update(existingUser);
-        }
+
+        // Update the user
+        userDirectory.update(existingUser);
 
     }
     
     /**
      * Deletes an individual existing user.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param userID The unique identifier of the user to delete.
-     * @throws GuacamoleException If a problem is encountered while deleting the user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to delete.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while deleting the user.
      */
     @DELETE
-    @Path("/{userID}")
+    @Path("/{username}")
     @AuthProviderRESTExposure
-    public void deleteUser(@QueryParam("token") String authToken, @PathParam("userID") String userID) 
+    public void deleteUser(@QueryParam("token") String authToken,
+            @PathParam("username") String username) 
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -210,12 +293,168 @@ public class UserRESTService {
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
-        User existingUser = userDirectory.get(userID);
+        User existingUser = userDirectory.get(username);
         if (existingUser == null)
-            throw new HTTPException(Response.Status.NOT_FOUND, "User not found with the provided userID.");
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Delete the user
-        userDirectory.remove(userID);
+        userDirectory.remove(username);
+
+    }
+
+    /**
+     * Gets a list of permissions for the user with the given username.
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to retrieve permissions for.
+     *
+     * @return
+     *     A list of all permissions granted to the specified user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions.
+     */
+    @GET
+    @Path("/{username}/permissions")
+    @AuthProviderRESTExposure
+    public APIPermissionSet getPermissions(@QueryParam("token") String authToken,
+            @PathParam("username") String username) 
+            throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+
+        // Get the user
+        User user = userContext.getUserDirectory().get(username);
+        if (user == null)
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
+
+        return new APIPermissionSet(user.getPermissions());
+
+    }
+    
+    /**
+     * Applies a given list of permission patches. Each patch specifies either
+     * an "add" or a "remove" operation for a permission type, represented by
+     * a string. Valid permission types depend on the path of each patch
+     * operation, as the path dictates the permission being modified, such as
+     * "/connectionPermissions/42" or "/systemPermissions".
+     * 
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     * 
+     * @param username
+     *     The username of the user to modify the permissions of.
+     *
+     * @param patches
+     *     The permission patches to apply for this request.
+     *
+     * @throws GuacamoleException
+     *     If a problem is encountered while modifying permissions.
+     */
+    @PATCH
+    @Path("/{username}/permissions")
+    @AuthProviderRESTExposure
+    public void patchPermissions(@QueryParam("token") String authToken,
+            @PathParam("username") String username,
+            List<APIPatch<String>> patches) throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+        
+        // Get the user directory
+        Directory<String, User> userDirectory = userContext.getUserDirectory();
+
+        // Get the user
+        User user = userContext.getUserDirectory().get(username);
+        if (user == null)
+            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
+
+        // Apply all patch operations individually
+        for (APIPatch<String> patch : patches) {
+
+            Permission permission;
+
+            String path = patch.getPath();
+
+            // Create connection permission if path has connection prefix
+            if (path.startsWith(CONNECTION_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create corresponding permission
+                permission = new ConnectionPermission(type, identifier);
+                
+            }
+
+            // Create connection group permission if path has connection group prefix
+            else if (path.startsWith(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create corresponding permission
+                permission = new ConnectionGroupPermission(type, identifier);
+                
+            }
+
+            // Create user permission if path has user prefix
+            else if (path.startsWith(USER_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(USER_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create corresponding permission
+                permission = new UserPermission(type, identifier);
+                
+            }
+
+            // Create system permission if path is system path
+            else if (path.startsWith(SYSTEM_PERMISSION_PATCH_PATH)) {
+
+                // Get identifier and type from patch operation
+                SystemPermission.Type type = SystemPermission.Type.valueOf(patch.getValue());
+
+                // Create corresponding permission
+                permission = new SystemPermission(type);
+                
+            }
+
+            // Otherwise, the path is not supported
+            else
+                throw new HTTPException(Status.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
+
+            // Add or remove permission based on operation
+            switch (patch.getOp()) {
+
+                // Add permission
+                case add:
+                    user.addPermission(permission);
+                    break;
+
+                // Remove permission
+                case remove:
+                    user.removePermission(permission);
+                    break;
+
+                // Unsupported patch operation
+                default:
+                    throw new HTTPException(Status.BAD_REQUEST,
+                            "Unsupported patch operation: \"" + patch.getOp() + "\"");
+
+            }
+
+        } // end for each patch operation
+        
+        // Save the permission changes
+        userDirectory.update(user);
 
     }
 

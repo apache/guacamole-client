@@ -132,10 +132,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         remaining: 15
     };
     
-    // Get DAO for reading connections and groups
-    var connectionGroupDAO = $injector.get('connectionGroupDAO');
-    var connectionService  = $injector.get('connectionService');
-    var ClientProperties   = $injector.get('ClientProperties');
+    // Get services for reading connections and groups
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var connectionService      = $injector.get('connectionService');
+    var ClientProperties       = $injector.get('ClientProperties');
 
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
@@ -176,7 +176,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
         // Connection group
         case 'g':
-            connectionGroupDAO.getConnectionGroup($routeParams.id).success(function (group) {
+            connectionGroupService.getConnectionGroup($routeParams.id).success(function (group) {
                 $scope.connectionName = $scope.page.title = group.name;
             });
             break;
