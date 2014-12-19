@@ -71,9 +71,10 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.groupListContext = {
     
         /**
-         * Open a modal to edit the connection.
+         * Open a modal to edit the given connection.
          *  
-         * @param {object} connection The connection to edit.
+         * @param {Connection} connection
+         *     The connection to edit.
          */
         editConnection : function editConnection(connection) {
             connectionEditModal.activate({
@@ -84,9 +85,10 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         },
 
         /**
-         * Open a modal to edit the connection group.
+         * Open a modal to edit the given connection group.
          *  
-         * @param {object} connection The connection group to edit.
+         * @param {ConnectionGroup} connectionGroup
+         *     The connection group to edit.
          */
         editConnectionGroup : function editConnectionGroup(connectionGroup) {
             connectionGroupEditModal.activate({
@@ -98,7 +100,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     };
     
     /**
-     * Open a modal to edit a new connection.
+     * Open a modal to create a new connection.
      */
     $scope.newConnection = function newConnection() {
         connectionEditModal.activate(
@@ -110,7 +112,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     };
     
     /**
-     * Open a modal to edit a new connection group.
+     * Open a modal to create a new connection group.
      */
     $scope.newConnectionGroup = function newConnectionGroup() {
         connectionGroupEditModal.activate(
