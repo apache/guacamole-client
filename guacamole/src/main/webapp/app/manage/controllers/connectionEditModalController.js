@@ -28,7 +28,6 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
             
     var connectionEditModal             = $injector.get('connectionEditModal');
     var connectionService               = $injector.get('connectionService');
-    var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
     var Connection                      = $injector.get('Connection');
     var HistoryEntryWrapper             = $injector.get('HistoryEntryWrapper');
     
@@ -39,9 +38,6 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     $scope.connection = new Connection($scope.connection);
     
     var newConnection = !$scope.connection.identifier;
-    if(newConnection)
-        // Prepare this connection for display
-        displayObjectPreparationService.prepareConnection($scope.connection);
     
     // Set it to VNC by default
     if(!$scope.connection.protocol)
@@ -50,9 +46,13 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     $scope.historyEntryWrappers = [];
     
     // Wrap all the history entries
-    $scope.connection.history.forEach(function wrapHistoryEntry(historyEntry) {
-       $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
-    });
+    if (!newConnection) {
+        connectionService.getConnectionHistory($scope.connection.identifier).success(function wrapHistoryEntries(historyEntries) {
+            historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
+               $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
+            });
+        });
+    }
     
     /**
      * Close the modal.

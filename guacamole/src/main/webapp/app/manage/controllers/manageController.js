@@ -60,83 +60,41 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
 
     });
     
-    /**
-     * Move the connection or connection group within the group heirarchy, 
-     * initially place a new item, or remove an item from the heirarchy.
-     * @param {object} item The connection or connection group to move.
-     * @param {string} fromID The ID of the group to move the item from, if relevant.
-     * @param {string} toID The ID of the group to move the item to, if relevant.
-     */
-    $scope.moveItem = function moveItem(item, fromID, toID) {
-        
-        // Remove the item from the old group, if there was one
-        if(fromID) {
-            var oldParent   = findGroup($scope.rootGroup, fromID),
-                oldChildren = oldParent.children;
-            
-            // Find and remove the item from the old group
-            for(var i = 0; i < oldChildren.length; i++) {
-                var child = oldChildren[i];
-                if(child.isConnection === item.isConnection &&
-                        child.identifier === item.identifier) {
-                    oldChildren.splice(i, 1);
-                    break;
-                }
-            }
-        }
-        
-        // Add the item to the new group, if there is one
-        if(toID) {
-            var newParent = findGroup($scope.rootGroup, toID);
-            newParent.children.push(item);
-        }
-    };
-    
-    function findGroup(group, parentID) {
-        // Only searching in groups
-        if(group.isConnection)
-            return;
-        
-        if(group.identifier === parentID)
-            return group;
-        
-        for(var i = 0; i < group.children.length; i++) {
-            var child = group.children[i];
-            var foundGroup = findGroup(child, parentID);
-            if(foundGroup) return foundGroup;
-        }
-    }
-        
-    
     $scope.protocols = {};
     
     // Get the protocol information from the server and copy it into the scope
     protocolService.getProtocols().success(function fetchProtocols(protocols) {
-        angular.extend($scope.protocols, protocols);
+        $scope.protocols = protocols;
     });
+
+    // Expose object edit functions to group list template
+    $scope.groupListContext = {
     
-    /**
-     * Toggle the open/closed status of the connectionGroup.
-     * 
-     * @param {object} connectionGroup The connection group to toggle.
-     */
-    $scope.toggleExpanded = function toggleExpanded(connectionGroup) {
-        connectionGroup.expanded = !connectionGroup.expanded;
-    };
-    
-    /**
-     * Open a modal to edit the connection.
-     *  
-     * @param {object} connection The connection to edit.
-     */
-    $scope.editConnection = function editConnection(connection) {
-        connectionEditModal.activate(
-        {
-            connection : connection, 
-            protocols  : $scope.protocols,
-            moveItem   : $scope.moveItem,
-            rootGroup  : $scope.rootGroup
-        });
+        /**
+         * Open a modal to edit the connection.
+         *  
+         * @param {object} connection The connection to edit.
+         */
+        editConnection : function editConnection(connection) {
+            connectionEditModal.activate({
+                connection : connection, 
+                protocols  : $scope.protocols,
+                rootGroup  : $scope.rootGroup
+            });
+        },
+
+        /**
+         * Open a modal to edit the connection group.
+         *  
+         * @param {object} connection The connection group to edit.
+         */
+        editConnectionGroup : function editConnectionGroup(connectionGroup) {
+            connectionGroupEditModal.activate({
+                connectionGroup : connectionGroup, 
+                rootGroup       : $scope.rootGroup
+            });
+        }
+
     };
     
     /**
@@ -159,20 +117,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         connectionGroupEditModal.activate(
         {
             connectionGroup : {}, 
-            moveItem        : $scope.moveItem,
-            rootGroup       : $scope.rootGroup
-        });
-    };
-    
-    /**
-     * Open a modal to edit the connection group.
-     *  
-     * @param {object} connection The connection group to edit.
-     */
-    $scope.editConnectionGroup = function editConnectionGroup(connectionGroup) {
-        connectionGroupEditModal.activate(
-        {
-            connectionGroup : connectionGroup, 
             moveItem        : $scope.moveItem,
             rootGroup       : $scope.rootGroup
         });

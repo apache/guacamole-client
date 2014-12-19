@@ -28,7 +28,6 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
             
     var connectionGroupEditModal        = $injector.get('connectionGroupEditModal');
     var connectionGroupService          = $injector.get('connectionGroupService');
-    var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
     
     // Make a copy of the old connection group so that we can copy over the changes when done
     var oldConnectionGroup = $scope.connectionGroup;
@@ -65,9 +64,6 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
      */
     $scope.save = function save() {
         connectionGroupService.saveConnectionGroup($scope.connectionGroup).success(function successfullyUpdatedConnectionGroup() {
-            
-            // Prepare this connection group for display
-            displayObjectPreparationService.prepareConnectionGroup($scope.connectionGroup);
             
             var oldParentID = oldConnectionGroup.parentIdentifier;
             var newParentID = $scope.connectionGroup.parentIdentifier;
