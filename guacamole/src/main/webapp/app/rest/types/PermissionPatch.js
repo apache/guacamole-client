@@ -59,15 +59,15 @@ angular.module('rest').factory('PermissionPatch', [function definePermissionPatc
         this.path = template.path;
 
         /**
-         * The array of permissions. If the permission applies to an object,
-         * such as a connection or connection group, these will be values from
-         * PermissionSet.ObjectPermissionType. If the permission applies to
-         * the system as a whole (the path is "/systemPermissions"), these will
-         * be values from PermissionSet.SystemPermissionType.
+         * The permissions being added or removed. If the permission applies to
+         * an object, such as a connection or connection group, this will be a
+         * value from PermissionSet.ObjectPermissionType. If the permission
+         * applies to the system as a whole (the path is "/systemPermissions"),
+         * this will be a value from PermissionSet.SystemPermissionType.
          *
-         * @type String[]
+         * @type String
          */
-        this.value = template.value || [];
+        this.value = template.value;
 
     };
 
@@ -78,12 +78,12 @@ angular.module('rest').factory('PermissionPatch', [function definePermissionPatc
     PermissionPatch.Operation = {
 
         /**
-         * Adds (grants) the specified permissions.
+         * Adds (grants) the specified permission.
          */
         ADD : "add",
 
         /**
-         * Removes (revokes) the specified permissions.
+         * Removes (revokes) the specified permission.
          */
         REMOVE : "remove"
 

@@ -104,6 +104,10 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
      * @param {String} operation
      *     The operation to specify within each of the patches. Valid values
      *     for this are defined within PermissionPatch.Operation.
+     *     
+     * @param {String} path
+     *     The path of the permissions being patched. The path is a JSON path
+     *     describing the position of the permissions within a PermissionSet.
      *
      * @param {Object.<String, String[]>} permissions
      *     A map of object identifiers to arrays of permission type strings,
@@ -114,10 +118,12 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
 
         // Add object permission operations to patch
         for (var identifier in permissions) {
-            patch.push({
-                op    : operation,
-                path  : path + "/" + identifier,
-                value : permissions[identifier]
+            permissions[identifier].forEach(function addObjectPatch(type) {
+                patch.push({
+                    op    : operation,
+                    path  : path + "/" + identifier,
+                    value : type
+                });
             });
         }
 
@@ -152,13 +158,13 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
             permissions.userPermissions);
 
         // Add system operations to patch
-        if (permissions.systemPermissions.length) {
+        permissions.systemPermissions.forEach(function addSystemPatch(type) {
             patch.push({
                 op    : operation,
                 path  : "/systemPermissions",
-                value : permissions.systemPermissions
+                value : type
             });
-        }
+        });
 
     };
             
