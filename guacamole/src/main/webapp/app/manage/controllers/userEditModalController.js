@@ -26,9 +26,9 @@
 angular.module('manage').controller('userEditModalController', ['$scope', '$injector', 
         function userEditModalController($scope, $injector) {
             
-    var userEditModal                   = $injector.get('userEditModal');
-    var userService                         = $injector.get('userService');
-    var permissionService                   = $injector.get('permissionService');
+    var userEditModal     = $injector.get('userEditModal');
+    var userService       = $injector.get('userService');
+    var permissionService = $injector.get('permissionService');
     
     // Make a copy of the old user so that we can copy over the changes when done
     var oldUser = $scope.user;

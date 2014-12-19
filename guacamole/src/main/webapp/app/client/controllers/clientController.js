@@ -134,8 +134,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     
     // Get services for reading connections and groups
     var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService  = $injector.get('connectionService');
-    var ClientProperties   = $injector.get('ClientProperties');
+    var connectionService      = $injector.get('connectionService');
+    var ClientProperties       = $injector.get('ClientProperties');
 
     // Client settings and state
     $scope.clientProperties = new ClientProperties();

@@ -27,7 +27,7 @@ angular.module('manage').controller('connectionGroupEditModalController', ['$sco
         function connectionEditModalController($scope, $injector) {
             
     var connectionGroupEditModal        = $injector.get('connectionGroupEditModal');
-    var connectionGroupService              = $injector.get('connectionGroupService');
+    var connectionGroupService          = $injector.get('connectionGroupService');
     var displayObjectPreparationService = $injector.get('displayObjectPreparationService');
     
     // Make a copy of the old connection group so that we can copy over the changes when done
