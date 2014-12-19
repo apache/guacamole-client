@@ -35,7 +35,36 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *
              * @type ConnectionGroup|Object 
              */
-            connectionGroup : '='
+            connectionGroup : '=',
+
+            /**
+             * Arbitrary object which shall be made available to the connection
+             * and connection group templates within the scope as
+             * <code>context</code>.
+             */
+            context : '=',
+
+            /**
+             * The URL or ID of the Angular template to use when rendering a
+             * connection. The @link{GroupListItem} associated with that
+             * connection will be exposed within the scope of the template
+             * as <code>item</code>, and the arbitrary context object, if any,
+             * will be exposed as <code>context</code>.
+             *
+             * @type String
+             */
+            connectionTemplate : '=',
+
+            /**
+             * The URL or ID of the Angular template to use when rendering a
+             * connection group. The @link{GroupListItem} associated with that
+             * connection group will be exposed within the scope of the
+             * template as <code>item</code>, and the arbitrary context object,
+             * if any, will be exposed as <code>context</code>.
+             *
+             * @type String
+             */
+            connectionGroupTemplate : '='
 
         },
 
