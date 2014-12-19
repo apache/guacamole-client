@@ -41,6 +41,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * Arbitrary object which shall be made available to the connection
              * and connection group templates within the scope as
              * <code>context</code>.
+             * 
+             * @type Object
              */
             context : '=',
 
