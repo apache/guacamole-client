@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import com.google.inject.Inject;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -147,12 +146,8 @@ public class ConnectionRESTService {
         // Retrieve connection configuration
         GuacamoleConfiguration config = connection.getConfiguration();
 
-        // Convert parameters to map
-        Map<String, String> parameters = new HashMap<String, String>();
-        for (String key : config.getParameterNames())
-            parameters.put(key, config.getParameter(key));
-        
-        return parameters;
+        // Return parameter map
+        return config.getParameters();
 
     }
 
@@ -350,11 +345,14 @@ public class ConnectionRESTService {
         if (existingConnection == null)
             throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
         
-        Connection wrappedConnection = new APIConnectionWrapper(connection);
+        // Retrieve connection configuration
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+        config.setProtocol(connection.getProtocol());
+        config.setParameters(connection.getParameters());
 
         // Update the connection
-        existingConnection.setConfiguration(wrappedConnection.getConfiguration());
-        existingConnection.setName(wrappedConnection.getName());
+        existingConnection.setConfiguration(config);
+        existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
 
     }

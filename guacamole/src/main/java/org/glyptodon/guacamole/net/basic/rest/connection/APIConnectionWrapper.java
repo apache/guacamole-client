@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -86,10 +85,8 @@ public class APIConnectionWrapper implements Connection {
 
         // Add parameters, if available
         Map<String, String> parameters = apiConnection.getParameters();
-        if (parameters != null) {
-            for (Map.Entry<String, String> entry : parameters.entrySet())
-                configuration.setParameter(entry.getKey(), entry.getValue());
-        }
+        if (parameters != null)
+            configuration.setParameters(parameters);
         
         return configuration;
     }
@@ -97,14 +94,9 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public void setConfiguration(GuacamoleConfiguration config) {
         
-        // Create a parameter map from the GuacamoleConfiguration
-        Map<String, String> parameters = new HashMap<String, String>();
-        for (String key : config.getParameterNames())
-            parameters.put(key, config.getParameter(key));
-        
         // Set protocol and parameters
         apiConnection.setProtocol(config.getProtocol());
-        apiConnection.setParameters(parameters);
+        apiConnection.setParameters(config.getParameters());
 
     }
 
