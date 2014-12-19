@@ -35,7 +35,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
@@ -47,7 +46,6 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
@@ -222,10 +220,10 @@ public class ConnectionGroupRESTService {
      *     The ID of the connection group to retrieve.
      *
      * @param permission
-     *     If specified, limit the returned list to only those connections and
-     *     connection groups for which the current user has the given
-     *     permission. Otherwise, all visible connections and connection groups
-     *     are returned.
+     *     If specified, limit the returned list to only those connections for
+     *     which the current user has the given permission. Otherwise, all
+     *     visible connections are returned. Connection groups are unaffected
+     *     by this parameter.
      * 
      * @return
      *     The requested connection group, including all descendants.
