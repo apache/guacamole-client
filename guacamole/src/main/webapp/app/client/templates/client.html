@@ -48,20 +48,20 @@
 
             <!-- No IME -->
             <div class="choice">
-                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-none" id="ime-none"/> {{'client.none' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="none"/> {{'client.none' | translate}}</label>
                 <p class="caption"><label for="ime-none">{{'client.noneDesc' | translate}}</label></p>
             </div>
 
             <!-- Text input -->
             <div class="choice">
                 <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
-                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-text" id="ime-text"/> {{'client.textInput' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="text"/> {{'client.textInput' | translate}}</label>
                 <p class="caption"><label for="ime-text">{{'client.textInputDesc' | translate}} </label></p>
             </div>
 
             <!-- Guac OSK -->
             <div class="choice">
-                <label><input name="input-method" ng-change="closeMenu()" type="radio" value="ime-osk" id="ime-osk"/> {{'client.osk' | translate}}</label>
+                <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="osk"/> {{'client.osk' | translate}}</label>
                 <p class="caption"><label for="ime-osk">{{'client.oskDesc' | translate}}</label></p>
             </div>
 
@@ -101,6 +101,11 @@
             <div><label><input ng-model="autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'client.autoFit' | translate}}</label></div>
         </div>
         
+    </div>
+
+    <!-- On-screen keyboard -->
+    <div class="keyboard-container" ng-class="{shown: showOSK}">
+        <guac-osk layout="'client.oskLayout' | translate"/>
     </div>
 
     <!-- Images which should be preloaded -->

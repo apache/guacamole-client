@@ -206,6 +206,7 @@
         }
     },
     "client": {
+        "oskLayout"         : "layouts/en-us-qwerty.xml",
         "ctrl"              : "Ctrl",
         "alt"               : "Alt",
         "esc"               : "Esc",

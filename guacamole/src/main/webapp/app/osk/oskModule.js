@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,7 @@
  * THE SOFTWARE.
  */
 
-.keyboard-container {
-    text-align: center;
-
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    border-top: 1px solid black;
-    background: #222;
-    opacity: 0.85;
-
-    visibility: hidden;
-    z-index: 1;
-}
-
-.keyboard-container.shown {
-    visibility: visible;
-}
+/**
+ * Module for displaying the Guacamole on-screen keyboard.
+ */
+angular.module('osk', []);

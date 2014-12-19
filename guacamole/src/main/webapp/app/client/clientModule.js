@@ -23,4 +23,4 @@
 /**
  * The module for code used to connect to a connection or balancing group.
  */
-angular.module('client', ['auth', 'history', 'rest']);
+angular.module('client', ['auth', 'history', 'osk', 'rest']);
