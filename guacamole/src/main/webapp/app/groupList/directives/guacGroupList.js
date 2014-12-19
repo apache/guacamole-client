@@ -64,7 +64,16 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *
              * @type String
              */
-            connectionGroupTemplate : '='
+            connectionGroupTemplate : '=',
+
+            /**
+             * Whether the root of the connection group hierarchy given should
+             * be shown. If false (the default), only the descendants of the
+             * given connection group will be listed.
+             * 
+             * @type Boolean
+             */
+            showRootGroup : '='
 
         },
 
@@ -77,8 +86,24 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             // Set contents whenever the connection group is assigned or changed
             $scope.$watch("connectionGroup", function setContents(connectionGroup) {
 
-                if (connectionGroup)
-                    $scope.rootItem = GroupListItem.fromConnectionGroup(connectionGroup);
+                if (connectionGroup) {
+
+                    // Create item hierarchy
+                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup);
+
+                    // If root group is to be shown, wrap that group as the child of a fake root group
+                    if ($scope.showRootGroup)
+                        $scope.rootItem = new GroupListItem({
+                            isConnectionGroup : true,
+                            isBalancing       : false,
+                            children          : [ rootItem ]
+                        });
+
+                    // If not wrapped, only the descendants of the root will be shown
+                    else
+                        $scope.rootItem = rootItem;
+
+                }
                 else
                     $scope.rootItem = null;
 
@@ -92,7 +117,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *     connection group.
              */
             $scope.toggleExpanded = function toggleExpanded(groupListItem) {
-                groupListItem.expanded = !groupListItem.expanded;
+                groupListItem.isExpanded = !groupListItem.isExpanded;
             };
             
         }]
