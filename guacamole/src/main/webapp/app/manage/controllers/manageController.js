@@ -105,7 +105,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         {
             connection : {}, 
             protocols  : $scope.protocols,
-            moveItem   : $scope.moveItem,
             rootGroup  : $scope.rootGroup
         });
     };
@@ -117,7 +116,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         connectionGroupEditModal.activate(
         {
             connectionGroup : {}, 
-            moveItem        : $scope.moveItem,
             rootGroup       : $scope.rootGroup
         });
     };
