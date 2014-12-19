@@ -101,6 +101,14 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
          */
         this.isExpanded = template.isExpanded;
 
+        /**
+         * The connection or connection group whose data is exposed within
+         * this GroupListItem.
+         *
+         * @type Connection|ConnectionGroup
+         */
+        this.wrappedItem = template.wrappedItem;
+
     };
 
     /**
@@ -125,7 +133,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
             // Type information
             isConnection      : true,
-            isConnectionGroup : false
+            isConnectionGroup : false,
+
+            // Wrapped item
+            wrappedItem : connection
 
         });
 
@@ -170,7 +181,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             isBalancing       : connectionGroup.type === ConnectionGroup.Type.BALANCING,
 
             // Already-converted children
-            children : children
+            children : children,
+
+            // Wrapped item
+            wrappedItem : connectionGroup
 
         });
 

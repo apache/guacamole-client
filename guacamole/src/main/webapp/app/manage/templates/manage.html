@@ -63,7 +63,11 @@ THE SOFTWARE.
 
         <!-- List of connections and groups this user has access to -->
         <div class="connection-list" ng-class="{loading: loadingConnections}">
-            <guac-group-list connection-group="rootGroup"/>
+            <guac-group-list
+                context="groupListContext"
+                connection-group="rootGroup"
+                connection-template="'app/manage/templates/connection.html'"
+                connection-group-template="'app/manage/templates/connectionGroup.html'"/>
         </div>
     </div>
 

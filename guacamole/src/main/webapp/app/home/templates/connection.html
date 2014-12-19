@@ -1,4 +1,4 @@
-<div class="group-list">
+<a ng-href="#/client/c/{{item.identifier}}">
     <!--
        Copyright (C) 2014 Glyptodon LLC
 
@@ -21,34 +21,15 @@
        THE SOFTWARE.
     -->
 
-    <script type="text/ng-template" id="nestedGroup.html">
+    <div class="caption">
 
-        <!-- Connection -->
-        <div class="connection" ng-show="item.isConnection">
-            <ng-include src="connectionTemplate"/>
+        <!-- Connection icon -->
+        <div class="protocol">
+            <div class="icon type" ng-class="item.protocol"></div>
         </div>
 
-        <!-- Connection group -->
-        <div class="group" ng-show="item.isConnectionGroup">
-            <div class="caption">
+        <!-- Connection name -->
+        <span class="name">{{item.name}}</span>
 
-                <!-- Connection group icon -->
-                <div class="icon group type" ng-click="toggleExpanded(item)"
-                     ng-class="{expanded: item.isExpanded, empty: !item.children.length, balancer: item.isBalancing}"></div>
-
-                <ng-include src="connectionGroupTemplate"/>
-
-            </div>
-
-            <!-- Children of this group -->
-            <div class="children" ng-show="item.isExpanded">
-                <div class="list-item" ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedGroup.html'">
-            </div>
-
-        </div>
-
-    </script>
-
-    <div class="list-item" ng-repeat="item in rootItem.children | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
-
-</div>
+    </div>
+</a>
