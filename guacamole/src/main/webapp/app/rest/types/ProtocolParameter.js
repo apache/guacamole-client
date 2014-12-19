@@ -99,7 +99,7 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
          * arbitrary string, where that string represents the username of the
          * user authenticating with the remote desktop service.
          * 
-         * @type string
+         * @type String
          */
         USERNAME : "USERNAME",
 
@@ -108,7 +108,7 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
          * arbitrary string, where that string represents the password of the
          * user authenticating with the remote desktop service.
          * 
-         * @type string
+         * @type String
          */
         PASSWORD : "PASSWORD",
 
@@ -116,7 +116,7 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
          * The type string associated with parameters that may contain only
          * numeric values.
          * 
-         * @type string
+         * @type String
          */
         NUMERIC : "NUMERIC",
 
