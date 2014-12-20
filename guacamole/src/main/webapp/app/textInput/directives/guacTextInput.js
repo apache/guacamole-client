@@ -58,6 +58,7 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
              * @type Object.<Number, Boolean>
              */
             var ALLOWED_KEYS = {
+                0xFE03: true, /* AltGr */
                 0xFF08: true, /* Backspace */
                 0xFF09: true, /* Tab */
                 0xFF0D: true, /* Enter */
@@ -83,6 +84,10 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
                 0xFFC9: true, /* F12 */
                 0xFFE1: true, /* Left shift */
                 0xFFE2: true, /* Right shift */
+                0xFFE3: true, /* Left ctrl */
+                0xFFE4: true, /* Right ctrl */
+                0xFFE9: true, /* Left alt */
+                0xFFEA: true, /* Right alt */
                 0xFFFF: true  /* Delete */
             };
 
