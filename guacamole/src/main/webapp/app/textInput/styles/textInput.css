@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,33 +20,30 @@
  * THE SOFTWARE.
  */
 
-#text-input {
-    display: none;
-    position: absolute;
-
+.text-input {
+    width: 100%;
     border-top: 1px solid rgba(0, 0, 0, 0.5);
     background: #CDA;
-
 }
 
-#text-input #text-input-field,
-#text-input #text-input-buttons {
+.text-input .text-input-field,
+.text-input .text-input-buttons {
     display: inline-block;
     vertical-align: middle;
 }
 
-#text-input #text-input-field {
+.text-input .text-input-field {
     width: 30%;
     overflow: hidden;
     white-space: nowrap;
 }
 
-#text-input #text-input-buttons {
+.text-input .text-input-buttons {
     width: 70%;
     text-align: right;
 }
 
-#text-input #target {
+.text-input .target {
 
     border: none;
     border-radius: 0;
@@ -67,18 +64,18 @@
 
 }
 
-#text-input.open {
+.text-input.open {
     display: block;
 }
 
-#text-input #sent-history {
+.text-input .sent-history {
     display: inline-block;
     vertical-align: middle;
     padding: 0.25em;
     padding-right: 0;
 }
 
-#text-input #sent-history .sent-text {
+.text-input .sent-history .sent-text {
     display: inline-block;
     vertical-align: baseline;
     white-space: pre;
@@ -89,7 +86,7 @@
     opacity: 0;
 }
 
-#text-input #text-input-buttons button {
+.text-input .text-input-buttons button {
     border: 1px solid rgba(0, 0, 0, 0.5);
     background: none;
     color: black;
@@ -101,8 +98,8 @@
     min-width: 3em;
 }
 
-#text-input #text-input-buttons button:active,
-#text-input #text-input-buttons button.pressed {
+.text-input .text-input-buttons button:active,
+.text-input .text-input-buttons button.pressed {
     border: 1px solid rgba(255, 255, 255, 0.5);
     background: rgba(0, 0, 0, 0.75);
     color: white;
