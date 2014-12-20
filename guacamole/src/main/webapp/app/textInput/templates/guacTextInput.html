@@ -1,0 +1,27 @@
+<div class="text-input">
+    <!--
+       Copyright (C) 2014 Glyptodon LLC
+
+       Permission is hereby granted, free of charge, to any person obtaining a copy
+       of this software and associated documentation files (the "Software"), to deal
+       in the Software without restriction, including without limitation the rights
+       to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+       copies of the Software, and to permit persons to whom the Software is
+       furnished to do so, subject to the following conditions:
+
+       The above copyright notice and this permission notice shall be included in
+       all copies or substantial portions of the Software.
+
+       THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+       IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+       FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+       AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+       LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+       OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+       THE SOFTWARE.
+    -->
+
+    <!-- Text input target -->
+    <div class="text-input-field"><div class="sent-history"><div class="sent-text" ng-repeat="text in sentText track by $index">{{text}}</div></div><textarea rows="1" class="target"></textarea></div><div class="text-input-buttons"><guac-key keysym="65507" sticky="true" text="'client.ctrl'" pressed="ctrlPressed"></guac-key><guac-key keysym="65513" sticky="true" text="'client.alt'" pressed="altPressed"></guac-key><guac-key keysym="65307" text="'client.esc'"></guac-key><guac-key keysym="65289" text="'client.tab'"></guac-key></div>
+
+</div>
