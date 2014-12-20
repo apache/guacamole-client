@@ -51,6 +51,42 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
             var TEXT_INPUT_PADDING_CODEPOINT = 0x200B;
 
             /**
+             * Keys which should be allowed through to the client when in text
+             * input mode, providing corresponding key events are received.
+             * Keys in this set will be allowed through to the server.
+             * 
+             * @type Object.<Number, Boolean>
+             */
+            var ALLOWED_KEYS = {
+                0xFF08: true, /* Backspace */
+                0xFF09: true, /* Tab */
+                0xFF0D: true, /* Enter */
+                0xFF1B: true, /* Escape */
+                0xFF50: true, /* Home */
+                0xFF51: true, /* Left */
+                0xFF52: true, /* Up */
+                0xFF53: true, /* Right */
+                0xFF54: true, /* Down */
+                0xFF57: true, /* End */
+                0xFF64: true, /* Insert */
+                0xFFBE: true, /* F1 */
+                0xFFBF: true, /* F2 */
+                0xFFC0: true, /* F3 */
+                0xFFC1: true, /* F4 */
+                0xFFC2: true, /* F5 */
+                0xFFC3: true, /* F6 */
+                0xFFC4: true, /* F7 */
+                0xFFC5: true, /* F8 */
+                0xFFC6: true, /* F9 */
+                0xFFC7: true, /* F10 */
+                0xFFC8: true, /* F11 */
+                0xFFC9: true, /* F12 */
+                0xFFE1: true, /* Left shift */
+                0xFFE2: true, /* Right shift */
+                0xFFFF: true  /* Delete */
+            };
+
+            /**
              * Recently-sent text, ordered from oldest to most recent.
              *
              * @type String[]
@@ -151,8 +187,8 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
              * @param {Number} keysym The keysym of the key to send.
              */
             var sendKeysym = function sendKeysym(keysym) {
-                $rootScope.$broadcast('guacKeydown', keysym);
-                $rootScope.$broadcast('guacKeyup', keysym);
+                $rootScope.$broadcast('guacSyntheticKeydown', keysym);
+                $rootScope.$broadcast('guacSyntheticKeyup', keysym);
             };
 
             /**
@@ -282,6 +318,18 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
             target.addEventListener("selectstart", function(e) {
                 e.preventDefault();
             }, false);
+
+            // If the text input UI has focus, prevent keydown events
+            $scope.$on('guacBeforeKeydown', function filterKeydown(event, keysym) {
+                if (hasFocus && !ALLOWED_KEYS[keysym])
+                    event.preventDefault();
+            });
+
+            // If the text input UI has focus, prevent keyup events
+            $scope.$on('guacBeforeKeyup', function filterKeyup(event, keysym) {
+                if (hasFocus && !ALLOWED_KEYS[keysym])
+                    event.preventDefault();
+            });
 
         }]
 

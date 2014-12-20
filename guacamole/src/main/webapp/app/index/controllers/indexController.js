@@ -193,19 +193,35 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     
     // Try to load them now
     $scope.loadBasicPermissions();
-    
+
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
 
-    // Broadcast keydown events down the scope heirarchy
+    // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
+
+        // Warn of pending keydown
+        var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeydown', keysym, keyboard);
+        if (guacBeforeKeydownEvent.defaultPrevented)
+            return true;
+
+        // If not prevented via guacBeforeKeydown, fire corresponding keydown event
         var guacKeydownEvent = $scope.$broadcast('guacKeydown', keysym, keyboard);
         return !guacKeydownEvent.defaultPrevented;
+
     };
     
-    // Broadcast keyup events down the scope heirarchy
+    // Broadcast keyup events
     keyboard.onkeyup = function onkeyup(keysym) {
+
+        // Warn of pending keyup
+        var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeyup', keysym, keyboard);
+        if (guacBeforeKeydownEvent.defaultPrevented)
+            return;
+
+        // If not prevented via guacBeforeKeyup, fire corresponding keydown event
         $scope.$broadcast('guacKeyup', keysym, keyboard);
+
     };
 
     // Release all keys when window loses focus

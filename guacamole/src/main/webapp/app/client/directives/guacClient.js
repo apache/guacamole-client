@@ -529,6 +529,16 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     event.preventDefault();
                 }   
             });
+
+            // Universally handle all synthetic keydown events
+            $scope.$on('guacSyntheticKeydown', function syntheticKeydownListener(event, keysym) {
+                client.sendKeyEvent(1, keysym);
+            });
+            
+            // Universally handle all synthetic keyup events
+            $scope.$on('guacSyntheticKeyup', function syntheticKeyupListener(event, keysym) {
+                client.sendKeyEvent(0, keysym);
+            });
             
             /**
              * Converts the given bytes to a base64-encoded string.
