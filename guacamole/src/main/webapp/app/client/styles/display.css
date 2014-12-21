@@ -32,11 +32,21 @@
 
 div.main {
     overflow: auto;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.resize-sensor {
+    height: 100%;
+    width: 100%;
+    position: absolute;
     left: 0;
+    top: 0;
+    overflow: hidden;
+    border: none;
+    opacity: 0;
+    z-index: -1;
 }
 
 div.displayOuter {
