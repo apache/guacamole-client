@@ -83,6 +83,22 @@ angular.module('client').factory('ClientProperties', [function defineClientPrope
          */
         this.emulateAbsoluteMouse = template.emulateAbsoluteMouse || true;
 
+        /**
+         * The relative Y coordinate of the scroll offset of the display within
+         * the client element.
+         * 
+         * @type Number
+         */
+        this.scrollTop = template.scrollTop || 0;
+
+        /**
+         * The relative X coordinate of the scroll offset of the display within
+         * the client element.
+         * 
+         * @type Number
+         */
+        this.scrollLeft = template.scrollLeft || 0;
+
     };
 
     return ClientProperties;

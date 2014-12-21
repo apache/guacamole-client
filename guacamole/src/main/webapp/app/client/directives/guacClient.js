@@ -319,6 +319,20 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
 
             /*
+             * SCROLLING
+             */
+
+            $scope.$watch('clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
+                main.scrollLeft = scrollLeft;
+                $scope.clientProperties.scrollLeft = main.scrollLeft;
+            });
+
+            $scope.$watch('clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
+                main.scrollTop = scrollTop;
+                $scope.clientProperties.scrollTop = main.scrollTop;
+            });
+
+            /*
              * CONNECT / RECONNECT
              */
 

@@ -24,7 +24,7 @@
 <div class="client-view">
 
     <!-- Central portion of view -->
-    <div class="client-body">
+    <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
         <!-- Client -->
         <guac-client 
@@ -52,7 +52,7 @@
 </div>
 
 <!-- Menu -->
-<div ng-class="{open: menuShown}" id="menu">
+<div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag">
     <h2>{{'client.clipboard' | translate}}</h2>
     <div class="content" id="clipboard-settings">
         <p class="description">{{'client.copiedText' | translate}}</p>
@@ -64,20 +64,20 @@
 
         <!-- No IME -->
         <div class="choice">
-            <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="none"/> {{'client.none' | translate}}</label>
+            <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="none"/> {{'client.none' | translate}}</label>
             <p class="caption"><label for="ime-none">{{'client.noneDesc' | translate}}</label></p>
         </div>
 
         <!-- Text input -->
         <div class="choice">
             <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
-            <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="text"/> {{'client.textInput' | translate}}</label>
+            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="text"/> {{'client.textInput' | translate}}</label>
             <p class="caption"><label for="ime-text">{{'client.textInputDesc' | translate}} </label></p>
         </div>
 
         <!-- Guac OSK -->
         <div class="choice">
-            <label><input name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="osk"/> {{'client.osk' | translate}}</label>
+            <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="osk"/> {{'client.osk' | translate}}</label>
             <p class="caption"><label for="ime-osk">{{'client.oskDesc' | translate}}</label></p>
         </div>
 
