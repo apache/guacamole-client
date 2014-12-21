@@ -322,12 +322,14 @@ angular.module('client').directive('guacClient', [function guacClient() {
              * SCROLLING
              */
 
-            $scope.$watch('clientProperties.scrollLeft', function scrollLeftChanged(newValue, oldValue) {
-                main.scrollLeft += newValue - oldValue;
+            $scope.$watch('clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
+                main.scrollLeft = scrollLeft;
+                $scope.clientProperties.scrollLeft = main.scrollLeft;
             });
 
-            $scope.$watch('clientProperties.scrollTop', function scrollTopChanged(newValue, oldValue) {
-                main.scrollTop += newValue - oldValue;
+            $scope.$watch('clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
+                main.scrollTop = scrollTop;
+                $scope.clientProperties.scrollTop = main.scrollTop;
             });
 
             /*
