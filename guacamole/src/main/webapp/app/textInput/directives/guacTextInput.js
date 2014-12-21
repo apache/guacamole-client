@@ -28,7 +28,17 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
     return {
         restrict: 'E',
         replace: true,
-        scope: {},
+        scope: {
+
+            /**
+             * Whether the text input UI should have focus. Setting this value
+             * is not guaranteed to work, due to browser limitations.
+             * 
+             * @type Boolean
+             */
+            needsFocus : '=?'
+
+        },
 
         templateUrl: 'app/textInput/templates/guacTextInput.html',
         controller: ['$scope', '$rootScope', '$element', '$timeout',
@@ -323,6 +333,16 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
             target.addEventListener("selectstart", function(e) {
                 e.preventDefault();
             }, false);
+
+            // Attempt to change focus depending on need
+            $scope.$watch('needsFocus', function focusDesireChanged(focusNeeded) {
+
+                if (focusNeeded)
+                    target.focus();
+                else
+                    target.blur();
+
+            });
 
             // If the text input UI has focus, prevent keydown events
             $scope.$on('guacBeforeKeydown', function filterKeydown(event, keysym) {
