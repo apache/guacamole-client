@@ -127,7 +127,7 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
             var deltaY = 0;
 
             // When there is exactly one touch, monitor the change in location
-            element.addEventListener("touchmove", function(e) {
+            element.addEventListener("touchmove", function dragTouchMove(e) {
                 if (e.touches.length === 1) {
 
                     e.stopPropagation();
@@ -165,7 +165,7 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
             }, false);
 
             // Reset monitoring and fire end event when done
-            element.addEventListener("touchend", function(e) {
+            element.addEventListener("touchend", function dragTouchEnd(e) {
 
                 if (startX && startY && e.touches.length === 0) {
 
