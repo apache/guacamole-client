@@ -116,6 +116,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
             var main = $element[0];
 
             /**
+             * The element which functions as a detector for size changes.
+             * 
+             * @type Element
+             */
+            var resizeSensor = $element.find('.resize-sensor')[0];
+
+            /**
              * Guacamole mouse event object, wrapped around the main client
              * display.
              *
@@ -491,8 +498,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     $scope.clientProperties.scale = $scope.clientProperties.minScale;
             });
             
-            // If the window is resized, attempt to resize client
-            $window.addEventListener('resize', function onResizeWindow() {
+            // If the element is resized, attempt to resize client
+            resizeSensor.contentWindow.addEventListener('resize', function mainElementResized() {
 
                 // Send new display size, if changed
                 if (client && display) {
@@ -528,6 +535,16 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     client.sendKeyEvent(0, keysym);
                     event.preventDefault();
                 }   
+            });
+
+            // Universally handle all synthetic keydown events
+            $scope.$on('guacSyntheticKeydown', function syntheticKeydownListener(event, keysym) {
+                client.sendKeyEvent(1, keysym);
+            });
+            
+            // Universally handle all synthetic keyup events
+            $scope.$on('guacSyntheticKeyup', function syntheticKeyupListener(event, keysym) {
+                client.sendKeyEvent(0, keysym);
             });
             
             /**

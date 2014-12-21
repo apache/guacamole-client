@@ -90,8 +90,8 @@ angular.module('textInput').directive('guacKey', [function guacKey() {
 
                 // For all non-sticky keys, press and release key immediately
                 else {
-                    $rootScope.$broadcast('guacKeydown', $scope.keysym);
-                    $rootScope.$broadcast('guacKeyup', $scope.keysym);
+                    $rootScope.$broadcast('guacSyntheticKeydown', $scope.keysym);
+                    $rootScope.$broadcast('guacSyntheticKeyup', $scope.keysym);
                 }
 
             };
@@ -101,11 +101,11 @@ angular.module('textInput').directive('guacKey', [function guacKey() {
 
                 // If the key is pressed now, send keydown
                 if (isPressed)
-                    $rootScope.$broadcast('guacKeydown', $scope.keysym);
+                    $rootScope.$broadcast('guacSyntheticKeydown', $scope.keysym);
 
                 // If the key was pressed, but is not pressed any longer, send keyup
                 else if (wasPressed)
-                    $rootScope.$broadcast('guacKeyup', $scope.keysym);
+                    $rootScope.$broadcast('guacSyntheticKeyup', $scope.keysym);
 
             });
 

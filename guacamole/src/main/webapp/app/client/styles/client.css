@@ -27,18 +27,6 @@ body.client {
     overflow: hidden;
 }
 
-/* Viewport Clone */
-
-#viewportClone {
-    display: table;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    visibility: hidden;
-}
-
 #preload {
     visibility: hidden;
     position: absolute;
@@ -47,4 +35,22 @@ body.client {
     width: 0;
     height: 0;
     overflow: hidden;
+}
+
+.client-view {
+    display: table;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.client-view .client-body {
+    display: table-row;
+}
+
+.client-view .client-bottom {
+    display: table-row;
+    height: 0;
 }

@@ -88,12 +88,12 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
 
                     // Broadcast keydown for each key pressed
                     keyboard.onkeydown = function(keysym) {
-                        $rootScope.$broadcast('guacKeydown', keysym);
+                        $rootScope.$broadcast('guacSyntheticKeydown', keysym);
                     };
                     
                     // Broadcast keydown for each key released 
                     keyboard.onkeyup = function(keysym) {
-                        $rootScope.$broadcast('guacKeyup', keysym);
+                        $rootScope.$broadcast('guacSyntheticKeyup', keysym);
                     };
 
                     // Resize keyboard whenever window changes size
