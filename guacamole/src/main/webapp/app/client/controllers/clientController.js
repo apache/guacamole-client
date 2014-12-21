@@ -204,8 +204,9 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Show/hide UI elements depending on input method
     $scope.$watch('inputMethod', function setInputMethod(inputMethod) {
 
-        // Show on-screen keyboard only if selected
-        $scope.showOSK = (inputMethod === 'osk');
+        // Show input methods only if selected
+        $scope.showOSK       = (inputMethod === 'osk');
+        $scope.showTextInput = (inputMethod === 'text');
 
     });
 
