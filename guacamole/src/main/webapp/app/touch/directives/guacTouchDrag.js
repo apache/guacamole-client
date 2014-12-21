@@ -27,7 +27,8 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
 
     return {
         restrict: 'A',
-        scope: {
+
+        link: function linkGuacTouchDrag($scope, $element, $attrs) {
 
             /**
              * Called during a drag gesture as the user's finger is placed upon
@@ -64,11 +65,7 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
              *     false if the default action of the touch event should be
              *     prevented, any other value otherwise.
              */
-            guacTouchDrag : '='
-
-        },
-
-        link: function guacTouchDrag($scope, $element) {
+            var guacTouchDrag = $scope.$eval($attrs.guacTouchDrag);
 
             /**
              * The element which will register the drag gesture.
@@ -154,9 +151,9 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
                     }
 
                     // Signal start/change in drag gesture
-                    if (inProgress && $scope.guacTouchDrag) {
+                    if (inProgress && guacTouchDrag) {
                         $scope.$apply(function dragChanged() {
-                            if ($scope.guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
+                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
                                 e.preventDefault();
                         });
                     }
@@ -172,9 +169,9 @@ angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
                     e.stopPropagation();
 
                     // Signal end of drag gesture
-                    if (inProgress && $scope.guacTouchDrag) {
+                    if (inProgress && guacTouchDrag) {
                         $scope.$apply(function dragComplete() {
-                            if ($scope.guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY === false))
+                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY === false))
                                 e.preventDefault();
                         });
                     }
