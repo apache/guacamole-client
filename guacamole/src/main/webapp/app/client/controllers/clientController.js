@@ -256,6 +256,68 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
 
     };
 
+    /**
+     * If a pinch gesture is in progress, the scale of the client display when
+     * the pinch gesture began.
+     *
+     * @type Number
+     */
+    var initialScale = null;
+
+    /**
+     * If a pinch gesture is in progress, the X coordinate of the point on the
+     * client display that was centered within the pinch at the time the
+     * gesture began.
+     * 
+     * @type Number
+     */
+    var initialCenterX = 0;
+
+    /**
+     * If a pinch gesture is in progress, the Y coordinate of the point on the
+     * client display that was centered within the pinch at the time the
+     * gesture began.
+     * 
+     * @type Number
+     */
+    var initialCenterY = 0;
+
+    // Zoom and pan client via pinch gestures
+    $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
+
+        // Stop gesture if not in progress
+        if (!inProgress) {
+            initialScale = null;
+            return false;
+        }
+
+        // Set initial scale if gesture has just started
+        if (!initialScale) {
+            initialScale   = $scope.clientProperties.scale;
+            initialCenterX = (centerX + $scope.clientProperties.scrollLeft) / initialScale;
+            initialCenterY = (centerY + $scope.clientProperties.scrollTop)  / initialScale;
+        }
+
+        // Determine new scale absolutely
+        currentScale = initialScale * currentLength / startLength;
+
+        // Fix scale within limits - scroll will be miscalculated otherwise
+        currentScale = Math.max(currentScale, $scope.clientProperties.minScale);
+        currentScale = Math.min(currentScale, $scope.clientProperties.maxScale);
+
+        // Update scale based on pinch distance
+        $scope.autoFit = false;
+        $scope.clientProperties.autoFit = false;
+        $scope.clientProperties.scale = currentScale;
+
+        // Scroll display to keep original pinch location centered within current pinch
+        $scope.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
+        $scope.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
+
+        return false;
+
+    };
+
     // Show/hide UI elements depending on input method
     $scope.$watch('inputMethod', function setInputMethod(inputMethod) {
 
