@@ -26,6 +26,30 @@
 angular.module('home').controller('clientController', ['$scope', '$routeParams', '$injector',
         function clientController($scope, $routeParams, $injector) {
 
+    /**
+     * The minimum number of pixels a drag gesture must move to result in the
+     * menu being shown or hidden.
+     *
+     * @type Number
+     */
+    var MENU_DRAG_DELTA = 64;
+
+    /**
+     * The maximum X location of the start of a drag gesture for that gesture
+     * to potentially show the menu.
+     *
+     * @type Number
+     */
+    var MENU_DRAG_MARGIN = 64;
+
+    /**
+     * When showing or hiding the menu via a drag gesture, the maximum number
+     * of pixels the touch can move vertically and still affect the menu.
+     * 
+     * @type Number
+     */
+    var MENU_DRAG_VERTICAL_TOLERANCE = 10;
+
     /*
      * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
      * several possible keysysms for each key.
@@ -200,6 +224,37 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         
         return true;
     }
+
+    // Hide menu when the user swipes from the right
+    $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
+
+        if (Math.abs(currentY - startY)  <  MENU_DRAG_VERTICAL_TOLERANCE
+                  && startX   - currentX >= MENU_DRAG_DELTA)
+            $scope.menuShown = false;
+
+    };
+
+    // Update menu or client based on dragging gestures
+    $scope.clientDrag = function clientDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
+
+        // Show menu if the user swipes from the left
+        if (startX <= MENU_DRAG_MARGIN) {
+
+            if (Math.abs(currentY - startY) <  MENU_DRAG_VERTICAL_TOLERANCE
+                      && currentX - startX  >= MENU_DRAG_DELTA)
+                $scope.menuShown = true;
+
+        }
+
+        // Scroll display if absolute mouse is in use
+        else if ($scope.clientProperties.emulateAbsoluteMouse) {
+            $scope.clientProperties.scrollLeft -= deltaX;
+            $scope.clientProperties.scrollTop -= deltaY;
+        }
+
+        return false;
+
+    };
 
     // Show/hide UI elements depending on input method
     $scope.$watch('inputMethod', function setInputMethod(inputMethod) {
