@@ -21,18 +21,17 @@
  */
 
 /**
- * A directive which allows handling of panning gestures on a particular
- * element.
+ * A directive which allows handling of drag gestures on a particular element.
  */
-angular.module('touch').directive('guacPan', [function guacPan() {
+angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
 
     return {
         restrict: 'A',
         scope: {
 
             /**
-             * Called as during a panning gesture as the user's finger is
-             * placed upon the element, moves, and is lifted from the element.
+             * Called during a drag gesture as the user's finger is placed upon
+             * the element, moves, and is lifted from the element.
              *
              * @event
              * @param {Boolean} inProgress
@@ -42,10 +41,10 @@ angular.module('touch').directive('guacPan', [function guacPan() {
              *     false.
              *
              * @param {Number} startX
-             *     The X location at which the panning gesture began.
+             *     The X location at which the drag gesture began.
              *     
              * @param {Number} startY
-             *     The Y location at which the panning gesture began.
+             *     The Y location at which the drag gesture began.
              *     
              * @param {Number} currentX
              *     The current X location of the user's finger.
@@ -60,15 +59,19 @@ angular.module('touch').directive('guacPan', [function guacPan() {
              * @param {Number} deltaY
              *     The difference in Y location relative to the start of the
              *     gesture.
+             * 
+             * @return {Boolean}
+             *     false if the default action of the touch event should be
+             *     prevented, any other value otherwise.
              */
-            guacPan : '='
+            guacTouchDrag : '='
 
         },
 
-        link: function guacPan($scope, $element) {
+        link: function guacTouchDrag($scope, $element) {
 
             /**
-             * The element which will register the panning gesture.
+             * The element which will register the drag gesture.
              *
              * @type Element
              */
@@ -127,7 +130,6 @@ angular.module('touch').directive('guacPan', [function guacPan() {
             element.addEventListener("touchmove", function(e) {
                 if (e.touches.length === 1) {
 
-                    e.preventDefault();
                     e.stopPropagation();
 
                     // Get touch location
@@ -151,10 +153,11 @@ angular.module('touch').directive('guacPan', [function guacPan() {
                         currentY = y;
                     }
 
-                    // Signal start/change in panning gesture
-                    if (inProgress && $scope.guacPan) {
-                        $scope.$apply(function panChanged() {
-                            $scope.guacPan(true, startX, startY, currentX, currentY, deltaX, deltaY);
+                    // Signal start/change in drag gesture
+                    if (inProgress && $scope.guacTouchDrag) {
+                        $scope.$apply(function dragChanged() {
+                            if ($scope.guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
+                                e.preventDefault();
                         });
                     }
 
@@ -166,13 +169,13 @@ angular.module('touch').directive('guacPan', [function guacPan() {
 
                 if (startX && startY && e.touches.length === 0) {
 
-                    e.preventDefault();
                     e.stopPropagation();
 
-                    // Signal end of panning gesture
-                    if (inProgress && $scope.guacPan) {
-                        $scope.$apply(function panComplete() {
-                            $scope.guacPan(true, startX, startY, currentX, currentY, deltaX, deltaY);
+                    // Signal end of drag gesture
+                    if (inProgress && $scope.guacTouchDrag) {
+                        $scope.$apply(function dragComplete() {
+                            if ($scope.guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY === false))
+                                e.preventDefault();
                         });
                     }
 
