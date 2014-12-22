@@ -43,12 +43,11 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     if(!$scope.connection.protocol)
         $scope.connection.protocol = "vnc";
     
-    $scope.historyEntryWrappers = [];
-    
     // Wrap all the history entries
     if (!newConnection) {
 
         connectionService.getConnectionHistory($scope.connection.identifier).success(function wrapHistoryEntries(historyEntries) {
+            $scope.historyEntryWrappers = [];
             historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
                $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
             });
@@ -60,6 +59,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
 
     }
     else {
+        $scope.historyEntryWrappers = [];
         $scope.connection.parameters = {};
     }
     

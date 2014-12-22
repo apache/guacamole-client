@@ -84,13 +84,10 @@ THE SOFTWARE.
             <!-- History connection area -->
             <dt>{{'manage.edit.connection.history.usageHistory' | translate}}</dt>
 
-            <dd ng-hide="connection.history.length">
-              <p>{{'manage.edit.connection.history.connectionNotUsed' | translate}}</p>
-            </dd>
-            
             <!-- History connection list -->
-            <dd ng-show="connection.history.length">
-                <table class="history section">
+            <dd ng-class="{loading: !historyEntryWrappers}">
+                <p ng-hide="historyEntryWrappers.length">{{'manage.edit.connection.history.connectionNotUsed' | translate}}</p>
+                <table class="history section" ng-show="historyEntryWrappers.length">
                     <tr>
                         <th>{{'manage.edit.connection.history.username' | translate}}</th>
                         <th>{{'manage.edit.connection.history.startTime' | translate}}</th>
