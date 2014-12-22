@@ -36,6 +36,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     
     // Copy data into a new conection object in case the user doesn't want to save
     $scope.connection = new Connection($scope.connection);
+    $scope.connection.parameters = {};
     
     var newConnection = !$scope.connection.identifier;
     
@@ -47,11 +48,17 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
     
     // Wrap all the history entries
     if (!newConnection) {
+
         connectionService.getConnectionHistory($scope.connection.identifier).success(function wrapHistoryEntries(historyEntries) {
             historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
                $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
             });
         });
+
+        connectionService.getConnectionParameters($scope.connection.identifier).success(function setParameters(parameters) {
+            $scope.connection.parameters = parameters;
+        });
+
     }
     
     /**
