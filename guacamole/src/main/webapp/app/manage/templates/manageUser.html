@@ -60,10 +60,15 @@ THE SOFTWARE.
     <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
 </div>
 
-<!-- User edit modal -->
-<h2>{{user.username}}</h2>
+<!-- Main property editor -->
+<h2>{{'manage.edit.user.title' | translate}}</h2>
 <div class="properties">
     <table>
+        <tr>
+            <th>{{'manage.edit.user.username' | translate}}</th>
+                      
+            <td>{{user.username}}</td>
+        </tr>
         <tr>
             <th>{{'manage.edit.user.password' | translate}}</th>
                         
@@ -117,9 +122,9 @@ THE SOFTWARE.
     </div>
 </div>
 
-<!-- Form controls -->
+<!-- Form action buttons -->
 <div class="action-buttons">
-    <button ng-click="save()">{{'manage.edit.user.save' | translate}}</button>
-    <button ng-click="close()">{{'manage.edit.user.cancel' | translate}}</button>
-    <button ng-click="delete()" class="danger">{{'manage.edit.user.delete' | translate}}</button>
+    <button ng-click="saveUser()">{{'manage.edit.user.save' | translate}}</button>
+    <button ng-click="cancel()">{{'manage.edit.user.cancel' | translate}}</button>
+    <button ng-click="deleteUser()" class="danger">{{'manage.edit.user.delete' | translate}}</button>
 </div>

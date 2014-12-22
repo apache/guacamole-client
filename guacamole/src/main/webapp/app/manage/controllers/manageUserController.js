@@ -27,231 +27,146 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         function manageUserController($scope, $injector) {
             
     // Required services
+    var $location         = $injector.get('$location');
     var $routeParams      = $injector.get('$routeParams');
     var userService       = $injector.get('userService');
     var permissionService = $injector.get('permissionService');
-    
-    var identifier = $routeParams.id;
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "manage.error.action.acknowledge",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * The username of the user being edited.
+     *
+     * @type String
+     */
+    var username = $routeParams.id;
 
     // Pull user data
-    userService.getUser(identifier).success(function userReceived(user) {
+    userService.getUser(username).success(function userReceived(user) {
         $scope.user = user;
     });
-    
-    /**
-     * Close the modal.
+
+    // Pull user permissions
+    permissionService.getPermissions(username).success(function gotPermissions(permissions) {
+        $scope.permissions = permissions;
+    });
+
+     /**
+     * Cancels all pending edits, returning to the management page.
      */
-    $scope.close = function close() {
-        userEditModal.deactivate();
+    $scope.cancel = function cancel() {
+        $location.path('/manage/');
     };
-    
-    /*
-     * All the permissions that have been modified since this modal was opened.
-     * Maps of type or id to value.
-     */ 
-    $scope.modifiedSystemPermissions = {};
-    $scope.modifiedConnectionPermissions = {};
-    $scope.modifiedConnectionGroupPermissions = {};
-    
-    $scope.markSystemPermissionModified = function markSystemPermissionModified(type) {
-        $scope.modifiedSystemPermissions[type] = $scope.systemPermissions[type];
-    };
-    
-    $scope.markConnectionPermissionModified = function markConnectionPermissionModified(id) {
-        $scope.modifiedConnectionPermissions[id] = $scope.connectionPermissions[id];
-    };
-    
-    $scope.markConnectionGroupPermissionModified = function markConnectionGroupPermissionModified(id) {
-        $scope.modifiedConnectionGroupPermissions[id] = $scope.connectionGroupPermissions[id];
-    };
-    
+            
     /**
-     * Save the user and close the modal.
+     * Saves the user, updating the existing user only.
      */
-    $scope.save = function save() {
-        
-        if($scope.passwordMatch !== $scope.user.password) {
-            //TODO: Display an error
+    $scope.saveUser = function saveUser() {
+
+        // Verify passwords match
+        if ($scope.passwordMatch !== $scope.user.password) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : 'manage.edit.user.passwordMismatch',
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
             return;
         }
-        
-        userService.saveUser($scope.user).success(function successfullyUpdatedUser() {
-            
-            //Figure out what permissions have changed
-            var connectionPermissionsToCreate = [],
-                connectionPermissionsToDelete = [],
-                connectionGroupPermissionsToCreate = [],
-                connectionGroupPermissionsToDelete = [],
-                systemPermissionsToCreate = [],
-                systemPermissionsToDelete = [];
-            
-            for(var type in $scope.modifiedSystemPermissions) {
-                // It was added
-                if($scope.modifiedSystemPermissions[type] && !originalSystemPermissions[type]) {
-                    systemPermissionsToCreate.push(type);
-                }
-                // It was removed
-                else if(!$scope.modifiedSystemPermissions[type] && originalSystemPermissions[type]) {
-                    systemPermissionsToDelete.push(type);
-                }
-            }
-            
-            for(var id in $scope.modifiedConnectionPermissions) {
-                // It was added
-                if($scope.modifiedConnectionPermissions[id] && !originalConnectionPermissions[id]) {
-                    connectionPermissionsToCreate.push(id);
-                }
-                // It was removed
-                else if(!$scope.modifiedConnectionPermissions[id] && originalConnectionPermissions[id]) {
-                    connectionPermissionsToDelete.push(id);
-                }
-            }
-            
-            for(var id in $scope.modifiedConnectionGroupPermissions) {
-                // It was added
-                if($scope.modifiedConnectionGroupPermissions[id] && !originalConnectionGroupPermissions[id]) {
-                    connectionGroupPermissionsToCreate.push(id);
-                }
-                // It was removed
-                else if(!$scope.modifiedConnectionGroupPermissions[id] && originalConnectionGroupPermissions[id]) {
-                    connectionGroupPermissionsToDelete.push(id);
-                }
-            }
-            
-            var permissionsToAdd = [];
-            var permissionsToRemove = [];
-            
-            // Create new connection permissions
-            for(var i = 0; i < connectionPermissionsToCreate.length; i++) {
-                permissionsToAdd.push({
-                    objectType :        "CONNECTION",
-                    objectIdentifier :  connectionPermissionsToCreate[i],
-                    permissionType :    "READ"
-                });
-            }
-            
-            // Delete old connection permissions
-            for(var i = 0; i < connectionPermissionsToDelete.length; i++) {
-                permissionsToRemove.push({
-                    objectType :        "CONNECTION",
-                    objectIdentifier :  connectionPermissionsToDelete[i],
-                    permissionType :    "READ"
-                });
-            }
-            
-            // Create new connection group permissions
-            for(var i = 0; i < connectionGroupPermissionsToCreate.length; i++) {
-                permissionsToAdd.push({
-                    objectType :        "CONNECTION_GROUP",
-                    objectIdentifier :  connectionGroupPermissionsToCreate[i],
-                    permissionType :    "READ"
-                });
-            }
-            
-            // Delete old connection group permissions
-            for(var i = 0; i < connectionGroupPermissionsToDelete.length; i++) {
-                permissionsToRemove.push({
-                    objectType :        "CONNECTION_GROUP",
-                    objectIdentifier :  connectionGroupPermissionsToDelete[i],
-                    permissionType :    "READ"
-                });
-            }
-            
-            // Create new system permissions
-            for(var i = 0; i < systemPermissionsToCreate.length; i++) {
-                permissionsToAdd.push({
-                    objectType :        "SYSTEM",
-                    permissionType :    systemPermissionsToCreate[i]
-                });
-            }
-            
-            // Delete old system permissions
-            for(var i = 0; i < systemPermissionsToDelete.length; i++) {
-                permissionsToRemove.push({
-                    objectType :        "SYSTEM",
-                    permissionType :    systemPermissionsToDelete[i]
-                });
-            }
-        
-            function completeSaveProcess() {
-                // Close the modal
-                userEditModal.deactivate();
-            }
-            
-            function handleFailure() {
-                //TODO: Handle the permission API call failure
-            }
-            
-            if(permissionsToAdd.length || permissionsToRemove.length) {
-                // Make the call to update the permissions
-                permissionService.patchPermissions(
-                        $scope.user.username, permissionsToAdd, permissionsToRemove)
-                        .success(completeSaveProcess).error(handleFailure);
-            } else {
-                completeSaveProcess();
-            }
-            
-        });
-    };
-    
-    $scope.permissions = [];
 
-    // Maps of connection and connection group IDs to access permission booleans
-    $scope.connectionPermissions = {};
-    $scope.connectionGroupPermissions = {};
-    $scope.systemPermissions = {};
-    
-    // The original permissions to compare against 
-    var originalConnectionPermissions,
-        originalConnectionGroupPermissions,
-        originalSystemPermissions;
-    
-    // Get the permissions for the user we are editing
-    permissionService.getPermissions(identifier).success(function gotPermissions(permissions) {
-        $scope.permissions = permissions;
-        
-        // Figure out if the user has any system level permissions
-        for(var i = 0; i < $scope.permissions.length; i++) {
-            var permission = $scope.permissions[i];
-            if(permission.objectType === "SYSTEM") {
-                
-                $scope.systemPermissions[permission.permissionType] = true;
-                
-            // Only READ permission is editable via this UI
-            } else if (permission.permissionType === "READ") {
-                switch(permission.objectType) {
-                    case "CONNECTION":
-                        $scope.connectionPermissions[permission.objectIdentifier] = true;
-                        break;
-                    case "CONNECTION_GROUP":
-                        $scope.connectionGroupPermissions[permission.objectIdentifier] = true;
-                        break;
-                }
-            }
-        }
-        
-        // Copy the original permissions so we can compare later
-        originalConnectionPermissions = angular.copy($scope.connectionPermissions);
-        originalConnectionGroupPermissions = angular.copy($scope.connectionGroupPermissions);
-        originalSystemPermissions = angular.copy($scope.systemPermissions);
-        
-    });
+        // Save the user
+        userService.saveUser($scope.user)
+        .success(function savedUser() {
+            $location.path('/manage/');
+
+            // TODO: Save permissions
+        })
+
+        // Notify of any errors
+        .error(function userSaveFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
+        });
+
+    };
     
     /**
-     * Delete the user and close the modal.
+     * An action to be provided along with the object sent to showStatus which
+     * immediately deletes the current user.
      */
-    $scope['delete'] = function deleteUser() {
-        userService.deleteUser($scope.user).success(function successfullyDeletedUser() {
-            
-            // Remove the user from the list
-            $scope.removeUser($scope.user);
-            
-            // Close the modal
-            userEditModal.deactivate();
-        });
+    var DELETE_ACTION = {
+        name        : "manage.edit.user.delete",
+        className   : "danger",
+        // Handle action
+        callback    : function deleteCallback() {
+            deleteUserImmediately();
+            $scope.showStatus(false);
+        }
     };
-    
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var CANCEL_ACTION = {
+        name        : "manage.edit.user.cancel",
+        // Handle action
+        callback    : function cancelCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * Immediately deletes the current user, without prompting the user for
+     * confirmation.
+     */
+    var deleteUserImmediately = function deleteUserImmediately() {
+
+        // Delete the user 
+        userService.deleteUser($scope.user)
+        .success(function deletedUser() {
+            $location.path('/manage/');
+        })
+
+        // Notify of any errors
+        .error(function userDeletionFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
+        });
+
+    };
+
+    /**
+     * Deletes the user, prompting the user first to confirm that deletion is
+     * desired.
+     */
+    $scope.deleteUser = function deleteUser() {
+
+        // Confirm deletion request
+        $scope.showStatus({
+            'title'      : 'manage.edit.user.confirmDelete.title',
+            'text'       : 'manage.edit.user.confirmDelete.text',
+            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
+        });
+
+    };
+
 }]);
-
-
-
