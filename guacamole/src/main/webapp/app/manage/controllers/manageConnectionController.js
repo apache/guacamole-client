@@ -23,51 +23,65 @@
 /**
  * The controller for the connection edit modal.
  */
-angular.module('manage').controller('connectionEditModalController', ['$scope', '$injector', 
-        function connectionEditModalController($scope, $injector) {
-            
-    var connectionEditModal             = $injector.get('connectionEditModal');
+angular.module('manage').controller('manageConnectionController', ['$scope', '$injector',
+        function manageConnectionController($scope, $injector) {
+
+    var $routeParams                    = $injector.get('$routeParams');
     var connectionService               = $injector.get('connectionService');
+    var connectionGroupService          = $injector.get('connectionGroupService');
+    var protocolService                 = $injector.get('protocolService');
     var Connection                      = $injector.get('Connection');
+    var ConnectionGroup                 = $injector.get('ConnectionGroup');
+    var PermissionSet                   = $injector.get('PermissionSet');
     var HistoryEntryWrapper             = $injector.get('HistoryEntryWrapper');
-    
+   
+    var identifier = $routeParams.id;
+
     // Make a copy of the old connection so that we can copy over the changes when done
     var oldConnection = $scope.connection;
-    
-    // Copy data into a new conection object in case the user doesn't want to save
-    $scope.connection = new Connection($scope.connection);
-    
-    var newConnection = !$scope.connection.identifier;
-    
-    // Set it to VNC by default
-    if(!$scope.connection.protocol)
-        $scope.connection.protocol = "vnc";
-    
-    // Wrap all the history entries
-    if (!newConnection) {
 
-        connectionService.getConnectionHistory($scope.connection.identifier).success(function wrapHistoryEntries(historyEntries) {
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    .success(function connectionGroupReceived(rootGroup) {
+        $scope.rootGroup = rootGroup;
+        $scope.loadingConnections = false; 
+    });
+   
+    // Get the protocol information from the server and copy it into the scope
+    protocolService.getProtocols().success(function fetchProtocols(protocols) {
+        $scope.protocols = protocols;
+    });
+   
+    // Wrap all the history entries
+    if (identifier) {
+
+        // Copy data into a new conection object in case the user doesn't want to save
+        connectionService.getConnection(identifier).success(function connectionRetrieved(connection) {
+            $scope.connection = connection;
+        });
+     
+        connectionService.getConnectionHistory(identifier).success(function wrapHistoryEntries(historyEntries) {
             $scope.historyEntryWrappers = [];
             historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
                $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
             });
         });
 
-        connectionService.getConnectionParameters($scope.connection.identifier).success(function setParameters(parameters) {
-            $scope.connection.parameters = parameters;
+        connectionService.getConnectionParameters(identifier).success(function setParameters(parameters) {
+            $scope.parameters = parameters;
         });
 
     }
     else {
+        $scope.connection = new Connection({ protocol: 'vnc' });
         $scope.historyEntryWrappers = [];
-        $scope.connection.parameters = {};
+        $scope.parameters = {};
     }
     
     /**
      * Close the modal.
      */
     $scope.close = function close() {
-        connectionEditModal.deactivate();
+        //connectionEditModal.deactivate();
     };
     
     /**
@@ -95,7 +109,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
                 }
             
             // Close the modal
-            connectionEditModal.deactivate();
+            //connectionEditModal.deactivate();
         });
     };
     
@@ -108,7 +122,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
         var newConnection = !$scope.connection.identifier;
         if(newConnection) {
             // Close the modal
-            connectionEditModal.deactivate();
+            //connectionEditModal.deactivate();
             return;
         }
         
@@ -119,7 +133,7 @@ angular.module('manage').controller('connectionEditModalController', ['$scope', 
             $scope.moveItem($scope.connection, oldParentID);
             
             // Close the modal
-            connectionEditModal.deactivate();
+            //connectionEditModal.deactivate();
         });
     };
 

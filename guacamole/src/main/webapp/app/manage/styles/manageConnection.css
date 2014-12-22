@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,78 +20,19 @@
  * THE SOFTWARE.
  */
 
-.dialog-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 1em;
-}
-
-.dialog-outer {
-    display: table;
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    background: rgba(0, 0, 0, 0.5);
-}
-
-.dialog-middle {
-    width: 100%;
-    text-align: center;
-    display: table-cell;
-    vertical-align: middle;
-}
-
-.dialog.edit {
-    max-height: 100%;
-}
-
-.dialog {
-
-    max-width: 100%;
-    width: 8in;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: auto;
-
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: #E7E7E7;
-
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-
-    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.6);
-    
-}
-
-.dialog > * {
+.manage-connection .info table,
+.manage-connection .parameters table {
     margin: 1em;
 }
 
-.dialog .header {
-    margin: 0;
+.manage-connection .info table th,
+.manage-connection .parameters table th {
+    text-align: left;
+    font-weight: normal;
+    padding-right: 1em;
 }
 
-.dialog td {
-    position: relative;
-}
-
-.dialog .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    z-index: 1;
-}
-
-.dialog .footer {
+.manage-connection .action-buttons {
     text-align: center;
+    margin-bottom: 1em;
 }

@@ -39,6 +39,7 @@
         "newGroup"               : "New Group",
         "edit": {
             "connection": {
+                "title"             : "Edit Connection",
                 "cancel"            : "Cancel",
                 "save"              : "Save",
                 "delete"            : "Delete",
@@ -46,10 +47,10 @@
                 "root"              : "ROOT",
                 "location"          : "Location:",
                 "name"              : "Name:",
-                "parameters"        : "Parameters:",
+                "parameters"        : "Parameters",
                 "history"           : {
                     "connectionNotUsed" : "This connection has not yet been used.",
-                    "usageHistory"      : "Usage History:",
+                    "usageHistory"      : "Usage History",
                     "username"          : "Username",
                     "startTime"         : "Start Time",
                     "duration"          : "Duration",

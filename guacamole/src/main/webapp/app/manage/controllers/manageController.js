@@ -32,7 +32,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
 
     // Required services
     var connectionGroupService      = $injector.get('connectionGroupService');
-    var connectionEditModal         = $injector.get('connectionEditModal');
     var connectionGroupEditModal    = $injector.get('connectionGroupEditModal');
     var userEditModal               = $injector.get('userEditModal');
     var protocolService             = $injector.get('protocolService');

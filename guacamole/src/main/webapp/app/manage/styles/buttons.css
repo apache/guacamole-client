@@ -31,7 +31,7 @@ button.add-user {
 
 }
 
-button.add-connection {
+a.button.add-connection {
 
     background-image: url('images/action-icons/guac-monitor-add.png');
     background-repeat: no-repeat;

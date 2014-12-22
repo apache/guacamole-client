@@ -20,16 +20,19 @@
  * THE SOFTWARE.
  */
 
-/**
- * A modal for editing a connection.
- */
-angular.module('manage').factory('connectionEditModal', ['btfModal', 
-        function connectionEditModal(btfModal) {
-            
-    // Create the modal object to be used later to actually create the modal
-    return btfModal({
-        controller: 'connectionEditModalController',
-        controllerAs: 'modal',
-        templateUrl: 'app/manage/templates/editableConnection.html',
-    });
-}]);
+.location-chooser .dropdown {
+
+    position: absolute;
+    z-index: 2;
+    margin-top: -1px;
+
+    width: 3in;
+    max-height: 2in;
+    overflow: auto;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: white;
+
+    font-size: 10pt;
+
+}
