@@ -40,11 +40,11 @@ THE SOFTWARE.
         </div>
 
         <!-- List of users this user has access to -->
-        <div class="user-list" ng-class="{loading: loadingUsers}">
-            <div ng-click="editUser(user)" ng-repeat="user in users | orderBy : 'username'" class="list-item">
+        <div class="user-list" ng-class="{loading: !users}">
+            <div ng-repeat="user in users | orderBy : 'username'" class="user list-item">
                 <div class="caption">
                     <div class="icon user"></div>
-                    <span class="name">{{user.username}}</span>
+                    <a class="name" ng-href="#/manage/users/{{user.username}}">{{user.username}}</a>
                 </div>
             </div>
         </div>
@@ -58,11 +58,11 @@ THE SOFTWARE.
         <!-- Control to create a new connection or group -->
         <div class="connection-add-form">
             <a class="add-connection button" href="#/manage/connections/">{{'manage.newConnection' | translate}}</a>
-            <button ng-click="newConnectionGroup()" class="add-connection-group">{{'manage.newGroup' | translate}}</button>
+            <a class="add-connection-group button" href="#/manage/connectionGroups/">{{'manage.newGroup' | translate}}</a>
         </div>
 
         <!-- List of connections and groups this user has access to -->
-        <div class="connection-list" ng-class="{loading: loadingConnections}">
+        <div class="connection-list" ng-class="{loading: !rootGroup}">
             <guac-group-list
                 context="groupListContext"
                 connection-group="rootGroup"

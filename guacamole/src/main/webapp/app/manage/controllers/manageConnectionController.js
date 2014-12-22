@@ -26,115 +26,181 @@
 angular.module('manage').controller('manageConnectionController', ['$scope', '$injector',
         function manageConnectionController($scope, $injector) {
 
-    var $routeParams                    = $injector.get('$routeParams');
-    var connectionService               = $injector.get('connectionService');
-    var connectionGroupService          = $injector.get('connectionGroupService');
-    var protocolService                 = $injector.get('protocolService');
-    var Connection                      = $injector.get('Connection');
-    var ConnectionGroup                 = $injector.get('ConnectionGroup');
-    var PermissionSet                   = $injector.get('PermissionSet');
-    var HistoryEntryWrapper             = $injector.get('HistoryEntryWrapper');
-   
+    // Required types
+    var Connection          = $injector.get('Connection');
+    var ConnectionGroup     = $injector.get('ConnectionGroup');
+    var HistoryEntryWrapper = $injector.get('HistoryEntryWrapper');
+    var PermissionSet       = $injector.get('PermissionSet');
+
+    // Required services
+    var $location              = $injector.get('$location');
+    var $routeParams           = $injector.get('$routeParams');
+    var connectionService      = $injector.get('connectionService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var protocolService        = $injector.get('protocolService');
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "manage.error.action.acknowledge",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * The identifier of the connection being edited. If a new connection is
+     * being created, this will not be defined.
+     *
+     * @type String
+     */
     var identifier = $routeParams.id;
 
-    // Make a copy of the old connection so that we can copy over the changes when done
-    var oldConnection = $scope.connection;
-
+    // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
         $scope.loadingConnections = false; 
     });
    
-    // Get the protocol information from the server and copy it into the scope
-    protocolService.getProtocols().success(function fetchProtocols(protocols) {
+    // Get protocol metadata
+    protocolService.getProtocols().success(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
    
-    // Wrap all the history entries
+    // If we are editing an existing connection, pull its data
     if (identifier) {
 
-        // Copy data into a new conection object in case the user doesn't want to save
+        // Pull data from existing connection
         connectionService.getConnection(identifier).success(function connectionRetrieved(connection) {
             $scope.connection = connection;
         });
-     
-        connectionService.getConnectionHistory(identifier).success(function wrapHistoryEntries(historyEntries) {
+
+        // Pull connection history
+        connectionService.getConnectionHistory(identifier).success(function historyReceived(historyEntries) {
+
+            // Wrap all history entries for sake of display
             $scope.historyEntryWrappers = [];
             historyEntries.forEach(function wrapHistoryEntry(historyEntry) {
                $scope.historyEntryWrappers.push(new HistoryEntryWrapper(historyEntry)); 
             });
+
         });
 
-        connectionService.getConnectionParameters(identifier).success(function setParameters(parameters) {
+        // Pull connection parameters
+        connectionService.getConnectionParameters(identifier).success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
 
     }
+
+    // If we are creating a new connection, populate skeleton connection data
     else {
         $scope.connection = new Connection({ protocol: 'vnc' });
         $scope.historyEntryWrappers = [];
         $scope.parameters = {};
     }
-    
+
     /**
-     * Close the modal.
+     * Cancels all pending edits, returning to the management page.
      */
-    $scope.close = function close() {
-        //connectionEditModal.deactivate();
+    $scope.cancel = function cancel() {
+        $location.path('/manage/');
     };
-    
+            
     /**
-     * Save the connection and close the modal.
+     * Saves the connection, creating a new connection or updating the existing
+     * connection.
      */
-    $scope.save = function save() {
-        connectionService.saveConnection($scope.connection).success(function successfullyUpdatedConnection() {
-            
-            var oldParentID = oldConnection.parentIdentifier;
-            var newParentID = $scope.connection.parentIdentifier;
-            
-            // Copy the data back to the original model
-            angular.extend(oldConnection, $scope.connection);
-            
-            // We have to move this connection
-            if(oldParentID !== newParentID)
-                
-                // New connections are created by default in root - don't try to move it if it's already there.
-                if(newConnection && newParentID === $scope.rootGroup.identifier) {
-                    $scope.moveItem($scope.connection, oldParentID, newParentID);
-                } else {
-                    connectionService.moveConnection($scope.connection).then(function moveConnection() {
-                        $scope.moveItem($scope.connection, oldParentID, newParentID);
-                    });
-                }
-            
-            // Close the modal
-            //connectionEditModal.deactivate();
+    $scope.saveConnection = function saveConnection() {
+
+        $scope.connection.parameters = $scope.parameters;
+
+        // Save the connection
+        connectionService.saveConnection($scope.connection)
+        .success(function savedConnection() {
+            $location.path('/manage/');
+        })
+
+        // Notify of any errors
+        .error(function connectionSaveFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
         });
+
+
     };
     
     /**
-     * Delete the connection and close the modal.
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
      */
-    $scope['delete'] = function deleteConnection() {
-        
-        // Nothing to delete if the connection is new
-        var newConnection = !$scope.connection.identifier;
-        if(newConnection) {
-            // Close the modal
-            //connectionEditModal.deactivate();
-            return;
+    var DELETE_ACTION = {
+        name        : "manage.edit.connection.delete",
+        className   : "danger",
+        // Handle action
+        callback    : function deleteCallback() {
+            deleteConnectionImmediately();
+            $scope.showStatus(false);
         }
-        
-        connectionService.deleteConnection($scope.connection).success(function successfullyDeletedConnection() {
-            var oldParentID = oldConnection.parentIdentifier;
-            
-            // We have to remove this connection from the heirarchy
-            $scope.moveItem($scope.connection, oldParentID);
-            
-            // Close the modal
-            //connectionEditModal.deactivate();
+    };
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var CANCEL_ACTION = {
+        name        : "manage.edit.connection.cancel",
+        // Handle action
+        callback    : function cancelCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * Immediately deletes the current connection, without prompting the user
+     * for confirmation.
+     */
+    var deleteConnectionImmediately = function deleteConnectionImmediately() {
+
+        // Delete the connection
+        connectionService.deleteConnection($scope.connection)
+        .success(function deletedConnection() {
+            $location.path('/manage/');
+        })
+
+        // Notify of any errors
+        .error(function connectionDeletionFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
         });
+
+    };
+
+    /**
+     * Deletes the connection, prompting the user first to confirm that
+     * deletion is desired.
+     */
+    $scope.deleteConnection = function deleteConnection() {
+
+        // Confirm deletion request
+        $scope.showStatus({
+            'title'      : 'manage.edit.connection.confirmDelete.title',
+            'text'       : 'manage.edit.connection.confirmDelete.text',
+            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
+        });
+
     };
 
 }]);

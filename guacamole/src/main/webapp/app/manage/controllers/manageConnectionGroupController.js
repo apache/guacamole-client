@@ -23,34 +23,46 @@
 /**
  * The controller for the connection group edit modal.
  */
-angular.module('manage').controller('connectionGroupEditModalController', ['$scope', '$injector', 
-        function connectionEditModalController($scope, $injector) {
+angular.module('manage').controller('manageConnectionGroupController', ['$scope', '$injector', 
+        function manageConnectionGroupController($scope, $injector) {
             
-    var connectionGroupEditModal        = $injector.get('connectionGroupEditModal');
-    var connectionGroupService          = $injector.get('connectionGroupService');
-    
-    // Make a copy of the old connection group so that we can copy over the changes when done
-    var oldConnectionGroup = $scope.connectionGroup;
+    // Required types
+    var ConnectionGroup = $injector.get('ConnectionGroup');
+    var PermissionSet   = $injector.get('PermissionSet');
+
+    // Required services
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var $routeParams           = $injector.get('$routeParams');
     
     // Copy data into a new conection group object in case the user doesn't want to save
-    $scope.connectionGroup = angular.copy($scope.connectionGroup);
-    
-    var newConnectionGroup = !$scope.connectionGroup.identifier;
-    
+    var identifier = $routeParams.id;
+
+    // Pull connection group data
+    if (identifier) {
+        connectionGroupService.getConnectionGroup(identifier).success(function connectionGroupReceived(connectionGroup) {
+            $scope.connectionGroup = connectionGroup;
+        });
+    }
+
+    else
+        $scope.connectionGroup = new ConnectionGroup();
+
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    .success(function connectionGroupReceived(rootGroup) {
+        $scope.rootGroup = rootGroup;
+        $scope.loadingConnections = false; 
+    });
+   
     $scope.types = [
         {
             label: "organizational",
-            value: "ORGANIZATIONAL"
+            value: ConnectionGroup.Type.ORGANIZATIONAL
         },
         {
-            label: "balancing",
-            value: "BALANCING"
+            label : "balancing",
+            value : ConnectionGroup.Type.BALANCING
         }
     ];
-    
-    // Set it to organizational by default
-    if(!$scope.connectionGroup.type)
-        $scope.connectionGroup.type = $scope.types[0].value;
     
     /**
      * Close the modal.

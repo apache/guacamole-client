@@ -23,18 +23,20 @@
 /**
  * The controller for the connection edit modal.
  */
-angular.module('manage').controller('userEditModalController', ['$scope', '$injector', 
-        function userEditModalController($scope, $injector) {
+angular.module('manage').controller('manageUserController', ['$scope', '$injector', 
+        function manageUserController($scope, $injector) {
             
-    var userEditModal     = $injector.get('userEditModal');
+    // Required services
+    var $routeParams      = $injector.get('$routeParams');
     var userService       = $injector.get('userService');
     var permissionService = $injector.get('permissionService');
     
-    // Make a copy of the old user so that we can copy over the changes when done
-    var oldUser = $scope.user;
-    
-    // Copy data into a new conection object in case the user doesn't want to save
-    $scope.user = angular.copy($scope.user);
+    var identifier = $routeParams.id;
+
+    // Pull user data
+    userService.getUser(identifier).success(function userReceived(user) {
+        $scope.user = user;
+    });
     
     /**
      * Close the modal.
@@ -205,7 +207,7 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
         originalSystemPermissions;
     
     // Get the permissions for the user we are editing
-    permissionService.getPermissions($scope.user.username).success(function gotPermissions(permissions) {
+    permissionService.getPermissions(identifier).success(function gotPermissions(permissions) {
         $scope.permissions = permissions;
         
         // Figure out if the user has any system level permissions
@@ -247,16 +249,8 @@ angular.module('manage').controller('userEditModalController', ['$scope', '$inje
             // Close the modal
             userEditModal.deactivate();
         });
-    }
-    
-    /**
-     * Toggle the open/closed status of the connectionGroup.
-     * 
-     * @param {object} connectionGroup The connection group to toggle.
-     */
-    $scope.toggleExpanded = function toggleExpanded(connectionGroup) {
-        connectionGroup.expanded = !connectionGroup.expanded;
     };
+    
 }]);
 
 

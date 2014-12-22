@@ -35,8 +35,11 @@ angular.module('notification').factory('NotificationAction', [function defineNot
      *
      * @param {Function} callback
      *     The callback to call when the user elects to perform this action.
+     * 
+     * @param {String} className
+     *     The CSS class to associate with this action, if any.
      */
-    var NotificationAction = function NotificationAction(name, callback) {
+    var NotificationAction = function NotificationAction(name, callback, className) {
 
         /**
          * Reference to this NotificationAction.
@@ -44,6 +47,13 @@ angular.module('notification').factory('NotificationAction', [function defineNot
          * @type NotificationAction
          */
         var action = this;
+
+        /**
+         * The CSS class associated with this action.
+         * 
+         * @type String
+         */
+        this.className = className;
 
         /**
          * The name of this action.

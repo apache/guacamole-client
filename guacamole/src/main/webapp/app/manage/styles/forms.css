@@ -20,19 +20,17 @@
  * THE SOFTWARE.
  */
 
-.manage-connection .info table,
-.manage-connection .parameters table {
+.manage .properties table {
     margin: 1em;
 }
 
-.manage-connection .info table th,
-.manage-connection .parameters table th {
+.manage .properties table th {
     text-align: left;
     font-weight: normal;
     padding-right: 1em;
 }
 
-.manage-connection .action-buttons {
+.manage .action-buttons {
     text-align: center;
     margin-bottom: 1em;
 }

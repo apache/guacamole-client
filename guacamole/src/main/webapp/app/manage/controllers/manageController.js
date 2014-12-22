@@ -27,146 +27,78 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         function manageController($scope, $injector) {
 
     // Required types
-    var PermissionSet   = $injector.get('PermissionSet');
     var ConnectionGroup = $injector.get('ConnectionGroup');
+    var PermissionSet   = $injector.get('PermissionSet');
+    var User            = $injector.get('User');
 
     // Required services
-    var connectionGroupService      = $injector.get('connectionGroupService');
-    var connectionGroupEditModal    = $injector.get('connectionGroupEditModal');
-    var userEditModal               = $injector.get('userEditModal');
-    var protocolService             = $injector.get('protocolService');
-    var userService                 = $injector.get('userService');
-    
-    // Set status to loading until we have all the connections, groups, and users have loaded
-    $scope.loadingUsers         = true;
-    $scope.loadingConnections   = true;
-    
-    $scope.basicPermissionsLoaded.then(function basicPermissionsHaveBeenLoaded() {
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var userService            = $injector.get('userService');
 
-        // Retrieve all users for whom we have UPDATE permission
-        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
-        .success(function connectionGroupReceived(rootGroup) {
-            $scope.rootGroup = rootGroup;
-            $scope.loadingConnections = false; 
-        });
-
-        // Retrieve all users for whom we have UPDATE permission
-        userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE)
-        .success(function usersReceived(users) {
-            $scope.users = users;
-            $scope.loadingUsers = false; 
-        });
-
-    });
-    
-    $scope.protocols = {};
-    
-    // Get the protocol information from the server and copy it into the scope
-    protocolService.getProtocols().success(function fetchProtocols(protocols) {
-        $scope.protocols = protocols;
-    });
-
-    // Expose object edit functions to group list template
-    $scope.groupListContext = {
-    
-        /**
-         * Open a modal to edit the given connection.
-         *  
-         * @param {Connection} connection
-         *     The connection to edit.
-         */
-        editConnection : function editConnection(connection) {
-            connectionEditModal.activate({
-                connection : connection, 
-                protocols  : $scope.protocols,
-                rootGroup  : $scope.rootGroup
-            });
-        },
-
-        /**
-         * Open a modal to edit the given connection group.
-         *  
-         * @param {ConnectionGroup} connectionGroup
-         *     The connection group to edit.
-         */
-        editConnectionGroup : function editConnectionGroup(connectionGroup) {
-            connectionGroupEditModal.activate({
-                connectionGroup : connectionGroup, 
-                rootGroup       : $scope.rootGroup
-            });
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "manage.error.action.acknowledge",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            $scope.showStatus(false);
         }
+    };
 
-    };
-    
     /**
-     * Open a modal to create a new connection.
+     * The name of the new user to create, if any, when user creation is
+     * requested via newUser().
+     *
+     * @type String
      */
-    $scope.newConnection = function newConnection() {
-        connectionEditModal.activate(
-        {
-            connection : {}, 
-            protocols  : $scope.protocols,
-            rootGroup  : $scope.rootGroup
-        });
-    };
-    
-    /**
-     * Open a modal to create a new connection group.
-     */
-    $scope.newConnectionGroup = function newConnectionGroup() {
-        connectionGroupEditModal.activate(
-        {
-            connectionGroup : {}, 
-            rootGroup       : $scope.rootGroup
-        });
-    };
-    
-    // Remove the user from the current list of users
-    function removeUser(user) {
-        for(var i = 0; i < $scope.users.length; i++) {
-            if($scope.users[i].username === user.username) {
-                $scope.users.splice(i, 1);
-                break;
-            }
-        }
-    }
-    
-    /**
-     * Open a modal to edit the user.
-     *  
-     * @param {object} user The user to edit.
-     */
-    $scope.editUser = function editUser(user) {
-        userEditModal.activate(
-        {
-            user            : user, 
-            rootGroup       : $scope.rootGroup,
-            removeUser      : removeUser
-        });
-    };
-    
     $scope.newUsername = "";
     
+    // Retrieve all users for whom we have UPDATE permission
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    .success(function connectionGroupReceived(rootGroup) {
+        $scope.rootGroup = rootGroup;
+    });
+
+    // Retrieve all users for whom we have UPDATE permission
+    userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE)
+    .success(function usersReceived(users) {
+        $scope.users = users;
+    });
+
     /**
-     * Open a modal to edit the user.
-     *  
-     * @param {object} user The user to edit.
+     * Creates a new user having the username specified in the user creation
+     * interface.
      */
     $scope.newUser = function newUser() {
-        if($scope.newUsername) {
-            var newUser = {
-                username: $scope.newUsername
-            };
-            
-            userService.createUser(newUser).success(function addUserToList() {
-                $scope.users.push(newUser);
+
+        // Create user skeleton
+        var user = new User({
+            username: $scope.newUsername || ''
+        });
+
+        // Create specified user
+        userService.createUser(user)
+
+        // Add user to visible list upon success
+        .success(function userCreated() {
+            $scope.users.push(user);
+        })
+
+        // Notify of any errors
+        .error(function userCreationFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
-            
-            $scope.newUsername = "";
-        }
+        });
+
+        // Reset username
+        $scope.newUsername = "";
+
     };
     
 }]);
-
-
-

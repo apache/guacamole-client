@@ -44,9 +44,21 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
         .when('/manage/connections/:id?', {
             title: 'application.title',
-            bodyClassName: 'manage-connection',
+            bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manageConnection.html',
             controller: 'manageConnectionController'
+        })
+        .when('/manage/connectionGroups/:id?', {
+            title: 'application.title',
+            bodyClassName: 'manage',
+            templateUrl: 'app/manage/templates/manageConnectionGroup.html',
+            controller: 'manageConnectionGroupController'
+        })
+        .when('/manage/users/:id', {
+            title: 'application.title',
+            bodyClassName: 'manage',
+            templateUrl: 'app/manage/templates/manageUser.html',
+            controller: 'manageUserController'
         })
         .when('/login/', {
             title: 'application.title',

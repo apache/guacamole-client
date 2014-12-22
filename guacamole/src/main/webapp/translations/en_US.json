@@ -43,6 +43,10 @@
                 "cancel"            : "Cancel",
                 "save"              : "Save",
                 "delete"            : "Delete",
+                "confirmDelete"     : {
+                    "title"             : "Delete Connection",
+                    "text"              : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?"
+                },
                 "protocol"          : "Protocol:",
                 "root"              : "ROOT",
                 "location"          : "Location:",
@@ -86,6 +90,12 @@
                 "createConnection"          : "Create new connections:",
                 "createConnectionGroup"     : "Create new connection groups:",
                 "connections"               : "Connections:"
+            }
+        },
+        "error": {
+            "title"             : "Error",
+            "action": {
+                "acknowledge"       : "OK"
             }
         }
     },
