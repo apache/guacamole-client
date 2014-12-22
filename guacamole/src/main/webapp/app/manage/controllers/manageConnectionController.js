@@ -21,7 +21,7 @@
  */
 
 /**
- * The controller for the connection edit modal.
+ * The controller for editing or creating connections.
  */
 angular.module('manage').controller('manageConnectionController', ['$scope', '$injector',
         function manageConnectionController($scope, $injector) {
@@ -63,7 +63,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
-        $scope.loadingConnections = false; 
     });
    
     // Get protocol metadata
@@ -135,12 +134,11 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             });
         });
 
-
     };
     
     /**
      * An action to be provided along with the object sent to showStatus which
-     * closes the currently-shown status dialog.
+     * immediately deletes the current connection.
      */
     var DELETE_ACTION = {
         name        : "manage.edit.connection.delete",
@@ -204,6 +202,3 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
 }]);
-
-
-

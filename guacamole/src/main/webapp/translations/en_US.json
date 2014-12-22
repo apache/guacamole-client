@@ -64,9 +64,14 @@
                 }
             },
             "connectionGroup": {
+                "title"             : "Edit Connection Group",
                 "cancel"            : "Cancel",
                 "save"              : "Save",
                 "delete"            : "Delete",
+                "confirmDelete"     : {
+                    "title"             : "Delete Connection",
+                    "text"              : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?"
+                },
                 "usageHistory"      : "Usage History:",
                 "type"              : {
                     "label"             : "Type",

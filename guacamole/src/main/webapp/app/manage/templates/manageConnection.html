@@ -25,10 +25,8 @@ THE SOFTWARE.
     <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
 </div>
 
-<!-- Connection name -->
+<!-- Main property editor -->
 <h2>{{'manage.edit.connection.title' | translate}}</h2>
-
-<!-- Main connection edit section -->
 <div class="properties">
         <table>
         
@@ -61,31 +59,28 @@ THE SOFTWARE.
 
 <!-- Connection parameters -->
 <h2>{{'manage.edit.connection.parameters' | translate}}</h2>
-
 <div class="properties" ng-class="{loading: !parameters}">
-  <table class="fields">
-      
-    <!-- All the different possible editable field types -->
-    <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
-      <th>{{'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.label' | translate}}:</th>
-      <td>
-          <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"/>
-      </td>
-    </tr>
-  </table>
+    <table class="fields">
+        
+        <!-- All the different possible editable field types -->
+        <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
+            <th>{{'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.label' | translate}}:</th>
+            <td>
+                <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"/>
+            </td>
+        </tr>
+    </table>
 </div>
 
 <!-- Form action buttons -->
 <div class="action-buttons">
-  <button ng-click="saveConnection()">{{'manage.edit.connection.save' | translate}}</button>
-  <button ng-click="cancel()">{{'manage.edit.connection.cancel' | translate}}</button>
-  <button ng-click="deleteConnection()" class="danger">{{'manage.edit.connection.delete' | translate}}</button>
+    <button ng-click="saveConnection()">{{'manage.edit.connection.save' | translate}}</button>
+    <button ng-click="cancel()">{{'manage.edit.connection.cancel' | translate}}</button>
+    <button ng-click="deleteConnection()" class="danger">{{'manage.edit.connection.delete' | translate}}</button>
 </div>
 
-<!-- History connection area -->
+<!-- Connection history -->
 <h2>{{'manage.edit.connection.history.usageHistory' | translate}}</h2>
-
-<!-- History connection list -->
 <div class="history" ng-class="{loading: !historyEntryWrappers}">
     <p ng-hide="historyEntryWrappers.length">{{'manage.edit.connection.history.connectionNotUsed' | translate}}</p>
     <table ng-show="historyEntryWrappers.length">

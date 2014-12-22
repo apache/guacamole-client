@@ -25,8 +25,8 @@ THE SOFTWARE.
     <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
 </div>
 
-<!-- Connection group name -->
-<h2>{{connectionGroup.name}}</h2>
+<!-- Main property editor -->
+<h2>{{'manage.edit.connectionGroup.title' | translate}}</h2>
 <div class="properties">
     <table>
                     
@@ -42,8 +42,8 @@ THE SOFTWARE.
             <th>{{'manage.edit.connectionGroup.location' | translate}}</th>
                       
             <td>
-        <location-chooser value="connectionGroup.parentIdentifier" root-group="rootGroup"/>
-        </td>
+                <location-chooser value="connectionGroup.parentIdentifier" root-group="rootGroup"/>
+            </td>
         </tr>
                     
                     
@@ -57,9 +57,9 @@ THE SOFTWARE.
     </table>
 </div>
 
-<!-- Control buttons -->
+<!-- Form action buttons -->
 <div class="action-buttons">
-    <button ng-click="save()">{{'manage.edit.connectionGroup.save' | translate}}</button>
-    <button ng-click="close()">{{'manage.edit.connectionGroup.cancel' | translate}}</button>
-    <button ng-click="delete()" class="danger">{{'manage.edit.connectionGroup.delete' | translate}}</button>
+    <button ng-click="saveConnectionGroup()">{{'manage.edit.connectionGroup.save' | translate}}</button>
+    <button ng-click="cancel()">{{'manage.edit.connectionGroup.cancel' | translate}}</button>
+    <button ng-click="deleteConnectionGroup()" class="danger">{{'manage.edit.connectionGroup.delete' | translate}}</button>
 </div>

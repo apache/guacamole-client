@@ -21,7 +21,7 @@
  */
 
 /**
- * The controller for the connection edit modal.
+ * The controller for editing users.
  */
 angular.module('manage').controller('manageUserController', ['$scope', '$injector', 
         function manageUserController($scope, $injector) {

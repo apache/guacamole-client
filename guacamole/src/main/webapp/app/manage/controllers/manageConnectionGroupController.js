@@ -21,7 +21,7 @@
  */
 
 /**
- * The controller for the connection group edit modal.
+ * The controller for editing or creating connection groups.
  */
 angular.module('manage').controller('manageConnectionGroupController', ['$scope', '$injector', 
         function manageConnectionGroupController($scope, $injector) {
@@ -31,28 +31,53 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     var PermissionSet   = $injector.get('PermissionSet');
 
     // Required services
-    var connectionGroupService = $injector.get('connectionGroupService');
+    var $location              = $injector.get('$location');
     var $routeParams           = $injector.get('$routeParams');
+    var connectionGroupService = $injector.get('connectionGroupService');
     
-    // Copy data into a new conection group object in case the user doesn't want to save
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "manage.error.action.acknowledge",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * The identifier of the connection group being edited. If a new connection
+     * group is being created, this will not be defined.
+     *
+     * @type String
+     */
     var identifier = $routeParams.id;
 
-    // Pull connection group data
+    // Pull connection group hierarchy
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    .success(function connectionGroupReceived(rootGroup) {
+        $scope.rootGroup = rootGroup;
+    });
+
+    // If we are editing an existing connection group, pull its data
     if (identifier) {
         connectionGroupService.getConnectionGroup(identifier).success(function connectionGroupReceived(connectionGroup) {
             $scope.connectionGroup = connectionGroup;
         });
     }
 
+    // If we are creating a new connection group, populate skeleton connection group data
     else
         $scope.connectionGroup = new ConnectionGroup();
 
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
-    .success(function connectionGroupReceived(rootGroup) {
-        $scope.rootGroup = rootGroup;
-        $scope.loadingConnections = false; 
-    });
-   
+    /**
+     * Available connection group types, as translation string / internal value
+     * pairs.
+     * 
+     * @type Object[]
+     */
     $scope.types = [
         {
             label: "organizational",
@@ -65,59 +90,99 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     ];
     
     /**
-     * Close the modal.
+     * Cancels all pending edits, returning to the management page.
      */
-    $scope.close = function close() {
-        connectionGroupEditModal.deactivate();
+    $scope.cancel = function cancel() {
+        $location.path('/manage/');
+    };
+   
+    /**
+     * Saves the connection group, creating a new connection group or updating
+     * the existing connection group.
+     */
+    $scope.saveConnectionGroup = function saveConnectionGroup() {
+
+        // Save the connection
+        connectionGroupService.saveConnectionGroup($scope.connectionGroup)
+        .success(function savedConnectionGroup() {
+            $location.path('/manage/');
+        })
+
+        // Notify of any errors
+        .error(function connectionGroupSaveFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
+        });
+
     };
     
     /**
-     * Save the connection and close the modal.
+     * An action to be provided along with the object sent to showStatus which
+     * immediately deletes the current connection group.
      */
-    $scope.save = function save() {
-        connectionGroupService.saveConnectionGroup($scope.connectionGroup).success(function successfullyUpdatedConnectionGroup() {
-            
-            var oldParentID = oldConnectionGroup.parentIdentifier;
-            var newParentID = $scope.connectionGroup.parentIdentifier;
-            
-            // Copy the data back to the original model
-            angular.extend(oldConnectionGroup, $scope.connectionGroup);
-            
-            // New groups are created by default in root - don't try to move it if it's already there.
-            if(newConnectionGroup && newParentID === $scope.rootGroup.identifier) {
-                $scope.moveItem($scope.connectionGroup, oldParentID, newParentID);
-            } else {
-                connectionGroupService.moveConnectionGroup($scope.connectionGroup).then(function moveConnectionGroup() {
-                    $scope.moveItem($scope.connectionGroup, oldParentID, newParentID);
-                });
-            }
-            
-            // Close the modal
-            connectionGroupEditModal.deactivate();
-        });
+    var DELETE_ACTION = {
+        name        : "manage.edit.connectionGroup.delete",
+        className   : "danger",
+        // Handle action
+        callback    : function deleteCallback() {
+            deleteConnectionGroupImmediately();
+            $scope.showStatus(false);
+        }
     };
-    
+
     /**
-     * Delete the connection and close the modal.
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
      */
-    $scope['delete'] = function deleteConnectionGroup() {
-        
-        // Nothing to delete if the connection is new
-        if(newConnectionGroup)
-            // Close the modal
-            connectionGroupEditModal.deactivate();
-        
-        connectionGroupService.deleteConnectionGroup($scope.connectionGroup).success(function successfullyDeletedConnectionGroup() {
-            var oldParentID = oldConnectionGroup.parentIdentifier;
-            
-            // We have to remove this connection group from the heirarchy
-            $scope.moveItem($scope.connectionGroup, oldParentID);
-            
-            // Close the modal
-            connectionGroupEditModal.deactivate();
+    var CANCEL_ACTION = {
+        name        : "manage.edit.connectionGroup.cancel",
+        // Handle action
+        callback    : function cancelCallback() {
+            $scope.showStatus(false);
+        }
+    };
+
+    /**
+     * Immediately deletes the current connection group, without prompting the
+     * user for confirmation.
+     */
+    var deleteConnectionGroupImmediately = function deleteConnectionGroupImmediately() {
+
+        // Delete the connection group
+        connectionGroupService.deleteConnectionGroup($scope.connectionGroup)
+        .success(function deletedConnectionGroup() {
+            $location.path('/manage/');
+        })
+
+        // Notify of any errors
+        .error(function connectionGroupDeletionFailed(error) {
+            $scope.showStatus({
+                'className'  : 'error',
+                'title'      : 'manage.error.title',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
         });
-    }
+
+    };
+
+    /**
+     * Deletes the connection group, prompting the user first to confirm that
+     * deletion is desired.
+     */
+    $scope.deleteConnectionGroup = function deleteConnectionGroup() {
+
+        // Confirm deletion request
+        $scope.showStatus({
+            'title'      : 'manage.edit.connectionGroup.confirmDelete.title',
+            'text'       : 'manage.edit.connectionGroup.confirmDelete.text',
+            'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
+        });
+
+    };
+
 }]);
-
-
-
