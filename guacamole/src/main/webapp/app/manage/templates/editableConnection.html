@@ -65,14 +65,17 @@ THE SOFTWARE.
               </table>
             </dd>
 
-            <dd>
+            <!-- Connection parameters -->
+            <dt>{{'manage.edit.connection.parameters' | translate}}</dt>
+
+            <dd ng-class="{loading: !connection.parameters}">
               <table class="fields section">
                   
                 <!-- All the different possible editable field types -->
                 <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
                   <th>{{'protocol.' + connection.protocol + '.parameters.' + parameter.name + '.label' | translate}}:</th>
                   <td>
-                      <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" value="connection.parameters[parameter.name]" />
+                      <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="connection.parameters"/>
                   </td>
                 </tr>
               </table>

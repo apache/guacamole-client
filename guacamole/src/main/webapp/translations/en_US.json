@@ -46,6 +46,7 @@
                 "root"              : "ROOT",
                 "location"          : "Location:",
                 "name"              : "Name:",
+                "parameters"        : "Parameters:",
                 "history"           : {
                     "connectionNotUsed" : "This connection has not yet been used.",
                     "usageHistory"      : "Usage History:",
