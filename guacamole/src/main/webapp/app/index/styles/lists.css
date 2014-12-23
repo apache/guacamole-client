@@ -73,6 +73,10 @@ div.recent-connections .protocol {
     vertical-align: middle;
 }
 
+.caption > * {
+    display: inline-block;
+}
+
 .caption .name {
     margin-left: 0.25em;
 }

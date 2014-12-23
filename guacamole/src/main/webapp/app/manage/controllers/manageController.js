@@ -55,7 +55,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
      */
     $scope.newUsername = "";
     
-    // Retrieve all users for whom we have UPDATE permission
+    // Retrieve all connections for which we have UPDATE permission
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;

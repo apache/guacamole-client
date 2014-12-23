@@ -20,11 +20,7 @@
  * THE SOFTWARE.
  */
 
-.manage .properties table {
-    margin: 1em;
-}
-
-.manage .properties table th {
+.manage table.properties th {
     text-align: left;
     font-weight: normal;
     padding-right: 1em;

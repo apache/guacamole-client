@@ -20,41 +20,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<!-- Hierarchical connection and connection group permission selector -->
-<script type="text/ng-template" id="nestedUserPermissionEditGroup.html">
-    
-    <!-- Connection -->
-    <div class="choice" ng-show="item.isConnection">
-      <input type="checkbox" ng-model="connectionPermissions[item.identifier]" ng-change="markConnectionPermissionModified(item.identifier)"/>
-      <div class="connection list-item">
-        <div class="caption">
-          <div class="protocol">
-            <div class="icon" ng-class="item.protocol"></div>
-          </div><span class="name">{{item.name}}</span>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Connection group -->
-    <div class="choice" ng-show="!item.isConnection">
-      <input type="checkbox" ng-model="connectionGroupPermissions[item.identifier]" ng-change="markConnectionGroupPermissionModified(item.identifier)"/>
-
-      <div class="group empty list-item balancer">
-        <div class="caption">
-          <div class="icon group" ng-click="toggleExpanded(item)" ng-class="{expanded: item.expanded, empty: !item.children.length, balancer: item.balancer && !item.children.length}"></div>
-
-          <span class="name">{{item.name}}</span>
-        </div>
-
-        <!-- Connection group children -->
-        <div class="children" ng-show="item.expanded">
-            <div ng-repeat="item in item.children | orderBy : 'name'" ng-include="'nestedUserPermissionEditGroup.html'">
-        </div>
-      </div>
-    </div>
-
-</script>
-
 <div class="logout-panel">
     <a class="back button" href="#/manage/">{{'manage.back' | translate}}</a>
     <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
@@ -62,8 +27,8 @@ THE SOFTWARE.
 
 <!-- Main property editor -->
 <h2>{{'manage.edit.user.title' | translate}}</h2>
-<div class="properties">
-    <table>
+<div class="section">
+    <table class="properties">
         <tr>
             <th>{{'manage.edit.user.username' | translate}}</th>
                       
@@ -84,8 +49,8 @@ THE SOFTWARE.
 
 <!-- System permissions section -->
 <h2>{{'manage.edit.user.permissions' | translate}}</h2>
-<div class="properties">
-    <table>
+<div class="section">
+    <table class="properties">
         <tr>
             <th>{{'manage.edit.user.administerSystem' | translate}}</th>
                         
@@ -114,12 +79,12 @@ THE SOFTWARE.
     
 <!-- Connection and connection group permission section -->
 <h2>{{'manage.edit.user.connections' | translate}}</h2>
-<div>
-    <div class="group-view">
-        <div class="list">
-            <div ng-repeat="item in rootGroup.children | orderBy : 'name'" ng-include="'nestedUserPermissionEditGroup.html'"></div>
-        </div>
-    </div>
+<div class="section" ng-class="{loading: !rootGroup}">
+    <guac-group-list
+        context="groupListContext"
+        connection-group="rootGroup"
+        connection-template="'app/manage/templates/connectionPermission.html'"
+        connection-group-template="'app/manage/templates/connectionGroupPermission.html'"/>
 </div>
 
 <!-- Form action buttons -->

@@ -26,11 +26,16 @@
 angular.module('manage').controller('manageUserController', ['$scope', '$injector', 
         function manageUserController($scope, $injector) {
             
+    // Required types
+    var ConnectionGroup = $injector.get('ConnectionGroup');
+    var PermissionSet   = $injector.get('PermissionSet');
+
     // Required services
-    var $location         = $injector.get('$location');
-    var $routeParams      = $injector.get('$routeParams');
-    var userService       = $injector.get('userService');
-    var permissionService = $injector.get('permissionService');
+    var $location              = $injector.get('$location');
+    var $routeParams           = $injector.get('$routeParams');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var userService            = $injector.get('userService');
+    var permissionService      = $injector.get('permissionService');
 
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -61,7 +66,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.permissions = permissions;
     });
 
-     /**
+    // Retrieve all connections for which we have UPDATE permission
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.ADMINISTER)
+    .success(function connectionGroupReceived(rootGroup) {
+        $scope.rootGroup = rootGroup;
+    });
+
+    /**
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {

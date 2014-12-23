@@ -72,8 +72,8 @@ h2 ~ h2 {
 }
 
 div.section {
-    margin: 0;
-    padding: 1em;
+    margin: 1em;
+    padding: 0;
 }
 
 /*

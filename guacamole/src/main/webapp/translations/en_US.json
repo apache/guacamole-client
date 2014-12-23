@@ -91,17 +91,16 @@
                     "title"             : "Delete User",
                     "text"              : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
                 },
-                "properties"                : "Properties:",
                 "password"                  : "Password:",
                 "passwordMatch"             : "Re-enter Password:",
                 "passwordMismatch"          : "The provided passwords do not match.",
-                "permissions"               : "Permissions:",
+                "permissions"               : "Permissions",
                 "username"                  : "Username:",
                 "administerSystem"          : "Administer system:",
                 "createUser"                : "Create new users:",
                 "createConnection"          : "Create new connections:",
                 "createConnectionGroup"     : "Create new connection groups:",
-                "connections"               : "Connections:"
+                "connections"               : "Connections"
             }
         },
         "error": {
