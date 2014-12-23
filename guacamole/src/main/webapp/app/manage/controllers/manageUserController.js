@@ -72,6 +72,57 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.rootGroup = rootGroup;
     });
 
+    // Expose permission query and modification functions to group list template
+    $scope.groupListContext = {
+
+        /**
+         * Determines whether read permission for the connection having the
+         * given identifier is granted for the user being edited.
+         * 
+         * @param {String} identifier
+         *     The identifier of the connection to check.
+         * 
+         * @returns {Boolean}
+         *     true if the user has read permission for the given connection,
+         *     false if the user lacks read permission, or the permissions have
+         *     not yet been loaded.
+         */
+        canReadConnection : function canReadConnection(identifier) {
+
+            // Assume no permission if permissions not available yet
+            if (!$scope.permissions)
+                return false;
+
+            // Return whether READ permission is present
+            return PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        },
+
+        /**
+         * Determines whether read permission for the connection group having
+         * the given identifier is granted for the user being edited.
+         * 
+         * @param {String} identifier
+         *     The identifier of the connection group to check.
+         * 
+         * @returns {Boolean}
+         *     true if the user has read permission for the given connection
+         *     group, false if the user lacks read permission, or the
+         *     permissions have not yet been loaded.
+         */
+        canReadConnectionGroup : function canReadConnectionGroup(identifier) {
+
+            // Assume no permission if permissions not available yet
+            if (!$scope.permissions)
+                return false;
+
+            // Return whether READ permission is present
+            return PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        }
+
+    };
+
     /**
      * Cancels all pending edits, returning to the management page.
      */

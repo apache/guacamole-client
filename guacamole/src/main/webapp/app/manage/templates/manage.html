@@ -64,7 +64,6 @@ THE SOFTWARE.
         <!-- List of connections and groups this user has access to -->
         <div class="connection-list" ng-class="{loading: !rootGroup}">
             <guac-group-list
-                context="groupListContext"
                 connection-group="rootGroup"
                 connection-template="'app/manage/templates/connection.html'"
                 connection-group-template="'app/manage/templates/connectionGroup.html'"/>

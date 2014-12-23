@@ -21,6 +21,6 @@
        THE SOFTWARE.
     -->
 
-    <input type="checkbox" ng-model="connectionPermissions[item.identifier]" ng-change="markConnectionPermissionModified(item.identifier)"/>
+    <input type="checkbox" ng-checked="context.canReadConnectionGroup(item.identifier)"/>
     <span class="name">{{item.name}}</span>
 </div>
