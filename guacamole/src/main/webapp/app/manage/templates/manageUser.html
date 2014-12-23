@@ -53,7 +53,7 @@ THE SOFTWARE.
     <table class="properties">
         <tr ng-repeat="systemPermissionType in systemPermissionTypes">
             <th>{{systemPermissionType.label | translate}}</th>
-            <td><input type="checkbox" ng-checked="hasSystemPermission(systemPermissionType.value)"/></td>
+            <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"/></td>
         </tr>
     </table>
 </div>

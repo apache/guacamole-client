@@ -21,6 +21,6 @@
        THE SOFTWARE.
     -->
 
-    <input type="checkbox" ng-checked="context.canReadConnectionGroup(item.identifier)"/>
+    <input type="checkbox" ng-model="context.getPermissionFlags().connectionGroupPermissions.READ[item.identifier]"/>
     <span class="name">{{item.name}}</span>
 </div>

@@ -27,8 +27,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         function manageUserController($scope, $injector) {
             
     // Required types
-    var ConnectionGroup = $injector.get('ConnectionGroup');
-    var PermissionSet   = $injector.get('PermissionSet');
+    var ConnectionGroup   = $injector.get('ConnectionGroup');
+    var PermissionFlagSet = $injector.get('PermissionFlagSet');
+    var PermissionSet     = $injector.get('PermissionSet');
 
     // Required services
     var $location              = $injector.get('$location');
@@ -63,7 +64,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     // Pull user permissions
     permissionService.getPermissions(username).success(function gotPermissions(permissions) {
-        $scope.permissions = permissions;
+        $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
     });
 
     // Retrieve all connections for which we have UPDATE permission
@@ -101,73 +102,16 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.groupListContext = {
 
         /**
-         * Determines whether read permission for the connection having the
-         * given identifier is granted for the user being edited.
-         * 
-         * @param {String} identifier
-         *     The identifier of the connection to check.
-         * 
-         * @returns {Boolean}
-         *     true if the user has read permission for the given connection,
-         *     false if the user lacks read permission, or the permissions have
-         *     not yet been loaded.
+         * Returns the PermissionFlagSet that contains the current state of
+         * granted permissions.
+         *
+         * @returns {PermissionFlagSet}
+         *     The PermissionFlagSet describing the current state of granted
+         *     permissions for the user being edited.
          */
-        canReadConnection : function canReadConnection(identifier) {
-
-            // Assume no permission if permissions not available yet
-            if (!$scope.permissions)
-                return false;
-
-            // Return whether READ permission is present
-            return PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.READ, identifier);
-
-        },
-
-        /**
-         * Determines whether read permission for the connection group having
-         * the given identifier is granted for the user being edited.
-         * 
-         * @param {String} identifier
-         *     The identifier of the connection group to check.
-         * 
-         * @returns {Boolean}
-         *     true if the user has read permission for the given connection
-         *     group, false if the user lacks read permission, or the
-         *     permissions have not yet been loaded.
-         */
-        canReadConnectionGroup : function canReadConnectionGroup(identifier) {
-
-            // Assume no permission if permissions not available yet
-            if (!$scope.permissions)
-                return false;
-
-            // Return whether READ permission is present
-            return PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.READ, identifier);
-
+        getPermissionFlags : function getPermissionFlags() {
+            return $scope.permissionFlags;
         }
-
-    };
-
-    /**
-     * Determines whether the given system permission is granted for the
-     * user being edited.
-     * 
-     * @param {String} type
-     *     The type string of the system permission to check.
-     * 
-     * @returns {Boolean}
-     *     true if the user has the given system permission, false if the
-     *     user lacks the given system permission, or the permissions have
-     *     not yet been loaded.
-     */
-    $scope.hasSystemPermission = function hasSystemPermission(type) {
-
-        // Assume no permission if permissions not available yet
-        if (!$scope.permissions)
-            return false;
-
-        // Return whether given permission is present
-        return PermissionSet.hasSystemPermission($scope.permissions, type);
 
     };
 
