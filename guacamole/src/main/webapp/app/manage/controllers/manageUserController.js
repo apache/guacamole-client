@@ -72,6 +72,31 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.rootGroup = rootGroup;
     });
 
+    /**
+     * Available system permission types, as translation string / internal
+     * value pairs.
+     * 
+     * @type Object[]
+     */
+    $scope.systemPermissionTypes = [
+        {
+            label: "manage.edit.user.administerSystem",
+            value: PermissionSet.SystemPermissionType.ADMINISTER
+        },
+        {
+            label: "manage.edit.user.createUser",
+            value: PermissionSet.SystemPermissionType.CREATE_USER
+        },
+        {
+            label: "manage.edit.user.createConnection",
+            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
+        },
+        {
+            label: "manage.edit.user.createConnectionGroup",
+            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
+        }
+    ];
+
     // Expose permission query and modification functions to group list template
     $scope.groupListContext = {
 
@@ -120,6 +145,29 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.READ, identifier);
 
         }
+
+    };
+
+    /**
+     * Determines whether the given system permission is granted for the
+     * user being edited.
+     * 
+     * @param {String} type
+     *     The type string of the system permission to check.
+     * 
+     * @returns {Boolean}
+     *     true if the user has the given system permission, false if the
+     *     user lacks the given system permission, or the permissions have
+     *     not yet been loaded.
+     */
+    $scope.hasSystemPermission = function hasSystemPermission(type) {
+
+        // Assume no permission if permissions not available yet
+        if (!$scope.permissions)
+            return false;
+
+        // Return whether given permission is present
+        return PermissionSet.hasSystemPermission($scope.permissions, type);
 
     };
 

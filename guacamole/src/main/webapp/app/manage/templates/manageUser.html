@@ -51,28 +51,9 @@ THE SOFTWARE.
 <h2>{{'manage.edit.user.permissions' | translate}}</h2>
 <div class="section">
     <table class="properties">
-        <tr>
-            <th>{{'manage.edit.user.administerSystem' | translate}}</th>
-                        
-            <td><input type="checkbox" ng-model="systemPermissions.ADMINISTER" ng-change="markSystemPermissionModified('ADMINISTER')" /></td>
-        </tr>
-                      
-        <tr>
-            <th>{{'manage.edit.user.createUser' | translate}}</th>
-                        
-            <td><input type="checkbox" ng-model="systemPermissions.CREATE_USER" ng-change="markSystemPermissionModified('CREATE_USER')" /></td>
-        </tr>
-                      
-        <tr>
-            <th>{{'manage.edit.user.createConnection' | translate}}</th>
-                        
-            <td><input type="checkbox" ng-model="systemPermissions.CREATE_CONNECTION" ng-change="markSystemPermissionModified('CREATE_CONNECTION')" /></td>
-        </tr>
-                      
-        <tr>
-            <th>{{'manage.edit.user.createConnectionGroup' | translate}}</th>
-                        
-            <td><input type="checkbox" ng-model="systemPermissions.CREATE_CONNECTION_GROUP" ng-change="markSystemPermissionModified('CREATE_CONNECTION_GROUP')" /></td>
+        <tr ng-repeat="systemPermissionType in systemPermissionTypes">
+            <th>{{systemPermissionType.label | translate}}</th>
+            <td><input type="checkbox" ng-checked="hasSystemPermission(systemPermissionType.value)"/></td>
         </tr>
     </table>
 </div>
