@@ -275,6 +275,64 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
         return permSet.systemPermissions.indexOf(type) !== -1;
     };
 
+    /**
+     * Adds the given system permission to the given permission set, if not
+     * already present. If the permission is already present, this function has
+     * no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.SystemPermissionType.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    PermissionSet.addSystemPermission = function addSystemPermission(permSet, type) {
+
+        // Add permission, if it doesn't already exist
+        if (permSet.systemPermissions.indexOf(type) === -1) {
+            permSet.systemPermissions.push(type);
+            return true;
+        }
+
+        // Permission already present
+        return false;
+
+    };
+
+    /**
+     * Removes the given system permission from the given permission set, if
+     * present. If the permission is not present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.SystemPermissionType.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    PermissionSet.removeSystemPermission = function removeSystemPermission(permSet, type) {
+
+        // Remove permission, if it exists
+        var permLocation = permSet.systemPermissions.indexOf(type);
+        if (permLocation !== -1) {
+            permSet.systemPermissions.splice(permLocation, 1);
+            return true;
+        }
+
+        // Permission not present
+        return false;
+
+    };
+
     return PermissionSet;
 
 }]);
