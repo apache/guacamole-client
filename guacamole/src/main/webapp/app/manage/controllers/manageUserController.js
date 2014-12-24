@@ -98,6 +98,85 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         }
     ];
 
+    /**
+     * The set of permissions that will be added to the user when the user is
+     * saved. Permissions will only be present in this set if they are
+     * manually added, and not later manually removed before saving.
+     *
+     * @type PermissionSet
+     */
+    var permissionsAdded = new PermissionSet();
+
+    /**
+     * The set of permissions that will be removed from the user when the user 
+     * is saved. Permissions will only be present in this set if they are
+     * manually removed, and not later manually added before saving.
+     *
+     * @type PermissionSet
+     */
+    var permissionsRemoved = new PermissionSet();
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the addition of the given permission.
+     * 
+     * @param {String} type
+     *     The system permission to remove, as defined by
+     *     PermissionSet.SystemPermissionType.
+     */
+    var addSystemPermission = function addSystemPermission(type) {
+
+        // If permission was previously removed, simply un-remove it
+        if (PermissionSet.hasSystemPermission(permissionsRemoved, type))
+            PermissionSet.removeSystemPermission(permissionsRemoved, type);
+
+        // Otherwise, explicitly add the permission
+        else
+            PermissionSet.addSystemPermission(permissionsAdded, type);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the removal of the given permission.
+     *
+     * @param {String} type
+     *     The system permission to add, as defined by
+     *     PermissionSet.SystemPermissionType.
+     */
+    var removeSystemPermission = function removeSystemPermission(type) {
+
+        // If permission was previously added, simply un-add it
+        if (PermissionSet.hasSystemPermission(permissionsAdded, type))
+            PermissionSet.removeSystemPermission(permissionsAdded, type);
+
+        // Otherwise, explicitly remove the permission
+        else
+            PermissionSet.addSystemPermission(permissionsRemoved, type);
+
+    };
+
+    /**
+     * Notifies of a change to the selected system permissions for the user
+     * being edited.
+     *
+     * @param {String} type
+     *     The system permission that was changed, as defined by
+     *     PermissionSet.SystemPermissionType.
+     */
+    $scope.systemPermissionChanged = function systemPermissionChanged(type) {
+
+        // Determine current permission setting
+        var value = $scope.permissionFlags.systemPermissions[type];
+
+        // Add/remove permission depending on flag state
+        if (value)
+            addSystemPermission(type);
+        else
+            removeSystemPermission(type);
+
+    };
+
     // Expose permission query and modification functions to group list template
     $scope.groupListContext = {
 
@@ -141,9 +220,23 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Save the user
         userService.saveUser($scope.user)
         .success(function savedUser() {
-            $location.path('/manage/');
 
-            // TODO: Save permissions
+            // Upon success, save any changed permissions
+            permissionService.patchPermissions($scope.user.username, permissionsAdded, permissionsRemoved)
+            .success(function patchedUserPermissions() {
+                $location.path('/manage/');
+            })
+
+            // Notify of any errors
+            .error(function userPermissionsPatchFailed(error) {
+                $scope.showStatus({
+                    'className'  : 'error',
+                    'title'      : 'manage.error.title',
+                    'text'       : error.message,
+                    'actions'    : [ ACKNOWLEDGE_ACTION ]
+                });
+            });
+
         })
 
         // Notify of any errors
