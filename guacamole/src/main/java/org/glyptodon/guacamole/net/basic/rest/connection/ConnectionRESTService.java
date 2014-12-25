@@ -250,7 +250,7 @@ public class ConnectionRESTService {
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
 
         // Use root group if identifier is null (or the standard root identifier)
-        if (identifier == null || identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
+        if (identifier != null && identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
             return rootGroup;
 
         // Pull specified connection group otherwise
@@ -340,12 +340,12 @@ public class ConnectionRESTService {
         Directory<String, Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
         
-        // Make sure the connection is there before trying to update
+        // Retrieve connection to update
         Connection existingConnection = connectionDirectory.get(connectionID);
         if (existingConnection == null)
             throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
         
-        // Retrieve connection configuration
+        // Build updated configuration
         GuacamoleConfiguration config = new GuacamoleConfiguration();
         config.setProtocol(connection.getProtocol());
         config.setParameters(connection.getParameters());
@@ -354,6 +354,10 @@ public class ConnectionRESTService {
         existingConnection.setConfiguration(config);
         existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
+
+        // Update connection parent
+        ConnectionGroup updatedParentGroup = retrieveConnectionGroup(userContext, connection.getParentIdentifier());
+        connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }
     
