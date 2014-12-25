@@ -23,14 +23,27 @@
 package org.glyptodon.guacamole.properties;
 
 import java.io.File;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract representation of the Guacamole configuration directory.
  *
+ * @deprecated
  * @author Michael Jumper
  */
 public class GuacamoleHome {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(GuacamoleHome.class);
+
+    static {
+        // Warn about deprecation
+        logger.warn("GuacamoleHome is deprecated. Please use Environment instead.");
+    }
+    
     /**
      * GuacamoleHome is a utility class and cannot be instantiated.
      */

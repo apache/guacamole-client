@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.net.basic.xml.user_mapping;
 
 import org.glyptodon.guacamole.net.basic.auth.Authorization;
-import org.glyptodon.guacamole.net.basic.xml.TagHandler;
+import org.glyptodon.guacamole.xml.TagHandler;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;

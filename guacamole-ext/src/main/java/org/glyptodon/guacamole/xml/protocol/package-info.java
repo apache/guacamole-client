@@ -21,8 +21,8 @@
  */
 
 /**
- * Classes driving the SAX-based XML parser used by the Guacamole web
- * application.
+ * Classes related to parsing XML files which describe the parameters of a
+ * protocol.
  */
-package org.glyptodon.guacamole.net.basic.xml;
+package org.glyptodon.guacamole.xml.protocol;
 

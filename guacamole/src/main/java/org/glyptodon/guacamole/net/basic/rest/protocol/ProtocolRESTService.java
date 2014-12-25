@@ -30,9 +30,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.basic.ProtocolInfo;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.protocols.ProtocolInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +59,6 @@ public class ProtocolRESTService {
     private AuthenticationService authenticationService;
     
     /**
-     * Service for retrieving protocol definitions.
-     */
-    @Inject
-    private ProtocolRetrievalService protocolRetrievalservice;
-
-    /**
      * Gets a map of protocols defined in the system - protocol name to protocol.
      * 
      * @param authToken
@@ -84,7 +80,8 @@ public class ProtocolRESTService {
         authenticationService.getUserContext(authToken);
 
         // Get and return a map of all protocols.
-        return protocolRetrievalservice.getProtocolMap();
+        Environment env = new LocalEnvironment();
+        return env.getProtocols();
 
     }
 

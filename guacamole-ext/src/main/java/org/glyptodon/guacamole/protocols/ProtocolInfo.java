@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.protocols;
 
 import java.util.ArrayList;
 import java.util.Collection;

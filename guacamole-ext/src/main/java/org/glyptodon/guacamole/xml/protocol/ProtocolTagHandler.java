@@ -20,10 +20,10 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.xml.protocol;
+package org.glyptodon.guacamole.xml.protocol;
 
-import org.glyptodon.guacamole.net.basic.ProtocolInfo;
-import org.glyptodon.guacamole.net.basic.xml.TagHandler;
+import org.glyptodon.guacamole.protocols.ProtocolInfo;
+import org.glyptodon.guacamole.xml.TagHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

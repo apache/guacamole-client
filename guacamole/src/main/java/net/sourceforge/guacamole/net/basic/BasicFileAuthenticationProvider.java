@@ -33,7 +33,7 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.auth.Authorization;
 import org.glyptodon.guacamole.net.basic.auth.UserMapping;
-import org.glyptodon.guacamole.net.basic.xml.DocumentHandler;
+import org.glyptodon.guacamole.xml.DocumentHandler;
 import org.glyptodon.guacamole.net.basic.xml.user_mapping.UserMappingTagHandler;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;

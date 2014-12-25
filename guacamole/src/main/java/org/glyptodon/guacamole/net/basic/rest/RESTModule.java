@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.AbstractModule;
-import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRetrievalService;
 
 /**
  * A Guice Module for setting up dependency injection for the 
@@ -37,7 +36,6 @@ public class RESTModule extends AbstractModule {
     protected void configure() {
 
         // Bind generic low-level services
-        bind(ProtocolRetrievalService.class);
         bind(ObjectRetrievalService.class);
         
     }

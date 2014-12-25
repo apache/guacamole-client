@@ -25,12 +25,13 @@ package org.glyptodon.guacamole.net.auth.simple;
 import java.util.Collections;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.SSLGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.AbstractConnection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -81,12 +82,14 @@ public class SimpleConnection extends AbstractConnection {
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 
+        Environment env = new LocalEnvironment();
+        
         // Get guacd connection parameters
-        String hostname = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_HOSTNAME);
-        int port = GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_PORT);
+        String hostname = env.getProperty(Environment.GUACD_HOSTNAME);
+        int port = env.getProperty(Environment.GUACD_PORT);
 
         // If guacd requires SSL, use it
-        if (GuacamoleProperties.getProperty(GuacamoleProperties.GUACD_SSL, false))
+        if (env.getProperty(Environment.GUACD_SSL, false))
             return new ConfiguredGuacamoleSocket(
                 new SSLGuacamoleSocket(hostname, port),
                 config, info
