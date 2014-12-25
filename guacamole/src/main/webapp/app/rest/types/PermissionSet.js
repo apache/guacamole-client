@@ -333,6 +333,226 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
 
     };
 
+    /**
+     * Adds the given permission applying to the arbitrary object with the 
+     * given ID to the given permission set, if not already present. If the
+     * permission is already present, this function has no effect.
+     *
+     * @param {Object.<String, String[]>} permMap
+     *     The permission map to modify, where each entry maps an object
+     *     identifer to the array of granted permissions.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the arbitrary object to which the permission
+     *     applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    var addObjectPermission = function addObjectPermission(permMap, type, identifier) {
+
+        // Pull array of permissions, creating it if necessary
+        var permArray = permMap[identifier] = permMap[identifier] || [];
+
+        // Add permission, if it doesn't already exist
+        if (permArray.indexOf(type) === -1) {
+            permArray.push(type);
+            return true;
+        }
+
+        // Permission already present
+        return false;
+
+    };
+
+    /**
+     * Removes the given permission applying to the arbitrary object with the 
+     * given ID from the given permission set, if present. If the permission is
+     * not present, this function has no effect.
+     *
+     * @param {Object.<String, String[]>} permMap
+     *     The permission map to modify, where each entry maps an object
+     *     identifer to the array of granted permissions.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the arbitrary object to which the permission
+     *     applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    var removeObjectPermission = function removeObjectPermission(permMap, type, identifier) {
+
+        // Pull array of permissions
+        var permArray = permMap[identifier];
+
+        // If no permissions present at all, nothing to remove
+        if (!(identifier in permMap))
+            return false;
+
+        // Remove permission, if it exists
+        var permLocation = permArray.indexOf(type);
+        if (permLocation !== -1) {
+            permArray.splice(permLocation, 1);
+            return true;
+        }
+
+        // Permission not present
+        return false;
+
+    };
+
+    /**
+     * Adds the given connection permission applying to the connection with
+     * the given ID to the given permission set, if not already present. If the
+     * permission is already present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection to which the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    PermissionSet.addConnectionPermission = function addConnectionPermission(permSet, type, identifier) {
+        return addObjectPermission(permSet.connectionPermissions, type, identifier);
+    };
+
+    /**
+     * Removes the given connection permission applying to the connection with
+     * the given ID from the given permission set, if present. If the
+     * permission is not present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection to which the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    PermissionSet.removeConnectionPermission = function removeConnectionPermission(permSet, type, identifier) {
+        return removeObjectPermission(permSet.connectionPermissions, type, identifier);
+    };
+
+    /**
+     * Adds the given connection group permission applying to the connection
+     * group with the given ID to the given permission set, if not already
+     * present. If the permission is already present, this function has no
+     * effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection group to which the permission
+     *     applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    PermissionSet.addConnectionGroupPermission = function addConnectionGroupPermission(permSet, type, identifier) {
+        return addObjectPermission(permSet.connectionGroupPermissions, type, identifier);
+    };
+
+    /**
+     * Removes the given connection group permission applying to the connection
+     * group with the given ID from the given permission set, if present. If
+     * the permission is not present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection group to which the permission
+     *     applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    PermissionSet.removeConnectionGroupPermission = function removeConnectionGroupPermission(permSet, type, identifier) {
+        return removeObjectPermission(permSet.connectionGroupPermissions, type, identifier);
+    };
+
+    /**
+     * Adds the given user permission applying to the user with the given ID to
+     * the given permission set, if not already present. If the permission is
+     * already present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user to which the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was added, false if the permission was
+     *     already present in the given permission set.
+     */
+    PermissionSet.addUserPermission = function addUserPermission(permSet, type, identifier) {
+        return addObjectPermission(permSet.userPermissions, type, identifier);
+    };
+
+    /**
+     * Removes the given user permission applying to the user with the given ID
+     * from the given permission set, if present. If the permission is not
+     * present, this function has no effect.
+     *
+     * @param {PermissionSet} permSet
+     *     The permission set to modify.
+     *
+     * @param {String} type
+     *     The permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user to whom the permission applies.
+     *
+     * @returns {Boolean}
+     *     true if the permission was removed, false if the permission was not
+     *     present in the given permission set.
+     */
+    PermissionSet.removeUserPermission = function removeUserPermission(permSet, type, identifier) {
+        return removeObjectPermission(permSet.userPermissions, type, identifier);
+    };
+
     return PermissionSet;
 
 }]);
