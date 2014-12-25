@@ -29,31 +29,49 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
     // Disable HTML5 mode (use # for routing)
     $locationProvider.html5Mode(false);
     
-    $routeProvider.
-        when('/', {
+    $routeProvider
+        .when('/', {
             title: 'application.title',
             bodyClassName: 'home',
             templateUrl: 'app/home/templates/home.html',
             controller: 'homeController'
-        }).
-        when('/manage/', {
+        })
+        .when('/manage/', {
             title: 'application.title',
             bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manage.html',
             controller: 'manageController'
-        }).
-        when('/login/', {
+        })
+        .when('/manage/connections/:id?', {
+            title: 'application.title',
+            bodyClassName: 'manage',
+            templateUrl: 'app/manage/templates/manageConnection.html',
+            controller: 'manageConnectionController'
+        })
+        .when('/manage/connectionGroups/:id?', {
+            title: 'application.title',
+            bodyClassName: 'manage',
+            templateUrl: 'app/manage/templates/manageConnectionGroup.html',
+            controller: 'manageConnectionGroupController'
+        })
+        .when('/manage/users/:id', {
+            title: 'application.title',
+            bodyClassName: 'manage',
+            templateUrl: 'app/manage/templates/manageUser.html',
+            controller: 'manageUserController'
+        })
+        .when('/login/', {
             title: 'application.title',
             bodyClassName: 'login',
             templateUrl: 'app/login/templates/login.html',
             controller: 'loginController'
-        }).
-        when('/client/:type/:id/:params?', {
+        })
+        .when('/client/:type/:id/:params?', {
             bodyClassName: 'client',
             templateUrl: 'app/client/templates/client.html',
             controller: 'clientController'
-        }).
-        otherwise({
+        })
+        .otherwise({
             redirectTo: '/'
         });
 }]);

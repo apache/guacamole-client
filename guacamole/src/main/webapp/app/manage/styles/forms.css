@@ -20,16 +20,13 @@
  * THE SOFTWARE.
  */
 
-/**
- * A modal for editing a connection.
- */
-angular.module('manage').factory('userEditModal', ['btfModal', 
-        function userEditModal(btfModal) {
-            
-    // Create the modal object to be used later to actually create the modal
-    return btfModal({
-        controller: 'userEditModalController',
-        controllerAs: 'modal',
-        templateUrl: 'app/manage/templates/editableUser.html',
-    });
-}]);
+.manage table.properties th {
+    text-align: left;
+    font-weight: normal;
+    padding-right: 1em;
+}
+
+.manage .action-buttons {
+    text-align: center;
+    margin-bottom: 1em;
+}

@@ -39,16 +39,22 @@
         "newGroup"               : "New Group",
         "edit": {
             "connection": {
+                "title"             : "Edit Connection",
                 "cancel"            : "Cancel",
                 "save"              : "Save",
                 "delete"            : "Delete",
+                "confirmDelete"     : {
+                    "title"             : "Delete Connection",
+                    "text"              : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?"
+                },
                 "protocol"          : "Protocol:",
                 "root"              : "ROOT",
                 "location"          : "Location:",
                 "name"              : "Name:",
+                "parameters"        : "Parameters",
                 "history"           : {
                     "connectionNotUsed" : "This connection has not yet been used.",
-                    "usageHistory"      : "Usage History:",
+                    "usageHistory"      : "Usage History",
                     "username"          : "Username",
                     "startTime"         : "Start Time",
                     "duration"          : "Duration",
@@ -58,9 +64,14 @@
                 }
             },
             "connectionGroup": {
+                "title"             : "Edit Connection Group",
                 "cancel"            : "Cancel",
                 "save"              : "Save",
                 "delete"            : "Delete",
+                "confirmDelete"     : {
+                    "title"             : "Delete Connection",
+                    "text"              : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?"
+                },
                 "usageHistory"      : "Usage History:",
                 "type"              : {
                     "label"             : "Type",
@@ -72,18 +83,30 @@
                 "name"              : "Name:"
             },
             "user": {
+                "title"                     : "Edit User",
                 "cancel"                    : "Cancel",
                 "save"                      : "Save",
                 "delete"                    : "Delete",
-                "properties"                : "Properties:",
+                "confirmDelete"     : {
+                    "title"             : "Delete User",
+                    "text"              : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
+                },
                 "password"                  : "Password:",
                 "passwordMatch"             : "Re-enter Password:",
-                "permissions"               : "Permissions:",
+                "passwordMismatch"          : "The provided passwords do not match.",
+                "permissions"               : "Permissions",
+                "username"                  : "Username:",
                 "administerSystem"          : "Administer system:",
                 "createUser"                : "Create new users:",
                 "createConnection"          : "Create new connections:",
                 "createConnectionGroup"     : "Create new connection groups:",
-                "connections"               : "Connections:"
+                "connections"               : "Connections"
+            }
+        },
+        "error": {
+            "title"             : "Error",
+            "action": {
+                "acknowledge"       : "OK"
             }
         }
     },

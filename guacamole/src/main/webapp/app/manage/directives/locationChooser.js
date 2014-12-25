@@ -72,13 +72,6 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
 
             };
 
-            // Map all known groups
-            mapConnectionGroups($scope.rootGroup);
-
-            // If no value is specified, default to the root identifier
-            if (!$scope.value || !($scope.value in connectionGroups))
-                $scope.value = $scope.rootGroup.identifier;
-
             /**
              * Whether the group list menu is currently open.
              * 
@@ -92,7 +85,7 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
              * 
              * @type String
              */
-            $scope.chosenConnectionGroupName = connectionGroups[$scope.value].name; 
+            $scope.chosenConnectionGroupName = null;
             
             /**
              * Toggle the current state of the menu listing connection groups.
@@ -124,6 +117,24 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
                 }
 
             };
+
+            $scope.$watch('rootGroup', function setRootGroup(rootGroup) {
+
+                connectionGroups = {};
+
+                if (!rootGroup)
+                    return;
+
+                // Map all known groups
+                mapConnectionGroups(rootGroup);
+
+                // If no value is specified, default to the root identifier
+                if (!$scope.value || !($scope.value in connectionGroups))
+                    $scope.value = rootGroup.identifier;
+
+                $scope.chosenConnectionGroupName = connectionGroups[$scope.value].name; 
+
+            });
 
         }]
     };

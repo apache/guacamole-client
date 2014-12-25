@@ -1,4 +1,4 @@
-<div ng-click="context.editConnection(item.wrappedItem)">
+<a ng-href="#/manage/connections/{{item.identifier}}">
     <!--
        Copyright (C) 2014 Glyptodon LLC
 
@@ -21,15 +21,12 @@
        THE SOFTWARE.
     -->
 
-    <div class="caption">
-
-        <!-- Connection icon -->
-        <div class="protocol">
-            <div class="icon type" ng-class="item.protocol"></div>
-        </div>
-
-        <!-- Connection name -->
-        <span class="name">{{item.name}}</span>
-
+    <!-- Connection icon -->
+    <div class="protocol">
+        <div class="icon type" ng-class="item.protocol"></div>
     </div>
-</div>
+
+    <!-- Connection name -->
+    <span class="name">{{item.name}}</span>
+
+</a>

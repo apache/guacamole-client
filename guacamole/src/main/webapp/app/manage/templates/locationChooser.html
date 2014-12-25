@@ -1,4 +1,4 @@
-<div>
+<div class="location-chooser">
     <!--
     Copyright 2014 Glyptodon LLC.
 
@@ -21,10 +21,10 @@
     THE SOFTWARE.
     -->
 
-    <!-- Open the dropdown -->
+    <!-- Chosen group name -->
     <div ng-click="toggleMenu()" class="location">{{chosenConnectionGroupName}}</div>
 
-    
+    <!-- Dropdown hierarchical menu of groups -->
     <div ng-show="menuOpen" class="dropdown">
         <guac-group-list
             context="groupListContext"
@@ -32,4 +32,5 @@
             connection-group="rootGroup"
             connection-group-template="'app/manage/templates/locationChooserConnectionGroup.html'"/>
     </div>
+
 </div>

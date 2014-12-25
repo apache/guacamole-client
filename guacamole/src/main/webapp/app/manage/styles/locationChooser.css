@@ -20,60 +20,19 @@
  * THE SOFTWARE.
  */
 
-.group,
-.connection {
-    cursor: pointer;
-}
+.location-chooser .dropdown {
 
-.connection a,
-.group a {
-    text-decoration:none;
-    color: black;
-}
+    position: absolute;
+    z-index: 2;
+    margin-top: -1px;
 
-.connection a:hover,
-.group a:hover {
-    text-decoration:none;
-    color: black;
-}
+    width: 3in;
+    max-height: 2in;
+    overflow: auto;
 
-.connection a:visited,
-.group a:visited {
-    text-decoration:none;
-    color: black;
-}
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background: white;
 
-.group .connection .bears {
-    display: none;
-}
+    font-size: 10pt;
 
-.connection:hover {
-    background: #CDA;
 }
-
-.connection .thumbnail {
-    margin: 0.5em;
-}
-
-.connection .thumbnail img {
-    border: 1px solid black;
-    box-shadow: 1px 1px 5px black;
-    max-width: 75%;
-}
-
-div.recent-connections .connection .thumbnail {
-    display: block;
-}
-
-div.recent-connections .protocol {
-    display: none;
-}
-
-.caption * {
-    vertical-align: middle;
-}
-
-.caption .name {
-    margin-left: 0.25em;
-}
-

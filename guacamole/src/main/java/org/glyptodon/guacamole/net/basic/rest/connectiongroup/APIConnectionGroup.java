@@ -88,11 +88,7 @@ public class APIConnectionGroup {
 
         this.identifier = connectionGroup.getIdentifier();
         this.parentIdentifier = connectionGroup.getParentIdentifier();
-        
-        // Use the explicit ROOT group ID
-        if (this.parentIdentifier == null)
-            this.parentIdentifier = ROOT_IDENTIFIER;
-        
+
         this.name = connectionGroup.getName();
         this.type = connectionGroup.getType();
 

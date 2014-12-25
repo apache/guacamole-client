@@ -20,16 +20,64 @@
  * THE SOFTWARE.
  */
 
-/**
- * A modal for editing a connection group.
- */
-angular.module('manage').factory('connectionGroupEditModal', ['btfModal', 
-        function connectionGroupEditModal(btfModal) {
-            
-    // Create the modal object to be used later to actually create the modal
-    return btfModal({
-        controller: 'connectionGroupEditModalController',
-        controllerAs: 'modal',
-        templateUrl: 'app/manage/templates/editableConnectionGroup.html',
-    });
-}]);
+.user,
+.group,
+.connection {
+    cursor: pointer;
+}
+
+.user a,
+.connection a,
+.group a {
+    text-decoration:none;
+    color: black;
+}
+
+.user a:hover,
+.connection a:hover,
+.group a:hover {
+    text-decoration:none;
+    color: black;
+}
+
+.user a:visited,
+.connection a:visited,
+.group a:visited {
+    text-decoration:none;
+    color: black;
+}
+
+.connection:hover {
+    background: #CDA;
+}
+
+.connection .thumbnail {
+    margin: 0.5em;
+}
+
+.connection .thumbnail img {
+    border: 1px solid black;
+    box-shadow: 1px 1px 5px black;
+    max-width: 75%;
+}
+
+div.recent-connections .connection .thumbnail {
+    display: block;
+}
+
+div.recent-connections .protocol {
+    display: none;
+}
+
+.caption * {
+    vertical-align: middle;
+}
+
+.caption > * {
+    display: inline-block;
+}
+
+.caption .name {
+    margin-left: 0.25em;
+}
+

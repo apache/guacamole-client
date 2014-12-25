@@ -1,4 +1,4 @@
-<span class="name" ng-click="context.editConnectionGroup(item.wrappedItem)">
+<a ng-href="#/manage/connectionGroups/{{item.identifier}}">
     <!--
        Copyright (C) 2014 Glyptodon LLC
 
@@ -21,5 +21,5 @@
        THE SOFTWARE.
     -->
 
-    {{item.name}}
-</span>
+    <span class="name">{{item.name}}</span>
+</a>

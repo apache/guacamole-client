@@ -54,6 +54,7 @@ import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
+import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.permission.APIPermissionSet;
@@ -105,6 +106,12 @@ public class UserRESTService {
     @Inject
     private AuthenticationService authenticationService;
     
+    /**
+     * Service for convenient retrieval of objects.
+     */
+    @Inject
+    private ObjectRetrievalService retrievalService;
+
     /**
      * Gets a list of users in the system, filtering the returned list by the
      * given permission, if specified.
@@ -177,15 +184,8 @@ public class UserRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
-
-        // Get the user
-        User user = userDirectory.get(username);
-        if (user == null)
-            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
-
-        // Return the user
+        // Retrieve the requested user
+        User user = retrievalService.retrieveUser(userContext, username);
         return new APIUser(user);
 
     }
@@ -254,9 +254,7 @@ public class UserRESTService {
                     "Username in path does not match username provided JSON data.");
 
         // Get the user
-        User existingUser = userDirectory.get(username);
-        if (existingUser == null)
-            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
+        User existingUser = retrievalService.retrieveUser(userContext, username);
 
         // Do not update the user password if no password was provided
         if (user.getPassword() != null)

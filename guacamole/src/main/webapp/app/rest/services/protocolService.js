@@ -30,12 +30,12 @@ angular.module('rest').factory('protocolService', ['$http', 'authenticationServi
     
     /**
      * Makes a request to the REST API to get the list of protocols, returning
-     * a promise that provides an array of @link{Protocol} objects if
-     * successful.
+     * a promise that provides a map of @link{Protocol} objects by protocol
+     * name if successful.
      *                          
-     * @returns {Promise.<Protocol[]>}
-     *     A promise which will resolve with an array of @link{Protocol}
-     *     objects upon success.
+     * @returns {Promise.<Object.<String, Protocol>>}
+     *     A promise which will resolve with a map of @link{Protocol}
+     *     objects by protocol name upon success.
      */
     service.getProtocols = function getProtocols() {
 
