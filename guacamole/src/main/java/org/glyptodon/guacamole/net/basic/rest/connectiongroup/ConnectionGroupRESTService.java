@@ -46,6 +46,7 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
@@ -71,6 +72,12 @@ public class ConnectionGroupRESTService {
      */
     @Inject
     private AuthenticationService authenticationService;
+    
+    /**
+     * Service for convenient retrieval of objects.
+     */
+    @Inject
+    private ObjectRetrievalService retrievalService;
     
     /**
      * Retrieves the given connection group from the user context, including
@@ -105,24 +112,14 @@ public class ConnectionGroupRESTService {
 
         User self = userContext.self();
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        
+
+        // Retrieve specified connection group
         ConnectionGroup connectionGroup;
-        
-        // Use root group if requested
-        if (identifier == null || identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            connectionGroup = rootGroup;
-
-        // Otherwise, query requested group using root group directory
-        else {
-
-            Directory<String, ConnectionGroup> connectionGroupDirectory =
-                    rootGroup.getConnectionGroupDirectory();
-
-            // Get the connection group from root directory
-            connectionGroup = connectionGroupDirectory.get(identifier);
-            if (connectionGroup == null)
-                return null;
-
+        try {
+            connectionGroup = retrievalService.retrieveConnectionGroup(userContext, identifier);
+        }
+        catch (GuacamoleResourceNotFoundException e) {
+            return null;
         }
 
         // Wrap queried connection group
@@ -274,17 +271,8 @@ public class ConnectionGroupRESTService {
         
         // Get the connection group directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        
-        // Use the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            connectionGroupID = rootGroup.getIdentifier();
-        
         Directory<String, ConnectionGroup> connectionGroupDirectory =
                 rootGroup.getConnectionGroupDirectory();
-
-        // Make sure the connection is there before trying to delete
-        if (connectionGroupDirectory.get(connectionGroupID) == null)
-            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
 
         // Delete the connection group
         connectionGroupDirectory.remove(connectionGroupID);
@@ -321,22 +309,9 @@ public class ConnectionGroupRESTService {
         if (connectionGroup == null)
             throw new GuacamoleClientException("Connection group JSON must be submitted when creating connections groups.");
 
+        // Retrieve parent group
         String parentID = connectionGroup.getParentIdentifier();
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-
-        // Use root group if no parent is specified
-        ConnectionGroup parentConnectionGroup;
-        if (parentID == null)
-            parentConnectionGroup = rootGroup;
-
-        // Pull specified connection group otherwise
-        else {
-            Directory<String, ConnectionGroup> connectionGroupDirectory = rootGroup.getConnectionGroupDirectory();
-            parentConnectionGroup = connectionGroupDirectory.get(parentID);
-
-            if (parentConnectionGroup == null)
-                throw new GuacamoleResourceNotFoundException("No such connection group: \"" + parentID + "\"");
-        }
+        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
 
         // Add the new connection group
         Directory<String, ConnectionGroup> connectionGroupDirectory = parentConnectionGroup.getConnectionGroupDirectory();
@@ -378,22 +353,22 @@ public class ConnectionGroupRESTService {
         if (connectionGroup == null)
             throw new GuacamoleClientException("Connection group JSON must be submitted when updating connection groups.");
 
-        // Get the connection directory
+        // Get the connection group directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        
-        // Use the root group if it was asked for
-        if (connectionGroupID != null && connectionGroupID.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            connectionGroupID = rootGroup.getIdentifier();
-        
         Directory<String, ConnectionGroup> connectionGroupDirectory =
                 rootGroup.getConnectionGroupDirectory();
 
-        // Make sure the connection group is there before trying to update
-        if (connectionGroupDirectory.get(connectionGroupID) == null)
-            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
-
+        // Retrieve connection group to update
+        ConnectionGroup existingConnectionGroup = connectionGroupDirectory.get(connectionGroupID);
+        
         // Update the connection group
-        connectionGroupDirectory.update(new APIConnectionGroupWrapper(connectionGroup));
+        existingConnectionGroup.setName(connectionGroup.getName());
+        existingConnectionGroup.setType(connectionGroup.getType());
+        connectionGroupDirectory.update(existingConnectionGroup);
+
+        // Update connection group parent
+        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroup.getParentIdentifier());
+        connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
 
     }
     

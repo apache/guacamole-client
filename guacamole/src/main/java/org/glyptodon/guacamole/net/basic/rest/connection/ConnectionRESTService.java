@@ -44,8 +44,8 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
-import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +72,12 @@ public class ConnectionRESTService {
     private AuthenticationService authenticationService;
     
     /**
+     * Service for convenient retrieval of objects.
+     */
+    @Inject
+    private ObjectRetrievalService retrievalService;
+    
+    /**
      * Retrieves an individual connection.
      * 
      * @param authToken
@@ -95,17 +101,8 @@ public class ConnectionRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         
-        // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
-
-        // Get the connection
-        Connection connection = connectionDirectory.get(connectionID);
-        if (connection == null)
-            throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
-
-        return new APIConnection(connection);
+        // Retrieve the requested connection
+        return new APIConnection(retrievalService.retrieveConnection(userContext, connectionID));
 
     }
 
@@ -138,10 +135,8 @@ public class ConnectionRESTService {
         Directory<String, Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
 
-        // Get the connection
-        Connection connection = connectionDirectory.get(connectionID);
-        if (connection == null)
-            throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
+        // Retrieve the requested connection
+        Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
 
         // Retrieve connection configuration
         GuacamoleConfiguration config = connection.getConfiguration();
@@ -181,11 +176,8 @@ public class ConnectionRESTService {
         Directory<String, Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
 
-        // Get the connection
-        Connection connection = connectionDirectory.get(connectionID);
-        if (connection == null)
-            throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
-
+        // Retrieve the requested connection's history
+        Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
         return connection.getHistory();
 
     }
@@ -216,51 +208,8 @@ public class ConnectionRESTService {
         Directory<String, Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
 
-        // Make sure the connection is there before trying to delete
-        if (connectionDirectory.get(connectionID) == null)
-            throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
-
-        // Delete the connection
+        // Delete the specified connection
         connectionDirectory.remove(connectionID);
-
-    }
-
-    /**
-     * Retrieves a single connection group from the given user context. If
-     * the given identifier is null or the root identifier, the root connection
-     * group will be returned.
-     *
-     * @param userContext
-     *     The user context to retrieve the connection group from.
-     *
-     * @param identifier
-     *     The identifier of the connection group to retrieve.
-     *
-     * @return
-     *     The connection group having the given identifier, or the root
-     *     connection group if the identifier is null or the root identifier.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the connection group, or if the
-     *     connection group does not exist.
-     */
-    private ConnectionGroup retrieveConnectionGroup(UserContext userContext,
-            String identifier) throws GuacamoleException {
-
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-
-        // Use root group if identifier is null (or the standard root identifier)
-        if (identifier != null && identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            return rootGroup;
-
-        // Pull specified connection group otherwise
-        Directory<String, ConnectionGroup> directory = rootGroup.getConnectionGroupDirectory();
-        ConnectionGroup connectionGroup = directory.get(identifier);
-
-        if (connectionGroup == null)
-            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + identifier + "\"");
-
-        return connectionGroup;
 
     }
 
@@ -294,7 +243,7 @@ public class ConnectionRESTService {
 
         // Retrieve parent group
         String parentID = connection.getParentIdentifier();
-        ConnectionGroup parentConnectionGroup = retrieveConnectionGroup(userContext, parentID);
+        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
 
         // Add the new connection
         Directory<String, Connection> connectionDirectory = parentConnectionGroup.getConnectionDirectory();
@@ -341,10 +290,8 @@ public class ConnectionRESTService {
                 rootGroup.getConnectionDirectory();
         
         // Retrieve connection to update
-        Connection existingConnection = connectionDirectory.get(connectionID);
-        if (existingConnection == null)
-            throw new GuacamoleResourceNotFoundException("No such connection: \"" + connectionID + "\"");
-        
+        Connection existingConnection = retrievalService.retrieveConnection(userContext, connectionID);
+
         // Build updated configuration
         GuacamoleConfiguration config = new GuacamoleConfiguration();
         config.setProtocol(connection.getProtocol());
@@ -356,7 +303,7 @@ public class ConnectionRESTService {
         connectionDirectory.update(existingConnection);
 
         // Update connection parent
-        ConnectionGroup updatedParentGroup = retrieveConnectionGroup(userContext, connection.getParentIdentifier());
+        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connection.getParentIdentifier());
         connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }
