@@ -118,7 +118,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     /**
      * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the addition of the given permission.
+     * reflect the addition of the given system permission.
      * 
      * @param {String} type
      *     The system permission to remove, as defined by
@@ -138,7 +138,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     /**
      * Updates the permissionsAdded and permissionsRemoved permission sets to
-     * reflect the removal of the given permission.
+     * reflect the removal of the given system permission.
      *
      * @param {String} type
      *     The system permission to add, as defined by
@@ -177,6 +177,82 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     };
 
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the addition of the given connection permission.
+     * 
+     * @param {String} identifier
+     *     The identifier of the connection to add READ permission for.
+     */
+    var addConnectionPermission = function addConnectionPermission(identifier) {
+
+        // If permission was previously removed, simply un-remove it
+        if (PermissionSet.hasConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly add the permission
+        else
+            PermissionSet.addConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the removal of the given connection permission.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection to remove READ permission for.
+     */
+    var removeConnectionPermission = function removeConnectionPermission(identifier) {
+
+        // If permission was previously added, simply un-add it
+        if (PermissionSet.hasConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeConnectionPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly remove the permission
+        else
+            PermissionSet.addConnectionPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the addition of the given connection group permission.
+     * 
+     * @param {String} identifier
+     *     The identifier of the connection group to add READ permission for.
+     */
+    var addConnectionGroupPermission = function addConnectionGroupPermission(identifier) {
+
+        // If permission was previously removed, simply un-remove it
+        if (PermissionSet.hasConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly add the permission
+        else
+            PermissionSet.addConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the removal of the given connection permission.
+     *
+     * @param {String} identifier
+     *     The identifier of the connection to remove READ permission for.
+     */
+    var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier) {
+
+        // If permission was previously added, simply un-add it
+        if (PermissionSet.hasConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
+            PermissionSet.removeConnectionGroupPermission(permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+
+        // Otherwise, explicitly remove the permission
+        else
+            PermissionSet.addConnectionGroupPermission(permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+
+    };
+
     // Expose permission query and modification functions to group list template
     $scope.groupListContext = {
 
@@ -190,6 +266,48 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
          */
         getPermissionFlags : function getPermissionFlags() {
             return $scope.permissionFlags;
+        },
+
+        /**
+         * Notifies of a change to the selected connection permission for the
+         * user being edited. This only applies to READ permissions.
+         *
+         * @param {String} identifier
+         *     The identifier of the connection affected by the changed
+         *     permission.
+         */
+        connectionPermissionChanged : function connectionPermissionChanged(identifier) {
+
+            // Determine current permission setting
+            var value = $scope.permissionFlags.connectionPermissions.READ[identifier];
+
+            // Add/remove permission depending on flag state
+            if (value)
+                addConnectionPermission(identifier);
+            else
+                removeConnectionPermission(identifier);
+
+        },
+
+        /**
+         * Notifies of a change to the selected connection group permission for
+         * the user being edited. This only applies to READ permissions.
+         *
+         * @param {String} identifier
+         *     The identifier of the connection group affected by the changed
+         *     permission.
+         */
+        connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
+
+            // Determine current permission setting
+            var value = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
+
+            // Add/remove permission depending on flag state
+            if (value)
+                addConnectionGroupPermission(identifier);
+            else
+                removeConnectionGroupPermission(identifier);
+
         }
 
     };
