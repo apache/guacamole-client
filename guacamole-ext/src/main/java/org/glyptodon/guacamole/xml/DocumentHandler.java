@@ -140,8 +140,13 @@ public class DocumentHandler extends DefaultHandler {
     public void characters(char[] ch, int start, int length)
             throws SAXException {
 
+        // Get current state
+        DocumentHandlerState current = getCurrentState();
+        if (current == null)
+            throw new SAXException("Character data not allowed outside XML document.");
+        
         // Append received chunk to text content
-        getCurrentState().getTextContent().append(ch, start, length);
+        current.getTextContent().append(ch, start, length);
 
     }
 
