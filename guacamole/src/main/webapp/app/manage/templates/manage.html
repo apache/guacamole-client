@@ -35,7 +35,7 @@ THE SOFTWARE.
 
         <!-- Control to create a new user -->
         <div class="user-add-form">
-            <input type="text" ng-model="newUsername" class="name username"/>
+            <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
             <button class="add-user" ng-click="newUser()">{{'MANAGE.ACTION_NEW_USER' | translate}}</button>
         </div>
 
