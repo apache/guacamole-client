@@ -111,7 +111,6 @@ public class ConnectionGroupRESTService {
             throws GuacamoleException {
 
         User self = userContext.self();
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
 
         // Retrieve specified connection group
         ConnectionGroup connectionGroup;
