@@ -23,5 +23,5 @@
 /**
  * The module for the administration functionality.
  */
-angular.module('manage', ['btford.modal', 'groupList', 'locale', 'rest']);
+angular.module('manage', ['groupList', 'locale', 'rest']);
 
