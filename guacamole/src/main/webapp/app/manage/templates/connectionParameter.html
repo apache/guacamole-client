@@ -21,11 +21,17 @@
         THE SOFTWARE.
     -->
 
-    <input ng-show="parameter.type === 'TEXT'" type="text" ng-model="typedValue"/>
-    <input ng-show="parameter.type === 'NUMERIC'" type="number" ng-model="typedValue"/>
-    <input ng-show="parameter.type === 'USERNAME'" type="text" ng-model="typedValue"/>
-    <input ng-show="parameter.type === 'PASSWORD'" type="password" ng-model="typedValue"/>
-    <input ng-show="parameter.type === 'BOOLEAN'" type="checkbox" ng-model="typedValue"/>
-    <textarea ng-show="parameter.type === 'MULTILINE'" ng-model="typedValue"></textarea>
-    <select ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getProtocolParameterOption(protocol.name, parameter.name, option.value) | translate for option in parameter.options | orderBy: value"></select>
+    <!-- Generic input types -->
+    <input    ng-show="parameter.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input    ng-show="parameter.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input    ng-show="parameter.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input    ng-show="parameter.type === 'PASSWORD'" type="password" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input    ng-show="parameter.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+
+    <!-- Multiline parameter -->
+    <textarea ng-show="parameter.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
+
+    <!-- Enumerated parameter -->
+    <select   ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getProtocolParameterOption(protocol.name, parameter.name, option.value) | translate for option in parameter.options | orderBy: value"></select>
+
 </span>
