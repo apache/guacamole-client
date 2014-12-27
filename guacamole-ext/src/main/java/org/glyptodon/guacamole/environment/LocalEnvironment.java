@@ -239,6 +239,12 @@ public class LocalEnvironment implements Environment {
                 }
             );
 
+            // Warn if directory contents are not available
+            if (files == null) {
+                logger.error("Unable to read contents of \"{}\".", protocol_directory.getAbsolutePath());
+                files = new File[0];
+            }
+            
             // Load each protocol from each file
             for (File file : files) {
 
