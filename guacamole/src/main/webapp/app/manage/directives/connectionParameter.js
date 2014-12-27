@@ -57,7 +57,11 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
 
         },
         templateUrl: 'app/manage/templates/connectionParameter.html',
-        controller: ['$scope', '$q', function connectionParameterController($scope, $q) {
+        controller: ['$scope', '$injector', function connectionParameterController($scope, $injector) {
+
+            // Required services
+            var $q                       = $injector.get('$q');
+            var translationStringService = $injector.get('translationStringService');
 
             /**
              * Deferred load of the parameter definition, pending availability
@@ -151,6 +155,31 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
                 });
 
             }); // end watch typedValue
+
+            /**
+             * Given the internal name of a protocol, the internal name of a
+             * parameter for that protocol, and the internal name for a valid
+             * value of that parameter, produces the translation string for the
+             * localized, human-readable name of that parameter value.
+             *
+             * @param {String} protocolName
+             *     The name of the protocol.
+             * 
+             * @param {String} parameterName
+             *     The name of the protocol parameter.
+             * 
+             * @param {String} parameterValue
+             *     The name of the parameter value.
+             * 
+             * @returns {String}
+             *     The translation string which produces the translated name of the
+             *     parameter value specified.
+             */
+            $scope.getProtocolParameterOption = function getProtocolParameterOption(protocolName, parameterName, parameterValue) {
+                return 'PROTOCOL_'      + translationStringService.canonicalize(protocolName)
+                     + '.FIELD_OPTION_' + translationStringService.canonicalize(parameterName)
+                     + '_'              + translationStringService.canonicalize(parameterValue || 'EMPTY');
+            };
 
         }] // end controller
     };

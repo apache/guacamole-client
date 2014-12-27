@@ -21,26 +21,26 @@ THE SOFTWARE.
 -->
 
 <div class="logout-panel">
-    <a class="back button" href="#/manage/">{{'manage.back' | translate}}</a>
-    <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
+    <a class="back button" href="#/manage/">{{'MANAGE_USER.ACTION_NAVIGATE_BACK' | translate}}</a>
+    <a class="logout button" ng-click="logout()">{{'MANAGE_USER.ACTION_LOGOUT' | translate}}</a>
 </div>
 
 <!-- Main property editor -->
-<h2>{{'manage.edit.user.title' | translate}}</h2>
+<h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
 <div class="section">
     <table class="properties">
         <tr>
-            <th>{{'manage.edit.user.username' | translate}}</th>
+            <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
                       
             <td>{{user.username}}</td>
         </tr>
         <tr>
-            <th>{{'manage.edit.user.password' | translate}}</th>
+            <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
                         
             <td><input ng-model="user.password" type="password" /></td>
         </tr>
         <tr>
-            <th>{{'manage.edit.user.passwordMatch' | translate}}</th>
+            <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
                         
             <td><input ng-model="passwordMatch" type="password" /></td>
         </tr>
@@ -48,7 +48,7 @@ THE SOFTWARE.
 </div>
 
 <!-- System permissions section -->
-<h2>{{'manage.edit.user.permissions' | translate}}</h2>
+<h2>{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
 <div class="section">
     <table class="properties">
         <tr ng-repeat="systemPermissionType in systemPermissionTypes">
@@ -60,7 +60,7 @@ THE SOFTWARE.
 </div>
     
 <!-- Connection and connection group permission section -->
-<h2>{{'manage.edit.user.connections' | translate}}</h2>
+<h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
 <div class="section" ng-class="{loading: !rootGroup}">
     <guac-group-list
         context="groupListContext"
@@ -71,7 +71,7 @@ THE SOFTWARE.
 
 <!-- Form action buttons -->
 <div class="action-buttons">
-    <button ng-click="saveUser()">{{'manage.edit.user.save' | translate}}</button>
-    <button ng-click="cancel()">{{'manage.edit.user.cancel' | translate}}</button>
-    <button ng-click="deleteUser()" class="danger">{{'manage.edit.user.delete' | translate}}</button>
+    <button ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
+    <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
+    <button ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
 </div>

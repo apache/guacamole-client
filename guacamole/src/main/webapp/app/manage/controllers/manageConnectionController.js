@@ -33,18 +33,19 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var PermissionSet       = $injector.get('PermissionSet');
 
     // Required services
-    var $location              = $injector.get('$location');
-    var $routeParams           = $injector.get('$routeParams');
-    var connectionService      = $injector.get('connectionService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var protocolService        = $injector.get('protocolService');
+    var $location                = $injector.get('$location');
+    var $routeParams             = $injector.get('$routeParams');
+    var connectionService        = $injector.get('connectionService');
+    var connectionGroupService   = $injector.get('connectionGroupService');
+    var protocolService          = $injector.get('protocolService');
+    var translationStringService = $injector.get('translationStringService');
 
     /**
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "manage.error.action.acknowledge",
+        name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             $scope.showStatus(false);
@@ -104,6 +105,41 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     }
 
     /**
+     * Given the internal name of a protocol, produces the translation string
+     * for the localized version of that protocol's name.
+     *
+     * @param {String} protocolName
+     *     The name of the protocol.
+     * 
+     * @returns {String}
+     *     The translation string which produces the localized name of the
+     *     protocol specified.
+     */
+    $scope.getProtocolName = function getProtocolName(protocolName) {
+        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName) + '.NAME';
+    };
+
+    /**
+     * Given the internal name of a protocol and the internal name of a
+     * parameter for that protocol, produces the translation string
+     * for the localized, human-readable name of that protocol parameter.
+     *
+     * @param {String} protocolName
+     *     The name of the protocol.
+     * 
+     * @param {String} parameterName
+     *     The name of the protocol parameter.
+     * 
+     * @returns {String}
+     *     The translation string which produces the translated name of the
+     *     protocol parameter specified.
+     */
+    $scope.getProtocolParameterName = function getProtocolParameterName(protocolName, parameterName) {
+        return 'PROTOCOL_'      + translationStringService.canonicalize(protocolName)
+             + '.FIELD_HEADER_' + translationStringService.canonicalize(parameterName);
+    };
+
+    /**
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
@@ -128,7 +164,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         .error(function connectionSaveFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -141,7 +177,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * immediately deletes the current connection.
      */
     var DELETE_ACTION = {
-        name        : "manage.edit.connection.delete",
+        name        : "MANAGE_CONNECTION.ACTION_DELETE",
         className   : "danger",
         // Handle action
         callback    : function deleteCallback() {
@@ -155,7 +191,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * closes the currently-shown status dialog.
      */
     var CANCEL_ACTION = {
-        name        : "manage.edit.connection.cancel",
+        name        : "MANAGE_CONNECTION.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
             $scope.showStatus(false);
@@ -178,7 +214,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         .error(function connectionDeletionFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -194,8 +230,8 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
         // Confirm deletion request
         $scope.showStatus({
-            'title'      : 'manage.edit.connection.confirmDelete.title',
-            'text'       : 'manage.edit.connection.confirmDelete.text',
+            'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_CONFIRM_DELETE',
+            'text'       : 'MANAGE_CONNECTION.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

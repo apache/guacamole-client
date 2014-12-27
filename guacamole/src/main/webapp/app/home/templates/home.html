@@ -23,18 +23,18 @@
 <div class="connection-list-ui">
 
     <div class="logout-panel">
-        <a class="manage button" ng-show="currentUserHasUpdate" href="#/manage">{{'home.manage' | translate}}</a>
-        <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
+        <a class="manage button" ng-show="currentUserHasUpdate" href="#/manage">{{'HOME.ACTION_MANAGE' | translate}}</a>
+        <a class="logout button" ng-click="logout()">{{'HOME.ACTION_LOGOUT' | translate}}</a>
     </div>
 
     <!-- The recent connections for this user -->
-    <h2>{{'home.recentConnections' | translate}}</h2>
+    <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
     <div class="recent-connections" ng-class="{loading: loading}">
         <guac-recent-connections root-group="rootConnectionGroup"/>
     </div>
 
     <!-- All connections for this user -->
-    <h2>{{'home.allConnections' | translate}}</h2>
+    <h2>{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
     <div class="all-connections" ng-class="{loading: loading}">
         <guac-group-list
             connection-group="rootConnectionGroup"

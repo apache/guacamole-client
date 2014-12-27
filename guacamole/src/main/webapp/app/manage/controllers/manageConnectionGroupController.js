@@ -40,7 +40,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "manage.error.action.acknowledge",
+        name        : "MANAGE_CONNECTION_GROUP.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             $scope.showStatus(false);
@@ -80,11 +80,11 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      */
     $scope.types = [
         {
-            label: "organizational",
+            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_ORGANIZATIONAL",
             value: ConnectionGroup.Type.ORGANIZATIONAL
         },
         {
-            label : "balancing",
+            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_BALANCING",
             value : ConnectionGroup.Type.BALANCING
         }
     ];
@@ -112,7 +112,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         .error(function connectionGroupSaveFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -125,7 +125,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * immediately deletes the current connection group.
      */
     var DELETE_ACTION = {
-        name        : "manage.edit.connectionGroup.delete",
+        name        : "MANAGE_CONNECTION_GROUP.ACTION_DELETE",
         className   : "danger",
         // Handle action
         callback    : function deleteCallback() {
@@ -139,7 +139,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * closes the currently-shown status dialog.
      */
     var CANCEL_ACTION = {
-        name        : "manage.edit.connectionGroup.cancel",
+        name        : "MANAGE_CONNECTION_GROUP.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
             $scope.showStatus(false);
@@ -162,7 +162,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         .error(function connectionGroupDeletionFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -178,8 +178,8 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         // Confirm deletion request
         $scope.showStatus({
-            'title'      : 'manage.edit.connectionGroup.confirmDelete.title',
-            'text'       : 'manage.edit.connectionGroup.confirmDelete.text',
+            'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_CONFIRM_DELETE',
+            'text'       : 'MANAGE_CONNECTION_GROUP.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

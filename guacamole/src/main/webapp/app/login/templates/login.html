@@ -23,7 +23,7 @@ THE SOFTWARE.
 <div class="login-ui" ng-class="{error: loginError}" >
 
     <!-- Login error message -->
-    <p class="login-error">{{'login.loginError' | translate}}</p>
+    <p class="login-error">{{'LOGIN.ERROR_INVALID_LOGIN' | translate}}</p>
 
     <div class="login-dialog-middle">
 
@@ -33,17 +33,17 @@ THE SOFTWARE.
 
                 <!-- Guacamole version -->
                 <img class="logo" src="images/guac-tricolor.png" alt=""/>
-                <div class="version">{{'application.title' | translate}}</div>
+                <div class="version">{{'APP.NAME' | translate}}</div>
 
                 <!-- Login fields (username + password) -->
                 <div class="login-fields">
-                    <input ng-model="username" placeholder="{{'login.username' | translate}}" type="text" name="username" autofocus="autofocus" class="username"/>
-                    <input ng-model="password" placeholder="{{'login.password' | translate}}" type="password" name="password" class="password"/>
+                    <input ng-model="username" placeholder="{{'LOGIN.FIELD_PLACEHOLDER_USERNAME' | translate}}" type="text" name="username" autofocus="autofocus" class="username"/>
+                    <input ng-model="password" placeholder="{{'LOGIN.FIELD_PLACEHOLDER_PASSWORD' | translate}}" type="password" name="password" class="password"/>
                 </div>
 
                 <!-- Submit button -->
                 <div class="buttons">
-                    <input type="submit" name="login" class="login" value="{{'login.login' | translate}}"/>
+                    <input type="submit" name="login" class="login" value="{{'LOGIN.ACTION_LOGIN' | translate}}"/>
                 </div>
 
             </form>

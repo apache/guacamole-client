@@ -48,51 +48,51 @@
 
 <!-- On-screen keyboard -->
 <div class="keyboard-container" ng-class="{shown: showOSK}">
-    <guac-osk layout="'client.oskLayout' | translate"/>
+    <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"/>
 </div>
 
 <!-- Menu -->
 <div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag">
-    <h2>{{'client.clipboard' | translate}}</h2>
+    <h2>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h2>
     <div class="content" id="clipboard-settings">
-        <p class="description">{{'client.copiedText' | translate}}</p>
+        <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
         <textarea ng-model="clipboardData" rows="10" cols="40" id="clipboard"></textarea>
     </div>
 
-    <h2>{{'client.inputMethod' | translate}}</h2>
+    <h2>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h2>
     <div class="content" id="keyboard-settings">
 
         <!-- No IME -->
         <div class="choice">
-            <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="none"/> {{'client.none' | translate}}</label>
-            <p class="caption"><label for="ime-none">{{'client.noneDesc' | translate}}</label></p>
+            <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="none"/> {{'CLIENT.NAME_INPUT_METHOD_NONE' | translate}}</label>
+            <p class="caption"><label for="ime-none">{{'CLIENT.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
         </div>
 
         <!-- Text input -->
         <div class="choice">
             <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.png" alt=""/></label></div>
-            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="text"/> {{'client.textInput' | translate}}</label>
-            <p class="caption"><label for="ime-text">{{'client.textInputDesc' | translate}} </label></p>
+            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="text"/> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | translate}}</label>
+            <p class="caption"><label for="ime-text">{{'CLIENT.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
         </div>
 
         <!-- Guac OSK -->
         <div class="choice">
-            <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="osk"/> {{'client.osk' | translate}}</label>
-            <p class="caption"><label for="ime-osk">{{'client.oskDesc' | translate}}</label></p>
+            <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="inputMethod" type="radio" value="osk"/> {{'CLIENT.NAME_INPUT_METHOD_OSK' | translate}}</label>
+            <p class="caption"><label for="ime-osk">{{'CLIENT.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
         </div>
 
     </div>
 
-    <h2>{{'client.mouseMode' | translate}}</h2>
+    <h2>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h2>
     <div class="content" id="mouse-settings">
-        <p class="description">{{'client.mouseModeDesc' | translate}}</p>
+        <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | translate}}</p>
 
         <!-- Touchscreen -->
         <div class="choice">
             <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
             <div class="figure">
-                <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'client.touchscreen' | translate}}"/></label>
-                <p class="caption"><label for="absolute">{{'client.touchscreenDesc' | translate}}</label></p>
+                <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"/></label>
+                <p class="caption"><label for="absolute">{{'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
             </div>
         </div>
 
@@ -100,21 +100,21 @@
         <div class="choice">
             <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
             <div class="figure">
-                <label for="relative"><img src="images/settings/touchpad.png" alt="{{'client.touchpad' | translate}}"/></label>
-                <p class="caption"><label for="relative">{{'client.touchpadDesc' | translate}}</label></p>
+                <label for="relative"><img src="images/settings/touchpad.png" alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | translate}}"/></label>
+                <p class="caption"><label for="relative">{{'CLIENT.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
             </div>
         </div>
 
     </div>
 
-    <h2>{{'client.display' | translate}}</h2>
+    <h2>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h2>
     <div class="content">
         <div id="zoom-settings">
             <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>
             <div id="zoom-state">{{formattedScale()}}%</div>
             <div ng-click="zoomIn()" id="zoom-in"><img src="images/settings/zoom-in.png" alt="+"/></div>
         </div>
-        <div><label><input ng-model="autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'client.autoFit' | translate}}</label></div>
+        <div><label><input ng-model="autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'CLIENT.TEXT_ZOOM_AUTO_FIT' | translate}}</label></div>
     </div>
     
 </div>
