@@ -233,6 +233,7 @@
         "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
         "FIELD_HEADER_DOMAIN"          : "Domain:",
+        "FIELD_HEADER_DPI"             : "Display resolution (DPI):",
         "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Enable drive:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Enable printing:",
@@ -249,6 +250,7 @@
         "FIELD_HEADER_SERVER_LAYOUT"   : "Keyboard layout:",
         "FIELD_HEADER_USERNAME"        : "Username:",
         "FIELD_HEADER_WIDTH"           : "Width:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
@@ -258,7 +260,7 @@
         "FIELD_OPTION_SECURITY_ANY"   : "Any",
         "FIELD_OPTION_SECURITY_EMPTY" : "(default)",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
-        "FIELD_OPTION_SECURITY_RTP"   : "RDP encryption",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
@@ -266,6 +268,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
 
         "NAME" : "RDP"
 
@@ -300,6 +303,36 @@
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
 
         "NAME" : "SSH"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_FONT_NAME"      : "Font name:",
+        "FIELD_HEADER_FONT_SIZE"      : "Font size:",
+        "FIELD_HEADER_HOSTNAME"       : "Hostname:",
+        "FIELD_HEADER_USERNAME"       : "Username:",
+        "FIELD_HEADER_PASSWORD"       : "Password:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
+        "FIELD_HEADER_PORT"           : "Port:",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Telnet"
 
     },
 
