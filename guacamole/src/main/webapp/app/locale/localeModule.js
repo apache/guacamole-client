@@ -21,7 +21,6 @@
  */
 
 /**
- * The module for the administration functionality.
+ * Module for handling common localization-related tasks.
  */
-angular.module('manage', ['btford.modal', 'groupList', 'locale', 'rest']);
-
+angular.module('locale', []);

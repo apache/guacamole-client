@@ -21,22 +21,22 @@ THE SOFTWARE.
 -->
 
 <div class="logout-panel">
-    <a class="back button" href="#/">{{'manage.back' | translate}}</a>
-    <a class="logout button" ng-click="logout()">{{'home.logout' | translate}}</a>
+    <a class="back button" href="#/">{{'MANAGE.ACTION_NAVIGATE_BACK' | translate}}</a>
+    <a class="logout button" ng-click="logout()">{{'MANAGE.ACTION_LOGOUT' | translate}}</a>
 </div>
 
-<h2>{{'manage.administration' | translate}}</h2>
+<h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
 <div ng-show="currentUserHasUpdate" class="settings section">
 
-    <h3 class="require-manage-users">{{'manage.users' | translate}}</h3>
+    <h3 class="require-manage-users">{{'MANAGE.SECTION_HEADER_USERS' | translate}}</h3>
     <div class="require-manage-users users">
 
-        <p>{{'manage.usersDescription' | translate}}</p>
+        <p>{{'MANAGE.HELP_USERS' | translate}}</p>
 
         <!-- Control to create a new user -->
         <div class="user-add-form">
             <input type="text" ng-model="newUsername" class="name username"/>
-            <button class="add-user" ng-click="newUser()">{{'manage.addUser' | translate}}</button>
+            <button class="add-user" ng-click="newUser()">{{'MANAGE.ACTION_NEW_USER' | translate}}</button>
         </div>
 
         <!-- List of users this user has access to -->
@@ -50,15 +50,15 @@ THE SOFTWARE.
         </div>
     </div>
 
-    <h3 class="require-manage-connections">{{'manage.connections' | translate}}</h3>
+    <h3 class="require-manage-connections">{{'MANAGE.SECTION_HEADER_CONNECTIONS' | translate}}</h3>
     <div class="require-manage-connections connections">
 
-        <p>{{'manage.connectionsDescription' | translate}}</p>
+        <p>{{'MANAGE.HELP_CONNECTIONS' | translate}}</p>
 
         <!-- Control to create a new connection or group -->
         <div class="connection-add-form">
-            <a class="add-connection button" href="#/manage/connections/">{{'manage.newConnection' | translate}}</a>
-            <a class="add-connection-group button" href="#/manage/connectionGroups/">{{'manage.newGroup' | translate}}</a>
+            <a class="add-connection button" href="#/manage/connections/">{{'MANAGE.ACTION_NEW_CONNECTION' | translate}}</a>
+            <a class="add-connection-group button" href="#/manage/connectionGroups/">{{'MANAGE.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
         </div>
 
         <!-- List of connections and groups this user has access to -->

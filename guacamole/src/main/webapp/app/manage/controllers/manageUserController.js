@@ -43,7 +43,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "manage.error.action.acknowledge",
+        name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             $scope.showStatus(false);
@@ -81,19 +81,19 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     $scope.systemPermissionTypes = [
         {
-            label: "manage.edit.user.administerSystem",
+            label: "MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
             value: PermissionSet.SystemPermissionType.ADMINISTER
         },
         {
-            label: "manage.edit.user.createUser",
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
             value: PermissionSet.SystemPermissionType.CREATE_USER
         },
         {
-            label: "manage.edit.user.createConnection",
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
             value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
         },
         {
-            label: "manage.edit.user.createConnectionGroup",
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
             value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
         }
     ];
@@ -328,8 +328,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         if ($scope.passwordMatch !== $scope.user.password) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
-                'text'       : 'manage.edit.user.passwordMismatch',
+                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
+                'text'       : 'MANAGE_USER.ERROR_PASSWORD_MISMATCH',
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
             return;
@@ -349,7 +349,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             .error(function userPermissionsPatchFailed(error) {
                 $scope.showStatus({
                     'className'  : 'error',
-                    'title'      : 'manage.error.title',
+                    'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                     'text'       : error.message,
                     'actions'    : [ ACKNOWLEDGE_ACTION ]
                 });
@@ -361,7 +361,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         .error(function userSaveFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -374,7 +374,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * immediately deletes the current user.
      */
     var DELETE_ACTION = {
-        name        : "manage.edit.user.delete",
+        name        : "MANAGE_USER.ACTION_DELETE",
         className   : "danger",
         // Handle action
         callback    : function deleteCallback() {
@@ -388,7 +388,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * closes the currently-shown status dialog.
      */
     var CANCEL_ACTION = {
-        name        : "manage.edit.user.cancel",
+        name        : "MANAGE_USER.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
             $scope.showStatus(false);
@@ -411,7 +411,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         .error(function userDeletionFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });
@@ -427,8 +427,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Confirm deletion request
         $scope.showStatus({
-            'title'      : 'manage.edit.user.confirmDelete.title',
-            'text'       : 'manage.edit.user.confirmDelete.text',
+            'title'      : 'MANAGE_USER.DIALOG_HEADER_CONFIRM_DELETE',
+            'text'       : 'MANAGE_USER.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
         });
 

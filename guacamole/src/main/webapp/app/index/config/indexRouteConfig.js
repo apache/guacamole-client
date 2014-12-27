@@ -31,37 +31,37 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
     
     $routeProvider
         .when('/', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'home',
             templateUrl: 'app/home/templates/home.html',
             controller: 'homeController'
         })
         .when('/manage/', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manage.html',
             controller: 'manageController'
         })
         .when('/manage/connections/:id?', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manageConnection.html',
             controller: 'manageConnectionController'
         })
         .when('/manage/connectionGroups/:id?', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manageConnectionGroup.html',
             controller: 'manageConnectionGroupController'
         })
         .when('/manage/users/:id', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'manage',
             templateUrl: 'app/manage/templates/manageUser.html',
             controller: 'manageUserController'
         })
         .when('/login/', {
-            title: 'application.title',
+            title: 'APP.NAME',
             bodyClassName: 'login',
             templateUrl: 'app/login/templates/login.html',
             controller: 'loginController'

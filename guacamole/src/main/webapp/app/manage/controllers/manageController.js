@@ -40,7 +40,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "manage.error.action.acknowledge",
+        name        : "MANAGE.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             $scope.showStatus(false);
@@ -90,7 +90,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         .error(function userCreationFailed(error) {
             $scope.showStatus({
                 'className'  : 'error',
-                'title'      : 'manage.error.title',
+                'title'      : 'MANAGE.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
                 'actions'    : [ ACKNOWLEDGE_ACTION ]
             });

@@ -26,5 +26,5 @@
     <input ng-show="parameter.type === 'USERNAME'" type="text" ng-model="typedValue"/>
     <input ng-show="parameter.type === 'PASSWORD'" type="password" ng-model="typedValue"/>
     <input ng-show="parameter.type === 'BOOLEAN'" type="checkbox" ng-model="typedValue"/>
-    <select ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as 'protocol.' + protocol.name + '.parameters.' + parameter.name + '.options.' + (option.value || 'empty') | translate for option in parameter.options | orderBy: value"></select>
+    <select ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getProtocolParameterOption(protocol.name, parameter.name, option.value) | translate for option in parameter.options | orderBy: value"></select>
 </span>

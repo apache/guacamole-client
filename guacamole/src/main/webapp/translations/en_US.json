@@ -1,319 +1,332 @@
 {
-    "application": {
-        "title" : "Guacamole ${project.version}"
+
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "OK",
+        "ACTION_CANCEL"        : "Cancel",
+        "ACTION_DELETE"        : "Delete",
+        "ACTION_LOGIN"         : "Login",
+        "ACTION_LOGOUT"        : "Logout",
+        "ACTION_MANAGE"        : "Manage",
+        "ACTION_NAVIGATE_BACK" : "Back",
+        "ACTION_SAVE"          : "Save",
+
+        "NAME" : "Guacamole ${project.version}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_RECONNECT"   : "Reconnect",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_SAVE_FILE"   : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONNECTING"       : "Connecting",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",
+        "DIALOG_HEADER_DISCONNECTED"     : "Disconnected",
+        "DIALOG_HEADER_FILE_TRANSFER"    : "File Transfer",
+
+        "ERROR_CLIENT_201"     : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
+        "ERROR_CLIENT_202"     : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
+        "ERROR_CLIENT_203"     : "The remote desktop server encountered an error and has closed the connection. Please try again or contact your system administrator.",
+        "ERROR_CLIENT_205"     : "This connection has been closed because it conflicts with another connection. Please try again later.",
+        "ERROR_CLIENT_301"     : "Log in failed. Please reconnect and try again.",
+        "ERROR_CLIENT_303"     : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
+        "ERROR_CLIENT_308"     : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
+        "ERROR_CLIENT_31D"     : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
+        "ERROR_CLIENT_DEFAULT" : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs.",
+
+        "ERROR_TUNNEL_201"     : "The Guacamole server has rejected this connection attempt because there are too many active connections. Please wait a few minutes and try again.",
+        "ERROR_TUNNEL_202"     : "The connection has been closed because the server is taking too long to respond. This is usually caused by network problems, such as a spotty wireless signal, or slow network speeds. Please check your network connection and try again or contact your system administrator.",
+        "ERROR_TUNNEL_203"     : "The server encountered an error and has closed the connection. Please try again or contact your system administrator.",
+        "ERROR_TUNNEL_204"     : "The requested connection does not exist. Please check the connection name and try again.",
+        "ERROR_TUNNEL_205"     : "This connection is currently in use, and concurrent access to this connection is not allowed. Please try again later.",
+        "ERROR_TUNNEL_301"     : "You do not have permission to access this connection because you are not logged in. Please log in and try again.",
+        "ERROR_TUNNEL_303"     : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
+        "ERROR_TUNNEL_308"     : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
+        "ERROR_TUNNEL_31D"     : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
+        "ERROR_TUNNEL_DEFAULT" : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs.",
+
+        "ERROR_UPLOAD_100"     : "File transfer is either not supported or not enabled. Please contact your system administrator, or check your system logs.",
+        "ERROR_UPLOAD_201"     : "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
+        "ERROR_UPLOAD_202"     : "The file cannot be transferred because the remote desktop server is taking too long to respond. Please try again or or contact your system administrator.",
+        "ERROR_UPLOAD_203"     : "The remote desktop server encountered an error during transfer. Please try again or contact your system administrator.",
+        "ERROR_UPLOAD_204"     : "The destination for the file transfer does not exist. Please check that the destionation exists and try again.",
+        "ERROR_UPLOAD_205"     : "The destination for the file transfer is currently locked. Please wait for any in-progress tasks to complete and try again.",
+        "ERROR_UPLOAD_301"     : "You do not have permission to upload this file because you are not logged in. Please log in and try again.",
+        "ERROR_UPLOAD_303"     : "You do not have permission to upload this file. If you require access, please check your system settings, or check with your system administrator.",
+        "ERROR_UPLOAD_308"     : "The file transfer has stalled. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
+        "ERROR_UPLOAD_31D"     : "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
+        "ERROR_UPLOAD_DEFAULT" : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs.",
+
+        "HELP_CLIPBOARD"           : "Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.",
+        "HELP_INPUT_METHOD_NONE"   : "No input method is used. Keyboard input is accepted from a connected, physical keyboard.",
+        "HELP_INPUT_METHOD_OSK"    : "Display and accept input from the built-in Guacamole on-screen keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible (such as Ctrl-Alt-Del).",
+        "HELP_INPUT_METHOD_TEXT"   : "Allow typing of text, and emulate keyboard events based on the typed text. This is necessary for devices such as mobile phones that lack a physical keyboard.",
+        "HELP_MOUSE_MODE"          : "Determines how the remote mouse behaves with respect to touches.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tap to click. The click occurs at the location of the touch.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
+
+        "NAME_INPUT_METHOD_NONE"   : "None",
+        "NAME_INPUT_METHOD_OSK"    : "On-screen keyboard",
+        "NAME_INPUT_METHOD_TEXT"   : "Text input",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Touchscreen",
+        "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
+
+        "SECTION_HEADER_CLIPBOARD"    : "Clipboard",
+        "SECTION_HEADER_INPUT_METHOD" : "Input method",
+        "SECTION_HEADER_DISPLAY"      : "Display",
+        "SECTION_HEADER_MOUSE_MODE"   : "Mouse emulation mode",
+
+        "TEXT_ZOOM_AUTO_FIT"            : "Automatically fit to browser window",
+        "TEXT_CLIENT_STATUS_IDLE"       : "Idle.",
+        "TEXT_CLIENT_STATUS_CONNECTING" : "Connecting to Guacamole...",
+        "TEXT_CLIENT_STATUS_WAITING"    : "Connected to Guacamole. Waiting for response...",
+        "TEXT_TUNNEL_STATUS_CLOSED"     :  "You have been disconnected. Reload the page to reconnect.",
+        "TEXT_RECONNECT_COUNTDOWN"      : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"   : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.xml"
+
+    },
+
+    "HOME" : {
+
+        "ACTION_LOGOUT" : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE" : "@:APP.ACTION_MANAGE",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "No recent Connections.",
+
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections",
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_LOGIN"               : "@:APP.ACTION_LOGIN",
+
+        "ERROR_INVALID_LOGIN"        : "Invalid Login",
+
+        "FIELD_PLACEHOLDER_USERNAME" : "Username",
+        "FIELD_PLACEHOLDER_PASSWORD" : "Password"
+
     },
     
-    "login": {
-        "loginError" : "Invalid Login",
-        "username"   : "Username",
-        "password"   : "Password",
-        "login"      : "Login"
+    "MANAGE" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_LOGOUT"               : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"        : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NEW_USER"             : "New User",
+        "ACTION_NEW_CONNECTION"       : "New Connection",
+        "ACTION_NEW_CONNECTION_GROUP" : "New Group",
+
+        "DIALOG_HEADER_ERROR"           : "Error",
+
+        "HELP_CONNECTIONS" : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
+        "HELP_USERS"       : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
+
+        "SECTION_HEADER_ADMINISTRATION" : "Administration",
+        "SECTION_HEADER_CONNECTIONS"    : "Connections",
+        "SECTION_HEADER_USERS"          : "Users"
+
     },
-    
-    "home": {
-        "manage"                  : "Manage",
-        "logout"                  : "Logout",
-        "recentConnections"       : "Recent Connections",
-        "noRecentConnections"     : "No recent Connections.",
-        "allConnections"          : "All Connections",
-        "clipboard"               : "Clipboard",
-        "clipboardDescription"    : "Text copied/cut within Guacamole will appear here. Changes to the text will affect the remote clipboard, and will be pastable within the remote desktop. Use the textbox below as an interface between the client and server clipboards.",
-        "settings"                : "Settings",
-        "autoFitDisplay"          : "Auto-fit display to browser window",
-        "autoFitDescription"      : "If checked, remote displays are automatically scaled to exactly fit within the browser window. If unchecked, remote displays are always shown at their natural resolution, even if doing so causes the display to extend beyond the bounds of the window.",
-        "disableSound"            : "Disable Sound",
-        "disableSoundDescription" : "If on a device or network where bandwidth usage must be kept to a minimum, you may wish to check this box and disable sound. This can also be necessary if a device doesn't actually support sound, but claims to, resulting in wasted bandwidth.",
-        "disableSoundNote"        : "Changing this setting will only affect future connections."
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection",
+        "DIALOG_HEADER_ERROR"          : "Error",
+
+        "FIELD_HEADER_LOCATION" : "Location:",
+        "FIELD_HEADER_NAME"     : "Name:",
+        "FIELD_HEADER_PROTOCOL" : "Protocol:",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Active Now",
+        "INFO_CONNECTION_NOT_USED"         : "This connection has not yet been used.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Edit Connection",
+        "SECTION_HEADER_HISTORY"         : "Usage History",
+        "SECTION_HEADER_PARAMETERS"      : "Parameters",
+
+        "TABLE_HEADER_HISTORY_USERNAME" : "Username",
+        "TABLE_HEADER_HISTORY_START"    : "Start Time",
+        "TABLE_HEADER_HISTORY_DURATION" : "Duration",
+
+        "TEXT_CONFIRM_DELETE"   : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+
     },
-            
-    "manage": {
-        "back"                   : "Back",
-        "logout"                 : "Logout",
-        "administration"         : "Administration",
-        "users"                  : "Users",
-        "usersDescription"       : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
-        "addUser"                : "Add User",
-        "connections"            : "Connections",
-        "connectionsDescription" : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
-        "newConnection"          : "New Connection",
-        "newGroup"               : "New Group",
-        "edit": {
-            "connection": {
-                "title"             : "Edit Connection",
-                "cancel"            : "Cancel",
-                "save"              : "Save",
-                "delete"            : "Delete",
-                "confirmDelete"     : {
-                    "title"             : "Delete Connection",
-                    "text"              : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?"
-                },
-                "protocol"          : "Protocol:",
-                "root"              : "ROOT",
-                "location"          : "Location:",
-                "name"              : "Name:",
-                "parameters"        : "Parameters",
-                "history"           : {
-                    "connectionNotUsed" : "This connection has not yet been used.",
-                    "usageHistory"      : "Usage History",
-                    "username"          : "Username",
-                    "startTime"         : "Start Time",
-                    "duration"          : "Duration",
-                    "activeNow"         : "Active Now",
-                    "unknownEnd"        : "--",
-                    "formattedDuration" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
-                }
-            },
-            "connectionGroup": {
-                "title"             : "Edit Connection Group",
-                "cancel"            : "Cancel",
-                "save"              : "Save",
-                "delete"            : "Delete",
-                "confirmDelete"     : {
-                    "title"             : "Delete Connection",
-                    "text"              : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?"
-                },
-                "usageHistory"      : "Usage History:",
-                "type"              : {
-                    "label"             : "Type",
-                    "organizational"    : "Organizational",
-                    "balancing"         : "Balancing"
-                },
-                "root"              : "ROOT",
-                "location"          : "Location:",
-                "name"              : "Name:"
-            },
-            "user": {
-                "title"                     : "Edit User",
-                "cancel"                    : "Cancel",
-                "save"                      : "Save",
-                "delete"                    : "Delete",
-                "confirmDelete"     : {
-                    "title"             : "Delete User",
-                    "text"              : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
-                },
-                "password"                  : "Password:",
-                "passwordMatch"             : "Re-enter Password:",
-                "passwordMismatch"          : "The provided passwords do not match.",
-                "permissions"               : "Permissions",
-                "username"                  : "Username:",
-                "administerSystem"          : "Administer system:",
-                "createUser"                : "Create new users:",
-                "createConnection"          : "Create new connections:",
-                "createConnectionGroup"     : "Create new connection groups:",
-                "connections"               : "Connections"
-            }
-        },
-        "error": {
-            "title"             : "Error",
-            "action": {
-                "acknowledge"       : "OK"
-            }
-        }
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection Group",
+        "DIALOG_HEADER_ERROR"          : "Error",
+
+        "FIELD_HEADER_LOCATION" : "Location:",
+        "FIELD_HEADER_NAME"     : "Name:",
+        "FIELD_HEADER_TYPE"     : "Type:",
+
+        "NAME_TYPE_BALANCING"       : "Balancing",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organizational",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Edit Connection Group",
+
+        "TEXT_CONFIRM_DELETE" : "Connection groups cannot be restored after they have been deleted. Are you sure you want to delete this connection group?"
+
     },
-    "protocol": {
-        "vnc": {
-            "label": "VNC",
-            "parameters": {
-                "hostname"          : {"label": "Hostname"},
-                "port"              : {"label": "Port"},
-                "password"          : {"label": "Password"},
-                "read-only"         : {"label": "Read-only"},
-                "swap-red-blue"     : {"label": "Swap red/blue components"},
-                "cursor"            : {
-                    "label": "Cursor",
-                    "options": {
-                        "local"     : "Local",
-                        "remote"    : "Remote"
-                    }
-                },
-                "color-depth"       : {
-                    "label": "Color Depth",
-                    "options": {
-                        "8"    : "256 color",
-                        "16"    : "Low color (16-bit)",
-                        "24"    : "True color (24-bit)",
-                        "32"    : "True color (32-bit)"
-                    }
-                },
-                "dest-host"         : {"label": "Repeater destination host"},
-                "dest-port"         : {"label": "Repeater destination port"},
-                "enable-audio"      : {"label": "Enable audio"},
-                "audio-servername"  : {"label": "Audio server name"}
-            }
-        },
-        "rdp": {
-            "label": "RDP",
-            "parameters": {
-                "hostname"          : {"label": "Hostname"},
-                "port"              : {"label": "Port"},
-                "username"          : {"label": "Username"},
-                "password"          : {"label": "Password"},
-                "domain"            : {"label": "Domain"},
-                "initial-program"   : {"label": "Initial Program"},
-                "width"             : {"label": "Width"},
-                "height"            : {"label": "Height"},
-                "color-depth"       : {
-                    "label": "Color Depth",
-                    "options": {
-                        "8"    : "256 color",
-                        "16"    : "Low color (16-bit)",
-                        "24"    : "True color (24-bit)",
-                        "32"    : "True color (32-bit)"
-                    }
-                },
-                "server-layout"     : {
-                    "label": "Keyboard layout",
-                    "options": {
-                        "empty"         : "(default)",
-                        "en-us-qwerty"  : "US English (Qwerty)",
-                        "fr-fr-azerty"  : "French (Azerty)",
-                        "de-de-qwertz"  : "German (Qwertz)",
-                        "failsafe"      : "Unicode"
-                    }
-                },
-                "console"           : {"label": "Administrator console"},
-                "console-audio"     : {"label": "Support audio in console"},
-                "disable-audio"     : {"label": "Disable audio"},
-                "enable-printing"   : {"label": "Enable printing"},
-                "enable-drive"      : {"label": "Enable drive"},
-                "drive-path"        : {"label": "Drive path"},
-                "security"          : {
-                    "label": "Security mode",
-                    "options": {
-                        "empty" : "(default)",
-                        "rdp"   : "RDP encryption",
-                        "tls"   : "TLS encryption",
-                        "nla"   : "NLA (Network Level Authentication)",
-                        "any"   : "Any"
-                    }
-                },
-                "disable-auth"      : {"label": "Disable authentication"},
-                "ignore-cert"       : {"label": "Ignore server certificate"},
-                "remote-app"        : {"label": "RemoteApp program"},
-                "remote-app-dir"    : {"label": "RemoteApp working directory"},
-                "remote-app-args"   : {"label": "RemoteApp parameters"}
-            }
-        },
-        "ssh": {
-            "label": "SSH",
-            "parameters": {
-                "hostname"          : {"label": "Hostname"},
-                "port"              : {"label": "Port"},
-                "username"          : {"label": "Username"},
-                "password"          : {"label": "Password"},
-                "font-name"         : {"label": "Font name"},
-                "font-size"         : {
-                    "label": "Font size",
-                    "options": {
-                        "empty" : "",
-                        "8"     : "8",
-                        "9"     : "9",
-                        "10"    : "10",
-                        "11"    : "11",
-                        "12"    : "12",
-                        "14"    : "14",
-                        "18"    : "18",
-                        "24"    : "24",
-                        "30"    : "30",
-                        "36"    : "36",
-                        "48"    : "48",
-                        "60"    : "60",
-                        "72"    : "72",
-                        "96"    : "96"
-                    }
-                 },
-                "enable-sftp"       : {"label": "Enable SFTP"},
-                "private-key"       : {"label": "Private key"},
-                "passphrase"        : {"label": "Passphrase"}
-            }
-        }
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE"  : "Delete User",
+        "DIALOG_HEADER_ERROR"           : "Error",
+
+        "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administer system:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Create new users:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Create new connections:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Create new connection groups:",
+        "FIELD_HEADER_PASSWORD"                      : "Password:",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "Re-enter Password:",
+        "FIELD_HEADER_USERNAME"                      : "Username:",
+
+        "SECTION_HEADER_CONNECTIONS" : "Connections",
+        "SECTION_HEADER_EDIT_USER"   : "Edit User",
+        "SECTION_HEADER_PERMISSIONS" : "Permissions",
+
+        "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
+
     },
-    "client": {
-        "oskLayout"         : "layouts/en-us-qwerty.xml",
-        "ctrl"              : "Ctrl",
-        "alt"               : "Alt",
-        "esc"               : "Esc",
-        "tab"               : "Tab",
-        "clipboard"         : "Clipboard",
-        "copiedText"        : "Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.",
-        "inputMethod"       : "Input method",
-        "none"              : "None",
-        "noneDesc"          : "No input method is used. Keyboard input is accepted from a connected, physical keyboard.",
-        "textInput"         : "Text input",
-        "textInputDesc"     : "Allow typing of text, and emulate keyboard events based on the typed text. This is necessary for devices such as mobile phones that lack a physical keyboard.",
-        "osk"               : "On-screen keyboard",
-        "oskDesc"           : "Display and accept input from the built-in Guacamole on-screen keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible (such as Ctrl-Alt-Del).",
-        "mouseMode"         : "Mouse emulation mode",
-        "mouseModeDesc"     : "Determines how the remote mouse behaves with respect to touches.",
-        "touchscreen"       : "Touchscreen",
-        "touchscreenDesc"   : "Tap to click. The click occurs at the location of the touch.",
-        "touchpad"          : "Touchpad",
-        "touchpadDesc"      : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
-        "display"           : "Display",
-        "oneHundredPercent" : "100%",
-        "autoFit"           : "Automatically fit to browser window",
-        "error"             : {
-            "reconnect"             : "Reconnect",
-            "connectionErrorTitle"  : "Connection Error",
-            "clientErrors"          : {
-                "201"       : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
-                "202"       : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
-                "203"       : "The remote desktop server encountered an error and has closed the connection. Please try again or contact your system administrator.",
-                "205"       : "This connection has been closed because it conflicts with another connection. Please try again later.",
-                "301"       : "Log in failed. Please reconnect and try again.",
-                "303"       : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
-                "308"       : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
-                "31D"       : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
-                "DEFAULT"   : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
-            },
-            "tunnelErrors"         : {
-                "201"       : "The Guacamole server has rejected this connection attempt because there are too many active connections. Please wait a few minutes and try again.",
-                "202"       : "The connection has been closed because the server is taking too long to respond. This is usually caused by network problems, such as a spotty wireless signal, or slow network speeds. Please check your network connection and try again or contact your system administrator.",
-                "203"       : "The server encountered an error and has closed the connection. Please try again or contact your system administrator.",
-                "204"       : "The requested connection does not exist. Please check the connection name and try again.",
-                "205"       : "This connection is currently in use, and concurrent access to this connection is not allowed. Please try again later.",
-                "301"       : "You do not have permission to access this connection because you are not logged in. Please log in and try again.",
-                "303"       : "You do not have permission to access this connection. If you require access, please ask your system administrator to add you the list of allowed users, or check your system settings.",
-                "308"       : "The Guacamole server has closed the connection because there has been no response from your browser for long enough that it appeared to be disconnected. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
-                "31D"       : "The Guacamole server is denying access to this connection because you have exhausted the limit for simultaneous connection use by an individual user. Please close one or more connections and try again.",
-                "DEFAULT"   : "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
-            },
-            "uploadErrors": {
-                "100": "File transfer is either not supported or not enabled. Please contact your system administrator, or check your system logs.",
-                "201": "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
-                "202": "The file cannot be transferred because the remote desktop server is taking too long to respond. Please try again or or contact your system administrator.",
-                "203": "The remote desktop server encountered an error during transfer. Please try again or contact your system administrator.",
-                "204": "The destination for the file transfer does not exist. Please check that the destionation exists and try again.",
-                "205": "The destination for the file transfer is currently locked. Please wait for any in-progress tasks to complete and try again.",
-                "301": "You do not have permission to upload this file because you are not logged in. Please log in and try again.",
-                "303": "You do not have permission to upload this file. If you require access, please check your system settings, or check with your system administrator.",
-                "308": "The file transfer has stalled. This is commonly caused by network problems, such as spotty wireless signal, or simply very slow network speeds. Please check your network and try again.",
-                "31D": "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
-                "DEFAULT": "An internal error has occurred within the Guacamole server, and the connection has been terminated. If the problem persists, please notify your system administrator, or check your system logs."
-            }
-        },
-        "status"            : {
-            "connectingStatusTitle" : "Connecting",
-            "closedStatusTitle"     : "Disconnected",
-            "clientStates"          : {
-                "idle"       : "Idle.",
-                "connecting" : "Connecting to Guacamole...",
-                "waiting"    : "Connected to Guacamole. Waiting for response..."
-            },
-            "tunnelStates"          : {
-                "closed"     : "You have been disconnected. Reload the page to reconnect."
-            }
-        },
-        "action" : {
-            "reconnect"             : "Reconnect",
-            "reconnectCountdown"    : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}..."
-        },
-        "fileTransfer" : {
-            "downloadTitle" : "File Transfer",
-            "uploadTitle"   : "File Transfer",
-            "progressText"  : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-            "ok"            : "OK",
-            "save"          : "Save"
-        }
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_COLOR_DEPTH"     : "Color depth:",
+        "FIELD_HEADER_CONSOLE"         : "Administrator console:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
+        "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
+        "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
+        "FIELD_HEADER_DOMAIN"          : "Domain:",
+        "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
+        "FIELD_HEADER_ENABLE_DRIVE"    : "Enable drive:",
+        "FIELD_HEADER_ENABLE_PRINTING" : "Enable printing:",
+        "FIELD_HEADER_HEIGHT"          : "Height:",
+        "FIELD_HEADER_HOSTNAME"        : "Hostname:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignore server certificate:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
+        "FIELD_HEADER_PASSWORD"        : "Password:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "RemoteApp parameters:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "RemoteApp working directory:",
+        "FIELD_HEADER_REMOTE_APP"      : "RemoteApp program:",
+        "FIELD_HEADER_SECURITY"        : "Security mode:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Keyboard layout:",
+        "FIELD_HEADER_USERNAME"        : "Username:",
+        "FIELD_HEADER_WIDTH"           : "Width:",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Any",
+        "FIELD_OPTION_SECURITY_EMPTY" : "(default)",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
+        "FIELD_OPTION_SECURITY_RTP"   : "RDP encryption",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
+
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "(default)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+
+        "NAME" : "RDP"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_FONT_NAME"   : "Font name:",
+        "FIELD_HEADER_FONT_SIZE"   : "Font size:",
+        "FIELD_HEADER_ENABLE_SFTP" : "Enable SFTP:",
+        "FIELD_HEADER_HOSTNAME"    : "Hostname:",
+        "FIELD_HEADER_USERNAME"    : "Username:",
+        "FIELD_HEADER_PASSWORD"    : "Password:",
+        "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
+        "FIELD_HEADER_PORT"        : "Port:",
+        "FIELD_HEADER_PRIVATE_KEY" : "Private key:",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "SSH"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
+        "FIELD_HEADER_CURSOR"           : "Cursor:",
+        "FIELD_HEADER_DEST_HOST"        : "Repeater destination host:",
+        "FIELD_HEADER_DEST_PORT"        : "Repeater destination port:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Enable audio:",
+        "FIELD_HEADER_HOSTNAME"         : "Hostname:",
+        "FIELD_HEADER_PASSWORD"         : "Password:",
+        "FIELD_HEADER_PORT"             : "Port:",
+        "FIELD_HEADER_READ_ONLY"        : "Read-only:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"  : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24" : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32" : "True color (32-bit)",
+
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Remote",
+
+        "NAME" : "VNC"
+
     }
+
 }

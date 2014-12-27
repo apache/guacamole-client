@@ -138,7 +138,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
      * showStatus.
      */
     var RECONNECT_ACTION = {
-        name        : "client.action.reconnect",
+        name        : "CLIENT.ACTION_RECONNECT",
         // Handle reconnect action
         callback    : function reconnectCallback() {
             $scope.id = uniqueId;
@@ -151,7 +151,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
      * automatic, timed reconnect.
      */
     var RECONNECT_COUNTDOWN = {
-        text: "client.action.reconnectCountdown",
+        text: "CLIENT.TEXT_RECONNECT_COUNTDOWN",
         callback: RECONNECT_ACTION.callback,
         remaining: 15
     };
@@ -380,8 +380,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Show new status if not yet connected
         if (status !== "connected") {
             $scope.showStatus({
-                title: "client.status.connectingStatusTitle",
-                text: "client.status.clientStates." + status
+                title: "CLIENT.DIALOG_HEADER_CONNECTING",
+                text: "CLIENT.TEXT_CLIENT_STATUS_" + status.toUpperCase()
             });
         }
 
@@ -406,8 +406,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Show error status
         $scope.showStatus({
             className: "error",
-            title: "client.error.connectionErrorTitle",
-            text: "client.error.clientErrors." + errorName,
+            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+            text: "CLIENT.ERROR_CLIENT_" + errorName,
             countdown: countdown,
             actions: [ RECONNECT_ACTION ]
         });
@@ -424,8 +424,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             $scope.id = null;
 
             $scope.showStatus({
-                title: "client.status.closedStatusTitle",
-                text: "client.status.tunnelStates." + status
+                title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
+                text: "CLIENT.TEXT_TUNNEL_STATUS_" + status.toUpperCase()
             });
         }
 
@@ -446,8 +446,8 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         // Show error status
         $scope.showStatus({
             className: "error",
-            title: "client.error.connectionErrorTitle",
-            text: "client.error.tunnelErrors." + errorName,
+            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+            text: "CLIENT.ERROR_TUNNEL_" + errorName,
             countdown: countdown,
             actions: [ RECONNECT_ACTION ]
         });
@@ -549,7 +549,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             
             var notification = {
                 className  : 'download',
-                title      : 'client.fileTransfer.downloadTitle',
+                title      : 'CLIENT.DIALOG_TITLE_FILE_TRANSFER',
                 text       : filename
             };
             
@@ -564,7 +564,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             
             var notification = downloadNotifications[streamIndex];
             if (notification)
-                notification.progress = getFileProgress('client.fileTransfer.progressText', length);
+                notification.progress = getFileProgress('CLIENT.TEXT_FILE_TRANSFER_PROGRESS', length);
             
         });
     });
@@ -590,7 +590,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 delete notification.progress;
                 notification.actions = [
                     {
-                        name       : 'client.fileTransfer.save',
+                        name       : 'CLIENT.ACTION_SAVE_FILE',
                         callback   : saveFile
                     }
                 ];
@@ -610,7 +610,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             
             var notification = {
                 className  : 'upload',
-                title      : 'client.fileTransfer.uploadTitle',
+                title      : 'CLIENT.DIALOG_TITLE_FILE_TRANSFER',
                 text       : filename
             };
             
@@ -625,7 +625,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
             
             var notification = uploadNotifications[streamIndex];
             if (notification)
-                notification.progress = getFileProgress('client.fileTransfer.progressText', offset, length);
+                notification.progress = getFileProgress('CLIENT.TEXT_FILE_TRANSFER_PROGRESS', offset, length);
             
         });
     });
@@ -650,7 +650,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 delete notification.progress;
                 notification.actions = [
                     {
-                        name       : 'client.fileTransfer.ok',
+                        name       : 'CLIENT.ACTION_ACKNOWLEDGE',
                         callback   : closeNotification
                     }
                 ];
@@ -682,11 +682,11 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
                 delete notification.progress;
                 notification.actions = [
                     {
-                        name       : 'client.fileTransfer.ok',
+                        name       : 'CLIENT.ACTION_ACKNOWLEDGE',
                         callback   : closeNotification
                     }
                 ];
-                notification.text = "client.error.uploadErrors." + errorName;
+                notification.text = "CLIENT.ERROR_UPLOAD_" + errorName;
                 notification.className = "upload error";
             }
             

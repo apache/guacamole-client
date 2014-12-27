@@ -59,15 +59,15 @@ angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
          * 
          * @type String
          */
-        this.durationText = 'manage.edit.connection.history.formattedDuration';
+        this.durationText = 'MANAGE_CONNECTION.TEXT_HISTORY_DURATION';
 
         // Notify if connection is active right now
         if (historyEntry.active)
-            this.durationText = 'manage.edit.connection.history.activeNow';
+            this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_ACTIVE_NOW';
 
         // If connection is not active, inform use if end date is not known
         else if (!historyEntry.endDate)
-            this.durationText = 'manage.edit.connection.history.unknownEnd';
+            this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_DURATION_UNKNOWN';
 
         // Set the duration if the necessary information is present
         if (historyEntry.endDate && historyEntry.startDate)
