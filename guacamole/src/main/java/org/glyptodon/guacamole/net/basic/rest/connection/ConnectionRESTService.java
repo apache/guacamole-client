@@ -37,7 +37,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -130,11 +129,6 @@ public class ConnectionRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
-
         // Retrieve the requested connection
         Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
 
@@ -171,11 +165,6 @@ public class ConnectionRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         
-        // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
-
         // Retrieve the requested connection's history
         Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
         return connection.getHistory();

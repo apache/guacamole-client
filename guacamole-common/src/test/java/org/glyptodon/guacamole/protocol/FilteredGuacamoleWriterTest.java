@@ -40,7 +40,7 @@ public class FilteredGuacamoleWriterTest {
     /**
      * Filter which allows through "yes" instructions but drops all others.
      */
-    private class TestFilter implements GuacamoleFilter {
+    private static class TestFilter implements GuacamoleFilter {
 
         @Override
         public GuacamoleInstruction filter(GuacamoleInstruction instruction) throws GuacamoleException {

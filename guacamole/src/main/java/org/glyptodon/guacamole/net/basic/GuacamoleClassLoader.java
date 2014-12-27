@@ -105,7 +105,7 @@ public class GuacamoleClassLoader extends ClassLoader {
 
         // Get list of URLs for all .jar's in the lib directory
         Collection<URL> jarURLs = new ArrayList<URL>();
-        for (File file : libDirectory.listFiles(new FilenameFilter() {
+        File[] files = libDirectory.listFiles(new FilenameFilter() {
 
             @Override
             public boolean accept(File dir, String name) {
@@ -115,13 +115,17 @@ public class GuacamoleClassLoader extends ClassLoader {
 
             }
 
-        })) {
+        });
+
+        // Verify directory was successfully read
+        if (files == null)
+            throw new GuacamoleException("Unable to read contents of directory " + libDirectory);
+
+        // Add the URL for each .jar to the jar URL list
+        for (File file : files) {
 
             try {
-
-                // Add URL for the .jar to the jar URL list
                 jarURLs.add(file.toURI().toURL());
-
             }
             catch (MalformedURLException e) {
                 throw new GuacamoleException(e);
