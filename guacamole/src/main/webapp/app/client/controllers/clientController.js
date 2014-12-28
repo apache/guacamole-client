@@ -23,7 +23,7 @@
 /**
  * The controller for the page used to connect to a connection or balancing group.
  */
-angular.module('home').controller('clientController', ['$scope', '$routeParams', '$injector',
+angular.module('client').controller('clientController', ['$scope', '$routeParams', '$injector',
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
@@ -304,6 +304,10 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Zoom and pan client via pinch gestures
     $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
 
+        // Do not handle pinch gestures while relative mouse is in use
+        if (!$scope.clientProperties.emulateAbsoluteMouse)
+            return false;
+
         // Stop gesture if not in progress
         if (!inProgress) {
             initialScale = null;
@@ -318,7 +322,7 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         }
 
         // Determine new scale absolutely
-        currentScale = initialScale * currentLength / startLength;
+        var currentScale = initialScale * currentLength / startLength;
 
         // Fix scale within limits - scroll will be miscalculated otherwise
         currentScale = Math.max(currentScale, $scope.clientProperties.minScale);
