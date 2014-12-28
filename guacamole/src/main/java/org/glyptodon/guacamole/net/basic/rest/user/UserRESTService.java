@@ -325,10 +325,18 @@ public class UserRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Get the user
-        User user = userContext.getUserDirectory().get(username);
-        if (user == null)
-            throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
+        User user;
+
+        // If username is own username, just use self - might not have query permissions
+        if (userContext.self().getUsername().equals(username))
+            user = userContext.self();
+
+        // If not self, query corresponding user from directory
+        else {
+            user = userContext.getUserDirectory().get(username);
+            if (user == null)
+                throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
+        }
 
         return new APIPermissionSet(user.getPermissions());
 
