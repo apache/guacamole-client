@@ -56,7 +56,7 @@
 </guac-viewport>
 
 <!-- Menu -->
-<div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag">
+<div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag" guac-scroll="menuScrollState">
     <h2>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h2>
     <div class="content" id="clipboard-settings">
         <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>

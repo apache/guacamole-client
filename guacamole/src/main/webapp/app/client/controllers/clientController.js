@@ -26,6 +26,14 @@
 angular.module('home').controller('clientController', ['$scope', '$routeParams', '$injector',
         function clientController($scope, $routeParams, $injector) {
 
+    // Required types
+    var ClientProperties = $injector.get('ClientProperties');
+    var ScrollState      = $injector.get('ScrollState');
+
+    // Required services
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var connectionService      = $injector.get('connectionService');
+
     /**
      * The minimum number of pixels a drag gesture must move to result in the
      * menu being shown or hidden.
@@ -156,11 +164,6 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
         remaining: 15
     };
     
-    // Get services for reading connections and groups
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService      = $injector.get('connectionService');
-    var ClientProperties       = $injector.get('ClientProperties');
-
     // Client settings and state
     $scope.clientProperties = new ClientProperties();
     
@@ -177,6 +180,13 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     $scope.closeMenu = function closeMenu() {
         $scope.menuShown = false;
     };
+
+    /**
+     * The current scroll state of the menu.
+     *
+     * @type ScrollState
+     */
+    $scope.menuScrollState = new ScrollState();
 
     // Update the model when clipboard data received from client
     $scope.$on('guacClientClipboard', function clientClipboardListener(event, client, mimetype, clipboardData) {
@@ -228,9 +238,18 @@ angular.module('home').controller('clientController', ['$scope', '$routeParams',
     // Hide menu when the user swipes from the right
     $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
 
+        // Hide menu if swipe gesture is detected
         if (Math.abs(currentY - startY)  <  MENU_DRAG_VERTICAL_TOLERANCE
                   && startX   - currentX >= MENU_DRAG_DELTA)
             $scope.menuShown = false;
+
+        // Scroll menu by default
+        else {
+            $scope.menuScrollState.left -= deltaX;
+            $scope.menuScrollState.top -= deltaY;
+        }
+
+        return false;
 
     };
 

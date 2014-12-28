@@ -21,6 +21,7 @@
  */
 
 /**
- * The module for the login functionality.
+ * Module for manipulating element state, such as focus or scroll position, as
+ * well as handling browser events.
  */
-angular.module('login', ['element']);
+angular.module('element', []);
