@@ -58,6 +58,13 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
             var main = $element[0];
 
             /**
+             * The element which functions as a detector for size changes.
+             * 
+             * @type Element
+             */
+            var resizeSensor = $element.find('.resize-sensor')[0];
+
+            /**
              * Event listener which resizes the current keyboard, if any, such
              * that it fits within available space.
              */
@@ -73,8 +80,10 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
             $scope.$watch("layout", function setLayout(layout) {
 
                 // Remove current keyboard
-                keyboard = null;
-                main.innerHTML = "";
+                if (keyboard) {
+                    main.removeChild(keyboard.getElement());
+                    keyboard = null;
+                }
 
                 // Load new keyboard
                 if (layout) {
@@ -96,17 +105,12 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                         $rootScope.$broadcast('guacSyntheticKeyup', keysym);
                     };
 
-                    // Resize keyboard whenever window changes size
-                    $window.addEventListener('resize', resizeListener);
+                    // Resize keyboard whenever element changes size
+                    resizeSensor.contentWindow.addEventListener('resize', resizeListener);
 
                 }
 
             }); // end layout scope watch
-
-            // Clean up event listeners upon destroy
-            $scope.$on('$destroy', function destroyKeyboard() {
-                $window.removeEventListener('resize', resizeListener);
-            });
 
         }]
 

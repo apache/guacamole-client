@@ -39,7 +39,7 @@ body.client {
 
 .client-view {
     display: table;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,16 +20,8 @@
  * THE SOFTWARE.
  */
 
-.keyboard-container {
-    text-align: center;
-
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    border-top: 1px solid black;
-    background: #222;
-    opacity: 0.85;
-
-    z-index: 1;
-}
+/**
+ * Module for manipulating element state, such as focus or scroll position, as
+ * well as handling browser events.
+ */
+angular.module('element', []);

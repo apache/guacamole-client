@@ -23,4 +23,4 @@
 /**
  * The module for the login functionality.
  */
-angular.module('login', []);
+angular.module('login', ['element']);

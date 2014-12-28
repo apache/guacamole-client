@@ -23,7 +23,7 @@
 /**
  * A directive which allows elements to be manually focused / blurred.
  */
-angular.module('login').directive('guacFocus', ['$timeout', '$parse', function guacFocus($timeout, $parse) {
+angular.module('element').directive('guacFocus', ['$timeout', '$parse', function guacFocus($timeout, $parse) {
 
     return {
         restrict: 'A',
