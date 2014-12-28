@@ -37,11 +37,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -63,6 +69,12 @@ public class ConnectionRESTService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ConnectionRESTService.class);
+
+    /**
+     * System administration permission.
+     */
+    private static final Permission SYSTEM_PERMISSION = 
+                new SystemPermission(SystemPermission.Type.ADMINISTER);
     
     /**
      * A service for authenticating users from auth tokens.
@@ -128,6 +140,12 @@ public class ConnectionRESTService {
             @PathParam("connectionID") String connectionID) throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
+        User self = userContext.self();
+
+        // Deny access if adminstrative or update permission is missing
+        if (!self.hasPermission(SYSTEM_PERMISSION)
+         && !self.hasPermission(new ConnectionPermission(ObjectPermission.Type.UPDATE, connectionID)))
+            throw new GuacamoleSecurityException("Permission to read connection parameters denied.");
 
         // Retrieve the requested connection
         Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
