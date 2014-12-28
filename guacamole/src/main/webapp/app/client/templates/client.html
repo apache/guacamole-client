@@ -43,14 +43,15 @@
                 <guac-text-input needs-focus="showTextInput"></guac-text-input>
             </div>
 
+            <!-- On-screen keyboard -->
+            <div class="keyboard-container" ng-show="showOSK">
+                <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"/>
+            </div>
+
         </div>
 
     </div>
 
-    <!-- On-screen keyboard -->
-    <div class="keyboard-container" ng-class="{shown: showOSK}">
-        <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"/>
-    </div>
 
 </guac-viewport>
 

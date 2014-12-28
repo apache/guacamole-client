@@ -23,9 +23,6 @@
 .keyboard-container {
     text-align: center;
 
-    position: fixed;
-    left: 0;
-    bottom: 0;
     width: 100%;
     margin: 0;
     padding: 0;
@@ -34,10 +31,5 @@
     background: #222;
     opacity: 0.85;
 
-    visibility: hidden;
     z-index: 1;
-}
-
-.keyboard-container.shown {
-    visibility: visible;
 }

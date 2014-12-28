@@ -20,6 +20,18 @@
  * THE SOFTWARE.
  */
 
+.osk .resize-sensor {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    border: none;
+    opacity: 0;
+    z-index: -1;
+}
+
 .guac-keyboard {
     display: inline-block;
     width: 100%;
