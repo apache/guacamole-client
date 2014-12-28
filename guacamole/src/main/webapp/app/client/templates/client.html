@@ -21,35 +21,38 @@
 -->
 
 <!-- Client view -->
-<div class="client-view">
+<guac-viewport>
+    <div class="client-view">
 
-    <!-- Central portion of view -->
-    <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
+        <!-- Central portion of view -->
+        <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
-        <!-- Client -->
-        <guac-client 
-            client-properties="clientProperties"
-            id="id"
-            connection-parameters="connectionParameters"/></guac-client>
+            <!-- Client -->
+            <guac-client 
+                client-properties="clientProperties"
+                id="id"
+                connection-parameters="connectionParameters"/></guac-client>
 
-    </div>
+        </div>
 
-    <!-- Bottom portion of view -->
-    <div class="client-bottom">
+        <!-- Bottom portion of view -->
+        <div class="client-bottom">
 
-        <!-- Text input -->
-        <div class="text-input-container" ng-show="showTextInput">
-            <guac-text-input needs-focus="showTextInput"></guac-text-input>
+            <!-- Text input -->
+            <div class="text-input-container" ng-show="showTextInput">
+                <guac-text-input needs-focus="showTextInput"></guac-text-input>
+            </div>
+
         </div>
 
     </div>
 
-</div>
+    <!-- On-screen keyboard -->
+    <div class="keyboard-container" ng-class="{shown: showOSK}">
+        <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"/>
+    </div>
 
-<!-- On-screen keyboard -->
-<div class="keyboard-container" ng-class="{shown: showOSK}">
-    <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"/>
-</div>
+</guac-viewport>
 
 <!-- Menu -->
 <div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag">
