@@ -23,21 +23,47 @@
 angular.module('login').controller('loginController', ['$scope', '$injector',
         function loginController($scope, $injector) {
             
-    // Get the dependencies commonJS style
-    var authenticationService = $injector.get("authenticationService");
+    // Required services
     var $location             = $injector.get("$location");
-            
+    var authenticationService = $injector.get("authenticationService");
+
+    /**
+     * Whether an error occurred during login.
+     * 
+     * @type Boolean
+     */
     $scope.loginError = false;
-    
+
+    /**
+     * Whether the password field has focus.
+     * 
+     * @type Boolean
+     */
+    $scope.passwordFocused = false;
+
+    /**
+     * Submits the currently-specified username and password to the
+     * authentication service, redirecting to the main view if successful.
+     */
     $scope.login = function login() {
+
+        // Attempt login
         authenticationService.login($scope.username, $scope.password)
-            .success(function success(data, status, headers, config) {
-                // Set up the basic permissions for the user
-                $scope.loadBasicPermissions();
-                $location.path('/');
-            }).error(function error(data, status, headers, config) {
-                $scope.loginError = true;
-            });
+
+        // Redirect to main view upon success
+        .success(function success(data, status, headers, config) {
+            // Set up the basic permissions for the user
+            $scope.loadBasicPermissions();
+            $location.path('/');
+        })
+
+        // Reset and focus password upon failure
+        .error(function error(data, status, headers, config) {
+            $scope.loginError = true;
+            $scope.passwordFocused = true;
+            $scope.password = '';
+        });
+
     };
 
 }]);
