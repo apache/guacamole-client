@@ -229,6 +229,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 displayElement = display.getElement();
                 displayContainer.appendChild(displayElement);
 
+                // Do nothing when the display element is clicked on
+                display.getElement().onclick = function(e) {
+                    e.preventDefault();
+                    return false;
+                };
+
             });
 
             // Update actual view scrollLeft when scroll properties change

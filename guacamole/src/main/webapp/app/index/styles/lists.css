@@ -55,10 +55,12 @@
     margin: 0.5em;
 }
 
-.connection .thumbnail img {
+.connection .thumbnail > * {
     border: 1px solid black;
+    background: black;
     box-shadow: 1px 1px 5px black;
     max-width: 75%;
+    display: inline-block;
 }
 
 div.recent-connections .connection .thumbnail {

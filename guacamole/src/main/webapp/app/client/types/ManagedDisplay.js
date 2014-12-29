@@ -168,12 +168,6 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
             });
         };
 
-        // Do nothing when the display element is clicked on
-        display.getElement().onclick = function(e) {
-            e.preventDefault();
-            return false;
-        };
-
         return managedDisplay;
 
     };
