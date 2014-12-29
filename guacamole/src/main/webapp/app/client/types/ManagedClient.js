@@ -29,6 +29,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     // Required types
     var ClientProperties   = $injector.get('ClientProperties');
     var ManagedClientState = $injector.get('ManagedClientState');
+    var ManagedDisplay     = $injector.get('ManagedDisplay');
 
     // Required services
     var $window               = $injector.get('$window');
@@ -75,6 +76,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.tunnel = template.tunnel;
 
         /**
+         * The display associated with the underlying Guacamole client.
+         * 
+         * @type ManagedDisplay
+         */
+        this.managedDisplay = template.managedDisplay;
+
+        /**
          * The name returned via the Guacamole protocol for this connection, if
          * any.
          *
@@ -88,6 +96,20 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type String
          */
         this.clipboardData = template.clipboardData;
+
+        /**
+         * The current width of the Guacamole display, in pixels.
+         *
+         * @type Number
+         */
+        this.displayWidth = template.displayWidth || 0;
+
+        /**
+         * The current width of the Guacamole display, in pixels.
+         *
+         * @type Number
+         */
+        this.displayHeight = template.displayHeight || 0;
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -352,6 +374,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             };
 
         };
+
+        // Manage the client display
+        managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
 
         /* TODO: Restore file transfer again */
 

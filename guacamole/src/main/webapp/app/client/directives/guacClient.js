@@ -258,7 +258,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
 
             // Attach any given managed client
-            $scope.$watch('client', function(managedClient) {
+            $scope.$watch('client', function attachManagedClient(managedClient) {
 
                 // Remove any existing display
                 displayContainer.innerHTML = "";
@@ -274,26 +274,21 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 display = client.getDisplay();
                 display.scale($scope.client.clientProperties.scale);
 
-                // Update the scale of the display when the client display size changes.
-                display.onresize = function() {
-                    $scope.$apply(updateDisplayScale);
-                };
-
-                // Use local cursor if possible, update localCursor flag
-                display.oncursor = function(canvas, x, y) {
-                    localCursor = mouse.setCursor(canvas, x, y);
-                };
-
                 // Add display element
                 displayElement = display.getElement();
                 displayContainer.appendChild(displayElement);
 
-                // Do nothing when the display element is clicked on.
-                displayElement.onclick = function(e) {
-                    e.preventDefault();
-                    return false;
-                };
+            });
 
+            // Update scale when display is resized
+            $scope.$watch('client.managedDisplay.size', function setDisplaySize() {
+                $scope.$evalAsync(updateDisplayScale);
+            });
+
+            // Keep local cursor up-to-date
+            $scope.$watch('client.managedDisplay.cursor', function setCursor(cursor) {
+                if (cursor)
+                    localCursor = mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
             });
 
             /*
