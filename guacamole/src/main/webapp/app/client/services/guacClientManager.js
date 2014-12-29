@@ -37,6 +37,36 @@ angular.module('client').factory('guacClientManager', ['ManagedClient',
     service.managedClients = {};
 
     /**
+     * Removes the existing ManagedClient associated with the connection having
+     * the given ID, if any. If no such a ManagedClient already exists, this
+     * function has no effect.
+     *
+     * @param {String} id
+     *     The ID of the connection whose ManagedClient should be removed.
+     * 
+     * @returns {Boolean}
+     *     true if an existing client was removed, false otherwise.
+     */
+    service.removeManagedClient = function replaceManagedClient(id) {
+        
+        // Remove client if it exists
+        if (id in service.managedClients) {
+
+            // Disconnect and remove
+            service.managedClients[id].client.disconnect();
+            delete service.managedClients[id];
+
+            // A client was removed
+            return true;
+
+        }
+
+        // No client was removed
+        return false;
+
+    };
+
+    /**
      * Creates a new ManagedClient associated with the connection having the
      * given ID. If such a ManagedClient already exists, it is disconnected and
      * replaced.
@@ -56,8 +86,7 @@ angular.module('client').factory('guacClientManager', ['ManagedClient',
     service.replaceManagedClient = function replaceManagedClient(id, connectionParameters) {
 
         // Disconnect any existing client
-        if (id in service.managedClients)
-            service.managedClients[id].client.disconnect();
+        service.removeManagedClient(id);
 
         // Set new client
         return service.managedClients[id] = ManagedClient.getInstance(id, connectionParameters);

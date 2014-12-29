@@ -709,6 +709,21 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 
+        // Remove client from client manager if no longer connected
+        var managedClient = $scope.client;
+        if (managedClient) {
+
+            // Get current connection state
+            var connectionState = managedClient.clientState.connectionState;
+
+            // If disconnected, remove from management
+            if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED
+             || connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR
+             || connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR)
+                guacClientManager.removeManagedClient(managedClient.id);
+
+        }
+
         // Hide any status dialog
         $scope.showStatus(false);
 
