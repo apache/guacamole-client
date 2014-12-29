@@ -28,10 +28,7 @@
         <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
             <!-- Client -->
-            <guac-client 
-                client-properties="clientProperties"
-                id="id"
-                connection-parameters="connectionParameters"/></guac-client>
+            <guac-client client="client"/></guac-client>
 
         </div>
 
@@ -60,7 +57,7 @@
     <h2>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h2>
     <div class="content" id="clipboard-settings">
         <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
-        <textarea ng-model="clipboardData" rows="10" cols="40" id="clipboard"></textarea>
+        <textarea ng-model="client.clipboardData" rows="10" cols="40" id="clipboard"></textarea>
     </div>
 
     <h2>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h2>
@@ -93,7 +90,7 @@
 
         <!-- Touchscreen -->
         <div class="choice">
-            <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
+            <input name="mouse-mode" ng-change="closeMenu()" ng-model="client.clientProperties.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
             <div class="figure">
                 <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"/></label>
                 <p class="caption"><label for="absolute">{{'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
@@ -102,7 +99,7 @@
 
         <!-- Touchpad -->
         <div class="choice">
-            <input name="mouse-mode" ng-change="closeMenu()" ng-model="clientProperties.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
+            <input name="mouse-mode" ng-change="closeMenu()" ng-model="client.clientProperties.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
             <div class="figure">
                 <label for="relative"><img src="images/settings/touchpad.png" alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | translate}}"/></label>
                 <p class="caption"><label for="relative">{{'CLIENT.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>

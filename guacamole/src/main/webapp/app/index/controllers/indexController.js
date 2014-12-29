@@ -26,32 +26,17 @@
 angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
-    // Get class dependencies
+    // Required types
     var PermissionSet = $injector.get("PermissionSet");
 
-    // Get services
-    var permissionService       = $injector.get("permissionService"),
-        authenticationService   = $injector.get("authenticationService"),
-        $q                      = $injector.get("$q"),
-        $document               = $injector.get("$document"),
-        $window                 = $injector.get("$window"),
-        $location               = $injector.get("$location");
+    // Required services
+    var $document               = $injector.get("$document");
+    var $location               = $injector.get("$location");
+    var $q                      = $injector.get("$q");
+    var $window                 = $injector.get("$window");
+    var authenticationService   = $injector.get("authenticationService");
+    var permissionService       = $injector.get("permissionService");
     
-    /*
-     * Safe $apply implementation from Alex Vanston:
-     * https://coderwall.com/p/ngisma
-     */
-    $scope.safeApply = function(fn) {
-        var phase = this.$root.$$phase;
-        if(phase === '$apply' || phase === '$digest') {
-            if(fn && (typeof(fn) === 'function')) {
-                fn();
-            }
-        } else {
-            this.$apply(fn);
-        }
-    };
-
     /**
      * The current status notification, or false if no status is currently
      * shown.

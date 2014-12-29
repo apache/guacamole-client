@@ -33,6 +33,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Required services
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
+    var guacClientManager      = $injector.get('guacClientManager');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -149,7 +150,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         name        : "CLIENT.ACTION_RECONNECT",
         // Handle reconnect action
         callback    : function reconnectCallback() {
-            $scope.id = uniqueId;
+            $scope.client = guacClientManager.replaceManagedClient(uniqueId, $routeParams.params);
             $scope.showStatus(false);
         }
     };
@@ -163,12 +164,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         callback: RECONNECT_ACTION.callback,
         remaining: 15
     };
-    
-    // Client settings and state
-    $scope.clientProperties = new ClientProperties();
-    
-    // Initialize clipboard data to an empty string
-    $scope.clipboardData = ""; 
     
     // Hide menu by default
     $scope.menuShown = false;
@@ -198,8 +193,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * as well as any extra parameters if set.
      */
     var uniqueId = $routeParams.type + '/' + $routeParams.id;
-    $scope.id = uniqueId;
-    $scope.connectionParameters = $routeParams.params || '';
+    $scope.client = guacClientManager.getManagedClient(uniqueId, $routeParams.params);
 
     // Pull connection name from server
     switch ($routeParams.type) {
@@ -266,9 +260,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         }
 
         // Scroll display if absolute mouse is in use
-        else if ($scope.clientProperties.emulateAbsoluteMouse) {
-            $scope.clientProperties.scrollLeft -= deltaX;
-            $scope.clientProperties.scrollTop -= deltaY;
+        else if ($scope.client.clientProperties.emulateAbsoluteMouse) {
+            $scope.client.clientProperties.scrollLeft -= deltaX;
+            $scope.client.clientProperties.scrollTop -= deltaY;
         }
 
         return false;
@@ -305,7 +299,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
 
         // Do not handle pinch gestures while relative mouse is in use
-        if (!$scope.clientProperties.emulateAbsoluteMouse)
+        if (!$scope.client.clientProperties.emulateAbsoluteMouse)
             return false;
 
         // Stop gesture if not in progress
@@ -316,26 +310,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Set initial scale if gesture has just started
         if (!initialScale) {
-            initialScale   = $scope.clientProperties.scale;
-            initialCenterX = (centerX + $scope.clientProperties.scrollLeft) / initialScale;
-            initialCenterY = (centerY + $scope.clientProperties.scrollTop)  / initialScale;
+            initialScale   = $scope.client.clientProperties.scale;
+            initialCenterX = (centerX + $scope.client.clientProperties.scrollLeft) / initialScale;
+            initialCenterY = (centerY + $scope.client.clientProperties.scrollTop)  / initialScale;
         }
 
         // Determine new scale absolutely
         var currentScale = initialScale * currentLength / startLength;
 
         // Fix scale within limits - scroll will be miscalculated otherwise
-        currentScale = Math.max(currentScale, $scope.clientProperties.minScale);
-        currentScale = Math.min(currentScale, $scope.clientProperties.maxScale);
+        currentScale = Math.max(currentScale, $scope.client.clientProperties.minScale);
+        currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
 
         // Update scale based on pinch distance
         $scope.autoFit = false;
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale = currentScale;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale = currentScale;
 
         // Scroll display to keep original pinch location centered within current pinch
-        $scope.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
-        $scope.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
+        $scope.client.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
+        $scope.client.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
 
         return false;
 
@@ -357,7 +351,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.$broadcast('guacClipboard', 'text/plain', $scope.clipboardData); 
         
         // Disable client keyboard if the menu is shown
-        $scope.clientProperties.keyboardEnabled = !menuShown;
+        $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
     });
     
@@ -385,7 +379,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 keyboard.reset();
                 
                 // Toggle the menu
-                $scope.safeApply(function() {
+                $scope.$apply(function() {
                     $scope.menuShown = !$scope.menuShown;
                 });
             }
@@ -478,33 +472,33 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     $scope.formattedScale = function formattedScale() {
-        return Math.round($scope.clientProperties.scale * 100);
+        return Math.round($scope.client.clientProperties.scale * 100);
     };
     
     $scope.zoomIn = function zoomIn() {
         $scope.autoFit = false;
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale += 0.1;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale += 0.1;
     };
     
     $scope.zoomOut = function zoomOut() {
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale -= 0.1;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale -= 0.1;
     };
     
     $scope.autoFit = true;
     
     $scope.changeAutoFit = function changeAutoFit() {
-        if ($scope.autoFit && $scope.clientProperties.minScale) {
-            $scope.clientProperties.autoFit = true;
+        if ($scope.autoFit && $scope.client.clientProperties.minScale) {
+            $scope.client.clientProperties.autoFit = true;
         } else {
-            $scope.clientProperties.autoFit = false;
-            $scope.clientProperties.scale = 1; 
+            $scope.client.clientProperties.autoFit = false;
+            $scope.client.clientProperties.scale = 1; 
         }
     };
     
     $scope.autoFitDisabled = function() {
-        return $scope.clientProperties.minZoom >= 1;
+        return $scope.client.clientProperties.minZoom >= 1;
     };
 
     /**
@@ -568,7 +562,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var downloadNotificationIDs = {};
     
     $scope.$on('guacClientFileDownloadStart', function handleClientFileDownloadStart(event, guacClient, streamIndex, mimetype, filename) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
             
             var notification = {
                 className  : 'download',
@@ -583,7 +577,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     $scope.$on('guacClientFileDownloadProgress', function handleClientFileDownloadProgress(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
             
             var notification = downloadNotifications[streamIndex];
             if (notification)
@@ -593,7 +587,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
     
     $scope.$on('guacClientFileDownloadEnd', function handleClientFileDownloadEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
 
             var notification = downloadNotifications[streamIndex];
             var notificationID = downloadNotificationIDs[streamIndex];
@@ -629,7 +623,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var uploadNotificationIDs = {};
     
     $scope.$on('guacClientFileUploadStart', function handleClientFileUploadStart(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
             
             var notification = {
                 className  : 'upload',
@@ -644,7 +638,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     $scope.$on('guacClientFileUploadProgress', function handleClientFileUploadProgress(event, guacClient, streamIndex, mimetype, filename, length, offset) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
             
             var notification = uploadNotifications[streamIndex];
             if (notification)
@@ -654,7 +648,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
     
     $scope.$on('guacClientFileUploadEnd', function handleClientFileUploadEnd(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
 
             var notification = uploadNotifications[streamIndex];
             var notificationID = uploadNotificationIDs[streamIndex];
@@ -683,7 +677,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
     
     $scope.$on('guacClientFileUploadError', function handleClientFileUploadError(event, guacClient, streamIndex, mimetype, fileName, length, status) {
-        $scope.safeApply(function() {
+        $scope.$apply(function() {
 
             var notification = uploadNotifications[streamIndex];
             var notificationID = uploadNotificationIDs[streamIndex];
