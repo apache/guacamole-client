@@ -243,7 +243,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         
         // Update connection state as tunnel state changes
         tunnel.onstatechange = function tunnelStateChanged(state) {
-            $rootScope.$apply(function updateTunnelState() {
+            $rootScope.$evalAsync(function updateTunnelState() {
                 
                 switch (state) {
 
@@ -269,7 +269,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Update connection state as client state changes
         client.onstatechange = function clientStateChanged(clientState) {
-            $rootScope.$apply(function updateClientState() {
+            $rootScope.$evalAsync(function updateClientState() {
 
                 switch (clientState) {
 
