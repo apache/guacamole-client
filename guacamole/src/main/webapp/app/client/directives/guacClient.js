@@ -208,55 +208,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
-            /*
-             * MOUSE
-             */
-
-            // Watch for changes to mouse emulation mode
-            // Send all received mouse events to the client
-            mouse.onmousedown =
-            mouse.onmouseup   =
-            mouse.onmousemove = function(mouseState) {
-
-                if (!client || !display)
-                    return;
-
-                // Send mouse state, show cursor if necessary
-                display.showCursor(!localCursor);
-                sendScaledMouseState(mouseState);
-
-            };
-
-            // Hide software cursor when mouse leaves display
-            mouse.onmouseout = function() {
-                if (!display) return;
-                display.showCursor(false);
-            };
-
-            /*
-             * CLIPBOARD
-             */
-
-            // Update active client if clipboard changes
-            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
-                if (client)
-                    client.setClipboard(data);
-            });
-
-            /*
-             * SCROLLING
-             */
-
-            $scope.$watch('client.clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
-                main.scrollLeft = scrollLeft;
-                $scope.client.clientProperties.scrollLeft = main.scrollLeft;
-            });
-
-            $scope.$watch('client.clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
-                main.scrollTop = scrollTop;
-                $scope.client.clientProperties.scrollTop = main.scrollTop;
-            });
-
             // Attach any given managed client
             $scope.$watch('client', function attachManagedClient(managedClient) {
 
@@ -280,6 +231,18 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             });
 
+            // Update actual view scrollLeft when scroll properties change
+            $scope.$watch('client.clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
+                main.scrollLeft = scrollLeft;
+                $scope.client.clientProperties.scrollLeft = main.scrollLeft;
+            });
+
+            // Update actual view scrollTop when scroll properties change
+            $scope.$watch('client.clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
+                main.scrollTop = scrollTop;
+                $scope.client.clientProperties.scrollTop = main.scrollTop;
+            });
+
             // Update scale when display is resized
             $scope.$watch('client.managedDisplay.size', function setDisplaySize() {
                 $scope.$evalAsync(updateDisplayScale);
@@ -291,11 +254,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                     localCursor = mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
             });
 
-            /*
-             * MOUSE EMULATION
-             */
-                
-            // Watch for changes to mouse emulation mode
+            // Swap mouse emulation modes depending on absolute mode flag
             $scope.$watch('client.clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
 
                 if (!client || !display) return;
@@ -340,10 +299,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             });
 
-            /*
-             * DISPLAY SCALE / SIZE
-             */
-                
             // Adjust scale if modified externally
             $scope.$watch('client.clientProperties.scale', function changeScale(scale) {
 
@@ -392,12 +347,35 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 $scope.$apply(updateDisplayScale);
 
             });
-            
-            /*
-             * KEYBOARD
-             */
-                
-            // Listen for broadcasted keydown events and fire the appropriate listeners
+
+            // Watch for changes to mouse emulation mode
+            // Send all received mouse events to the client
+            mouse.onmousedown =
+            mouse.onmouseup   =
+            mouse.onmousemove = function(mouseState) {
+
+                if (!client || !display)
+                    return;
+
+                // Send mouse state, show cursor if necessary
+                display.showCursor(!localCursor);
+                sendScaledMouseState(mouseState);
+
+            };
+
+            // Hide software cursor when mouse leaves display
+            mouse.onmouseout = function() {
+                if (!display) return;
+                display.showCursor(false);
+            };
+
+            // Update remote clipboard if local clipboard changes
+            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
+                if (client)
+                    client.setClipboard(data);
+            });
+
+            // Translate local keydown events to remote keydown events if keyboard is enabled
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
                 if ($scope.client.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(1, keysym);
@@ -405,7 +383,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 }
             });
             
-            // Listen for broadcasted keyup events and fire the appropriate listeners
+            // Translate local keyup events to remote keyup events if keyboard is enabled
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
                 if ($scope.client.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(0, keysym);
