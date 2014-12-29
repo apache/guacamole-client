@@ -189,11 +189,6 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
 
             });
 
-            // Do not allow nested elements to prevent handling of click events
-            main.addEventListener('click', function preventClickPropagation(e) {
-                e.stopPropagation();
-            }, true);
-
         }]
     };
 }]);

@@ -34,4 +34,5 @@ div.thumbnail-main {
 
 .thumbnail-main .display {
     position: absolute;
+    pointer-events: none;
 }
