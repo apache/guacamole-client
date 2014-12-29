@@ -288,7 +288,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     // Connected
                     case 3:
                         ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.DISCONNECTED);
+                            ManagedClientState.ConnectionState.CONNECTED);
                         break;
 
                     // Connecting, disconnecting, and disconnected are all

@@ -27,8 +27,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
-    var ClientProperties = $injector.get('ClientProperties');
-    var ScrollState      = $injector.get('ScrollState');
+    var ManagedClientState = $injector.get('ManagedClientState');
+    var ScrollState        = $injector.get('ScrollState');
 
     // Required services
     var connectionGroupService = $injector.get('connectionGroupService');
@@ -391,83 +391,79 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         delete keysCurrentlyPressed[keysym];
     });
 
-    // Show status dialog when client status changes
-    $scope.$on('guacClientStateChange', function clientStateChangeListener(event, client, status) {
+    // Show status dialog when connection status changes
+    $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
-        // Show new status if not yet connected
-        if (status !== "connected") {
+        // Hide status if no known state
+        if (!connectionState) {
+            $scope.showStatus(false);
+            return;
+        }
+
+        // Get any associated status code
+        var status = $scope.client.clientState.statusCode;
+
+        // Connecting 
+        if (connectionState === ManagedClientState.ConnectionState.CONNECTING
+         || connectionState === ManagedClientState.ConnectionState.WAITING) {
             $scope.showStatus({
                 title: "CLIENT.DIALOG_HEADER_CONNECTING",
-                text: "CLIENT.TEXT_CLIENT_STATUS_" + status.toUpperCase()
+                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
             });
         }
 
-        // Hide status upon connecting
-        else
-            $scope.showStatus(false);
+        // Client error
+        else if (connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR) {
 
-    });
+            // Determine translation name of error
+            var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
-    // Show status dialog when client errors occur
-    $scope.$on('guacClientError', function clientErrorListener(event, client, status) {
+            // Determine whether the reconnect countdown applies
+            var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
-        // Determine translation name of error
-        var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+            // Show error status
+            $scope.showStatus({
+                className: "error",
+                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text: "CLIENT.ERROR_CLIENT_" + errorName,
+                countdown: countdown,
+                actions: [ RECONNECT_ACTION ]
+            });
 
-        // Determine whether the reconnect countdown applies
-        var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+        }
 
-        // Override any existing status
-        $scope.showStatus(false);
+        // Tunnel error
+        else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
 
-        // Show error status
-        $scope.showStatus({
-            className: "error",
-            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-            text: "CLIENT.ERROR_CLIENT_" + errorName,
-            countdown: countdown,
-            actions: [ RECONNECT_ACTION ]
-        });
+            // Determine translation name of error
+            var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
 
-    });
+            // Determine whether the reconnect countdown applies
+            var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
-    // Show status dialog when tunnel status changes
-    $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, tunnel, status) {
+            // Show error status
+            $scope.showStatus({
+                className: "error",
+                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text: "CLIENT.ERROR_TUNNEL_" + errorName,
+                countdown: countdown,
+                actions: [ RECONNECT_ACTION ]
+            });
 
-        // Show new status only if disconnected
-        if (status === "closed") {
+        }
 
-            // Disconnect
-            $scope.id = null;
-
+        // Disconnected
+        else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
             $scope.showStatus({
                 title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
-                text: "CLIENT.TEXT_TUNNEL_STATUS_" + status.toUpperCase()
+                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
+                actions: [ RECONNECT_ACTION ]
             });
         }
 
-    });
-
-    // Show status dialog when tunnel errors occur
-    $scope.$on('guacTunnelError', function tunnelErrorListener(event, tunnel, status) {
-
-        // Determine translation name of error
-        var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
-
-        // Determine whether the reconnect countdown applies
-        var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
-
-        // Override any existing status
-        $scope.showStatus(false);
-
-        // Show error status
-        $scope.showStatus({
-            className: "error",
-            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-            text: "CLIENT.ERROR_TUNNEL_" + errorName,
-            countdown: countdown,
-            actions: [ RECONNECT_ACTION ]
-        });
+        // Hide status for all other states
+        else
+            $scope.showStatus(false);
 
     });
 
@@ -708,6 +704,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             }
             
         });
+    });
+
+    // Clean up when view destroyed
+    $scope.$on('$destroy', function clientViewDestroyed() {
+
+        // Hide any status dialog
+        $scope.showStatus(false);
+
     });
 
 }]);
