@@ -32,12 +32,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedDisplay     = $injector.get('ManagedDisplay');
 
     // Required services
-    var $window               = $injector.get('$window');
-    var $document             = $injector.get('$document');
-    var authenticationService = $injector.get('authenticationService');
-    var guacAudio             = $injector.get('guacAudio');
-    var guacHistory           = $injector.get('guacHistory');
-    var guacVideo             = $injector.get('guacVideo');
+    var $window                = $injector.get('$window');
+    var $document              = $injector.get('$document');
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var connectionService      = $injector.get('connectionService');
+    var guacAudio              = $injector.get('guacAudio');
+    var guacHistory            = $injector.get('guacHistory');
+    var guacVideo              = $injector.get('guacVideo');
         
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
@@ -83,8 +85,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.managedDisplay = template.managedDisplay;
 
         /**
-         * The name returned via the Guacamole protocol for this connection, if
-         * any.
+         * The name returned associated with the connection or connection
+         * group in use.
          *
          * @type String
          */
@@ -326,13 +328,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             });
         };
 
-        // Update stored name if name changes
-        client.onname = function clientNameChanged(name) {
-            $rootScope.$apply(function updateName() {
-                managedClient.name = name;
-            });
-        };
-
         // Disconnect and update status when the client receives an error
         client.onerror = function clientError(status) {
             $rootScope.$apply(function handleClientError() {
@@ -414,6 +409,25 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         // Connect the Guacamole client
         client.connect(getConnectString(id, connectionParameters));
+
+        // Determine type of connection
+        var typePrefix = id.substring(0, 2);
+
+        // If using a connection, pull connection name
+        if (typePrefix === 'c/') {
+            connectionService.getConnection(id.substring(2))
+            .success(function connectionRetrieved(connection) {
+                managedClient.name = connection.name;
+            });
+        }
+        
+        // If using a connection group, pull connection name
+        else if (typePrefix === 'g/') {
+            connectionGroupService.getConnectionGroup(id.substring(2))
+            .success(function connectionGroupRetrieved(group) {
+                managedClient.name = group.name;
+            });
+        }
 
         return managedClient;
 

@@ -31,9 +31,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService      = $injector.get('connectionService');
-    var guacClientManager      = $injector.get('guacClientManager');
+    var $location          = $injector.get('$location');
+    var guacClientManager  = $injector.get('guacClientManager');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -143,13 +142,22 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * The reconnect action to be provided along with the object sent to
-     * showStatus.
+     * Action which returns the user to the home screen.
+     */
+    var NAVIGATE_BACK_ACTION = {
+        name      : "CLIENT.ACTION_NAVIGATE_BACK",
+        className : "back button",
+        callback  : function navigateBackCallback() {
+            $location.path('/');
+        }
+    };
+
+    /**
+     * Action which replaces the current client with a newly-connected client.
      */
     var RECONNECT_ACTION = {
-        name        : "CLIENT.ACTION_RECONNECT",
-        // Handle reconnect action
-        callback    : function reconnectCallback() {
+        name     : "CLIENT.ACTION_RECONNECT",
+        callback : function reconnectCallback() {
             $scope.client = guacClientManager.replaceManagedClient(uniqueId, $routeParams.params);
             $scope.showStatus(false);
         }
@@ -194,25 +202,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var uniqueId = $routeParams.type + '/' + $routeParams.id;
     $scope.client = guacClientManager.getManagedClient(uniqueId, $routeParams.params);
-
-    // Pull connection name from server
-    switch ($routeParams.type) {
-
-        // Connection
-        case 'c':
-            connectionService.getConnection($routeParams.id).success(function (connection) {
-                $scope.connectionName = $scope.page.title = connection.name;
-            });
-            break;
-
-        // Connection group
-        case 'g':
-            connectionGroupService.getConnectionGroup($routeParams.id).success(function (group) {
-                $scope.connectionName = $scope.page.title = group.name;
-            });
-            break;
-
-    }
 
     var keysCurrentlyPressed = {};
 
@@ -391,6 +380,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         delete keysCurrentlyPressed[keysym];
     });
 
+    // Update page title when client name is received
+    $scope.$watch('client.name', function clientNameChanged(name) {
+        $scope.page.title = name;
+    });
+
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
@@ -427,7 +421,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_CLIENT_" + errorName,
                 countdown: countdown,
-                actions: [ RECONNECT_ACTION ]
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
             });
 
         }
@@ -447,7 +441,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_TUNNEL_" + errorName,
                 countdown: countdown,
-                actions: [ RECONNECT_ACTION ]
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
             });
 
         }
@@ -457,7 +451,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.showStatus({
                 title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
                 text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
-                actions: [ RECONNECT_ACTION ]
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
             });
         }
 
