@@ -54,13 +54,20 @@
 
 <!-- Menu -->
 <div ng-class="{open: menuShown}" id="menu" guac-touch-drag="menuDrag" guac-scroll="menuScrollState">
-    <h2>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h2>
+
+    <div class="logout-panel">
+        <a class="back button" href="#/">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</a>
+        <a class="disconnect danger button" ng-click="disconnect()">{{'CLIENT.ACTION_DISCONNECT' | translate}}</a>
+    </div>
+    <h2>NAME</h2>
+    
+    <h3>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h3>
     <div class="content" id="clipboard-settings">
         <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
         <textarea ng-model="client.clipboardData" rows="10" cols="40" id="clipboard"></textarea>
     </div>
 
-    <h2>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h2>
+    <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
     <div class="content" id="keyboard-settings">
 
         <!-- No IME -->
@@ -84,7 +91,7 @@
 
     </div>
 
-    <h2>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h2>
+    <h3>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h3>
     <div class="content" id="mouse-settings">
         <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | translate}}</p>
 
@@ -108,7 +115,7 @@
 
     </div>
 
-    <h2>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h2>
+    <h3>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h3>
     <div class="content">
         <div id="zoom-settings">
             <div ng-click="zoomOut()" id="zoom-out"><img src="images/settings/zoom-out.png" alt="-"/></div>

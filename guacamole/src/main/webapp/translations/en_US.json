@@ -17,9 +17,11 @@
 
     "CLIENT" : {
 
-        "ACTION_RECONNECT"   : "Reconnect",
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_SAVE_FILE"   : "@:APP.ACTION_SAVE",
+        "ACTION_RECONNECT"     : "Reconnect",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_DISCONNECT"    : "Disconnect",
+        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_SAVE_FILE"     : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONNECTING"       : "Connecting",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",

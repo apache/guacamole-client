@@ -498,6 +498,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
+     * Immediately disconnects the currently-connected client, if any.
+     */
+    $scope.disconnect = function disconnect() {
+
+        // Disconnect if client is available
+        if ($scope.client)
+            $scope.client.client.disconnect();
+
+        // Hide menu
+        $scope.menuShown = false;
+
+    };
+
+    /**
      * Returns a progress object, as required by $scope.addNotification(), which
      * contains the given number of bytes as an appropriate combination of
      * progress value and associated unit.
