@@ -30,6 +30,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ClientProperties   = $injector.get('ClientProperties');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedDisplay     = $injector.get('ManagedDisplay');
+    var ManagedFileUpload  = $injector.get('ManagedFileUpload');
 
     // Required services
     var $window                = $injector.get('$window');
@@ -100,18 +101,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.clipboardData = template.clipboardData;
 
         /**
-         * The current width of the Guacamole display, in pixels.
+         * All uploaded files. As files are uploaded, their progress can be
+         * observed through the elements of this array. It is intended that
+         * this array be manipulated externally as needed.
          *
-         * @type Number
+         * @type ManagedFileUpload[]
          */
-        this.displayWidth = template.displayWidth || 0;
-
-        /**
-         * The current width of the Guacamole display, in pixels.
-         *
-         * @type Number
-         */
-        this.displayHeight = template.displayHeight || 0;
+        this.uploads = template.uploads || [];
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -431,6 +427,21 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         return managedClient;
 
+    };
+
+    /**
+     * Uploads the given file to the server through the given Guacamole client.
+     * The file transfer can be monitored through the corresponding entry in
+     * the uploads array of the given managedClient.
+     * 
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient through which the file is to be uploaded.
+     * 
+     * @param {File} file
+     *     The file to upload.
+     */
+    ManagedClient.uploadFile = function uploadFile(managedClient, file) {
+        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file));
     };
 
     return ManagedClient;

@@ -42,8 +42,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
         templateUrl: 'app/client/templates/guacClient.html',
         controller: ['$scope', '$injector', '$element', function guacClientController($scope, $injector, $element) {
    
+            // Required types
+            var ManagedClient = $injector.get('ManagedClient');
+                
             // Required services
-            var $window     = $injector.get('$window');
+            var $window = $injector.get('$window');
                 
             /**
              * Whether the local, hardware mouse cursor is in use.
@@ -408,26 +411,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
             
             /**
-             * Converts the given bytes to a base64-encoded string.
-             * 
-             * @param {Uint8Array} bytes A Uint8Array which contains the data to be
-             *                           encoded as base64.
-             * @return {String} The base64-encoded string.
-             */
-            function getBase64(bytes) {
-
-                var data = "";
-
-                // Produce binary string from bytes in buffer
-                for (var i=0; i<bytes.byteLength; i++)
-                    data += String.fromCharCode(bytes[i]);
-
-                // Convert to base64
-                return $window.btoa(data);
-
-            }
-            
-            /**
              * Ignores the given event.
              * 
              * @param {Event} e The event to ignore.
@@ -435,68 +418,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             function ignoreEvent(e) {
                e.preventDefault();
                e.stopPropagation();
-            }
-            
-            /**
-             * Uploads the given file to the server.
-             * 
-             * @param {File} file The file to upload.
-             */
-            function uploadFile(file) {
-
-                // Construct reader for file
-                var reader = new FileReader();
-                reader.onloadend = function() {
-
-                    // Open file for writing
-                    var stream = client.createFileStream(file.type, file.name);
-
-                    var valid = true;
-                    var bytes = new Uint8Array(reader.result);
-                    var offset = 0;
-
-                    // Add upload notification
-                    $scope.$emit('guacClientFileUploadStart', client, stream.index, file.type, file.name, bytes.length);
-
-                    // Invalidate stream on all errors
-                    // Continue upload when acknowledged
-                    stream.onack = function(status) {
-
-                        // Handle errors 
-                        if (status.isError()) {
-                            valid = false;
-                            $scope.$emit('guacClientFileUploadError', client, stream.index, file.type, file.name, bytes.length, status.code);
-                        }
-
-                        // Abort upload if stream is invalid
-                        if (!valid) return false;
-
-                        // Encode packet as base64
-                        var slice = bytes.subarray(offset, offset+4096);
-                        var base64 = getBase64(slice);
-
-                        // Write packet
-                        stream.sendBlob(base64);
-
-                        // Advance to next packet
-                        offset += 4096;
-
-                        // If at end, stop upload
-                        if (offset >= bytes.length) {
-                            stream.sendEnd();
-                            $scope.$emit('guacClientFileUploadProgress', client, stream.index, file.type, file.name, bytes.length, bytes.length);
-                            $scope.$emit('guacClientFileUploadEnd', client, stream.index, file.type, file.name, bytes.length);
-                        }
-
-                        // Otherwise, update progress
-                        else
-                            $scope.$emit('guacClientFileUploadProgress', client, stream.index, file.type, file.name, bytes.length, offset);
-
-                    };
-
-                };
-                reader.readAsArrayBuffer(file);
-
             }
 
             // Handle and ignore dragenter/dragover
@@ -510,12 +431,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 e.stopPropagation();
 
                 // Ignore file drops if no attached client
-                if (!client) return;
+                if (!$scope.client)
+                    return;
 
                 // Upload each file 
                 var files = e.dataTransfer.files;
                 for (var i=0; i<files.length; i++)
-                    uploadFile(files[i]);
+                    ManagedClient.uploadFile($scope.client, files[i]);
 
             }, false);
 
