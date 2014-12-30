@@ -27,10 +27,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     function defineManagedClient($rootScope, $injector) {
 
     // Required types
-    var ClientProperties   = $injector.get('ClientProperties');
-    var ManagedClientState = $injector.get('ManagedClientState');
-    var ManagedDisplay     = $injector.get('ManagedDisplay');
-    var ManagedFileUpload  = $injector.get('ManagedFileUpload');
+    var ClientProperties     = $injector.get('ClientProperties');
+    var ManagedClientState   = $injector.get('ManagedClientState');
+    var ManagedDisplay       = $injector.get('ManagedDisplay');
+    var ManagedFileDownload  = $injector.get('ManagedFileDownload');
+    var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
     // Required services
     var $window                = $injector.get('$window');
@@ -99,6 +100,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type String
          */
         this.clipboardData = template.clipboardData;
+
+        /**
+         * All downloaded files. As files are downloaded, their progress can be
+         * observed through the elements of this array. It is intended that
+         * this array be manipulated externally as needed.
+         *
+         * @type ManagedFileDownload[]
+         */
+        this.downloads = template.downloads || [];
 
         /**
          * All uploaded files. As files are uploaded, their progress can be
@@ -366,42 +376,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
         };
 
+        // Handle any received files
+        client.onfile = function clientFileReceived(stream, mimetype, filename) {
+            $rootScope.$apply(function startDownload() {
+                managedClient.downloads.push(ManagedFileDownload.getInstance(stream, mimetype, filename));
+            });
+        };
+
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
-
-        /* TODO: Restore file transfer again */
-
-        /*
-        // Handle any received files
-        client.onfile = function onClientFile(stream, mimetype, filename) {
-
-            // Begin file download
-            var guacFileStartEvent = $rootScope.$emit('guacClientFileDownloadStart', client, stream.index, mimetype, filename);
-            if (!guacFileStartEvent.defaultPrevented) {
-
-                var blob_reader = new Guacamole.BlobReader(stream, mimetype);
-
-                // Update progress as data is received
-                blob_reader.onprogress = function onprogress() {
-                    $rootScope.$emit('guacClientFileDownloadProgress', client, stream.index, mimetype, filename, blob_reader.getLength());
-                    stream.sendAck("Received", Guacamole.Status.Code.SUCCESS);
-                };
-
-                // When complete, prompt for download
-                blob_reader.onend = function onend() {
-                    $rootScope.$emit('guacClientFileDownloadEnd', client, stream.index, mimetype, filename, blob_reader.getBlob());
-                };
-
-                stream.sendAck("Ready", Guacamole.Status.Code.SUCCESS);
-                
-            }
-            
-            // Respond with UNSUPPORTED if download (default action) canceled within event handler
-            else
-                stream.sendAck("Download canceled", Guacamole.Status.Code.UNSUPPORTED);
-
-        };
-        */
 
         // Connect the Guacamole client
         client.connect(getConnectString(id, connectionParameters));

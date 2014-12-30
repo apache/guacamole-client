@@ -559,67 +559,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
             
-    // Mapping of download stream index to notification object
-    var downloadNotifications = {};
-    
-    // Mapping of download stream index to notification ID
-    var downloadNotificationIDs = {};
-    
-    $scope.$on('guacClientFileDownloadStart', function handleClientFileDownloadStart(event, guacClient, streamIndex, mimetype, filename) {
-        $scope.$apply(function() {
-            
-            var notification = {
-                className  : 'download',
-                title      : 'CLIENT.DIALOG_TITLE_FILE_TRANSFER',
-                text       : filename
-            };
-            
-            downloadNotifications[streamIndex]   = notification;
-            downloadNotificationIDs[streamIndex] = $scope.addNotification(notification);
-            
-        });
-    });
-
-    $scope.$on('guacClientFileDownloadProgress', function handleClientFileDownloadProgress(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.$apply(function() {
-            
-            var notification = downloadNotifications[streamIndex];
-            if (notification)
-                notification.progress = getFileProgress('CLIENT.TEXT_FILE_TRANSFER_PROGRESS', length);
-            
-        });
-    });
-    
-    $scope.$on('guacClientFileDownloadEnd', function handleClientFileDownloadEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
-        $scope.$apply(function() {
-
-            var notification = downloadNotifications[streamIndex];
-            var notificationID = downloadNotificationIDs[streamIndex];
-            
-            /**
-             * Saves the current file.
-             */
-            var saveFile = function saveFile() {
-                saveAs(blob, filename);
-                $scope.removeNotification(notificationID);
-                delete downloadNotifications[streamIndex];
-                delete downloadNotificationIDs[streamIndex];
-            };
-            
-            // Add download action and remove progress indicator
-            if (notificationID && notification) {
-                delete notification.progress;
-                notification.actions = [
-                    {
-                        name       : 'CLIENT.ACTION_SAVE_FILE',
-                        callback   : saveFile
-                    }
-                ];
-            }
-
-        });
-    });
-
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 
