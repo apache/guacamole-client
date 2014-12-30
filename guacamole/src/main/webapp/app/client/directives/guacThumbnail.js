@@ -61,13 +61,6 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
             var THUMBNAIL_HEIGHT = 240;
                 
             /**
-             * The current Guacamole client instance.
-             * 
-             * @type Guacamole.Client 
-             */
-            var client = null;
-
-            /**
              * The display of the current Guacamole client instance.
              * 
              * @type Guacamole.Display
@@ -130,7 +123,7 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
                     return;
 
                 // Get Guacamole client instance
-                client = managedClient.client;
+                var client = managedClient.client;
 
                 // Attach possibly new display
                 display = client.getDisplay();
@@ -172,21 +165,7 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
 
             // If the element is resized, attempt to resize client
             resizeSensor.contentWindow.addEventListener('resize', function mainElementResized() {
-
-                // Send new display size, if changed
-                if (client && display) {
-
-                    var pixelDensity = $window.devicePixelRatio || 1;
-                    var width  = main.offsetWidth  * pixelDensity;
-                    var height = main.offsetHeight * pixelDensity;
-
-                    if (display.getWidth() !== width || display.getHeight() !== height)
-                        client.sendSize(width, height);
-
-                }
-
                 $scope.$apply(updateDisplayScale);
-
             });
 
         }]
