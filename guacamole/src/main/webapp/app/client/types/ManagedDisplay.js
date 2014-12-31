@@ -148,7 +148,7 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
         });
 
         // Store changes to display size
-        display.onresize = function() {
+        display.onresize = function setClientSize() {
             $rootScope.$apply(function updateClientSize() {
                 managedDisplay.size = new ManagedDisplay.Dimensions({
                     width  : display.getWidth(),
@@ -158,7 +158,7 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
         };
 
         // Store changes to display cursor
-        display.oncursor = function(canvas, x, y) {
+        display.oncursor = function setClientCursor(canvas, x, y) {
             $rootScope.$apply(function updateClientCursor() {
                 managedDisplay.cursor = new ManagedDisplay.Cursor({
                     canvas : canvas,

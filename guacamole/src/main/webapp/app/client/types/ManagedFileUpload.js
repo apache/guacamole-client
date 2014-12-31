@@ -134,7 +134,7 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
 
         // Construct reader for file
         var reader = new FileReader();
-        reader.onloadend = function() {
+        reader.onloadend = function fileContentsLoaded() {
 
             // Open file for writing
             var stream = client.createFileStream(file.type, file.name);
@@ -159,7 +159,7 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
 
             // Invalidate stream on all errors
             // Continue upload when acknowledged
-            stream.onack = function(status) {
+            stream.onack = function ackReceived(status) {
 
                 // Handle errors 
                 if (status.isError()) {

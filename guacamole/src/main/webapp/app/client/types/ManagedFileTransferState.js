@@ -116,7 +116,7 @@ angular.module('client').factory('ManagedFileTransferState', [function defineMan
      *     specified, the status code of the ManagedFileTransferState is not
      *     touched.
      */
-    ManagedFileTransferState.setStreamState = function(transferState, streamState, statusCode) {
+    ManagedFileTransferState.setStreamState = function setStreamState(transferState, streamState, statusCode) {
 
         // Do not set state after an error is registered
         if (transferState.streamState === ManagedFileTransferState.StreamState.ERROR)
