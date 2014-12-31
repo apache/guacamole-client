@@ -17,9 +17,11 @@
 
     "CLIENT" : {
 
-        "ACTION_RECONNECT"   : "Reconnect",
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_SAVE_FILE"   : "@:APP.ACTION_SAVE",
+        "ACTION_RECONNECT"     : "Reconnect",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_DISCONNECT"    : "Disconnect",
+        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_SAVE_FILE"     : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONNECTING"       : "Connecting",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",
@@ -82,13 +84,13 @@
         "SECTION_HEADER_DISPLAY"      : "Display",
         "SECTION_HEADER_MOUSE_MODE"   : "Mouse emulation mode",
 
-        "TEXT_ZOOM_AUTO_FIT"            : "Automatically fit to browser window",
-        "TEXT_CLIENT_STATUS_IDLE"       : "Idle.",
-        "TEXT_CLIENT_STATUS_CONNECTING" : "Connecting to Guacamole...",
-        "TEXT_CLIENT_STATUS_WAITING"    : "Connected to Guacamole. Waiting for response...",
-        "TEXT_TUNNEL_STATUS_CLOSED"     :  "You have been disconnected. Reload the page to reconnect.",
-        "TEXT_RECONNECT_COUNTDOWN"      : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
-        "TEXT_FILE_TRANSFER_PROGRESS"   : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+        "TEXT_ZOOM_AUTO_FIT"              : "Automatically fit to browser window",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Idle.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Connecting to Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "You have been disconnected.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Connected to Guacamole. Waiting for response...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.xml"
 

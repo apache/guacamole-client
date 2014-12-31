@@ -42,9 +42,50 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
         },
 
         templateUrl: 'app/home/templates/guacRecentConnections.html',
-        controller: ['$scope', '$injector', 'guacHistory', 'RecentConnection',
-            function guacRecentConnectionsController($scope, $injector, guacHistory, RecentConnection) {
+        controller: ['$scope', '$injector', function guacRecentConnectionsController($scope, $injector) {
 
+            // Required types
+            var ActiveConnection = $injector.get('ActiveConnection');
+            var RecentConnection = $injector.get('RecentConnection');
+
+            // Required services
+            var guacClientManager = $injector.get('guacClientManager');
+            var guacHistory       = $injector.get('guacHistory');
+
+            /**
+             * Array of all known and visible active connections.
+             *
+             * @type ActiveConnection[]
+             */
+            $scope.activeConnections = [];
+
+            /**
+             * Array of all known and visible recently-used connections.
+             *
+             * @type RecentConnection[]
+             */
+            $scope.recentConnections = [];
+
+            /**
+             * Returns whether recent connections are available for display.
+             * Note that, for the sake of this directive, recent connections
+             * include any currently-active connections, even if they are not
+             * yet in the history.
+             *
+             * @returns {Boolean}
+             *     true if recent (or active) connections are present, false
+             *     otherwise.
+             */
+            $scope.hasRecentConnections = function hasRecentConnections() {
+                return !!($scope.activeConnections.length || $scope.recentConnections.length);
+            };
+
+            /**
+             * Map of all visible objects, connections or connection groups, by
+             * object identifier.
+             *
+             * @type Object.<String, Connection|ConnectionGroup>
+             */
             var visibleObjects = {};
 
             /**
@@ -87,6 +128,8 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             // Update visible objects when root group is set
             $scope.$watch("rootGroup", function setRootGroup(rootGroup) {
 
+                // Clear connection arrays
+                $scope.activeConnections = [];
                 $scope.recentConnections = [];
 
                 // Produce collection of visible objects
@@ -94,11 +137,27 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
                 if (rootGroup)
                     addVisibleConnectionGroup(rootGroup);
 
+                // Add all active connections
+                for (var id in guacClientManager.managedClients) {
+
+                    // Get corresponding managed client
+                    var client = guacClientManager.managedClients[id];
+
+                    // Add active connections for clients with associated visible objects
+                    if (id in visibleObjects) {
+
+                        var object = visibleObjects[id];
+                        $scope.activeConnections.push(new ActiveConnection(object.name, client));
+
+                    }
+
+                }
+
                 // Add any recent connections that are visible
                 guacHistory.recentConnections.forEach(function addRecentConnection(historyEntry) {
 
                     // Add recent connections for history entries with associated visible objects
-                    if (historyEntry.id in visibleObjects) {
+                    if (historyEntry.id in visibleObjects && !(historyEntry.id in guacClientManager.managedClients)) {
 
                         var object = visibleObjects[historyEntry.id];
                         $scope.recentConnections.push(new RecentConnection(object.name, historyEntry));

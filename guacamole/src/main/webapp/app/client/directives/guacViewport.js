@@ -28,11 +28,11 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
     return {
         // Element only
         restrict: 'E',
-        scope: false,
+        scope: {},
         transclude: true,
         templateUrl: 'app/client/templates/guacViewport.html',
-        controller: ['$window', '$document', '$element',
-            function guacViewportController($window, $document, $element) {
+        controller: ['$scope', '$window', '$document', '$element',
+            function guacViewportController($scope, $window, $document, $element) {
 
             /**
              * The fullscreen container element.
@@ -55,8 +55,12 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
              */
             var currentAdjustedHeight = null;
 
-            // Fit container within visible region when window scrolls
-            $window.onscroll = function fitScrollArea() {
+            /**
+             * Resizes the container element inside the guacViewport such that
+             * it exactly fits within the visible area, even if the browser has
+             * been scrolled.
+             */
+            var fitVisibleArea = function fitVisibleArea() {
 
                 // Pull scroll properties
                 var scrollLeft   = document.body.scrollLeft;
@@ -81,6 +85,14 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
                 }
 
             };
+
+            // Fit container within visible region when window scrolls
+            $window.addEventListener('scroll', fitVisibleArea);
+
+            // Clean up event listener on destroy
+            $scope.$on('$destroy', function destroyViewport() {
+                $window.removeEventListener('scroll', fitVisibleArea);
+            });
 
         }]
     };

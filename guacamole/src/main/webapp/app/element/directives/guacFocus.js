@@ -23,7 +23,7 @@
 /**
  * A directive which allows elements to be manually focused / blurred.
  */
-angular.module('element').directive('guacFocus', ['$timeout', '$parse', function guacFocus($timeout, $parse) {
+angular.module('element').directive('guacFocus', ['$parse', function guacFocus($parse) {
 
     return {
         restrict: 'A',
@@ -47,7 +47,7 @@ angular.module('element').directive('guacFocus', ['$timeout', '$parse', function
 
             // Set/unset focus depending on value of guacFocus
             $scope.$watch(guacFocus, function updateFocus(value) {
-                $timeout(function updateFocusAsync() {
+                $scope.$evalAsync(function updateFocusAsync() {
                     if (value)
                         element.focus();
                     else
@@ -57,14 +57,14 @@ angular.module('element').directive('guacFocus', ['$timeout', '$parse', function
 
             // Set focus flag when focus is received
             element.addEventListener('focus', function focusReceived() {
-                $scope.$apply(function setGuacFocus() {
+                $scope.$evalAsync(function setGuacFocusAsync() {
                     guacFocus.assign($scope, true);
                 });
             });
 
             // Unset focus flag when focus is lost
             element.addEventListener('blur', function focusLost() {
-                $scope.$apply(function unsetGuacFocus() {
+                $scope.$evalAsync(function unsetGuacFocusAsync() {
                     guacFocus.assign($scope, false);
                 });
             });

@@ -20,4 +20,36 @@
  * THE SOFTWARE.
  */
 
-angular.module('home', ['client', 'history', 'groupList', 'rest']);
+/**
+ * Provides the ActiveConnection class used by the guacRecentConnections
+ * directive.
+ */
+angular.module('home').factory('ActiveConnection', [function defineActiveConnection() {
+
+    /**
+     * A recently-user connection, visible to the current user, with an
+     * associated history entry.
+     * 
+     * @constructor
+     */
+    var ActiveConnection = function ActiveConnection(name, client) {
+
+        /**
+         * The human-readable name of this connection.
+         * 
+         * @type String
+         */
+        this.name = name;
+
+        /**
+         * The client associated with this active connection.
+         * 
+         * @type ManagedClient 
+         */
+        this.client = client;
+
+    };
+
+    return ActiveConnection;
+
+}]);

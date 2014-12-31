@@ -32,46 +32,22 @@ angular.module('client').directive('guacClient', [function guacClient() {
         scope: {
 
             /**
-             * Parameters for controlling client state.
+             * The client to display within this guacClient directive.
              * 
-             * @type ClientProperties|Object
+             * @type ManagedClient
              */
-            clientProperties : '=',
+            client : '='
             
-            /**
-             * The ID of the Guacamole connection to connect to.
-             * 
-             * @type String
-             */
-            id : '=',
-
-            /**
-             * Arbitrary URL-encoded parameters to append to the connection
-             * string when connecting.
-             * 
-             * @type String
-             */
-            connectionParameters : '='
-
         },
         templateUrl: 'app/client/templates/guacClient.html',
         controller: ['$scope', '$injector', '$element', function guacClientController($scope, $injector, $element) {
-    
-            /*
-             * Safe $apply implementation from Alex Vanston:
-             * https://coderwall.com/p/ngisma
-             */
-            $scope.safeApply = function(fn) {
-                var phase = this.$root.$$phase;
-                if(phase === '$apply' || phase === '$digest') {
-                    if(fn && (typeof(fn) === 'function')) {
-                        fn();
-                    }
-                } else {
-                    this.$apply(fn);
-                }
-            };
-
+   
+            // Required types
+            var ManagedClient = $injector.get('ManagedClient');
+                
+            // Required services
+            var $window = $injector.get('$window');
+                
             /**
              * Whether the local, hardware mouse cursor is in use.
              * 
@@ -146,14 +122,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
              */
             var touchPad = new Guacamole.Mouse.Touchpad(displayContainer);
 
-            var $window               = $injector.get('$window'),
-                guacAudio             = $injector.get('guacAudio'),
-                guacVideo             = $injector.get('guacVideo'),
-                guacHistory           = $injector.get('guacHistory'),
-                guacTunnelFactory     = $injector.get('guacTunnelFactory'),
-                guacClientFactory     = $injector.get('guacClientFactory'),
-                authenticationService = $injector.get('authenticationService');
- 
             /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
@@ -163,60 +131,20 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 if (!display) return;
 
                 // Calculate scale to fit screen
-                $scope.clientProperties.minScale = Math.min(
+                $scope.client.clientProperties.minScale = Math.min(
                     main.offsetWidth  / Math.max(display.getWidth(),  1),
                     main.offsetHeight / Math.max(display.getHeight(), 1)
                 );
 
                 // Calculate appropriate maximum zoom level
-                $scope.clientProperties.maxScale = Math.max($scope.clientProperties.minScale, 3);
+                $scope.client.clientProperties.maxScale = Math.max($scope.client.clientProperties.minScale, 3);
 
                 // Clamp zoom level, maintain auto-fit
-                if (display.getScale() < $scope.clientProperties.minScale || $scope.clientProperties.autoFit)
-                    $scope.clientProperties.scale = $scope.clientProperties.minScale;
+                if (display.getScale() < $scope.client.clientProperties.minScale || $scope.client.clientProperties.autoFit)
+                    $scope.client.clientProperties.scale = $scope.client.clientProperties.minScale;
 
-                else if (display.getScale() > $scope.clientProperties.maxScale)
-                    $scope.clientProperties.scale = $scope.clientProperties.maxScale;
-
-            };
-
-            /**
-             * Returns the string of connection parameters to be passed to the
-             * Guacamole client during connection. This string generally
-             * contains the desired connection ID, display resolution, and
-             * supported audio/video codecs.
-             * 
-             * @returns {String} The string of connection parameters to be
-             *                   passed to the Guacamole client.
-             */
-            var getConnectString = function getConnectString() {
-
-                // Calculate optimal width/height for display
-                var pixel_density = $window.devicePixelRatio || 1;
-                var optimal_dpi = pixel_density * 96;
-                var optimal_width = $window.innerWidth * pixel_density;
-                var optimal_height = $window.innerHeight * pixel_density;
-
-                // Build base connect string
-                var connectString =
-                      "id="         + encodeURIComponent($scope.id)
-                    + "&authToken=" + encodeURIComponent(authenticationService.getCurrentToken())
-                    + "&width="     + Math.floor(optimal_width)
-                    + "&height="    + Math.floor(optimal_height)
-                    + "&dpi="       + Math.floor(optimal_dpi)
-                    + ($scope.connectionParameters ? '&' + $scope.connectionParameters : '');
-
-                // Add audio mimetypes to connect_string
-                guacAudio.supported.forEach(function(mimetype) {
-                    connectString += "&audio=" + encodeURIComponent(mimetype);
-                });
-
-                // Add video mimetypes to connect_string
-                guacVideo.supported.forEach(function(mimetype) {
-                    connectString += "&video=" + encodeURIComponent(mimetype);
-                });
-
-                return connectString;
+                else if (display.getScale() > $scope.client.clientProperties.maxScale)
+                    $scope.client.clientProperties.scale = $scope.client.clientProperties.maxScale;
 
             };
 
@@ -283,158 +211,60 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             };
 
-            /*
-             * MOUSE
-             */
+            // Attach any given managed client
+            $scope.$watch('client', function attachManagedClient(managedClient) {
 
-            // Watch for changes to mouse emulation mode
-            // Send all received mouse events to the client
-            mouse.onmousedown =
-            mouse.onmouseup   =
-            mouse.onmousemove = function(mouseState) {
+                // Remove any existing display
+                displayContainer.innerHTML = "";
 
-                if (!client || !display)
+                // Only proceed if a client is given 
+                if (!managedClient)
                     return;
 
-                // Send mouse state, show cursor if necessary
-                display.showCursor(!localCursor);
-                sendScaledMouseState(mouseState);
+                // Get Guacamole client instance
+                client = managedClient.client;
 
-            };
-
-            // Hide software cursor when mouse leaves display
-            mouse.onmouseout = function() {
-                if (!display) return;
-                display.showCursor(false);
-            };
-
-            /*
-             * CLIPBOARD
-             */
-
-            // Update active client if clipboard changes
-            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
-                if (client)
-                    client.setClipboard(data);
-            });
-
-            /*
-             * SCROLLING
-             */
-
-            $scope.$watch('clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
-                main.scrollLeft = scrollLeft;
-                $scope.clientProperties.scrollLeft = main.scrollLeft;
-            });
-
-            $scope.$watch('clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
-                main.scrollTop = scrollTop;
-                $scope.clientProperties.scrollTop = main.scrollTop;
-            });
-
-            /*
-             * CONNECT / RECONNECT
-             */
-
-            /**
-             * Store the thumbnail of the currently connected client within
-             * the connection history under the given ID. If the client is not
-             * connected, or if no ID is given, this function has no effect.
-             *
-             * @param {String} id
-             *     The ID of the history entry to update.
-             */
-            var updateHistoryEntry = function updateHistoryEntry(id) {
-
-                // Update stored thumbnail of previous connection 
-                if (id && display && display.getWidth() > 0 && display.getHeight() > 0) {
-
-                    // Get screenshot
-                    var canvas = display.flatten();
-                    
-                    // Calculate scale of thumbnail (max 320x240, max zoom 100%)
-                    var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
-                    
-                    // Create thumbnail canvas
-                    var thumbnail = document.createElement("canvas");
-                    thumbnail.width  = canvas.width*scale;
-                    thumbnail.height = canvas.height*scale;
-                    
-                    // Scale screenshot to thumbnail
-                    var context = thumbnail.getContext("2d");
-                    context.drawImage(canvas,
-                        0, 0, canvas.width, canvas.height,
-                        0, 0, thumbnail.width, thumbnail.height
-                    );
-
-                    guacHistory.updateThumbnail(id, thumbnail.toDataURL("image/png"));
-
-                }
-
-            };
-
-            // Connect to given ID whenever ID changes
-            $scope.$watch('id', function(id, previousID) {
-
-                // If a client is already attached, ensure it is disconnected
-                if (client)
-                    client.disconnect();
-
-                // Update stored thumbnail of previous connection
-                updateHistoryEntry(previousID);
-
-                // Only proceed if a new client is attached
-                if (!id)
-                    return;
-
-                // Get new client instance
-                var tunnel = guacTunnelFactory.getInstance($scope);
-                client = guacClientFactory.getInstance($scope, tunnel);
-
-                // Init display
+                // Attach possibly new display
                 display = client.getDisplay();
-                display.scale($scope.clientProperties.scale);
-
-                // Update the scale of the display when the client display size changes.
-                display.onresize = function() {
-                    $scope.safeApply(updateDisplayScale);
-                };
-
-                // Use local cursor if possible, update localCursor flag
-                display.oncursor = function(canvas, x, y) {
-                    localCursor = mouse.setCursor(canvas, x, y);
-                };
+                display.scale($scope.client.clientProperties.scale);
 
                 // Add display element
                 displayElement = display.getElement();
-                displayContainer.innerHTML = "";
                 displayContainer.appendChild(displayElement);
 
-                // Do nothing when the display element is clicked on.
-                displayElement.onclick = function(e) {
+                // Do nothing when the display element is clicked on
+                display.getElement().onclick = function(e) {
                     e.preventDefault();
                     return false;
                 };
 
-                // Connect
-                client.connect(getConnectString());
-
             });
 
-            // Clean up when client directive is destroyed
-            $scope.$on('$destroy', function destroyClient() {
-
-                // Update stored thumbnail of current connection
-                updateHistoryEntry($scope.id);
-
+            // Update actual view scrollLeft when scroll properties change
+            $scope.$watch('client.clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
+                main.scrollLeft = scrollLeft;
+                $scope.client.clientProperties.scrollLeft = main.scrollLeft;
             });
 
-            /*
-             * MOUSE EMULATION
-             */
-                
-            // Watch for changes to mouse emulation mode
-            $scope.$watch('clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
+            // Update actual view scrollTop when scroll properties change
+            $scope.$watch('client.clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
+                main.scrollTop = scrollTop;
+                $scope.client.clientProperties.scrollTop = main.scrollTop;
+            });
+
+            // Update scale when display is resized
+            $scope.$watch('client.managedDisplay.size', function setDisplaySize() {
+                $scope.$evalAsync(updateDisplayScale);
+            });
+
+            // Keep local cursor up-to-date
+            $scope.$watch('client.managedDisplay.cursor', function setCursor(cursor) {
+                if (cursor)
+                    localCursor = mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
+            });
+
+            // Swap mouse emulation modes depending on absolute mode flag
+            $scope.$watch('client.clientProperties.emulateAbsoluteMouse', function(emulateAbsoluteMouse) {
 
                 if (!client || !display) return;
 
@@ -478,19 +308,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
             });
 
-            /*
-             * DISPLAY SCALE / SIZE
-             */
-                
             // Adjust scale if modified externally
-            $scope.$watch('clientProperties.scale', function changeScale(scale) {
+            $scope.$watch('client.clientProperties.scale', function changeScale(scale) {
 
                 // Fix scale within limits
-                scale = Math.max(scale, $scope.clientProperties.minScale);
-                scale = Math.min(scale, $scope.clientProperties.maxScale);
+                scale = Math.max(scale, $scope.client.clientProperties.minScale);
+                scale = Math.min(scale, $scope.client.clientProperties.maxScale);
 
                 // If at minimum zoom level, hide scroll bars
-                if (scale === $scope.clientProperties.minScale)
+                if (scale === $scope.client.clientProperties.minScale)
                     main.style.overflow = "hidden";
 
                 // If not at minimum zoom level, show scroll bars
@@ -501,15 +327,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 if (display)
                     display.scale(scale);
                 
-                if (scale !== $scope.clientProperties.scale)
-                    $scope.clientProperties.scale = scale;
+                if (scale !== $scope.client.clientProperties.scale)
+                    $scope.client.clientProperties.scale = scale;
 
             });
             
             // If autofit is set, the scale should be set to the minimum scale, filling the screen
-            $scope.$watch('clientProperties.autoFit', function changeAutoFit(autoFit) {
+            $scope.$watch('client.clientProperties.autoFit', function changeAutoFit(autoFit) {
                 if(autoFit)
-                    $scope.clientProperties.scale = $scope.clientProperties.minScale;
+                    $scope.client.clientProperties.scale = $scope.client.clientProperties.minScale;
             });
             
             // If the element is resized, attempt to resize client
@@ -527,25 +353,48 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 }
 
-                $scope.safeApply(updateDisplayScale);
+                $scope.$apply(updateDisplayScale);
 
             });
-            
-            /*
-             * KEYBOARD
-             */
-                
-            // Listen for broadcasted keydown events and fire the appropriate listeners
+
+            // Watch for changes to mouse emulation mode
+            // Send all received mouse events to the client
+            mouse.onmousedown =
+            mouse.onmouseup   =
+            mouse.onmousemove = function(mouseState) {
+
+                if (!client || !display)
+                    return;
+
+                // Send mouse state, show cursor if necessary
+                display.showCursor(!localCursor);
+                sendScaledMouseState(mouseState);
+
+            };
+
+            // Hide software cursor when mouse leaves display
+            mouse.onmouseout = function() {
+                if (!display) return;
+                display.showCursor(false);
+            };
+
+            // Update remote clipboard if local clipboard changes
+            $scope.$on('guacClipboard', function onClipboard(event, mimetype, data) {
+                if (client)
+                    client.setClipboard(data);
+            });
+
+            // Translate local keydown events to remote keydown events if keyboard is enabled
             $scope.$on('guacKeydown', function keydownListener(event, keysym, keyboard) {
-                if ($scope.clientProperties.keyboardEnabled && !event.defaultPrevented) {
+                if ($scope.client.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(1, keysym);
                     event.preventDefault();
                 }
             });
             
-            // Listen for broadcasted keyup events and fire the appropriate listeners
+            // Translate local keyup events to remote keyup events if keyboard is enabled
             $scope.$on('guacKeyup', function keyupListener(event, keysym, keyboard) {
-                if ($scope.clientProperties.keyboardEnabled && !event.defaultPrevented) {
+                if ($scope.client.clientProperties.keyboardEnabled && !event.defaultPrevented) {
                     client.sendKeyEvent(0, keysym);
                     event.preventDefault();
                 }   
@@ -562,26 +411,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
             
             /**
-             * Converts the given bytes to a base64-encoded string.
-             * 
-             * @param {Uint8Array} bytes A Uint8Array which contains the data to be
-             *                           encoded as base64.
-             * @return {String} The base64-encoded string.
-             */
-            function getBase64(bytes) {
-
-                var data = "";
-
-                // Produce binary string from bytes in buffer
-                for (var i=0; i<bytes.byteLength; i++)
-                    data += String.fromCharCode(bytes[i]);
-
-                // Convert to base64
-                return $window.btoa(data);
-
-            }
-            
-            /**
              * Ignores the given event.
              * 
              * @param {Event} e The event to ignore.
@@ -589,68 +418,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
             function ignoreEvent(e) {
                e.preventDefault();
                e.stopPropagation();
-            }
-            
-            /**
-             * Uploads the given file to the server.
-             * 
-             * @param {File} file The file to upload.
-             */
-            function uploadFile(file) {
-
-                // Construct reader for file
-                var reader = new FileReader();
-                reader.onloadend = function() {
-
-                    // Open file for writing
-                    var stream = client.createFileStream(file.type, file.name);
-
-                    var valid = true;
-                    var bytes = new Uint8Array(reader.result);
-                    var offset = 0;
-
-                    // Add upload notification
-                    $scope.$emit('guacClientFileUploadStart', client, stream.index, file.type, file.name, bytes.length);
-
-                    // Invalidate stream on all errors
-                    // Continue upload when acknowledged
-                    stream.onack = function(status) {
-
-                        // Handle errors 
-                        if (status.isError()) {
-                            valid = false;
-                            $scope.$emit('guacClientFileUploadError', client, stream.index, file.type, file.name, bytes.length, status.code);
-                        }
-
-                        // Abort upload if stream is invalid
-                        if (!valid) return false;
-
-                        // Encode packet as base64
-                        var slice = bytes.subarray(offset, offset+4096);
-                        var base64 = getBase64(slice);
-
-                        // Write packet
-                        stream.sendBlob(base64);
-
-                        // Advance to next packet
-                        offset += 4096;
-
-                        // If at end, stop upload
-                        if (offset >= bytes.length) {
-                            stream.sendEnd();
-                            $scope.$emit('guacClientFileUploadProgress', client, stream.index, file.type, file.name, bytes.length, bytes.length);
-                            $scope.$emit('guacClientFileUploadEnd', client, stream.index, file.type, file.name, bytes.length);
-                        }
-
-                        // Otherwise, update progress
-                        else
-                            $scope.$emit('guacClientFileUploadProgress', client, stream.index, file.type, file.name, bytes.length, offset);
-
-                    };
-
-                };
-                reader.readAsArrayBuffer(file);
-
             }
 
             // Handle and ignore dragenter/dragover
@@ -664,12 +431,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 e.stopPropagation();
 
                 // Ignore file drops if no attached client
-                if (!client) return;
+                if (!$scope.client)
+                    return;
 
                 // Upload each file 
                 var files = e.dataTransfer.files;
                 for (var i=0; i<files.length; i++)
-                    uploadFile(files[i]);
+                    ManagedClient.uploadFile($scope.client, files[i]);
 
             }, false);
 

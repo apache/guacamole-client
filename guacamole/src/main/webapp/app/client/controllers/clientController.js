@@ -27,12 +27,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
-    var ClientProperties = $injector.get('ClientProperties');
-    var ScrollState      = $injector.get('ScrollState');
+    var ManagedClientState = $injector.get('ManagedClientState');
+    var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var connectionService      = $injector.get('connectionService');
+    var $location          = $injector.get('$location');
+    var guacClientManager  = $injector.get('guacClientManager');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -142,14 +142,23 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * The reconnect action to be provided along with the object sent to
-     * showStatus.
+     * Action which returns the user to the home screen.
+     */
+    var NAVIGATE_BACK_ACTION = {
+        name      : "CLIENT.ACTION_NAVIGATE_BACK",
+        className : "back button",
+        callback  : function navigateBackCallback() {
+            $location.path('/');
+        }
+    };
+
+    /**
+     * Action which replaces the current client with a newly-connected client.
      */
     var RECONNECT_ACTION = {
-        name        : "CLIENT.ACTION_RECONNECT",
-        // Handle reconnect action
-        callback    : function reconnectCallback() {
-            $scope.id = uniqueId;
+        name     : "CLIENT.ACTION_RECONNECT",
+        callback : function reconnectCallback() {
+            $scope.client = guacClientManager.replaceManagedClient(uniqueId, $routeParams.params);
             $scope.showStatus(false);
         }
     };
@@ -163,12 +172,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         callback: RECONNECT_ACTION.callback,
         remaining: 15
     };
-    
-    // Client settings and state
-    $scope.clientProperties = new ClientProperties();
-    
-    // Initialize clipboard data to an empty string
-    $scope.clipboardData = ""; 
     
     // Hide menu by default
     $scope.menuShown = false;
@@ -198,27 +201,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * as well as any extra parameters if set.
      */
     var uniqueId = $routeParams.type + '/' + $routeParams.id;
-    $scope.id = uniqueId;
-    $scope.connectionParameters = $routeParams.params || '';
-
-    // Pull connection name from server
-    switch ($routeParams.type) {
-
-        // Connection
-        case 'c':
-            connectionService.getConnection($routeParams.id).success(function (connection) {
-                $scope.connectionName = $scope.page.title = connection.name;
-            });
-            break;
-
-        // Connection group
-        case 'g':
-            connectionGroupService.getConnectionGroup($routeParams.id).success(function (group) {
-                $scope.connectionName = $scope.page.title = group.name;
-            });
-            break;
-
-    }
+    $scope.client = guacClientManager.getManagedClient(uniqueId, $routeParams.params);
 
     var keysCurrentlyPressed = {};
 
@@ -266,9 +249,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         }
 
         // Scroll display if absolute mouse is in use
-        else if ($scope.clientProperties.emulateAbsoluteMouse) {
-            $scope.clientProperties.scrollLeft -= deltaX;
-            $scope.clientProperties.scrollTop -= deltaY;
+        else if ($scope.client.clientProperties.emulateAbsoluteMouse) {
+            $scope.client.clientProperties.scrollLeft -= deltaX;
+            $scope.client.clientProperties.scrollTop -= deltaY;
         }
 
         return false;
@@ -305,7 +288,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.clientPinch = function clientPinch(inProgress, startLength, currentLength, centerX, centerY) {
 
         // Do not handle pinch gestures while relative mouse is in use
-        if (!$scope.clientProperties.emulateAbsoluteMouse)
+        if (!$scope.client.clientProperties.emulateAbsoluteMouse)
             return false;
 
         // Stop gesture if not in progress
@@ -316,26 +299,26 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Set initial scale if gesture has just started
         if (!initialScale) {
-            initialScale   = $scope.clientProperties.scale;
-            initialCenterX = (centerX + $scope.clientProperties.scrollLeft) / initialScale;
-            initialCenterY = (centerY + $scope.clientProperties.scrollTop)  / initialScale;
+            initialScale   = $scope.client.clientProperties.scale;
+            initialCenterX = (centerX + $scope.client.clientProperties.scrollLeft) / initialScale;
+            initialCenterY = (centerY + $scope.client.clientProperties.scrollTop)  / initialScale;
         }
 
         // Determine new scale absolutely
         var currentScale = initialScale * currentLength / startLength;
 
         // Fix scale within limits - scroll will be miscalculated otherwise
-        currentScale = Math.max(currentScale, $scope.clientProperties.minScale);
-        currentScale = Math.min(currentScale, $scope.clientProperties.maxScale);
+        currentScale = Math.max(currentScale, $scope.client.clientProperties.minScale);
+        currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
 
         // Update scale based on pinch distance
         $scope.autoFit = false;
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale = currentScale;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale = currentScale;
 
         // Scroll display to keep original pinch location centered within current pinch
-        $scope.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
-        $scope.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
+        $scope.client.clientProperties.scrollLeft = initialCenterX * currentScale - centerX;
+        $scope.client.clientProperties.scrollTop  = initialCenterY * currentScale - centerY;
 
         return false;
 
@@ -354,10 +337,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         
         // Send clipboard data if menu is hidden
         if (!menuShown && menuShownPreviousState)
-            $scope.$broadcast('guacClipboard', 'text/plain', $scope.clipboardData); 
+            $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData); 
         
         // Disable client keyboard if the menu is shown
-        $scope.clientProperties.keyboardEnabled = !menuShown;
+        $scope.client.clientProperties.keyboardEnabled = !menuShown;
 
     });
     
@@ -385,7 +368,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 keyboard.reset();
                 
                 // Toggle the menu
-                $scope.safeApply(function() {
+                $scope.$apply(function() {
                     $scope.menuShown = !$scope.menuShown;
                 });
             }
@@ -397,114 +380,129 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         delete keysCurrentlyPressed[keysym];
     });
 
-    // Show status dialog when client status changes
-    $scope.$on('guacClientStateChange', function clientStateChangeListener(event, client, status) {
+    // Update page title when client name is received
+    $scope.$watch('client.name', function clientNameChanged(name) {
+        $scope.page.title = name;
+    });
 
-        // Show new status if not yet connected
-        if (status !== "connected") {
+    // Show status dialog when connection status changes
+    $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
+
+        // Hide status if no known state
+        if (!connectionState) {
+            $scope.showStatus(false);
+            return;
+        }
+
+        // Get any associated status code
+        var status = $scope.client.clientState.statusCode;
+
+        // Connecting 
+        if (connectionState === ManagedClientState.ConnectionState.CONNECTING
+         || connectionState === ManagedClientState.ConnectionState.WAITING) {
             $scope.showStatus({
                 title: "CLIENT.DIALOG_HEADER_CONNECTING",
-                text: "CLIENT.TEXT_CLIENT_STATUS_" + status.toUpperCase()
+                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
             });
         }
 
-        // Hide status upon connecting
+        // Client error
+        else if (connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR) {
+
+            // Determine translation name of error
+            var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+            // Determine whether the reconnect countdown applies
+            var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+
+            // Show error status
+            $scope.showStatus({
+                className: "error",
+                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text: "CLIENT.ERROR_CLIENT_" + errorName,
+                countdown: countdown,
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+            });
+
+        }
+
+        // Tunnel error
+        else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
+
+            // Determine translation name of error
+            var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+            // Determine whether the reconnect countdown applies
+            var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
+
+            // Show error status
+            $scope.showStatus({
+                className: "error",
+                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text: "CLIENT.ERROR_TUNNEL_" + errorName,
+                countdown: countdown,
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+            });
+
+        }
+
+        // Disconnected
+        else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
+            $scope.showStatus({
+                title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
+                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
+                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+            });
+        }
+
+        // Hide status for all other states
         else
             $scope.showStatus(false);
 
     });
 
-    // Show status dialog when client errors occur
-    $scope.$on('guacClientError', function clientErrorListener(event, client, status) {
-
-        // Determine translation name of error
-        var errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
-
-        // Determine whether the reconnect countdown applies
-        var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
-
-        // Override any existing status
-        $scope.showStatus(false);
-
-        // Show error status
-        $scope.showStatus({
-            className: "error",
-            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-            text: "CLIENT.ERROR_CLIENT_" + errorName,
-            countdown: countdown,
-            actions: [ RECONNECT_ACTION ]
-        });
-
-    });
-
-    // Show status dialog when tunnel status changes
-    $scope.$on('guacTunnelStateChange', function tunnelStateChangeListener(event, tunnel, status) {
-
-        // Show new status only if disconnected
-        if (status === "closed") {
-
-            // Disconnect
-            $scope.id = null;
-
-            $scope.showStatus({
-                title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
-                text: "CLIENT.TEXT_TUNNEL_STATUS_" + status.toUpperCase()
-            });
-        }
-
-    });
-
-    // Show status dialog when tunnel errors occur
-    $scope.$on('guacTunnelError', function tunnelErrorListener(event, tunnel, status) {
-
-        // Determine translation name of error
-        var errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
-
-        // Determine whether the reconnect countdown applies
-        var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
-
-        // Override any existing status
-        $scope.showStatus(false);
-
-        // Show error status
-        $scope.showStatus({
-            className: "error",
-            title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-            text: "CLIENT.ERROR_TUNNEL_" + errorName,
-            countdown: countdown,
-            actions: [ RECONNECT_ACTION ]
-        });
-
-    });
-
     $scope.formattedScale = function formattedScale() {
-        return Math.round($scope.clientProperties.scale * 100);
+        return Math.round($scope.client.clientProperties.scale * 100);
     };
     
     $scope.zoomIn = function zoomIn() {
         $scope.autoFit = false;
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale += 0.1;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale += 0.1;
     };
     
     $scope.zoomOut = function zoomOut() {
-        $scope.clientProperties.autoFit = false;
-        $scope.clientProperties.scale -= 0.1;
+        $scope.client.clientProperties.autoFit = false;
+        $scope.client.clientProperties.scale -= 0.1;
     };
     
     $scope.autoFit = true;
     
     $scope.changeAutoFit = function changeAutoFit() {
-        if ($scope.autoFit && $scope.clientProperties.minScale) {
-            $scope.clientProperties.autoFit = true;
+        if ($scope.autoFit && $scope.client.clientProperties.minScale) {
+            $scope.client.clientProperties.autoFit = true;
         } else {
-            $scope.clientProperties.autoFit = false;
-            $scope.clientProperties.scale = 1; 
+            $scope.client.clientProperties.autoFit = false;
+            $scope.client.clientProperties.scale = 1; 
         }
     };
     
     $scope.autoFitDisabled = function() {
-        return $scope.clientProperties.minZoom >= 1;
+        return $scope.client.clientProperties.minZoom >= 1;
+    };
+
+    /**
+     * Immediately disconnects the currently-connected client, if any.
+     */
+    $scope.disconnect = function disconnect() {
+
+        // Disconnect if client is available
+        if ($scope.client)
+            $scope.client.client.disconnect();
+
+        // Hide menu
+        $scope.menuShown = false;
+
     };
 
     /**
@@ -561,159 +559,27 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
             
-    // Mapping of download stream index to notification object
-    var downloadNotifications = {};
-    
-    // Mapping of download stream index to notification ID
-    var downloadNotificationIDs = {};
-    
-    $scope.$on('guacClientFileDownloadStart', function handleClientFileDownloadStart(event, guacClient, streamIndex, mimetype, filename) {
-        $scope.safeApply(function() {
-            
-            var notification = {
-                className  : 'download',
-                title      : 'CLIENT.DIALOG_TITLE_FILE_TRANSFER',
-                text       : filename
-            };
-            
-            downloadNotifications[streamIndex]   = notification;
-            downloadNotificationIDs[streamIndex] = $scope.addNotification(notification);
-            
-        });
-    });
+    // Clean up when view destroyed
+    $scope.$on('$destroy', function clientViewDestroyed() {
 
-    $scope.$on('guacClientFileDownloadProgress', function handleClientFileDownloadProgress(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
-            
-            var notification = downloadNotifications[streamIndex];
-            if (notification)
-                notification.progress = getFileProgress('CLIENT.TEXT_FILE_TRANSFER_PROGRESS', length);
-            
-        });
-    });
-    
-    $scope.$on('guacClientFileDownloadEnd', function handleClientFileDownloadEnd(event, guacClient, streamIndex, mimetype, filename, blob) {
-        $scope.safeApply(function() {
+        // Remove client from client manager if no longer connected
+        var managedClient = $scope.client;
+        if (managedClient) {
 
-            var notification = downloadNotifications[streamIndex];
-            var notificationID = downloadNotificationIDs[streamIndex];
-            
-            /**
-             * Saves the current file.
-             */
-            var saveFile = function saveFile() {
-                saveAs(blob, filename);
-                $scope.removeNotification(notificationID);
-                delete downloadNotifications[streamIndex];
-                delete downloadNotificationIDs[streamIndex];
-            };
-            
-            // Add download action and remove progress indicator
-            if (notificationID && notification) {
-                delete notification.progress;
-                notification.actions = [
-                    {
-                        name       : 'CLIENT.ACTION_SAVE_FILE',
-                        callback   : saveFile
-                    }
-                ];
-            }
+            // Get current connection state
+            var connectionState = managedClient.clientState.connectionState;
 
-        });
-    });
+            // If disconnected, remove from management
+            if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED
+             || connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR
+             || connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR)
+                guacClientManager.removeManagedClient(managedClient.id);
 
-    // Mapping of upload stream index to notification object
-    var uploadNotifications = {};
-    
-    // Mapping of upload stream index to notification ID
-    var uploadNotificationIDs = {};
-    
-    $scope.$on('guacClientFileUploadStart', function handleClientFileUploadStart(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
-            
-            var notification = {
-                className  : 'upload',
-                title      : 'CLIENT.DIALOG_TITLE_FILE_TRANSFER',
-                text       : filename
-            };
-            
-            uploadNotifications[streamIndex]   = notification;
-            uploadNotificationIDs[streamIndex] = $scope.addNotification(notification);
-            
-        });
-    });
+        }
 
-    $scope.$on('guacClientFileUploadProgress', function handleClientFileUploadProgress(event, guacClient, streamIndex, mimetype, filename, length, offset) {
-        $scope.safeApply(function() {
-            
-            var notification = uploadNotifications[streamIndex];
-            if (notification)
-                notification.progress = getFileProgress('CLIENT.TEXT_FILE_TRANSFER_PROGRESS', offset, length);
-            
-        });
-    });
-    
-    $scope.$on('guacClientFileUploadEnd', function handleClientFileUploadEnd(event, guacClient, streamIndex, mimetype, filename, length) {
-        $scope.safeApply(function() {
+        // Hide any status dialog
+        $scope.showStatus(false);
 
-            var notification = uploadNotifications[streamIndex];
-            var notificationID = uploadNotificationIDs[streamIndex];
-            
-            /**
-             * Close the notification.
-             */
-            var closeNotification = function closeNotification() {
-                $scope.removeNotification(notificationID);
-                delete uploadNotifications[streamIndex];
-                delete uploadNotificationIDs[streamIndex];
-            };
-            
-            // Show that the file has uploaded successfully
-            if (notificationID && notification) {
-                delete notification.progress;
-                notification.actions = [
-                    {
-                        name       : 'CLIENT.ACTION_ACKNOWLEDGE',
-                        callback   : closeNotification
-                    }
-                ];
-            }
-
-        });
-    });
-    
-    $scope.$on('guacClientFileUploadError', function handleClientFileUploadError(event, guacClient, streamIndex, mimetype, fileName, length, status) {
-        $scope.safeApply(function() {
-
-            var notification = uploadNotifications[streamIndex];
-            var notificationID = uploadNotificationIDs[streamIndex];
-
-            // Determine translation name of error
-            var errorName = (status in UPLOAD_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
-
-            /**
-             * Close the notification.
-             */
-            var closeNotification = function closeNotification() {
-                $scope.removeNotification(notificationID);
-                delete uploadNotifications[streamIndex];
-                delete uploadNotificationIDs[streamIndex];
-            };
-
-            // Show that the file upload has failed
-            if (notificationID && notification) {
-                delete notification.progress;
-                notification.actions = [
-                    {
-                        name       : 'CLIENT.ACTION_ACKNOWLEDGE',
-                        callback   : closeNotification
-                    }
-                ];
-                notification.text = "CLIENT.ERROR_UPLOAD_" + errorName;
-                notification.className = "upload error";
-            }
-            
-        });
     });
 
 }]);
