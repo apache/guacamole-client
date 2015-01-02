@@ -95,3 +95,16 @@
     height: 100%;
     width: 0;
 }
+
+.savable.transfer {
+    cursor: pointer;
+}
+
+.savable.transfer:hover .progress {
+    border-color: black;
+}
+
+.savable.transfer .filename {
+    color: blue;
+    text-decoration: underline;
+}

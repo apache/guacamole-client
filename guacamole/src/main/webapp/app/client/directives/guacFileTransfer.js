@@ -154,6 +154,34 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
 
             };
 
+            /**
+             * Returns whether the file associated with this file transfer can
+             * be saved locally via a call to save().
+             *
+             * @returns {Boolean}
+             *     true if a call to save() will result in the file being
+             *     saved, false otherwise.
+             */
+            $scope.isSavable = function isSavable() {
+                return !!$scope.transfer.blob;
+            };
+
+            /**
+             * Saves the downloaded file, if any. If this transfer is an upload
+             * or the download is not yet complete, this function has no
+             * effect.
+             */
+            $scope.save = function save() {
+
+                // Ignore if no blob exists
+                if (!$scope.transfer.blob)
+                    return;
+
+                // Save file
+                saveAs($scope.transfer.blob, $scope.transfer.filename); 
+
+            };
+
         }] // end file transfer controller
 
     };
