@@ -43,9 +43,118 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
         templateUrl: 'app/client/templates/guacFileTransfer.html',
         controller: ['$scope', '$injector', function guacFileTransferController($scope, $injector) {
 
-            /* STUB */
+            // Required types
+            var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
-        }]
+            /**
+             * Returns the unit string that is most appropriate for the
+             * number of bytes transferred thus far - either 'gb', 'mb', 'kb',
+             * or 'b'.
+             *
+             * @returns {String}
+             *     The unit string that is most appropriate for the number of
+             *     bytes transferred thus far.
+             */
+            $scope.getProgressUnit = function getProgressUnit() {
+
+                var bytes = $scope.transfer.progress;
+
+                // Gigabytes
+                if (bytes > 1000000000)
+                    return 'gb';
+
+                // Megabytes
+                if (bytes > 1000000)
+                    return 'mb';
+
+                // Kilobytes
+                if (bytes > 1000)
+                    return 'kb';
+
+                // Bytes
+                return 'b';
+
+            };
+
+            /**
+             * Returns the amount of data transferred thus far, in the units
+             * returned by getProgressUnit().
+             *
+             * @returns {Number}
+             *     The amount of data transferred thus far, in the units
+             *     returned by getProgressUnit().
+             */
+            $scope.getProgressValue = function getProgressValue() {
+
+                var bytes = $scope.transfer.progress;
+                if (!bytes)
+                    return bytes;
+
+                // Convert bytes to necessary units
+                switch ($scope.getProgressUnit()) {
+
+                    // Gigabytes
+                    case 'gb':
+                        return (bytes / 1000000000).toFixed(1);
+
+                    // Megabytes
+                    case 'mb':
+                        return (bytes / 1000000).toFixed(1);
+
+                    // Kilobytes
+                    case 'kb':
+                        return (bytes / 1000).toFixed(1);
+
+                    // Bytes
+                    case 'b':
+                    default:
+                        return bytes;
+
+                }
+
+            };
+
+            /**
+             * Returns the percentage of bytes transferred thus far, if the
+             * overall length of the file is known.
+             *
+             * @returns {Number}
+             *     The percentage of bytes transferred thus far, if the
+             *     overall length of the file is known.
+             */
+            $scope.getPercentDone = function getPercentDone() {
+                return $scope.transfer.progress / $scope.transfer.length * 100;
+            };
+
+            /**
+             * Determines whether the associated file transfer is in progress.
+             *
+             * @returns {Boolean}
+             *     true if the file transfer is in progress, false othherwise.
+             */
+            $scope.isInProgress = function isInProgress() {
+
+                // Not in progress if there is no transfer
+                if (!$scope.transfer)
+                    return false;
+
+                // Determine in-progress status based on stream state
+                switch ($scope.transfer.transferState.streamState) {
+
+                    // IDLE or OPEN file transfers are active
+                    case ManagedFileTransferState.StreamState.IDLE:
+                    case ManagedFileTransferState.StreamState.OPEN:
+                        return true;
+
+                    // All others are not active
+                    default:
+                        return false;
+
+                }
+
+            };
+
+        }] // end file transfer controller
 
     };
 }]);

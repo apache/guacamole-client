@@ -53,7 +53,23 @@
 .transfer .progress {
 
     width: 100%;
-    background: #C2C2C2 url('images/progress.png');
+    background: #C2C2C2;
+    padding: 0.25em;
+    
+    border: 1px solid gray;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    opacity: 0.25;
+    
+}
+
+.transfer.in-progress .progress {
+
+    background-image: url('images/progress.png');
+
     background-size: 16px 16px;
     -moz-background-size: 16px 16px;
     -webkit-background-size: 16px 16px;
@@ -69,16 +85,6 @@
     -webkit-animation-timing-function: linear;
     -webkit-animation-iteration-count: infinite;
 
-    padding: 0.25em;
-    
-    border: 1px solid gray;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    opacity: 0.25;
-    
 }
 
 .transfer .progress .bar {

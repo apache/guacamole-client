@@ -1,4 +1,4 @@
-<div class="transfer">
+<div class="transfer" ng-class="{'in-progress': isInProgress()}">
     <!--
        Copyright (C) 2014 Glyptodon LLC
 
@@ -25,9 +25,9 @@
     <div class="filename">{{transfer.filename}}</div>
 
     <!-- Progress/status text -->
-    <div class="text">{{transfer.progress}}</div>
+    <div class="text">{{'CLIENT.TEXT_FILE_TRANSFER_PROGRESS' | translate:'{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}'}}</div>
 
     <!-- Progress bar -->
-    <div class="progress"><div ng-style="{'width': (transfer.progress / transfer.length * 100) + '%'}" class="bar"></div></div>
+    <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>
 
 </div>

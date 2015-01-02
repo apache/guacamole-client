@@ -505,60 +505,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    /**
-     * Returns a progress object, as required by $scope.addNotification(), which
-     * contains the given number of bytes as an appropriate combination of
-     * progress value and associated unit.
-     *
-     * @param {String} text
-     *     The translation string to associate with the progress object
-     *     returned.
-     *
-     * @param {Number} bytes The number of bytes.
-     * @param {Number} [length] The file length, in bytes, if known.
-     *
-     * @returns {Object}
-     *     A progress object, as required by $scope.addNotification().
-     */
-    var getFileProgress = function getFileProgress(text, bytes, length) {
-
-        // Gigabytes
-        if (bytes > 1000000000)
-            return {
-                text  : text,
-                value : (bytes / 1000000000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "gb"
-            };
-
-        // Megabytes
-        if (bytes > 1000000)
-            return {
-                text  : text,
-                value : (bytes / 1000000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "mb"
-            };
-
-        // Kilobytes
-        if (bytes > 1000)
-            return {
-                text  : text,
-                value : (bytes / 1000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "kb"
-            };
-
-        // Bytes
-        return {
-            text  : text,
-            value : bytes,
-            ratio : bytes / length,
-            unit  : "b"
-        };
-
-    };
-            
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 
