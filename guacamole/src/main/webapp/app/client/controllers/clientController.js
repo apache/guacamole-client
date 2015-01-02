@@ -113,24 +113,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
  
     /**
-     * All upload error codes handled and passed off for translation. Any error
-     * code not present in this list will be represented by the "DEFAULT"
-     * translation.
-     */
-    var UPLOAD_ERRORS = {
-        0x0100: true,
-        0x0201: true,
-        0x0202: true,
-        0x0203: true,
-        0x0204: true,
-        0x0205: true,
-        0x0301: true,
-        0x0303: true,
-        0x0308: true,
-        0x031D: true
-    };
-
-    /**
      * All error codes for which automatic reconnection is appropriate when a
      * tunnel error occurs.
      */

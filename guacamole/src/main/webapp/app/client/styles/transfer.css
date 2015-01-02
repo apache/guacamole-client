@@ -32,6 +32,8 @@
     overflow: hidden;
     width: 100%;
     margin-bottom: 0.5em;
+    font-family: monospace;
+    font-weight: bold;
 }
 
 .transfer .text {
@@ -107,4 +109,21 @@
 .savable.transfer .filename {
     color: blue;
     text-decoration: underline;
+}
+
+.error.transfer {
+    background: #FDD;
+}
+
+.error.transfer .progress {
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.error.transfer .text,
+.error.transfer .progress .bar {
+    display: none;
+}
+
+.error-text {
+    margin-bottom: 0;
 }

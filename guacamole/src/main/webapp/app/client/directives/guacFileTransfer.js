@@ -47,6 +47,24 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
             var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
 
             /**
+             * All upload error codes handled and passed off for translation.
+             * Any error code not present in this list will be represented by
+             * the "DEFAULT" translation.
+             */
+            var UPLOAD_ERRORS = {
+                0x0100: true,
+                0x0201: true,
+                0x0202: true,
+                0x0203: true,
+                0x0204: true,
+                0x0205: true,
+                0x0301: true,
+                0x0303: true,
+                0x0308: true,
+                0x031D: true
+            };
+
+            /**
              * Returns the unit string that is most appropriate for the
              * number of bytes transferred thus far - either 'gb', 'mb', 'kb',
              * or 'b'.
@@ -179,6 +197,37 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
 
                 // Save file
                 saveAs($scope.transfer.blob, $scope.transfer.filename); 
+
+            };
+
+            /**
+             * Returns whether an error has occurred. If an error has occurred,
+             * the transfer is no longer active, and the text of the error can
+             * be read from getErrorText().
+             *
+             * @returns {Boolean}
+             *     true if an error has occurred during transfer, false
+             *     otherwise.
+             */
+            $scope.hasError = function hasError() {
+                return $scope.transfer.transferState.streamState === ManagedFileTransferState.StreamState.ERROR;
+            };
+
+            /**
+             * Returns the text of the current error as a translation string.
+             *
+             * @returns {String}
+             *     The name of the translation string containing the text
+             *     associated with the current error.
+             */
+            $scope.getErrorText = function getErrorText() {
+
+                // Determine translation name of error
+                var status = $scope.transfer.transferState.statusCode;
+                var errorName = (status in UPLOAD_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+
+                // Return translation string
+                return 'CLIENT.ERROR_UPLOAD_' + errorName;
 
             };
 
