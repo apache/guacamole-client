@@ -385,6 +385,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.page.title = name;
     });
 
+    // Show menu if new file transfers have started
+    $scope.$watch('client.uploads.length + client.downloads.length', function transfersChanged(count, oldCount) {
+
+        if (count > oldCount)
+            $scope.menuShown = true;
+
+    });
+
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 

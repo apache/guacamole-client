@@ -28,7 +28,6 @@
         "DIALOG_HEADER_CONNECTING"       : "Connecting",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",
         "DIALOG_HEADER_DISCONNECTED"     : "Disconnected",
-        "DIALOG_HEADER_FILE_TRANSFER"    : "File Transfer",
 
         "ERROR_CLIENT_201"     : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
         "ERROR_CLIENT_202"     : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
