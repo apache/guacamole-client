@@ -385,11 +385,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.page.title = name;
     });
 
-    // Show menu if new file transfers have started
+    // Show file transfer section of menu if new file transfers have started
     $scope.$watch('client.uploads.length + client.downloads.length', function transfersChanged(count, oldCount) {
 
-        if (count > oldCount)
+        // Show menu and scroll file transfer into view
+        if (count > oldCount) {
             $scope.menuShown = true;
+            $scope.fileTransferMarker.scrollIntoView();
+        }
 
     });
 
