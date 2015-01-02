@@ -39,7 +39,7 @@ angular.module('element').directive('guacFocus', ['$parse', function guacFocus($
             var guacFocus = $parse($attrs.guacFocus);
 
             /**
-             * The element which will register the drag gesture.
+             * The element which will be focused / blurred.
              *
              * @type Element
              */
