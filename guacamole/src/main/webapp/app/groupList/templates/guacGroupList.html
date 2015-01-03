@@ -24,14 +24,14 @@
     <script type="text/ng-template" id="nestedGroup.html">
 
         <!-- Connection -->
-        <div class="connection" ng-show="item.isConnection">
+        <div class="connection" ng-show="isVisibleConnection(item)">
             <div class="caption">
                 <ng-include src="connectionTemplate"/>
             </div>
         </div>
 
         <!-- Connection group -->
-        <div class="group" ng-show="item.isConnectionGroup">
+        <div class="group" ng-show="isVisibleConnectionGroup(item)">
             <div class="caption">
 
                 <!-- Connection group icon -->
