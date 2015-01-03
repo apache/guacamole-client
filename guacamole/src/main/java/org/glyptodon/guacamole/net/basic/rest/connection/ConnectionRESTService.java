@@ -309,9 +309,14 @@ public class ConnectionRESTService {
         existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
 
-        // Update connection parent
+        // Get old and new parents
+        String oldParentIdentifier = existingConnection.getParentIdentifier();
         ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connection.getParentIdentifier());
-        connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
+
+        // Update connection parent, if changed
+        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getParentIdentifier()))
+             || (oldParentIdentifier == null && updatedParentGroup.getParentIdentifier() != null))
+            connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }
     

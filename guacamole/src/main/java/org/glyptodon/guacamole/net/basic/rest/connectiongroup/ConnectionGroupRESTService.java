@@ -365,9 +365,14 @@ public class ConnectionGroupRESTService {
         existingConnectionGroup.setType(connectionGroup.getType());
         connectionGroupDirectory.update(existingConnectionGroup);
 
-        // Update connection group parent
+        // Get old and new parents
+        String oldParentIdentifier = existingConnectionGroup.getParentIdentifier();
         ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroup.getParentIdentifier());
-        connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
+
+        // Update connection group parent, if changed
+        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getParentIdentifier()))
+             || (oldParentIdentifier == null && updatedParentGroup.getParentIdentifier() != null))
+            connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
 
     }
     
