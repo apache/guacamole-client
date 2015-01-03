@@ -33,13 +33,13 @@ angular.module('element').directive('guacUpload', ['$document', function guacUpl
         link: function linkGuacUpload($scope, $element, $attrs) {
 
             /**
-             * Angular expression which evaluates to the function to call
-             * whenever files are chosen. The callback is provided a single
-             * parameter: the FileList containing all chosen files.
+             * The function to call whenever files are chosen. The callback is
+             * provided a single parameter: the FileList containing all chosen
+             * files.
              *
-             * @type String 
+             * @type Function 
              */
-            var guacUpload = $attrs.guacUpload;
+            var guacUpload = $scope.$eval($attrs.guacUpload);
 
             /**
              * The element which will register the drag gesture.
@@ -73,11 +73,9 @@ angular.module('element').directive('guacUpload', ['$document', function guacUpl
             input.addEventListener('change', function filesSelected() {
                 $scope.$apply(function setSelectedFiles() {
 
-                    var callback = $scope.$eval(guacUpload);
-
                     // Only set chosen files selection is not canceled
-                    if (callback && input.files.length > 0)
-                        callback(input.files);
+                    if (guacUpload && input.files.length > 0)
+                        guacUpload(input.files);
 
                     // Reset selection
                     form.reset();
