@@ -85,6 +85,38 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             // Get required types
             var GroupListItem = $injector.get('GroupListItem');
 
+            /**
+             * Returns whether the given item represents a connection that can
+             * be displayed. If there is no connection template, then no
+             * connection is visible.
+             * 
+             * @param {GroupListItem} item
+             *     The item to check.
+             *
+             * @returns {Boolean}
+             *     true if the given item is a connection that can be
+             *     displayed, false otherwise.
+             */
+            $scope.isVisibleConnection = function isVisibleConnection(item) {
+                return item.isConnection && !!$scope.connectionTemplate;
+            };
+
+            /**
+             * Returns whether the given item represents a connection group
+             * that can be displayed. If there is no connection group template,
+             * then no connection group is visible.
+             * 
+             * @param {GroupListItem} item
+             *     The item to check.
+             *
+             * @returns {Boolean}
+             *     true if the given item is a connection group that can be
+             *     displayed, false otherwise.
+             */
+            $scope.isVisibleConnectionGroup = function isVisibleConnectionGroup(item) {
+                return item.isConnectionGroup && !!$scope.connectionGroupTemplate;
+            };
+
             // Set contents whenever the connection group is assigned or changed
             $scope.$watch("connectionGroup", function setContents(connectionGroup) {
 
