@@ -99,7 +99,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          *
          * @type String
          */
-        this.clipboardData = template.clipboardData;
+        this.clipboardData = template.clipboardData || '';
 
         /**
          * All downloaded files. As files are downloaded, their progress can be

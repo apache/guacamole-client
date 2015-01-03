@@ -318,7 +318,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$watch('menuShown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
         // Send clipboard data if menu is hidden
-        if (!menuShown && menuShownPreviousState && angular.isString($scope.client.clipboardData))
+        if (!menuShown && menuShownPreviousState)
             $scope.$broadcast('guacClipboard', 'text/plain', $scope.client.clipboardData); 
         
         // Disable client keyboard if the menu is shown
