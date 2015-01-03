@@ -60,13 +60,21 @@
         <a class="disconnect danger button" ng-click="disconnect()">{{'CLIENT.ACTION_DISCONNECT' | translate}}</a>
     </div>
     <h2>{{client.name}}</h2>
-    
+
+    <!-- Clipboard -->
     <h3>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | translate}}</h3>
     <div class="content" id="clipboard-settings">
         <p class="description">{{'CLIENT.HELP_CLIPBOARD' | translate}}</p>
         <textarea ng-model="client.clipboardData" rows="10" cols="40" id="clipboard"></textarea>
     </div>
 
+    <!-- File transfers -->
+    <h3 guac-marker="fileTransferMarker">{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h3>
+    <div class="content" id="file-transfers">
+        <guac-file-transfer-manager client="client"></guac-file-transfer-manager>
+    </div>
+
+    <!-- Input method -->
     <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
     <div class="content" id="keyboard-settings">
 
@@ -91,6 +99,7 @@
 
     </div>
 
+    <!-- Mouse mode -->
     <h3>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | translate}}</h3>
     <div class="content" id="mouse-settings">
         <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | translate}}</p>
@@ -115,6 +124,7 @@
 
     </div>
 
+    <!-- Display options -->
     <h3>{{'CLIENT.SECTION_HEADER_DISPLAY' | translate}}</h3>
     <div class="content">
         <div id="zoom-settings">
@@ -124,11 +134,5 @@
         </div>
         <div><label><input ng-model="autoFit" ng-change="changeAutoFit()" ng-disabled="autoFitDisabled()" type="checkbox" id="auto-fit"/> {{'CLIENT.TEXT_ZOOM_AUTO_FIT' | translate}}</label></div>
     </div>
-    
-</div>
 
-<!-- Images which should be preloaded -->
-<div id="preload">
-    <img src="images/action-icons/guac-close.png" alt=""/>
-    <img src="images/progress.png" alt=""/>
 </div>

@@ -113,24 +113,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
  
     /**
-     * All upload error codes handled and passed off for translation. Any error
-     * code not present in this list will be represented by the "DEFAULT"
-     * translation.
-     */
-    var UPLOAD_ERRORS = {
-        0x0100: true,
-        0x0201: true,
-        0x0202: true,
-        0x0203: true,
-        0x0204: true,
-        0x0205: true,
-        0x0301: true,
-        0x0303: true,
-        0x0308: true,
-        0x031D: true
-    };
-
-    /**
      * All error codes for which automatic reconnection is appropriate when a
      * tunnel error occurs.
      */
@@ -333,7 +315,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    $scope.$watch('menuShown', function setKeyboardEnabled(menuShown, menuShownPreviousState) {
+    $scope.$watch('menuShown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
         // Send clipboard data if menu is hidden
         if (!menuShown && menuShownPreviousState)
@@ -383,6 +365,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Update page title when client name is received
     $scope.$watch('client.name', function clientNameChanged(name) {
         $scope.page.title = name;
+    });
+
+    // Show file transfer section of menu if new file transfers have started
+    $scope.$watch('client.uploads.length + client.downloads.length', function transfersChanged(count, oldCount) {
+
+        // Show menu and scroll file transfer into view
+        if (count > oldCount) {
+            $scope.menuShown = true;
+            $scope.fileTransferMarker.scrollIntoView();
+        }
+
     });
 
     // Show status dialog when connection status changes
@@ -505,60 +498,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    /**
-     * Returns a progress object, as required by $scope.addNotification(), which
-     * contains the given number of bytes as an appropriate combination of
-     * progress value and associated unit.
-     *
-     * @param {String} text
-     *     The translation string to associate with the progress object
-     *     returned.
-     *
-     * @param {Number} bytes The number of bytes.
-     * @param {Number} [length] The file length, in bytes, if known.
-     *
-     * @returns {Object}
-     *     A progress object, as required by $scope.addNotification().
-     */
-    var getFileProgress = function getFileProgress(text, bytes, length) {
-
-        // Gigabytes
-        if (bytes > 1000000000)
-            return {
-                text  : text,
-                value : (bytes / 1000000000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "gb"
-            };
-
-        // Megabytes
-        if (bytes > 1000000)
-            return {
-                text  : text,
-                value : (bytes / 1000000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "mb"
-            };
-
-        // Kilobytes
-        if (bytes > 1000)
-            return {
-                text  : text,
-                value : (bytes / 1000).toFixed(1),
-                ratio : bytes / length,
-                unit  : "kb"
-            };
-
-        // Bytes
-        return {
-            text  : text,
-            value : bytes,
-            ratio : bytes / length,
-            unit  : "b"
-        };
-
-    };
-            
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 

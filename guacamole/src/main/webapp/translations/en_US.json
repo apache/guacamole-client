@@ -17,16 +17,17 @@
 
     "CLIENT" : {
 
-        "ACTION_RECONNECT"     : "Reconnect",
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_DISCONNECT"    : "Disconnect",
-        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_SAVE_FILE"     : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Clear Completed Transfers",
+        "ACTION_DISCONNECT"                : "Disconnect",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_RECONNECT"                 : "Reconnect",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_UPLOAD_FILES"              : "Upload Files",
 
         "DIALOG_HEADER_CONNECTING"       : "Connecting",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",
         "DIALOG_HEADER_DISCONNECTED"     : "Disconnected",
-        "DIALOG_HEADER_FILE_TRANSFER"    : "File Transfer",
 
         "ERROR_CLIENT_201"     : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
         "ERROR_CLIENT_202"     : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
@@ -69,6 +70,8 @@
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tap to click. The click occurs at the location of the touch.",
         "HELP_MOUSE_MODE_RELATIVE" : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
 
+        "INFO_NO_FILE_TRANSFERS" : "No file transfers.",
+
         "NAME_INPUT_METHOD_NONE"   : "None",
         "NAME_INPUT_METHOD_OSK"    : "On-screen keyboard",
         "NAME_INPUT_METHOD_TEXT"   : "Text input",
@@ -79,10 +82,11 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Touchscreen",
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
-        "SECTION_HEADER_CLIPBOARD"    : "Clipboard",
-        "SECTION_HEADER_INPUT_METHOD" : "Input method",
-        "SECTION_HEADER_DISPLAY"      : "Display",
-        "SECTION_HEADER_MOUSE_MODE"   : "Mouse emulation mode",
+        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_FILE_TRANSFERS" : "File Transfers",
+        "SECTION_HEADER_INPUT_METHOD"   : "Input method",
+        "SECTION_HEADER_MOUSE_MODE"     : "Mouse emulation mode",
 
         "TEXT_ZOOM_AUTO_FIT"              : "Automatically fit to browser window",
         "TEXT_CLIENT_STATUS_IDLE"         : "Idle.",
@@ -101,10 +105,10 @@
         "ACTION_LOGOUT" : "@:APP.ACTION_LOGOUT",
         "ACTION_MANAGE" : "@:APP.ACTION_MANAGE",
 
-        "INFO_NO_RECENT_CONNECTIONS" : "No recent Connections.",
+        "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
 
-        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections",
-        "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections"
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections"
 
     },
 

@@ -1,0 +1,129 @@
+/*
+ * Copyright (C) 2014 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+.transfer {
+    position: relative;
+    padding: 0.5em;
+    font-size: 0.75em;
+}
+
+.transfer .filename {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    margin-bottom: 0.5em;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.transfer .text {
+    position: relative;
+    text-align: center;
+    margin-top: 0.5em;
+}
+
+@keyframes transfer-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+@-webkit-keyframes transfer-progress {
+    from {background-position: 0px  0px;}
+    to   {background-position: 64px 0px;}
+}
+
+.transfer .progress {
+
+    width: 100%;
+    background: #C2C2C2;
+    padding: 0.25em;
+    
+    border: 1px solid gray;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    opacity: 0.25;
+    
+}
+
+.transfer.in-progress .progress {
+
+    background-image: url('images/progress.png');
+
+    background-size: 16px 16px;
+    -moz-background-size: 16px 16px;
+    -webkit-background-size: 16px 16px;
+    -khtml-background-size: 16px 16px;
+
+    animation-name: transfer-progress;
+    animation-duration: 2s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+
+    -webkit-animation-name: transfer-progress;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+}
+
+.transfer .progress .bar {
+    background: #A3D655;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+}
+
+.savable.transfer {
+    cursor: pointer;
+}
+
+.savable.transfer:hover .progress {
+    border-color: black;
+}
+
+.savable.transfer .filename {
+    color: blue;
+    text-decoration: underline;
+}
+
+.error.transfer {
+    background: #FDD;
+}
+
+.error.transfer .progress {
+    border-color: rgba(0, 0, 0, 0.125);
+}
+
+.error.transfer .text,
+.error.transfer .progress .bar {
+    display: none;
+}
+
+.error-text {
+    margin-bottom: 0;
+}
