@@ -20,6 +20,10 @@
  * THE SOFTWARE.
  */
 
+.osk {
+    position: relative;
+}
+
 .osk .resize-sensor {
     height: 100%;
     width: 100%;
