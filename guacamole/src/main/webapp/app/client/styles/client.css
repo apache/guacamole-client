@@ -48,6 +48,8 @@ body.client {
 
 .client-view .client-body {
     display: table-row;
+    width: 100%;
+    height: 100%;
 }
 
 .client-view .client-bottom {
