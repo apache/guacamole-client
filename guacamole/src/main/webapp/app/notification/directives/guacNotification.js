@@ -66,8 +66,8 @@ angular.module('notification').directive('guacNotification', [function guacNotif
                         $scope.timeRemaining--;
 
                         // Call countdown callback when time remaining expires
-                        if ($scope.timeRemaining === 0)
-                            countdown.performAction();
+                        if ($scope.timeRemaining === 0 && countdown.callback)
+                            countdown.callback();
 
                     }, 1000, $scope.timeRemaining);
 

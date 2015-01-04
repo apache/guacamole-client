@@ -72,16 +72,6 @@ angular.module('notification').factory('NotificationCountdown', [function define
          */
         this.callback = callback;
 
-        /**
-         * Calls the callback associated with this NotificationCountdown, if any.
-         * If no callback is associated with this NotificationCountdown, this
-         * function has no effect.
-         */
-        this.performAction = function performAction() {
-            if (countdown.callback)
-                countdown.callback();
-        };
-
     };
 
     return NotificationCountdown;
