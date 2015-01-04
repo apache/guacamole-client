@@ -381,11 +381,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
-        // Hide status if no known state
-        if (!connectionState) {
-            $scope.showStatus(false);
+        // Hide any existing status
+        $scope.showStatus(false);
+
+        // Do not display status if status not known
+        if (!connectionState)
             return;
-        }
 
         // Get any associated status code
         var status = $scope.client.clientState.statusCode;

@@ -69,16 +69,6 @@ angular.module('notification').factory('NotificationAction', [function defineNot
          */
         this.callback = callback;
 
-        /**
-         * Calls the callback associated with this NotificationAction, if any.
-         * If no callback is associated with this NotificationAction, this
-         * function has no effect.
-         */
-        this.performAction = function performAction() {
-            if (action.callback)
-                action.callback();
-        };
-
     };
 
     return NotificationAction;
