@@ -398,22 +398,3 @@ div.logout-panel {
     text-align: center;
     margin: 1em;
 }
-
-.button.logout, .button.manage, .button.back {
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: 0.5em 0.45em;
-    padding-left: 1.8em;
-}
-
-.button.logout {
-    background-image: url('images/action-icons/guac-logout.png');
-}
-
-.button.manage {
-    background-image: url('images/action-icons/guac-config.png');
-}
-
-.button.back {
-    background-image: url('images/action-icons/guac-back.png');
-}

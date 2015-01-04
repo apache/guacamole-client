@@ -126,10 +126,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     /**
      * Action which returns the user to the home screen.
      */
-    var NAVIGATE_BACK_ACTION = {
-        name      : "CLIENT.ACTION_NAVIGATE_BACK",
-        className : "back button",
-        callback  : function navigateBackCallback() {
+    var NAVIGATE_HOME_ACTION = {
+        name      : "CLIENT.ACTION_NAVIGATE_HOME",
+        className : "home button",
+        callback  : function navigateHomeCallback() {
             $location.path('/');
         }
     };
@@ -415,7 +415,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_CLIENT_" + errorName,
                 countdown: countdown,
-                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
             });
 
         }
@@ -435,7 +435,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_TUNNEL_" + errorName,
                 countdown: countdown,
-                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
             });
 
         }
@@ -445,7 +445,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.showStatus({
                 title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
                 text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
-                actions: [ NAVIGATE_BACK_ACTION, RECONNECT_ACTION ]
+                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
             });
         }
 

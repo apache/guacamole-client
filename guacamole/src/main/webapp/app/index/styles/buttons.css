@@ -73,7 +73,7 @@ button.danger:active, a.button.danger:active {
     background: #932;
 }
 
-.button.logout, .button.manage, .button.back {
+.button.logout, .button.manage, .button.back, .button.home {
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.5em 0.45em;
@@ -90,4 +90,8 @@ button.danger:active, a.button.danger:active {
 
 .button.back {
     background-image: url('images/action-icons/guac-back.png');
+}
+
+.button.home {
+    background-image: url('images/action-icons/guac-home.png');
 }

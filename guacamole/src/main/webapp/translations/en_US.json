@@ -9,6 +9,7 @@
         "ACTION_LOGOUT"        : "Logout",
         "ACTION_MANAGE"        : "Manage",
         "ACTION_NAVIGATE_BACK" : "Back",
+        "ACTION_NAVIGATE_HOME" : "Home",
         "ACTION_SAVE"          : "Save",
 
         "NAME" : "Guacamole ${project.version}"
@@ -20,7 +21,7 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Clear Completed Transfers",
         "ACTION_DISCONNECT"                : "Disconnect",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Reconnect",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
         "ACTION_UPLOAD_FILES"              : "Upload Files",
@@ -127,7 +128,7 @@
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_LOGOUT"               : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"        : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"        : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_NEW_USER"             : "New User",
         "ACTION_NEW_CONNECTION"       : "New Connection",
         "ACTION_NEW_CONNECTION_GROUP" : "New Group",
