@@ -23,8 +23,14 @@
 /**
  * A service for managing several active Guacamole clients.
  */
-angular.module('client').factory('guacClientManager', ['ManagedClient',
-        function guacClientManager(ManagedClient) {
+angular.module('client').factory('guacClientManager', ['$injector',
+        function guacClientManager($injector) {
+
+    // Required types
+    var ManagedClient = $injector.get('ManagedClient');
+
+    // Required services
+    var $window = $injector.get('$window');
 
     var service = {};
 
@@ -120,6 +126,15 @@ angular.module('client').factory('guacClientManager', ['ManagedClient',
         return service.managedClients[id];
 
     };
+
+    // Disconnect all clients when window is unloaded
+    $window.addEventListener('unload', function disconnectAllClients() {
+
+        // Disconnect each managed client
+        for (var id in service.managedClients)
+            service.managedClients[id].client.disconnect();
+
+    });
 
     return service;
 
