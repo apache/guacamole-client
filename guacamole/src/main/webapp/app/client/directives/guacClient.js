@@ -353,7 +353,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 }
 
-                $scope.$apply(updateDisplayScale);
+                $scope.$evalAsync(updateDisplayScale);
 
             });
 
