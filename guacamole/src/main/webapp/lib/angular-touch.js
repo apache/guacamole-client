@@ -54,11 +54,13 @@ ngTouch.factory('$swipe', [function() {
   var MOVE_BUFFER_RADIUS = 10;
 
   function getCoordinates(event) {
+    // Unwrap event if wrapped by jQuery
+    if(event.originalEvent) {
+      event = event.originalEvent;
+    }
+
     var touches = event.touches && event.touches.length ? event.touches : [event];
-    var e = (event.changedTouches && event.changedTouches[0]) ||
-        (event.originalEvent && event.originalEvent.changedTouches &&
-            event.originalEvent.changedTouches[0]) ||
-        touches[0].originalEvent || touches[0];
+    var e = (event.changedTouches && event.changedTouches[0]) || touches[0];
 
     return {
       x: e.clientX,
@@ -283,6 +285,11 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
       return; // Too old.
     }
 
+    // Unwrap event if wrapped by jQuery
+    if(event.originalEvent) {
+      event = event.originalEvent;
+    }
+
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -312,6 +319,11 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
   // Global touchstart handler that creates an allowable region for a click event.
   // This allowable region can be removed by preventGhostClick if we want to bust it.
   function onTouchStart(event) {
+    // Unwrap event if wrapped by jQuery
+    if(event.originalEvent) {
+      event = event.originalEvent;
+    }
+
     var touches = event.touches && event.touches.length ? event.touches : [event];
     var x = touches[0].clientX;
     var y = touches[0].clientY;
@@ -358,6 +370,12 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('touchstart', function(event) {
       tapping = true;
+
+      // Unwrap event if wrapped by jQuery
+      if(event.originalEvent) {
+        event = event.originalEvent;
+      }
+
       tapElement = event.target ? event.target : event.srcElement; // IE uses srcElement.
       // Hack for Safari, which can target text nodes instead of containers.
       if(tapElement.nodeType == 3) {
@@ -384,6 +402,11 @@ ngTouch.directive('ngClick', ['$parse', '$timeout', '$rootElement',
 
     element.on('touchend', function(event) {
       var diff = Date.now() - startTime;
+
+      // Unwrap event if wrapped by jQuery
+      if(event.originalEvent) {
+        event = event.originalEvent;
+      }
 
       var touches = (event.changedTouches && event.changedTouches.length) ? event.changedTouches :
           ((event.touches && event.touches.length) ? event.touches : [event]);
