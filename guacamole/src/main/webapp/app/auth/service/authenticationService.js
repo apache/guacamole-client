@@ -37,7 +37,81 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
     var AUTH_COOKIE_ID = "GUAC_AUTH";
 
     /**
-     * Makes a request to authenticate a user using the token REST API endpoint, 
+     * Makes a request to authenticate a user using the token REST API endpoint
+     * and given arbitrary parameters, returning a promise that succeeds only
+     * if the authentication operation was successful. The resulting
+     * authentication data can be retrieved later via getCurrentToken() or
+     * getCurrentUserID().
+     * 
+     * The provided parameters can be virtually any object, as each property
+     * will be sent as an HTTP parameter in the authentication request.
+     * Standard parameters include "username" for the user's username,
+     * "password" for the user's associated password, and "token" for the
+     * auth token to check/update.
+     * 
+     * If a token is provided, it will be reused if possible.
+     * 
+     * @param {Object} parameters 
+     *     Arbitrary parameters to authenticate with.
+     *
+     * @returns {Promise}
+     *     A promise which succeeds only if the login operation was successful.
+     */
+    service.authenticate = function authenticate(parameters) {
+        return $http({
+            method: 'POST',
+            url: 'api/tokens',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: $.param(parameters),
+        }).success(function success(data, status, headers, config) {
+            $cookieStore.put(AUTH_COOKIE_ID, {
+                authToken : data.authToken,
+                userID    : data.userID
+            });
+        });
+    };
+
+    /**
+     * Makes a request to update the current auth token, if any, using the
+     * token REST API endpoint. If the optional parameters object is provided,
+     * its properties will be included as parameters in the update request.
+     * This function returns a promise that succeeds only if the authentication
+     * operation was successful. The resulting authentication data can be
+     * retrieved later via getCurrentToken() or getCurrentUserID().
+     * 
+     * If there is no current auth token, this function behaves identically to
+     * authenticate(), and makes a general authentication request.
+     * 
+     * @param {Object} [parameters]
+     *     Arbitrary parameters to authenticate with, if any.
+     *
+     * @returns {Promise}
+     *     A promise which succeeds only if the login operation was successful.
+     */
+    service.updateCurrentToken = function updateCurrentToken(parameters) {
+
+        // HTTP parameters for the authentication request
+        var httpParameters = {};
+
+        // Add token parameter if current token is known
+        var token = service.getCurrentToken();
+        if (token)
+            httpParameters.token = service.getCurrentToken();
+
+        // Add any additional parameters
+        if (parameters)
+            angular.extend(httpParameters, parameters);
+
+        // Make the request
+        return service.authenticate(httpParameters);
+
+    };
+
+    /**
+     * Makes a request to authenticate a user using the token REST API endpoint
+     * with a username and password, ignoring any currently-stored token, 
      * returning a promise that succeeds only if the login operation was
      * successful. The resulting authentication data can be retrieved later
      * via getCurrentToken() or getCurrentUserID().
@@ -52,21 +126,9 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
      *     A promise which succeeds only if the login operation was successful.
      */
     service.login = function login(username, password) {
-        return $http({
-            method: 'POST',
-            url: 'api/tokens',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: $.param({
-                username: username,
-                password: password
-            })
-        }).success(function success(data, status, headers, config) {
-            $cookieStore.put(AUTH_COOKIE_ID, {
-                authToken : data.authToken,
-                userID    : data.userID
-            });
+        return service.authenticate({
+            username: username,
+            password: password
         });
     };
 
