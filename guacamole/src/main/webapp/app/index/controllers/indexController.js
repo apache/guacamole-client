@@ -198,11 +198,16 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
 
+        // Set title
         var title = current.$$route.title;
         if (title)
             $scope.page.title = title;
 
+        // Set body CSS class
         $scope.page.bodyClassName = current.$$route.bodyClassName || '';
+
+        // Hide any status dialog
+        $scope.showStatus(false);
 
     });
 
