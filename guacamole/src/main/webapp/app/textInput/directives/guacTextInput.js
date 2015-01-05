@@ -50,7 +50,7 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
              *
              * @type Number
              */
-            var TEXT_INPUT_PADDING = 128;
+            var TEXT_INPUT_PADDING = 4;
 
             /**
              * The Unicode codepoint of the character to use for padding on
