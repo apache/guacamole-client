@@ -314,8 +314,8 @@ public class ConnectionRESTService {
         ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connection.getParentIdentifier());
 
         // Update connection parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getParentIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getParentIdentifier() != null))
+        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
+             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
             connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }

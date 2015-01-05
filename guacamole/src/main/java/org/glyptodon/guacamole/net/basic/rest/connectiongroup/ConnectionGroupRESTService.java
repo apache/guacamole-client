@@ -370,8 +370,8 @@ public class ConnectionGroupRESTService {
         ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroup.getParentIdentifier());
 
         // Update connection group parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getParentIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getParentIdentifier() != null))
+        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
+             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
             connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
 
     }
