@@ -28,20 +28,47 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
 
     // Get required types
     var ConnectionGroup = $injector.get("ConnectionGroup");
+    var PermissionSet   = $injector.get("PermissionSet");
             
     // Get required services
-    var connectionGroupService  = $injector.get("connectionGroupService");
+    var authenticationService  = $injector.get("authenticationService");
+    var connectionGroupService = $injector.get("connectionGroupService");
+    var permissionService      = $injector.get("permissionService");
     
-    // Set status to loading until we have all the connections and groups loaded
-    $scope.loading = true;
+    /**
+     * The root connection group, or null if the connection group hierarchy has
+     * not yet been loaded.
+     *
+     * @type ConnectionGroup
+     */
+    $scope.rootConnectionGroup = null;
+
+    /**
+     * Whether the current user has sufficient permissions to use the
+     * management interface. If permissions have not yet been loaded, this will
+     * be null.
+     *
+     * @type Boolean
+     */
+    $scope.canManageGuacamole = null;
 
     // Retrieve root group and all descendants
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
     .success(function rootGroupRetrieved(rootConnectionGroup) {
-
         $scope.rootConnectionGroup = rootConnectionGroup;
-        $scope.loading = false;
+    });
 
+    // Retrieve current permissions
+    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    .success(function permissionsRetrieved(permissions) {
+
+        // Determine whether the current user can access the management UI
+        $scope.canManageGuacamole =
+                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
+        
     });
     
 }]);

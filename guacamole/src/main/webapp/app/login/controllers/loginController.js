@@ -52,8 +52,6 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
 
         // Redirect to main view upon success
         .success(function success(data, status, headers, config) {
-            // Set up the basic permissions for the user
-            $scope.loadBasicPermissions();
             $location.path('/');
         })
 
