@@ -285,9 +285,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
                     // Connection has closed
                     case Guacamole.Tunnel.State.CLOSED:
-
-                        updateHistoryEntry(managedClient);
-
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.DISCONNECTED);
                         break;
@@ -309,6 +306,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.IDLE);
                         break;
 
+                    // Ignore "connecting" state
+                    case 1: // Connecting
+                        break;
+
                     // Connected + waiting
                     case 2:
                         ManagedClientState.setConnectionState(managedClient.clientState,
@@ -321,12 +322,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                             ManagedClientState.ConnectionState.CONNECTED);
                         break;
 
-                    // Connecting, disconnecting, and disconnected are all
-                    // either ignored or handled by tunnel state
-
-                    case 1: // Connecting
+                    // Update history when disconnecting
                     case 4: // Disconnecting
                     case 5: // Disconnected
+                        updateHistoryEntry(managedClient);
                         break;
 
                 }
