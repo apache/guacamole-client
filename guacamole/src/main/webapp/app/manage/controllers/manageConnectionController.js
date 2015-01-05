@@ -60,6 +60,59 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      */
     var identifier = $routeParams.id;
 
+    /**
+     * All known protocols.
+     *
+     * @type Object.<String, Protocol>
+     */
+    $scope.protocols = null;
+
+    /**
+     * The root connection group of the connection group hierarchy.
+     *
+     * @type ConnectionGroup
+     */
+    $scope.rootGroup = null;
+
+    /**
+     * The connection being modified.
+     * 
+     * @type Connection
+     */
+    $scope.connection = null;
+
+    /**
+     * The parameter name/value pairs associated with the connection being
+     * modified.
+     *
+     * @type Object.<String, String>
+     */
+    $scope.parameters = null;
+
+    /**
+     * The usage history of the connection being modified.
+     *
+     * @type HistoryEntryWrapper[]
+     */
+    $scope.historyEntryWrappers = null;
+
+    /**
+     * Returns whether critical data has completed being loaded.
+     *
+     * @returns {Boolean}
+     *     true if enough data has been loaded for the user interface to be
+     *     useful, false otherwise.
+     */
+    $scope.isLoaded = function isLoaded() {
+
+        return $scope.protocols            !== null
+            && $scope.rootGroup            !== null
+            && $scope.connection           !== null
+            && $scope.parameters           !== null
+            && $scope.historyEntryWrappers !== null;
+
+    };
+
     // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
     .success(function connectionGroupReceived(rootGroup) {

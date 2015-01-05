@@ -55,6 +55,35 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      */
     var identifier = $routeParams.id;
 
+    /**
+     * The root connection group of the connection group hierarchy.
+     *
+     * @type ConnectionGroup
+     */
+    $scope.rootGroup = null;
+
+    /**
+     * The connection group being modified.
+     * 
+     * @type ConnectionGroup
+     */
+    $scope.connectionGroup = null;
+
+    /**
+     * Returns whether critical data has completed being loaded.
+     *
+     * @returns {Boolean}
+     *     true if enough data has been loaded for the user interface to be
+     *     useful, false otherwise.
+     */
+    $scope.isLoaded = function isLoaded() {
+
+        return $scope.rootGroup       !== null
+            && $scope.connectionGroup !== null;
+
+    };
+
+
     // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
     .success(function connectionGroupReceived(rootGroup) {

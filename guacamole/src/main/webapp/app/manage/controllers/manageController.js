@@ -32,7 +32,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var User            = $injector.get('User');
 
     // Required services
+    var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
+    var permissionService      = $injector.get('permissionService');
     var userService            = $injector.get('userService');
 
     /**
@@ -48,12 +50,104 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     };
 
     /**
+     * Whether the current user can manage users. If the current permissions
+     * have not yet been loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    $scope.canManageUsers = null;
+
+    /**
+     * Whether the current user can manage connections. If the current
+     * permissions have not yet been loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    $scope.canManageConnections = null;
+
+    /**
+     * Whether the current user can create new users. If the current
+     * permissions have not yet been loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    $scope.canCreateUsers = null;
+
+    /**
+     * Whether the current user can create new connections. If the current
+     * permissions have not yet been loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    $scope.canCreateConnections = null;
+
+    /**
+     * Whether the current user can create new connection groups. If the
+     * current permissions have not yet been loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    $scope.canCreateConnectionGroups = null;
+
+    /**
      * The name of the new user to create, if any, when user creation is
      * requested via newUser().
      *
      * @type String
      */
     $scope.newUsername = "";
+
+    /**
+     * Returns whether critical data has completed being loaded.
+     *
+     * @returns {Boolean}
+     *     true if enough data has been loaded for the user interface to be
+     *     useful, false otherwise.
+     */
+    $scope.isLoaded = function isLoaded() {
+
+        return $scope.users                     !== null
+            && $scope.rootGroup                 !== null
+            && $scope.canManageUsers            !== null
+            && $scope.canManageConnections      !== null
+            && $scope.canCreateUsers            !== null
+            && $scope.canCreateConnections      !== null
+            && $scope.canCreateConnectionGroups !== null;
+
+    };
+
+    // Retrieve current permissions
+    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    .success(function permissionsRetrieved(permissions) {
+
+        // Determine whether the current user can create new users
+        $scope.canCreateUsers =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER);
+
+        // Determine whether the current user can create new users
+        $scope.canCreateConnections =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION);
+
+        // Determine whether the current user can create new users
+        $scope.canCreateConnectionGroups =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP);
+
+        // Determine whether the current user can manage other users
+        $scope.canManageUsers =
+               $scope.canCreateUsers
+            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
+
+        // Determine whether the current user can manage other connections
+        $scope.canManageConnections =
+               $scope.canCreateConnections
+            || $scope.canCreateConnectionGroups
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+            || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
+    
+    });
     
     // Retrieve all connections for which we have UPDATE permission
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)

@@ -57,6 +57,42 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     var username = $routeParams.id;
 
+    /**
+     * The user being modified.
+     *
+     * @type User
+     */
+    $scope.user = null;
+
+    /**
+     * All permissions associated with the user being modified.
+     * 
+     * @type PermissionFlagSet
+     */
+    $scope.permissionFlags = null;
+
+    /**
+     * The root connection group of the connection group hierarchy.
+     *
+     * @type ConnectionGroup
+     */
+    $scope.rootGroup = null;
+
+    /**
+     * Returns whether critical data has completed being loaded.
+     *
+     * @returns {Boolean}
+     *     true if enough data has been loaded for the user interface to be
+     *     useful, false otherwise.
+     */
+    $scope.isLoaded = function isLoaded() {
+
+        return $scope.user            !== null
+            && $scope.permissionFlags !== null
+            && $scope.rootGroup       !== null;
+
+    };
+
     // Pull user data
     userService.getUser(username).success(function userReceived(user) {
         $scope.user = user;

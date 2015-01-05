@@ -52,6 +52,20 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      */
     $scope.canManageGuacamole = null;
 
+    /**
+     * Returns whether critical data has completed being loaded.
+     *
+     * @returns {Boolean}
+     *     true if enough data has been loaded for the user interface to be
+     *     useful, false otherwise.
+     */
+    $scope.isLoaded = function isLoaded() {
+
+        return $scope.rootConnectionGroup !== null
+            && $scope.canManageGuacamole  !== null;
+
+    };
+
     // Retrieve root group and all descendants
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
     .success(function rootGroupRetrieved(rootConnectionGroup) {
