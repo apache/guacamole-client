@@ -20,53 +20,67 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<div class="logout-panel">
-    <a class="home button" href="#/">{{'MANAGE.ACTION_NAVIGATE_HOME' | translate}}</a>
-    <a class="logout button" ng-click="logout()">{{'MANAGE.ACTION_LOGOUT' | translate}}</a>
-</div>
+<div class="view" ng-class="{loading: !isLoaded()}">
 
-<h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
-<div ng-show="currentUserHasUpdate" class="settings section">
+    <div class="logout-panel">
+        <a class="home button" href="#/">{{'MANAGE.ACTION_NAVIGATE_HOME' | translate}}</a>
+        <a class="logout button" ng-click="logout()">{{'MANAGE.ACTION_LOGOUT' | translate}}</a>
+    </div>
 
-    <h3 class="require-manage-users">{{'MANAGE.SECTION_HEADER_USERS' | translate}}</h3>
-    <div class="require-manage-users users">
+    <h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
 
-        <p>{{'MANAGE.HELP_USERS' | translate}}</p>
+    <!-- User management -->
+    <div class="settings section" ng-show="canManageUsers">
+        <h3>{{'MANAGE.SECTION_HEADER_USERS' | translate}}</h3>
+        <div class="users">
 
-        <!-- Control to create a new user -->
-        <div class="user-add-form">
-            <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
-            <button class="add-user" ng-click="newUser()">{{'MANAGE.ACTION_NEW_USER' | translate}}</button>
-        </div>
+            <p>{{'MANAGE.HELP_USERS' | translate}}</p>
 
-        <!-- List of users this user has access to -->
-        <div class="user-list" ng-class="{loading: !users}">
-            <div ng-repeat="user in users | orderBy : 'username'" class="user list-item">
-                <div class="caption">
-                    <div class="icon user"></div>
-                    <a class="name" ng-href="#/manage/users/{{user.username}}">{{user.username}}</a>
+            <!-- User creation form -->
+            <div class="user-add-form" ng-show="canCreateUsers">
+                <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
+                <button class="add-user" ng-click="newUser()">{{'MANAGE.ACTION_NEW_USER' | translate}}</button>
+            </div>
+
+            <!-- List of users this user has access to -->
+            <div class="user-list">
+                <div ng-repeat="user in users | orderBy : 'username'" class="user list-item">
+                    <div class="caption">
+                        <div class="icon user"></div>
+                        <a class="name" ng-href="#/manage/users/{{user.username}}">{{user.username}}</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <h3 class="require-manage-connections">{{'MANAGE.SECTION_HEADER_CONNECTIONS' | translate}}</h3>
-    <div class="require-manage-connections connections">
+    <!-- Connection management -->
+    <div class="settings section" ng-show="canManageConnections">
+        <h3>{{'MANAGE.SECTION_HEADER_CONNECTIONS' | translate}}</h3>
+        <div class="connections">
 
-        <p>{{'MANAGE.HELP_CONNECTIONS' | translate}}</p>
+            <p>{{'MANAGE.HELP_CONNECTIONS' | translate}}</p>
 
-        <!-- Control to create a new connection or group -->
-        <div class="connection-add-form">
-            <a class="add-connection button" href="#/manage/connections/">{{'MANAGE.ACTION_NEW_CONNECTION' | translate}}</a>
-            <a class="add-connection-group button" href="#/manage/connectionGroups/">{{'MANAGE.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
-        </div>
+            <!-- Connection/group creation buttons -->
+            <div class="connection-add-form">
 
-        <!-- List of connections and groups this user has access to -->
-        <div class="connection-list" ng-class="{loading: !rootGroup}">
-            <guac-group-list
-                connection-group="rootGroup"
-                connection-template="'app/manage/templates/connection.html'"
-                connection-group-template="'app/manage/templates/connectionGroup.html'"/>
+                <a class="add-connection button"
+                   ng-show="canCreateConnections"
+                   href="#/manage/connections/">{{'MANAGE.ACTION_NEW_CONNECTION' | translate}}</a>
+
+                <a class="add-connection-group button"
+                   ng-show="canCreateConnectionGroups"
+                   href="#/manage/connectionGroups/">{{'MANAGE.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+
+            </div>
+
+            <!-- List of accessible connections and groups -->
+            <div class="connection-list">
+                <guac-group-list
+                    connection-group="rootGroup"
+                    connection-template="'app/manage/templates/connection.html'"
+                    connection-group-template="'app/manage/templates/connectionGroup.html'"/>
+            </div>
         </div>
     </div>
 

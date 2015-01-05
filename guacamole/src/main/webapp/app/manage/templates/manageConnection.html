@@ -20,83 +20,87 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<div class="logout-panel">
-    <a class="back button" href="#/manage/">{{'MANAGE_CONNECTION.ACTION_NAVIGATE_BACK' | translate}}</a>
-    <a class="logout button" ng-click="logout()">{{'MANAGE_CONNECTION.ACTION_LOGOUT' | translate}}</a>
-</div>
+<div class="view" ng-class="{loading: !isLoaded()}">
 
-<!-- Main property editor -->
-<h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | translate}}</h2>
-<div class="section">
-    <table class="properties">
-        
-        <!-- Edit connection name -->
-        <tr>
-            <th>{{'MANAGE_CONNECTION.FIELD_HEADER_NAME' | translate}}</th>
-          
-            <td><input type="text" ng-model="connection.name" autocorrect="off" autocapitalize="off"/></td>
-        </tr>
-        
-        <!-- Edit connection location -->
-        <tr>
-            <th>{{'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | translate}}</th>
-          
-            <td>
-                <location-chooser value="connection.parentIdentifier" root-group="rootGroup"></location-chooser>
-            </td>
-        </tr>
-        
-        
-        <!-- Edit connection protocol -->
-        <tr>
-            <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
-            <td>
-                <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
-            </td>
-        </tr>
-    </table>
-</div>
+    <div class="logout-panel">
+        <a class="back button" href="#/manage/">{{'MANAGE_CONNECTION.ACTION_NAVIGATE_BACK' | translate}}</a>
+        <a class="logout button" ng-click="logout()">{{'MANAGE_CONNECTION.ACTION_LOGOUT' | translate}}</a>
+    </div>
 
-<!-- Connection parameters -->
-<h2>{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
-<div class="section" ng-class="{loading: !parameters}">
-    <table class="properties">
-        
-        <!-- All the different possible editable field types -->
-        <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
-            <th>{{getProtocolParameterName(connection.protocol, parameter.name) | translate}}</th>
-            <td>
-                <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"/>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<!-- Form action buttons -->
-<div class="action-buttons">
-    <button ng-click="saveConnection()">{{'MANAGE_CONNECTION.ACTION_SAVE' | translate}}</button>
-    <button ng-click="cancel()">{{'MANAGE_CONNECTION.ACTION_CANCEL' | translate}}</button>
-    <button ng-click="deleteConnection()" class="danger">{{'MANAGE_CONNECTION.ACTION_DELETE' | translate}}</button>
-</div>
-
-<!-- Connection history -->
-<h2>{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
-<div class="history section" ng-class="{loading: !historyEntryWrappers}">
-    <p ng-hide="historyEntryWrappers.length">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | translate}}</p>
-    <table ng-show="historyEntryWrappers.length">
-        <thead>
+    <!-- Main property editor -->
+    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | translate}}</h2>
+    <div class="section">
+        <table class="properties">
+            
+            <!-- Edit connection name -->
             <tr>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | translate}}</th>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | translate}}</th>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | translate}}</th>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_NAME' | translate}}</th>
+              
+                <td><input type="text" ng-model="connection.name" autocorrect="off" autocapitalize="off"/></td>
             </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="wrapper in historyEntryWrappers">
-                <td class="username">{{wrapper.entry.username}}</td>
-                <td class="start">{{wrapper.entry.startDate | date:'short'}}</td>
-                <td class="duration">{{wrapper.durationText | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
+            
+            <!-- Edit connection location -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | translate}}</th>
+              
+                <td>
+                    <location-chooser value="connection.parentIdentifier" root-group="rootGroup"></location-chooser>
+                </td>
             </tr>
-        </tbody>
-    </table>
+            
+            
+            <!-- Edit connection protocol -->
+            <tr>
+                <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | translate}}</th>
+                <td>
+                    <select ng-model="connection.protocol" ng-options="name as getProtocolName(protocol.name) | translate for (name, protocol) in protocols | orderBy: name"></select>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Connection parameters -->
+    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
+    <div class="section" ng-class="{loading: !parameters}">
+        <table class="properties">
+            
+            <!-- All the different possible editable field types -->
+            <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
+                <th>{{getProtocolParameterName(connection.protocol, parameter.name) | translate}}</th>
+                <td>
+                    <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons">
+        <button ng-click="saveConnection()">{{'MANAGE_CONNECTION.ACTION_SAVE' | translate}}</button>
+        <button ng-click="cancel()">{{'MANAGE_CONNECTION.ACTION_CANCEL' | translate}}</button>
+        <button ng-click="deleteConnection()" class="danger">{{'MANAGE_CONNECTION.ACTION_DELETE' | translate}}</button>
+    </div>
+
+    <!-- Connection history -->
+    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
+    <div class="history section" ng-class="{loading: !historyEntryWrappers}">
+        <p ng-hide="historyEntryWrappers.length">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | translate}}</p>
+        <table ng-show="historyEntryWrappers.length">
+            <thead>
+                <tr>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | translate}}</th>
+                    <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="wrapper in historyEntryWrappers">
+                    <td class="username">{{wrapper.entry.username}}</td>
+                    <td class="start">{{wrapper.entry.startDate | date:'short'}}</td>
+                    <td class="duration">{{wrapper.durationText | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>

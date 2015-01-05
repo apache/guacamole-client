@@ -20,26 +20,30 @@
    THE SOFTWARE.
 -->
 
-<div class="connection-list-ui">
+<div class="view" ng-class="{loading: !isLoaded()}">
 
-    <div class="logout-panel">
-        <a class="manage button" ng-show="currentUserHasUpdate" href="#/manage">{{'HOME.ACTION_MANAGE' | translate}}</a>
-        <a class="logout button" ng-click="logout()">{{'HOME.ACTION_LOGOUT' | translate}}</a>
-    </div>
+    <div class="connection-list-ui">
 
-    <!-- The recent connections for this user -->
-    <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
-    <div class="recent-connections" ng-class="{loading: loading}">
-        <guac-recent-connections root-group="rootConnectionGroup"/>
-    </div>
+        <div class="logout-panel">
+            <a class="manage button" ng-show="canManageGuacamole" href="#/manage">{{'HOME.ACTION_MANAGE' | translate}}</a>
+            <a class="logout button" ng-click="logout()">{{'HOME.ACTION_LOGOUT' | translate}}</a>
+        </div>
 
-    <!-- All connections for this user -->
-    <h2>{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
-    <div class="all-connections" ng-class="{loading: loading}">
-        <guac-group-list
-            connection-group="rootConnectionGroup"
-            connection-template="'app/home/templates/connection.html'"
-            connection-group-template="'app/home/templates/connectionGroup.html'"/>
+        <!-- The recent connections for this user -->
+        <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+        <div class="recent-connections">
+            <guac-recent-connections root-group="rootConnectionGroup"/>
+        </div>
+
+        <!-- All connections for this user -->
+        <h2>{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
+        <div class="all-connections">
+            <guac-group-list
+                connection-group="rootConnectionGroup"
+                connection-template="'app/home/templates/connection.html'"
+                connection-group-template="'app/home/templates/connectionGroup.html'"/>
+        </div>
+
     </div>
 
 </div>

@@ -26,16 +26,11 @@
 angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
-    // Required types
-    var PermissionSet = $injector.get("PermissionSet");
-
     // Required services
-    var $document               = $injector.get("$document");
-    var $location               = $injector.get("$location");
-    var $q                      = $injector.get("$q");
-    var $window                 = $injector.get("$window");
-    var authenticationService   = $injector.get("authenticationService");
-    var permissionService       = $injector.get("permissionService");
+    var $document             = $injector.get("$document");
+    var $location             = $injector.get("$location");
+    var $window               = $injector.get("$window");
+    var authenticationService = $injector.get("authenticationService");
     
     /**
      * The current status notification, or false if no status is currently
@@ -52,27 +47,35 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      */
     $scope.notifications = [];
 
-    // Put some useful variables in the top level scope
+    /**
+     * Basic page-level information.
+     */
     $scope.page = {
+
+        /**
+         * The title of the page.
+         * 
+         * @type String
+         */
         title: '',
+
+        /**
+         * The name of the CSS class to apply to the page body, if any.
+         *
+         * @type String
+         */
         bodyClassName: ''
+
     };
-    $scope.currentUserID = null;
-    $scope.currentUserIsAdmin = false;
-    $scope.currentUserHasUpdate = false;
-    $scope.currentUserPermissions = null;
+
+    /**
+     * The ID of the most recently shown notification, or 0 if no notifications
+     * have yet been shown.
+     *
+     * @type Number
+     */
     var notificationUniqueID = 0;
     
-    // A promise to be fulfilled when all basic user permissions are loaded.
-    var permissionsLoaded= $q.defer();
-    $scope.basicPermissionsLoaded = permissionsLoaded.promise;
-    
-    $scope.currentUserID = authenticationService.getCurrentUserID();
-    
-    // If the user is unknown, force a login
-    if(!$scope.currentUserID)
-        $location.path('/login');
-
     /**
      * Shows or hides the given notification as a modal status. If a status
      * notification is currently shown, no further statuses will be shown
@@ -150,25 +153,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         }
     };
            
-    // Allow the permissions to be reloaded elsewhere if needed
-    $scope.loadBasicPermissions = function loadBasicPermissions() {
-        
-        permissionService.getPermissions($scope.currentUserID).success(function fetchCurrentUserPermissions(permissions) {
-            $scope.currentUserPermissions = permissions;
-
-            // Whether the user has system-wide admin permission
-            $scope.currentUserIsAdmin = PermissionSet.hasSystemPermission($scope.currentUserPermissions, PermissionSet.SystemPermissionType.ADMINISTER);
-
-            // Whether the user can update at least one object
-            $scope.currentUserHasUpdate = $scope.currentUserIsAdmin
-                                        || PermissionSet.hasConnectionPermission($scope.currentUserPermissions, "UPDATE")
-                                        || PermissionSet.hasConnectionGroupPermission($scope.currentUserPermissions, "UPDATE")
-                                        || PermissionSet.hasUserPermission($scope.currentUserPermissions, "UPDATE");
-
-            permissionsLoaded.resolve();
-        });
-    };
-
     // Provide simple mechanism for logging out the current user
     $scope.logout = function logout() {
         authenticationService.logout()['finally'](function logoutComplete() {
@@ -176,9 +160,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         });
     };
     
-    // Try to load them now
-    $scope.loadBasicPermissions();
-
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
 
@@ -217,11 +198,16 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
 
+        // Set title
         var title = current.$$route.title;
         if (title)
             $scope.page.title = title;
 
+        // Set body CSS class
         $scope.page.bodyClassName = current.$$route.bodyClassName || '';
+
+        // Hide any status dialog
+        $scope.showStatus(false);
 
     });
 

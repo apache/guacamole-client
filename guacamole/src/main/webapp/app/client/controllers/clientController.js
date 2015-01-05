@@ -517,9 +517,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         }
 
-        // Hide any status dialog
-        $scope.showStatus(false);
-
     });
 
 }]);

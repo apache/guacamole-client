@@ -20,58 +20,62 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<div class="logout-panel">
-    <a class="back button" href="#/manage/">{{'MANAGE_USER.ACTION_NAVIGATE_BACK' | translate}}</a>
-    <a class="logout button" ng-click="logout()">{{'MANAGE_USER.ACTION_LOGOUT' | translate}}</a>
-</div>
+<div class="view" ng-class="{loading: !isLoaded()}">
 
-<!-- Main property editor -->
-<h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
-<div class="section">
-    <table class="properties">
-        <tr>
-            <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
-                      
-            <td>{{user.username}}</td>
-        </tr>
-        <tr>
-            <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
-                        
-            <td><input ng-model="user.password" type="password" /></td>
-        </tr>
-        <tr>
-            <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
-                        
-            <td><input ng-model="passwordMatch" type="password" /></td>
-        </tr>
-    </table>
-</div>
+    <div class="logout-panel">
+        <a class="back button" href="#/manage/">{{'MANAGE_USER.ACTION_NAVIGATE_BACK' | translate}}</a>
+        <a class="logout button" ng-click="logout()">{{'MANAGE_USER.ACTION_LOGOUT' | translate}}</a>
+    </div>
 
-<!-- System permissions section -->
-<h2>{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
-<div class="section">
-    <table class="properties">
-        <tr ng-repeat="systemPermissionType in systemPermissionTypes">
-            <th>{{systemPermissionType.label | translate}}</th>
-            <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"
-                                       ng-change="systemPermissionChanged(systemPermissionType.value)"/></td>
-        </tr>
-    </table>
-</div>
-    
-<!-- Connection and connection group permission section -->
-<h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
-<div class="section" ng-class="{loading: !rootGroup}">
-    <guac-group-list
-        context="groupListContext"
-        connection-group="rootGroup"
-        connection-template="'app/manage/templates/connectionPermission.html'"
-        connection-group-template="'app/manage/templates/connectionGroupPermission.html'"/>
-</div>
+    <!-- Main property editor -->
+    <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
+    <div class="section">
+        <table class="properties">
+            <tr>
+                <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
+                          
+                <td>{{user.username}}</td>
+            </tr>
+            <tr>
+                <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
+                            
+                <td><input ng-model="user.password" type="password" /></td>
+            </tr>
+            <tr>
+                <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
+                            
+                <td><input ng-model="passwordMatch" type="password" /></td>
+            </tr>
+        </table>
+    </div>
 
-<!-- Form action buttons -->
-<div class="action-buttons">
-    <button ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
-    <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
-    <button ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
+    <!-- System permissions section -->
+    <h2>{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
+    <div class="section">
+        <table class="properties">
+            <tr ng-repeat="systemPermissionType in systemPermissionTypes">
+                <th>{{systemPermissionType.label | translate}}</th>
+                <td><input type="checkbox" ng-model="permissionFlags.systemPermissions[systemPermissionType.value]"
+                                           ng-change="systemPermissionChanged(systemPermissionType.value)"/></td>
+            </tr>
+        </table>
+    </div>
+        
+    <!-- Connection and connection group permission section -->
+    <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
+    <div class="section" ng-class="{loading: !rootGroup}">
+        <guac-group-list
+            context="groupListContext"
+            connection-group="rootGroup"
+            connection-template="'app/manage/templates/connectionPermission.html'"
+            connection-group-template="'app/manage/templates/connectionGroupPermission.html'"/>
+    </div>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons">
+        <button ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
+        <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
+        <button ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
+    </div>
+
 </div>
