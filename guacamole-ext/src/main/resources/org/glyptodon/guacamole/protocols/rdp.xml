@@ -12,6 +12,7 @@
     <param name="height"          type="numeric"  title="Display height"/>
     <param name="dpi"             type="numeric"  title="Display resolution (DPI)"/>
     <param name="color-depth"     type="enum" title="Color depth">
+        <option value=""></option>
         <option value="8">256 color</option>
         <option value="16">Low color (16-bit)</option>
         <option value="24">True color (24-bit)</option>
@@ -19,7 +20,7 @@
     </param>
 
     <param name="server-layout" type="enum" title="Keyboard layout">
-        <option value="">(default)</option>
+        <option value=""></option>
         <option value="en-us-qwerty">US English (Qwerty)</option>
         <option value="fr-fr-azerty">French (Azerty)</option>
         <option value="de-de-qwertz">German (Qwertz)</option>
@@ -35,7 +36,7 @@
     <param name="drive-path"      type="text"    title="Drive path"/>
 
     <param name="security" type="enum" title="Security mode">
-        <option value="">(default)</option>
+        <option value=""></option>
         <option value="rdp">RDP encryption</option>
         <option value="tls">TLS encryption</option>
         <option value="nla">NLA (Network Level Authentication)</option>

@@ -263,15 +263,16 @@
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
         "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
         "FIELD_OPTION_SECURITY_ANY"   : "Any",
-        "FIELD_OPTION_SECURITY_EMPTY" : "(default)",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Network Level Authentication)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
 
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
-        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "(default)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
@@ -357,11 +358,13 @@
         "FIELD_HEADER_READ_ONLY"        : "Read-only:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
 
-        "FIELD_OPTION_COLOR_DEPTH_8"  : "256 color",
-        "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-bit)",
-        "FIELD_OPTION_COLOR_DEPTH_24" : "True color (24-bit)",
-        "FIELD_OPTION_COLOR_DEPTH_32" : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "True color (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
         "FIELD_OPTION_CURSOR_REMOTE" : "Remote",
 
