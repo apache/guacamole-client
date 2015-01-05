@@ -115,8 +115,8 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             title         : 'APP.NAME',
             bodyClassName : 'login',
             templateUrl   : 'app/login/templates/login.html',
-            controller    : 'loginController',
-            resolve       : { updateCurrentToken: updateCurrentToken }
+            controller    : 'loginController'
+            // No need to update token here - the login screen ignores all auth
         })
 
         // Client view
