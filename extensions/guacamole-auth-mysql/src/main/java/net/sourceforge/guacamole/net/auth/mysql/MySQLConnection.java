@@ -108,7 +108,7 @@ public class MySQLConnection extends AbstractConnection {
         if (parentID != null)
             this.setParentIdentifier(String.valueOf(parentID));
         else
-            this.setParentIdentifier(null);
+            this.setParentIdentifier(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER);
 
     }
 
