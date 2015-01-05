@@ -75,7 +75,7 @@ div.recent-connections .protocol {
     vertical-align: middle;
 }
 
-.caption > * {
+.caption .choice {
     display: inline-block;
 }
 
