@@ -64,7 +64,12 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
          * 
          * @type Object.<String, Object.<String, Boolean>>
          */
-        this.connectionPermissions = template.connectionPermissions || {};
+        this.connectionPermissions = template.connectionPermissions || {
+            'READ'       : {},
+            'UPDATE'     : {},
+            'DELETE'     : {},
+            'ADMINISTER' : {}
+        };
 
         /**
          * The granted state of each permission for each connection group, as a
@@ -78,7 +83,12 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
          * 
          * @type Object.<String, Object.<String, Boolean>>
          */
-        this.connectionGroupPermissions = template.connectionGroupPermissions || {};
+        this.connectionGroupPermissions = template.connectionGroupPermissions || {
+            'READ'       : {},
+            'UPDATE'     : {},
+            'DELETE'     : {},
+            'ADMINISTER' : {}
+        };
 
         /**
          * The granted state of each permission for each user, as a map of
@@ -91,7 +101,12 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
          * 
          * @type Object.<String, Object.<String, Boolean>>
          */
-        this.userPermissions = template.userPermissions || {};
+        this.userPermissions = template.userPermissions || {
+            'READ'       : {},
+            'UPDATE'     : {},
+            'DELETE'     : {},
+            'ADMINISTER' : {}
+        };
 
     };
 
