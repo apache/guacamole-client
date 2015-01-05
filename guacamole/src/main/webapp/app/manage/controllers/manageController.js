@@ -50,6 +50,20 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     };
 
     /**
+     * All visible users.
+     *
+     * @type User[]
+     */
+    $scope.users = null;
+
+    /**
+     * The root connection group of the connection group hierarchy.
+     *
+     * @type ConnectionGroup
+     */
+    $scope.rootGroup = null;
+
+    /**
      * Whether the current user can manage users. If the current permissions
      * have not yet been loaded, this will be null.
      *
