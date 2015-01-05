@@ -50,18 +50,6 @@ public class BasicGuacamoleProperties {
     };
 
     /**
-     * Whether HTTP "Authorization" headers should be taken into account when
-     * authenticating the user. By default, "Authorization" headers are
-     * ignored.
-     */
-    public static final BooleanGuacamoleProperty ENABLE_HTTP_AUTH = new BooleanGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "enable-http-auth"; }
-
-    };
-
-    /**
      * The directory to search for authentication provider classes.
      */
     public static final FileGuacamoleProperty LIB_DIRECTORY = new FileGuacamoleProperty() {

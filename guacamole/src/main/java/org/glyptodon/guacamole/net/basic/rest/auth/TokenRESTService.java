@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -33,6 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
@@ -111,6 +113,38 @@ public class TokenRESTService {
         else
             existingSession = null;
 
+        // If no username/password given, try Authorization header
+        if (username == null && password == null) {
+
+            String authorization = request.getHeader("Authorization");
+            if (authorization != null && authorization.startsWith("Basic ")) {
+
+                try {
+
+                    // Decode base64 authorization
+                    String basicBase64 = authorization.substring(6);
+                    String basicCredentials = new String(DatatypeConverter.parseBase64Binary(basicBase64), "UTF-8");
+
+                    // Pull username/password from auth data
+                    int colon = basicCredentials.indexOf(':');
+                    if (colon != -1) {
+                        username = basicCredentials.substring(0, colon);
+                        password = basicCredentials.substring(colon + 1);
+                    }
+                    else
+                        logger.debug("Invalid HTTP Basic \"Authorization\" header received.");
+
+                }
+
+                // UTF-8 support is required by the Java specification
+                catch (UnsupportedEncodingException e) {
+                    throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
+                }
+
+            }
+
+        } // end Authorization header fallback
+        
         // Build credentials
         Credentials credentials = new Credentials();
         credentials.setUsername(username);
@@ -155,7 +189,7 @@ public class TokenRESTService {
         }
         
         logger.debug("Login was successful for user \"{}\".", userContext.self().getUsername());
-        return new APIAuthToken(authToken, username);
+        return new APIAuthToken(authToken, userContext.self().getUsername());
 
     }
 
