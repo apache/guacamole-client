@@ -135,8 +135,10 @@
 
         "DIALOG_HEADER_ERROR"           : "Error",
 
-        "HELP_CONNECTIONS" : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
-        "HELP_USERS"       : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
+        "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
+        "HELP_SHOW_PASSWORD" : "Click to show password",
+        "HELP_HIDE_PASSWORD" : "Click to hide password",
+        "HELP_USERS"         : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
         "SECTION_HEADER_ADMINISTRATION" : "Administration",
         "SECTION_HEADER_CONNECTIONS"    : "Connections",

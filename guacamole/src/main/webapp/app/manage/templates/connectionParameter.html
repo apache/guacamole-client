@@ -1,4 +1,4 @@
-<span class="connectionParameter">
+<div class="connection-parameter">
     <!--
         Copyright 2014 Glyptodon LLC.
 
@@ -25,8 +25,13 @@
     <input    ng-show="parameter.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
     <input    ng-show="parameter.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
     <input    ng-show="parameter.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input    ng-show="parameter.type === 'PASSWORD'" type="password" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
     <input    ng-show="parameter.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+
+    <!-- Password parameter -->
+    <div ng-show="parameter.type === 'PASSWORD'" class="password-field">
+        <input type="{{passwordInputType}}" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+        <div class="icon toggle-password" ng-click="togglePassword()" title="{{getTogglePasswordHelpText() | translate}}"></div>
+    </div>
 
     <!-- Multiline parameter -->
     <textarea ng-show="parameter.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
@@ -34,4 +39,4 @@
     <!-- Enumerated parameter -->
     <select   ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getProtocolParameterOption(protocol.name, parameter.name, option.value) | translate for option in parameter.options | orderBy: value"></select>
 
-</span>
+</div>

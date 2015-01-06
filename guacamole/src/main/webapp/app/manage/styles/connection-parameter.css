@@ -1,0 +1,57 @@
+/*
+ * Copyright (C) 2014 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/* Do not stretch connection parameters to fit available area */
+.connection-parameter input[type=text],
+.connection-parameter input[type=password],
+.connection-parameter input[type=number] {
+    width: auto;
+}
+
+/* Keep toggle-password icon on same line */
+.connection-parameter .password-field {
+    white-space: nowrap;
+}
+
+/* Generic 1x1em icon/button */
+.connection-parameter .password-field .icon.toggle-password {
+
+    display: inline-block;
+    opacity: 0.5;
+    cursor: default;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    width: 1em;
+    height: 1em;
+
+}
+
+/* Icon for unmasking passwords */
+.connection-parameter .password-field input[type=password] ~ .icon.toggle-password {
+    background-image: url('images/action-icons/guac-show-pass.png');
+}
+
+/* Icon for masking passwords */
+.connection-parameter .password-field input[type=text] ~ .icon.toggle-password {
+    background-image: url('images/action-icons/guac-hide-pass.png');
+}
