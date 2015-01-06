@@ -32,6 +32,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var User            = $injector.get('User');
 
     // Required services
+    var $location              = $injector.get('$location');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var permissionService      = $injector.get('permissionService');
@@ -134,6 +135,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     permissionService.getPermissions(authenticationService.getCurrentUserID())
     .success(function permissionsRetrieved(permissions) {
 
+        // Ignore permission to update root group
+        PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+
         // Determine whether the current user can create new users
         $scope.canCreateUsers =
                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
@@ -152,15 +156,26 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         // Determine whether the current user can manage other users
         $scope.canManageUsers =
                $scope.canCreateUsers
-            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
+            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE);
 
-        // Determine whether the current user can manage other connections
+        // Determine whether the current user can manage other connections or groups
         $scope.canManageConnections =
+
+            // Permission to manage connections
                $scope.canCreateConnections
-            || $scope.canCreateConnectionGroups
             || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
-            || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
-    
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+
+            // Permission to manage groups
+            || $scope.canCreateConnectionGroups
+            || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+            || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE);
+
+        // Return to home if there's nothing to do here
+        if (!$scope.canManageUsers && !$scope.canManageConnections)
+            $location.path('/');
+        
     });
     
     // Retrieve all connections for which we have UPDATE permission
