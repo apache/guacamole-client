@@ -28,6 +28,8 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.token.StandardTokens;
+import org.glyptodon.guacamole.token.TokenFilter;
 
 /**
  * Provides means of retrieving a set of named GuacamoleConfigurations for a
@@ -72,6 +74,14 @@ public abstract class SimpleAuthenticationProvider
         if (configs == null)
             return null;
 
+        // Build credential TokenFilter
+        TokenFilter tokenFilter = new TokenFilter();
+        StandardTokens.addStandardTokens(tokenFilter, credentials);
+        
+        // Filter each configuration
+        for (GuacamoleConfiguration config : configs.values())
+            tokenFilter.filterValues(config.getParameters());
+        
         // Return user context restricted to authorized configs
         return new SimpleUserContext(credentials.getUsername(), configs);
 
