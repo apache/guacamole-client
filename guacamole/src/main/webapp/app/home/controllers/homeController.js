@@ -76,12 +76,31 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     permissionService.getPermissions(authenticationService.getCurrentUserID())
     .success(function permissionsRetrieved(permissions) {
 
-        // Determine whether the current user can access the management UI
+        // Ignore permission to update root group
+        PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+
+        // Determine whether the current user needs access to the management UI
         $scope.canManageGuacamole =
+
+                // System permissions
                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
+                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
+
+                // Permission to update objects
+                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
                 || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
-                || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE);
+                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.UPDATE)
+
+                // Permission to delete objects
+                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
+                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.DELETE)
+
+                // Permission to administer objects
+                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
+                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
         
     });
     
