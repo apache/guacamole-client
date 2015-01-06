@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole.token;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -54,6 +56,47 @@ public class TokenFilterTest {
             "${NOPE}hellovalue-of-aworld${TOKEN_C}",
             tokenFilter.filter("${NOPE}hello${TOKEN_A}world${TOKEN_C}")
         );
+        
+    }
+    
+    /**
+     * Verifies that token replacement via filterValues() functions as
+     * specified.
+     */
+    @Test
+    public void testFilterValues() {
+
+        // Create token filter
+        TokenFilter tokenFilter = new TokenFilter();
+        tokenFilter.setToken("TOKEN_A", "value-of-a");
+        tokenFilter.setToken("TOKEN_B", "value-of-b");
+
+        // Create test map
+        Map<Integer, String> map = new HashMap<Integer, String>();
+        map.put(1, "$$${NOPE}hello${TOKEN_A}world${TOKEN_B}$${NOT_A_TOKEN}");
+        map.put(2, "${NOPE}hello${TOKEN_A}world${TOKEN_C}");
+        map.put(3, null);
+
+        // Filter map values
+        tokenFilter.filterValues(map);
+
+        // Filter should not affect size of map
+        assertEquals(3, map.size());
+
+        // Filtered value 1
+        assertEquals(
+            "$${NOPE}hellovalue-of-aworldvalue-of-b${NOT_A_TOKEN}",
+            map.get(1)
+        );
+        
+        // Filtered value 2
+        assertEquals(
+            "${NOPE}hellovalue-of-aworld${TOKEN_C}",
+            map.get(2)
+        );
+
+        // Null values are not filtered
+        assertNull(map.get(3));
         
     }
     

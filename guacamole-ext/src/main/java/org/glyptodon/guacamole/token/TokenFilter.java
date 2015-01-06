@@ -209,5 +209,26 @@ public class TokenFilter {
         return output.toString();
        
     }
-    
+
+    /**
+     * Given an arbitrary map containing String values, replace each non-null
+     * value with the corresponding filtered value.
+     *
+     * @param map
+     *     The map whose values should be filtered.
+     */
+    public void filterValues(Map<?, String> map) {
+
+        // For each map entry
+        for (Map.Entry<?, String> entry : map.entrySet()) {
+
+            // If value is non-null, filter value through this TokenFilter
+            String value = entry.getValue();
+            if (value != null)
+                entry.setValue(filter(value));
+            
+        }
+        
+    }
+
 }
