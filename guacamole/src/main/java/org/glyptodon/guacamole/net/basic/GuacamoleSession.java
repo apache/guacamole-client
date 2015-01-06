@@ -51,7 +51,7 @@ public class GuacamoleSession {
     private static final Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
     /**
-     * The credentials provided when the user logged in.
+     * The credentials provided when the user authenticated.
      */
     private Credentials credentials;
     
@@ -139,10 +139,11 @@ public class GuacamoleSession {
 
     /**
      * Returns the credentials used when the user associated with this session
-     * logged in.
+     * authenticated.
      *
-     * @return The credentials used when the user associated with this session
-     *         logged in.
+     * @return
+     *     The credentials used when the user associated with this session
+     *     authenticated.
      */
     public Credentials getCredentials() {
         return credentials;
