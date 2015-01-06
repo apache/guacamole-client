@@ -52,9 +52,9 @@ public class MySQLConnection extends AbstractConnection {
     private Integer parentID;
 
     /**
-     * The ID of the user who queried or created this connection.
+     * The user who queried or created this connection.
      */
-    private int userID;
+    private AuthenticatedUser currentUser;
 
     /**
      * History of this connection.
@@ -115,16 +115,31 @@ public class MySQLConnection extends AbstractConnection {
     /**
      * Initialize from explicit values.
      *
-     * @param connectionID The ID of the associated database record, if any.
-     * @param parentID The D of the parent connection group for this connection, if any.
-     * @param identifier The unique identifier associated with this connection.
-     * @param config The GuacamoleConfiguration associated with this connection.
-     * @param history All ConnectionRecords associated with this connection.
-     * @param userID The IID of the user who queried this connection.
+     * @param connectionID
+     *     The ID of the associated database record, if any.
+     *
+     * @param parentID
+     *     The ID of the parent connection group for this connection, if any.
+     *
+     * @param name 
+     *     The human-readable name associated with this connection.
+     *
+     * @param identifier
+     *     The unique identifier associated with this connection.
+     *
+     * @param config
+     *     The GuacamoleConfiguration associated with this connection.
+     *
+     * @param history
+     *     All ConnectionRecords associated with this connection.
+     *
+     * @param currentUser 
+     *     The user who queried this connection.
      */
     public void init(Integer connectionID, Integer parentID, String name, 
             String identifier, GuacamoleConfiguration config,
-            List<? extends ConnectionRecord> history, int userID) {
+            List<? extends ConnectionRecord> history,
+            AuthenticatedUser currentUser) {
 
         this.connectionID = connectionID;
         this.setParentID(parentID);
@@ -132,13 +147,13 @@ public class MySQLConnection extends AbstractConnection {
         setIdentifier(identifier);
         setConfiguration(config);
         this.history.addAll(history);
-        this.userID = userID;
+        this.currentUser = currentUser;
 
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionService.connect(this, info, userID, null);
+        return connectionService.connect(this, info, currentUser, null);
     }
 
     @Override

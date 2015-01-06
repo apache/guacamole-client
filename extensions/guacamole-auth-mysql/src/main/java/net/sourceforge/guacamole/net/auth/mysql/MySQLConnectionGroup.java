@@ -52,9 +52,9 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     private Integer parentID;
 
     /**
-     * The ID of the user who queried or created this connection group.
+     * The user who queried or created this connection group.
      */
-    private int userID;
+    private AuthenticatedUser currentUser;
     
     /**
      * A Directory of connections that have this connection group as a parent.
@@ -136,27 +136,39 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
     /**
      * Initialize from explicit values.
      *
-     * @param connectionGroupID The ID of the associated database record, if any.
-     * @param parentID The ID of the parent connection group for this connection group, if any.
-     * @param name The name of this connection group.
-     * @param identifier The unique identifier associated with this connection group.
-     * @param type The type of this connection group.
-     * @param userID The IID of the user who queried this connection.
+     * @param connectionGroupID
+     *     The ID of the associated database record, if any.
+     *
+     * @param parentID
+     *     The ID of the parent connection group for this connection group, if
+     *     any.
+     *
+     * @param name
+     *     The name of this connection group.
+     *
+     * @param identifier
+     *     The unique identifier associated with this connection group.
+     *
+     * @param type
+     *     The type of this connection group.
+     *
+     * @param currentUser
+     *     The user who queried this connection.
      */
     public void init(Integer connectionGroupID, Integer parentID, String name, 
-            String identifier, ConnectionGroup.Type type, int userID) {
+            String identifier, ConnectionGroup.Type type, AuthenticatedUser currentUser) {
         this.connectionGroupID = connectionGroupID;
         this.setParentID(parentID);
         setName(name);
         setIdentifier(identifier);
         setType(type);
-        this.userID = userID;
+        this.currentUser = currentUser;
         
         connectionDirectory = connectionDirectoryProvider.get();
-        connectionDirectory.init(userID, connectionGroupID);
+        connectionDirectory.init(currentUser, connectionGroupID);
         
         connectionGroupDirectory = connectionGroupDirectoryProvider.get();
-        connectionGroupDirectory.init(userID, connectionGroupID);
+        connectionGroupDirectory.init(currentUser, connectionGroupID);
     }
 
     @Override
@@ -164,14 +176,14 @@ public class MySQLConnectionGroup extends AbstractConnectionGroup {
         
         // Verify permission to use the connection group for balancing purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (this.connectionGroupID, this.userID, MySQLConstants.CONNECTION_GROUP_BALANCING);
+                (this.connectionGroupID, currentUser, MySQLConstants.CONNECTION_GROUP_BALANCING);
 
         // Verify permission to delete
-        permissionCheckService.verifyConnectionGroupAccess(this.userID,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 this.connectionGroupID,
                 MySQLConstants.CONNECTION_GROUP_READ);
         
-        return connectionGroupService.connect(this, info, userID);
+        return connectionGroupService.connect(this, info, currentUser);
     }
     
     @Override

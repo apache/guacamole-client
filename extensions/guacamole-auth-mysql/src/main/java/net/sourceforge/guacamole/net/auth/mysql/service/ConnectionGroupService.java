@@ -31,6 +31,7 @@ import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import net.sourceforge.guacamole.net.auth.mysql.ActiveConnectionMap;
+import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConstants;
@@ -82,14 +83,21 @@ public class ConnectionGroupService {
      * Retrieves the connection group having the given 
      * name from the database.
      *
-     * @param name The name of the connection to return.
-     * @param parentID The ID of the parent connection group.
-     * @param userID The ID of the user who queried this connection group.
-     * @return The connection having the given name, or null if no such
-     *         connection group could be found.
+     * @param name
+     *     The name of the connection to return.
+     *
+     * @param parentID
+     *     The ID of the parent connection group.
+     *
+     * @param currentUser
+     *     The user who queried this connection group.
+     *
+     * @return
+     *     The connection having the given name, or null if no such connection
+     *     group could be found.
      */
     public MySQLConnectionGroup retrieveConnectionGroup(String name, Integer parentID,
-            int userID) {
+            AuthenticatedUser currentUser) {
 
         // Create criteria
         ConnectionGroupExample example = new ConnectionGroupExample();
@@ -108,7 +116,7 @@ public class ConnectionGroupService {
             return null;
 
         // Otherwise, return found connection
-        return toMySQLConnectionGroup(connectionGroups.get(0), userID);
+        return toMySQLConnectionGroup(connectionGroups.get(0), currentUser);
 
     }
 
@@ -116,13 +124,21 @@ public class ConnectionGroupService {
      * Retrieves the connection group having the given unique identifier 
      * from the database.
      *
-     * @param uniqueIdentifier The unique identifier of the connection group to retrieve.
-     * @param userID The ID of the user who queried this connection group.
-     * @return The connection group having the given unique identifier, 
-     *         or null if no such connection group was found.
+     * @param uniqueIdentifier
+     *     The unique identifier of the connection group to retrieve.
+     *
+     * @param currentUser 
+     *     The user who queried this connection group.
+     *
+     * @return
+     *     The connection group having the given unique identifier, or null if
+     *     no such connection group was found.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the connection group.
      */
     public MySQLConnectionGroup retrieveConnectionGroup(String uniqueIdentifier, 
-            int userID) throws GuacamoleException {
+            AuthenticatedUser currentUser) throws GuacamoleException {
 
         // The unique identifier for a MySQLConnectionGroup is the database ID
         Integer connectionGroupID = null;
@@ -136,18 +152,23 @@ public class ConnectionGroupService {
             }
         }
         
-        return retrieveConnectionGroup(connectionGroupID, userID);
+        return retrieveConnectionGroup(connectionGroupID, currentUser);
     }
     
     /**
      * Retrieves the connection group having the given ID from the database.
      *
-     * @param id The ID of the connection group to retrieve.
-     * @param userID The ID of the user who queried this connection.
-     * @return The connection group having the given ID, or null if no such
-     *         connection was found.
+     * @param id
+     *     The ID of the connection group to retrieve.
+     *
+     * @param currentUser
+     *     The user who queried this connection.
+     *
+     * @return
+     *     The connection group having the given ID, or null if no such
+     *     connection was found.
      */
-    public MySQLConnectionGroup retrieveConnectionGroup(Integer id, int userID) {
+    public MySQLConnectionGroup retrieveConnectionGroup(Integer id, AuthenticatedUser currentUser) {
 
         // This is the root connection group, so just create it here
         if(id == null) {
@@ -156,7 +177,7 @@ public class ConnectionGroupService {
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
                     MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
                     org.glyptodon.guacamole.net.auth.ConnectionGroup.Type.ORGANIZATIONAL, 
-                    userID);
+                    currentUser);
             
             return connectionGroup;
         }
@@ -169,23 +190,31 @@ public class ConnectionGroupService {
             return null;
 
         // Otherwise, return found connection
-        return toMySQLConnectionGroup(connectionGroup, userID);
+        return toMySQLConnectionGroup(connectionGroup, currentUser);
     }
 
     /**
      * Connect to the connection within the given group with the lowest number
      * of currently active users.
      *
-     * @param group The group to load balance across.
-     * @param info The information to use when performing the connection
-     *             handshake.
-     * @param userID The ID of the user who is connecting to the socket.
-     * @return The connected socket.
-     * @throws GuacamoleException If an error occurs while connecting the
-     *                            socket.
+     * @param group
+     *     The group to load balance across.
+     *
+     * @param info
+     *     The information to use when performing the connection handshake.
+     *
+     * @param currentUser
+     *     The user who is connecting to the socket.
+     * 
+     * @return
+     *     The connected socket.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while connecting the socket.
      */
     public GuacamoleSocket connect(MySQLConnectionGroup group, 
-            GuacamoleClientInformation info, int userID) throws GuacamoleException {
+            GuacamoleClientInformation info, AuthenticatedUser currentUser)
+            throws GuacamoleException {
        
         // Get all connections in the group.
         List<Integer> connectionIDs = connectionService.getAllConnectionIDs
@@ -208,16 +237,16 @@ public class ConnectionGroupService {
             
             if(GuacamoleProperties.getProperty(
                     MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true)
-                    && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), userID))
+                    && activeConnectionMap.isConnectionGroupUserActive(group.getConnectionGroupID(), currentUser.getUserID()))
                 throw new GuacamoleClientTooManyException
                         ("Cannot connect. Connection group already in use by this user.");
 
             // Get the connection 
             MySQLConnection connection = connectionService
-                    .retrieveConnection(leastUsedConnectionID, userID);
+                    .retrieveConnection(leastUsedConnectionID, currentUser);
             
             // Connect to the connection
-            return connectionService.connect(connection, info, userID, group.getConnectionGroupID());
+            return connectionService.connect(connection, info, currentUser, group.getConnectionGroupID());
 
         }
             
@@ -287,12 +316,18 @@ public class ConnectionGroupService {
      * The parameters of the given connection will be read and added to the
      * MySQLConnection in the process.
      *
-     * @param connection The connection to convert.
-     * @param userID The user who queried this connection.
-     * @return A new MySQLConnection containing all data associated with the
-     *         specified connection.
+     * @param connection
+     *     The connection to convert.
+     *
+     * @param currentUser
+     *     The user who queried this connection.
+     *
+     * @return
+     *     A new MySQLConnection containing all data associated with the
+     *     specified connection.
      */
-    private MySQLConnectionGroup toMySQLConnectionGroup(ConnectionGroup connectionGroup, int userID) {
+    private MySQLConnectionGroup toMySQLConnectionGroup(ConnectionGroup connectionGroup,
+            AuthenticatedUser currentUser) {
 
         // Create new MySQLConnection from retrieved data
         MySQLConnectionGroup mySQLConnectionGroup = mysqlConnectionGroupProvider.get();
@@ -311,7 +346,7 @@ public class ConnectionGroupService {
             connectionGroup.getConnection_group_name(),
             Integer.toString(connectionGroup.getConnection_group_id()),
             authType,
-            userID
+            currentUser
         );
 
         return mySQLConnectionGroup;
@@ -341,13 +376,22 @@ public class ConnectionGroupService {
     /**
      * Creates a new connection group having the given name and type.
      *
-     * @param name The name to assign to the new connection group.
-     * @param userID The ID of the user who created this connection group.
-     * @param Type The type of the new connection group.
+     * @param name
+     *     The name to assign to the new connection group.
+     *
+     * @param currentUser
+     *     The user who created this connection group.
+     *
+     * @param parentID
+     *     The ID of the parent of the new connection group, if any.
+     *
+     * @param type
+     *     The type of the new connection group.
+     *
      * @return A new MySQLConnectionGroup containing the data of the newly created
      *         connection group.
      */
-    public MySQLConnectionGroup createConnectionGroup(String name, int userID, 
+    public MySQLConnectionGroup createConnectionGroup(String name, AuthenticatedUser currentUser, 
             Integer parentID, String type) {
 
         // Initialize database connection
@@ -358,7 +402,7 @@ public class ConnectionGroupService {
 
         // Create connection
         connectionGroupDAO.insert(connectionGroup);
-        return toMySQLConnectionGroup(connectionGroup, userID);
+        return toMySQLConnectionGroup(connectionGroup, currentUser);
 
     }
 

@@ -50,10 +50,10 @@ import org.mybatis.guice.transactional.Transactional;
 public class ConnectionDirectory implements Directory<String, Connection>{
 
     /**
-     * The ID of the user who this connection directory belongs to.
-     * Access is based on his/her permission settings.
+     * The user who this connection directory belongs to. Access is based on
+     * his/her permission settings.
      */
-    private int user_id;
+    private AuthenticatedUser currentUser;
 
     /**
      * The ID of the parent connection group.
@@ -93,12 +93,15 @@ public class ConnectionDirectory implements Directory<String, Connection>{
     /**
      * Set the user and parentID for this directory.
      *
-     * @param user_id The ID of the user owning this connection directory.
-     * @param parentID The ID of the parent connection group.
+     * @param currentUser
+     *     The user owning this connection directory.
+     *
+     * @param parentID
+     *     The ID of the parent connection group.
      */
-    public void init(int user_id, Integer parentID) {
+    public void init(AuthenticatedUser currentUser, Integer parentID) {
+        this.currentUser = currentUser;
         this.parentID = parentID;
-        this.user_id = user_id;
     }
 
     @Transactional
@@ -107,18 +110,18 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Get connection
         MySQLConnection connection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(identifier, currentUser);
         
         if(connection == null)
             return null;
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (connection.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (connection.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify access is granted
         permissionCheckService.verifyConnectionAccess(
-                this.user_id,
+                currentUser,
                 connection.getConnectionID(),
                 MySQLConstants.CONNECTION_READ);
 
@@ -133,9 +136,9 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         
         // Verify permission to use the connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (parentID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
         
-        return permissionCheckService.retrieveConnectionIdentifiers(user_id, 
+        return permissionCheckService.retrieveConnectionIdentifiers(currentUser, 
                 parentID, MySQLConstants.CONNECTION_READ);
     }
 
@@ -148,26 +151,26 @@ public class ConnectionDirectory implements Directory<String, Connection>{
             throw new GuacamoleClientException("The connection name cannot be blank.");
         
         // Verify permission to create
-        permissionCheckService.verifySystemAccess(this.user_id,
+        permissionCheckService.verifySystemAccess(currentUser,
                 MySQLConstants.SYSTEM_CONNECTION_CREATE);
         
         // Verify permission to edit the connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id, 
+        permissionCheckService.verifyConnectionGroupAccess(currentUser, 
                 this.parentID, MySQLConstants.CONNECTION_GROUP_UPDATE);
         
         // Verify permission to use the connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (parentID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify that no connection already exists with this name.
         MySQLConnection previousConnection =
-                connectionService.retrieveConnection(name, parentID, user_id);
+                connectionService.retrieveConnection(name, parentID, currentUser);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection name is already in use.");
 
         // Create connection
         MySQLConnection connection = connectionService.createConnection(
-                name, object.getConfiguration().getProtocol(), user_id, parentID);
+                name, object.getConfiguration().getProtocol(), currentUser, parentID);
         
         // Set the connection ID
         object.setIdentifier(connection.getIdentifier());
@@ -179,7 +182,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         // Finally, give the current user full access to the newly created
         // connection.
         ConnectionPermissionKey newConnectionPermission = new ConnectionPermissionKey();
-        newConnectionPermission.setUser_id(this.user_id);
+        newConnectionPermission.setUser_id(currentUser.getUserID());
         newConnectionPermission.setConnection_id(connection.getConnectionID());
 
         // Read permission
@@ -238,7 +241,7 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         MySQLConnection mySQLConnection = (MySQLConnection) object;
 
         // Verify permission to update
-        permissionCheckService.verifyConnectionAccess(this.user_id,
+        permissionCheckService.verifyConnectionAccess(currentUser,
                 mySQLConnection.getConnectionID(),
                 MySQLConstants.CONNECTION_UPDATE);
 
@@ -262,17 +265,17 @@ public class ConnectionDirectory implements Directory<String, Connection>{
 
         // Get connection
         MySQLConnection mySQLConnection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(identifier, currentUser);
         
         if(mySQLConnection == null)
             throw new GuacamoleResourceNotFoundException("Connection not found.");
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (mySQLConnection.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (mySQLConnection.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to delete
-        permissionCheckService.verifyConnectionAccess(this.user_id,
+        permissionCheckService.verifyConnectionAccess(currentUser,
                 mySQLConnection.getConnectionID(),
                 MySQLConstants.CONNECTION_DELETE);
 
@@ -292,36 +295,36 @@ public class ConnectionDirectory implements Directory<String, Connection>{
         
         // Get connection
         MySQLConnection mySQLConnection =
-                connectionService.retrieveConnection(identifier, user_id);
+                connectionService.retrieveConnection(identifier, currentUser);
         
         if(mySQLConnection == null)
             throw new GuacamoleResourceNotFoundException("Connection not found.");
 
         // Verify permission to update the connection
-        permissionCheckService.verifyConnectionAccess(this.user_id,
+        permissionCheckService.verifyConnectionAccess(currentUser,
                 mySQLConnection.getConnectionID(),
                 MySQLConstants.CONNECTION_UPDATE);
         
         // Verify permission to use the from connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (mySQLConnection.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (mySQLConnection.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to update the from connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 mySQLConnection.getParentID(), MySQLConstants.CONNECTION_GROUP_UPDATE);
         
         // Verify permission to use the to connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (toConnectionGroupID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (toConnectionGroupID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to update the to connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 toConnectionGroupID, MySQLConstants.CONNECTION_GROUP_UPDATE);
 
         // Verify that no connection already exists with this name.
         MySQLConnection previousConnection =
                 connectionService.retrieveConnection(mySQLConnection.getName(), 
-                toConnectionGroupID, user_id);
+                toConnectionGroupID, currentUser);
         if(previousConnection != null)
             throw new GuacamoleClientException("That connection name is already in use.");
         

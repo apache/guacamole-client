@@ -67,10 +67,10 @@ import org.mybatis.guice.transactional.Transactional;
 public class UserDirectory implements Directory<String, User> {
 
     /**
-     * The ID of the user who this user directory belongs to.
-     * Access is based on his/her permission settings.
+     * The user this user directory belongs to. Access is based on his/her
+     * permission settings.
      */
-    private int user_id;
+    private AuthenticatedUser currentUser;
 
     /**
      * Service for accessing users.
@@ -123,11 +123,12 @@ public class UserDirectory implements Directory<String, User> {
     /**
      * Set the user for this directory.
      *
-     * @param user_id The ID of the user whose permissions define the visibility
-     *                of other users in this directory.
+     * @param currentUser
+     *     The user whose permissions define the visibility of other users in
+     *     this directory.
      */
-    public void init(int user_id) {
-        this.user_id = user_id;
+    public void init(AuthenticatedUser currentUser) {
+        this.currentUser = currentUser;
     }
 
     @Transactional
@@ -142,7 +143,7 @@ public class UserDirectory implements Directory<String, User> {
             return null;
 
         // Verify access is granted
-        permissionCheckService.verifyUserAccess(this.user_id,
+        permissionCheckService.verifyUserAccess(currentUser,
                 user.getUserID(),
                 MySQLConstants.USER_READ);
 
@@ -154,7 +155,7 @@ public class UserDirectory implements Directory<String, User> {
     @Transactional
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return permissionCheckService.retrieveUsernames(user_id,
+        return permissionCheckService.retrieveUsernames(currentUser,
                 MySQLConstants.USER_READ);
     }
 
@@ -168,7 +169,7 @@ public class UserDirectory implements Directory<String, User> {
             throw new GuacamoleClientException("The username cannot be blank.");
 
         // Verify current user has permission to create users
-        permissionCheckService.verifySystemAccess(this.user_id,
+        permissionCheckService.verifySystemAccess(currentUser,
                 MySQLConstants.SYSTEM_USER_CREATE);
         Preconditions.checkNotNull(object);
 
@@ -185,7 +186,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Give the current user full access to the newly created user.
         UserPermissionKey newUserPermission = new UserPermissionKey();
-        newUserPermission.setUser_id(this.user_id);
+        newUserPermission.setUser_id(currentUser.getUserID());
         newUserPermission.setAffected_user_id(user.getUserID());
 
         // READ permission on new user
@@ -304,7 +305,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable user IDs
         List<Integer> administerableUserIDs =
-            permissionCheckService.retrieveUserIDs(this.user_id,
+            permissionCheckService.retrieveUserIDs(currentUser,
                 MySQLConstants.USER_ADMINISTER);
 
         // Get set of usernames corresponding to administerable users
@@ -322,13 +323,13 @@ public class UserDirectory implements Directory<String, User> {
             // every one of these users
             if (affected_id == null)
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate user "
                     + permission.getObjectIdentifier());
 
             // Create new permission
             UserPermissionKey newPermission = new UserPermissionKey();
-            newPermission.setUser_id(user_id);
+            newPermission.setUser_id(currentUser.getUserID());
             newPermission.setPermission(MySQLConstants.getUserConstant(permission.getType()));
             newPermission.setAffected_user_id(affected_id);
             userPermissionDAO.insert(newPermission);
@@ -356,7 +357,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable user IDs
         List<Integer> administerableUserIDs =
-            permissionCheckService.retrieveUserIDs(this.user_id,
+            permissionCheckService.retrieveUserIDs(currentUser,
                 MySQLConstants.USER_ADMINISTER);
 
         // Get set of usernames corresponding to administerable users
@@ -374,7 +375,7 @@ public class UserDirectory implements Directory<String, User> {
             // every one of these users
             if (affected_id == null)
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate user "
                     + permission.getObjectIdentifier());
 
@@ -410,7 +411,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable connection IDs
         Set<Integer> administerableConnectionIDs = Sets.<Integer>newHashSet(
-            permissionCheckService.retrieveConnectionIDs(this.user_id,
+            permissionCheckService.retrieveConnectionIDs(currentUser,
                 MySQLConstants.CONNECTION_ADMINISTER));
 
         // Insert all given permissions
@@ -423,7 +424,7 @@ public class UserDirectory implements Directory<String, User> {
             // is not granted
             if (!administerableConnectionIDs.contains(connection_id))
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate connection "
                     + permission.getObjectIdentifier());
 
@@ -457,7 +458,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable connection group IDs
         Set<Integer> administerableConnectionGroupIDs = Sets.<Integer>newHashSet(
-            permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
+            permissionCheckService.retrieveConnectionGroupIDs(currentUser,
                 MySQLConstants.CONNECTION_GROUP_ADMINISTER));
 
         // Insert all given permissions
@@ -470,7 +471,7 @@ public class UserDirectory implements Directory<String, User> {
             // is not granted
             if (!administerableConnectionGroupIDs.contains(connection_group_id))
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate connection group"
                     + permission.getObjectIdentifier());
 
@@ -503,7 +504,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable connection IDs
         Set<Integer> administerableConnectionIDs = Sets.<Integer>newHashSet(
-            permissionCheckService.retrieveConnectionIDs(this.user_id,
+            permissionCheckService.retrieveConnectionIDs(currentUser,
                 MySQLConstants.CONNECTION_ADMINISTER));
 
         // Delete requested permissions
@@ -516,7 +517,7 @@ public class UserDirectory implements Directory<String, User> {
             // every one of these connections
             if (!administerableConnectionIDs.contains(connection_id))
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate connection "
                     + permission.getObjectIdentifier());
 
@@ -550,7 +551,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Get list of administerable connection group IDs
         Set<Integer> administerableConnectionGroupIDs = Sets.<Integer>newHashSet(
-            permissionCheckService.retrieveConnectionGroupIDs(this.user_id,
+            permissionCheckService.retrieveConnectionGroupIDs(currentUser,
                 MySQLConstants.CONNECTION_GROUP_ADMINISTER));
 
         // Delete requested permissions
@@ -563,7 +564,7 @@ public class UserDirectory implements Directory<String, User> {
             // every one of these connection groups
             if (!administerableConnectionGroupIDs.contains(connection_group_id))
                 throw new GuacamoleSecurityException(
-                      "User #" + this.user_id
+                      "User #" + currentUser.getUserID()
                     + " does not have permission to administrate connection group"
                     + permission.getObjectIdentifier());
 
@@ -597,7 +598,7 @@ public class UserDirectory implements Directory<String, User> {
 
         // Only a system administrator can add system permissions.
         permissionCheckService.verifySystemAccess(
-                this.user_id, SystemPermission.Type.ADMINISTER.name());
+                currentUser, SystemPermission.Type.ADMINISTER.name());
 
         // Insert all requested permissions
         for (SystemPermission permission : permissions) {
@@ -631,7 +632,7 @@ public class UserDirectory implements Directory<String, User> {
             return;
 
         // Prevent self-de-adminifying
-        if (user_id == this.user_id)
+        if (user_id == currentUser.getUserID())
             throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
 
         // Build list of requested system permissions
@@ -660,7 +661,7 @@ public class UserDirectory implements Directory<String, User> {
         MySQLUser mySQLUser = (MySQLUser) object;
 
         // Validate permission to update this user is granted
-        permissionCheckService.verifyUserAccess(this.user_id,
+        permissionCheckService.verifyUserAccess(currentUser,
                 mySQLUser.getUserID(),
                 MySQLConstants.USER_UPDATE);
 
@@ -685,11 +686,11 @@ public class UserDirectory implements Directory<String, User> {
         MySQLUser user = userService.retrieveUser(identifier);
 
         // Prevent self-deletion
-        if (user.getUserID() == this.user_id)
+        if (user.getUserID() == currentUser.getUserID())
             throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
 
         // Validate current user has permission to remove the specified user
-        permissionCheckService.verifyUserAccess(this.user_id,
+        permissionCheckService.verifyUserAccess(currentUser,
                 user.getUserID(),
                 MySQLConstants.USER_DELETE);
 
