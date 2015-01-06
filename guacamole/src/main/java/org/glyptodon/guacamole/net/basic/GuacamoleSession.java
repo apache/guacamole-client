@@ -51,14 +51,14 @@ public class GuacamoleSession {
     private static final Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
     /**
-     * The credentials provided when the user logged in.
+     * The credentials provided when the user authenticated.
      */
-    private final Credentials credentials;
+    private Credentials credentials;
     
     /**
      * The user context associated with this session.
      */
-    private final UserContext userContext;
+    private UserContext userContext;
 
     /**
      * Collection of all event listeners configured in guacamole.properties.
@@ -139,15 +139,27 @@ public class GuacamoleSession {
 
     /**
      * Returns the credentials used when the user associated with this session
-     * logged in.
+     * authenticated.
      *
-     * @return The credentials used when the user associated with this session
-     *         logged in.
+     * @return
+     *     The credentials used when the user associated with this session
+     *     authenticated.
      */
     public Credentials getCredentials() {
         return credentials;
     }
 
+    /**
+     * Replaces the credentials associated with this session with the given
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials to associate with this session.
+     */
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+    
     /**
      * Returns the UserContext associated with this session.
      *
@@ -157,6 +169,17 @@ public class GuacamoleSession {
         return userContext;
     }
 
+    /**
+     * Replaces the user context associated with this session with the given
+     * user context.
+     *
+     * @param userContext
+     *     The user context to associate with this session.
+     */
+    public void setUserContext(UserContext userContext) {
+        this.userContext = userContext;
+    }
+    
     /**
      * Returns the ClipboardState associated with this session.
      *

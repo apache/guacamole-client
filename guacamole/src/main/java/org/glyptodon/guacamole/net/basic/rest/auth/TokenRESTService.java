@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
+import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -33,6 +34,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
@@ -77,20 +79,73 @@ public class TokenRESTService {
     
     /**
      * Authenticates a user, generates an auth token, associates that auth token
-     * with the user's UserContext for use by further requests.
+     * with the user's UserContext for use by further requests. If an existing
+     * token is provided, the authentication procedure will attempt to update
+     * or reuse the provided token.
      * 
-     * @param username The username of the user who is to be authenticated.
-     * @param password The password of the user who is to be authenticated.
-     * @param request The HttpServletRequest associated with the login attempt.
+     * @param username
+     *     The username of the user who is to be authenticated.
+     *
+     * @param password
+     *     The password of the user who is to be authenticated.
+     *
+     * @param token
+     *     An optional existing auth token for the user who is to be
+     *     authenticated.
+     *
+     * @param request
+     *     The HttpServletRequest associated with the login attempt.
+     *
      * @return The auth token for the newly logged-in user.
      * @throws GuacamoleException If an error prevents successful login.
      */
     @POST
     @AuthProviderRESTExposure
     public APIAuthToken createToken(@FormParam("username") String username,
-            @FormParam("password") String password, 
+            @FormParam("password") String password,
+            @FormParam("token") String token,
             @Context HttpServletRequest request) throws GuacamoleException {
+
+        // Pull existing session if token provided
+        GuacamoleSession existingSession;
+        if (token != null)
+            existingSession = tokenSessionMap.get(token);
+        else
+            existingSession = null;
+
+        // If no username/password given, try Authorization header
+        if (username == null && password == null) {
+
+            String authorization = request.getHeader("Authorization");
+            if (authorization != null && authorization.startsWith("Basic ")) {
+
+                try {
+
+                    // Decode base64 authorization
+                    String basicBase64 = authorization.substring(6);
+                    String basicCredentials = new String(DatatypeConverter.parseBase64Binary(basicBase64), "UTF-8");
+
+                    // Pull username/password from auth data
+                    int colon = basicCredentials.indexOf(':');
+                    if (colon != -1) {
+                        username = basicCredentials.substring(0, colon);
+                        password = basicCredentials.substring(colon + 1);
+                    }
+                    else
+                        logger.debug("Invalid HTTP Basic \"Authorization\" header received.");
+
+                }
+
+                // UTF-8 support is required by the Java specification
+                catch (UnsupportedEncodingException e) {
+                    throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
+                }
+
+            }
+
+        } // end Authorization header fallback
         
+        // Build credentials
         Credentials credentials = new Credentials();
         credentials.setUsername(username);
         credentials.setPassword(password);
@@ -99,7 +154,15 @@ public class TokenRESTService {
         
         UserContext userContext;
         try {
-            userContext = authProvider.getUserContext(credentials);
+
+            // Update existing user context if session already exists
+            if (existingSession != null)
+                userContext = authProvider.updateUserContext(existingSession.getUserContext(), credentials);
+
+            /// Otherwise, generate a new user context
+            else
+                userContext = authProvider.getUserContext(credentials);
+
         }
         catch(GuacamoleException e) {
             logger.error("Exception caught while authenticating user.", e);
@@ -110,13 +173,23 @@ public class TokenRESTService {
         // Authentication failed.
         if (userContext == null)
             throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
-        
-        String authToken = authTokenGenerator.getToken();
-        
-        tokenSessionMap.put(authToken, new GuacamoleSession(credentials, userContext));
+
+        // Update existing session, if it exists
+        String authToken;
+        if (existingSession != null) {
+            authToken = token;
+            existingSession.setCredentials(credentials);
+            existingSession.setUserContext(userContext);
+        }
+
+        // If no existing session, generate a new token/session pair
+        else {
+            authToken = authTokenGenerator.getToken();
+            tokenSessionMap.put(authToken, new GuacamoleSession(credentials, userContext));
+        }
         
         logger.debug("Login was successful for user \"{}\".", userContext.self().getUsername());
-        return new APIAuthToken(authToken, username);
+        return new APIAuthToken(authToken, userContext.self().getUsername());
 
     }
 
