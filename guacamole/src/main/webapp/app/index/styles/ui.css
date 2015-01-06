@@ -305,11 +305,12 @@ div.section {
 .connection-list,
 .user-list {
     border: 1px solid rgba(0, 0, 0, 0.25);
-    min-height: 20em;
+    height: 20em;
     -moz-border-radius: 0.2em;
     -webkit-border-radius: 0.2em;
     -khtml-border-radius: 0.2em;
     border-radius: 0.2em;
+    overflow: auto;
 }
 
 .connections .add-connection,
