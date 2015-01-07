@@ -30,6 +30,7 @@ import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
+import org.glyptodon.guacamole.net.auth.Credentials;
 
 /**
  * The MySQL representation of a UserContext.
@@ -38,10 +39,10 @@ import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 public class MySQLUserContext implements UserContext {
 
     /**
-     * The ID of the user owning this context. The permissions of this user
-     * dictate the access given via the user and connection directories.
+     * The the user owning this context. The permissions of this user dictate
+     * the access given via the user and connection directories.
      */
-    private int user_id;
+    private AuthenticatedUser currentUser;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -65,20 +66,21 @@ public class MySQLUserContext implements UserContext {
     /**
      * Initializes the user and directories associated with this context.
      *
-     * @param user_id The ID of the user owning this context.
+     * @param currentUser
+     *     The user owning this context.
      */
-    public void init(int user_id) {
-        this.user_id = user_id;
-        userDirectory.init(user_id);
+    public void init(AuthenticatedUser currentUser) {
+        this.currentUser = currentUser;
+        userDirectory.init(currentUser);
         rootConnectionGroup.init(null, null, 
                 MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
                 MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                ConnectionGroup.Type.ORGANIZATIONAL, user_id);
+                ConnectionGroup.Type.ORGANIZATIONAL, currentUser);
     }
 
     @Override
     public User self() {
-        return userService.retrieveUser(user_id);
+        return userService.retrieveUser(currentUser.getUserID());
     }
 
     @Override

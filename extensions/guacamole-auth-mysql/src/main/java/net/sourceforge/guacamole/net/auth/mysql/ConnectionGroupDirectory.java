@@ -46,10 +46,10 @@ import org.mybatis.guice.transactional.Transactional;
 public class ConnectionGroupDirectory implements Directory<String, ConnectionGroup>{
 
     /**
-     * The ID of the user who this connection directory belongs to.
-     * Access is based on his/her permission settings.
+     * The user who this connection directory belongs to. Access is based on
+     * his/her permission settings.
      */
-    private int user_id;
+    private AuthenticatedUser currentUser;
 
     /**
      * The ID of the parent connection group.
@@ -77,12 +77,15 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
     /**
      * Set the user and parentID for this directory.
      *
-     * @param user_id The ID of the user owning this connection group directory.
-     * @param parentID The ID of the parent connection group.
+     * @param currentUser
+     *     The user owning this connection group directory.
+     *
+     * @param parentID
+     *     The ID of the parent connection group.
      */
-    public void init(int user_id, Integer parentID) {
+    public void init(AuthenticatedUser currentUser, Integer parentID) {
         this.parentID = parentID;
-        this.user_id = user_id;
+        this.currentUser = currentUser;
     }
 
     @Transactional
@@ -91,18 +94,18 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Get connection
         MySQLConnectionGroup connectionGroup =
-                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+                connectionGroupService.retrieveConnectionGroup(identifier, currentUser);
         
         if(connectionGroup == null)
             return null;
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (connectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (connectionGroup.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify access is granted
         permissionCheckService.verifyConnectionGroupAccess(
-                this.user_id,
+                currentUser,
                 connectionGroup.getConnectionGroupID(),
                 MySQLConstants.CONNECTION_GROUP_READ);
 
@@ -117,9 +120,9 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         
         // Verify permission to use the connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (parentID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
         
-        return permissionCheckService.retrieveConnectionGroupIdentifiers(user_id, 
+        return permissionCheckService.retrieveConnectionGroupIdentifiers(currentUser, 
                 parentID, MySQLConstants.CONNECTION_GROUP_READ);
     }
 
@@ -136,26 +139,26 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         String mySQLType = MySQLConstants.getConnectionGroupTypeConstant(type);
         
         // Verify permission to create
-        permissionCheckService.verifySystemAccess(this.user_id,
+        permissionCheckService.verifySystemAccess(currentUser,
                 MySQLConstants.SYSTEM_CONNECTION_GROUP_CREATE);
         
         // Verify permission to edit the parent connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id, 
+        permissionCheckService.verifyConnectionGroupAccess(currentUser, 
                 this.parentID, MySQLConstants.CONNECTION_GROUP_UPDATE);
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (parentID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (parentID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify that no connection already exists with this name.
         MySQLConnectionGroup previousConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(name, parentID, user_id);
+                connectionGroupService.retrieveConnectionGroup(name, parentID, currentUser);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
 
         // Create connection group
         MySQLConnectionGroup connectionGroup = connectionGroupService
-                .createConnectionGroup(name, user_id, parentID, mySQLType);
+                .createConnectionGroup(name, currentUser, parentID, mySQLType);
         
         // Set the connection group ID
         object.setIdentifier(connectionGroup.getIdentifier());
@@ -163,7 +166,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         // Finally, give the current user full access to the newly created
         // connection group.
         ConnectionGroupPermissionKey newConnectionGroupPermission = new ConnectionGroupPermissionKey();
-        newConnectionGroupPermission.setUser_id(this.user_id);
+        newConnectionGroupPermission.setUser_id(currentUser.getUserID());
         newConnectionGroupPermission.setConnection_group_id(connectionGroup.getConnectionGroupID());
 
         // Read permission
@@ -196,7 +199,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         MySQLConnectionGroup mySQLConnectionGroup = (MySQLConnectionGroup) object;
 
         // Verify permission to update
-        permissionCheckService.verifyConnectionAccess(this.user_id,
+        permissionCheckService.verifyConnectionAccess(currentUser,
                 mySQLConnectionGroup.getConnectionGroupID(),
                 MySQLConstants.CONNECTION_UPDATE);
 
@@ -210,17 +213,17 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Get connection
         MySQLConnectionGroup mySQLConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+                connectionGroupService.retrieveConnectionGroup(identifier, currentUser);
         
         if(mySQLConnectionGroup == null)
             throw new GuacamoleResourceNotFoundException("Connection group not found.");
         
         // Verify permission to use the parent connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (mySQLConnectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (mySQLConnectionGroup.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to delete
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 mySQLConnectionGroup.getConnectionGroupID(),
                 MySQLConstants.CONNECTION_GROUP_DELETE);
 
@@ -244,36 +247,36 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
 
         // Get connection group
         MySQLConnectionGroup mySQLConnectionGroup =
-                connectionGroupService.retrieveConnectionGroup(identifier, user_id);
+                connectionGroupService.retrieveConnectionGroup(identifier, currentUser);
         
         if(mySQLConnectionGroup == null)
             throw new GuacamoleResourceNotFoundException("Connection group not found.");
 
         // Verify permission to update the connection
-        permissionCheckService.verifyConnectionAccess(this.user_id,
+        permissionCheckService.verifyConnectionAccess(currentUser,
                 mySQLConnectionGroup.getConnectionGroupID(),
                 MySQLConstants.CONNECTION_GROUP_UPDATE);
         
         // Verify permission to use the from connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (mySQLConnectionGroup.getParentID(), user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (mySQLConnectionGroup.getParentID(), currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to update the from connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 mySQLConnectionGroup.getParentID(), MySQLConstants.CONNECTION_GROUP_UPDATE);
         
         // Verify permission to use the to connection group for organizational purposes
         permissionCheckService.verifyConnectionGroupUsageAccess
-                (toConnectionGroupID, user_id, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
+                (toConnectionGroupID, currentUser, MySQLConstants.CONNECTION_GROUP_ORGANIZATIONAL);
 
         // Verify permission to update the to connection group
-        permissionCheckService.verifyConnectionGroupAccess(this.user_id,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 toConnectionGroupID, MySQLConstants.CONNECTION_GROUP_UPDATE);
 
         // Verify that no connection already exists with this name.
         MySQLConnectionGroup previousConnectionGroup =
                 connectionGroupService.retrieveConnectionGroup(mySQLConnectionGroup.getName(), 
-                toConnectionGroupID, user_id);
+                toConnectionGroupID, currentUser);
         if(previousConnectionGroup != null)
             throw new GuacamoleClientException("That connection group name is already in use.");
         
@@ -284,7 +287,7 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
                 throw new GuacamoleUnsupportedException("Connection group cycle detected.");
             
             MySQLConnectionGroup relativeParentGroup = connectionGroupService.
-                    retrieveConnectionGroup(relativeParentID, user_id);
+                    retrieveConnectionGroup(relativeParentID, currentUser);
             
             relativeParentID = relativeParentGroup.getParentID();
         }
