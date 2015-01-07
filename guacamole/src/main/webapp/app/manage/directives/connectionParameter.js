@@ -64,6 +64,51 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
             var translationStringService = $injector.get('translationStringService');
 
             /**
+             * The type to use for password input fields. By default, password
+             * input fields have type 'password', and are thus masked.
+             * 
+             * @type String
+             * @default 'password'
+             */
+            $scope.passwordInputType = 'password';
+
+            /**
+             * Returns a string which describes the action the next call to
+             * togglePassword() will have.
+             *
+             * @return {String}
+             *     A string which describes the action the next call to
+             *     togglePassword() will have.
+             */
+            $scope.getTogglePasswordHelpText = function getTogglePasswordHelpText() {
+
+                // If password is hidden, togglePassword() will show the password
+                if ($scope.passwordInputType === 'password')
+                    return 'MANAGE.HELP_SHOW_PASSWORD';
+
+                // If password is shown, togglePassword() will hide the password
+                return 'MANAGE.HELP_HIDE_PASSWORD';
+
+            };
+
+            /**
+             * Toggles visibility of the parameter contents, if this parameter
+             * is a password parameter. Initially, password contents are
+             * masked (invisible).
+             */
+            $scope.togglePassword = function togglePassword() {
+
+                // If password is hidden, show the password
+                if ($scope.passwordInputType === 'password')
+                    $scope.passwordInputType = 'text';
+
+                // If password is shown, hide the password
+                else
+                    $scope.passwordInputType = 'password';
+
+            };
+
+            /**
              * Deferred load of the parameter definition, pending availability
              * of the protocol definition as a whole.
              *
