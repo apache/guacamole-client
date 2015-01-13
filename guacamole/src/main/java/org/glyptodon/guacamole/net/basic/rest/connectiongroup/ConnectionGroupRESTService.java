@@ -45,6 +45,7 @@ import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -111,6 +112,9 @@ public class ConnectionGroupRESTService {
             throws GuacamoleException {
 
         User self = userContext.self();
+        
+        // An admin user has access to any connection or connection group
+        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
 
         // Retrieve specified connection group
         ConnectionGroup connectionGroup;
@@ -139,7 +143,7 @@ public class ConnectionGroupRESTService {
                     continue;
 
                 // Filter based on permission, if requested
-                if (permission == null || self.hasPermission(new ConnectionPermission(permission, childIdentifier)))
+                if (isAdmin || permission == null || self.hasPermission(new ConnectionPermission(permission, childIdentifier)))
                     apiConnections.add(new APIConnection(childConnection));
 
             }
