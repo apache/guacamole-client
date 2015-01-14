@@ -178,8 +178,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         
     });
     
-    // Retrieve all connections for which we have UPDATE permission
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    // Retrieve all connections for which we have UPDATE or DELETE permission
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, 
+        [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE])
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });

@@ -33,7 +33,9 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     // Required services
     var $location              = $injector.get('$location');
     var $routeParams           = $injector.get('$routeParams');
+    var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
+    var permissionService      = $injector.get('permissionService');
     
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -68,6 +70,20 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * @type ConnectionGroup
      */
     $scope.connectionGroup = null;
+    
+    /**
+     * Whether the user has UPDATE permission for the current connection group.
+     * 
+     * @type boolean
+     */
+    $scope.hasUpdatePermission = null;
+    
+    /**
+     * Whether the user has DELETE permission for the current connection group.
+     * 
+     * @type boolean
+     */
+    $scope.hasDeletePermission = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -78,14 +94,32 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.rootGroup       !== null
-            && $scope.connectionGroup !== null;
+        return $scope.rootGroup           !== null
+            && $scope.connectionGroup     !== null
+            && $scope.hasUpdatePermission !== null
+            && $scope.hasDeletePermission !== null;
 
     };
+    
+    // Query the user's permissions for the current connection group
+    permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsReceived(permissions) {
+                
+         // Check if the user has UPDATE permission
+         $scope.hasUpdatePermission =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
+            
+         // Check if the user has DELETE permission
+         $scope.hasDeletePermission =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier);
+    
+    });
 
 
     // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });

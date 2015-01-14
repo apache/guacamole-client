@@ -39,17 +39,17 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
      *     The ID of the connection group to retrieve. If not provided, the
      *     root connection group will be retrieved by default.
      *     
-     * @param {String} [permissionType]
-     *     The permission type string of the permission that the current user
-     *     must have for a given connection or connection group to appear
-     *     within the result. Valid values are listed within
-     *     PermissionSet.ObjectType.
+     * @param {String[]} [permissionType]
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for a connection to appear in the result. 
+     *     If null, no filtering will be performed. Valid values are listed
+     *     within PermissionSet.ObjectType.
      *
      * @returns {Promise.ConnectionGroup}
      *     A promise which will resolve with a @link{ConnectionGroup} upon
      *     success.
      */
-    service.getConnectionGroupTree = function getConnectionGroupTree(connectionGroupID, permissionType) {
+    service.getConnectionGroupTree = function getConnectionGroupTree(connectionGroupID, permissionTypes) {
         
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
@@ -60,8 +60,8 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
         };
 
         // Add permission filter if specified
-        if (permissionType)
-            httpParameters.permission = permissionType;
+        if (permissionTypes)
+            httpParameters.permission = permissionTypes;
 
         // Retrieve connection group 
         return $http({

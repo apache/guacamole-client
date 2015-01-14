@@ -35,8 +35,10 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
+    var authenticationService    = $injector.get('authenticationService');
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
+    var permissionService        = $injector.get('permissionService');
     var protocolService          = $injector.get('protocolService');
     var translationStringService = $injector.get('translationStringService');
 
@@ -95,6 +97,20 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * @type HistoryEntryWrapper[]
      */
     $scope.historyEntryWrappers = null;
+    
+    /**
+     * Whether the user has UPDATE permission for the current connection.
+     * 
+     * @type boolean
+     */
+    $scope.hasUpdatePermission = null;
+    
+    /**
+     * Whether the user has DELETE permission for the current connection.
+     * 
+     * @type boolean
+     */
+    $scope.hasDeletePermission = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -109,14 +125,33 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             && $scope.rootGroup            !== null
             && $scope.connection           !== null
             && $scope.parameters           !== null
-            && $scope.historyEntryWrappers !== null;
+            && $scope.historyEntryWrappers !== null
+            && $scope.hasUpdatePermission  !== null
+            && $scope.hasDeletePermission  !== null;
 
     };
 
     // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.UPDATE)
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, 
+        [PermissionSet.ObjectPermissionType.ADMINISTER])
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
+    });
+    
+    // Query the user's permissions for the current connection
+    permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsReceived(permissions) {
+                
+         // Check if the user has UPDATE permission
+         $scope.hasUpdatePermission =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
+            
+         // Check if the user has DELETE permission
+         $scope.hasDeletePermission =
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier);
+    
     });
    
     // Get protocol metadata
