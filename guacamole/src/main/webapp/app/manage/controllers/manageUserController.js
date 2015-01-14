@@ -103,8 +103,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
     });
 
-    // Retrieve all connections for which we have UPDATE permission
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, PermissionSet.ObjectPermissionType.ADMINISTER)
+    // Retrieve all connections for which we have ADMINISTER permission
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });

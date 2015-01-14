@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -45,6 +46,7 @@ import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -80,6 +82,40 @@ public class ConnectionGroupRESTService {
     private ObjectRetrievalService retrievalService;
     
     /**
+     * Determines whether the given user has at least one of the given
+     * permissions for the connection having the given identifier.
+     * 
+     * @param user
+     *     The user to check permissions for.
+     * 
+     * @param identifier 
+     *     The identifier of the connection to check permissions for.
+     * 
+     * @param permissions
+     *     The permissions to check. The given user must have one or more of
+     *     these permissions for this function to return true.
+     * 
+     * @return
+     *     true if the user has at least one of the given permissions.
+     */
+    private boolean hasConnectionPermission(User user, String identifier,
+            List<ObjectPermission.Type> permissions) throws GuacamoleException {
+        
+        // Determine whether user has at least one of the given permissions
+        for (ObjectPermission.Type permission : permissions) {
+            
+            ConnectionPermission connectionPermission = new ConnectionPermission(permission, identifier);
+            if (user.hasPermission(connectionPermission))
+                return true;
+            
+        }
+        
+        // None of the given permissions were present
+        return false;
+        
+    }
+    
+    /**
      * Retrieves the given connection group from the user context, including
      * all descendant connections and groups if requested.
      *
@@ -93,10 +129,10 @@ public class ConnectionGroupRESTService {
      *     Whether the descendant connections and groups of the given
      *     connection group should also be retrieved.
      * 
-     * @param permission
-     *     The permission the current user must have for a connection or
-     *     connection group to be returned in the results, if any. If null
-     *     is specified, no filtering by permission will be performed.
+     * @param permissions
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for a connection to appear in the result. 
+     *     If null, no filtering will be performed.
      *
      * @return
      *     The requested connection group, or null if no such connection group
@@ -107,10 +143,13 @@ public class ConnectionGroupRESTService {
      *     or any of its descendants.
      */
     private APIConnectionGroup retrieveConnectionGroup(UserContext userContext,
-            String identifier, boolean includeDescendants, ObjectPermission.Type permission)
+            String identifier, boolean includeDescendants, List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
         User self = userContext.self();
+        
+        // An admin user has access to any connection or connection group
+        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
 
         // Retrieve specified connection group
         ConnectionGroup connectionGroup;
@@ -139,7 +178,7 @@ public class ConnectionGroupRESTService {
                     continue;
 
                 // Filter based on permission, if requested
-                if (permission == null || self.hasPermission(new ConnectionPermission(permission, childIdentifier)))
+                if (isAdmin || permissions == null || hasConnectionPermission(self, childIdentifier, permissions))
                     apiConnections.add(new APIConnection(childConnection));
 
             }
@@ -154,7 +193,7 @@ public class ConnectionGroupRESTService {
             for (String childIdentifier : groupDirectory.getIdentifiers()) {
 
                 // Pull current connection group - silently ignore if connection group was removed prior to read
-                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true, permission);
+                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true, permissions);
                 if (childConnectionGroup == null)
                     continue;
 
@@ -215,11 +254,11 @@ public class ConnectionGroupRESTService {
      * @param connectionGroupID
      *     The ID of the connection group to retrieve.
      *
-     * @param permission
+     * @param permissions
      *     If specified, limit the returned list to only those connections for
-     *     which the current user has the given permission. Otherwise, all
-     *     visible connections are returned. Connection groups are unaffected
-     *     by this parameter.
+     *     which the current user has any of the given permissions. Otherwise, 
+     *     all visible connections are returned. Connection groups are 
+     *     unaffected by this parameter.
      * 
      * @return
      *     The requested connection group, including all descendants.
@@ -233,13 +272,13 @@ public class ConnectionGroupRESTService {
     @AuthProviderRESTExposure
     public APIConnectionGroup getConnectionGroupTree(@QueryParam("token") String authToken, 
             @PathParam("connectionGroupID") String connectionGroupID,
-            @QueryParam("permission") ObjectPermission.Type permission)
+            @QueryParam("permission") List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Retrieve requested connection group and all descendants
-        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true, permission);
+        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true, permissions);
         if (connectionGroup == null)
             throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
 
