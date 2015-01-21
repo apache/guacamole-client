@@ -159,14 +159,18 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         var children = [];
 
         // Add any child connections
-        connectionGroup.childConnections.forEach(function addChildConnection(child) {
-            children.push(GroupListItem.fromConnection(child));
-        });
+        if (connectionGroup.childConnections) {
+            connectionGroup.childConnections.forEach(function addChildConnection(child) {
+                children.push(GroupListItem.fromConnection(child));
+            });
+        }
 
         // Add any child groups 
-        connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
-            children.push(GroupListItem.fromConnectionGroup(child));
-        });
+        if (connectionGroup.childConnectionGroups) {
+            connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
+                children.push(GroupListItem.fromConnectionGroup(child));
+            });
+        }
 
         // Return item representing the given connection group
         return new GroupListItem({

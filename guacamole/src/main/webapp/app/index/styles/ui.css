@@ -255,14 +255,14 @@ div.section {
     padding-left: 6px;
 }
  
+.group .icon.group.type.empty.balancer {
+    opacity: 1;
+    background-image: url('images/protocol-icons/guac-monitor.png');
+}
+
 .group.expanded > .children {
     display: block;
     border-left: 1px dotted rgba(0, 0, 0, 0.25);
-}
-
-.group.balancer:not(.empty) > .caption .icon.type {
-    display: inline-block;
-    background-image: url('images/protocol-icons/guac-monitor.png');
 }
 
 .group > .caption .icon.group {

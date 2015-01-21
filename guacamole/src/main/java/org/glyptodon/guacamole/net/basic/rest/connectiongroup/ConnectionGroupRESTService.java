@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -44,6 +45,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
 import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -114,7 +116,41 @@ public class ConnectionGroupRESTService {
         return false;
         
     }
-    
+
+    /**
+     * Determines whether the given user has at least one of the given
+     * permissions for the connection group having the given identifier.
+     *
+     * @param user
+     *     The user to check permissions for.
+     *
+     * @param identifier
+     *     The identifier of the connection group to check permissions for.
+     *
+     * @param permissions
+     *     The permissions to check. The given user must have one or more of
+     *     these permissions for this function to return true.
+     *
+     * @return
+     *     true if the user has at least one of the given permissions.
+     */
+    private boolean hasConnectionGroupPermission(User user, String identifier,
+            List<ObjectPermission.Type> permissions) throws GuacamoleException {
+
+        // Determine whether user has at least one of the given permissions
+        for (ObjectPermission.Type permission : permissions) {
+
+            ConnectionGroupPermission connectionGroupPermission = new ConnectionGroupPermission(permission, identifier);
+            if (user.hasPermission(connectionGroupPermission))
+                return true;
+
+        }
+
+        // None of the given permissions were present
+        return false;
+
+    }
+
     /**
      * Retrieves the given connection group from the user context, including
      * all descendant connections and groups if requested.
@@ -163,8 +199,14 @@ public class ConnectionGroupRESTService {
         // Wrap queried connection group
         APIConnectionGroup apiConnectionGroup = new APIConnectionGroup(connectionGroup);
 
-        // Recursively query all descendants if necessary
-        if (includeDescendants) {
+        // Recursively query all descendants if necessary, only querying the
+        // descendants of balancing groups if we have admin permission on that
+        // group
+        if (includeDescendants
+            && (connectionGroup.getType() != ConnectionGroup.Type.BALANCING
+                || isAdmin
+                || hasConnectionGroupPermission(self, identifier,
+                        Collections.singletonList(ObjectPermission.Type.ADMINISTER)))) {
 
             // Query all child connections
             Collection<APIConnection> apiConnections = new ArrayList<APIConnection>();
