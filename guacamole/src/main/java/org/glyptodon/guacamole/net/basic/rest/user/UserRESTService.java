@@ -111,6 +111,40 @@ public class UserRESTService {
      */
     @Inject
     private ObjectRetrievalService retrievalService;
+    
+    /**
+     * Determines whether the given user has at least one of the given
+     * permissions for the user having the given username.
+     * 
+     * @param user
+     *     The user to check permissions for.
+     * 
+     * @param username 
+     *     The username of the user to check permissions for.
+     * 
+     * @param permissions
+     *     The permissions to check. The given user must have one or more of
+     *     these permissions for this function to return true.
+     * 
+     * @return
+     *     true if the user has at least one of the given permissions.
+     */
+    private boolean hasUserPermission(User user, String username,
+            List<ObjectPermission.Type> permissions) throws GuacamoleException {
+        
+        // Determine whether user has at least one of the given permissions
+        for (ObjectPermission.Type permission : permissions) {
+            
+            UserPermission userPermission = new UserPermission(permission, username);
+            if (user.hasPermission(userPermission))
+                return true;
+            
+        }
+        
+        // None of the given permissions were present
+        return false;
+        
+    }
 
     /**
      * Gets a list of users in the system, filtering the returned list by the
@@ -120,10 +154,10 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
-     * @param permission
-     *     If specified, limit the returned list to only those users for whom
-     *     the current user has the given permission. Otherwise, all visible
-     *     users are returned.
+     * @param permissions
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for a user to appear in the result. 
+     *     If null, no filtering will be performed.
      * 
      * @return
      *     A list of all visible users. If a permission was specified, this
@@ -136,11 +170,14 @@ public class UserRESTService {
     @GET
     @AuthProviderRESTExposure
     public List<APIUser> getUsers(@QueryParam("token") String authToken,
-            @QueryParam("permission") UserPermission.Type permission)
+            @QueryParam("permission") List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         User self = userContext.self();
+        
+        // An admin user has access to any user
+        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
 
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
@@ -150,7 +187,7 @@ public class UserRESTService {
         // Add all users matching the given permission filter
         for (String username : userDirectory.getIdentifiers()) {
 
-            if (permission == null || self.hasPermission(new UserPermission(permission, username)))
+            if (isAdmin || permissions == null || hasUserPermission(self, username, permissions))
                 users.add(new APIUser(userDirectory.get(username)));
 
         }

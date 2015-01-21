@@ -74,14 +74,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     /**
      * Whether the user has UPDATE permission for the current connection group.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasUpdatePermission = null;
     
     /**
      * Whether the user has DELETE permission for the current connection group.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasDeletePermission = null;
 

@@ -33,16 +33,17 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
      * returning a promise that provides an array of @link{User} objects if
      * successful.
      * 
-     * @param {String} [permissionType]
-     *     The permission type string of the permission that the current user
-     *     must have for a given user to appear within the list. Valid values
-     *     are listed within PermissionSet.ObjectType.
+     * @param {String[]} [permissionTypes]
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for a user to appear in the result. 
+     *     If null, no filtering will be performed. Valid values are listed
+     *     within PermissionSet.ObjectType.
      *                          
      * @returns {Promise.<User[]>}
      *     A promise which will resolve with an array of @link{User} objects
      *     upon success.
      */
-    service.getUsers = function getUsers(permissionType) {
+    service.getUsers = function getUsers(permissionTypes) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -50,8 +51,8 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
         };
 
         // Add permission filter if specified
-        if (permissionType)
-            httpParameters.permission = permissionType;
+        if (permissionTypes)
+            httpParameters.permission = permissionTypes;
 
         // Retrieve users
         return $http({

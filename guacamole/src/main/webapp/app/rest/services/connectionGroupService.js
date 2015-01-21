@@ -39,7 +39,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
      *     The ID of the connection group to retrieve. If not provided, the
      *     root connection group will be retrieved by default.
      *     
-     * @param {String[]} [permissionType]
+     * @param {String[]} [permissionTypes]
      *     The set of permissions to filter with. A user must have one or more
      *     of these permissions for a connection to appear in the result. 
      *     If null, no filtering will be performed. Valid values are listed

@@ -101,14 +101,14 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     /**
      * Whether the user has UPDATE permission for the current connection.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasUpdatePermission = null;
     
     /**
      * Whether the user has DELETE permission for the current connection.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasDeletePermission = null;
 
