@@ -79,18 +79,17 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     $scope.rootGroup = null;
     
-    
     /**
      * Whether the authenticated user has UPDATE permission for the user being edited.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasUpdatePermission = null;
     
     /**
      * Whether the authenticated user has DELETE permission for the user being edited.
      * 
-     * @type boolean
+     * @type Boolean
      */
     $scope.hasDeletePermission = null;
 
