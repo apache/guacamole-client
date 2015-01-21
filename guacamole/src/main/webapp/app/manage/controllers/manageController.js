@@ -185,8 +185,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         $scope.rootGroup = rootGroup;
     });
 
-    // Retrieve all users for whom we have UPDATE permission
-    userService.getUsers(PermissionSet.ObjectPermissionType.UPDATE)
+    // Retrieve all users for whom we have UPDATE or DELETE permission
+    userService.getUsers([PermissionSet.ObjectPermissionType.UPDATE, 
+        PermissionSet.ObjectPermissionType.DELETE])
     .success(function usersReceived(users) {
         $scope.users = users;
     });
