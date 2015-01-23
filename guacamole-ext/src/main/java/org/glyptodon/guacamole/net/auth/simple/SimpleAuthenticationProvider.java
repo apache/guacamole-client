@@ -86,7 +86,7 @@ public abstract class SimpleAuthenticationProvider
             tokenFilter.filterValues(config.getParameters());
         
         // Return user context restricted to authorized configs
-        if (username != null)
+        if (username != null && !username.isEmpty())
             return new SimpleUserContext(username, configs);
 
         // If there is no associated username, let SimpleUserContext generate one
