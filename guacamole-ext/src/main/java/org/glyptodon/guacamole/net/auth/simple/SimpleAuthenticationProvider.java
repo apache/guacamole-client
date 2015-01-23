@@ -66,6 +66,9 @@ public abstract class SimpleAuthenticationProvider
     public UserContext getUserContext(Credentials credentials)
             throws GuacamoleException {
 
+        // Get username, if any
+        String username = credentials.getUsername();
+
         // Get configurations
         Map<String, GuacamoleConfiguration> configs =
                 getAuthorizedConfigurations(credentials);
@@ -83,7 +86,12 @@ public abstract class SimpleAuthenticationProvider
             tokenFilter.filterValues(config.getParameters());
         
         // Return user context restricted to authorized configs
-        return new SimpleUserContext(credentials.getUsername(), configs);
+        if (username != null)
+            return new SimpleUserContext(username, configs);
+
+        // If there is no associated username, let SimpleUserContext generate one
+        else
+            return new SimpleUserContext(configs);
 
     }
 
