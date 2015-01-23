@@ -176,6 +176,10 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         User self = userContext.self();
         
+        // Do not filter on permissions if no permissions are specified
+        if (permissions != null && permissions.isEmpty())
+            permissions = null;
+
         // An admin user has access to any user
         boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
 
