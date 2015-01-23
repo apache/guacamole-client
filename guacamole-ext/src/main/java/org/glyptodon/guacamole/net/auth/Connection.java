@@ -52,8 +52,13 @@ public interface Connection {
     public void setName(String name);
 
     /**
-     * Returns the unique identifier assigned to this Connection.
-     * @return The unique identifier assigned to this Connection.
+     * Returns the unique identifier assigned to this Connection. All
+     * connections must have a deterministic, unique identifier which may not
+     * be null.
+     *
+     * @return
+     *     The unique identifier assigned to this Connection, which may not be
+     *     null.
      */
     public String getIdentifier();
 

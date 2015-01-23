@@ -297,10 +297,10 @@ public class ConnectionGroupRESTService {
      *     The ID of the connection group to retrieve.
      *
      * @param permissions
-     *     If specified, limit the returned list to only those connections for
-     *     which the current user has any of the given permissions. Otherwise, 
-     *     all visible connections are returned. Connection groups are 
-     *     unaffected by this parameter.
+     *     If specified and non-empty, limit the returned list to only those
+     *     connections for which the current user has any of the given
+     *     permissions. Otherwise, all visible connections are returned.
+     *     Connection groups are unaffected by this parameter.
      * 
      * @return
      *     The requested connection group, including all descendants.
@@ -319,6 +319,10 @@ public class ConnectionGroupRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
+        // Do not filter on permissions if no permissions are specified
+        if (permissions != null && permissions.isEmpty())
+            permissions = null;
+        
         // Retrieve requested connection group and all descendants
         APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true, permissions);
         if (connectionGroup == null)

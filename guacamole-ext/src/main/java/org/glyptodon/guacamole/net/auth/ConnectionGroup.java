@@ -52,8 +52,13 @@ public interface ConnectionGroup {
     public void setName(String name);
 
     /**
-     * Returns the unique identifier assigned to this ConnectionGroup.
-     * @return The unique identifier assigned to this ConnectionGroup.
+     * Returns the unique identifier assigned to this ConnectionGroup. All
+     * connection groups must have a deterministic, unique identifier which may
+     * not be null.
+     *
+     * @return
+     *     The unique identifier assigned to this ConnectionGroup, which may
+     *     not be null.
      */
     public String getIdentifier();
 

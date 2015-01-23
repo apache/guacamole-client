@@ -36,8 +36,11 @@ public interface User {
 
     /**
      * Returns the name of this user, which must be unique across all users.
+     * All users must have a deterministic, unique username which may not be
+     * null.
      *
-     * @return The name of this user.
+     * @return
+     *     The unique username of this user, which may not be null.
      */
     public String getUsername();
 
