@@ -22,10 +22,12 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
+import java.util.List;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
@@ -63,6 +65,11 @@ public class APIConnection {
     private Map<String, String> parameters;
     
     /**
+     * The count of currently active users for this connection.
+     */
+    private int activeUsers;
+    
+    /**
      * Create an empty APIConnection.
      */
     public APIConnection() {}
@@ -86,6 +93,14 @@ public class APIConnection {
         this.parentIdentifier = connection.getParentIdentifier();
         if (this.parentIdentifier == null)
             this.parentIdentifier = APIConnectionGroup.ROOT_IDENTIFIER;
+        
+        // Set the number of currently active users
+        this.activeUsers = 0;
+        
+        for (ConnectionRecord history : connection.getHistory()) {
+            if (history.isActive())
+                this.activeUsers++;
+        }
 
         // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
@@ -172,6 +187,22 @@ public class APIConnection {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    /**
+     * Returns the number of currently active users for this connection.
+     * @return The number of currently active users for this connection.
+     */
+    public int getActiveUsers() {
+        return activeUsers;
+    }
+
+    /**
+     * Set the number of currently active users for this connection.
+     * @param activeUsers The number of currently active users for this connection.
+     */
+    public void setActiveUsers(int activeUsers) {
+        this.activeUsers = activeUsers;
     }
     
 }

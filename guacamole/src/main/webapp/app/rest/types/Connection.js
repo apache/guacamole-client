@@ -79,6 +79,15 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          * @type Object.<String, String>
          */
         this.parameters = template.parameters;
+        
+        /**
+         * The count of currently active users for this connection. This field
+         * will be returned from the REST API during a get operation, 
+         * but may not be set when doing an update or create operation.
+         * 
+         * @type Number
+         */
+        this.activeUsers = template.activeUsers;
 
     };
 

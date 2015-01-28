@@ -140,6 +140,16 @@ div.section {
     background: #DEB;
 }
 
+.caption.active * {
+    opacity: 0.5;
+}
+
+.caption .activeUserCount {
+    font-style: italic;
+    position: absolute;
+    right: 1em;
+}
+
 .list-item:not(.selected) .caption:hover {
     background: #CDA;
 }
