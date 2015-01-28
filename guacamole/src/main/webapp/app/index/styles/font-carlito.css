@@ -41,3 +41,10 @@
     font-style: normal;
     src: url('fonts/carlito/Carlito-Bold.woff') format('woff');
 }
+
+@font-face {
+    font-family: 'Carlito';
+    font-weight: normal;
+    font-style: italic;
+    src: url('fonts/carlito/Carlito-Italic.woff') format('woff');
+}
