@@ -31,8 +31,8 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
         scope: {},
         transclude: true,
         templateUrl: 'app/client/templates/guacViewport.html',
-        controller: ['$scope', '$window', '$document', '$element',
-            function guacViewportController($scope, $window, $document, $element) {
+        controller: ['$scope', '$interval', '$window', '$document', '$element',
+            function guacViewportController($scope, $interval, $window, $document, $element) {
 
             /**
              * The fullscreen container element.
@@ -69,7 +69,7 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
                 var scrollHeight = document.body.scrollHeight;
 
                 // Calculate new height
-                var adjustedHeight = $window.innerHeight - scrollTop;
+                var adjustedHeight = scrollHeight - scrollTop;
 
                 // Only update if not in response to our own call to scrollTo()
                 if (scrollLeft !== scrollWidth && scrollTop !== scrollHeight
@@ -84,14 +84,22 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
 
                 }
 
+                // Manually attempt scroll if height has not been adjusted
+                else if (adjustedHeight === 0)
+                    $window.scrollTo(scrollWidth, scrollHeight);
+
             };
 
             // Fit container within visible region when window scrolls
             $window.addEventListener('scroll', fitVisibleArea);
 
-            // Clean up event listener on destroy
+            // Poll every 10ms, in case scroll event does not fire
+            var pollArea = $interval(fitVisibleArea, 10);
+
+            // Clean up on destruction
             $scope.$on('$destroy', function destroyViewport() {
                 $window.removeEventListener('scroll', fitVisibleArea);
+                $interval.cancel(pollArea);
             });
 
         }]
