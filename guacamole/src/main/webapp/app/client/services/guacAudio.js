@@ -30,6 +30,11 @@ angular.module('client').factory('guacAudio', [function guacAudio() {
      */
     return new (function() {
 
+        /**
+         * Array of codecs to test.
+         *
+         * @type String[]
+         */
         var codecs = [
             'audio/ogg; codecs="vorbis"',
             'audio/mp4; codecs="mp4a.40.5"',
@@ -38,8 +43,36 @@ angular.module('client').factory('guacAudio', [function guacAudio() {
             'audio/wav; codecs=1'
         ];
 
+        /**
+         * Array of all codecs that are reported as "probably" supported.
+         *
+         * @type String[]
+         */
         var probably_supported = [];
+
+        /**
+         * Array of all codecs that are reported as "maybe" supported.
+         *
+         * @type String[]
+         */
         var maybe_supported = [];
+
+        /**
+         * Internal audio element for the sake of testing codec support. If
+         * audio is explicitly not supported by the browser, this will instead
+         * be null.
+         *
+         * @type Audio
+         */
+        var audio = null;
+
+        // Attempt to create audio element
+        try {
+            audio = new Audio();
+        }
+        catch (e) {
+            // If creation fails, allow audio to remain null
+        }
 
         /**
          * Array of all supported audio mimetypes, ordered by liklihood of
@@ -47,32 +80,33 @@ angular.module('client').factory('guacAudio', [function guacAudio() {
          */
         this.supported = [];
 
-        // Build array of supported audio formats
-        codecs.forEach(function(mimetype) {
+        // Build array of supported audio formats (if audio supported at all)
+        if (audio) {
+            codecs.forEach(function(mimetype) {
 
-            var audio = new Audio();
-            var support_level = audio.canPlayType(mimetype);
+                var support_level = audio.canPlayType(mimetype);
 
-            // Trim semicolon and trailer
-            var semicolon = mimetype.indexOf(";");
-            if (semicolon != -1)
-                mimetype = mimetype.substring(0, semicolon);
+                // Trim semicolon and trailer
+                var semicolon = mimetype.indexOf(";");
+                if (semicolon !== -1)
+                    mimetype = mimetype.substring(0, semicolon);
 
-            // Partition by probably/maybe
-            if (support_level == "probably")
-                probably_supported.push(mimetype);
-            else if (support_level == "maybe")
-                maybe_supported.push(mimetype);
+                // Partition by probably/maybe
+                if (support_level === "probably")
+                    probably_supported.push(mimetype);
+                else if (support_level === "maybe")
+                    maybe_supported.push(mimetype);
 
-        });
+            });
 
-        // Add probably supported types first
-        Array.prototype.push.apply(
-            this.supported, probably_supported);
+            // Add probably supported types first
+            Array.prototype.push.apply(
+                this.supported, probably_supported);
 
-        // Prioritize "maybe" supported types second
-        Array.prototype.push.apply(
-            this.supported, maybe_supported);
+            // Prioritize "maybe" supported types second
+            Array.prototype.push.apply(
+                this.supported, maybe_supported);
+        }
 
     })();
 
