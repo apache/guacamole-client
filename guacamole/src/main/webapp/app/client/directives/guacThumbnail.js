@@ -90,17 +90,10 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
             var main = $element[0];
 
             /**
-             * The element which functions as a detector for size changes.
-             * 
-             * @type Element
-             */
-            var resizeSensor = $element.find('.resize-sensor')[0];
-
-            /**
              * Updates the scale of the attached Guacamole.Client based on current window
              * size and "auto-fit" setting.
              */
-            var updateDisplayScale = function updateDisplayScale() {
+            $scope.updateDisplayScale = function updateDisplayScale() {
 
                 if (!display) return;
 
@@ -159,13 +152,9 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
                 thumbnail.height = height;
                 $scope.thumbnail = thumbnail.toDataURL("image/png");
 
-                $scope.$evalAsync(updateDisplayScale);
+                // Init display scale
+                $scope.$evalAsync($scope.updateDisplayScale);
 
-            });
-
-            // If the element is resized, attempt to resize client
-            resizeSensor.contentDocument.defaultView.addEventListener('resize', function mainElementResized() {
-                $scope.$apply(updateDisplayScale);
             });
 
         }]
