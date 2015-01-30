@@ -168,8 +168,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         shown : false,
 
         /**
-         * The currently selected input method. This may be either 'none',
-         * 'osk', or 'none'.
+         * The currently selected input method. This may be either "none",
+         * "osk", or "text".
          *
          * @type String
          */
