@@ -106,7 +106,7 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                     };
 
                     // Resize keyboard whenever element changes size
-                    resizeSensor.contentWindow.addEventListener('resize', resizeListener);
+                    resizeSensor.contentDocument.defaultView.addEventListener('resize', resizeListener);
 
                 }
 

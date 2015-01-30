@@ -164,7 +164,7 @@ angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
             });
 
             // If the element is resized, attempt to resize client
-            resizeSensor.contentWindow.addEventListener('resize', function mainElementResized() {
+            resizeSensor.contentDocument.defaultView.addEventListener('resize', function mainElementResized() {
                 $scope.$apply(updateDisplayScale);
             });
 

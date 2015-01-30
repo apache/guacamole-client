@@ -339,7 +339,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
             
             // If the element is resized, attempt to resize client
-            resizeSensor.contentWindow.addEventListener('resize', function mainElementResized() {
+            resizeSensor.contentDocument.defaultView.addEventListener('resize', function mainElementResized() {
 
                 // Send new display size, if changed
                 if (client && display) {
