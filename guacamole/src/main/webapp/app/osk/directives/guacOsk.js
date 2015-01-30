@@ -57,18 +57,8 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
              */
             var main = $element[0];
 
-            /**
-             * The element which functions as a detector for size changes.
-             * 
-             * @type Element
-             */
-            var resizeSensor = $element.find('.resize-sensor')[0];
-
-            /**
-             * Event listener which resizes the current keyboard, if any, such
-             * that it fits within available space.
-             */
-            var resizeListener = function resizeListener() {
+            // Size keyboard to same size as main element
+            $scope.keyboardResized = function keyboardResized() {
 
                 // Resize keyboard, if defined
                 if (keyboard)
@@ -104,9 +94,6 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                     keyboard.onkeyup = function(keysym) {
                         $rootScope.$broadcast('guacSyntheticKeyup', keysym);
                     };
-
-                    // Resize keyboard whenever element changes size
-                    resizeSensor.contentDocument.defaultView.addEventListener('resize', resizeListener);
 
                 }
 

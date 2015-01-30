@@ -339,7 +339,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
             });
             
             // If the element is resized, attempt to resize client
-            resizeSensor.contentDocument.defaultView.addEventListener('resize', function mainElementResized() {
+            $scope.mainElementResized = function mainElementResized() {
 
                 // Send new display size, if changed
                 if (client && display) {
@@ -355,7 +355,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 $scope.$evalAsync(updateDisplayScale);
 
-            });
+            };
 
             // Watch for changes to mouse emulation mode
             // Send all received mouse events to the client
