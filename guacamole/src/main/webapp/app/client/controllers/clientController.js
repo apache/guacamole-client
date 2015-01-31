@@ -168,6 +168,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         shown : false,
 
         /**
+         * Whether the Guacamole display should be scaled to fit the browser
+         * window.
+         *
+         * @type Boolean
+         */
+        autoFit : true,
+
+        /**
          * The currently selected input method. This may be either "none",
          * "osk", or "text".
          *
@@ -310,7 +318,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
 
         // Update scale based on pinch distance
-        $scope.autoFit = false;
+        $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale = currentScale;
 
@@ -476,7 +484,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
     
     $scope.zoomIn = function zoomIn() {
-        $scope.autoFit = false;
+        $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale += 0.1;
     };
@@ -486,12 +494,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.client.clientProperties.scale -= 0.1;
     };
     
-    $scope.autoFit = true;
-    
     $scope.changeAutoFit = function changeAutoFit() {
-        if ($scope.autoFit && $scope.client.clientProperties.minScale) {
+        if ($scope.menu.autoFit && $scope.client.clientProperties.minScale) {
             $scope.client.clientProperties.autoFit = true;
-        } else {
+        }
+        else {
             $scope.client.clientProperties.autoFit = false;
             $scope.client.clientProperties.scale = 1; 
         }
