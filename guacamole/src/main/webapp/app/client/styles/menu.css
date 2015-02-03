@@ -21,10 +21,10 @@
  */
 
 #menu {
-    overflow: auto;
+    overflow: hidden;
     position: absolute;
     top: 0;
-    bottom: 0;
+    height: 100%;
     max-width: 100%;
     width: 480px;
     background: #EEE;
@@ -35,6 +35,43 @@
     -ms-transition: left 0.125s, opacity 0.125s;
     -o-transition: left 0.125s, opacity 0.125s;
     transition: left 0.125s, opacity 0.125s;
+}
+
+.menu-content {
+    overflow: hidden;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-header {
+    display: table-row;
+    height: 0;
+}
+
+.menu-header h2 {
+    margin-bottom: 0;
+}
+
+.menu-body {
+    display: table-row;
+    height: 100%;
+}
+
+.menu-body-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.menu-body-scroll-region {
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 #menu h3 {

@@ -154,24 +154,48 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         callback: RECONNECT_ACTION.callback,
         remaining: 15
     };
-    
-    // Hide menu by default
-    $scope.menuShown = false;
 
-    // Use physical keyboard by default
-    $scope.inputMethod = 'none';
+    /**
+     * Menu-specific properties.
+     */
+    $scope.menu = {
+
+        /**
+         * Whether the menu is currently shown.
+         *
+         * @type Boolean
+         */
+        shown : false,
+
+        /**
+         * Whether the Guacamole display should be scaled to fit the browser
+         * window.
+         *
+         * @type Boolean
+         */
+        autoFit : true,
+
+        /**
+         * The currently selected input method. This may be either "none",
+         * "osk", or "text".
+         *
+         * @type String
+         */
+        inputMethod : 'none',
+
+        /**
+         * The current scroll state of the menu.
+         *
+         * @type ScrollState
+         */
+        scrollState : new ScrollState()
+
+    };
 
     // Convenience method for closing the menu
     $scope.closeMenu = function closeMenu() {
-        $scope.menuShown = false;
+        $scope.menu.shown = false;
     };
-
-    /**
-     * The current scroll state of the menu.
-     *
-     * @type ScrollState
-     */
-    $scope.menuScrollState = new ScrollState();
 
     // Update the model when clipboard data received from client
     $scope.$on('guacClientClipboard', function clientClipboardListener(event, client, mimetype, clipboardData) {
@@ -206,12 +230,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Hide menu if swipe gesture is detected
         if (Math.abs(currentY - startY)  <  MENU_DRAG_VERTICAL_TOLERANCE
                   && startX   - currentX >= MENU_DRAG_DELTA)
-            $scope.menuShown = false;
+            $scope.menu.shown = false;
 
         // Scroll menu by default
         else {
-            $scope.menuScrollState.left -= deltaX;
-            $scope.menuScrollState.top -= deltaY;
+            $scope.menu.scrollState.left -= deltaX;
+            $scope.menu.scrollState.top -= deltaY;
         }
 
         return false;
@@ -226,7 +250,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
             if (Math.abs(currentY - startY) <  MENU_DRAG_VERTICAL_TOLERANCE
                       && currentX - startX  >= MENU_DRAG_DELTA)
-                $scope.menuShown = true;
+                $scope.menu.shown = true;
 
         }
 
@@ -294,7 +318,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         currentScale = Math.min(currentScale, $scope.client.clientProperties.maxScale);
 
         // Update scale based on pinch distance
-        $scope.autoFit = false;
+        $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale = currentScale;
 
@@ -307,7 +331,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     // Show/hide UI elements depending on input method
-    $scope.$watch('inputMethod', function setInputMethod(inputMethod) {
+    $scope.$watch('menu.inputMethod', function setInputMethod(inputMethod) {
 
         // Show input methods only if selected
         $scope.showOSK       = (inputMethod === 'osk');
@@ -315,7 +339,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    $scope.$watch('menuShown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
+    $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
         
         // Send clipboard data if menu is hidden
         if (!menuShown && menuShownPreviousState)
@@ -351,7 +375,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 
                 // Toggle the menu
                 $scope.$apply(function() {
-                    $scope.menuShown = !$scope.menuShown;
+                    $scope.menu.shown = !$scope.menu.shown;
                 });
             }
         }
@@ -372,8 +396,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Show menu and scroll file transfer into view
         if (count > oldCount) {
-            $scope.menuShown = true;
-            $scope.fileTransferMarker.scrollIntoView();
+            $scope.menu.shown = true;
+            $scope.menu.fileTransferMarker.scrollIntoView();
         }
 
     });
@@ -460,7 +484,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
     
     $scope.zoomIn = function zoomIn() {
-        $scope.autoFit = false;
+        $scope.menu.autoFit = false;
         $scope.client.clientProperties.autoFit = false;
         $scope.client.clientProperties.scale += 0.1;
     };
@@ -470,12 +494,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.client.clientProperties.scale -= 0.1;
     };
     
-    $scope.autoFit = true;
-    
     $scope.changeAutoFit = function changeAutoFit() {
-        if ($scope.autoFit && $scope.client.clientProperties.minScale) {
+        if ($scope.menu.autoFit && $scope.client.clientProperties.minScale) {
             $scope.client.clientProperties.autoFit = true;
-        } else {
+        }
+        else {
             $scope.client.clientProperties.autoFit = false;
             $scope.client.clientProperties.scale = 1; 
         }
@@ -495,7 +518,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.client.client.disconnect();
 
         // Hide menu
-        $scope.menuShown = false;
+        $scope.menu.shown = false;
 
     };
 
