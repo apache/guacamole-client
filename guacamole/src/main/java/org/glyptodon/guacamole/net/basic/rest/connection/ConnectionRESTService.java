@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import com.google.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.ws.rs.Consumes;
@@ -178,14 +179,14 @@ public class ConnectionRESTService {
     @GET
     @Path("/{connectionID}/history")
     @AuthProviderRESTExposure
-    public List<? extends ConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken, 
+    public List<ConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken, 
             @PathParam("connectionID") String connectionID) throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Retrieve the requested connection's history
         Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
-        return connection.getHistory();
+        return Collections.<ConnectionRecord>unmodifiableList(connection.getHistory());
 
     }
 
