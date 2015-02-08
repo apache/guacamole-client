@@ -37,7 +37,7 @@ THE SOFTWARE.
         <!-- Global status/error dialog -->
         <div ng-class="{shown: status}" class="status-outer">
             <div class="status-middle">
-                <guac-notification notification="status"/>
+                <guac-notification notification="status"></guac-notification>
             </div>
         </div>
         
@@ -47,7 +47,7 @@ THE SOFTWARE.
         <!-- Notification area -->
         <div id="notificationArea">
             <div ng-repeat="wrapper in notifications">
-                <guac-notification notification="wrapper.notification"/>
+                <guac-notification notification="wrapper.notification"></guac-notification>
             </div>                
         </div>
         

@@ -68,7 +68,7 @@ THE SOFTWARE.
             <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
                 <th>{{getProtocolParameterName(connection.protocol, parameter.name) | translate}}</th>
                 <td>
-                    <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"/>
+                    <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"></guac-connection-parameter>
                 </td>
             </tr>
         </table>

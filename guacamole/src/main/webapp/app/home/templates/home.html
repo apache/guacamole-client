@@ -32,7 +32,7 @@
         <!-- The recent connections for this user -->
         <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
         <div class="recent-connections">
-            <guac-recent-connections root-group="rootConnectionGroup"/>
+            <guac-recent-connections root-group="rootConnectionGroup"></guac-recent-connections>
         </div>
 
         <!-- All connections for this user -->
@@ -41,7 +41,7 @@
             <guac-group-list
                 connection-group="rootConnectionGroup"
                 connection-template="'app/home/templates/connection.html'"
-                connection-group-template="'app/home/templates/connectionGroup.html'"/>
+                connection-group-template="'app/home/templates/connectionGroup.html'"></guac-group-list>
         </div>
 
     </div>
