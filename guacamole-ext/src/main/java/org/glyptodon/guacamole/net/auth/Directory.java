@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Collection;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 
@@ -56,6 +57,29 @@ public interface Directory<IdentifierType, ObjectType> {
      *                            object is denied.
      */
     ObjectType get(IdentifierType identifier) throws GuacamoleException;
+
+    /**
+     * Returns the objects having the given identifiers. Note that changes to
+     * any object returned will not necessarily affect the object stored within
+     * the Directory. To update an object stored within a
+     * Directory such that future calls to get() will return the updated
+     * object, you must call update() on the object after modification.
+     *
+     * @param identifiers
+     *     The identifiers to use when locating the objects to return.
+     *
+     * @return
+     *     The objects having the given identifiers. If any identifiers do not
+     *     correspond to accessible objects, those identifiers will be ignored.
+     *     If no objects correspond to any of the given identifiers, the
+     *     returned collection will be empty.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the objects, or if permission
+     *     to retrieve the requested objects is denied.
+     */
+    Collection<ObjectType> getAll(Collection<IdentifierType> identifiers)
+            throws GuacamoleException;
 
     /**
      * Returns a Set containing all identifiers for all objects within this

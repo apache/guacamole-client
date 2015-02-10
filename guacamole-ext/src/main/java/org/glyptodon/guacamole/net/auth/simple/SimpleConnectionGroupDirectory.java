@@ -25,11 +25,7 @@ package org.glyptodon.guacamole.net.auth.simple;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.Directory;
 
 /**
  * An extremely simple read-only implementation of a Directory of
@@ -39,18 +35,18 @@ import org.glyptodon.guacamole.net.auth.Directory;
  * @author James Muehlner
  */
 public class SimpleConnectionGroupDirectory
-    implements Directory<String, ConnectionGroup> {
+    extends SimpleDirectory<String, ConnectionGroup> {
 
     /**
      * The Map of ConnectionGroups to provide access to.
      */
-    private Map<String, ConnectionGroup> connectionGroups =
+    private final Map<String, ConnectionGroup> connectionGroups =
             new HashMap<String, ConnectionGroup>();
 
     /**
      * Creates a new SimpleConnectionGroupDirectory which contains the given
      * groups.
-     * 
+     *
      * @param groups A Collection of all groups that should be present in this
      *               connection group directory.
      */
@@ -60,46 +56,15 @@ public class SimpleConnectionGroupDirectory
         for (ConnectionGroup group : groups)
             connectionGroups.put(group.getIdentifier(), group);
 
-    }
+        // Use the connection group map to back the underlying AbstractDirectory
+        super.setObjects(connectionGroups);
 
-    @Override
-    public ConnectionGroup get(String identifier)
-            throws GuacamoleException {
-        return connectionGroups.get(identifier);
-    }
-
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return connectionGroups.keySet();
-    }
-
-    @Override
-    public void add(ConnectionGroup connectionGroup)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void update(ConnectionGroup connectionGroup)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void move(String identifier, Directory<String, ConnectionGroup> directory) 
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
     }
 
     /**
      * An internal method for modifying the ConnectionGroups in this Directory.
      * Returns the previous connection group for the given identifier, if found.
-     * 
+     *
      * @param connectionGroup The connection group to add or update the
      *                        Directory with.
      * @return The previous connection group for the connection group
@@ -108,10 +73,10 @@ public class SimpleConnectionGroupDirectory
     public ConnectionGroup putConnectionGroup(ConnectionGroup connectionGroup) {
         return connectionGroups.put(connectionGroup.getIdentifier(), connectionGroup);
     }
-    
+
     /**
      * An internal method for removing a ConnectionGroup from this Directory.
-     * 
+     *
      * @param identifier The identifier of the ConnectionGroup to remove.
      * @return The previous connection group for the given identifier, if found.
      */
