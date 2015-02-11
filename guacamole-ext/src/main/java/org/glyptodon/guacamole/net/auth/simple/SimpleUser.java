@@ -27,13 +27,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.AbstractUser;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -44,9 +44,16 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 public class SimpleUser extends AbstractUser {
 
     /**
-     * The set of all permissions available to this user.
+     * All connection permissions granted to this user.
      */
-    private Set<Permission> permissions = new HashSet<Permission>();
+    private final Set<ObjectPermission<String>> connectionPermissions =
+            new HashSet<ObjectPermission<String>>();
+    
+    /**
+     * All connection group permissions granted to this user.
+     */
+    private final Set<ObjectPermission<String>> connectionGroupPermissions =
+            new HashSet<ObjectPermission<String>>();
 
     /**
      * Creates a completely uninitialized SimpleUser.
@@ -72,13 +79,13 @@ public class SimpleUser extends AbstractUser {
         for (String identifier : configs.keySet()) {
 
             // Create permission
-            Permission permission = new ConnectionPermission(
+            ObjectPermission permission = new ObjectPermission(
                 ObjectPermission.Type.READ,
                 identifier
             );
 
             // Add to set
-            permissions.add(permission);
+            connectionPermissions.add(permission);
 
         }
 
@@ -86,36 +93,40 @@ public class SimpleUser extends AbstractUser {
         for (ConnectionGroup group : groups) {
 
             // Create permission
-            Permission permission = new ConnectionGroupPermission(
+            ObjectPermission permission = new ObjectPermission(
                 ObjectPermission.Type.READ,
                 group.getIdentifier()
             );
 
             // Add to set
-            permissions.add(permission);
+            connectionGroupPermissions.add(permission);
 
         }
 
     }
 
     @Override
-    public Set<Permission> getPermissions() throws GuacamoleException {
-        return permissions;
+    public SystemPermissionSet getSystemPermissions()
+            throws GuacamoleException {
+        return new SimpleSystemPermissionSet();
     }
 
     @Override
-    public boolean hasPermission(Permission permission) throws GuacamoleException {
-        return permissions.contains(permission);
+    public ObjectPermissionSet<String, Connection> getConnectionPermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet<String, Connection>(connectionPermissions);
     }
 
     @Override
-    public void addPermission(Permission permission) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+    public ObjectPermissionSet<String, ConnectionGroup> getConnectionGroupPermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet<String, ConnectionGroup>(connectionGroupPermissions);
     }
 
     @Override
-    public void removePermission(Permission permission) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
+    public ObjectPermissionSet<String, User> getUserPermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet<String, User>();
     }
 
 }
