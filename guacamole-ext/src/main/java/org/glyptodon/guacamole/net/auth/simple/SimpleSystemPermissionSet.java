@@ -72,16 +72,8 @@ public class SimpleSystemPermissionSet implements SystemPermissionSet {
         this.permissions = permissions;
     }
 
-    /**
-     * Returns the Set which currently backs this SimpleSystemPermissionSet.
-     * Changes to this Set will affect future function calls on this
-     * SimpleSystemPermissionSet.
-     *
-     * @return
-     *     The Set of permissions this SimpleSystemPermissionSet currently 
-     *     contains.
-     */
-    protected Set<SystemPermission> getPermissions() {
+    @Override
+    public Set<SystemPermission> getPermissions() {
         return permissions;
     }
 
@@ -102,6 +94,18 @@ public class SimpleSystemPermissionSet implements SystemPermissionSet {
 
     @Override
     public void removePermission(SystemPermission.Type permission)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void addPermissions(Set<SystemPermission> permissions)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void removePermissions(Set<SystemPermission> permissions)
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

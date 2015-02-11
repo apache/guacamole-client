@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth.permission;
 
+import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 
 
@@ -73,5 +74,50 @@ public interface SystemPermissionSet {
      */
     void removePermission(SystemPermission.Type permission)
             throws GuacamoleException;
+
+    /**
+     * Returns a Set which contains all system-level permissions granted within
+     * this permission set.
+     *
+     * @return
+     *     A Set containing all system-level permissions granted within this
+     *     permission set.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving permissions, or if permissions
+     *     cannot be retrieved due to lack of permissions to do so.
+     */
+    Set<SystemPermission> getPermissions() throws GuacamoleException;
+
+    /**
+     * Adds the specified permissions, if not already granted. If a specified
+     * permission is already granted, no operation is performed regarding that
+     * permission.
+     *
+     * @param permissions
+     *     The permissions to add.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while adding the permissions, or if permission to
+     *     add permissions is denied.
+     */
+    void addPermissions(Set<SystemPermission> permissions)
+            throws GuacamoleException;
+
+    /**
+     * Removes each of the specified permissions, if granted. If a specified
+     * permission is not granted, no operation is performed regarding that
+     * permission.
+     *
+     * @param permissions
+     *     The permissions to remove.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while removing the permissions, or if permission
+     *     to remove permissions is denied.
+     */
+    void removePermissions(Set<SystemPermission> permissions)
+            throws GuacamoleException;
+
 
 }

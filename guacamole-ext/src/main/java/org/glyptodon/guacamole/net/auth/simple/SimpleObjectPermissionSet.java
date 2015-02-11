@@ -78,20 +78,11 @@ public class SimpleObjectPermissionSet<IdentifierType>
         this.permissions = permissions;
     }
 
-    /**
-     * Returns the Set which currently backs this SimpleObjectPermissionSet.
-     * Changes to this Set will affect future function calls on this
-     * SimpleObjectPermissionSet.
-     *
-     * @return
-     *     The Set of permissions this SimpleObjectPermissionSet currently 
-     *     contains.
-     */
-    protected Set<ObjectPermission<IdentifierType>> getPermissions() {
+    @Override
+    public Set<ObjectPermission<IdentifierType>> getPermissions() {
         return permissions;
     }
 
-   
     @Override
     public boolean hasPermission(ObjectPermission.Type permission,
             IdentifierType identifier) throws GuacamoleException {
@@ -138,6 +129,18 @@ public class SimpleObjectPermissionSet<IdentifierType>
 
         return accessibleObjects;
         
+    }
+
+    @Override
+    public void addPermissions(Set<ObjectPermission<IdentifierType>> permissions)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
+    }
+
+    @Override
+    public void removePermissions(Set<ObjectPermission<IdentifierType>> permissions)
+            throws GuacamoleException {
+        throw new GuacamoleSecurityException("Permission denied.");
     }
 
 }
