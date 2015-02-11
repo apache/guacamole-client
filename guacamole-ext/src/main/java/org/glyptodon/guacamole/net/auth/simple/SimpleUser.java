@@ -112,21 +112,21 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
-    public ObjectPermissionSet<String, Connection> getConnectionPermissions()
+    public ObjectPermissionSet<String> getConnectionPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String, Connection>(connectionPermissions);
+        return new SimpleObjectPermissionSet<String>(connectionPermissions);
     }
 
     @Override
-    public ObjectPermissionSet<String, ConnectionGroup> getConnectionGroupPermissions()
+    public ObjectPermissionSet<String> getConnectionGroupPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String, ConnectionGroup>(connectionGroupPermissions);
+        return new SimpleObjectPermissionSet<String>(connectionGroupPermissions);
     }
 
     @Override
-    public ObjectPermissionSet<String, User> getUserPermissions()
+    public ObjectPermissionSet<String> getUserPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String, User>();
+        return new SimpleObjectPermissionSet<String>();
     }
 
 }

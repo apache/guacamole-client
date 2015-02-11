@@ -39,13 +39,9 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  * @param <IdentifierType>
  *     The type of identifier used to identify objects affected by permissions
  *     stored in this SimpleObjectPermissionSet.
- *
- * @param <ObjectType>
- *     The type of objects affected by permissions stored in this
- *     SimpleObjectPermissionSet.
  */
-public class SimpleObjectPermissionSet<IdentifierType, ObjectType>
-    implements ObjectPermissionSet<IdentifierType, ObjectType> {
+public class SimpleObjectPermissionSet<IdentifierType>
+    implements ObjectPermissionSet<IdentifierType> {
 
     /**
      * The set of all permissions currently granted.

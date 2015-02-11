@@ -34,12 +34,8 @@ import org.glyptodon.guacamole.GuacamoleException;
  * @param <IdentifierType>
  *     The type of identifier used to identify objects affected by permissions
  *     stored in this ObjectPermissionSet.
- *
- * @param <ObjectType>
- *     The type of objects affected by permissions stored in this
- *     ObjectPermissionSet.
  */
-public interface ObjectPermissionSet<IdentifierType, ObjectType> {
+public interface ObjectPermissionSet<IdentifierType> {
 
     /**
      * Tests whether the permission of the given type is granted for the

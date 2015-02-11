@@ -69,47 +69,56 @@ public interface User {
     public void setPassword(String password);
 
     /**
-     * Lists all permissions given to this user.
+     * Returns all system-level permissions given to this user.
      *
-     * @return A Set of all permissions granted to this user.
+     * @return
+     *     A SystemPermissionSet of all system-level permissions granted to
+     *     this user.
      *
-     * @throws GuacamoleException  If an error occurs while retrieving
-     *                             permissions, or if reading all permissions
-     *                             is not allowed.
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
      */
     SystemPermissionSet getSystemPermissions() throws GuacamoleException;
 
     /**
-     * Lists all permissions given to this user.
+     * Returns all connection permissions given to this user.
      *
-     * @return A Set of all permissions granted to this user.
+     * @return
+     *     An ObjectPermissionSet of all connection permissions granted to this
+     *     user.
      *
-     * @throws GuacamoleException  If an error occurs while retrieving
-     *                             permissions, or if reading all permissions
-     *                             is not allowed.
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
      */
-    ObjectPermissionSet<String, Connection> getConnectionPermissions() throws GuacamoleException;
+    ObjectPermissionSet<String> getConnectionPermissions()
+            throws GuacamoleException;
 
     /**
-     * Lists all permissions given to this user.
+     * Returns all connection group permissions given to this user.
      *
-     * @return A Set of all permissions granted to this user.
+     * @return
+     *     An ObjectPermissionSet of all connection group permissions granted
+     *     to this user.
      *
-     * @throws GuacamoleException  If an error occurs while retrieving
-     *                             permissions, or if reading all permissions
-     *                             is not allowed.
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
      */
-    ObjectPermissionSet<String, ConnectionGroup> getConnectionGroupPermissions() throws GuacamoleException;
+    ObjectPermissionSet<String> getConnectionGroupPermissions()
+            throws GuacamoleException;
 
     /**
-     * Lists all permissions given to this user.
+     * Returns all user permissions given to this user.
      *
-     * @return A Set of all permissions granted to this user.
+     * @return
+     *     An ObjectPermissionSet of all user permissions granted to this user.
      *
-     * @throws GuacamoleException  If an error occurs while retrieving
-     *                             permissions, or if reading all permissions
-     *                             is not allowed.
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
      */
-    ObjectPermissionSet<String, User> getUserPermissions() throws GuacamoleException;
+    ObjectPermissionSet<String> getUserPermissions() throws GuacamoleException;
 
 }
