@@ -22,9 +22,9 @@
 
 package org.glyptodon.guacamole.net.auth;
 
-import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
 
 /**
@@ -77,40 +77,39 @@ public interface User {
      *                             permissions, or if reading all permissions
      *                             is not allowed.
      */
-    Set<Permission> getPermissions() throws GuacamoleException;
+    SystemPermissionSet getSystemPermissions() throws GuacamoleException;
 
     /**
-     * Tests whether this user has the specified permission.
+     * Lists all permissions given to this user.
      *
-     * @param permission The permission to check.
-     * @return true if the permission is granted to this user, false otherwise.
+     * @return A Set of all permissions granted to this user.
      *
-     * @throws GuacamoleException If an error occurs while checking permissions,
-     *                            or if permissions cannot be checked due to
-     *                            lack of permissions to do so.
+     * @throws GuacamoleException  If an error occurs while retrieving
+     *                             permissions, or if reading all permissions
+     *                             is not allowed.
      */
-    boolean hasPermission(Permission permission) throws GuacamoleException;
+    ObjectPermissionSet<String, Connection> getConnectionPermissions() throws GuacamoleException;
 
     /**
-     * Adds the specified permission to this user.
+     * Lists all permissions given to this user.
      *
-     * @param permission The permission to add.
+     * @return A Set of all permissions granted to this user.
      *
-     * @throws GuacamoleException If an error occurs while adding the
-     *                            permission. or if permission to add
-     *                            permissions is denied.
+     * @throws GuacamoleException  If an error occurs while retrieving
+     *                             permissions, or if reading all permissions
+     *                             is not allowed.
      */
-    void addPermission(Permission permission) throws GuacamoleException;
+    ObjectPermissionSet<String, ConnectionGroup> getConnectionGroupPermissions() throws GuacamoleException;
 
     /**
-     * Removes the specified permission from this specified user.
+     * Lists all permissions given to this user.
      *
-     * @param permission The permission to remove.
+     * @return A Set of all permissions granted to this user.
      *
-     * @throws GuacamoleException If an error occurs while removing the
-     *                            permission. or if permission to remove
-     *                            permissions is denied.
+     * @throws GuacamoleException  If an error occurs while retrieving
+     *                             permissions, or if reading all permissions
+     *                             is not allowed.
      */
-    void removePermission(Permission permission) throws GuacamoleException;
+    ObjectPermissionSet<String, User> getUserPermissions() throws GuacamoleException;
 
 }
