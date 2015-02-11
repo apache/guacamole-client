@@ -27,63 +27,56 @@ import org.glyptodon.guacamole.GuacamoleException;
 
 
 /**
- * A set of permissions which affects the system as a whole.
+ * An arbitrary set of permissions.
  *
  * @author Michael Jumper
+ * @param <PermissionType>
+ *     The type of permission stored within this PermissionSet.
  */
-public interface SystemPermissionSet extends PermissionSet<SystemPermission> {
+public interface PermissionSet<PermissionType extends Permission> {
 
     /**
-     * Tests whether the permission of the given type is granted.
-     *
-     * @param permission
-     *     The permission to check.
+     * Returns a Set which contains all permissions granted within this
+     * permission set.
      *
      * @return
-     *     true if the permission is granted, false otherwise.
+     *     A Set containing all permissions granted within this permission set.
      *
-     * @throws GuacamoleException
-     *     If an error occurs while checking permissions, or if permissions
-     *     cannot be checked due to lack of permissions to do so.
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving permissions, or if permissions
+     *     cannot be retrieved due to lack of permissions to do so.
      */
-    boolean hasPermission(SystemPermission.Type permission)
-            throws GuacamoleException;
+    Set<PermissionType> getPermissions() throws GuacamoleException;
 
     /**
-     * Adds the specified permission.
+     * Adds the specified permissions, if not already granted. If a specified
+     * permission is already granted, no operation is performed regarding that
+     * permission.
      *
-     * @param permission
-     *     The permission to add.
+     * @param permissions
+     *     The permissions to add.
      *
      * @throws GuacamoleException
-     *     If an error occurs while adding the permission, or if permission to
+     *     If an error occurs while adding the permissions, or if permission to
      *     add permissions is denied.
      */
-    void addPermission(SystemPermission.Type permission)
+    void addPermissions(Set<PermissionType> permissions)
             throws GuacamoleException;
 
     /**
-     * Removes the specified permission.
+     * Removes each of the specified permissions, if granted. If a specified
+     * permission is not granted, no operation is performed regarding that
+     * permission.
      *
-     * @param permission
-     *     The permission to remove.
+     * @param permissions
+     *     The permissions to remove.
      *
      * @throws GuacamoleException
-     *     If an error occurs while removing the permission, or if permission
+     *     If an error occurs while removing the permissions, or if permission
      *     to remove permissions is denied.
      */
-    void removePermission(SystemPermission.Type permission)
+    void removePermissions(Set<PermissionType> permissions)
             throws GuacamoleException;
 
-    @Override
-    Set<SystemPermission> getPermissions() throws GuacamoleException;
-
-    @Override
-    void addPermissions(Set<SystemPermission> permissions)
-            throws GuacamoleException;
-
-    @Override
-    void removePermissions(Set<SystemPermission> permissions)
-            throws GuacamoleException;
 
 }
