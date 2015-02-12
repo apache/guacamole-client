@@ -480,7 +480,7 @@ public class UserRESTService {
             }
 
             // Create system permission if path is system path
-            else if (path.startsWith(SYSTEM_PERMISSION_PATCH_PATH)) {
+            else if (path.equals(SYSTEM_PERMISSION_PATCH_PATH)) {
 
                 // Get identifier and type from patch operation
                 SystemPermission.Type type = SystemPermission.Type.valueOf(patch.getValue());
