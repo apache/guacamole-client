@@ -838,6 +838,12 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
      */
     var tunnels = [];
 
+    /**
+     * Stores a single committed tunnel once committed
+     * @private
+     */
+    var committedTunnel;
+
     // Load all tunnels into array
     for (var i=0; i<arguments.length; i++)
         tunnels.push(arguments[i]);
@@ -889,6 +895,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
             tunnel.onstatechange = chained_tunnel.onstatechange;
             tunnel.oninstruction = chained_tunnel.oninstruction;
             tunnel.onerror = chained_tunnel.onerror;
+            committedTunnel = tunnel;
         }
 
         // Wrap own onstatechange within current tunnel
@@ -944,8 +951,8 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         // Remember connect data
         connect_data = data;
 
-        // Get first tunnel
-        var next_tunnel = tunnels.shift();
+        // Get committed tunnel if exists or the first tunnel on the list
+        var next_tunnel = committedTunnel ? committedTunnel : tunnels.shift();
 
         // Attach first tunnel
         if (next_tunnel)
