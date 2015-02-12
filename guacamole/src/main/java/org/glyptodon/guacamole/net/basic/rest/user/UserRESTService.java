@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.user;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -114,40 +115,6 @@ public class UserRESTService {
     private ObjectRetrievalService retrievalService;
     
     /**
-     * Determines whether the given user has at least one of the given
-     * permissions for the user having the given username.
-     * 
-     * @param user
-     *     The user to check permissions for.
-     * 
-     * @param username 
-     *     The username of the user to check permissions for.
-     * 
-     * @param permissions
-     *     The permissions to check. The given user must have one or more of
-     *     these permissions for this function to return true.
-     * 
-     * @return
-     *     true if the user has at least one of the given permissions.
-     */
-    private boolean hasUserPermission(User user, String username,
-            List<ObjectPermission.Type> permissions) throws GuacamoleException {
-        
-        // Retrieve user permissions
-        ObjectPermissionSet<String> userPermissions = user.getUserPermissions();
-        
-        // Determine whether user has at least one of the given permissions
-        for (ObjectPermission.Type permission : permissions) {
-            if (userPermissions.hasPermission(permission, username))
-                return true;
-        }
-        
-        // None of the given permissions were present
-        return false;
-        
-    }
-
-    /**
      * Gets a list of users in the system, filtering the returned list by the
      * given permission, if specified.
      * 
@@ -188,18 +155,20 @@ public class UserRESTService {
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
 
-        List<APIUser> users = new ArrayList<APIUser>();
-
-        // Add all users matching the given permission filter
-        for (String username : userDirectory.getIdentifiers()) {
-
-            if (isAdmin || permissions == null || hasUserPermission(self, username, permissions))
-                users.add(new APIUser(userDirectory.get(username)));
-
+        // Filter users, if requested
+        Collection<String> userIdentifiers = userDirectory.getIdentifiers();
+        if (!isAdmin && permissions != null) {
+            ObjectPermissionSet<String> userPermissions = self.getUserPermissions();
+            userIdentifiers = userPermissions.getAccessibleObjects(permissions, userIdentifiers);
         }
-        
-        // Return the user directory listing
-        return users;
+            
+        // Retrieve all users, converting to API users
+        List<APIUser> apiUsers = new ArrayList<APIUser>();
+        for (User user : userDirectory.getAll(userIdentifiers))
+            apiUsers.add(new APIUser(user));
+
+        // Return the converted user list
+        return apiUsers;
 
     }
     
