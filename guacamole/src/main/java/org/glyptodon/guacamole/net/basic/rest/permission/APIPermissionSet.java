@@ -24,17 +24,14 @@ package org.glyptodon.guacamole.net.basic.rest.permission;
 
 import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleServerException;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
+import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
-import org.glyptodon.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * The set of permissions which are granted to a specific user, organized by
@@ -50,97 +47,26 @@ public class APIPermissionSet {
     /**
      * Map of connection ID to the set of granted permissions.
      */
-    private Map<String, EnumSet<ObjectPermission.Type>> connectionPermissions = new HashMap<String, EnumSet<ObjectPermission.Type>>();
+    private Map<String, Set<ObjectPermission.Type>> connectionPermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
      * Map of connection group ID to the set of granted permissions.
      */
-    private Map<String, EnumSet<ObjectPermission.Type>> connectionGroupPermissions = new HashMap<String, EnumSet<ObjectPermission.Type>>();
+    private Map<String, Set<ObjectPermission.Type>> connectionGroupPermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
      * Map of user ID to the set of granted permissions.
      */
-    private Map<String, EnumSet<ObjectPermission.Type>> userPermissions = new HashMap<String, EnumSet<ObjectPermission.Type>>();
+    private Map<String, Set<ObjectPermission.Type>> userPermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
      * Set of all granted system-level permissions.
      */
-    private EnumSet<SystemPermission.Type> systemPermissions = EnumSet.noneOf(SystemPermission.Type.class);
-
-    /**
-     * Adds the given object permission to the given map of object identifier
-     * to permission set.
-     *
-     * @param permissions
-     *     The map to add the given permission to.
-     *
-     * @param permission
-     *     The permission to add.
-     */
-    private void addPermission(Map<String, EnumSet<ObjectPermission.Type>> permissions, ObjectPermission<String> permission) {
-
-        // Pull set of permissions for given object
-        String id = permission.getObjectIdentifier();
-        EnumSet<ObjectPermission.Type> types = permissions.get(id);
-
-        // If set does not yet exist, create it
-        if (types == null) {
-            types = EnumSet.of(permission.getType());
-            permissions.put(id, types);
-        }
-
-        // Otherwise, add the specified permission
-        else
-            types.add(permission.getType());
-
-    }
-
-    /**
-     * Adds the given system-level permission to the given set of granted
-     * system permissions.
-     *
-     * @param permissions
-     *     The set of system permissions to add the given permission to.
-     *
-     * @param permission
-     *     The permission to add.
-     */
-    private void addPermission(EnumSet<SystemPermission.Type> permissions, SystemPermission permission) {
-        permissions.add(permission.getType());
-    }
-
-    /**
-     * Adds the given permission to the appropriate type-specific set or map of
-     * permissions based on the permission class. Only connection, connection
-     * group, user, and system permissions are supported. Unsupported
-     * permission types will result in a GuacamoleException being thrown.
-     *
-     * @param permission The permission to add.
-     * @throws GuacamoleException If the permission is of an unsupported type.
-     */
-    private void addPermission(Permission<?> permission) throws GuacamoleException {
-
-        // Connection permissions
-        if (permission instanceof ConnectionPermission)
-            addPermission(connectionPermissions, (ConnectionPermission) permission);
-
-        // Connection group permissions
-        else if (permission instanceof ConnectionGroupPermission)
-            addPermission(connectionGroupPermissions, (ConnectionGroupPermission) permission);
-
-        // User permissions
-        else if (permission instanceof UserPermission)
-            addPermission(userPermissions, (UserPermission) permission);
-
-        // System permissions
-        else if (permission instanceof SystemPermission)
-            addPermission(systemPermissions, (SystemPermission) permission);
-
-        // Unknown / unsupported permission type
-        else
-            throw new GuacamoleServerException("Serialization of permission type \"" + permission.getClass() + "\" not implemented.");
-
-    }
+    private Set<SystemPermission.Type> systemPermissions =
+            EnumSet.noneOf(SystemPermission.Type.class);
 
     /**
      * Creates a new permission set which contains no granted permissions. Any
@@ -151,37 +77,83 @@ public class APIPermissionSet {
     }
 
     /**
-     * Creates a new permission set having the given permissions.
+     * Adds the system permissions from the given SystemPermissionSet to the
+     * Set of system permissions provided.
      *
      * @param permissions
-     *     The permissions to initially store within the permission set.
+     *     The Set to add system permissions to.
+     *
+     * @param permSet
+     *     The SystemPermissionSet containing the system permissions to add.
      *
      * @throws GuacamoleException
-     *     If any of the given permissions are of an unsupported type.
+     *     If an error occurs while retrieving system permissions from the
+     *     SystemPermissionSet.
      */
-    public APIPermissionSet(Iterable<Permission> permissions) throws GuacamoleException {
+    private void addSystemPermissions(Set<SystemPermission.Type> permissions,
+            SystemPermissionSet permSet) throws GuacamoleException {
 
-        // Add all provided permissions 
-        for (Permission permission : permissions)
-            addPermission(permission);
+        // Add all provided system permissions 
+        for (SystemPermission permission : permSet.getPermissions())
+            permissions.add(permission.getType());
 
     }
-
+    
     /**
-     * Creates a new permission set having the given permissions.
+     * Adds the object permissions from the given ObjectPermissionSet to the
+     * Map of object permissions provided.
      *
      * @param permissions
-     *     The permissions to initially store within the permission set.
+     *     The Map to add object permissions to.
+     *
+     * @param permSet
+     *     The ObjectPermissionSet containing the object permissions to add.
      *
      * @throws GuacamoleException
-     *     If any of the given permissions are of an unsupported type.
+     *     If an error occurs while retrieving object permissions from the
+     *     ObjectPermissionSet.
      */
-    public APIPermissionSet(Permission... permissions) throws GuacamoleException {
+    private void addObjectPermissions(Map<String, Set<ObjectPermission.Type>> permissions,
+            ObjectPermissionSet<String> permSet) throws GuacamoleException {
 
-        // Add all provided permissions 
-        for (Permission permission : permissions)
-            addPermission(permission);
+        // Add all provided object permissions 
+        for (ObjectPermission<String> permission : permSet.getPermissions()) {
 
+            // Get associated set of permissions
+            String identifier = permission.getObjectIdentifier();
+            Set<ObjectPermission.Type> objectPermissions = permissions.get(identifier);
+
+            // Create new set if none yet exists
+            if (objectPermissions == null)
+                permissions.put(identifier, EnumSet.of(permission.getType()));
+
+            // Otherwise add to existing set
+            else
+                objectPermissions.add(permission.getType());
+
+        }
+
+    }
+    
+    /**
+     * Creates a new permission set containing all permissions currently
+     * granted to the given user.
+     *
+     * @param user
+     *     The user whose permissions should be stored within this permission
+     *     set.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user's permissions.
+     */
+    public APIPermissionSet(User user) throws GuacamoleException {
+
+        // Add all permissions from the provided user
+        addSystemPermissions(systemPermissions,          user.getSystemPermissions());
+        addObjectPermissions(connectionPermissions,      user.getConnectionPermissions());
+        addObjectPermissions(connectionGroupPermissions, user.getConnectionGroupPermissions());
+        addObjectPermissions(userPermissions,            user.getUserPermissions());
+        
     }
 
     /**
@@ -195,7 +167,7 @@ public class APIPermissionSet {
      *     A map of connection IDs to the set of permissions granted for that
      *     connection.
      */
-    public Map<String, EnumSet<ObjectPermission.Type>> getConnectionPermissions() {
+    public Map<String, Set<ObjectPermission.Type>> getConnectionPermissions() {
         return connectionPermissions;
     }
 
@@ -210,7 +182,7 @@ public class APIPermissionSet {
      *     A map of connection group IDs to the set of permissions granted for
      *     that connection group.
      */
-    public Map<String, EnumSet<ObjectPermission.Type>> getConnectionGroupPermissions() {
+    public Map<String, Set<ObjectPermission.Type>> getConnectionGroupPermissions() {
         return connectionGroupPermissions;
     }
 
@@ -223,7 +195,7 @@ public class APIPermissionSet {
      * @return
      *     A map of user IDs to the set of permissions granted for that user.
      */
-    public Map<String, EnumSet<ObjectPermission.Type>> getUserPermissions() {
+    public Map<String, Set<ObjectPermission.Type>> getUserPermissions() {
         return userPermissions;
     }
 
@@ -236,7 +208,7 @@ public class APIPermissionSet {
      * @return
      *     The set of granted system-level permissions.
      */
-    public EnumSet<SystemPermission.Type> getSystemPermissions() {
+    public Set<SystemPermission.Type> getSystemPermissions() {
         return systemPermissions;
     }
 
@@ -249,7 +221,7 @@ public class APIPermissionSet {
      * @param connectionPermissions
      *     The map which must replace the currently-stored map of permissions.
      */
-    public void setConnectionPermissions(Map<String, EnumSet<ObjectPermission.Type>> connectionPermissions) {
+    public void setConnectionPermissions(Map<String, Set<ObjectPermission.Type>> connectionPermissions) {
         this.connectionPermissions = connectionPermissions;
     }
 
@@ -262,7 +234,7 @@ public class APIPermissionSet {
      * @param connectionGroupPermissions
      *     The map which must replace the currently-stored map of permissions.
      */
-    public void setConnectionGroupPermissions(Map<String, EnumSet<ObjectPermission.Type>> connectionGroupPermissions) {
+    public void setConnectionGroupPermissions(Map<String, Set<ObjectPermission.Type>> connectionGroupPermissions) {
         this.connectionGroupPermissions = connectionGroupPermissions;
     }
 
@@ -274,7 +246,7 @@ public class APIPermissionSet {
      * @param userPermissions
      *     The map which must replace the currently-stored map of permissions.
      */
-    public void setUserPermissions(Map<String, EnumSet<ObjectPermission.Type>> userPermissions) {
+    public void setUserPermissions(Map<String, Set<ObjectPermission.Type>> userPermissions) {
         this.userPermissions = userPermissions;
     }
 
@@ -286,7 +258,7 @@ public class APIPermissionSet {
      * @param systemPermissions
      *     The set which must replace the currently-stored set of permissions.
      */
-    public void setSystemPermissions(EnumSet<SystemPermission.Type> systemPermissions) {
+    public void setSystemPermissions(Set<SystemPermission.Type> systemPermissions) {
         this.systemPermissions = systemPermissions;
     }
     

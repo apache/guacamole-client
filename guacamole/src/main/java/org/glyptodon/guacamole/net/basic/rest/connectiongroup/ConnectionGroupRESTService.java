@@ -45,10 +45,10 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -102,14 +102,14 @@ public class ConnectionGroupRESTService {
      */
     private boolean hasConnectionPermission(User user, String identifier,
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
+
+        // Retrieve connection permissions
+        ObjectPermissionSet<String> connectionPermissions = user.getConnectionPermissions();
         
         // Determine whether user has at least one of the given permissions
         for (ObjectPermission.Type permission : permissions) {
-            
-            ConnectionPermission connectionPermission = new ConnectionPermission(permission, identifier);
-            if (user.hasPermission(connectionPermission))
+            if (connectionPermissions.hasPermission(permission, identifier))
                 return true;
-            
         }
         
         // None of the given permissions were present
@@ -137,13 +137,13 @@ public class ConnectionGroupRESTService {
     private boolean hasConnectionGroupPermission(User user, String identifier,
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
 
+        // Retrieve connection group permissions
+        ObjectPermissionSet<String> connectionGroupPermissions = user.getConnectionGroupPermissions();
+        
         // Determine whether user has at least one of the given permissions
         for (ObjectPermission.Type permission : permissions) {
-
-            ConnectionGroupPermission connectionGroupPermission = new ConnectionGroupPermission(permission, identifier);
-            if (user.hasPermission(connectionGroupPermission))
+            if (connectionGroupPermissions.hasPermission(permission, identifier))
                 return true;
-
         }
 
         // None of the given permissions were present
@@ -185,7 +185,8 @@ public class ConnectionGroupRESTService {
         User self = userContext.self();
         
         // An admin user has access to any connection or connection group
-        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
+        SystemPermissionSet systemPermissions = self.getSystemPermissions();
+        boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Retrieve specified connection group
         ConnectionGroup connectionGroup;

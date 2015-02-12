@@ -22,15 +22,17 @@
 
 package org.glyptodon.guacamole.net.basic.rest.user;
 
-import java.util.Collections;
-import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * A wrapper to make an APIConnection look like a User. Useful where a
- * org.glyptodon.guacamole.net.auth.User is required.
+ * A wrapper to make an APIUser look like a User. Useful where an
+ * org.glyptodon.guacamole.net.auth.User is required. As a simple wrapper for
+ * APIUser, access to permissions is not provided. Any attempt to access or
+ * manipulate permissions on an APIUserWrapper will result in an exception.
  * 
  * @author James Muehlner
  */
@@ -42,12 +44,6 @@ public class APIUserWrapper implements User {
     private final APIUser apiUser;
     
     /**
-     * The set of permissions for this user. 
-     * NOTE: Not exposed by the REST endpoints.
-     */
-    private Set<Permission> permissionSet = Collections.EMPTY_SET;
-    
-    /**
      * Wrap a given APIUser to expose as a User.
      * @param apiUser The APIUser to wrap.
      */
@@ -55,16 +51,6 @@ public class APIUserWrapper implements User {
         this.apiUser = apiUser;
     }
     
-    /**
-     * Wrap a given APIUser to expose as a User, with the given permission set.
-     * @param apiUser The APIUser to wrap.
-     * @param permissionSet The set of permissions for the wrapped user.
-     */
-    public APIUserWrapper(APIUser apiUser, Set<Permission> permissionSet) {
-        this.apiUser = apiUser;
-        this.permissionSet = permissionSet;
-    }
-
     @Override
     public String getUsername() {
         return apiUser.getUsername();
@@ -86,23 +72,27 @@ public class APIUserWrapper implements User {
     }
 
     @Override
-    public Set<Permission> getPermissions() throws GuacamoleException {
-        return permissionSet;
+    public SystemPermissionSet getSystemPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
     @Override
-    public boolean hasPermission(Permission permission) throws GuacamoleException {
-        return permissionSet.contains(permission);
+    public ObjectPermissionSet<String> getConnectionPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
     @Override
-    public void addPermission(Permission permission) throws GuacamoleException {
-        throw new UnsupportedOperationException("Operation not supported.");
+    public ObjectPermissionSet<String> getConnectionGroupPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
     @Override
-    public void removePermission(Permission permission) throws GuacamoleException {
-        throw new UnsupportedOperationException("Operation not supported.");
+    public ObjectPermissionSet<String> getUserPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
 }

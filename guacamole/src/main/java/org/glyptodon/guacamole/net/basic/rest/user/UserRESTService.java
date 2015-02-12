@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.user;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
@@ -43,12 +44,12 @@ import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
-import org.glyptodon.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
@@ -132,13 +133,13 @@ public class UserRESTService {
     private boolean hasUserPermission(User user, String username,
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
         
+        // Retrieve user permissions
+        ObjectPermissionSet<String> userPermissions = user.getUserPermissions();
+        
         // Determine whether user has at least one of the given permissions
         for (ObjectPermission.Type permission : permissions) {
-            
-            UserPermission userPermission = new UserPermission(permission, username);
-            if (user.hasPermission(userPermission))
+            if (userPermissions.hasPermission(permission, username))
                 return true;
-            
         }
         
         // None of the given permissions were present
@@ -181,7 +182,8 @@ public class UserRESTService {
             permissions = null;
 
         // An admin user has access to any user
-        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
+        SystemPermissionSet systemPermissions = self.getSystemPermissions();
+        boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Get the directory
         Directory<String, User> userDirectory = userContext.getUserDirectory();
@@ -379,7 +381,53 @@ public class UserRESTService {
                 throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
         }
 
-        return new APIPermissionSet(user.getPermissions());
+        return new APIPermissionSet(user);
+
+    }
+
+    /**
+     * Updates the given permission set by adding or removing the given
+     * permission based on the given patch operation.
+     *
+     * @param <PermissionType>
+     *     The type of permission stored within the permission set.
+     *
+     * @param operation
+     *     The patch operation to perform.
+     *
+     * @param permissionSet
+     *     The permission set being modified.
+     *
+     * @param permission
+     *     The permission being added or removed from the set.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while modifying the permission set.
+     */
+    private <PermissionType extends Permission> void updatePermissionSet(
+            APIPatch.Operation operation,
+            PermissionSet<PermissionType> permissionSet,
+            PermissionType permission) throws GuacamoleException {
+
+        // Add or remove permission based on operation
+        switch (operation) {
+
+            // Add permission
+            case add:
+                permissionSet.addPermissions(Collections.singleton(permission));
+                break;
+
+            // Remove permission
+            case remove:
+                permissionSet.removePermissions(Collections.singleton(permission));
+                break;
+
+            // Unsupported patch operation
+            default:
+                throw new HTTPException(Status.BAD_REQUEST,
+                        "Unsupported patch operation: \"" + operation + "\"");
+
+        }
 
     }
     
@@ -423,8 +471,6 @@ public class UserRESTService {
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
 
-            Permission permission;
-
             String path = patch.getPath();
 
             // Create connection permission if path has connection prefix
@@ -434,8 +480,9 @@ public class UserRESTService {
                 String identifier = path.substring(CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new ConnectionPermission(type, identifier);
+                // Create and update corresponding permission
+                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                updatePermissionSet(patch.getOp(), user.getConnectionPermissions(), permission);
                 
             }
 
@@ -446,8 +493,9 @@ public class UserRESTService {
                 String identifier = path.substring(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new ConnectionGroupPermission(type, identifier);
+                // Create and update corresponding permission
+                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                updatePermissionSet(patch.getOp(), user.getConnectionGroupPermissions(), permission);
                 
             }
 
@@ -458,9 +506,10 @@ public class UserRESTService {
                 String identifier = path.substring(USER_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new UserPermission(type, identifier);
-                
+                // Create and update corresponding permission
+                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                updatePermissionSet(patch.getOp(), user.getUserPermissions(), permission);
+
             }
 
             // Create system permission if path is system path
@@ -469,34 +518,15 @@ public class UserRESTService {
                 // Get identifier and type from patch operation
                 SystemPermission.Type type = SystemPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new SystemPermission(type);
+                // Create and update corresponding permission
+                SystemPermission permission = new SystemPermission(type);
+                updatePermissionSet(patch.getOp(), user.getSystemPermissions(), permission);
                 
             }
 
             // Otherwise, the path is not supported
             else
                 throw new HTTPException(Status.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
-
-            // Add or remove permission based on operation
-            switch (patch.getOp()) {
-
-                // Add permission
-                case add:
-                    user.addPermission(permission);
-                    break;
-
-                // Remove permission
-                case remove:
-                    user.removePermission(permission);
-                    break;
-
-                // Unsupported patch operation
-                default:
-                    throw new HTTPException(Status.BAD_REQUEST,
-                            "Unsupported patch operation: \"" + patch.getOp() + "\"");
-
-            }
 
         } // end for each patch operation
         
