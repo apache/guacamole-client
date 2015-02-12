@@ -25,7 +25,6 @@ package org.glyptodon.guacamole.net.basic.rest.user;
 import com.google.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
@@ -48,7 +47,6 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
-import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
@@ -355,8 +353,8 @@ public class UserRESTService {
     }
 
     /**
-     * Updates the given permission set by adding or removing the given
-     * permission based on the given patch operation.
+     * Updates the given permission set patch by queuing an add or remove
+     * operation for the given permission based on the given patch operation.
      *
      * @param <PermissionType>
      *     The type of permission stored within the permission set.
@@ -364,31 +362,28 @@ public class UserRESTService {
      * @param operation
      *     The patch operation to perform.
      *
-     * @param permissionSet
-     *     The permission set being modified.
+     * @param permissionSetPatch
+     *     The permission set patch being modified.
      *
      * @param permission
      *     The permission being added or removed from the set.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while modifying the permission set.
      */
     private <PermissionType extends Permission> void updatePermissionSet(
             APIPatch.Operation operation,
-            PermissionSet<PermissionType> permissionSet,
-            PermissionType permission) throws GuacamoleException {
+            PermissionSetPatch<PermissionType> permissionSetPatch,
+            PermissionType permission) {
 
         // Add or remove permission based on operation
         switch (operation) {
 
             // Add permission
             case add:
-                permissionSet.addPermissions(Collections.singleton(permission));
+                permissionSetPatch.addPermission(permission);
                 break;
 
             // Remove permission
             case remove:
-                permissionSet.removePermissions(Collections.singleton(permission));
+                permissionSetPatch.removePermission(permission);
                 break;
 
             // Unsupported patch operation
@@ -429,14 +424,17 @@ public class UserRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         
-        // Get the user directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
-
         // Get the user
         User user = userContext.getUserDirectory().get(username);
         if (user == null)
             throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
+        // Permission patches for all types of permissions
+        PermissionSetPatch<ObjectPermission<String>> connectionPermissionPatch      = new PermissionSetPatch<ObjectPermission<String>>();
+        PermissionSetPatch<ObjectPermission<String>> connectionGroupPermissionPatch = new PermissionSetPatch<ObjectPermission<String>>();
+        PermissionSetPatch<ObjectPermission<String>> userPermissionPatch            = new PermissionSetPatch<ObjectPermission<String>>();
+        PermissionSetPatch<SystemPermission>         systemPermissionPatch          = new PermissionSetPatch<SystemPermission>();
+        
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
 
@@ -451,7 +449,7 @@ public class UserRESTService {
 
                 // Create and update corresponding permission
                 ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
-                updatePermissionSet(patch.getOp(), user.getConnectionPermissions(), permission);
+                updatePermissionSet(patch.getOp(), connectionPermissionPatch, permission);
                 
             }
 
@@ -464,7 +462,7 @@ public class UserRESTService {
 
                 // Create and update corresponding permission
                 ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
-                updatePermissionSet(patch.getOp(), user.getConnectionGroupPermissions(), permission);
+                updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
                 
             }
 
@@ -477,7 +475,7 @@ public class UserRESTService {
 
                 // Create and update corresponding permission
                 ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
-                updatePermissionSet(patch.getOp(), user.getUserPermissions(), permission);
+                updatePermissionSet(patch.getOp(), userPermissionPatch, permission);
 
             }
 
@@ -489,7 +487,7 @@ public class UserRESTService {
 
                 // Create and update corresponding permission
                 SystemPermission permission = new SystemPermission(type);
-                updatePermissionSet(patch.getOp(), user.getSystemPermissions(), permission);
+                updatePermissionSet(patch.getOp(), systemPermissionPatch, permission);
                 
             }
 
@@ -500,7 +498,10 @@ public class UserRESTService {
         } // end for each patch operation
         
         // Save the permission changes
-        userDirectory.update(user);
+        connectionPermissionPatch.apply(user.getConnectionPermissions());
+        connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
+        userPermissionPatch.apply(user.getUserPermissions());
+        systemPermissionPatch.apply(user.getSystemPermissions());
 
     }
 
