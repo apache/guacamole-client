@@ -40,6 +40,16 @@
         FROM guacamole_user
     </select>
 
+    <!-- Select usernames of all readable users -->
+    <select id="selectReadableIdentifiers" resultType="string">
+        SELECT username
+        FROM guacamole_user
+        JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
+        WHERE
+            guacamole_user_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            AND permission = 'read'
+    </select>
+
     <!-- Select multiple users by username -->
     <select id="select" resultMap="UserResultMap">
 
@@ -56,6 +66,27 @@
             </foreach>
 
     </select>
+
+    <!-- Select multiple users by username only if readable -->
+    <select id="selectReadable" resultMap="UserResultMap">
+
+        SELECT
+            guacamole_user.user_id,
+            username,
+            password_hash,
+            password_salt
+        FROM guacamole_user
+        JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
+        WHERE username IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+            AND guacamole_user_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            AND permission = 'read'
+
+    </select>
+
 
     <select id="selectByCredentials" resultMap="UserResultMap">
         SELECT

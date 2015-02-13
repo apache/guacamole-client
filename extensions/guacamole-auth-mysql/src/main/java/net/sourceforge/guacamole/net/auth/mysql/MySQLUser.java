@@ -29,6 +29,7 @@ import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.simple.SimpleSystemPermissionSet;
@@ -126,6 +127,22 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
 
     }
 
+    /**
+     * Returns whether this user is a system administrator, and thus is not
+     * restricted by permissions.
+     *
+     * @return
+     *    true if this user is a system administrator, false otherwise.
+     *
+     * @throws GuacamoleException 
+     *    If an error occurs while determining the user's system administrator
+     *    status.
+     */
+    public boolean isAdministrator() throws GuacamoleException {
+        SystemPermissionSet systemPermissionSet = getSystemPermissions();
+        return systemPermissionSet.hasPermission(SystemPermission.Type.ADMINISTER);
+    }
+    
     @Override
     public SystemPermissionSet getSystemPermissions()
             throws GuacamoleException {

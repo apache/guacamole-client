@@ -103,9 +103,12 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * @return
      *     The object having the given identifier, or null if no such object
      *     exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the requested object.
      */
     public ObjectType retrieveObject(AuthenticatedUser user,
-            String identifier) {
+            String identifier) throws GuacamoleException {
 
         // Pull objects having given identifier
         Collection<ObjectType> objects = retrieveObjects(user, Collections.singleton(identifier));
@@ -135,16 +138,29 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *
      * @return
      *     The objects having the given identifiers.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the requested objects.
      */
     public Collection<ObjectType> retrieveObjects(AuthenticatedUser user,
-            Collection<String> identifiers) {
+            Collection<String> identifiers) throws GuacamoleException {
 
         // Do not query if no identifiers given
         if (identifiers.isEmpty())
             return Collections.EMPTY_LIST;
 
+        Collection<ModelType> objects;
+
+        // Bypass permission checks if the user is a system admin
+        if (user.getUser().isAdministrator())
+            objects = getObjectMapper().select(identifiers);
+
+        // Otherwise only return explicitly readable identifiers
+        else
+            objects = getObjectMapper().selectReadable(user.getUser().getModel(), identifiers);
+        
         // Return collection of requested objects
-        return getObjectInstances(getObjectMapper().select(identifiers));
+        return getObjectInstances(objects);
         
     }
 
@@ -215,9 +231,21 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *
      * @return
      *     The set of all identifiers for all objects in the database.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading identifiers.
      */
-    public Set<String> getIdentifiers(AuthenticatedUser user) {
-        return getObjectMapper().selectIdentifiers();
+    public Set<String> getIdentifiers(AuthenticatedUser user)
+        throws GuacamoleException {
+
+        // Bypass permission checks if the user is a system admin
+        if (user.getUser().isAdministrator())
+            return getObjectMapper().selectIdentifiers();
+
+        // Otherwise only return explicitly readable identifiers
+        else
+            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel());
+
     }
 
 }

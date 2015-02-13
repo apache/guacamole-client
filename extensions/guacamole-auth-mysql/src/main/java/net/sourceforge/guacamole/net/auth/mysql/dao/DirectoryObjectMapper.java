@@ -24,6 +24,7 @@ package net.sourceforge.guacamole.net.auth.mysql.dao;
 
 import java.util.Collection;
 import java.util.Set;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -32,14 +33,18 @@ import org.apache.ibatis.annotations.Param;
  * to fulfill the needs of the Directory class.
  *
  * @author Michael Jumper
- * @param <T>
+ * @param <ModelType>
  *     The type of object contained within the directory whose objects are
  *     mapped by this mapper.
  */
-public interface DirectoryObjectMapper<T> {
+public interface DirectoryObjectMapper<ModelType> {
 
     /**
-     * Selects the identifiers of all objects.
+     * Selects the identifiers of all objects, regardless of whether they
+     * are readable by any particular user. This should only be called on
+     * behalf of a system administrator. If identifiers are needed by a non-
+     * administrative user who must have explicit read rights, use
+     * selectReadableIdentifiers() instead.
      *
      * @return
      *     A Set containing all identifiers of all objects.
@@ -47,8 +52,26 @@ public interface DirectoryObjectMapper<T> {
     Set<String> selectIdentifiers();
     
     /**
+     * Selects the identifiers of all objects that are explicitly readable by
+     * the given user. If identifiers are needed by a system administrator
+     * (who, by definition, does not need explicit read rights), use
+     * selectIdentifiers() instead.
+     *
+     * @param user
+     *    The user whose permissions should determine whether an identifier
+     *    is returned.
+     *
+     * @return
+     *     A Set containing all identifiers of all readable objects.
+     */
+    Set<String> selectReadableIdentifiers(@Param("user") UserModel user);
+    
+    /**
      * Selects all objects which have the given identifiers. If an identifier
-     * has no corresponding object, it will be ignored.
+     * has no corresponding object, it will be ignored. This should only be
+     * called on behalf of a system administrator. If objects are needed by a
+     * non-administrative user who must have explicit read rights, use
+     * selectReadable() instead.
      *
      * @param identifiers
      *     The identifiers of the objects to return.
@@ -56,7 +79,27 @@ public interface DirectoryObjectMapper<T> {
      * @return 
      *     A Collection of all objects having the given identifiers.
      */
-    Collection<T> select(@Param("identifiers") Collection<String> identifiers);
+    Collection<ModelType> select(@Param("identifiers") Collection<String> identifiers);
+
+    /**
+     * Selects all objects which have the given identifiers and are explicitly
+     * readably by the given user. If an identifier has no corresponding
+     * object, or the corresponding object is unreadable, it will be ignored.
+     * If objects are needed by a system administrator (who, by definition,
+     * does not need explicit read rights), use select() instead.
+     *
+     * @param user
+     *    The user whose permissions should determine whether an object 
+     *    is returned.
+     *
+     * @param identifiers
+     *     The identifiers of the objects to return.
+     *
+     * @return 
+     *     A Collection of all objects having the given identifiers.
+     */
+    Collection<ModelType> selectReadable(@Param("user") UserModel user,
+            @Param("identifiers") Collection<String> identifiers);
 
     /**
      * Inserts the given object into the database. If the object already
@@ -68,7 +111,7 @@ public interface DirectoryObjectMapper<T> {
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("object") T object);
+    int insert(@Param("object") ModelType object);
 
     /**
      * Deletes the given object into the database. If the object does not 
@@ -92,6 +135,6 @@ public interface DirectoryObjectMapper<T> {
      * @return
      *     The number of rows updated.
      */
-    int update(@Param("object") T object);
+    int update(@Param("object") ModelType object);
     
 }
