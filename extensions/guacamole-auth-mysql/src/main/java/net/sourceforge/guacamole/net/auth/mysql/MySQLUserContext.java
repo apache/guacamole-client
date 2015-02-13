@@ -43,7 +43,7 @@ public class MySQLUserContext implements UserContext {
     /**
      * The the user owning this context.
      */
-    private MySQLUser currentUser;
+    private AuthenticatedUser currentUser;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -58,13 +58,14 @@ public class MySQLUserContext implements UserContext {
      * @param currentUser
      *     The user owning this context.
      */
-    public void init(MySQLUser currentUser) {
+    public void init(AuthenticatedUser currentUser) {
         this.currentUser = currentUser;
+        userDirectory.init(currentUser);
     }
 
     @Override
     public User self() {
-        return currentUser;
+        return currentUser.getUser();
     }
 
     @Override

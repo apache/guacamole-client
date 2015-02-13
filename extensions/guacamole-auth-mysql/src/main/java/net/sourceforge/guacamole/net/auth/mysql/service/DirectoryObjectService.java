@@ -26,8 +26,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.DirectoryObject;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
+import org.glyptodon.guacamole.GuacamoleException;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -89,7 +91,11 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
     }
 
     /**
-     * Retrieves the single object that has the given identifier, if it exists.
+     * Retrieves the single object that has the given identifier, if it exists
+     * and the user has permission to read it.
+     *
+     * @param user
+     *     The user retrieving the object.
      *
      * @param identifier
      *     The identifier of the object to retrieve.
@@ -98,10 +104,11 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     The object having the given identifier, or null if no such object
      *     exists.
      */
-    public ObjectType retrieveObject(String identifier) {
+    public ObjectType retrieveObject(AuthenticatedUser user,
+            String identifier) {
 
         // Pull objects having given identifier
-        Collection<ObjectType> objects = retrieveObjects(Collections.singleton(identifier));
+        Collection<ObjectType> objects = retrieveObjects(user, Collections.singleton(identifier));
 
         // If no such object, return null
         if (objects.isEmpty())
@@ -118,6 +125,10 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
     
     /**
      * Retrieves all objects that have the identifiers in the given collection.
+     * Only objects that the user has permission to read will be returned.
+     *
+     * @param user
+     *     The user retrieving the objects.
      *
      * @param identifiers
      *     The identifiers of the objects to retrieve.
@@ -125,7 +136,8 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * @return
      *     The objects having the given identifiers.
      */
-    public Collection<ObjectType> retrieveObjects(Collection<String> identifiers) {
+    public Collection<ObjectType> retrieveObjects(AuthenticatedUser user,
+            Collection<String> identifiers) {
 
         // Do not query if no identifiers given
         if (identifiers.isEmpty())
@@ -141,10 +153,18 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * exists, an error will be thrown. The internal model object will be
      * updated appropriately to contain the new database ID.
      *
+     * @param user
+     *     The user creating the object.
+     *
      * @param object
      *     The object to create.
+     *
+     * @throws GuacamoleException
+     *     If the user lacks permission to create the object, or an error
+     *     occurs while creating the object.
      */
-    public void createObject(ObjectType object) {
+    public void createObject(AuthenticatedUser user, ObjectType object)
+        throws GuacamoleException {
         getObjectMapper().insert(object.getModel());
     }
 
@@ -152,10 +172,18 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * Deletes the object having the given identifier. If no such object
      * exists, this function has no effect.
      *
+     * @param user
+     *     The user deleting the object.
+     *
      * @param identifier
      *     The identifier of the object to delete.
+     *
+     * @throws GuacamoleException
+     *     If the user lacks permission to delete the object, or an error
+     *     occurs while deleting the object.
      */
-    public void deleteObject(String identifier) {
+    public void deleteObject(AuthenticatedUser user, String identifier)
+        throws GuacamoleException {
         getObjectMapper().delete(identifier);
     }
 
@@ -163,20 +191,32 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * Updates the given object in the database, applying any changes that have
      * been made. If no such object exists, this function has no effect.
      *
+     * @param user
+     *     The user updating the object.
+     *
      * @param object
      *     The object to update.
+     *
+     * @throws GuacamoleException
+     *     If the user lacks permission to update the object, or an error
+     *     occurs while updating the object.
      */
-    public void updateObject(ObjectType object) {
+    public void updateObject(AuthenticatedUser user, ObjectType object)
+        throws GuacamoleException {
         getObjectMapper().update(object.getModel());
     }
 
     /**
-     * Returns the set of all identifiers for all objects in the database.
+     * Returns the set of all identifiers for all objects in the database that
+     * the user has read access to.
+     *
+     * @param user
+     *     The user retrieving the identifiers.
      *
      * @return
      *     The set of all identifiers for all objects in the database.
      */
-    public Set<String> getIdentifiers() {
+    public Set<String> getIdentifiers(AuthenticatedUser user) {
         return getObjectMapper().selectIdentifiers();
     }
 

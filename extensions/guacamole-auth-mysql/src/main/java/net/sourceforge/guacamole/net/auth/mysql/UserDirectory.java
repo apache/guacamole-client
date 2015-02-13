@@ -43,11 +43,28 @@ import org.mybatis.guice.transactional.Transactional;
 public class UserDirectory implements Directory<String, User> {
 
     /**
+     * The user this user directory belongs to. Access is based on his/her
+     * permission settings.
+     */
+    private AuthenticatedUser currentUser;
+    
+    /**
      * Service for managing user objects.
      */
     @Inject
     private UserService userService;
 
+    /**
+     * Set the user for this directory.
+     *
+     * @param currentUser
+     *     The user whose permissions define the visibility of other users in
+     *     this directory.
+     */
+    public void init(AuthenticatedUser currentUser) {
+        this.currentUser = currentUser;
+    }
+    
     @Override
     public void move(String identifier, Directory<String, User> groupIdentifier) 
             throws GuacamoleException {
@@ -56,43 +73,40 @@ public class UserDirectory implements Directory<String, User> {
 
     @Override
     public User get(String identifier) throws GuacamoleException {
-        return userService.retrieveObject(identifier);
+        return userService.retrieveObject(currentUser, identifier);
     }
 
     @Override
     @Transactional
     public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
-        return Collections.<User>unmodifiableCollection(userService.retrieveObjects(identifiers));
+        Collection<MySQLUser> objects = userService.retrieveObjects(currentUser, identifiers);
+        return Collections.<User>unmodifiableCollection(objects);
     }
 
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
-        // STUB
-        return userService.getIdentifiers();
+        return userService.getIdentifiers(currentUser);
     }
 
     @Override
     @Transactional
     public void add(User object) throws GuacamoleException {
-        // STUB
         MySQLUser user = (MySQLUser) object;
-        userService.createObject(user);
+        userService.createObject(currentUser, user);
     }
 
     @Override
     @Transactional
     public void update(User object) throws GuacamoleException {
-        // STUB
         MySQLUser user = (MySQLUser) object;
-        userService.updateObject(user);
+        userService.updateObject(currentUser, user);
     }
 
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
-        // STUB
-        userService.deleteObject(identifier);
+        userService.deleteObject(currentUser, identifier);
     }
 
 }

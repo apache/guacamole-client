@@ -25,17 +25,16 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import org.glyptodon.guacamole.net.auth.Credentials;
 
 /**
- * Represents an authenticated user via their database ID and corresponding
- * credentials.
+ * Associates a user with the credentials they used to authenticate.
  *
  * @author Michael Jumper 
  */
 public class AuthenticatedUser {
 
     /**
-     * The database ID of this user.
+     * The user that authenticated.
      */
-    private final int userID;
+    private final MySQLUser user;
 
     /**
      * The credentials given when this user authenticated.
@@ -43,28 +42,28 @@ public class AuthenticatedUser {
     private final Credentials credentials;
 
     /**
-     * Creates a new AuthenticatedUser associated with the given database ID
-     * and credentials.
+     * Creates a new AuthenticatedUser associating the given user with their
+     * corresponding credentials.
      *
-     * @param userID
-     *     The database ID of the user this object should represent.
+     * @param user
+     *     The user this object should represent.
      *
      * @param credentials 
      *     The credentials given by the user when they authenticated.
      */
-    public AuthenticatedUser(int userID, Credentials credentials) {
-        this.userID = userID;
+    public AuthenticatedUser(MySQLUser user, Credentials credentials) {
+        this.user = user;
         this.credentials = credentials;
     }
 
     /**
-     * Returns the ID of this user.
+     * Returns the user that authenticated.
      *
      * @return 
-     *     The ID of this user.
+     *     The user that authenticated.
      */
-    public int getUserID() {
-        return userID;
+    public MySQLUser getUser() {
+        return user;
     }
 
     /**

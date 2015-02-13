@@ -66,12 +66,15 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         // Get user service
         UserService userService = injector.getInstance(UserService.class);
 
-        // Get user
+        // Authenticate user
         MySQLUser user = userService.retrieveUser(credentials);
         if (user != null) {
+
+            // Upon successful authentication, return new user context
             MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
-            context.init(user);
+            context.init(new AuthenticatedUser(user, credentials));
             return context;
+
         }
 
         // Otherwise, unauthorized
