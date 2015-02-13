@@ -22,6 +22,8 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import org.glyptodon.guacamole.net.auth.Identifiable;
+
 /**
  * Common interface for objects that will ultimately be made available through
  * the Directory class. All such objects will need the same base set of queries
@@ -32,7 +34,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
  *     The type of object contained within the directory whose objects are
  *     mapped by this mapper.
  */
-public interface DirectoryObject<ModelType> {
+public interface DirectoryObject<ModelType> extends Identifiable {
 
     /**
      * Returns the backing model object. Changes to the model object will

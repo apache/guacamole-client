@@ -69,7 +69,7 @@ public class MySQLUserContext implements UserContext {
     }
 
     @Override
-    public Directory<String, User> getUserDirectory() throws GuacamoleException {
+    public Directory<User> getUserDirectory() throws GuacamoleException {
         return userDirectory;
     }
 

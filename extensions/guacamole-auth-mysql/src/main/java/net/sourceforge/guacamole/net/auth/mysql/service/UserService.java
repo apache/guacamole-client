@@ -24,11 +24,16 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -60,6 +65,25 @@ public class UserService extends DirectoryObjectService<MySQLUser, UserModel> {
         MySQLUser user = mySQLUserProvider.get();
         user.setModel(model);
         return user;
+    }
+
+    @Override
+    protected boolean hasCreatePermission(AuthenticatedUser user)
+            throws GuacamoleException {
+
+        // Return whether user has explicit user creation permission
+        SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
+        return permissionSet.hasPermission(SystemPermission.Type.CREATE_USER);
+
+    }
+
+    @Override
+    protected ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+            throws GuacamoleException {
+
+        // Return permissions related to users
+        return user.getUser().getUserPermissions();
+
     }
 
     /**

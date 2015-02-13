@@ -97,12 +97,12 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     }
 
     @Override
-    public String getUsername() {
+    public String getIdentifier() {
         return userModel.getUsername();
     }
 
     @Override
-    public void setUsername(String username) {
+    public void setIdentifier(String username) {
         userModel.setUsername(username);
     }
 
@@ -151,24 +151,24 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionPermissions()
+    public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
         // STUB
-        return new SimpleObjectPermissionSet<String>();
+        return new SimpleObjectPermissionSet();
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionGroupPermissions()
+    public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
         // STUB
-        return new SimpleObjectPermissionSet<String>();
+        return new SimpleObjectPermissionSet();
     }
 
     @Override
-    public ObjectPermissionSet<String> getUserPermissions()
+    public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         // STUB
-        return new SimpleObjectPermissionSet<String>();
+        return new SimpleObjectPermissionSet();
     }
 
 }

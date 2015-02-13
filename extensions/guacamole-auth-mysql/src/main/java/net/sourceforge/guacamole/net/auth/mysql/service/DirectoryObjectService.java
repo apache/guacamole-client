@@ -30,6 +30,9 @@ import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.DirectoryObject;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -66,6 +69,41 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     An object which is backed by the given model object.
      */
     protected abstract ObjectType getObjectInstance(ModelType model);
+
+    /**
+     * Returns whether the given user has permission to create the type of
+     * objects that this directory object service manages.
+     *
+     * @param user
+     *     The user being checked.
+     *
+     * @return
+     *     true if the user has object creation permission relevant to this
+     *     directory object service, false otherwise.
+     * 
+     * @throws GuacamoleException
+     *     If permission to read the user's permissions is denied.
+     */
+    protected abstract boolean hasCreatePermission(AuthenticatedUser user)
+            throws GuacamoleException;
+
+    /**
+     * Returns the permission set associated with the given user and related
+     * to the type of objects handled by this directory object service.
+     *
+     * @param user
+     *     The user whose permissions are being retrieved.
+     *
+     * @return
+     *     A permission set which contains the permissions associated with the
+     *     given user and related to the type of objects handled by this
+     *     directory object service.
+     * 
+     * @throws GuacamoleException
+     *     If permission to read the user's permissions is denied.
+     */
+    protected abstract ObjectPermissionSet getPermissionSet(AuthenticatedUser user)
+            throws GuacamoleException;
 
     /**
      * Returns a collection of objects which are backed by the models in the
@@ -181,7 +219,14 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      */
     public void createObject(AuthenticatedUser user, ObjectType object)
         throws GuacamoleException {
-        getObjectMapper().insert(object.getModel());
+
+        // Only create object if user has permission to do so
+        if (user.getUser().isAdministrator() || hasCreatePermission(user))
+            getObjectMapper().insert(object.getModel());
+
+        // User lacks permission to create 
+        throw new GuacamoleSecurityException("Permission denied.");
+
     }
 
     /**
@@ -200,7 +245,18 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      */
     public void deleteObject(AuthenticatedUser user, String identifier)
         throws GuacamoleException {
-        getObjectMapper().delete(identifier);
+
+        // Get object permissions
+        ObjectPermissionSet permissionSet = getPermissionSet(user);
+        
+        // Only delete object if user has permission to do so
+        if (user.getUser().isAdministrator()
+                || permissionSet.hasPermission(ObjectPermission.Type.DELETE, identifier))
+            getObjectMapper().delete(identifier);
+
+        // User lacks permission to delete 
+        throw new GuacamoleSecurityException("Permission denied.");
+
     }
 
     /**
@@ -219,7 +275,18 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      */
     public void updateObject(AuthenticatedUser user, ObjectType object)
         throws GuacamoleException {
-        getObjectMapper().update(object.getModel());
+
+        // Get object permissions
+        ObjectPermissionSet permissionSet = getPermissionSet(user);
+        
+        // Only update object if user has permission to do so
+        if (user.getUser().isAdministrator()
+                || permissionSet.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
+            getObjectMapper().update(object.getModel());
+
+        // User lacks permission to update
+        throw new GuacamoleSecurityException("Permission denied.");
+
     }
 
     /**

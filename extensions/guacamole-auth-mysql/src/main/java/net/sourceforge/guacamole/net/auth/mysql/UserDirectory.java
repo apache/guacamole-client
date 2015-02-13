@@ -40,7 +40,7 @@ import org.mybatis.guice.transactional.Transactional;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class UserDirectory implements Directory<String, User> {
+public class UserDirectory implements Directory<User> {
 
     /**
      * The user this user directory belongs to. Access is based on his/her
@@ -66,7 +66,7 @@ public class UserDirectory implements Directory<String, User> {
     }
     
     @Override
-    public void move(String identifier, Directory<String, User> groupIdentifier) 
+    public void move(String identifier, Directory<User> groupIdentifier) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
