@@ -41,86 +41,13 @@ compiles all classes and packages them into a redistributable .jar file. This
 .jar file can be installed in the library directory configured in
 guacamole.properties such that the authentication provider is available.
 
-1) Set up a MySQL database with the Guacamole schema.
-
-    When guacamole-auth-mysql is compiling, it needs to generate source
-    based on a database schema. Because the source generator uses a
-    connection to an actual database to do this, you must have a MySQL
-    database running with the Guacamole schema set up.
-
-    First, create a database. For the sake of these instructions, we will
-    call the database "guacamole", and will run all scripts as the root user:
-
-    $ mysql -u root -p
-    Enter password:
-    mysql> CREATE DATABASE guacamole;
-    Query OK, 1 row affected (0.00 sec)
-
-    mysql> exit
-    Bye
-
-    The schema files are in the schema/ subdirectory of the source. If run
-    in order, they will create the schema and a default user:
-
-    $ cat schema/*.sql | mysql -u root -p guacamole
-
-2) Set up your ~/.m2/settings.xml
-
-    Once the database is set up, Maven will need to have the credentials
-    required to connect to it and query the schema. This information is
-    specified in properties inside your ~/.m2/settings.xml file. If this
-    file does not exist yet, simply create it.
-
-    For ease of compilation, we've included an example settings.xml
-    defining the required properties in doc/example/settings.xml. You can
-    simply copy this file into ~/.m2 and edit as necessary.
-
-    If you wish to write the file yourself, the file should look like this in
-    general:
-
-    <settings>
-        <profiles>
-            ...profiles...
-        </profiles>
-    </settings>
-
-    We need to add a profile which defines the required properties by
-    placing a section like the following within the "profiles" section of your
-    settings.xml:
-
-    <profile>
-        <id>guacamole-mybatis</id>
-        <properties>
-            <guacamole.database.catalog>DATABASE</guacamole.database.catalog>
-            <guacamole.database.user>USERNAME</guacamole.database.user>
-            <guacamole.database.password>PASSWORD</guacamole.database.password>
-        </properties>
-    </profile>
-
-    Obviously, the DATABASE, USERNAME, and PASSWORD placeholders above must
-    be replaced with the appropriate values for your system.
-
-    Finally, to make the profile available to the build, it must be activated.
-    Place a section like the following at the bottom of your settings.xml,
-    right after the profiles section:
-
-    <activeProfiles>
-        <activeProfile>guacamole-mybatis</activeProfile>
-    </activeProfiles>
-
-    Maven's documentation has more details on writing the settings.xml file
-    if you have different needs or the above directions are not clear.
-
-3) Run mvn package
+1) Run mvn package
 
     $ mvn package
 
     Maven will download any needed dependencies for building the .jar file.
     Once all dependencies have been downloaded, the .jar file will be
     created in the target/ subdirectory of the current directory.
-
-    If this process fails, check the build errors, and verify that the
-    contents of your settings.xml file is correct.
 
 4) Extract the .tar.gz file now present in the target/ directory, and
    place the .jar files in the extracted lib/ subdirectory in the library 
