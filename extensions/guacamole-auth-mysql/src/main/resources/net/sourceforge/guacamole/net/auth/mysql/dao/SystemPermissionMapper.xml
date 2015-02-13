@@ -63,7 +63,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionModel">
 
-        INSERT INTO guacamole_system_permission (
+        INSERT IGNORE INTO guacamole_system_permission (
             user_id,
             permission
         )
