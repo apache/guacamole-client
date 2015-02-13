@@ -22,10 +22,15 @@
 
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -59,9 +64,99 @@ public abstract class ObjectPermissionService<ObjectPermissionType extends Objec
      * @throws GuacamoleException
      *     If permission to read the user's permissions is denied.
      */
-    protected abstract PermissionSet<ObjectPermissionType> getAffectedPermissionSet(AuthenticatedUser user)
+    protected abstract ObjectPermissionSet getAffectedPermissionSet(AuthenticatedUser user)
             throws GuacamoleException;
 
-    /* TODO: Override create/delete testing permissions for affected objects */
+    /**
+     * Determines whether the current user has permission to update the given
+     * target user, adding or removing the given permissions. Such permission
+     * depends on whether the current user is a system administrator, whether
+     * they have explicit UPDATE permission on the target user, and whether
+     * they have explicit ADMINISTER permission on all affected objects.
+     *
+     * @param user
+     *     The user who is changing permissions.
+     *
+     * @param targetUser
+     *     The user whose permissions are being changed.
+     *
+     * @param permissions
+     *     The permissions that are being added or removed from the target
+     *     user.
+     *
+     * @return
+     *     true if the user has permission to change the target users
+     *     permissions as specified, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while checking permission status, or if
+     *     permission is denied to read the current user's permissions.
+     */
+    protected boolean canAlterPermissions(AuthenticatedUser user, MySQLUser targetUser,
+            Collection<ObjectPermissionType> permissions)
+            throws GuacamoleException {
+
+        // A system adminstrator can do anything
+        if (user.getUser().isAdministrator())
+            return true;
+        
+        // Verify user has update permission on the target user
+        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
+        if (!userPermissionSet.hasPermission(ObjectPermission.Type.UPDATE, targetUser.getIdentifier()))
+            return false;
+
+        // Produce collection of affected identifiers
+        Collection<String> affectedIdentifiers = new HashSet(permissions.size());
+        for (ObjectPermissionType permission : permissions)
+            affectedIdentifiers.add(permission.getObjectIdentifier());
+
+        // Determine subset of affected identifiers that we have admin access to
+        ObjectPermissionSet affectedPermissionSet = getAffectedPermissionSet(user);
+        Collection<String> allowedSubset = affectedPermissionSet.getAccessibleObjects(
+            Collections.singleton(ObjectPermission.Type.ADMINISTER),
+            affectedIdentifiers
+        );
+
+        // The permissions can be altered if and only if the set of objects we
+        // are allowed to administer is equal to the set of objects we will be
+        // affecting.
+
+        return affectedIdentifiers.size() == allowedSubset.size();
+        
+    }
+    
+    @Override
+    public void createPermissions(AuthenticatedUser user, MySQLUser targetUser,
+            Collection<ObjectPermissionType> permissions)
+            throws GuacamoleException {
+
+        // Create permissions only if user has permission to do so
+        if (canAlterPermissions(user, targetUser, permissions)) {
+            Collection<ModelType> models = getModelInstances(targetUser, permissions);
+            getPermissionMapper().insert(models);
+            return;
+        }
+        
+        // User lacks permission to create object permissions
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
+    @Override
+    public void deletePermissions(AuthenticatedUser user, MySQLUser targetUser,
+            Collection<ObjectPermissionType> permissions)
+            throws GuacamoleException {
+
+        // Delete permissions only if user has permission to do so
+        if (canAlterPermissions(user, targetUser, permissions)) {
+            Collection<ModelType> models = getModelInstances(targetUser, permissions);
+            getPermissionMapper().delete(models);
+            return;
+        }
+        
+        // User lacks permission to delete object permissions
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
 
 }
