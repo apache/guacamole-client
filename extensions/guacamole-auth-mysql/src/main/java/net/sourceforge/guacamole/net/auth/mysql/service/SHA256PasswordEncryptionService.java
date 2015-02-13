@@ -25,7 +25,6 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import javax.xml.bind.DatatypeConverter;
 
 /**
@@ -33,16 +32,6 @@ import javax.xml.bind.DatatypeConverter;
  * @author James Muehlner
  */
 public class SHA256PasswordEncryptionService implements PasswordEncryptionService {
-
-    @Override
-    public boolean checkPassword(String password, byte[] hashedPassword,
-        byte[] salt) {
-
-        // Compare bytes of password in credentials against hashed password
-        byte[] passwordBytes = createPasswordHash(password, salt);
-        return Arrays.equals(passwordBytes, hashedPassword);
-
-    }
 
     @Override
     public byte[] createPasswordHash(String password, byte[] salt) {
@@ -72,4 +61,5 @@ public class SHA256PasswordEncryptionService implements PasswordEncryptionServic
         }
 
     }
+
 }

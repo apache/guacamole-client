@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+   Copyright (C) 2015 Glyptodon LLC
+
+   Permission is hereby granted, free of charge, to any person obtaining a copy
+   of this software and associated documentation files (the "Software"), to deal
+   in the Software without restriction, including without limitation the rights
+   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+   copies of the Software, and to permit persons to whom the Software is
+   furnished to do so, subject to the following conditions:
+
+   The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+   THE SOFTWARE.
+-->
+
+<mapper namespace="net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper" >
+
+    <!-- Result mapper for user objects -->
+    <resultMap id="UserResultMap" type="net.sourceforge.guacamole.net.auth.mysql.model.UserModel" >
+        <id     column="user_id"       property="userID"       jdbcType="INTEGER"/>
+        <result column="username"      property="username"     jdbcType="VARCHAR"/>
+        <result column="password_hash" property="passwordHash" jdbcType="BINARY"/>
+        <result column="password_salt" property="passwordSalt" jdbcType="BINARY"/>
+    </resultMap>
+
+    <!-- Select all usernames -->
+    <select id="selectIdentifiers" resultType="string">
+        SELECT username
+        FROM guacamole_user
+    </select>
+
+    <!-- Select multiple users by username -->
+    <select id="select" resultMap="UserResultMap">
+
+        SELECT
+            user_id,
+            username,
+            password_hash,
+            password_salt
+        FROM guacamole_user
+        WHERE username IN
+            <foreach collection="identifiers" item="identifier"
+                     open="(" separator="," close=")">
+                #{identifier,jdbcType=VARCHAR}
+            </foreach>
+
+    </select>
+
+    <select id="selectByCredentials" resultMap="UserResultMap">
+        SELECT
+            user_id,
+            username,
+            password_hash,
+            password_salt
+        FROM guacamole_user
+        WHERE
+                username      = #{username,jdbcType=VARCHAR}
+            AND password_hash = UNHEX(SHA2(CONCAT(#{password,jdbcType=VARCHAR}, HEX(password_salt)), 256))
+    </select>
+
+    <!-- Delete single user by username -->
+    <delete id="delete">
+        DELETE FROM guacamole_user
+        WHERE username = #{identifier,jdbcType=VARCHAR}
+    </delete>
+
+    <!-- Insert single user -->
+    <insert id="insert" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserModel">
+
+        INSERT INTO guacamole_user (
+            username,
+            password_hash,
+            password_salt
+        )
+        VALUES (
+            #{username,jdbcType=VARCHAR},
+            #{passwordHash,jdbcType=BINARY},
+            #{passwordSalt,jdbcType=BINARY}
+        )
+
+        <selectKey resultType="java.lang.Integer" keyProperty="userID" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+
+    </insert>
+
+    <!-- Update single user -->
+    <update id="update" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserModel">
+        UPDATE guacamole_user
+        SET password_hash = #{passwordHash,jdbcType=BINARY},
+            password_salt = #{passwordSalt,jdbcType=BINARY}
+        WHERE user_id = #{userID,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

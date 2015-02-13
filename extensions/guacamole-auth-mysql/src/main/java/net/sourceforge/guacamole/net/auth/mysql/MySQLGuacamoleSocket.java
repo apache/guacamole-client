@@ -23,7 +23,6 @@
 package net.sourceforge.guacamole.net.auth.mysql;
 
 
-import com.google.inject.Inject;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
@@ -34,12 +33,6 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
  * @author James Muehlner
  */
 public class MySQLGuacamoleSocket implements GuacamoleSocket {
-
-    /**
-     * Injected ActiveConnectionMap which will contain all active connections.
-     */
-    @Inject
-    private ActiveConnectionMap activeConnectionMap;
 
     /**
      * The wrapped socket.
@@ -86,18 +79,7 @@ public class MySQLGuacamoleSocket implements GuacamoleSocket {
 
     @Override
     public void close() throws GuacamoleException {
-
-        // Mark this connection as inactive
-        synchronized (activeConnectionMap) {
-
-            if (isOpen())
-                activeConnectionMap.closeConnection(historyID, connectionGroupID);
-
-            // Close socket
-            socket.close();
-
-        }
-
+        socket.close();
     }
 
     @Override

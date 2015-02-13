@@ -24,13 +24,15 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 
 import com.google.inject.Inject;
+import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
-import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionDirectory;
+import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroup;
+import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 
 /**
  * The MySQL representation of a UserContext.
@@ -39,10 +41,9 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 public class MySQLUserContext implements UserContext {
 
     /**
-     * The the user owning this context. The permissions of this user dictate
-     * the access given via the user and connection directories.
+     * The the user owning this context.
      */
-    private AuthenticatedUser currentUser;
+    private MySQLUser currentUser;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -52,35 +53,18 @@ public class MySQLUserContext implements UserContext {
     private UserDirectory userDirectory;
     
     /**
-     * The root connection group.
-     */
-    @Inject
-    private MySQLConnectionGroup rootConnectionGroup;
-
-    /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
      * Initializes the user and directories associated with this context.
      *
      * @param currentUser
      *     The user owning this context.
      */
-    public void init(AuthenticatedUser currentUser) {
+    public void init(MySQLUser currentUser) {
         this.currentUser = currentUser;
-        userDirectory.init(currentUser);
-        rootConnectionGroup.init(null, null, 
-                MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-                ConnectionGroup.Type.ORGANIZATIONAL, currentUser);
     }
 
     @Override
     public User self() {
-        return userService.retrieveUser(currentUser.getUserID());
+        return currentUser;
     }
 
     @Override
@@ -90,7 +74,11 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        return rootConnectionGroup;
+        /* STUB */
+        return new SimpleConnectionGroup("ROOT", "ROOT",
+            new SimpleConnectionDirectory(Collections.EMPTY_MAP),
+            new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST)
+        );
     }
 
 }

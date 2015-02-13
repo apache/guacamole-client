@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,37 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql.service;
+package net.sourceforge.guacamole.net.auth.mysql;
 
 /**
- * A service to perform password encryption and checking.
- * @author James Muehlner
+ * Common interface for objects that will ultimately be made available through
+ * the Directory class. All such objects will need the same base set of queries
+ * to fulfill the needs of the Directory class.
+ *
+ * @author Michael Jumper
+ * @param <ModelType>
+ *     The type of object contained within the directory whose objects are
+ *     mapped by this mapper.
  */
-public interface PasswordEncryptionService {
+public interface DirectoryObject<ModelType> {
 
     /**
-     * Creates a password hash based on the provided username, password, and
-     * salt.
+     * Returns the backing model object. Changes to the model object will
+     * affect this object, and changes to this object will affect the model
+     * object.
      *
-     * @param password The password to hash.
-     * @param salt The salt to use when hashing the password.
-     * @return The generated password hash.
+     * @return
+     *     The user model object backing this MySQLUser.
      */
-    public byte[] createPasswordHash(String password, byte[] salt);
+    public ModelType getModel();
+
+    /**
+     * Sets the backing model object. This will effectively replace all data
+     * contained within this object.
+     *
+     * @param model
+     *     The backing model object.
+     */
+    public void setModel(ModelType model);
 
 }

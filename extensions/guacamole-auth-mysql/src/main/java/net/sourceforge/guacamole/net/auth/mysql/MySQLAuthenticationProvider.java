@@ -33,20 +33,9 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionHistoryMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionParameterMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionPermissionMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
-import net.sourceforge.guacamole.net.auth.mysql.dao.UserPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
-import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
-import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
-import net.sourceforge.guacamole.net.auth.mysql.service.PermissionCheckService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SHA256PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
@@ -66,15 +55,10 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
     /**
-     * Set of all active connections.
-     */
-    private ActiveConnectionMap activeConnectionMap = new ActiveConnectionMap();
-
-    /**
      * Injector which will manage the object graph of this authentication
      * provider.
      */
-    private Injector injector;
+    private final Injector injector;
 
     @Override
     public UserContext getUserContext(Credentials credentials) throws GuacamoleException {
@@ -83,10 +67,10 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         UserService userService = injector.getInstance(UserService.class);
 
         // Get user
-        MySQLUser authenticatedUser = userService.retrieveUser(credentials);
-        if (authenticatedUser != null) {
+        MySQLUser user = userService.retrieveUser(credentials);
+        if (user != null) {
             MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
-            context.init(new AuthenticatedUser(authenticatedUser.getUserID(), credentials));
+            context.init(user);
             return context;
         }
 
@@ -145,27 +129,15 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bindTransactionFactoryType(JdbcTransactionFactory.class);
 
                     // Add MyBatis mappers
-                    addMapperClass(ConnectionHistoryMapper.class);
-                    addMapperClass(ConnectionMapper.class);
-                    addMapperClass(ConnectionGroupMapper.class);
-                    addMapperClass(ConnectionGroupPermissionMapper.class);
-                    addMapperClass(ConnectionParameterMapper.class);
-                    addMapperClass(ConnectionPermissionMapper.class);
-                    addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
-                    addMapperClass(UserPermissionMapper.class);
 
                     // Bind interfaces
-                    bind(MySQLUserContext.class);
-                    bind(UserDirectory.class);
                     bind(MySQLUser.class);
-                    bind(SaltService.class).to(SecureRandomSaltService.class);
+                    bind(MySQLUserContext.class);
                     bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
-                    bind(PermissionCheckService.class);
-                    bind(ConnectionService.class);
-                    bind(ConnectionGroupService.class);
+                    bind(SaltService.class).to(SecureRandomSaltService.class);
+                    bind(UserDirectory.class);
                     bind(UserService.class);
-                    bind(ActiveConnectionMap.class).toInstance(activeConnectionMap);
 
                 }
             } // end of mybatis module

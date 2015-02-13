@@ -22,40 +22,50 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.google.inject.Inject;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
+import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.auth.AbstractUser;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
+import org.glyptodon.guacamole.net.auth.simple.SimpleSystemPermissionSet;
 
 /**
  * A MySQL based implementation of the User object.
  * @author James Muehlner
  */
-public class MySQLUser extends AbstractUser {
+public class MySQLUser implements User, DirectoryObject<UserModel> {
 
     /**
-     * The ID of this user in the database, if any.
+     * Service for hashing passwords.
      */
-    private Integer userID;
+    @Inject
+    private PasswordEncryptionService encryptionService;
 
     /**
-     * The set of current permissions a user has.
+     * Service for providing secure, random salts.
      */
-    private Set<Permission> permissions = new HashSet<Permission>();
+    @Inject
+    private SaltService saltService;
+    
+    /**
+     * The internal model object containing the values which represent this
+     * user in the database.
+     */
+    private UserModel userModel;
 
     /**
-     * Any newly added permissions that have yet to be committed.
+     * The plaintext password previously set by a call to setPassword(), if
+     * any. The password of a user cannot be retrieved once saved into the
+     * database, so this serves to ensure getPassword() returns a reasonable
+     * value if setPassword() is called. If no password has been set, or the
+     * user was retrieved from the database, this will be null.
      */
-    private Set<Permission> newPermissions = new HashSet<Permission>();
-
-    /**
-     * Any newly deleted permissions that have yet to be deleted.
-     */
-    private Set<Permission> removedPermissions = new HashSet<Permission>();
-
+    private String password = null;
+    
     /**
      * Creates a new, empty MySQLUser.
      */
@@ -63,118 +73,85 @@ public class MySQLUser extends AbstractUser {
     }
 
     /**
-     * Initializes a new MySQLUser having the given username.
-     *
-     * @param name The name to assign to this MySQLUser.
+     * Creates a new MySQLUser backed by the given user model object. Changes
+     * to this model object will affect the new MySQLUser even after creation,
+     * and changes to the new MySQLUser will affect this model object.
+     * 
+     * @param userModel
+     *     The user model object to use to back this MySQLUser.
      */
-    public void init(String name) {
-        init(null, name, null, Collections.EMPTY_SET);
-    }
-
-    /**
-     * Initializes a new MySQLUser, copying all data from the given user
-     * object.
-     *
-     * @param user The user object to copy.
-     * @throws GuacamoleException If an error occurs while reading the user
-     *                            data in the given object.
-     */
-    public void init(User user) throws GuacamoleException {
-        init(null, user.getUsername(), user.getPassword(), user.getPermissions());
-    }
-
-    /**
-     * Initializes a new MySQLUser initialized from the given data from the
-     * database.
-     *
-     * @param userID The ID of the user in the database, if any.
-     * @param username The username of this user.
-     * @param password The password to assign to this user.
-     * @param permissions The permissions to assign to this user, as
-     *                    retrieved from the database.
-     */
-    public void init(Integer userID, String username, String password,
-            Set<Permission> permissions) {
-        this.userID = userID;
-        setUsername(username);
-        setPassword(password);
-        this.permissions.addAll(permissions);
-    }
-
-    /**
-     * Get the current set of permissions this user has.
-     * @return the current set of permissions.
-     */
-    public Set<Permission> getCurrentPermissions() {
-        return permissions;
-    }
-
-    /**
-     * Get any new permissions that have yet to be inserted.
-     * @return the new set of permissions.
-     */
-    public Set<Permission> getNewPermissions() {
-        return newPermissions;
-    }
-
-    /**
-     * Get any permissions that have not yet been deleted.
-     * @return the permissions that need to be deleted.
-     */
-    public Set<Permission> getRemovedPermissions() {
-        return removedPermissions;
-    }
-
-    /**
-     * Reset the new and removed permission sets after they are
-     * no longer needed.
-     */
-    public void resetPermissions() {
-        newPermissions.clear();
-        removedPermissions.clear();
-    }
-
-    /**
-     * Returns the ID of this user in the database, if it exists.
-     *
-     * @return The ID of this user in the database, or null if this user
-     *         was not retrieved from the database.
-     */
-    public Integer getUserID() {
-        return userID;
-    }
-
-    /**
-     * Sets the ID of this user to the given value.
-     *
-     * @param userID The ID to assign to this user.
-     */
-    public void setUserID(Integer userID) {
-        this.userID = userID;
+    public MySQLUser(UserModel userModel) {
+        this.userModel = userModel;
     }
 
     @Override
-    public Set<Permission> getPermissions() throws GuacamoleException {
-        return Collections.unmodifiableSet(permissions);
+    public UserModel getModel() {
+        return userModel;
     }
 
     @Override
-    public boolean hasPermission(Permission permission) throws GuacamoleException {
-        return permissions.contains(permission);
+    public void setModel(UserModel userModel) {
+        this.userModel = userModel;
+        this.password = null;
     }
 
     @Override
-    public void addPermission(Permission permission) throws GuacamoleException {
-        permissions.add(permission);
-        newPermissions.add(permission);
-        removedPermissions.remove(permission);
+    public String getUsername() {
+        return userModel.getUsername();
     }
 
     @Override
-    public void removePermission(Permission permission) throws GuacamoleException {
-        permissions.remove(permission);
-        newPermissions.remove(permission);
-        removedPermissions.add(permission);
+    public void setUsername(String username) {
+        userModel.setUsername(username);
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void setPassword(String password) {
+
+        // Store plaintext password internally
+        this.password = password;
+        
+        // Generate new salt and hash given password using newly-generated salt
+        byte[] salt = saltService.generateSalt();
+        byte[] hash = encryptionService.createPasswordHash(password, salt);
+
+        // Set stored salt and hash
+        userModel.setPasswordSalt(salt);
+        userModel.setPasswordHash(hash);
+
+    }
+
+    @Override
+    public SystemPermissionSet getSystemPermissions()
+            throws GuacamoleException {
+        // STUB
+        return new SimpleSystemPermissionSet();
+    }
+
+    @Override
+    public ObjectPermissionSet<String> getConnectionPermissions()
+            throws GuacamoleException {
+        // STUB
+        return new SimpleObjectPermissionSet<String>();
+    }
+
+    @Override
+    public ObjectPermissionSet<String> getConnectionGroupPermissions()
+            throws GuacamoleException {
+        // STUB
+        return new SimpleObjectPermissionSet<String>();
+    }
+
+    @Override
+    public ObjectPermissionSet<String> getUserPermissions()
+            throws GuacamoleException {
+        // STUB
+        return new SimpleObjectPermissionSet<String>();
     }
 
 }

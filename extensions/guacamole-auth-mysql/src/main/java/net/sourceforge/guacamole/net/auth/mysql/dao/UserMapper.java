@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,22 +20,33 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql.service;
+package net.sourceforge.guacamole.net.auth.mysql.dao;
+
+import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
+import org.apache.ibatis.annotations.Param;
 
 /**
- * A service to perform password encryption and checking.
- * @author James Muehlner
+ * Mapper for user objects.
+ *
+ * @author Michael Jumper
  */
-public interface PasswordEncryptionService {
+public interface UserMapper extends DirectoryObjectMapper<UserModel> {
 
     /**
-     * Creates a password hash based on the provided username, password, and
-     * salt.
+     * Returns the user having the given username and password, if any. If no
+     * such user exists, null is returned.
      *
-     * @param password The password to hash.
-     * @param salt The salt to use when hashing the password.
-     * @return The generated password hash.
+     * @param username
+     *     The username of the user to return.
+     *
+     * @param password
+     *     The password of the user to return.
+     *
+     * @return
+     *     The user having the given username and password, or null if no such
+     *     user exists.
      */
-    public byte[] createPasswordHash(String password, byte[] salt);
-
+    UserModel selectByCredentials(@Param("username") String username,
+            @Param("password") String password);
+    
 }
