@@ -61,9 +61,10 @@ public class UserService extends DirectoryObjectService<MySQLUser, UserModel> {
     }
 
     @Override
-    protected MySQLUser getObjectInstance(UserModel model) {
+    protected MySQLUser getObjectInstance(AuthenticatedUser currentUser,
+            UserModel model) {
         MySQLUser user = mySQLUserProvider.get();
-        user.setModel(model);
+        user.init(currentUser, model);
         return user;
     }
 
@@ -105,9 +106,11 @@ public class UserService extends DirectoryObjectService<MySQLUser, UserModel> {
         if (userModel == null)
             return null;
 
-        // Return corresponding user
-        return getObjectInstance(userModel);
-        
+        // Return corresponding user, set up cyclic reference
+        MySQLUser user = getObjectInstance(null, userModel);
+        user.setCurrentUser(new AuthenticatedUser(user, credentials));
+        return user;
+
     }
 
 }

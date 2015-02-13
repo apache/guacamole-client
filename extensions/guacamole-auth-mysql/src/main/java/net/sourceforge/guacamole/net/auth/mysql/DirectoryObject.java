@@ -37,6 +37,38 @@ import org.glyptodon.guacamole.net.auth.Identifiable;
 public interface DirectoryObject<ModelType> extends Identifiable {
 
     /**
+     * Initializes this object, associating it with the current authenticated
+     * user and populating it with data from the given model object
+     *
+     * @param currentUser
+     *     The user that created or retrieved this object.
+     *
+     * @param model 
+     *     The backing model object.
+     */
+    public void init(AuthenticatedUser currentUser, ModelType model);
+
+    /**
+     * Returns the user that created or queried this object. This user's
+     * permissions dictate what operations can be performed on or through this
+     * object.
+     *
+     * @return
+     *     The user that created or queried this object.
+     */
+    public AuthenticatedUser getCurrentUser();
+
+    /**
+     * Sets the user that created or queried this object. This user's
+     * permissions dictate what operations can be performed on or through this
+     * object.
+     *
+     * @param currentUser 
+     *     The user that created or queried this object.
+     */
+    public void setCurrentUser(AuthenticatedUser currentUser);
+
+    /**
      * Returns the backing model object. Changes to the model object will
      * affect this object, and changes to this object will affect the model
      * object.

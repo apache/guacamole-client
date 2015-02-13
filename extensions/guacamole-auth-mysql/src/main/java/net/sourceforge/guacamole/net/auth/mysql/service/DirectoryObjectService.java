@@ -62,13 +62,17 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * Returns an instance of an object which is backed by the given model
      * object.
      *
+     * @param currentUser
+     *     The user for whom this object is being created.
+     *
      * @param model
      *     The model object to use to back the returned object.
      *
      * @return
      *     An object which is backed by the given model object.
      */
-    protected abstract ObjectType getObjectInstance(ModelType model);
+    protected abstract ObjectType getObjectInstance(AuthenticatedUser currentUser,
+            ModelType model);
 
     /**
      * Returns whether the given user has permission to create the type of
@@ -109,6 +113,9 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * Returns a collection of objects which are backed by the models in the
      * given collection.
      *
+     * @param currentUser
+     *     The user for whom these objects are being created.
+     *
      * @param models
      *     The model objects to use to back the objects within the returned
      *     collection.
@@ -117,12 +124,13 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     A collection of objects which are backed by the models in the given
      *     collection.
      */
-    protected Collection<ObjectType> getObjectInstances(Collection<ModelType> models) {
+    protected Collection<ObjectType> getObjectInstances(AuthenticatedUser currentUser,
+            Collection<ModelType> models) {
 
         // Create new collection of objects by manually converting each model
         Collection<ObjectType> objects = new ArrayList<ObjectType>(models.size());
         for (ModelType model : models)
-            objects.add(getObjectInstance(model));
+            objects.add(getObjectInstance(currentUser, model));
 
         return objects;
         
@@ -198,7 +206,7 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
             objects = getObjectMapper().selectReadable(user.getUser().getModel(), identifiers);
         
         // Return collection of requested objects
-        return getObjectInstances(objects);
+        return getObjectInstances(user, objects);
         
     }
 

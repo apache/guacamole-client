@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SystemPermissionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -41,6 +42,12 @@ import org.glyptodon.guacamole.net.auth.simple.SimpleSystemPermissionSet;
 public class MySQLUser implements User, DirectoryObject<UserModel> {
 
     /**
+     * The user this user belongs to. Access is based on his/her permission
+     * settings.
+     */
+    private AuthenticatedUser currentUser;
+
+    /**
      * Service for hashing passwords.
      */
     @Inject
@@ -51,6 +58,12 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
      */
     @Inject
     private SaltService saltService;
+
+    /**
+     * Service for retrieving system permissions.
+     */
+    @Inject
+    private SystemPermissionService systemPermissionService;
     
     /**
      * The internal model object containing the values which represent this
@@ -73,16 +86,20 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     public MySQLUser() {
     }
 
-    /**
-     * Creates a new MySQLUser backed by the given user model object. Changes
-     * to this model object will affect the new MySQLUser even after creation,
-     * and changes to the new MySQLUser will affect this model object.
-     * 
-     * @param userModel
-     *     The user model object to use to back this MySQLUser.
-     */
-    public MySQLUser(UserModel userModel) {
-        this.userModel = userModel;
+    @Override
+    public void init(AuthenticatedUser currentUser, UserModel userModel) {
+        this.currentUser = currentUser;
+        setModel(userModel);
+    }
+
+    @Override
+    public AuthenticatedUser getCurrentUser() {
+        return currentUser;
+    }
+
+    @Override
+    public void setCurrentUser(AuthenticatedUser currentUser) {
+        this.currentUser = currentUser;
     }
 
     @Override
@@ -147,7 +164,7 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     public SystemPermissionSet getSystemPermissions()
             throws GuacamoleException {
         // STUB
-        return new SimpleSystemPermissionSet();
+        return new SimpleSystemPermissionSet(systemPermissionService.retrievePermissions(getCurrentUser(), this));
     }
 
     @Override

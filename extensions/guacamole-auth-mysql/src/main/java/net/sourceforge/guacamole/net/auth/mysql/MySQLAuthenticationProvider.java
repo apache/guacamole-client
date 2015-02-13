@@ -29,6 +29,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
+import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
@@ -39,6 +40,7 @@ import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionServic
 import net.sourceforge.guacamole.net.auth.mysql.service.SHA256PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
+import net.sourceforge.guacamole.net.auth.mysql.service.SystemPermissionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
@@ -72,7 +74,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
             // Upon successful authentication, return new user context
             MySQLUserContext context = injector.getInstance(MySQLUserContext.class);
-            context.init(new AuthenticatedUser(user, credentials));
+            context.init(user.getCurrentUser());
             return context;
 
         }
@@ -132,6 +134,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bindTransactionFactoryType(JdbcTransactionFactory.class);
 
                     // Add MyBatis mappers
+                    addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
 
                     // Bind interfaces
@@ -139,6 +142,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(MySQLUserContext.class);
                     bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
                     bind(SaltService.class).to(SecureRandomSaltService.class);
+                    bind(SystemPermissionService.class);
                     bind(UserDirectory.class);
                     bind(UserService.class);
 
