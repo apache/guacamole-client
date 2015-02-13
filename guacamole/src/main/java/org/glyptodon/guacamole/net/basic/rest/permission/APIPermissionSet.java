@@ -114,10 +114,10 @@ public class APIPermissionSet {
      *     ObjectPermissionSet.
      */
     private void addObjectPermissions(Map<String, Set<ObjectPermission.Type>> permissions,
-            ObjectPermissionSet<String> permSet) throws GuacamoleException {
+            ObjectPermissionSet permSet) throws GuacamoleException {
 
         // Add all provided object permissions 
-        for (ObjectPermission<String> permission : permSet.getPermissions()) {
+        for (ObjectPermission permission : permSet.getPermissions()) {
 
             // Get associated set of permissions
             String identifier = permission.getObjectIdentifier();

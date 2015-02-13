@@ -36,7 +36,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public interface Connection {
+public interface Connection extends Identifiable {
 
     /**
      * Returns the name assigned to this Connection.
@@ -50,24 +50,6 @@ public interface Connection {
      * @param name The name to assign.
      */
     public void setName(String name);
-
-    /**
-     * Returns the unique identifier assigned to this Connection. All
-     * connections must have a deterministic, unique identifier which may not
-     * be null.
-     *
-     * @return
-     *     The unique identifier assigned to this Connection, which may not be
-     *     null.
-     */
-    public String getIdentifier();
-
-    /**
-     * Sets the identifier assigned to this Connection.
-     *
-     * @param identifier The identifier to assign.
-     */
-    public void setIdentifier(String identifier);
 
     /**
      * Returns the unique identifier of the parent ConnectionGroup for

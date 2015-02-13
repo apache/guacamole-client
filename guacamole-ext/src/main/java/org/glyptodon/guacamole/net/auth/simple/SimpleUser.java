@@ -28,9 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AbstractUser;
-import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
@@ -46,14 +44,14 @@ public class SimpleUser extends AbstractUser {
     /**
      * All connection permissions granted to this user.
      */
-    private final Set<ObjectPermission<String>> connectionPermissions =
-            new HashSet<ObjectPermission<String>>();
+    private final Set<ObjectPermission> connectionPermissions =
+            new HashSet<ObjectPermission>();
     
     /**
      * All connection group permissions granted to this user.
      */
-    private final Set<ObjectPermission<String>> connectionGroupPermissions =
-            new HashSet<ObjectPermission<String>>();
+    private final Set<ObjectPermission> connectionGroupPermissions =
+            new HashSet<ObjectPermission>();
 
     /**
      * Creates a completely uninitialized SimpleUser.
@@ -73,7 +71,7 @@ public class SimpleUser extends AbstractUser {
             Collection<ConnectionGroup> groups) {
 
         // Set username
-        setUsername(username);
+        setIdentifier(username);
 
         // Add connection permissions
         for (String identifier : configs.keySet()) {
@@ -112,21 +110,21 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionPermissions()
+    public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String>(connectionPermissions);
+        return new SimpleObjectPermissionSet(connectionPermissions);
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionGroupPermissions()
+    public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String>(connectionGroupPermissions);
+        return new SimpleObjectPermissionSet(connectionGroupPermissions);
     }
 
     @Override
-    public ObjectPermissionSet<String> getUserPermissions()
+    public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet<String>();
+        return new SimpleObjectPermissionSet();
     }
 
 }

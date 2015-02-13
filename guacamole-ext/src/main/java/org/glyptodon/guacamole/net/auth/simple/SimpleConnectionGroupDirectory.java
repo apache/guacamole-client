@@ -35,7 +35,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
  * @author James Muehlner
  */
 public class SimpleConnectionGroupDirectory
-    extends SimpleDirectory<String, ConnectionGroup> {
+    extends SimpleDirectory<ConnectionGroup> {
 
     /**
      * The Map of ConnectionGroups to provide access to.

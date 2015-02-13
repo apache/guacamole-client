@@ -92,12 +92,12 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     }
 
     @Override
-    public Directory<String, Connection> getConnectionDirectory() throws GuacamoleException {
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 
     @Override
-    public Directory<String, ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 

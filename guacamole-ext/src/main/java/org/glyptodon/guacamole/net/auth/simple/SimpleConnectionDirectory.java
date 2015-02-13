@@ -35,7 +35,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public class SimpleConnectionDirectory extends SimpleDirectory<String, Connection> {
+public class SimpleConnectionDirectory extends SimpleDirectory<Connection> {
 
     /**
      * The Map of Connections to provide access to.

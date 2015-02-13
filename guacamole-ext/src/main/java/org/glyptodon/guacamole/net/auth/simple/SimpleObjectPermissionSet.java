@@ -36,17 +36,13 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  * of Permissions to determine which permissions are present.
  *
  * @author Michael Jumper
- * @param <IdentifierType>
- *     The type of identifier used to identify objects affected by permissions
- *     stored in this SimpleObjectPermissionSet.
  */
-public class SimpleObjectPermissionSet<IdentifierType>
-    implements ObjectPermissionSet<IdentifierType> {
+public class SimpleObjectPermissionSet implements ObjectPermissionSet {
 
     /**
      * The set of all permissions currently granted.
      */
-    private Set<ObjectPermission<IdentifierType>> permissions = Collections.EMPTY_SET;
+    private Set<ObjectPermission> permissions = Collections.EMPTY_SET;
 
     /**
      * Creates a new empty SimpleObjectPermissionSet.
@@ -62,7 +58,7 @@ public class SimpleObjectPermissionSet<IdentifierType>
      *     The Set of permissions this SimpleObjectPermissionSet should
      *     contain.
      */
-    public SimpleObjectPermissionSet(Set<ObjectPermission<IdentifierType>> permissions) {
+    public SimpleObjectPermissionSet(Set<ObjectPermission> permissions) {
         this.permissions = permissions;
     }
 
@@ -74,21 +70,21 @@ public class SimpleObjectPermissionSet<IdentifierType>
      *     The Set of permissions this SimpleObjectPermissionSet should
      *     contain.
      */
-    protected void setPermissions(Set<ObjectPermission<IdentifierType>> permissions) {
+    protected void setPermissions(Set<ObjectPermission> permissions) {
         this.permissions = permissions;
     }
 
     @Override
-    public Set<ObjectPermission<IdentifierType>> getPermissions() {
+    public Set<ObjectPermission> getPermissions() {
         return permissions;
     }
 
     @Override
     public boolean hasPermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException {
+            String identifier) throws GuacamoleException {
 
-        ObjectPermission<IdentifierType> objectPermission =
-                new ObjectPermission<IdentifierType>(permission, identifier);
+        ObjectPermission objectPermission =
+                new ObjectPermission(permission, identifier);
         
         return permissions.contains(objectPermission);
 
@@ -96,29 +92,29 @@ public class SimpleObjectPermissionSet<IdentifierType>
 
     @Override
     public void addPermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException {
+            String identifier) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
     public void removePermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException {
+            String identifier) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public Collection<IdentifierType> getAccessibleObjects(
+    public Collection<String> getAccessibleObjects(
             Collection<ObjectPermission.Type> permissionTypes,
-            Collection<IdentifierType> identifiers) throws GuacamoleException {
+            Collection<String> identifiers) throws GuacamoleException {
 
-        Collection<IdentifierType> accessibleObjects = new ArrayList<IdentifierType>(permissions.size());
+        Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
 
         // For each identifier/permission combination
-        for (IdentifierType identifier : identifiers) {
+        for (String identifier : identifiers) {
             for (ObjectPermission.Type permissionType : permissionTypes) {
 
                 // Add identifier if at least one requested permission is granted
-                ObjectPermission<IdentifierType> permission = new ObjectPermission<IdentifierType>(permissionType, identifier);
+                ObjectPermission permission = new ObjectPermission(permissionType, identifier);
                 if (permissions.contains(permission)) {
                     accessibleObjects.add(identifier);
                     break;
@@ -132,13 +128,13 @@ public class SimpleObjectPermissionSet<IdentifierType>
     }
 
     @Override
-    public void addPermissions(Set<ObjectPermission<IdentifierType>> permissions)
+    public void addPermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void removePermissions(Set<ObjectPermission<IdentifierType>> permissions)
+    public void removePermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

@@ -32,24 +32,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  *
  * @author Michael Jumper
  */
-public interface User {
-
-    /**
-     * Returns the name of this user, which must be unique across all users.
-     * All users must have a deterministic, unique username which may not be
-     * null.
-     *
-     * @return
-     *     The unique username of this user, which may not be null.
-     */
-    public String getUsername();
-
-    /**
-     * Sets the name of this user, which must be unique across all users.
-     *
-     * @param username  The name of this user.
-     */
-    public void setUsername(String username);
+public interface User extends Identifiable {
 
     /**
      * Returns this user's password. Note that the password returned may be
@@ -92,7 +75,7 @@ public interface User {
      *     If an error occurs while retrieving permissions, or if reading all
      *     permissions is not allowed.
      */
-    ObjectPermissionSet<String> getConnectionPermissions()
+    ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException;
 
     /**
@@ -106,7 +89,7 @@ public interface User {
      *     If an error occurs while retrieving permissions, or if reading all
      *     permissions is not allowed.
      */
-    ObjectPermissionSet<String> getConnectionGroupPermissions()
+    ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException;
 
     /**
@@ -119,6 +102,6 @@ public interface User {
      *     If an error occurs while retrieving permissions, or if reading all
      *     permissions is not allowed.
      */
-    ObjectPermissionSet<String> getUserPermissions() throws GuacamoleException;
+    ObjectPermissionSet getUserPermissions() throws GuacamoleException;
 
 }

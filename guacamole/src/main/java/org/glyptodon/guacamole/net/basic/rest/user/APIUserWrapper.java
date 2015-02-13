@@ -52,12 +52,12 @@ public class APIUserWrapper implements User {
     }
     
     @Override
-    public String getUsername() {
+    public String getIdentifier() {
         return apiUser.getUsername();
     }
 
     @Override
-    public void setUsername(String username) {
+    public void setIdentifier(String username) {
         apiUser.setUsername(username);
     }
 
@@ -78,19 +78,19 @@ public class APIUserWrapper implements User {
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionPermissions()
+    public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
     @Override
-    public ObjectPermissionSet<String> getConnectionGroupPermissions()
+    public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
     @Override
-    public ObjectPermissionSet<String> getUserPermissions()
+    public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }

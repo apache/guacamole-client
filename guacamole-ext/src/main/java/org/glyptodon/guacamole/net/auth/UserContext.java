@@ -52,7 +52,7 @@ public interface UserContext {
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
      */
-    Directory<String, User> getUserDirectory() throws GuacamoleException;
+    Directory<User> getUserDirectory() throws GuacamoleException;
 
     /**
      * Retrieves a connection group which can be used to view and manipulate

@@ -34,11 +34,10 @@ import org.glyptodon.guacamole.GuacamoleException;
  * function.
  *
  * @author Michael Jumper
- * @param <IdentifierType> The type of identifier used to identify objects
- *                         stored within this Directory.
- * @param <ObjectType> The type of objects stored within this Directory.
+ * @param <ObjectType>
+ *     The type of objects stored within this Directory.
  */
-public interface Directory<IdentifierType, ObjectType> {
+public interface Directory<ObjectType> {
 
     /**
      * Returns the object having the given identifier. Note that changes to
@@ -56,7 +55,7 @@ public interface Directory<IdentifierType, ObjectType> {
      *                            object, or if permission for retrieving the
      *                            object is denied.
      */
-    ObjectType get(IdentifierType identifier) throws GuacamoleException;
+    ObjectType get(String identifier) throws GuacamoleException;
 
     /**
      * Returns the objects having the given identifiers. Note that changes to
@@ -78,7 +77,7 @@ public interface Directory<IdentifierType, ObjectType> {
      *     If an error occurs while retrieving the objects, or if permission
      *     to retrieve the requested objects is denied.
      */
-    Collection<ObjectType> getAll(Collection<IdentifierType> identifiers)
+    Collection<ObjectType> getAll(Collection<String> identifiers)
             throws GuacamoleException;
 
     /**
@@ -89,7 +88,7 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while retrieving
      *                            the identifiers.
      */
-    Set<IdentifierType> getIdentifiers() throws GuacamoleException;
+    Set<String> getIdentifiers() throws GuacamoleException;
 
     /**
      * Adds the given object to the overall set.
@@ -121,7 +120,7 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while removing the object,
      *                            or if removing object is not allowed.
      */
-    void remove(IdentifierType identifier) throws GuacamoleException;
+    void remove(String identifier) throws GuacamoleException;
 
     /**
      * Moves the object with the given identifier to the given directory.
@@ -132,7 +131,7 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while moving the object,
      *                            or if moving object is not allowed.
      */
-    void move(IdentifierType identifier, Directory<IdentifierType, ObjectType> directory) 
+    void move(String identifier, Directory<ObjectType> directory) 
             throws GuacamoleException;
 
 }

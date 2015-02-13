@@ -32,12 +32,8 @@ import org.glyptodon.guacamole.GuacamoleException;
  * an associated unique identifier.
  *
  * @author Michael Jumper
- * @param <IdentifierType>
- *     The type of identifier used to identify objects affected by permissions
- *     stored in this ObjectPermissionSet.
  */
-public interface ObjectPermissionSet<IdentifierType>
-    extends PermissionSet<ObjectPermission<IdentifierType>> {
+public interface ObjectPermissionSet extends PermissionSet<ObjectPermission> {
 
     /**
      * Tests whether the permission of the given type is granted for the
@@ -58,7 +54,7 @@ public interface ObjectPermissionSet<IdentifierType>
      *     cannot be checked due to lack of permissions to do so.
      */
     boolean hasPermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException;
+            String identifier) throws GuacamoleException;
 
     /**
      * Adds the specified permission for the object having the given
@@ -76,7 +72,7 @@ public interface ObjectPermissionSet<IdentifierType>
      *     add permissions is denied.
      */
     void addPermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException;
+            String identifier) throws GuacamoleException;
 
     /**
      * Removes the specified permission for the object having the given
@@ -94,7 +90,7 @@ public interface ObjectPermissionSet<IdentifierType>
      *     to remove permissions is denied.
      */
     void removePermission(ObjectPermission.Type permission,
-            IdentifierType identifier) throws GuacamoleException;
+            String identifier) throws GuacamoleException;
 
     /**
      * Tests whether this user has the specified permissions for the objects
@@ -119,20 +115,20 @@ public interface ObjectPermissionSet<IdentifierType>
      *     If an error occurs while checking permissions, or if permissions
      *     cannot be checked due to lack of permissions to do so.
      */
-    Collection<IdentifierType> getAccessibleObjects(
+    Collection<String> getAccessibleObjects(
             Collection<ObjectPermission.Type> permissions,
-            Collection<IdentifierType> identifiers) throws GuacamoleException;
+            Collection<String> identifiers) throws GuacamoleException;
 
     @Override
-    Set<ObjectPermission<IdentifierType>> getPermissions()
+    Set<ObjectPermission> getPermissions()
             throws GuacamoleException;
 
     @Override
-    void addPermissions(Set<ObjectPermission<IdentifierType>> permissions)
+    void addPermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException;
 
     @Override
-    void removePermissions(Set<ObjectPermission<IdentifierType>> permissions)
+    void removePermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException;
 
 }

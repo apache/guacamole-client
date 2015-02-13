@@ -51,7 +51,7 @@ public class SimpleUserContext implements UserContext {
      * The Directory with access only to the User associated with this
      * UserContext.
      */
-    private final Directory<String, User> userDirectory;
+    private final Directory<User> userDirectory;
 
     /**
      * The ConnectionGroup with access only to those Connections that the User
@@ -102,7 +102,7 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public Directory<String, User> getUserDirectory()
+    public Directory<User> getUserDirectory()
             throws GuacamoleException {
         return userDirectory;
     }

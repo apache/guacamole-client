@@ -151,12 +151,12 @@ public class UserRESTService {
         boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
         // Filter users, if requested
         Collection<String> userIdentifiers = userDirectory.getIdentifiers();
         if (!isAdmin && permissions != null) {
-            ObjectPermissionSet<String> userPermissions = self.getUserPermissions();
+            ObjectPermissionSet userPermissions = self.getUserPermissions();
             userIdentifiers = userPermissions.getAccessibleObjects(permissions, userIdentifiers);
         }
             
@@ -217,7 +217,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
         
         // Randomly set the password if it wasn't provided
         if (user.getPassword() == null)
@@ -256,7 +256,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
         // Validate data and path are sane
         if (!user.getUsername().equals(username))
@@ -298,7 +298,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
         User existingUser = userDirectory.get(username);
@@ -338,7 +338,7 @@ public class UserRESTService {
         User user;
 
         // If username is own username, just use self - might not have query permissions
-        if (userContext.self().getUsername().equals(username))
+        if (userContext.self().getIdentifier().equals(username))
             user = userContext.self();
 
         // If not self, query corresponding user from directory
@@ -430,10 +430,10 @@ public class UserRESTService {
             throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Permission patches for all types of permissions
-        PermissionSetPatch<ObjectPermission<String>> connectionPermissionPatch      = new PermissionSetPatch<ObjectPermission<String>>();
-        PermissionSetPatch<ObjectPermission<String>> connectionGroupPermissionPatch = new PermissionSetPatch<ObjectPermission<String>>();
-        PermissionSetPatch<ObjectPermission<String>> userPermissionPatch            = new PermissionSetPatch<ObjectPermission<String>>();
-        PermissionSetPatch<SystemPermission>         systemPermissionPatch          = new PermissionSetPatch<SystemPermission>();
+        PermissionSetPatch<ObjectPermission> connectionPermissionPatch      = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> userPermissionPatch            = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<SystemPermission> systemPermissionPatch          = new PermissionSetPatch<SystemPermission>();
         
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
@@ -448,7 +448,7 @@ public class UserRESTService {
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
                 // Create and update corresponding permission
-                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                ObjectPermission permission = new ObjectPermission(type, identifier);
                 updatePermissionSet(patch.getOp(), connectionPermissionPatch, permission);
                 
             }
@@ -461,7 +461,7 @@ public class UserRESTService {
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
                 // Create and update corresponding permission
-                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                ObjectPermission permission = new ObjectPermission(type, identifier);
                 updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
                 
             }
@@ -474,7 +474,7 @@ public class UserRESTService {
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
                 // Create and update corresponding permission
-                ObjectPermission<String> permission = new ObjectPermission<String>(type, identifier);
+                ObjectPermission permission = new ObjectPermission(type, identifier);
                 updatePermissionSet(patch.getOp(), userPermissionPatch, permission);
 
             }

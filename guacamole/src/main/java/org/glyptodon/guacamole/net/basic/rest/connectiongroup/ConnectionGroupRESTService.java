@@ -104,7 +104,7 @@ public class ConnectionGroupRESTService {
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
 
         // Retrieve connection permissions
-        ObjectPermissionSet<String> connectionPermissions = user.getConnectionPermissions();
+        ObjectPermissionSet connectionPermissions = user.getConnectionPermissions();
         
         // Determine whether user has at least one of the given permissions
         for (ObjectPermission.Type permission : permissions) {
@@ -138,7 +138,7 @@ public class ConnectionGroupRESTService {
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
 
         // Retrieve connection group permissions
-        ObjectPermissionSet<String> connectionGroupPermissions = user.getConnectionGroupPermissions();
+        ObjectPermissionSet connectionGroupPermissions = user.getConnectionGroupPermissions();
         
         // Determine whether user has at least one of the given permissions
         for (ObjectPermission.Type permission : permissions) {
@@ -211,7 +211,7 @@ public class ConnectionGroupRESTService {
 
             // Query all child connections
             Collection<APIConnection> apiConnections = new ArrayList<APIConnection>();
-            Directory<String, Connection> connectionDirectory = connectionGroup.getConnectionDirectory();
+            Directory<Connection> connectionDirectory = connectionGroup.getConnectionDirectory();
 
             for (String childIdentifier : connectionDirectory.getIdentifiers()) {
 
@@ -231,7 +231,7 @@ public class ConnectionGroupRESTService {
 
             // Query all child connection groups
             Collection<APIConnectionGroup> apiConnectionGroups = new ArrayList<APIConnectionGroup>();
-            Directory<String, ConnectionGroup> groupDirectory = connectionGroup.getConnectionGroupDirectory();
+            Directory<ConnectionGroup> groupDirectory = connectionGroup.getConnectionGroupDirectory();
 
             for (String childIdentifier : groupDirectory.getIdentifiers()) {
 
@@ -356,7 +356,7 @@ public class ConnectionGroupRESTService {
         
         // Get the connection group directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, ConnectionGroup> connectionGroupDirectory =
+        Directory<ConnectionGroup> connectionGroupDirectory =
                 rootGroup.getConnectionGroupDirectory();
 
         // Delete the connection group
@@ -399,7 +399,7 @@ public class ConnectionGroupRESTService {
         ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
 
         // Add the new connection group
-        Directory<String, ConnectionGroup> connectionGroupDirectory = parentConnectionGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = parentConnectionGroup.getConnectionGroupDirectory();
         connectionGroupDirectory.add(new APIConnectionGroupWrapper(connectionGroup));
 
         // Return the new connection group identifier
@@ -440,7 +440,7 @@ public class ConnectionGroupRESTService {
 
         // Get the connection group directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, ConnectionGroup> connectionGroupDirectory =
+        Directory<ConnectionGroup> connectionGroupDirectory =
                 rootGroup.getConnectionGroupDirectory();
 
         // Retrieve connection group to update

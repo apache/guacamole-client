@@ -28,10 +28,8 @@ package org.glyptodon.guacamole.net.auth.permission;
  * whole.
  *
  * @author Michael Jumper
- * @param <IdentifierType>
- *     The type of identifier used by the object this permission affects.
  */
-public class ObjectPermission<IdentifierType> implements Permission<ObjectPermission.Type> {
+public class ObjectPermission implements Permission<ObjectPermission.Type> {
 
     /**
      * Specific types of object-level permissions. Each permission type is
@@ -65,7 +63,7 @@ public class ObjectPermission<IdentifierType> implements Permission<ObjectPermis
      * The identifier of the GuacamoleConfiguration associated with the
      * operation affected by this permission.
      */
-    private final IdentifierType identifier;
+    private final String identifier;
 
     /**
      * The type of operation affected by this permission.
@@ -84,7 +82,7 @@ public class ObjectPermission<IdentifierType> implements Permission<ObjectPermis
      *     The identifier of the object associated with the operation affected
      *     by this permission.
      */
-    public ObjectPermission(Type type, IdentifierType identifier) {
+    public ObjectPermission(Type type, String identifier) {
 
         this.identifier = identifier;
         this.type = type;
@@ -98,7 +96,7 @@ public class ObjectPermission<IdentifierType> implements Permission<ObjectPermis
      * @return The identifier of the specific object affected by this
      *         permission.
      */
-    public IdentifierType getObjectIdentifier() {
+    public String getObjectIdentifier() {
         return identifier;
     }
 

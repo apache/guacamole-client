@@ -44,13 +44,13 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
      * Underlying connection directory, containing all connections within this
      * group.
      */
-    private final Directory<String, Connection> connectionDirectory;
+    private final Directory<Connection> connectionDirectory;
 
     /**
      * Underlying connection group directory, containing all connections within
      * this group.
      */
-    private final Directory<String, ConnectionGroup> connectionGroupDirectory;
+    private final Directory<ConnectionGroup> connectionGroupDirectory;
     
     /**
      * Creates a new SimpleConnectionGroup having the given name and identifier
@@ -64,8 +64,8 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
      *                                 when requested.
      */
     public SimpleConnectionGroup(String name, String identifier,
-            Directory<String, Connection> connectionDirectory, 
-            Directory<String, ConnectionGroup> connectionGroupDirectory) {
+            Directory<Connection> connectionDirectory, 
+            Directory<ConnectionGroup> connectionGroupDirectory) {
 
         // Set name
         setName(name);
@@ -83,13 +83,13 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     }
     
     @Override
-    public Directory<String, Connection> getConnectionDirectory() 
+    public Directory<Connection> getConnectionDirectory() 
             throws GuacamoleException {
         return connectionDirectory;
     }
 
     @Override
-    public Directory<String, ConnectionGroup> getConnectionGroupDirectory() 
+    public Directory<ConnectionGroup> getConnectionGroupDirectory() 
             throws GuacamoleException {
         return connectionGroupDirectory;
     }

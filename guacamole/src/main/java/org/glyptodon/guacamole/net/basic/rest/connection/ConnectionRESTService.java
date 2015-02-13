@@ -139,7 +139,7 @@ public class ConnectionRESTService {
 
         // Retrieve permission sets
         SystemPermissionSet systemPermissions = self.getSystemPermissions();
-        ObjectPermissionSet<String> connectionPermissions = self.getConnectionPermissions();
+        ObjectPermissionSet connectionPermissions = self.getConnectionPermissions();
 
         // Deny access if adminstrative or update permission is missing
         if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
@@ -211,7 +211,7 @@ public class ConnectionRESTService {
 
         // Get the connection directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
+        Directory<Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
 
         // Delete the specified connection
@@ -252,7 +252,7 @@ public class ConnectionRESTService {
         ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
 
         // Add the new connection
-        Directory<String, Connection> connectionDirectory = parentConnectionGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = parentConnectionGroup.getConnectionDirectory();
         connectionDirectory.add(new APIConnectionWrapper(connection));
 
         // Return the new connection identifier
@@ -292,7 +292,7 @@ public class ConnectionRESTService {
 
         // Get the connection directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
+        Directory<Connection> connectionDirectory =
                 rootGroup.getConnectionDirectory();
         
         // Retrieve connection to update

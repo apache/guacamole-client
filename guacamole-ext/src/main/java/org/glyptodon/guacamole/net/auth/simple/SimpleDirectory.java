@@ -37,20 +37,15 @@ import org.glyptodon.guacamole.net.auth.Directory;
  * will affect the available contents of this SimpleDirectory.
  *
  * @author Michael Jumper
- * @param <IdentifierType>
- *     The type of identifier used to identify objects stored within this
- *     SimpleDirectory.
- *
  * @param <ObjectType>
  *     The type of objects stored within this SimpleDirectory.
  */
-public class SimpleDirectory<IdentifierType, ObjectType>
-    implements Directory<IdentifierType, ObjectType> {
+public class SimpleDirectory<ObjectType> implements Directory<ObjectType> {
 
     /**
      * The Map of objects to provide access to.
      */
-    private Map<IdentifierType, ObjectType> objects = Collections.EMPTY_MAP;
+    private Map<String, ObjectType> objects = Collections.EMPTY_MAP;
 
     /**
      * Creates a new empty SimpleDirectory which does not provide access to
@@ -66,7 +61,7 @@ public class SimpleDirectory<IdentifierType, ObjectType>
      * @param objects
      *     The Map of objects to provide access to.
      */
-    public SimpleDirectory(Map<IdentifierType, ObjectType> objects) {
+    public SimpleDirectory(Map<String, ObjectType> objects) {
         this.objects = objects;
     }
 
@@ -78,7 +73,7 @@ public class SimpleDirectory<IdentifierType, ObjectType>
      * @param objects
      *     The Map of objects to provide access to.
      */
-    protected void setObjects(Map<IdentifierType, ObjectType> objects) {
+    protected void setObjects(Map<String, ObjectType> objects) {
         this.objects = objects;
     }
 
@@ -90,25 +85,25 @@ public class SimpleDirectory<IdentifierType, ObjectType>
      * @return
      *     The Map of objects which currently backs this SimpleDirectory.
      */
-    protected Map<IdentifierType, ObjectType> getObjects() {
+    protected Map<String, ObjectType> getObjects() {
         return objects;
     }
 
     @Override
-    public ObjectType get(IdentifierType identifier)
+    public ObjectType get(String identifier)
             throws GuacamoleException {
         return objects.get(identifier);
     }
 
     @Override
-    public Collection<ObjectType> getAll(Collection<IdentifierType> identifiers)
+    public Collection<ObjectType> getAll(Collection<String> identifiers)
             throws GuacamoleException {
 
         // Create collection which has an appropriate initial size
         Collection<ObjectType> foundObjects = new ArrayList<ObjectType>(identifiers.size());
 
         // Populate collection with matching objects
-        for (IdentifierType identifier : identifiers) {
+        for (String identifier : identifiers) {
 
             // Add the object which has the current identifier, if any
             ObjectType object = objects.get(identifier);
@@ -122,7 +117,7 @@ public class SimpleDirectory<IdentifierType, ObjectType>
     }
 
     @Override
-    public Set<IdentifierType> getIdentifiers() throws GuacamoleException {
+    public Set<String> getIdentifiers() throws GuacamoleException {
         return objects.keySet();
     }
 
@@ -139,13 +134,12 @@ public class SimpleDirectory<IdentifierType, ObjectType>
     }
 
     @Override
-    public void remove(IdentifierType identifier) throws GuacamoleException {
+    public void remove(String identifier) throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
     @Override
-    public void move(IdentifierType identifier,
-            Directory<IdentifierType, ObjectType> directory)
+    public void move(String identifier, Directory<ObjectType> directory)
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

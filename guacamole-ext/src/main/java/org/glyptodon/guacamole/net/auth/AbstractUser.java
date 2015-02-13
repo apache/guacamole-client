@@ -44,12 +44,12 @@ public abstract class AbstractUser implements User {
     private String password;
 
     @Override
-    public String getUsername() {
+    public String getIdentifier() {
         return username;
     }
 
     @Override
-    public void setUsername(String username) {
+    public void setIdentifier(String username) {
         this.username = username;
     }
 

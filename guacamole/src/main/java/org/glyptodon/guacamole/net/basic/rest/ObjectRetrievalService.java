@@ -59,7 +59,7 @@ public class ObjectRetrievalService {
             String identifier) throws GuacamoleException {
 
         // Get user directory
-        Directory<String, User> directory = userContext.getUserDirectory();
+        Directory<User> directory = userContext.getUserDirectory();
 
         // Pull specified user
         User user = directory.get(identifier);
@@ -91,7 +91,7 @@ public class ObjectRetrievalService {
 
         // Get root directory
         ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> directory = rootGroup.getConnectionDirectory();
+        Directory<Connection> directory = rootGroup.getConnectionDirectory();
 
         // Pull specified connection
         Connection connection = directory.get(identifier);
@@ -132,7 +132,7 @@ public class ObjectRetrievalService {
             return rootGroup;
 
         // Pull specified connection group otherwise
-        Directory<String, ConnectionGroup> directory = rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> directory = rootGroup.getConnectionGroupDirectory();
         ConnectionGroup connectionGroup = directory.get(identifier);
 
         if (connectionGroup == null)
