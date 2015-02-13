@@ -22,22 +22,15 @@
 
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
-import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
-import net.sourceforge.guacamole.net.auth.mysql.dao.PermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * deleting object permissions.
+ * deleting object permissions. This service will automatically enforce the
+ * permissions of the current user.
  *
  * @author Michael Jumper
  * @param <ObjectPermissionType>

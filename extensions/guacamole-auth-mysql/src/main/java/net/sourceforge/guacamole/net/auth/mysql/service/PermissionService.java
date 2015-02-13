@@ -35,7 +35,8 @@ import org.glyptodon.guacamole.net.auth.permission.Permission;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * deleting permissions.
+ * deleting permissions. This service will automatically enforce the
+ * permissions of the current user.
  *
  * @author Michael Jumper
  * @param <PermissionType>
