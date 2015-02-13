@@ -22,6 +22,7 @@
 
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,27 +58,27 @@ public abstract class PermissionService<PermissionType extends Permission, Model
     protected abstract PermissionMapper<ModelType> getPermissionMapper();
 
     /**
-     * Returns an instance of a permission which is backed by the given model
+     * Returns an instance of a permission which is based on the given model
      * object.
      *
      * @param model
-     *     The model object to use to back the returned permission.
+     *     The model object to use to produce the returned permission.
      *
      * @return
-     *     A permission which is backed by the given model object.
+     *     A permission which is based on the given model object.
      */
     protected abstract PermissionType getPermissionInstance(ModelType model);
 
     /**
-     * Returns a collection of permissions which are backed by the models in
+     * Returns a collection of permissions which are based on the models in
      * the given collection.
      *
      * @param models
-     *     The model objects to use to back the permissions within the returned
-     *     set.
+     *     The model objects to use to produce the permissions within the
+     *     returned set.
      *
      * @return
-     *     A set of permissions which are backed by the models in the given
+     *     A set of permissions which are based on the models in the given
      *     collection.
      */
     protected Set<PermissionType> getPermissionInstances(Collection<ModelType> models) {
@@ -91,6 +92,49 @@ public abstract class PermissionService<PermissionType extends Permission, Model
         
     }
 
+    /**
+     * Returns an instance of a model object which is based on the given
+     * permission and target user.
+     *
+     * @param targetUser
+     *     The user to whom this permission is granted.
+     *
+     * @param permission
+     *     The permission to use to produce the returned model object.
+     *
+     * @return
+     *     A model object which is based on the given permission and target
+     *     user.
+     */
+    protected abstract ModelType getModelInstance(MySQLUser targetUser,
+            PermissionType permission);
+    
+    /**
+     * Returns a collection of model objects which are based on the given
+     * permissions and target user.
+     *
+     * @param targetUser
+     *     The user to whom this permission is granted.
+     *
+     * @param permissions
+     *     The permissions to use to produce the returned model objects.
+     *
+     * @return
+     *     A collection of model objects which are based on the given
+     *     permissions and target user.
+     */
+    protected Collection<ModelType> getModelInstances(MySQLUser targetUser,
+            Collection<PermissionType> permissions) {
+
+        // Create new collection of models by manually converting each permission 
+        Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
+        for (PermissionType permission : permissions)
+            models.add(getModelInstance(targetUser, permission));
+
+        return models;
+
+    }
+    
     /**
      * Retrieves all permissions associated with the given user.
      *
@@ -115,7 +159,7 @@ public abstract class PermissionService<PermissionType extends Permission, Model
             return getPermissionInstances(getPermissionMapper().select(targetUser.getModel()));
 
         // User cannot read this user's permissions
-        throw new GuacamoleSecurityException("Permision denied.");
+        throw new GuacamoleSecurityException("Permission denied.");
         
     }
 
@@ -126,6 +170,9 @@ public abstract class PermissionService<PermissionType extends Permission, Model
      * @param user
      *     The user creating the permissions.
      *
+     * @param targetUser
+     *     The user associated with the permissions to be created.
+     *
      * @param permissions 
      *     The permissions to create.
      *
@@ -134,6 +181,7 @@ public abstract class PermissionService<PermissionType extends Permission, Model
      *     occurs while creating the permissions.
      */
     public abstract void createPermissions(AuthenticatedUser user,
+            MySQLUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
     /**
@@ -143,6 +191,9 @@ public abstract class PermissionService<PermissionType extends Permission, Model
      * @param user
      *     The user deleting the permissions.
      *
+     * @param targetUser
+     *     The user associated with the permissions to be deleted.
+     *
      * @param permissions
      *     The permissions to delete.
      *
@@ -151,6 +202,7 @@ public abstract class PermissionService<PermissionType extends Permission, Model
      *     occurs while deleting the permissions.
      */
     public abstract void deletePermissions(AuthenticatedUser user,
+            MySQLUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
 }

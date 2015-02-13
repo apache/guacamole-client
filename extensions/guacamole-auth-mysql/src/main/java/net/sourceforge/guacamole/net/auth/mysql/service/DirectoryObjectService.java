@@ -229,8 +229,10 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
         throws GuacamoleException {
 
         // Only create object if user has permission to do so
-        if (user.getUser().isAdministrator() || hasCreatePermission(user))
+        if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
             getObjectMapper().insert(object.getModel());
+            return;
+        }
 
         // User lacks permission to create 
         throw new GuacamoleSecurityException("Permission denied.");
@@ -259,8 +261,10 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
         
         // Only delete object if user has permission to do so
         if (user.getUser().isAdministrator()
-                || permissionSet.hasPermission(ObjectPermission.Type.DELETE, identifier))
+                || permissionSet.hasPermission(ObjectPermission.Type.DELETE, identifier)) {
             getObjectMapper().delete(identifier);
+            return;
+        }
 
         // User lacks permission to delete 
         throw new GuacamoleSecurityException("Permission denied.");
@@ -289,8 +293,10 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
         
         // Only update object if user has permission to do so
         if (user.getUser().isAdministrator()
-                || permissionSet.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
+                || permissionSet.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier())) {
             getObjectMapper().update(object.getModel());
+            return;
+        }
 
         // User lacks permission to update
         throw new GuacamoleSecurityException("Permission denied.");
