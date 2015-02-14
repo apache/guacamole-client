@@ -133,14 +133,22 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
 
         // Store plaintext password internally
         this.password = password;
-        
-        // Generate new salt and hash given password using newly-generated salt
-        byte[] salt = saltService.generateSalt();
-        byte[] hash = encryptionService.createPasswordHash(password, salt);
 
-        // Set stored salt and hash
-        userModel.setPasswordSalt(salt);
-        userModel.setPasswordHash(hash);
+        // If no password provided, clear password salt and hash
+        if (password == null) {
+            userModel.setPasswordSalt(null);
+            userModel.setPasswordHash(null);
+        }
+
+        // Otherwise generate new salt and hash given password using newly-generated salt
+        else {
+            byte[] salt = saltService.generateSalt();
+            byte[] hash = encryptionService.createPasswordHash(password, salt);
+
+            // Set stored salt and hash
+            userModel.setPasswordSalt(salt);
+            userModel.setPasswordHash(hash);
+        }
 
     }
 

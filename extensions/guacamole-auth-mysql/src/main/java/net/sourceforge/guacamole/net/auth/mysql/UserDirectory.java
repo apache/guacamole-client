@@ -92,8 +92,7 @@ public class UserDirectory implements Directory<User> {
     @Override
     @Transactional
     public void add(User object) throws GuacamoleException {
-        MySQLUser user = (MySQLUser) object;
-        userService.createObject(currentUser, user);
+        userService.createObject(currentUser, object);
     }
 
     @Override

@@ -83,8 +83,7 @@
             permission
         )
         VALUES
-            <foreach collection="permissions" item="permission"
-                     open="(" separator="," close=")">
+            <foreach collection="permissions" item="permission" separator=",">
                 (#{permission.userID,jdbcType=INTEGER},
                  #{permission.type,jdbcType=VARCHAR})
             </foreach>

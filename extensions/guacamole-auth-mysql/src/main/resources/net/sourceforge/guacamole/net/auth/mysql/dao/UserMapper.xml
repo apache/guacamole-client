@@ -115,9 +115,9 @@
             password_salt
         )
         VALUES (
-            #{username,jdbcType=VARCHAR},
-            #{passwordHash,jdbcType=BINARY},
-            #{passwordSalt,jdbcType=BINARY}
+            #{object.username,jdbcType=VARCHAR},
+            #{object.passwordHash,jdbcType=BINARY},
+            #{object.passwordSalt,jdbcType=BINARY}
         )
 
         <selectKey resultType="java.lang.Integer" keyProperty="userID" order="AFTER">
@@ -129,9 +129,9 @@
     <!-- Update single user -->
     <update id="update" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserModel">
         UPDATE guacamole_user
-        SET password_hash = #{passwordHash,jdbcType=BINARY},
-            password_salt = #{passwordSalt,jdbcType=BINARY}
-        WHERE user_id = #{userID,jdbcType=VARCHAR}
+        SET password_hash = #{object.passwordHash,jdbcType=BINARY},
+            password_salt = #{object.passwordSalt,jdbcType=BINARY}
+        WHERE user_id = #{object.userID,jdbcType=VARCHAR}
     </update>
 
 </mapper>

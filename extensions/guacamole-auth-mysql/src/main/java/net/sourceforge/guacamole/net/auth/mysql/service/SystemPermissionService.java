@@ -70,55 +70,14 @@ public class SystemPermissionService
     protected SystemPermissionModel getModelInstance(final MySQLUser targetUser,
             final SystemPermission permission) {
 
-        // Populate and return model object
-        return new SystemPermissionModel() {
+        SystemPermissionModel model = new SystemPermissionModel();
 
-            /**
-             * The ID of the user to whom this permission is granted.
-             */
-            private Integer userID = targetUser.getModel().getUserID();
+        // Populate model object with data from user and permission
+        model.setUserID(targetUser.getModel().getUserID());
+        model.setUsername(targetUser.getModel().getUsername());
+        model.setType(permission.getType());
 
-            /**
-             * The username of the user to whom this permission is granted.
-             */
-            private String username = targetUser.getModel().getUsername();
-
-            /**
-             * The type of action granted by this permission.
-             */
-            private SystemPermission.Type type = permission.getType();
-            
-            @Override
-            public Integer getUserID() {
-                return userID;
-            }
-
-            @Override
-            public void setUserID(Integer userID) {
-                this.userID = userID;
-            }
-
-            @Override
-            public String getUsername() {
-                return username;
-            }
-
-            @Override
-            public void setUsername(String username) {
-                this.username = username;
-            }
-
-            @Override
-            public SystemPermission.Type getType() {
-                return type;
-            }
-
-            @Override
-            public void setType(SystemPermission.Type type) {
-                this.type = type;
-            }
-
-        };
+        return model;
         
     }
 
@@ -191,8 +150,16 @@ public class SystemPermissionService
 
         // Only an admin can read permissions that aren't his own
         if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
-                || user.getUser().isAdministrator())
-            return getPermissionInstance(getPermissionMapper().selectOne(targetUser.getModel(), type));
+                || user.getUser().isAdministrator()) {
+
+            // Read permission from database, return null if not found
+            SystemPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type);
+            if (model == null)
+                return null;
+
+            return getPermissionInstance(model);
+
+        }
 
         // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");

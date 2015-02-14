@@ -40,14 +40,20 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  * permissions of the current user.
  *
  * @author Michael Jumper
- * @param <ObjectType>
- *     The type of object this service provides access to.
+ * @param <InternalType>
+ *     The specific internal implementation of the type of object this service
+ *     provides access to.
+ *
+ * @param <ExternalType>
+ *     The external interface or implementation of the type of object this
+ *     service provides access to, as defined by the guacamole-ext API.
  *
  * @param <ModelType>
- *     The underlying model object used to represent ObjectType in the
+ *     The underlying model object used to represent InternalType in the
  *     database.
  */
-public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<ModelType>, ModelType> {
+public abstract class DirectoryObjectService<InternalType extends DirectoryObject<ModelType>,
+        ExternalType, ModelType> {
 
     /**
      * Returns an instance of a mapper for the type of object used by this
@@ -72,8 +78,24 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * @return
      *     An object which is backed by the given model object.
      */
-    protected abstract ObjectType getObjectInstance(AuthenticatedUser currentUser,
+    protected abstract InternalType getObjectInstance(AuthenticatedUser currentUser,
             ModelType model);
+
+    /**
+     * Returns an instance of a model object which is based on the given
+     * object.
+     *
+     * @param currentUser
+     *     The user for whom this model object is being created.
+     *
+     * @param object 
+     *     The object to use to produce the returned model object.
+     *
+     * @return
+     *     A model object which is based on the given object.
+     */
+    protected abstract ModelType getModelInstance(AuthenticatedUser currentUser,
+            ExternalType object);
 
     /**
      * Returns whether the given user has permission to create the type of
@@ -125,11 +147,11 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     A collection of objects which are backed by the models in the given
      *     collection.
      */
-    protected Collection<ObjectType> getObjectInstances(AuthenticatedUser currentUser,
+    protected Collection<InternalType> getObjectInstances(AuthenticatedUser currentUser,
             Collection<ModelType> models) {
 
         // Create new collection of objects by manually converting each model
-        Collection<ObjectType> objects = new ArrayList<ObjectType>(models.size());
+        Collection<InternalType> objects = new ArrayList<InternalType>(models.size());
         for (ModelType model : models)
             objects.add(getObjectInstance(currentUser, model));
 
@@ -154,11 +176,11 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested object.
      */
-    public ObjectType retrieveObject(AuthenticatedUser user,
+    public InternalType retrieveObject(AuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
         // Pull objects having given identifier
-        Collection<ObjectType> objects = retrieveObjects(user, Collections.singleton(identifier));
+        Collection<InternalType> objects = retrieveObjects(user, Collections.singleton(identifier));
 
         // If no such object, return null
         if (objects.isEmpty())
@@ -189,7 +211,7 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested objects.
      */
-    public Collection<ObjectType> retrieveObjects(AuthenticatedUser user,
+    public Collection<InternalType> retrieveObjects(AuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
         // Do not query if no identifiers given
@@ -226,12 +248,12 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     If the user lacks permission to create the object, or an error
      *     occurs while creating the object.
      */
-    public void createObject(AuthenticatedUser user, ObjectType object)
+    public void createObject(AuthenticatedUser user, ExternalType object)
         throws GuacamoleException {
 
         // Only create object if user has permission to do so
         if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
-            getObjectMapper().insert(object.getModel());
+            getObjectMapper().insert(getModelInstance(user, object));
             return;
         }
 
@@ -286,7 +308,7 @@ public abstract class DirectoryObjectService<ObjectType extends DirectoryObject<
      *     If the user lacks permission to update the object, or an error
      *     occurs while updating the object.
      */
-    public void updateObject(AuthenticatedUser user, ObjectType object)
+    public void updateObject(AuthenticatedUser user, InternalType object)
         throws GuacamoleException {
 
         // Get object permissions

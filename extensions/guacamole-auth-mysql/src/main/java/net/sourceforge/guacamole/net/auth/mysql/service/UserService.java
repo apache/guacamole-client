@@ -31,6 +31,7 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
@@ -41,7 +42,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class UserService extends DirectoryObjectService<MySQLUser, UserModel> {
+public class UserService extends DirectoryObjectService<MySQLUser, User, UserModel> {
 
     /**
      * Mapper for accessing users.
@@ -66,6 +67,22 @@ public class UserService extends DirectoryObjectService<MySQLUser, UserModel> {
         MySQLUser user = mySQLUserProvider.get();
         user.init(currentUser, model);
         return user;
+    }
+
+    @Override
+    protected UserModel getModelInstance(AuthenticatedUser currentUser,
+            final User object) {
+
+        // Create new MySQLUser backed by blank model
+        UserModel model = new UserModel();
+        MySQLUser user = getObjectInstance(currentUser, model);
+
+        // Set model contents through MySQLUser, copying the provided user
+        user.setIdentifier(object.getIdentifier());
+        user.setPassword(object.getPassword());
+
+        return model;
+        
     }
 
     @Override
