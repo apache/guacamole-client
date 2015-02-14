@@ -163,8 +163,7 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     @Override
     public SystemPermissionSet getSystemPermissions()
             throws GuacamoleException {
-        // STUB
-        return new SimpleSystemPermissionSet(systemPermissionService.retrievePermissions(getCurrentUser(), this));
+        return systemPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
     @Override

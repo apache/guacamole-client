@@ -140,6 +140,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     // Bind interfaces
                     bind(MySQLUser.class);
                     bind(MySQLUserContext.class);
+                    bind(MySQLSystemPermissionSet.class);
                     bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
                     bind(SaltService.class).to(SecureRandomSaltService.class);
                     bind(SystemPermissionService.class);

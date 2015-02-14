@@ -23,8 +23,10 @@
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.Collection;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLSystemPermissionSet;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionModel;
@@ -40,19 +42,25 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
  * @author Michael Jumper
  */
 public class SystemPermissionService
-    extends PermissionService<SystemPermission, SystemPermissionModel> {
+    extends PermissionService<MySQLSystemPermissionSet, SystemPermission, SystemPermissionModel> {
 
     /**
      * Mapper for system-level permissions.
      */
     @Inject
     private SystemPermissionMapper systemPermissionMapper;
-    
+
+    /**
+     * Provider for creating system permission sets.
+     */
+    @Inject
+    private Provider<MySQLSystemPermissionSet> systemPermissionSetProvider;
+
     @Override
     protected SystemPermissionMapper getPermissionMapper() {
         return systemPermissionMapper;
     }
-
+    
     @Override
     protected SystemPermission getPermissionInstance(SystemPermissionModel model) {
         return new SystemPermission(model.getType());
@@ -115,6 +123,18 @@ public class SystemPermissionService
     }
 
     @Override
+    public MySQLSystemPermissionSet getPermissionSet(AuthenticatedUser user,
+            MySQLUser targetUser) throws GuacamoleException {
+
+        // Create permission set for requested user
+        MySQLSystemPermissionSet permissionSet = systemPermissionSetProvider.get();
+        permissionSet.init(user, targetUser);
+
+        return permissionSet;
+        
+    }
+    
+    @Override
     public void createPermissions(AuthenticatedUser user, MySQLUser targetUser,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
@@ -142,6 +162,39 @@ public class SystemPermissionService
         }
 
         // User lacks permission to delete system permissions
+        throw new GuacamoleSecurityException("Permission denied.");
+        
+    }
+
+    /**
+     * Retrieves the permission of the given type associated with the given
+     * user, if it exists. If no such permission exists, null is returned.
+     *
+     * @param user
+     *     The user retrieving the permission.
+     *
+     * @param targetUser
+     *     The user associated with the permission to be retrieved.
+     * 
+     * @param type
+     *     The type of permission to retrieve.
+     *
+     * @return
+     *     The permission of the given type associated with the given user, or
+     *     null if no such permission exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the requested permission.
+     */
+    public SystemPermission retrievePermission(AuthenticatedUser user,
+            MySQLUser targetUser, SystemPermission.Type type) throws GuacamoleException {
+
+        // Only an admin can read permissions that aren't his own
+        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
+                || user.getUser().isAdministrator())
+            return getPermissionInstance(getPermissionMapper().selectOne(targetUser.getModel(), type));
+
+        // User cannot read this user's permissions
         throw new GuacamoleSecurityException("Permission denied.");
         
     }

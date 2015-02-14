@@ -38,15 +38,12 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  * permissions of the current user.
  *
  * @author Michael Jumper
- * @param <ObjectPermissionType>
- *     The type of object permission this service provides access to.
- *
  * @param <ModelType>
  *     The underlying model object used to represent PermissionType in the
  *     database.
  */
-public abstract class ObjectPermissionService<ObjectPermissionType extends ObjectPermission, ModelType>
-    extends PermissionService<ObjectPermissionType, ModelType> {
+public abstract class ObjectPermissionService<ModelType>
+    extends PermissionService<ObjectPermissionSet, ObjectPermission, ModelType> {
 
     /**
      * Returns the permission set associated with the given user and related
@@ -93,7 +90,7 @@ public abstract class ObjectPermissionService<ObjectPermissionType extends Objec
      *     permission is denied to read the current user's permissions.
      */
     protected boolean canAlterPermissions(AuthenticatedUser user, MySQLUser targetUser,
-            Collection<ObjectPermissionType> permissions)
+            Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
         // A system adminstrator can do anything
@@ -107,7 +104,7 @@ public abstract class ObjectPermissionService<ObjectPermissionType extends Objec
 
         // Produce collection of affected identifiers
         Collection<String> affectedIdentifiers = new HashSet(permissions.size());
-        for (ObjectPermissionType permission : permissions)
+        for (ObjectPermission permission : permissions)
             affectedIdentifiers.add(permission.getObjectIdentifier());
 
         // Determine subset of affected identifiers that we have admin access to
@@ -127,7 +124,7 @@ public abstract class ObjectPermissionService<ObjectPermissionType extends Objec
     
     @Override
     public void createPermissions(AuthenticatedUser user, MySQLUser targetUser,
-            Collection<ObjectPermissionType> permissions)
+            Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
         // Create permissions only if user has permission to do so
@@ -144,7 +141,7 @@ public abstract class ObjectPermissionService<ObjectPermissionType extends Objec
 
     @Override
     public void deletePermissions(AuthenticatedUser user, MySQLUser targetUser,
-            Collection<ObjectPermissionType> permissions)
+            Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
         // Delete permissions only if user has permission to do so

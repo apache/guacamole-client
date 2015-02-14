@@ -32,13 +32,18 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.PermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * deleting permissions. This service will automatically enforce the
- * permissions of the current user.
+ * deleting permissions, and for obtaining the permission sets that contain
+ * these permissions. This service will automatically enforce the permissions
+ * of the current user.
  *
  * @author Michael Jumper
+ * @param <PermissionSetType>
+ *     The type of permission sets this service provides access to.
+ *
  * @param <PermissionType>
  *     The type of permission this service provides access to.
  *
@@ -46,7 +51,8 @@ import org.glyptodon.guacamole.net.auth.permission.Permission;
  *     The underlying model object used to represent PermissionType in the
  *     database.
  */
-public abstract class PermissionService<PermissionType extends Permission, ModelType> {
+public abstract class PermissionService<PermissionSetType extends PermissionSet<PermissionType>,
+        PermissionType extends Permission, ModelType> {
 
     /**
      * Returns an instance of a mapper for the type of permission used by this
@@ -135,7 +141,31 @@ public abstract class PermissionService<PermissionType extends Permission, Model
         return models;
 
     }
-    
+
+    /**
+     * Returns a permission set that can be used to retrieve and manipulate the
+     * permissions of the given user.
+     *
+     * @param user
+     *     The user who will be retrieving or manipulating permissions through
+     *     the returned permission set.
+     *
+     * @param targetUser
+     *     The user to whom the permissions in the returned permission set are
+     *     granted.
+     *
+     * @return
+     *     A permission set that contains all permissions associated with the
+     *     given user, and can be used to manipulate that user's permissions.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the permissions of the given
+     *     user, or if permission to retrieve the permissions of the given
+     *     user is denied.
+     */
+    public abstract PermissionSetType getPermissionSet(AuthenticatedUser user,
+            MySQLUser targetUser) throws GuacamoleException;
+
     /**
      * Retrieves all permissions associated with the given user.
      *

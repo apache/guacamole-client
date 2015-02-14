@@ -23,6 +23,9 @@
 package net.sourceforge.guacamole.net.auth.mysql.dao;
 
 import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionModel;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
+import org.apache.ibatis.annotations.Param;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 
 /**
  * Mapper for system-level permissions.
@@ -30,4 +33,22 @@ import net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionModel;
  * @author Michael Jumper
  */
 public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
+
+    /**
+     * Retrieve the permission of the given type associated with the given
+     * user, if it exists. If no such permission exists, null is returned.
+     *
+     * @param user
+     *     The user to retrieve permissions for.
+     * 
+     * @param type
+     *     The type of permission to return.
+     *
+     * @return
+     *     The requested permission, or null if no such permission is granted
+     *     to the given user.
+     */
+    SystemPermissionModel selectOne(@Param("user") UserModel user,
+            @Param("type") SystemPermission.Type type);
+
 }

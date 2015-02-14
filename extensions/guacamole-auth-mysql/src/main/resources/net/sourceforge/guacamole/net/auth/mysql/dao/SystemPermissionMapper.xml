@@ -47,6 +47,21 @@
 
     </select>
 
+    <!-- Select the single permission matching the given criteria -->
+    <select id="selectOne" resultMap="SystemPermissionResultMap">
+
+        SELECT
+            guacamole_system_permission.user_id,
+            username,
+            permission
+        FROM guacamole_system_permission
+        JOIN guacamole_user ON guacamole_system_permission.user_id = guacamole_user.user_id
+        WHERE
+            guacamole_system_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            AND permission = #{type,jdbcType=VARCHAR}
+
+    </select>
+
     <!-- Delete all given permissions -->
     <delete id="delete" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.SystemPermissionModel">
 
