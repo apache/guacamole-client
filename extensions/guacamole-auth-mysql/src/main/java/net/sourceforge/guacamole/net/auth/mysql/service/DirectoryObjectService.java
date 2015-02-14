@@ -254,6 +254,7 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
         // Only create object if user has permission to do so
         if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
             getObjectMapper().insert(getModelInstance(user, object));
+            // FIXME: Insert implicit object permissions, too.
             return;
         }
 
