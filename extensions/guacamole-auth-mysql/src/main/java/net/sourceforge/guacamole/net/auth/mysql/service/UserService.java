@@ -24,12 +24,15 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collection;
+import java.util.Collections;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLUser;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
+import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -102,6 +105,44 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
         // Return permissions related to users
         return user.getUser().getUserPermissions();
 
+    }
+
+    @Override
+    protected void validateNewObject(AuthenticatedUser user, User object)
+            throws GuacamoleException {
+
+        // Username must not be blank
+        if (object.getIdentifier().trim().isEmpty())
+            throw new GuacamoleClientException("The username must not be blank.");
+        
+        // Do not create duplicate users
+        Collection<UserModel> existing = userMapper.select(Collections.singleton(object.getIdentifier()));
+        if (!existing.isEmpty())
+            throw new GuacamoleClientException("User \"" + object.getIdentifier() + "\" already exists.");
+
+    }
+
+    @Override
+    protected void validateExistingObject(AuthenticatedUser user,
+            MySQLUser object) throws GuacamoleException {
+
+        // Username must not be blank
+        if (object.getIdentifier().trim().isEmpty())
+            throw new GuacamoleClientException("The username must not be blank.");
+        
+        // Check whether such a user is already present
+        MySQLUser existing = retrieveObject(user, object.getIdentifier());
+        if (existing != null) {
+
+            UserModel existingModel = existing.getModel();
+            UserModel updatedModel = object.getModel();
+
+            // Do not rename to existing user
+            if (!existingModel.getUserID().equals(updatedModel.getUserID()))
+                throw new GuacamoleClientException("User \"" + object.getIdentifier() + "\" already exists.");
+            
+        }
+        
     }
 
     /**

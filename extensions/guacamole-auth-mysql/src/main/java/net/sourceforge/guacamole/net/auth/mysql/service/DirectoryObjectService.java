@@ -160,6 +160,55 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     }
 
     /**
+     * Returns whether the given object is valid and can be created as-is. The
+     * object does not yet exist in the database, but the user desires to
+     * create a new object with the given values. This function will be called
+     * prior to any creation operation, and provides a means for the
+     * implementation to abort prior to completion. The default implementation
+     * does nothing.
+     *
+     * @param user
+     *     The user creating the object.
+     *
+     * @param object
+     *     The object to validate.
+     *
+     * @throws GuacamoleException
+     *     If the object is invalid, or an error prevents validating the given
+     *     object.
+     */
+    protected void validateNewObject(AuthenticatedUser user,
+            ExternalType object) throws GuacamoleException {
+
+        // By default, do nothing.
+
+    }
+
+    /**
+     * Returns whether the given object is valid and can updated as-is. The
+     * object already exists in the database, but the user desires to update
+     * the object to the given values. This function will be called prior to
+     * update operation, and provides a means for the implementation to abort
+     * prior to completion. The default implementation does nothing.
+     *
+     * @param user
+     *     The user updating the existing object.
+     *
+     * @param object 
+     *     The object to validate.
+     *
+     * @throws GuacamoleException
+     *     If the object is invalid, or an error prevents validating the given
+     *     object.
+     */
+    protected void validateExistingObject(AuthenticatedUser user,
+            InternalType object) throws GuacamoleException {
+
+        // By default, do nothing.
+
+    }
+
+    /**
      * Retrieves the single object that has the given identifier, if it exists
      * and the user has permission to read it.
      *
@@ -253,7 +302,13 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
 
         // Only create object if user has permission to do so
         if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
+
+            // Validate object prior to creation
+            validateNewObject(user, object);
+
+            // Create object
             getObjectMapper().insert(getModelInstance(user, object));
+
             // FIXME: Insert implicit object permissions, too.
             return;
         }
@@ -318,6 +373,11 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
         // Only update object if user has permission to do so
         if (user.getUser().isAdministrator()
                 || permissionSet.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier())) {
+
+            // Validate object prior to creation
+            validateExistingObject(user, object);
+
+            // Update object
             getObjectMapper().update(object.getModel());
             return;
         }
