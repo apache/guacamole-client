@@ -30,4 +30,4 @@ var Guacamole = Guacamole || {};
  *
  * @type String
  */
-Guacamole.API_VERSION = "0.9.3";
+Guacamole.API_VERSION = "0.9.5";
