@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-ldap</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.4</version>
+    <version>0.9.5</version>
     <name>guacamole-auth-ldap</name>
     <url>http://guac-dev.org/</url>
 
@@ -64,7 +64,7 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.4</version>
+            <version>0.9.5</version>
         </dependency>
 
         <!-- JLDAP -->
