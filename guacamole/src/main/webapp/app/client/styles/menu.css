@@ -38,16 +38,45 @@
 }
 
 .menu-content {
-    overflow: hidden;
-    display: table;
-    table-layout: fixed;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    
     width: 100%;
     height: 100%;
+
 }
 
 .menu-header {
-    display: table-row;
-    height: 0;
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
 }
 
 .menu-header h2 {
@@ -55,23 +84,15 @@
 }
 
 .menu-body {
-    display: table-row;
-    height: 100%;
-}
 
-.menu-body-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
+    -ms-flex: 0 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 0 1 auto;
+    flex: 0 1 auto;
 
-.menu-body-scroll-region {
     overflow: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+
 }
 
 #menu h3 {
