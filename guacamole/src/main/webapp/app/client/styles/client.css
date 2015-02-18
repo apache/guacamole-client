@@ -38,21 +38,71 @@ body.client {
 }
 
 .client-view {
-    display: table;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+    -ms-flex-pack: end;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    -moz-box-pack: end;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+    -webkit-box-pack: end;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+    -webkit-flex-pack: end;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    flex-pack: end;
+
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
+
 }
 
 .client-view .client-body {
-    display: table-cell;
-    width: 100%;
-    height: 100%;
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+    position: relative;
 }
 
 .client-view .client-bottom {
-    display: table-row;
-    height: 0;
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+.client-view .client-body .main {
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: auto;
+    height: auto;
+
 }

@@ -120,11 +120,11 @@
 
 .menu-header > h2 {
 
-    -ms-flex: 1 0 auto;
+    -ms-flex: 1 1 auto;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
-    -webkit-flex: 1 0 auto;
-    flex: 1 0 auto;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
 
     border: none;
     padding: 0;
@@ -136,11 +136,11 @@
 
 .menu-body {
 
-    -ms-flex: 0 1 auto;
+    -ms-flex: 1 1 auto;
     -moz-box-flex: 1;
     -webkit-box-flex: 1;
-    -webkit-flex: 0 1 auto;
-    flex: 0 1 auto;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
 
     padding: 1em;
     overflow: auto;
