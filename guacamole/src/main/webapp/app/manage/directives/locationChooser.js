@@ -62,13 +62,22 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
              */
             var connectionGroups = {};
 
+            /**
+             * Recursively traverses the given connection group and all
+             * children, storing each encountered connection group within the
+             * connectionGroups map by its identifier.
+             *
+             * @param {GroupListItem} group
+             *     The connection group to traverse.
+             */
             var mapConnectionGroups = function mapConnectionGroups(group) {
 
                 // Map given group
                 connectionGroups[group.identifier] = group;
 
                 // Map all child groups
-                group.childConnectionGroups.forEach(mapConnectionGroups);
+                if (group.childConnectionGroups)
+                    group.childConnectionGroups.forEach(mapConnectionGroups);
 
             };
 

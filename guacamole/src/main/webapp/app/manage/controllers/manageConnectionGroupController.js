@@ -94,10 +94,10 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.rootGroup           !== null
-            && $scope.connectionGroup     !== null
-            && $scope.hasUpdatePermission !== null
-            && $scope.hasDeletePermission !== null;
+        return $scope.rootGroup                !== null
+            && $scope.connectionGroup          !== null
+            && $scope.canSaveConnectionGroup   !== null
+            && $scope.canDeleteConnectionGroup !== null;
 
     };
     
@@ -105,15 +105,18 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
                 
-         // Check if the user has UPDATE permission
-         $scope.hasUpdatePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
-            
-         // Check if the user has DELETE permission
-         $scope.hasDeletePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier);
+        // Check if the connection group is new or if the user has UPDATE permission
+        $scope.canSaveConnectionGroup =
+              !identifier
+           || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+           || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
+
+        // Check if connection group is not new and the user has DELETE permission
+        $scope.canDeleteConnectionGroup =
+           !!identifier && (
+                  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+              ||  PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
+           );
     
     });
 
