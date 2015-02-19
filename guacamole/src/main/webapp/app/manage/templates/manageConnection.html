@@ -76,9 +76,10 @@ THE SOFTWARE.
 
     <!-- Form action buttons -->
     <div class="action-buttons">
-        <button ng-show="hasUpdatePermission" ng-click="saveConnection()">{{'MANAGE_CONNECTION.ACTION_SAVE' | translate}}</button>
+        <button ng-show="canSaveConnection" ng-click="saveConnection()">{{'MANAGE_CONNECTION.ACTION_SAVE' | translate}}</button>
+        <button ng-show="canCloneConnection" ng-click="cloneConnection()">{{'MANAGE_CONNECTION.ACTION_CLONE' | translate}}</button>
         <button ng-click="cancel()">{{'MANAGE_CONNECTION.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="hasDeletePermission" ng-click="deleteConnection()" class="danger">{{'MANAGE_CONNECTION.ACTION_DELETE' | translate}}</button>
+        <button ng-show="canDeleteConnection" ng-click="deleteConnection()" class="danger">{{'MANAGE_CONNECTION.ACTION_DELETE' | translate}}</button>
     </div>
 
     <!-- Connection history -->

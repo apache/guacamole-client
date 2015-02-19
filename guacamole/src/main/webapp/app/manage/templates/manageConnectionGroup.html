@@ -61,9 +61,9 @@ THE SOFTWARE.
 
     <!-- Form action buttons -->
     <div class="action-buttons">
-        <button ng-show="hasUpdatePermission" ng-click="saveConnectionGroup()">{{'MANAGE_CONNECTION_GROUP.ACTION_SAVE' | translate}}</button>
+        <button ng-show="canSaveConnectionGroup" ng-click="saveConnectionGroup()">{{'MANAGE_CONNECTION_GROUP.ACTION_SAVE' | translate}}</button>
         <button ng-click="cancel()">{{'MANAGE_CONNECTION_GROUP.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="hasDeletePermission" ng-click="deleteConnectionGroup()" class="danger">{{'MANAGE_CONNECTION_GROUP.ACTION_DELETE' | translate}}</button>
+        <button ng-show="canDeleteConnectionGroup" ng-click="deleteConnectionGroup()" class="danger">{{'MANAGE_CONNECTION_GROUP.ACTION_DELETE' | translate}}</button>
     </div>
 
 </div>

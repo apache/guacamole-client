@@ -105,8 +105,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         return $scope.user                !== null
             && $scope.permissionFlags     !== null
             && $scope.rootGroup           !== null
-            && $scope.hasUpdatePermission !== null
-            && $scope.hasDeletePermission !== null;
+            && $scope.canSaveUser         !== null
+            && $scope.canDeleteUser       !== null;
 
     };
 
@@ -130,16 +130,19 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
                 
-         // Check if the user has UPDATE permission
-         $scope.hasUpdatePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, username);
-            
-         // Check if the user has DELETE permission
-         $scope.hasDeletePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, username);
-    
+        // Check if the user is new or if the user has UPDATE permission
+        $scope.canSaveUser =
+              !username
+           || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+           || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, username);
+
+        // Check if user is not new and the user has DELETE permission
+        $scope.canDeleteUser =
+           !!username && (
+                  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+              ||  PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, username)
+           );
+
     });
 
     /**

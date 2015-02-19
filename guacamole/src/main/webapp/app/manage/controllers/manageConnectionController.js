@@ -53,6 +53,14 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             $scope.showStatus(false);
         }
     };
+    
+    /**
+     * The identifier of the original connection from which this connection is
+     * being cloned. Only valid if this is a new connection.
+     * 
+     * @type String
+     */
+    var cloneSourceIdentifier = $location.search().clone;
 
     /**
      * The identifier of the connection being edited. If a new connection is
@@ -99,18 +107,26 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.historyEntryWrappers = null;
     
     /**
-     * Whether the user has UPDATE permission for the current connection.
+     * Whether the user can save the connection being edited. This could be
+     * updating an existing connection, or creating a new connection.
      * 
      * @type Boolean
      */
-    $scope.hasUpdatePermission = null;
+    $scope.canSaveConnection = null;
     
     /**
-     * Whether the user has DELETE permission for the current connection.
+     * Whether the user can delete the connection being edited.
      * 
      * @type Boolean
      */
-    $scope.hasDeletePermission = null;
+    $scope.canDeleteConnection = null;
+    
+    /**
+     * Whether the user can clone the connection being edited.
+     * 
+     * @type Boolean
+     */
+    $scope.canCloneConnection = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -126,8 +142,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             && $scope.connection           !== null
             && $scope.parameters           !== null
             && $scope.historyEntryWrappers !== null
-            && $scope.hasUpdatePermission  !== null
-            && $scope.hasDeletePermission  !== null;
+            && $scope.canSaveConnection    !== null
+            && $scope.canDeleteConnection  !== null
+            && $scope.canCloneConnection   !== null;
 
     };
 
@@ -142,15 +159,27 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
                 
-         // Check if the user has UPDATE permission
-         $scope.hasUpdatePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+         // Check if the connection is new or if the user has UPDATE permission
+         $scope.canSaveConnection =
+               !identifier
+            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
             || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
             
-         // Check if the user has DELETE permission
-         $scope.hasDeletePermission =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier);
+         // Check if connection is not new and the user has DELETE permission
+         $scope.canDeleteConnection =
+            !!identifier && (
+                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+               ||  PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
+            );
+                
+         // Check if the connection is not new and the user has UPDATE and CREATE_CONNECTION permissions
+         $scope.canCloneConnection =
+            !!identifier && (
+               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER) || (
+                       PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier)
+                   &&  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
+               )
+            );
     
     });
    
@@ -182,7 +211,26 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         connectionService.getConnectionParameters(identifier).success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
+    }
+    
+    // If we are cloning an existing connection, pull its data instead
+    else if (cloneSourceIdentifier) {
 
+        // Pull data from cloned connection
+        connectionService.getConnection(cloneSourceIdentifier).success(function connectionRetrieved(connection) {
+            $scope.connection = connection;
+            
+            // Clear the identifier field because this connection is new
+            delete $scope.connection.identifier;
+        });
+
+        // Do not pull connection history
+        $scope.historyEntryWrappers = [];
+        
+        // Pull connection parameters from cloned connection
+        connectionService.getConnectionParameters(cloneSourceIdentifier).success(function parametersReceived(parameters) {
+            $scope.parameters = parameters;
+        });
     }
 
     // If we are creating a new connection, populate skeleton connection data
@@ -231,7 +279,15 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/manage/');
+        $location.url('/manage/');
+    };
+    
+    /**
+     * Cancels all pending edits, opening an edit page for a new connection
+     * which is prepopulated with the data from the connection currently being edited. 
+     */
+    $scope.cloneConnection = function cloneConnection() {
+        $location.path('/manage/connections').search('clone', identifier);
     };
             
     /**

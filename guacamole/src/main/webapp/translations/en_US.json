@@ -4,6 +4,7 @@
 
         "ACTION_ACKNOWLEDGE"   : "OK",
         "ACTION_CANCEL"        : "Cancel",
+        "ACTION_CLONE"         : "Clone",
         "ACTION_DELETE"        : "Delete",
         "ACTION_LOGIN"         : "Login",
         "ACTION_LOGOUT"        : "Logout",
@@ -156,6 +157,7 @@
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
         "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
