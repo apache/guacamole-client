@@ -199,9 +199,9 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         MySQLConnectionGroup mySQLConnectionGroup = (MySQLConnectionGroup) object;
 
         // Verify permission to update
-        permissionCheckService.verifyConnectionAccess(currentUser,
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 mySQLConnectionGroup.getConnectionGroupID(),
-                MySQLConstants.CONNECTION_UPDATE);
+                MySQLConstants.CONNECTION_GROUP_UPDATE);
 
         // Perform update
         connectionGroupService.updateConnectionGroup(mySQLConnectionGroup);
@@ -252,8 +252,8 @@ public class ConnectionGroupDirectory implements Directory<String, ConnectionGro
         if(mySQLConnectionGroup == null)
             throw new GuacamoleResourceNotFoundException("Connection group not found.");
 
-        // Verify permission to update the connection
-        permissionCheckService.verifyConnectionAccess(currentUser,
+        // Verify permission to update the connection group
+        permissionCheckService.verifyConnectionGroupAccess(currentUser,
                 mySQLConnectionGroup.getConnectionGroupID(),
                 MySQLConstants.CONNECTION_GROUP_UPDATE);
         
