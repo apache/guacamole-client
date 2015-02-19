@@ -38,52 +38,204 @@
 }
 
 .menu-content {
-    overflow: hidden;
-    display: table;
-    table-layout: fixed;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+    
     width: 100%;
     height: 100%;
+
 }
 
 .menu-header {
-    display: table-row;
-    height: 0;
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+    padding: 0.75em 0.5em;
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
 }
 
-.menu-header h2 {
-    margin-bottom: 0;
+.menu-header > * {
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+.menu-header > h2 {
+
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    background: none;
+    margin: 0;
+
 }
 
 .menu-body {
-    display: table-row;
-    height: 100%;
-}
 
-.menu-body-content {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
 
-.menu-body-scroll-region {
+    padding: 1em;
     overflow: auto;
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+}
+
+.menu-body > * {
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
 }
 
 #menu h3 {
-    margin: 1em;
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1em;
 }
 
 #menu .content {
-    margin: 1em;
+
+    padding: 0;
+    margin: 0;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+}
+
+#menu .content + h3 {
+    padding-top: 1em;
 }
 
 #menu .content > * {
-    margin: 1em 0;
+
+    margin: 0;
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+
+}
+
+#menu .content > * + * {
+    margin-top: 1em;
 }
 
 #menu,
@@ -116,7 +268,6 @@
 #menu #mouse-settings .choice .figure {
     display: inline-block;
     vertical-align: middle;
-    max-width: 80%;
 }
 
 #menu #keyboard-settings .caption {
@@ -132,7 +283,8 @@
 
 #menu #mouse-settings .figure img {
     display: block;
-    max-width: 100%;
+    width: 75%;
+    max-width: 320px;
     margin: 1em auto;
 }
 
