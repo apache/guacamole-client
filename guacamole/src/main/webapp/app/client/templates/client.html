@@ -24,30 +24,32 @@
 
     <!-- Client view -->
     <div class="client-view">
+        <div class="client-view-content">
 
-        <!-- Central portion of view -->
-        <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
+            <!-- Central portion of view -->
+            <div class="client-body" guac-touch-drag="clientDrag" guac-touch-pinch="clientPinch">
 
-            <!-- Client -->
-            <guac-client client="client"></guac-client>
+                <!-- Client -->
+                <guac-client client="client"></guac-client>
 
-        </div>
-
-        <!-- Bottom portion of view -->
-        <div class="client-bottom">
-
-            <!-- Text input -->
-            <div class="text-input-container" ng-show="showTextInput">
-                <guac-text-input needs-focus="showTextInput"></guac-text-input>
             </div>
 
-            <!-- On-screen keyboard -->
-            <div class="keyboard-container" ng-show="showOSK">
-                <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
+            <!-- Bottom portion of view -->
+            <div class="client-bottom">
+
+                <!-- Text input -->
+                <div class="text-input-container" ng-show="showTextInput">
+                    <guac-text-input needs-focus="showTextInput"></guac-text-input>
+                </div>
+
+                <!-- On-screen keyboard -->
+                <div class="keyboard-container" ng-show="showOSK">
+                    <guac-osk layout="'CLIENT.URL_OSK_LAYOUT' | translate"></guac-osk>
+                </div>
+
             </div>
 
         </div>
-
     </div>
 
     <!-- Menu -->

@@ -39,6 +39,19 @@ body.client {
 
 .client-view {
 
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    font-size: 0px;
+
+}
+
+.client-view-content {
+
     /* IE10 */
     display: -ms-flexbox;
     -ms-flex-align: stretch;
@@ -69,11 +82,10 @@ body.client {
     flex-direction: column;
     flex-pack: end;
 
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
+
+    font-size: 12pt;
 
 }
 
