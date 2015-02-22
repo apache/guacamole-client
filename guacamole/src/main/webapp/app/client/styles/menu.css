@@ -268,6 +268,8 @@
 #menu #mouse-settings .choice .figure {
     display: inline-block;
     vertical-align: middle;
+    width: 75%;
+    max-width: 320px;
 }
 
 #menu #keyboard-settings .caption {
@@ -283,7 +285,7 @@
 
 #menu #mouse-settings .figure img {
     display: block;
-    width: 75%;
+    width: 100%;
     max-width: 320px;
     margin: 1em auto;
 }
