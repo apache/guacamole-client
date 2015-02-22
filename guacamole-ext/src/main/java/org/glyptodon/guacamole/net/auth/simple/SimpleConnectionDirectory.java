@@ -22,11 +22,10 @@
 
 package org.glyptodon.guacamole.net.auth.simple;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.glyptodon.guacamole.net.auth.Connection;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely simple read-only implementation of a Directory of
@@ -44,22 +43,21 @@ public class SimpleConnectionDirectory extends SimpleDirectory<Connection> {
             new HashMap<String, Connection>();
 
     /**
-     * Creates a new SimpleConnectionDirectory which provides
-     * access to the configurations contained within the given Map.
+     * Creates a new SimpleConnectionDirectory which provides access to the
+     * connections contained within the given Map.
      *
-     * @param configs The Map of GuacamoleConfigurations to provide access to.
+     * @param connections
+     *     A Collection of all connections that should be present in this
+     *     connection directory.
      */
-    public SimpleConnectionDirectory(
-            Map<String, GuacamoleConfiguration> configs) {
+    public SimpleConnectionDirectory(Collection<Connection> connections) {
 
-        // Create connections for each config
-        for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet())
-            connections.put(entry.getKey(),
-                    new SimpleConnection(entry.getKey(), entry.getKey(),
-                entry.getValue()));
+        // Add all given connections
+        for (Connection connection : connections)
+            this.connections.put(connection.getIdentifier(), connection);
 
-        // Use the connection map to back the underlying AbstractDirectory
-        super.setObjects(connections);
+        // Use the connection map to back the underlying directory 
+        super.setObjects(this.connections);
 
     }
 

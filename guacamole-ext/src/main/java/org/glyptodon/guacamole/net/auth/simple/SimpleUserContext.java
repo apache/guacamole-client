@@ -22,10 +22,13 @@
 
 package org.glyptodon.guacamole.net.auth.simple;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
@@ -41,6 +44,11 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  */
 public class SimpleUserContext implements UserContext {
 
+    /**
+     * The unique identifier of the root connection group.
+     */
+    private static final String ROOT_IDENTIFIER = "ROOT";
+    
     /**
      * Reference to the user whose permissions dictate the configurations
      * accessible within this UserContext.
@@ -82,9 +90,25 @@ public class SimpleUserContext implements UserContext {
      */
     public SimpleUserContext(String username, Map<String, GuacamoleConfiguration> configs) {
 
+        // Produce collection of connections from given configs
+        Collection<Connection> connections = new ArrayList<Connection>(configs.size());
+        for (Map.Entry<String, GuacamoleConfiguration> configEntry : configs.entrySet()) {
+
+            // Get connection identifier and configuration
+            String identifier = configEntry.getKey();
+            GuacamoleConfiguration config = configEntry.getValue();
+
+            // Add as simple connection
+            Connection connection = new SimpleConnection(identifier, identifier, config);
+            connection.setParentIdentifier(ROOT_IDENTIFIER);
+            connections.add(connection);
+
+        }
+        
         // Add root group that contains only configurations
-        this.connectionGroup = new SimpleConnectionGroup("ROOT", "ROOT",
-                new SimpleConnectionDirectory(configs),
+        this.connectionGroup = new SimpleConnectionGroup(
+                ROOT_IDENTIFIER, ROOT_IDENTIFIER,
+                new SimpleConnectionDirectory(connections),
                 new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST));
 
         // Build new user from credentials, giving the user an arbitrary name
