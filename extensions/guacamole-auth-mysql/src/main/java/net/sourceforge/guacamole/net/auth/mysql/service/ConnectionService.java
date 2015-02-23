@@ -24,6 +24,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
@@ -128,6 +129,32 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
         
         // FIXME: Check whether such a connection is already present
         
+    }
+
+    /**
+     * Returns the set of all identifiers for all connections within the root
+     * connection group that the user has read access to.
+     *
+     * @param user
+     *     The user retrieving the identifiers.
+     *
+     * @return
+     *     The set of all identifiers for all connections in the root
+     *     connection group that the user has read access to.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading identifiers.
+     */
+    public Set<String> getRootIdentifiers(AuthenticatedUser user) throws GuacamoleException {
+
+        // Bypass permission checks if the user is a system admin
+        if (user.getUser().isAdministrator())
+            return connectionMapper.selectIdentifiersWithin(null);
+
+        // Otherwise only return explicitly readable identifiers
+        else
+            return connectionMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), null);
+
     }
 
 }

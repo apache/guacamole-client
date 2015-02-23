@@ -24,6 +24,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -58,7 +59,13 @@ public class MySQLUserContext implements UserContext {
      */
     @Inject
     private ConnectionDirectory connectionDirectory;
-    
+
+    /**
+     * Provider for creating the root group.
+     */
+    @Inject
+    private Provider<MySQLRootConnectionGroup> rootGroupProvider;
+
     /**
      * Initializes the user and directories associated with this context.
      *
@@ -69,6 +76,7 @@ public class MySQLUserContext implements UserContext {
 
         this.currentUser = currentUser;
 
+        // Init directories
         userDirectory.init(currentUser);
         connectionDirectory.init(currentUser);
 
@@ -97,13 +105,12 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        /* STUB */
-        return new SimpleConnectionGroup(
-            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
-            Collections.EMPTY_LIST,
-            Collections.EMPTY_LIST
-        );
+
+        // Build and return a root group for the current user
+        MySQLRootConnectionGroup rootGroup = rootGroupProvider.get();
+        rootGroup.init(currentUser);
+        return rootGroup;
+
     }
 
 }
