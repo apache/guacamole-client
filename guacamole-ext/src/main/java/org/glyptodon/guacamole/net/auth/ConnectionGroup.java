@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import java.util.Set;
+import org.glyptodon.guacamole.GuacamoleException;
 
 /**
  * Represents a connection group, which can contain both other connection groups
@@ -106,8 +107,11 @@ public interface ConnectionGroup extends Identifiable, Connectable {
      * @return
      *     The set of identifiers of all readable connections that are children
      *     of this connection group.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the identifiers.
      */
-    public Set<String> getConnectionIdentifiers();
+    public Set<String> getConnectionIdentifiers() throws GuacamoleException;
 
     /**
      * Returns the identifiers of all readable connection groups that are
@@ -116,8 +120,12 @@ public interface ConnectionGroup extends Identifiable, Connectable {
      * @return
      *     The set of identifiers of all readable connection groups that are
      *     children of this connection group.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the identifiers.
      */
 
-    public Set<String> getConnectionGroupIdentifiers();
+    public Set<String> getConnectionGroupIdentifiers()
+            throws GuacamoleException;
     
 }
