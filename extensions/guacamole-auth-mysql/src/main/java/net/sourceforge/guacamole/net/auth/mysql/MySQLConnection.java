@@ -105,12 +105,26 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public String getParentIdentifier() {
-        return connectionModel.getParentIdentifier();
+
+        // Translate null parent to proper identifier
+        String parentIdentifier = connectionModel.getParentIdentifier();
+        if (parentIdentifier == null)
+            return MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER;
+
+        return parentIdentifier;
+        
     }
 
     @Override
     public void setParentIdentifier(String parentIdentifier) {
+
+        // Translate root identifier back into null
+        if (parentIdentifier != null
+                && parentIdentifier.equals(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER))
+            parentIdentifier = null;
+
         connectionModel.setParentID(parentIdentifier);
+
     }
 
     @Override
