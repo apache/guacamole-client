@@ -210,9 +210,7 @@ public class ConnectionRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
 
         // Delete the specified connection
         connectionDirectory.remove(connectionID);
@@ -247,12 +245,8 @@ public class ConnectionRESTService {
         if (connection == null)
             throw new GuacamoleClientException("Connection JSON must be submitted when creating connections.");
 
-        // Retrieve parent group
-        String parentID = connection.getParentIdentifier();
-        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
-
         // Add the new connection
-        Directory<Connection> connectionDirectory = parentConnectionGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
         connectionDirectory.add(new APIConnectionWrapper(connection));
 
         // Return the new connection identifier
@@ -291,9 +285,7 @@ public class ConnectionRESTService {
             throw new GuacamoleClientException("Connection JSON must be submitted when updating connections.");
 
         // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
         
         // Retrieve connection to update
         Connection existingConnection = retrievalService.retrieveConnection(userContext, connectionID);
@@ -307,15 +299,6 @@ public class ConnectionRESTService {
         existingConnection.setConfiguration(config);
         existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
-
-        // Get old and new parents
-        String oldParentIdentifier = existingConnection.getParentIdentifier();
-        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connection.getParentIdentifier());
-
-        // Update connection parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
-            connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }
     

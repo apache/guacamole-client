@@ -62,10 +62,21 @@ public class SimpleUserContext implements UserContext {
     private final Directory<User> userDirectory;
 
     /**
-     * The ConnectionGroup with access only to those Connections that the User
-     * associated with this UserContext has access to.
+     * The Directory with access only to the root group associated with this
+     * UserContext.
      */
-    private final ConnectionGroup connectionGroup;
+    private final Directory<ConnectionGroup> connectionGroupDirectory;
+
+    /**
+     * The Directory with access to all connections within the root group
+     * associated with this UserContext.
+     */
+    private final Directory<Connection> connectionDirectory;
+
+    /**
+     * The root connection group.
+     */
+    private final ConnectionGroup rootGroup;
 
     /**
      * Creates a new SimpleUserContext which provides access to only those
@@ -90,6 +101,9 @@ public class SimpleUserContext implements UserContext {
      */
     public SimpleUserContext(String username, Map<String, GuacamoleConfiguration> configs) {
 
+        Collection<String> connectionIdentifiers = new ArrayList<String>(configs.size());
+        Collection<String> connectionGroupIdentifiers = Collections.singleton(ROOT_IDENTIFIER);
+        
         // Produce collection of connections from given configs
         Collection<Connection> connections = new ArrayList<Connection>(configs.size());
         for (Map.Entry<String, GuacamoleConfiguration> configEntry : configs.entrySet()) {
@@ -103,20 +117,25 @@ public class SimpleUserContext implements UserContext {
             connection.setParentIdentifier(ROOT_IDENTIFIER);
             connections.add(connection);
 
+            // Add identifier to overall set of identifiers
+            connectionIdentifiers.add(identifier);
+            
         }
         
-        // Add root group that contains only configurations
-        this.connectionGroup = new SimpleConnectionGroup(
-                ROOT_IDENTIFIER, ROOT_IDENTIFIER,
-                new SimpleConnectionDirectory(connections),
-                new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST));
+        // Add root group that contains only the given configurations
+        this.rootGroup = new SimpleConnectionGroup(
+            ROOT_IDENTIFIER, ROOT_IDENTIFIER,
+            connectionIdentifiers, Collections.EMPTY_LIST
+        );
 
-        // Build new user from credentials, giving the user an arbitrary name
-        this.self = new SimpleUser(username,
-                configs, Collections.singleton(connectionGroup));
+        // Build new user from credentials
+        this.self = new SimpleUser(username, connectionIdentifiers,
+                connectionGroupIdentifiers);
 
-        // Create user directory for new user
+        // Create directories for new user
         this.userDirectory = new SimpleUserDirectory(self);
+        this.connectionDirectory = new SimpleConnectionDirectory(connections);
+        this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
         
     }
 
@@ -132,8 +151,20 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
+    public Directory<Connection> getConnectionDirectory()
+            throws GuacamoleException {
+        return connectionDirectory;
+    }
+
+    @Override
+    public Directory<ConnectionGroup> getConnectionGroupDirectory()
+            throws GuacamoleException {
+        return connectionGroupDirectory;
+    }
+
+    @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        return connectionGroup;
+        return rootGroup;
     }
 
 }

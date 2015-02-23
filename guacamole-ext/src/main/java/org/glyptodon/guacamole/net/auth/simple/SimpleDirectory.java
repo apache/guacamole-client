@@ -138,10 +138,4 @@ public class SimpleDirectory<ObjectType> implements Directory<ObjectType> {
         throw new GuacamoleSecurityException("Permission denied.");
     }
 
-    @Override
-    public void move(String identifier, Directory<ObjectType> directory)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
 }

@@ -137,7 +137,7 @@ public class ConnectionGroupRESTService {
 
         // Retrieve the requested tree, filtering by the given permissions
         ConnectionGroup treeRoot = retrievalService.retrieveConnectionGroup(userContext, connectionGroupID);
-        ConnectionGroupTree tree = new ConnectionGroupTree(treeRoot, permissions);
+        ConnectionGroupTree tree = new ConnectionGroupTree(userContext, treeRoot, permissions);
 
         // Return tree as a connection group
         return tree.getRootAPIConnectionGroup();
@@ -166,9 +166,7 @@ public class ConnectionGroupRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the connection group directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<ConnectionGroup> connectionGroupDirectory =
-                rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
 
         // Delete the connection group
         connectionGroupDirectory.remove(connectionGroupID);
@@ -205,12 +203,8 @@ public class ConnectionGroupRESTService {
         if (connectionGroup == null)
             throw new GuacamoleClientException("Connection group JSON must be submitted when creating connections groups.");
 
-        // Retrieve parent group
-        String parentID = connectionGroup.getParentIdentifier();
-        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
-
         // Add the new connection group
-        Directory<ConnectionGroup> connectionGroupDirectory = parentConnectionGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
         connectionGroupDirectory.add(new APIConnectionGroupWrapper(connectionGroup));
 
         // Return the new connection group identifier
@@ -250,9 +244,7 @@ public class ConnectionGroupRESTService {
             throw new GuacamoleClientException("Connection group JSON must be submitted when updating connection groups.");
 
         // Get the connection group directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<ConnectionGroup> connectionGroupDirectory =
-                rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
 
         // Retrieve connection group to update
         ConnectionGroup existingConnectionGroup = connectionGroupDirectory.get(connectionGroupID);
@@ -261,15 +253,6 @@ public class ConnectionGroupRESTService {
         existingConnectionGroup.setName(connectionGroup.getName());
         existingConnectionGroup.setType(connectionGroup.getType());
         connectionGroupDirectory.update(existingConnectionGroup);
-
-        // Get old and new parents
-        String oldParentIdentifier = existingConnectionGroup.getParentIdentifier();
-        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroup.getParentIdentifier());
-
-        // Update connection group parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
-            connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
 
     }
     

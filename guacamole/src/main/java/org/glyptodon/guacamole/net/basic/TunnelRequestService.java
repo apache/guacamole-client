@@ -210,11 +210,9 @@ public class TunnelRequestService {
             // Connection identifiers
             case CONNECTION: {
 
-                UserContext context = session.getUserContext();
-
                 // Get connection directory
-                Directory<Connection> directory =
-                    context.getRootConnectionGroup().getConnectionDirectory();
+                UserContext context = session.getUserContext();
+                Directory<Connection> directory = context.getConnectionDirectory();
 
                 // Get authorized connection
                 Connection connection = directory.get(id);
@@ -232,11 +230,9 @@ public class TunnelRequestService {
             // Connection group identifiers
             case CONNECTION_GROUP: {
 
-                UserContext context = session.getUserContext();
-
                 // Get connection group directory
-                Directory<ConnectionGroup> directory =
-                    context.getRootConnectionGroup().getConnectionGroupDirectory();
+                UserContext context = session.getUserContext();
+                Directory<ConnectionGroup> directory = context.getConnectionGroupDirectory();
 
                 // Get authorized connection group
                 ConnectionGroup group = directory.get(id);

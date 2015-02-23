@@ -24,8 +24,6 @@ package org.glyptodon.guacamole.net.auth;
 
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -36,7 +34,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public interface Connection extends Identifiable {
+public interface Connection extends Identifiable, Connectable {
 
     /**
      * Returns the name assigned to this Connection.
@@ -85,21 +83,6 @@ public interface Connection extends Identifiable {
      *               Connection.
      */
     public void setConfiguration(GuacamoleConfiguration config);
-
-    /**
-     * Establishes a connection to guacd using the GuacamoleConfiguration
-     * associated with this Connection, and returns the resulting, connected
-     * GuacamoleSocket. The GuacamoleSocket will be pre-configured and will
-     * already have passed the handshake stage.
-     *
-     * @param info Information associated with the connecting client.
-     * @return A fully-established GuacamoleSocket.
-     *
-     * @throws GuacamoleException If an error occurs while connecting to guacd,
-     *                            or if permission to connect is denied.
-     */
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
-            throws GuacamoleException;
 
     /**
      * Returns a list of ConnectionRecords representing the usage history

@@ -89,9 +89,8 @@ public class ObjectRetrievalService {
     public Connection retrieveConnection(UserContext userContext,
             String identifier) throws GuacamoleException {
 
-        // Get root directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<Connection> directory = rootGroup.getConnectionDirectory();
+        // Get connection directory
+        Directory<Connection> directory = userContext.getConnectionDirectory();
 
         // Pull specified connection
         Connection connection = directory.get(identifier);
@@ -125,14 +124,12 @@ public class ObjectRetrievalService {
     public ConnectionGroup retrieveConnectionGroup(UserContext userContext,
             String identifier) throws GuacamoleException {
 
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-
-        // Use root group if identifier is null (or the standard root identifier)
+        // Use root group if identifier is the standard root identifier
         if (identifier != null && identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            return rootGroup;
+            return userContext.getRootConnectionGroup();
 
         // Pull specified connection group otherwise
-        Directory<ConnectionGroup> directory = rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> directory = userContext.getConnectionGroupDirectory();
         ConnectionGroup connectionGroup = directory.get(identifier);
 
         if (connectionGroup == null)

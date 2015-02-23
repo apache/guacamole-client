@@ -22,9 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
+import java.util.Set;
 
 /**
  * Represents a connection group, which can contain both other connection groups
@@ -32,7 +30,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author James Muehlner
  */
-public interface ConnectionGroup extends Identifiable {
+public interface ConnectionGroup extends Identifiable, Connectable {
   
     /**
      * All legal types of connection group.
@@ -102,45 +100,24 @@ public interface ConnectionGroup extends Identifiable {
     public Type getType();
 
     /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connections and their configurations, but only as allowed by the
-     * permissions given to the user.
+     * Returns the identifiers of all readable connections that are children
+     * of this connection group.
      *
-     * @return A Directory whose operations are bound by the permissions of 
-     *         the user.
-     *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            Directory.
+     * @return
+     *     The set of identifiers of all readable connections that are children
+     *     of this connection group.
      */
-    Directory<Connection> getConnectionDirectory()
-            throws GuacamoleException;
+    public Set<String> getConnectionIdentifiers();
 
     /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connection groups and their members, but only as allowed by the
-     * permissions given to the user.
+     * Returns the identifiers of all readable connection groups that are
+     * children of this connection group.
      *
-     * @return A Directory whose operations are bound by the permissions of
-     *         the user.
-     *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            Directory.
+     * @return
+     *     The set of identifiers of all readable connection groups that are
+     *     children of this connection group.
      */
-    Directory<ConnectionGroup> getConnectionGroupDirectory()
-            throws GuacamoleException;
+
+    public Set<String> getConnectionGroupIdentifiers();
     
-    /**
-     * Establishes a connection to guacd using a connection chosen from among
-     * the connections in this ConnectionGroup, and returns the resulting, 
-     * connected GuacamoleSocket.
-     *
-     * @param info Information associated with the connecting client.
-     * @return A fully-established GuacamoleSocket.
-     *
-     * @throws GuacamoleException If an error occurs while connecting to guacd,
-     *                            or if permission to connect is denied.
-     */
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
-            throws GuacamoleException;
-
 }

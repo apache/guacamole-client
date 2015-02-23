@@ -31,6 +31,7 @@ import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
@@ -48,11 +49,11 @@ public class ConnectionGroupTree {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ConnectionGroupTree.class);
-    
+
     /**
-     * The root connection group.
+     * The context of the user obtaining this tree.
      */
-    private final ConnectionGroup root;
+    private final UserContext userContext;
     
     /**
      * The root connection group as an APIConnectionGroup.
@@ -174,19 +175,19 @@ public class ConnectionGroupTree {
         
         // Build lists of identifiers for retrieval
         for (ConnectionGroup parent : parents) {
-            childConnectionIdentifiers.addAll(parent.getConnectionDirectory().getIdentifiers());
-            childConnectionGroupIdentifiers.addAll(parent.getConnectionGroupDirectory().getIdentifiers());
+            childConnectionIdentifiers.addAll(parent.getConnectionIdentifiers());
+            childConnectionGroupIdentifiers.addAll(parent.getConnectionGroupIdentifiers());
         }
 
         // Retrieve child connections
         if (!childConnectionIdentifiers.isEmpty()) {
-            Collection<Connection> childConnections = root.getConnectionDirectory().getAll(childConnectionIdentifiers);
+            Collection<Connection> childConnections = userContext.getConnectionDirectory().getAll(childConnectionIdentifiers);
             addConnections(childConnections);
         }
 
         // Retrieve child connection groups
         if (!childConnectionGroupIdentifiers.isEmpty()) {
-            Collection<ConnectionGroup> childConnectionGroups = root.getConnectionGroupDirectory().getAll(childConnectionGroupIdentifiers);
+            Collection<ConnectionGroup> childConnectionGroups = userContext.getConnectionGroupDirectory().getAll(childConnectionGroupIdentifiers);
             addConnectionGroups(childConnectionGroups);
             addDescendants(childConnectionGroups);
         }
@@ -196,6 +197,9 @@ public class ConnectionGroupTree {
     /**
      * Creates a new connection group tree using the given connection group as
      * the tree root.
+     *
+     * @param userContext
+     *     The context of the user obtaining the connection group tree.
      *
      * @param root
      *     The connection group to use as the root of this connection group
@@ -211,11 +215,12 @@ public class ConnectionGroupTree {
      *     If an error occurs while retrieving the tree of connection groups
      *     and their descendants.
      */
-    public ConnectionGroupTree(ConnectionGroup root,
+    public ConnectionGroupTree(UserContext userContext, ConnectionGroup root,
             List<ObjectPermission.Type> permissions) throws GuacamoleException {
 
+        this.userContext = userContext;
+        
         // Store root of tree
-        this.root = root;
         this.rootAPIGroup = new APIConnectionGroup(root);
         retrievedGroups.put(root.getIdentifier(), this.rootAPIGroup);
 

@@ -24,15 +24,12 @@ package org.glyptodon.guacamole.net.auth.simple;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AbstractUser;
-import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely basic User implementation.
@@ -60,46 +57,52 @@ public class SimpleUser extends AbstractUser {
     }
 
     /**
-     * Creates a new SimpleUser having the given username.
+     * Adds a new READ permission to the given set of permissions for each of
+     * the given identifiers.
      *
-     * @param username The username to assign to this SimpleUser.
-     * @param configs All configurations this user has read access to.
-     * @param groups All groups this user has read access to.
+     * @param permissions
+     *     The set of permissions to add READ permissions to.
+     *
+     * @param identifiers
+     *     The identifiers which should each have a corresponding READ
+     *     permission added to the given set.
+     */
+    private void addReadPermissions(Set<ObjectPermission> permissions,
+            Collection<String> identifiers) {
+
+        // Add a READ permission to the set for each identifier given
+        for (String identifier : identifiers) {
+            permissions.add(new ObjectPermission (
+                ObjectPermission.Type.READ,
+                identifier
+            ));
+        }
+
+    }
+    
+    /**
+     * Creates a new SimpleUser having the given username and READ access to
+     * the connections and groups having the given identifiers.
+     *
+     * @param username
+     *     The username to assign to this SimpleUser.
+     * @param connectionIdentifiers
+     *     The identifiers of all connections this user has READ access to.
+     *
+     * @param connectionGroupIdentifiers
+     *     The identifiers of all connection groups this user has READ access
+     *     to.
      */
     public SimpleUser(String username,
-            Map<String, GuacamoleConfiguration> configs,
-            Collection<ConnectionGroup> groups) {
+            Collection<String> connectionIdentifiers,
+            Collection<String> connectionGroupIdentifiers) {
 
         // Set username
         setIdentifier(username);
 
-        // Add connection permissions
-        for (String identifier : configs.keySet()) {
-
-            // Create permission
-            ObjectPermission permission = new ObjectPermission(
-                ObjectPermission.Type.READ,
-                identifier
-            );
-
-            // Add to set
-            connectionPermissions.add(permission);
-
-        }
-
-        // Add group permissions
-        for (ConnectionGroup group : groups) {
-
-            // Create permission
-            ObjectPermission permission = new ObjectPermission(
-                ObjectPermission.Type.READ,
-                group.getIdentifier()
-            );
-
-            // Add to set
-            connectionGroupPermissions.add(permission);
-
-        }
+        // Add permissions
+        addReadPermissions(connectionPermissions,      connectionIdentifiers);
+        addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
 
     }
 

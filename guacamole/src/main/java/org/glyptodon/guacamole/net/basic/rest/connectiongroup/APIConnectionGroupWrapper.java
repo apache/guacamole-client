@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
+import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -92,12 +93,12 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     }
 
     @Override
-    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+    public Set<String> getConnectionIdentifiers() {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 
     @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+    public Set<String> getConnectionGroupIdentifiers() {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 
