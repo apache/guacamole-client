@@ -26,6 +26,7 @@ package net.sourceforge.guacamole.net.auth.mysql;
 import com.google.inject.Inject;
 import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
@@ -74,11 +75,25 @@ public class MySQLUserContext implements UserContext {
     }
 
     @Override
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+        /* STUB */
+        return new SimpleConnectionDirectory(Collections.EMPTY_LIST);
+    }
+
+    @Override
+    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+        /* STUB */
+        return new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST);
+    }
+
+    @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
         /* STUB */
-        return new SimpleConnectionGroup("ROOT", "ROOT",
-            new SimpleConnectionDirectory(Collections.EMPTY_MAP),
-            new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST)
+        return new SimpleConnectionGroup(
+            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+            MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER, 
+            Collections.EMPTY_LIST,
+            Collections.EMPTY_LIST
         );
     }
 

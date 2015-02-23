@@ -66,12 +66,6 @@ public class UserDirectory implements Directory<User> {
     }
     
     @Override
-    public void move(String identifier, Directory<User> groupIdentifier) 
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
     public User get(String identifier) throws GuacamoleException {
         return userService.retrieveObject(currentUser, identifier);
     }
