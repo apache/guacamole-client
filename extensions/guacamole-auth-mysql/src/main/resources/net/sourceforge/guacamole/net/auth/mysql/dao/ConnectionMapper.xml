@@ -28,10 +28,10 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionResultMap" type="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel" >
-        <id     column="connection_id" property="identifier"       jdbcType="INTEGER"/>
-        <result column="name"          property="name"             jdbcType="VARCHAR"/>
-        <result column="parent_id"     property="parentIdentifier" jdbcType="INTEGER"/>
-        <result column="protocol"      property="protocol"         jdbcType="VARCHAR"/>
+        <id     column="connection_id"   property="identifier"       jdbcType="INTEGER"/>
+        <result column="connection_name" property="name"             jdbcType="VARCHAR"/>
+        <result column="parent_id"       property="parentIdentifier" jdbcType="INTEGER"/>
+        <result column="protocol"        property="protocol"         jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- Select all connection identifiers -->
@@ -75,7 +75,7 @@
 
         SELECT
             connection_id,
-            name,
+            connection_name,
             parent_id,
             protocol 
         FROM guacamole_connection
@@ -92,7 +92,7 @@
 
         SELECT
             guacamole_connection.connection_id,
-            name,
+            connection_name,
             parent_id,
             protocol 
         FROM guacamole_connection
@@ -117,7 +117,7 @@
     <insert id="insert" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel">
 
         INSERT INTO guacamole_connection (
-            name,
+            connection_name,
             parent_id,
             protocol 
         )
@@ -136,9 +136,9 @@
     <!-- Update single connection -->
     <update id="update" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel">
         UPDATE guacamole_connection
-        SET name      = #{object.name,jdbcType=VARCHAR},
-            parent_id = #{object.parentIdentifier,jdbcType=VARCHAR},
-            protocol  = #{object.protocol,jdbcType=VARCHAR}
+        SET connection_name = #{object.name,jdbcType=VARCHAR},
+            parent_id       = #{object.parentIdentifier,jdbcType=VARCHAR},
+            protocol        = #{object.protocol,jdbcType=VARCHAR}
         WHERE connection_id = #{object.identifier,jdbcType=VARCHAR}
     </update>
 
