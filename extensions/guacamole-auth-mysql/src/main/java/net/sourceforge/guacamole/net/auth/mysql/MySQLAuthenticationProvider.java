@@ -29,6 +29,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
@@ -36,6 +37,7 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SHA256PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
@@ -134,10 +136,14 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bindTransactionFactoryType(JdbcTransactionFactory.class);
 
                     // Add MyBatis mappers
+                    addMapperClass(ConnectionMapper.class);
                     addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
 
                     // Bind interfaces
+                    bind(ConnectionDirectory.class);
+                    bind(ConnectionService.class);
+                    bind(MySQLConnection.class);
                     bind(MySQLUser.class);
                     bind(MySQLUserContext.class);
                     bind(MySQLSystemPermissionSet.class);

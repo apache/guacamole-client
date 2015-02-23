@@ -31,7 +31,6 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 
@@ -52,6 +51,13 @@ public class MySQLUserContext implements UserContext {
      */
     @Inject
     private UserDirectory userDirectory;
+ 
+    /**
+     * Connection directory restricted by the permissions of the user
+     * associated with this context.
+     */
+    @Inject
+    private ConnectionDirectory connectionDirectory;
     
     /**
      * Initializes the user and directories associated with this context.
@@ -60,8 +66,12 @@ public class MySQLUserContext implements UserContext {
      *     The user owning this context.
      */
     public void init(AuthenticatedUser currentUser) {
+
         this.currentUser = currentUser;
+
         userDirectory.init(currentUser);
+        connectionDirectory.init(currentUser);
+
     }
 
     @Override
@@ -76,14 +86,13 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
-        /* STUB */
-        return new SimpleConnectionDirectory(Collections.EMPTY_LIST);
+        return connectionDirectory;
     }
 
     @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
         /* STUB */
-        return new SimpleConnectionGroupDirectory(Collections.EMPTY_LIST);
+        return new SimpleConnectionGroupDirectory(Collections.singleton(getRootConnectionGroup()));
     }
 
     @Override
