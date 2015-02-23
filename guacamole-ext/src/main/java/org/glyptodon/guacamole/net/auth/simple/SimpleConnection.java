@@ -79,6 +79,11 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     @Override
+    public int getActiveConnections() {
+        return 0;
+    }
+
+    @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 

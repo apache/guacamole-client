@@ -102,12 +102,12 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         this.isExpanded = template.isExpanded;
         
         /**
-         * The number of currently active users for this connection. This field
-         * has no meaning for a connection group, and may be null or undefined.
+         * The number of currently active users for this connection or
+         * connection group, if known.
          * 
          * @type Number
          */
-        this.activeUsers = template.activeUsers;
+        this.activeConnections = template.activeConnections;
 
         /**
          * The connection or connection group whose data is exposed within
@@ -143,8 +143,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             isConnection      : true,
             isConnectionGroup : false,
             
-            // Count of currently active users
-            activeUsers : connection.activeUsers,
+            // Count of currently active connections using this connection
+            activeConnections : connection.activeConnections,
 
             // Wrapped item
             wrappedItem : connection
@@ -197,6 +197,9 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
             // Already-converted children
             children : children,
+
+            // Count of currently active connection groups using this connection
+            activeConnections : connectionGroup.activeConnections,
 
             // Wrapped item
             wrappedItem : connectionGroup

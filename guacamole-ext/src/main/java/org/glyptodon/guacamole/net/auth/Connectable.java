@@ -51,4 +51,13 @@ public interface Connectable {
     public GuacamoleSocket connect(GuacamoleClientInformation info)
             throws GuacamoleException;
 
+    /**
+     * Returns the number of active connections associated with this object.
+     * Implementations may simply return 0 if this value is not tracked.
+     *
+     * @return
+     *     The number of active connections associated with this object.
+     */
+    public int getActiveConnections();
+    
 }

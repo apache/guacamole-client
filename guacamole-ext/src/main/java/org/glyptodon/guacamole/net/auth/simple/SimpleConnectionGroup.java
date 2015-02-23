@@ -87,6 +87,11 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     }
 
     @Override
+    public int getActiveConnections() {
+        return 0;
+    }
+
+    @Override
     public Set<String> getConnectionIdentifiers() {
         return connectionIdentifiers;
     }

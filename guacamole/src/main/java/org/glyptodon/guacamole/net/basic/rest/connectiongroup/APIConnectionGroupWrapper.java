@@ -25,9 +25,7 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -90,6 +88,11 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     @Override
     public Type getType() {
         return apiConnectionGroup.getType();
+    }
+
+    @Override
+    public int getActiveConnections() {
+        return apiConnectionGroup.getActiveConnections();
     }
 
     @Override

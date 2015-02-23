@@ -91,6 +91,15 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
          */
         this.childConnectionGroups = template.childConnectionGroups;
 
+        /**
+         * The count of currently active connections using this connection
+         * group. This field will be returned from the REST API during a get
+         * operation, but manually setting this field will have no effect.
+         * 
+         * @type Number
+         */
+        this.activeConnections = template.activeConnections;
+
     };
 
     /**
