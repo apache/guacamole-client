@@ -22,11 +22,12 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
+import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -51,6 +52,12 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
      */
     private ConnectionModel connectionModel;
 
+    /**
+     * Service for managing connections.
+     */
+    @Inject
+    private ConnectionService connectionService;
+    
     /**
      * Creates a new, empty MySQLConnection.
      */
@@ -156,8 +163,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        /* STUB */
-        throw new GuacamoleUnsupportedException("STUB - connecting not implemented at the moment");
+        return connectionService.connect(currentUser, this, info);
     }
 
     @Override

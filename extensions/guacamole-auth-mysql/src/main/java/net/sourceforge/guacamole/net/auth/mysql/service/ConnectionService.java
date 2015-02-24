@@ -32,10 +32,15 @@ import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -157,4 +162,40 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
 
     }
 
+    /**
+     * Connects to the given connection as the given user, using the given
+     * client information. If the user does not have permission to read the
+     * connection, permission will be denied.
+     *
+     * @param user
+     *     The user connecting to the connection.
+     *
+     * @param connection
+     *     The connection being connected to.
+     *
+     * @param info
+     *     Information associated with the connecting client.
+     *
+     * @return
+     *     A connected GuacamoleSocket associated with a newly-established
+     *     connection.
+     *
+     * @throws GuacamoleException
+     *     If permission to connect to this connection is denied.
+     */
+    public GuacamoleSocket connect(AuthenticatedUser user,
+            MySQLConnection connection, GuacamoleClientInformation info)
+            throws GuacamoleException {
+
+        // Connect only if READ permission is granted
+        if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ)) {
+            // STUB
+            throw new GuacamoleUnsupportedException("STUB - connecting not implemented at the moment");
+        }
+
+        // The user does not have permission to connect
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+    
 }

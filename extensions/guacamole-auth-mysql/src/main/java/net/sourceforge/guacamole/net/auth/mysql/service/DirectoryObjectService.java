@@ -115,6 +115,39 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
             throws GuacamoleException;
 
     /**
+     * Returns whether the given user has permission to perform a certain
+     * action on a specific object managed by this directory object service.
+     *
+     * @param user
+     *     The user being checked.
+     *
+     * @param identifier
+     *     The identifier of the object to check.
+     *
+     * @param type
+     *     The type of action that will be performed.
+     *
+     * @return
+     *     true if the user has object permission relevant described, false
+     *     otherwise.
+     * 
+     * @throws GuacamoleException
+     *     If permission to read the user's permissions is denied.
+     */
+    protected boolean hasObjectPermission(AuthenticatedUser user,
+            String identifier, ObjectPermission.Type type)
+            throws GuacamoleException {
+
+        // Get object permissions
+        ObjectPermissionSet permissionSet = getPermissionSet(user);
+        
+        // Return whether permission is granted
+        return user.getUser().isAdministrator()
+            || permissionSet.hasPermission(type, identifier);
+
+    }
+ 
+    /**
      * Returns the permission set associated with the given user and related
      * to the type of objects handled by this directory object service.
      *
@@ -335,12 +368,8 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     public void deleteObject(AuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
-        // Get object permissions
-        ObjectPermissionSet permissionSet = getPermissionSet(user);
-        
         // Only delete object if user has permission to do so
-        if (user.getUser().isAdministrator()
-                || permissionSet.hasPermission(ObjectPermission.Type.DELETE, identifier)) {
+        if (hasObjectPermission(user, identifier, ObjectPermission.Type.DELETE)) {
             getObjectMapper().delete(identifier);
             return;
         }
@@ -367,12 +396,8 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     public void updateObject(AuthenticatedUser user, InternalType object)
         throws GuacamoleException {
 
-        // Get object permissions
-        ObjectPermissionSet permissionSet = getPermissionSet(user);
-        
         // Only update object if user has permission to do so
-        if (user.getUser().isAdministrator()
-                || permissionSet.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier())) {
+        if (hasObjectPermission(user, object.getIdentifier(), ObjectPermission.Type.UPDATE)) {
 
             // Validate object prior to creation
             validateExistingObject(user, object);
