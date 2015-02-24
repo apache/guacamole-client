@@ -30,6 +30,7 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
@@ -46,6 +47,8 @@ import net.sourceforge.guacamole.net.auth.mysql.service.SystemPermissionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
@@ -96,16 +99,19 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
      */
     public MySQLAuthenticationProvider() throws GuacamoleException {
 
+        // Get local environment
+        final Environment environment = new LocalEnvironment();
+        
         final Properties myBatisProperties = new Properties();
         final Properties driverProperties = new Properties();
 
         // Set the mysql properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME));
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PORT)));
-        myBatisProperties.setProperty("JDBC.schema", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_DATABASE));
-        myBatisProperties.setProperty("JDBC.username", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME));
-        myBatisProperties.setProperty("JDBC.password", GuacamoleProperties.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
+        myBatisProperties.setProperty("JDBC.host", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME));
+        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PORT)));
+        myBatisProperties.setProperty("JDBC.schema", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_DATABASE));
+        myBatisProperties.setProperty("JDBC.username", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME));
+        myBatisProperties.setProperty("JDBC.password", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
@@ -137,21 +143,25 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
                     // Add MyBatis mappers
                     addMapperClass(ConnectionMapper.class);
+                    addMapperClass(ParameterMapper.class);
                     addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);
 
-                    // Bind interfaces
+                    // Bind core implementations of guacamole-ext classes
+                    bind(Environment.class).toInstance(environment);
                     bind(ConnectionDirectory.class);
-                    bind(ConnectionService.class);
                     bind(MySQLConnection.class);
                     bind(MySQLUser.class);
                     bind(MySQLUserContext.class);
                     bind(MySQLRootConnectionGroup.class);
                     bind(MySQLSystemPermissionSet.class);
+                    bind(UserDirectory.class);
+
+                    // Bind services
+                    bind(ConnectionService.class);
                     bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
                     bind(SaltService.class).to(SecureRandomSaltService.class);
                     bind(SystemPermissionService.class);
-                    bind(UserDirectory.class);
                     bind(UserService.class);
 
                 }

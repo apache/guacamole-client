@@ -24,23 +24,29 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collection;
 import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
+import net.sourceforge.guacamole.net.auth.mysql.model.ParameterModel;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
+import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -51,10 +57,22 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 public class ConnectionService extends DirectoryObjectService<MySQLConnection, Connection, ConnectionModel> {
 
     /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private Environment environment;
+    
+    /**
      * Mapper for accessing connections.
      */
     @Inject
     private ConnectionMapper connectionMapper;
+
+    /**
+     * Mapper for accessing connection parameters.
+     */
+    @Inject
+    private ParameterMapper parameterMapper;
 
     /**
      * Provider for creating connections.
@@ -187,10 +205,32 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             MySQLConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
+        String identifier = connection.getIdentifier();
+        
         // Connect only if READ permission is granted
-        if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ)) {
-            // STUB
-            throw new GuacamoleUnsupportedException("STUB - connecting not implemented at the moment");
+        if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
+
+            // Generate configuration from available data
+            GuacamoleConfiguration config = new GuacamoleConfiguration();
+
+            // Set protocol from connection
+            ConnectionModel model = connection.getModel();
+            config.setProtocol(model.getProtocol());
+
+            // Set parameters from associated data
+            Collection<ParameterModel> parameters = parameterMapper.select(identifier);
+            for (ParameterModel parameter : parameters)
+                config.setParameter(parameter.getName(), parameter.getValue());
+
+            // Return new socket
+            return new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket(
+                    environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
+                    environment.getRequiredProperty(Environment.GUACD_PORT)
+                ),
+                config
+            );
+
         }
 
         // The user does not have permission to connect
