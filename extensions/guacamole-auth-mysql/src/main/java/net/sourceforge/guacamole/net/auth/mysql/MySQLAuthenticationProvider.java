@@ -45,7 +45,6 @@ import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SystemPermissionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
@@ -151,6 +150,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(Environment.class).toInstance(environment);
                     bind(ConnectionDirectory.class);
                     bind(MySQLConnection.class);
+                    bind(MySQLGuacamoleConfiguration.class);
                     bind(MySQLUser.class);
                     bind(MySQLUserContext.class);
                     bind(MySQLRootConnectionGroup.class);

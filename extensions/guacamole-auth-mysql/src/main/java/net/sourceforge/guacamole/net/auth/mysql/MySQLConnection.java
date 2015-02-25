@@ -23,6 +23,7 @@
 package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
@@ -57,6 +58,17 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
      */
     @Inject
     private ConnectionService connectionService;
+
+    /**
+     * Provider for lazy-loaded, permission-controlled configurations.
+     */
+    @Inject
+    private Provider<MySQLGuacamoleConfiguration> configProvider;
+    
+    /**
+     * The manually-set GuacamoleConfiguration, if any.
+     */
+    private GuacamoleConfiguration config = null;
     
     /**
      * Creates a new, empty MySQLConnection.
@@ -86,8 +98,9 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
     }
 
     @Override
-    public void setModel(ConnectionModel userModel) {
-        this.connectionModel = userModel;
+    public void setModel(ConnectionModel connectionModel) {
+        this.connectionModel = connectionModel;
+        this.config = null;
     }
 
     @Override
@@ -137,20 +150,24 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
     @Override
     public GuacamoleConfiguration getConfiguration() {
 
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(connectionModel.getProtocol());
+        // If configuration has been manually set, return that
+        if (config != null)
+            return config;
 
-        /* FIXME: Set parameters, if available */
+        // Otherwise, return permission-controlled configuration
+        MySQLGuacamoleConfiguration restrictedConfig = configProvider.get();
+        restrictedConfig.init(currentUser, connectionModel);
+        return restrictedConfig;
 
-        return config;
-        
     }
 
     @Override
     public void setConfiguration(GuacamoleConfiguration config) {
 
-        /* FIXME: Set parameters, if available */
+        // Store manually-set configuration internally
+        this.config = config;
 
+        // Update model
         connectionModel.setProtocol(config.getProtocol());
         
     }

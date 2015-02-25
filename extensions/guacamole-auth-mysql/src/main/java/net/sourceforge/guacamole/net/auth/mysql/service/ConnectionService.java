@@ -25,6 +25,8 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
@@ -180,6 +182,39 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
 
     }
 
+    /**
+     * Retrieves all parameters visible to the given user and associated with
+     * the connection having the given identifier. If the given user has no
+     * access to such parameters, or no such connection exists, the returned
+     * map will be empty.
+     *
+     * @param user
+     *     The user retrieving connection parameters.
+     *
+     * @param identifier
+     *     The identifier of the connection whose parameters are being
+     *     retrieved.
+     *
+     * @return
+     *     A new map of all parameter name/value pairs that the given user has
+     *     access to.
+     */
+    public Map<String, String> retrieveParameters(AuthenticatedUser user,
+            String identifier) {
+
+        // FIXME: Check permissions
+        
+        Map<String, String> parameterMap = new HashMap<String, String>();
+
+        // Convert associated parameters to map
+        Collection<ParameterModel> parameters = parameterMapper.select(identifier);
+        for (ParameterModel parameter : parameters)
+            parameterMap.put(parameter.getName(), parameter.getValue());
+
+        return parameterMap;
+
+    }
+    
     /**
      * Connects to the given connection as the given user, using the given
      * client information. If the user does not have permission to read the
