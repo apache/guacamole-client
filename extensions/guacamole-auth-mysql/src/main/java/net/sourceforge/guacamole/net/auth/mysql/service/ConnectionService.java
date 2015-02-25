@@ -27,14 +27,18 @@ import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionRecord;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionRecordMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionRecordModel;
 import net.sourceforge.guacamole.net.auth.mysql.model.ParameterModel;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -66,6 +70,12 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
      */
     @Inject
     private ParameterMapper parameterMapper;
+
+    /**
+     * Mapper for accessing connection history.
+     */
+    @Inject
+    private ConnectionRecordMapper connectionRecordMapper;
 
     /**
      * Provider for creating connections.
@@ -260,6 +270,43 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
         }
 
         return parameterMap;
+
+    }
+
+    /**
+     * Retrieves the connection history of the connection with the given
+     * identifier.
+     *
+     * @param user
+     *     The user retrieving the connection history.
+     *
+     * @param identifier
+     *     The identifier of the connection whose history is being retrieved.
+     *
+     * @return
+     * @throws GuacamoleException 
+     */
+    public List<MySQLConnectionRecord> retrieveHistory(AuthenticatedUser user,
+            String identifier) throws GuacamoleException {
+
+        // Retrieve history only if READ permission is granted
+        if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
+
+            // Retrieve history
+            List<ConnectionRecordModel> models = connectionRecordMapper.select(identifier);
+
+            // Convert model objects into standard records
+            List<MySQLConnectionRecord> records = new ArrayList<MySQLConnectionRecord>(models.size());
+            for (ConnectionRecordModel model : models)
+                records.add(new MySQLConnectionRecord(model));
+
+            // Return converted history list
+            return records;
+            
+        }
+        
+        // The user does not have permission to read the history
+        throw new GuacamoleSecurityException("Permission denied.");
 
     }
     

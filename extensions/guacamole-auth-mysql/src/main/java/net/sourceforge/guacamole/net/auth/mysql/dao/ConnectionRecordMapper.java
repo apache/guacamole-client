@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,56 +20,42 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package net.sourceforge.guacamole.net.auth.mysql.dao;
 
-
-import java.util.Date;
+import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionRecordModel;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
+import org.apache.ibatis.annotations.Param;
 
 /**
- * A ConnectionRecord which is based on data stored in MySQL.
+ * Mapper for connection record objects.
  *
- * @author James Muehlner
  * @author Michael Jumper
  */
-public class MySQLConnectionRecord implements ConnectionRecord {
+public interface ConnectionRecordMapper {
 
     /**
-     * The model object backing this connection record.
+     * Returns a collection of all connection records associated with the
+     * connection having the given identifier.
+     *
+     * @param identifier
+     *     The identifier of the connection whose records are to be retrieved.
+     *
+     * @return
+     *     A collection of all connection records associated with the
+     *     connection having the given identifier. This collection will be
+     *     empty if no such connection exists.
      */
-    private ConnectionRecordModel model;
+    List<ConnectionRecordModel> select(@Param("identifier") String identifier);
 
     /**
-     * Creates a new MySQLConnectionRecord backed by the given model object.
-     * Changes to this record will affect the backing model object, and changes
-     * to the backing model object will affect this record.
-     * 
-     * @param model
-     *     The model object to use to back this connection record.
+     * Inserts the given connection record.
+     *
+     * @param record
+     *     The connection record to insert.
+     *
+     * @return
+     *     The number of rows inserted.
      */
-    public MySQLConnectionRecord(ConnectionRecordModel model) {
-        this.model = model;
-    }
-
-    @Override
-    public Date getStartDate() {
-        return model.getStartDate();
-    }
-
-    @Override
-    public Date getEndDate() {
-        return model.getEndDate();
-    }
-
-    @Override
-    public String getUsername() {
-        return model.getUsername();
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
+    int insert(@Param("record") ConnectionRecordModel record);
+    
 }

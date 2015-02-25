@@ -30,6 +30,7 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionRecordMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.SystemPermissionMapper;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -144,6 +145,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
                     // Add MyBatis mappers
                     addMapperClass(ConnectionMapper.class);
+                    addMapperClass(ConnectionRecordMapper.class);
                     addMapperClass(ParameterMapper.class);
                     addMapperClass(SystemPermissionMapper.class);
                     addMapperClass(UserMapper.class);

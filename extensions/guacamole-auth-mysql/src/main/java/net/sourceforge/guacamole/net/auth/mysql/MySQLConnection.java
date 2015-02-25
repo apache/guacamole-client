@@ -24,7 +24,6 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
@@ -181,8 +180,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        /* STUB */
-        return Collections.EMPTY_LIST;
+        return connectionService.retrieveHistory(currentUser, this.getIdentifier());
     }
 
     @Override
