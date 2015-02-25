@@ -129,7 +129,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
         // Translate null parent to proper identifier
         String parentIdentifier = connectionModel.getParentIdentifier();
         if (parentIdentifier == null)
-            return MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER;
+            return MySQLRootConnectionGroup.IDENTIFIER;
 
         return parentIdentifier;
         
@@ -140,7 +140,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
         // Translate root identifier back into null
         if (parentIdentifier != null
-                && parentIdentifier.equals(MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER))
+                && parentIdentifier.equals(MySQLRootConnectionGroup.IDENTIFIER))
             parentIdentifier = null;
 
         connectionModel.setParentID(parentIdentifier);

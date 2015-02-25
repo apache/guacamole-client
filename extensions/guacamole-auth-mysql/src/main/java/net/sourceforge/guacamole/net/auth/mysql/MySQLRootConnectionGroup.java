@@ -41,6 +41,20 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 public class MySQLRootConnectionGroup implements ConnectionGroup {
 
     /**
+     * The identifier used to represent the root connection group. There is no
+     * corresponding entry in the database, thus a reserved identifier that
+     * cannot collide with database-generated identifiers is needed.
+     */
+    public static final String IDENTIFIER = "ROOT";
+
+    /**
+     * The human-readable name of this connection group. The name of the root
+     * group is not normally visible, and may even be replaced by the web
+     * interface for the sake of translation.
+     */
+    public static final String NAME = "ROOT";
+
+    /**
      * The user this group belongs to. Access is based on his/her permission
      * settings.
      */
@@ -71,7 +85,7 @@ public class MySQLRootConnectionGroup implements ConnectionGroup {
 
     @Override
     public String getName() {
-        return MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER;
+        return NAME;
     }
 
     @Override
@@ -113,7 +127,7 @@ public class MySQLRootConnectionGroup implements ConnectionGroup {
 
     @Override
     public String getIdentifier() {
-        return MySQLConstants.CONNECTION_GROUP_ROOT_IDENTIFIER;
+        return IDENTIFIER;
     }
 
     @Override
