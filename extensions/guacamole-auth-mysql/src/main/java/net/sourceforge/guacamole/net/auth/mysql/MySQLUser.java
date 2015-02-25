@@ -33,7 +33,6 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
-import org.glyptodon.guacamole.net.auth.simple.SimpleSystemPermissionSet;
 
 /**
  * A MySQL based implementation of the User object.
