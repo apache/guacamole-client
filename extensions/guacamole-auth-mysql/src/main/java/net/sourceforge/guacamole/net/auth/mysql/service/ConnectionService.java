@@ -24,6 +24,8 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -148,6 +150,46 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             throw new GuacamoleClientException("Connection names must not be blank.");
         
         // FIXME: Check whether such a connection is already present
+        
+    }
+
+    @Override
+    public void updateObject(AuthenticatedUser user, MySQLConnection object)
+            throws GuacamoleException {
+
+        // Update connection
+        super.updateObject(user, object);
+
+        // Get identifier and connection parameters
+        String identifier = object.getIdentifier();
+        Map<String, String> parameters = object.getConfiguration().getParameters();
+        
+        // Convert parameters to model objects
+        Collection<ParameterModel> parameterModels = new ArrayList(parameters.size());
+        for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
+
+            // Get parameter name and value
+            String name = parameterEntry.getKey();
+            String value = parameterEntry.getValue();
+
+            // There is no need to insert empty parameters
+            if (value.isEmpty())
+                continue;
+            
+            // Produce model object from parameter
+            ParameterModel model = new ParameterModel();
+            model.setConnectionIdentifier(identifier);
+            model.setName(name);
+            model.setValue(value);
+
+            // Add model to list
+            parameterModels.add(model);
+            
+        }
+
+        // Replace existing parameters with new parameters
+        parameterMapper.delete(identifier);
+        parameterMapper.insert(parameterModels);
         
     }
 
