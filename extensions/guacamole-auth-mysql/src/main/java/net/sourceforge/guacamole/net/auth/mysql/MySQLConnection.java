@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -58,6 +59,12 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
      */
     @Inject
     private ConnectionService connectionService;
+
+    /**
+     * Service for creating and tracking sockets.
+     */
+    @Inject
+    private GuacamoleSocketService socketService;
 
     /**
      * Provider for lazy-loaded, permission-controlled configurations.
@@ -185,8 +192,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public int getActiveConnections() {
-        /* STUB */
-        return 0;
+        return socketService.getActiveConnections(this);
     }
 
 }

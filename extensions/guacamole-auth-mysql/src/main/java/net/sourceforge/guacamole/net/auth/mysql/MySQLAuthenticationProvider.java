@@ -39,11 +39,13 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.GuacamoleSocketService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SHA256PasswordEncryptionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SecureRandomSaltService;
 import net.sourceforge.guacamole.net.auth.mysql.service.SystemPermissionService;
+import net.sourceforge.guacamole.net.auth.mysql.service.UnrestrictedGuacamoleSocketService;
 import net.sourceforge.guacamole.net.auth.mysql.service.UserService;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.glyptodon.guacamole.environment.Environment;
@@ -164,6 +166,9 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     bind(SystemPermissionService.class);
                     bind(UserService.class);
 
+                    // Bind appropriate socket service based on policy
+                    bind(GuacamoleSocketService.class).to(UnrestrictedGuacamoleSocketService.class);
+                    
                 }
             } // end of mybatis module
 

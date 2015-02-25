@@ -24,8 +24,6 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,17 +37,13 @@ import net.sourceforge.guacamole.net.auth.mysql.model.ParameterModel;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
-import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -59,12 +53,6 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  */
 public class ConnectionService extends DirectoryObjectService<MySQLConnection, Connection, ConnectionModel> {
 
-    /**
-     * The environment of the Guacamole server.
-     */
-    @Inject
-    private Environment environment;
-    
     /**
      * Mapper for accessing connections.
      */
@@ -83,6 +71,12 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     @Inject
     private Provider<MySQLConnection> mySQLConnectionProvider;
 
+    /**
+     * Service for creating and tracking sockets.
+     */
+    @Inject
+    private GuacamoleSocketService socketService;
+    
     @Override
     protected DirectoryObjectMapper<ConnectionModel> getObjectMapper() {
         return connectionMapper;
@@ -252,33 +246,9 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             MySQLConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        String identifier = connection.getIdentifier();
-        
         // Connect only if READ permission is granted
-        if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
-
-            // Generate configuration from available data
-            GuacamoleConfiguration config = new GuacamoleConfiguration();
-
-            // Set protocol from connection
-            ConnectionModel model = connection.getModel();
-            config.setProtocol(model.getProtocol());
-
-            // Set parameters from associated data
-            Collection<ParameterModel> parameters = parameterMapper.select(identifier);
-            for (ParameterModel parameter : parameters)
-                config.setParameter(parameter.getName(), parameter.getValue());
-
-            // Return new socket
-            return new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(
-                    environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
-                    environment.getRequiredProperty(Environment.GUACD_PORT)
-                ),
-                config
-            );
-
-        }
+        if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ))
+            return socketService.getGuacamoleSocket(user, connection, info);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");
