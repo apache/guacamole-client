@@ -82,16 +82,6 @@ public class MySQLGuacamoleConfiguration extends GuacamoleConfiguration {
     }
 
     @Override
-    public String getConnectionID() {
-        return connectionModel.getIdentifier();
-    }
-
-    @Override
-    public void setConnectionID(String connectionID) {
-        throw new UnsupportedOperationException("The ID of this GuacamoleConfiguration is immutable.");
-    }
-
-    @Override
     public String getProtocol() {
         return connectionModel.getProtocol();
     }
