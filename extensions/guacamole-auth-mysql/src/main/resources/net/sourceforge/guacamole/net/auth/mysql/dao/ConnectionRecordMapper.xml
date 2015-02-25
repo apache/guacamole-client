@@ -49,8 +49,8 @@
         WHERE
             connection_id = #{identifier,jdbcType=VARCHAR}
         ORDER BY
-            start_date,
-            end_date
+            start_date DESC,
+            end_date DESC
 
     </select>
 
