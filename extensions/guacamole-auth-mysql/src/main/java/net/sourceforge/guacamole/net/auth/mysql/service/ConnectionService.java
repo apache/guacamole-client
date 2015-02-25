@@ -25,6 +25,7 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -202,14 +203,25 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     public Map<String, String> retrieveParameters(AuthenticatedUser user,
             String identifier) {
 
-        // FIXME: Check permissions
-        
         Map<String, String> parameterMap = new HashMap<String, String>();
 
-        // Convert associated parameters to map
-        Collection<ParameterModel> parameters = parameterMapper.select(identifier);
-        for (ParameterModel parameter : parameters)
-            parameterMap.put(parameter.getName(), parameter.getValue());
+        // Determine whether we have permission to read parameters
+        boolean canRetrieveParameters;
+        try {
+            canRetrieveParameters = hasObjectPermission(user, identifier,
+                    ObjectPermission.Type.UPDATE);
+        }
+
+        // Provide empty (but mutable) map if unable to check permissions
+        catch (GuacamoleException e) {
+            return parameterMap;
+        }
+
+        // Populate parameter map if we have permission to do so
+        if (canRetrieveParameters) {
+            for (ParameterModel parameter : parameterMapper.select(identifier))
+                parameterMap.put(parameter.getName(), parameter.getValue());
+        }
 
         return parameterMap;
 
