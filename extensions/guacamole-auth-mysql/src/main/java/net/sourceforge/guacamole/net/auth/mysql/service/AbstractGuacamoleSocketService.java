@@ -24,18 +24,26 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 
 import com.google.inject.Inject;
 import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionRecordMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
+import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionRecordModel;
 import net.sourceforge.guacamole.net.auth.mysql.model.ParameterModel;
+import net.sourceforge.guacamole.net.auth.mysql.model.UserModel;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -63,11 +71,17 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     private ParameterMapper parameterMapper;
 
     /**
+     * Mapper for accessing connection history.
+     */
+    @Inject
+    private ConnectionRecordMapper connectionRecordMapper;
+
+    /**
      * The current number of concurrent uses of the connection having a given
      * identifier.
      */
-    private final ConcurrentHashMap<String, AtomicInteger> activeConnectionCount =
-            new ConcurrentHashMap<String, AtomicInteger>();
+    private final Map<String, LinkedList<ConnectionRecord>> activeConnections =
+            new HashMap<String, LinkedList<ConnectionRecord>>();
 
     /**
      * Atomically increments the current usage count for the given connection.
@@ -75,13 +89,22 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      * @param connection
      *     The connection which is being used.
      */
-    private void incrementUsage(MySQLConnection connection) {
+    private void addActiveConnection(Connection connection, ConnectionRecord record) {
+        synchronized (activeConnections) {
 
-        // Increment or initialize usage count atomically
-        AtomicInteger count = activeConnectionCount.putIfAbsent(connection.getIdentifier(), new AtomicInteger(1));
-        if (count != null)
-            count.incrementAndGet();
+            String identifier = connection.getIdentifier();
 
+            // Get set of active connection records, creating if necessary
+            LinkedList<ConnectionRecord> connections = activeConnections.get(identifier);
+            if (connections == null) {
+                connections = new LinkedList<ConnectionRecord>();
+                activeConnections.put(identifier, connections);
+            }
+
+            // Add active connection
+            connections.addFirst(record);
+
+        }
     }
 
     /**
@@ -93,15 +116,23 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      * @param connection
      *     The connection which is no longer being used.
      */
-    private void decrementUsage(MySQLConnection connection) {
+    private void removeActiveConnection(Connection connection, ConnectionRecord record) {
+        synchronized (activeConnections) {
 
-        // Decrement usage count, remove entry if it becomes zero
-        AtomicInteger count = activeConnectionCount.get(connection.getIdentifier());
-        if (count != null) {
-            count.decrementAndGet();
-            activeConnectionCount.remove(connection.getIdentifier(), 0);
+            String identifier = connection.getIdentifier();
+
+            // Get set of active connection records
+            LinkedList<ConnectionRecord> connections = activeConnections.get(identifier);
+            assert(connections != null);
+
+            // Remove old record
+            connections.remove(record);
+
+            // If now empty, clean the tracking entry
+            if (connections.isEmpty())
+                activeConnections.remove(identifier);
+
         }
-
     }
 
     /**
@@ -135,36 +166,14 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     protected abstract void release(AuthenticatedUser user,
             MySQLConnection connection);
 
-    /**
-     * Creates a socket for the given user which connects to the given
-     * connection. The given client information will be passed to guacd when
-     * the connection is established. This function will apply any concurrent
-     * usage rules in effect, but will NOT test object- or system-level
-     * permissions.
-     *
-     * @param user
-     *     The user for whom the connection is being established.
-     *
-     * @param connection
-     *     The connection the user is connecting to.
-     *
-     * @param info
-     *     Information describing the Guacamole client connecting to the given
-     *     connection.
-     *
-     * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
-     *     connection.
-     *
-     * @throws GuacamoleException
-     *     If the connection cannot be established due to concurrent usage
-     *     rules.
-     */
     @Override
     public GuacamoleSocket getGuacamoleSocket(final AuthenticatedUser user,
             final MySQLConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
+        // Create record for active connection
+        final ActiveConnectionRecord activeConnection = new ActiveConnectionRecord(user);
+        
         // Generate configuration from available data
         GuacamoleConfiguration config = new GuacamoleConfiguration();
 
@@ -182,7 +191,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
             // Atomically gain access to connection
             acquire(user, connection);
-            incrementUsage(connection);
+            addActiveConnection(connection, activeConnection);
 
             // Return newly-reserved connection
             return new ConfiguredGuacamoleSocket(
@@ -200,9 +209,22 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                     super.close();
                     
                     // Release connection upon close
-                    decrementUsage(connection);
+                    removeActiveConnection(connection, activeConnection);
                     release(user, connection);
 
+                    UserModel userModel = user.getUser().getModel();
+                    ConnectionRecordModel recordModel = new ConnectionRecordModel();
+
+                    // Copy user information and timestamps into new record
+                    recordModel.setUserID(userModel.getUserID());
+                    recordModel.setUsername(userModel.getUsername());
+                    recordModel.setConnectionIdentifier(connection.getIdentifier());
+                    recordModel.setStartDate(activeConnection.getStartDate());
+                    recordModel.setEndDate(new Date());
+
+                    // Insert connection record
+                    connectionRecordMapper.insert(recordModel);
+                    
                 }
                 
             };
@@ -213,7 +235,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         catch (GuacamoleException e) {
 
             // Atomically release access to connection
-            decrementUsage(connection);
+            removeActiveConnection(connection, activeConnection);
             release(user, connection);
 
             throw e;
@@ -223,16 +245,19 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     @Override
-    public int getActiveConnections(Connection connection) {
+    public List<ConnectionRecord> getActiveConnections(Connection connection) {
+        synchronized (activeConnections) {
 
-        // If no such active connection, zero active users
-        AtomicInteger count = activeConnectionCount.get(connection.getIdentifier());
-        if (count == null)
-            return 0;
+            String identifier = connection.getIdentifier();
 
-        // Otherwise, return stored value
-        return count.intValue();
-        
+            // Get set of active connection records
+            LinkedList<ConnectionRecord> connections = activeConnections.get(identifier);
+            if (connections != null)
+                return Collections.unmodifiableList(connections);
+
+            return Collections.EMPTY_LIST;
+
+        }
     }
     
 }

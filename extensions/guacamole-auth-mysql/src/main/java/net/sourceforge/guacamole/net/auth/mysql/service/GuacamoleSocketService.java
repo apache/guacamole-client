@@ -22,11 +22,13 @@
 
 package net.sourceforge.guacamole.net.auth.mysql.service;
 
+import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 
@@ -68,14 +70,17 @@ public interface GuacamoleSocketService {
             throws GuacamoleException;
 
     /**
-     * Returns the number of active connections using the given connection.
+     * Returns a list containing connection records representing all currently-
+     * active connections using the given connection. These records will have
+     * usernames and start dates, but no end date.
      *
      * @param connection
      *     The connection to check.
      *
      * @return
-     *     The number of active connections using the given connection.
+     *     A list containing connection records representing all currently-
+     *     active connections.
      */
-    public int getActiveConnections(Connection connection);
-   
+    public List<ConnectionRecord> getActiveConnections(Connection connection);
+
 }

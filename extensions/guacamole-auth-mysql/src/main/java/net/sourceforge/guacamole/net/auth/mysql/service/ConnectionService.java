@@ -45,6 +45,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -274,29 +275,37 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     }
 
     /**
-     * Retrieves the connection history of the connection with the given
-     * identifier.
+     * Retrieves the connection history of the given connection, including any
+     * active connections.
      *
      * @param user
      *     The user retrieving the connection history.
      *
-     * @param identifier
-     *     The identifier of the connection whose history is being retrieved.
+     * @param connection
+     *     The connection whose history is being retrieved.
      *
      * @return
-     * @throws GuacamoleException 
+     *     The connection history of the given connection, including any
+     *     active connections.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the connection history is denied.
      */
-    public List<MySQLConnectionRecord> retrieveHistory(AuthenticatedUser user,
-            String identifier) throws GuacamoleException {
+    public List<ConnectionRecord> retrieveHistory(AuthenticatedUser user,
+            MySQLConnection connection) throws GuacamoleException {
 
+        String identifier = connection.getIdentifier();
+        
         // Retrieve history only if READ permission is granted
         if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
 
             // Retrieve history
             List<ConnectionRecordModel> models = connectionRecordMapper.select(identifier);
 
-            // Convert model objects into standard records
-            List<MySQLConnectionRecord> records = new ArrayList<MySQLConnectionRecord>(models.size());
+            // Get currently-active connections
+            List<ConnectionRecord> records = new ArrayList<ConnectionRecord>(socketService.getActiveConnections(connection));
+
+            // Add past connections from model objects
             for (ConnectionRecordModel model : models)
                 records.add(new MySQLConnectionRecord(model));
 

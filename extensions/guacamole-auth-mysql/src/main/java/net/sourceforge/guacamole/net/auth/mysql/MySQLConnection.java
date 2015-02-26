@@ -180,7 +180,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return connectionService.retrieveHistory(currentUser, this.getIdentifier());
+        return connectionService.retrieveHistory(currentUser, this);
     }
 
     @Override
@@ -190,7 +190,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
     @Override
     public int getActiveConnections() {
-        return socketService.getActiveConnections(this);
+        return socketService.getActiveConnections(this).size();
     }
 
 }
