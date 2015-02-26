@@ -47,6 +47,8 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.token.StandardTokens;
+import org.glyptodon.guacamole.token.TokenFilter;
 
 
 /**
@@ -185,6 +187,13 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         Collection<ParameterModel> parameters = parameterMapper.select(connection.getIdentifier());
         for (ParameterModel parameter : parameters)
             config.setParameter(parameter.getName(), parameter.getValue());
+
+        // Build token filter containing credential tokens
+        TokenFilter tokenFilter = new TokenFilter();
+        StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
+
+        // Filter the configuration
+        tokenFilter.filterValues(config.getParameters());
 
         // Return new socket
         try {
