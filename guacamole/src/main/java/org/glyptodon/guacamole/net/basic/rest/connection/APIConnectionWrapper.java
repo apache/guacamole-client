@@ -40,8 +40,18 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  */
 public class APIConnectionWrapper implements Connection {
 
+    /**
+     * The wrapped APIConnection.
+     */
     private final APIConnection apiConnection;
-    
+
+    /**
+     * Creates a new APIConnectionWrapper which wraps the given APIConnection
+     * as a Connection.
+     *
+     * @param apiConnection
+     *     The APIConnection to wrap.
+     */
     public APIConnectionWrapper(APIConnection apiConnection) {
         this.apiConnection = apiConnection;
     }
@@ -74,6 +84,11 @@ public class APIConnectionWrapper implements Connection {
     @Override
     public void setParentIdentifier(String parentIdentifier) {
         apiConnection.setParentIdentifier(parentIdentifier);
+    }
+
+    @Override
+    public int getActiveConnections() {
+        return apiConnection.getActiveConnections();
     }
 
     @Override

@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Collection;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 
@@ -33,11 +34,10 @@ import org.glyptodon.guacamole.GuacamoleException;
  * function.
  *
  * @author Michael Jumper
- * @param <IdentifierType> The type of identifier used to identify objects
- *                         stored within this Directory.
- * @param <ObjectType> The type of objects stored within this Directory.
+ * @param <ObjectType>
+ *     The type of objects stored within this Directory.
  */
-public interface Directory<IdentifierType, ObjectType> {
+public interface Directory<ObjectType> {
 
     /**
      * Returns the object having the given identifier. Note that changes to
@@ -55,7 +55,30 @@ public interface Directory<IdentifierType, ObjectType> {
      *                            object, or if permission for retrieving the
      *                            object is denied.
      */
-    ObjectType get(IdentifierType identifier) throws GuacamoleException;
+    ObjectType get(String identifier) throws GuacamoleException;
+
+    /**
+     * Returns the objects having the given identifiers. Note that changes to
+     * any object returned will not necessarily affect the object stored within
+     * the Directory. To update an object stored within a
+     * Directory such that future calls to get() will return the updated
+     * object, you must call update() on the object after modification.
+     *
+     * @param identifiers
+     *     The identifiers to use when locating the objects to return.
+     *
+     * @return
+     *     The objects having the given identifiers. If any identifiers do not
+     *     correspond to accessible objects, those identifiers will be ignored.
+     *     If no objects correspond to any of the given identifiers, the
+     *     returned collection will be empty.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the objects, or if permission
+     *     to retrieve the requested objects is denied.
+     */
+    Collection<ObjectType> getAll(Collection<String> identifiers)
+            throws GuacamoleException;
 
     /**
      * Returns a Set containing all identifiers for all objects within this
@@ -65,7 +88,7 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while retrieving
      *                            the identifiers.
      */
-    Set<IdentifierType> getIdentifiers() throws GuacamoleException;
+    Set<String> getIdentifiers() throws GuacamoleException;
 
     /**
      * Adds the given object to the overall set.
@@ -97,18 +120,6 @@ public interface Directory<IdentifierType, ObjectType> {
      * @throws GuacamoleException If an error occurs while removing the object,
      *                            or if removing object is not allowed.
      */
-    void remove(IdentifierType identifier) throws GuacamoleException;
-
-    /**
-     * Moves the object with the given identifier to the given directory.
-     *
-     * @param identifier The identifier of the object to remove.
-     * @param directory The directory to move the object to.
-     *
-     * @throws GuacamoleException If an error occurs while moving the object,
-     *                            or if moving object is not allowed.
-     */
-    void move(IdentifierType identifier, Directory<IdentifierType, ObjectType> directory) 
-            throws GuacamoleException;
+    void remove(String identifier) throws GuacamoleException;
 
 }

@@ -22,18 +22,19 @@
 
 package org.glyptodon.guacamole.net.auth.simple;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.AbstractConnectionGroup;
-import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * An extremely simple read-only implementation of a ConnectionGroup which
- * returns the connection and connection group directories it was constructed
+ * returns the connection and connection group identifiers it was constructed
  * with. Load balancing across this connection group is not allowed.
  * 
  * @author James Muehlner
@@ -41,31 +42,34 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 public class SimpleConnectionGroup extends AbstractConnectionGroup {
 
     /**
-     * Underlying connection directory, containing all connections within this
-     * group.
+     * The identifiers of all connections in this group.
      */
-    private final Directory<String, Connection> connectionDirectory;
+    private final Set<String> connectionIdentifiers;
 
     /**
-     * Underlying connection group directory, containing all connections within
-     * this group.
+     * The identifiers of all connection groups in this group.
      */
-    private final Directory<String, ConnectionGroup> connectionGroupDirectory;
+    private final Set<String> connectionGroupIdentifiers;
     
     /**
      * Creates a new SimpleConnectionGroup having the given name and identifier
-     * which will expose the given directories as its contents.
+     * which will expose the given contents.
      * 
-     * @param name The name to associate with this connection.
-     * @param identifier The identifier to associate with this connection.
-     * @param connectionDirectory The connection directory to expose when
-     *                            requested.
-     * @param connectionGroupDirectory The connection group directory to expose
-     *                                 when requested.
+     * @param name
+     *     The name to associate with this connection group.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection group.
+     *
+     * @param connectionIdentifiers
+     *     The connection identifiers to expose when requested.
+     *
+     * @param connectionGroupIdentifiers
+     *     The connection group identifiers to expose when requested.
      */
     public SimpleConnectionGroup(String name, String identifier,
-            Directory<String, Connection> connectionDirectory, 
-            Directory<String, ConnectionGroup> connectionGroupDirectory) {
+            Collection<String> connectionIdentifiers, 
+            Collection<String> connectionGroupIdentifiers) {
 
         // Set name
         setName(name);
@@ -76,22 +80,25 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
         // Set group type
         setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
-        // Assign directories
-        this.connectionDirectory = connectionDirectory;
-        this.connectionGroupDirectory = connectionGroupDirectory;
+        // Populate contents
+        this.connectionIdentifiers = new HashSet<String>(connectionIdentifiers);
+        this.connectionGroupIdentifiers = new HashSet<String>(connectionGroupIdentifiers);
 
-    }
-    
-    @Override
-    public Directory<String, Connection> getConnectionDirectory() 
-            throws GuacamoleException {
-        return connectionDirectory;
     }
 
     @Override
-    public Directory<String, ConnectionGroup> getConnectionGroupDirectory() 
-            throws GuacamoleException {
-        return connectionGroupDirectory;
+    public int getActiveConnections() {
+        return 0;
+    }
+
+    @Override
+    public Set<String> getConnectionIdentifiers() {
+        return connectionIdentifiers;
+    }
+
+    @Override
+    public Set<String> getConnectionGroupIdentifiers() {
+        return connectionGroupIdentifiers;
     }
 
     @Override

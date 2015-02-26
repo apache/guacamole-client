@@ -210,44 +210,40 @@ public class TunnelRequestService {
             // Connection identifiers
             case CONNECTION: {
 
-                UserContext context = session.getUserContext();
-
                 // Get connection directory
-                Directory<String, Connection> directory =
-                    context.getRootConnectionGroup().getConnectionDirectory();
+                UserContext context = session.getUserContext();
+                Directory<Connection> directory = context.getConnectionDirectory();
 
                 // Get authorized connection
                 Connection connection = directory.get(id);
                 if (connection == null) {
-                    logger.info("Connection \"{}\" does not exist for user \"{}\".", id, context.self().getUsername());
+                    logger.info("Connection \"{}\" does not exist for user \"{}\".", id, context.self().getIdentifier());
                     throw new GuacamoleSecurityException("Requested connection is not authorized.");
                 }
 
                 // Connect socket
                 socket = connection.connect(info);
-                logger.info("User \"{}\" successfully connected to \"{}\".", context.self().getUsername(), id);
+                logger.info("User \"{}\" successfully connected to \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
 
             // Connection group identifiers
             case CONNECTION_GROUP: {
 
-                UserContext context = session.getUserContext();
-
                 // Get connection group directory
-                Directory<String, ConnectionGroup> directory =
-                    context.getRootConnectionGroup().getConnectionGroupDirectory();
+                UserContext context = session.getUserContext();
+                Directory<ConnectionGroup> directory = context.getConnectionGroupDirectory();
 
                 // Get authorized connection group
                 ConnectionGroup group = directory.get(id);
                 if (group == null) {
-                    logger.info("Connection group \"{}\" does not exist for user \"{}\".", id, context.self().getUsername());
+                    logger.info("Connection group \"{}\" does not exist for user \"{}\".", id, context.self().getIdentifier());
                     throw new GuacamoleSecurityException("Requested connection group is not authorized.");
                 }
 
                 // Connect socket
                 socket = group.connect(info);
-                logger.info("User \"{}\" successfully connected to group \"{}\".", context.self().getUsername(), id);
+                logger.info("User \"{}\" successfully connected to group \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
 

@@ -22,9 +22,8 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
  * Represents a connection group, which can contain both other connection groups
@@ -32,10 +31,29 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author James Muehlner
  */
-public interface ConnectionGroup {
-    
+public interface ConnectionGroup extends Identifiable, Connectable {
+  
+    /**
+     * All legal types of connection group.
+     */
     public enum Type {
-        ORGANIZATIONAL, BALANCING
+
+        /**
+         * A connection group that purely organizes other connections or
+         * connection groups, serving only as a container. An organizational
+         * connection group is analogous to a directory or folder in a
+         * filesystem.
+         */
+        ORGANIZATIONAL,
+
+        /**
+         * A connection group that acts as a load balancer. A balancing
+         * connection group can be connected to in the same manner as a
+         * connection, and will transparently route to the least-used
+         * underlying connection.
+         */
+        BALANCING
+
     };
 
     /**
@@ -50,24 +68,6 @@ public interface ConnectionGroup {
      * @param name The name to assign.
      */
     public void setName(String name);
-
-    /**
-     * Returns the unique identifier assigned to this ConnectionGroup. All
-     * connection groups must have a deterministic, unique identifier which may
-     * not be null.
-     *
-     * @return
-     *     The unique identifier assigned to this ConnectionGroup, which may
-     *     not be null.
-     */
-    public String getIdentifier();
-
-    /**
-     * Sets the identifier assigned to this ConnectionGroup.
-     *
-     * @param identifier The identifier to assign.
-     */
-    public void setIdentifier(String identifier);
 
     /**
      * Returns the unique identifier of the parent ConnectionGroup for
@@ -101,45 +101,31 @@ public interface ConnectionGroup {
     public Type getType();
 
     /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connections and their configurations, but only as allowed by the
-     * permissions given to the user.
+     * Returns the identifiers of all readable connections that are children
+     * of this connection group.
      *
-     * @return A Directory whose operations are bound by the permissions of 
-     *         the user.
+     * @return
+     *     The set of identifiers of all readable connections that are children
+     *     of this connection group.
      *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            Directory.
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the identifiers.
      */
-    Directory<String, Connection> getConnectionDirectory()
-            throws GuacamoleException;
+    public Set<String> getConnectionIdentifiers() throws GuacamoleException;
 
     /**
-     * Retrieves a Directory which can be used to view and manipulate
-     * connection groups and their members, but only as allowed by the
-     * permissions given to the user.
+     * Returns the identifiers of all readable connection groups that are
+     * children of this connection group.
      *
-     * @return A Directory whose operations are bound by the permissions of
-     *         the user.
+     * @return
+     *     The set of identifiers of all readable connection groups that are
+     *     children of this connection group.
      *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            Directory.
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the identifiers.
      */
-    Directory<String, ConnectionGroup> getConnectionGroupDirectory()
+
+    public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException;
     
-    /**
-     * Establishes a connection to guacd using a connection chosen from among
-     * the connections in this ConnectionGroup, and returns the resulting, 
-     * connected GuacamoleSocket.
-     *
-     * @param info Information associated with the connecting client.
-     * @return A fully-established GuacamoleSocket.
-     *
-     * @throws GuacamoleException If an error occurs while connecting to guacd,
-     *                            or if permission to connect is denied.
-     */
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
-            throws GuacamoleException;
-
 }

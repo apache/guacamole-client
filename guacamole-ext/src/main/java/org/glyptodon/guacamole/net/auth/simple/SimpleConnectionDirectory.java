@@ -22,15 +22,10 @@
 
 package org.glyptodon.guacamole.net.auth.simple;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Connection;
-import org.glyptodon.guacamole.net.auth.Directory;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
  * An extremely simple read-only implementation of a Directory of
@@ -39,77 +34,44 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public class SimpleConnectionDirectory
-    implements Directory<String, Connection> {
+public class SimpleConnectionDirectory extends SimpleDirectory<Connection> {
 
     /**
      * The Map of Connections to provide access to.
      */
-    private Map<String, Connection> connections =
+    private final Map<String, Connection> connections =
             new HashMap<String, Connection>();
 
     /**
-     * Creates a new SimpleConnectionDirectory which provides
-     * access to the configurations contained within the given Map.
+     * Creates a new SimpleConnectionDirectory which provides access to the
+     * connections contained within the given Map.
      *
-     * @param configs The Map of GuacamoleConfigurations to provide access to.
+     * @param connections
+     *     A Collection of all connections that should be present in this
+     *     connection directory.
      */
-    public SimpleConnectionDirectory(
-            Map<String, GuacamoleConfiguration> configs) {
+    public SimpleConnectionDirectory(Collection<Connection> connections) {
 
-        // Create connections for each config
-        for (Entry<String, GuacamoleConfiguration> entry : configs.entrySet())
-            connections.put(entry.getKey(),
-                    new SimpleConnection(entry.getKey(), entry.getKey(), 
-                entry.getValue()));
+        // Add all given connections
+        for (Connection connection : connections)
+            this.connections.put(connection.getIdentifier(), connection);
+
+        // Use the connection map to back the underlying directory 
+        super.setObjects(this.connections);
 
     }
 
-    @Override
-    public Connection get(String identifier)
-            throws GuacamoleException {
-        return connections.get(identifier);
-    }
-
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return connections.keySet();
-    }
-
-    @Override
-    public void add(Connection connection)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void update(Connection connection)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-
-    @Override
-    public void move(String identifier, Directory<String, Connection> directory) 
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
-    
     /**
      * An internal method for modifying the Connections in this Directory.
      * Returns the previous connection for the given identifier, if found.
-     * 
+     *
      * @param connection The connection to add or update the Directory with.
      * @return The previous connection for the connection identifier, if found.
      */
     public Connection putConnection(Connection connection) {
         return connections.put(connection.getIdentifier(), connection);
     }
-    
+
     /**
      * An internal method for removing a Connection from this Directory.
      * @param identifier The identifier of the Connection to remove.

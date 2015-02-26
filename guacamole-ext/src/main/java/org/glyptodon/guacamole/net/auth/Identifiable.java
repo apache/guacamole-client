@@ -20,27 +20,33 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.auth.simple;
-
-import java.util.Collections;
-import org.glyptodon.guacamole.net.auth.User;
+package org.glyptodon.guacamole.net.auth;
 
 /**
- * An extremely simple read-only implementation of a Directory of Users which
- * provides access to a single pre-defined User.
+ * An object which has a deterministic, unique identifier, which may not be
+ * null.
  *
  * @author Michael Jumper
  */
-public class SimpleUserDirectory extends SimpleDirectory<User> {
+public interface Identifiable {
 
     /**
-     * Creates a new SimpleUserDirectory which provides access to the single
-     * user provided.
+     * Returns the unique identifier assigned to this object. All identifiable
+     * objects must have a deterministic, unique identifier which may not be
+     * null.
      *
-     * @param user The user to provide access to.
+     * @return
+     *     The unique identifier assigned to this object, which may not be
+     *     null.
      */
-    public SimpleUserDirectory(User user) {
-        super(Collections.singletonMap(user.getIdentifier(), user));
-    }
+    public String getIdentifier();
+
+    /**
+     * Sets the identifier assigned to this object.
+     *
+     * @param identifier
+     *     The identifier to assign.
+     */
+    public void setIdentifier(String identifier);
 
 }

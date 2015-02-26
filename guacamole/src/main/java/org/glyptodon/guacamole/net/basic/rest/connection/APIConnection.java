@@ -22,13 +22,10 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connection;
 
-import java.util.List;
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
-import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -65,9 +62,9 @@ public class APIConnection {
     private Map<String, String> parameters;
     
     /**
-     * The count of currently active users for this connection.
+     * The count of currently active connections using this connection.
      */
-    private int activeUsers;
+    private int activeConnections;
     
     /**
      * Create an empty APIConnection.
@@ -85,23 +82,12 @@ public class APIConnection {
     public APIConnection(Connection connection) 
             throws GuacamoleException {
 
-        // Set identifying information
+        // Set connection information
         this.name = connection.getName();
         this.identifier = connection.getIdentifier();
-        
-        // Set proper parent identifier, using root identifier if needed
         this.parentIdentifier = connection.getParentIdentifier();
-        if (this.parentIdentifier == null)
-            this.parentIdentifier = APIConnectionGroup.ROOT_IDENTIFIER;
+        this.activeConnections = connection.getActiveConnections();
         
-        // Set the number of currently active users
-        this.activeUsers = 0;
-        
-        for (ConnectionRecord history : connection.getHistory()) {
-            if (history.isActive())
-                this.activeUsers++;
-        }
-
         // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
         this.protocol = configuration.getProtocol();
@@ -190,19 +176,24 @@ public class APIConnection {
     }
 
     /**
-     * Returns the number of currently active users for this connection.
-     * @return The number of currently active users for this connection.
+     * Returns the number of currently active connections using this
+     * connection.
+     *
+     * @return
+     *     The number of currently active usages of this connection.
      */
-    public int getActiveUsers() {
-        return activeUsers;
+    public int getActiveConnections() {
+        return activeConnections;
     }
 
     /**
-     * Set the number of currently active users for this connection.
-     * @param activeUsers The number of currently active users for this connection.
+     * Set the number of currently active connections using this connection.
+     *
+     * @param activeConnections
+     *     The number of currently active usages of this connection.
      */
-    public void setActiveUsers(int activeUsers) {
-        this.activeUsers = activeUsers;
+    public void setActiveUsers(int activeConnections) {
+        this.activeConnections = activeConnections;
     }
     
 }

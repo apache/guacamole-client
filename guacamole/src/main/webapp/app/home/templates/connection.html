@@ -21,7 +21,7 @@
        THE SOFTWARE.
     -->
 
-    <div class="caption" ng-class="{active: item.activeUsers}">
+    <div class="caption" ng-class="{active: item.activeConnections}">
 
         <!-- Connection icon -->
         <div class="protocol">
@@ -32,8 +32,8 @@
         <span class="name">{{item.name}}</span>
         
         <!-- Active user count -->
-        <span class="activeUserCount" ng-show="item.activeUsers">
-            {{'HOME.INFO_ACTIVE_USER_COUNT' | translate:'{USERS: item.activeUsers}'}}
+        <span class="activeUserCount" ng-show="item.activeConnections">
+            {{'HOME.INFO_ACTIVE_USER_COUNT' | translate:'{USERS: item.activeConnections}'}}
         </span>
 
     </div>

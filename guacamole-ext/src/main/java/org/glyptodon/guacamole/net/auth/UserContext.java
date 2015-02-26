@@ -52,7 +52,35 @@ public interface UserContext {
      * @throws GuacamoleException If an error occurs while creating the
      *                            Directory.
      */
-    Directory<String, User> getUserDirectory() throws GuacamoleException;
+    Directory<User> getUserDirectory() throws GuacamoleException;
+
+    /**
+     * Retrieves a Directory which can be used to view and manipulate
+     * connections and their configurations, but only as allowed by the
+     * permissions given to the user.
+     *
+     * @return A Directory whose operations are bound by the permissions of 
+     *         the user.
+     *
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Directory.
+     */
+    Directory<Connection> getConnectionDirectory()
+            throws GuacamoleException;
+
+    /**
+     * Retrieves a Directory which can be used to view and manipulate
+     * connection groups and their members, but only as allowed by the
+     * permissions given to the user.
+     *
+     * @return A Directory whose operations are bound by the permissions of
+     *         the user.
+     *
+     * @throws GuacamoleException If an error occurs while creating the
+     *                            Directory.
+     */
+    Directory<ConnectionGroup> getConnectionGroupDirectory()
+            throws GuacamoleException;
 
     /**
      * Retrieves a connection group which can be used to view and manipulate

@@ -20,27 +20,44 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.auth.simple;
+package org.glyptodon.guacamole.net.auth;
 
-import java.util.Collections;
-import org.glyptodon.guacamole.net.auth.User;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
- * An extremely simple read-only implementation of a Directory of Users which
- * provides access to a single pre-defined User.
+ * An object which Guacamole can connect to.
  *
  * @author Michael Jumper
  */
-public class SimpleUserDirectory extends SimpleDirectory<User> {
+public interface Connectable {
 
     /**
-     * Creates a new SimpleUserDirectory which provides access to the single
-     * user provided.
+     * Establishes a connection to guacd using the information associated with
+     * this object. The connection will be provided the given client
+     * information.
      *
-     * @param user The user to provide access to.
+     * @param info
+     *     Information associated with the connecting client.
+     *
+     * @return
+     *     A fully-established GuacamoleSocket.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while connecting to guacd, or if permission to
+     *     connect is denied.
      */
-    public SimpleUserDirectory(User user) {
-        super(Collections.singletonMap(user.getIdentifier(), user));
-    }
+    public GuacamoleSocket connect(GuacamoleClientInformation info)
+            throws GuacamoleException;
 
+    /**
+     * Returns the number of active connections associated with this object.
+     * Implementations may simply return 0 if this value is not tracked.
+     *
+     * @return
+     *     The number of active connections associated with this object.
+     */
+    public int getActiveConnections();
+    
 }

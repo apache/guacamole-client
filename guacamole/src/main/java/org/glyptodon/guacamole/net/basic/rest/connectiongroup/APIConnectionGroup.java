@@ -62,6 +62,11 @@ public class APIConnectionGroup {
     private Type type;
 
     /**
+     * The count of currently active connections using this connection group.
+     */
+    private int activeConnections;
+
+    /**
      * All child connection groups. If children are not being queried, this may
      * be omitted.
      */
@@ -91,6 +96,7 @@ public class APIConnectionGroup {
 
         this.name = connectionGroup.getName();
         this.type = connectionGroup.getType();
+        this.activeConnections = connectionGroup.getActiveConnections();
 
     }
 
@@ -206,4 +212,26 @@ public class APIConnectionGroup {
         this.childConnections = childConnections;
     }
 
+    /**
+     * Returns the number of currently active connections using this
+     * connection group.
+     *
+     * @return
+     *     The number of currently active usages of this connection group.
+     */
+    public int getActiveConnections() {
+        return activeConnections;
+    }
+
+    /**
+     * Set the number of currently active connections using this connection
+     * group.
+     *
+     * @param activeConnections
+     *     The number of currently active usages of this connection group.
+     */
+    public void setActiveUsers(int activeConnections) {
+        this.activeConnections = activeConnections;
+    }
+    
 }

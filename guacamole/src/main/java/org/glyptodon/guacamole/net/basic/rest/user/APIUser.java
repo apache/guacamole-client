@@ -55,7 +55,7 @@ public class APIUser {
      * @param user The User to construct the APIUser from.
      */
     public APIUser(User user) {
-        this.username = user.getUsername();
+        this.username = user.getIdentifier();
         this.password = user.getPassword();
     }
 

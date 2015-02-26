@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.user;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import javax.ws.rs.Consumes;
@@ -43,12 +44,11 @@ import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
-import org.glyptodon.guacamole.net.auth.permission.UserPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
@@ -113,40 +113,6 @@ public class UserRESTService {
     private ObjectRetrievalService retrievalService;
     
     /**
-     * Determines whether the given user has at least one of the given
-     * permissions for the user having the given username.
-     * 
-     * @param user
-     *     The user to check permissions for.
-     * 
-     * @param username 
-     *     The username of the user to check permissions for.
-     * 
-     * @param permissions
-     *     The permissions to check. The given user must have one or more of
-     *     these permissions for this function to return true.
-     * 
-     * @return
-     *     true if the user has at least one of the given permissions.
-     */
-    private boolean hasUserPermission(User user, String username,
-            List<ObjectPermission.Type> permissions) throws GuacamoleException {
-        
-        // Determine whether user has at least one of the given permissions
-        for (ObjectPermission.Type permission : permissions) {
-            
-            UserPermission userPermission = new UserPermission(permission, username);
-            if (user.hasPermission(userPermission))
-                return true;
-            
-        }
-        
-        // None of the given permissions were present
-        return false;
-        
-    }
-
-    /**
      * Gets a list of users in the system, filtering the returned list by the
      * given permission, if specified.
      * 
@@ -181,23 +147,26 @@ public class UserRESTService {
             permissions = null;
 
         // An admin user has access to any user
-        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
+        SystemPermissionSet systemPermissions = self.getSystemPermissions();
+        boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
-        List<APIUser> users = new ArrayList<APIUser>();
-
-        // Add all users matching the given permission filter
-        for (String username : userDirectory.getIdentifiers()) {
-
-            if (isAdmin || permissions == null || hasUserPermission(self, username, permissions))
-                users.add(new APIUser(userDirectory.get(username)));
-
+        // Filter users, if requested
+        Collection<String> userIdentifiers = userDirectory.getIdentifiers();
+        if (!isAdmin && permissions != null) {
+            ObjectPermissionSet userPermissions = self.getUserPermissions();
+            userIdentifiers = userPermissions.getAccessibleObjects(permissions, userIdentifiers);
         }
-        
-        // Return the user directory listing
-        return users;
+            
+        // Retrieve all users, converting to API users
+        List<APIUser> apiUsers = new ArrayList<APIUser>();
+        for (User user : userDirectory.getAll(userIdentifiers))
+            apiUsers.add(new APIUser(user));
+
+        // Return the converted user list
+        return apiUsers;
 
     }
     
@@ -248,7 +217,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
         
         // Randomly set the password if it wasn't provided
         if (user.getPassword() == null)
@@ -287,7 +256,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
         // Validate data and path are sane
         if (!user.getUsername().equals(username))
@@ -329,7 +298,7 @@ public class UserRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
+        Directory<User> userDirectory = userContext.getUserDirectory();
 
         // Get the user
         User existingUser = userDirectory.get(username);
@@ -369,7 +338,7 @@ public class UserRESTService {
         User user;
 
         // If username is own username, just use self - might not have query permissions
-        if (userContext.self().getUsername().equals(username))
+        if (userContext.self().getIdentifier().equals(username))
             user = userContext.self();
 
         // If not self, query corresponding user from directory
@@ -379,7 +348,50 @@ public class UserRESTService {
                 throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
         }
 
-        return new APIPermissionSet(user.getPermissions());
+        return new APIPermissionSet(user);
+
+    }
+
+    /**
+     * Updates the given permission set patch by queuing an add or remove
+     * operation for the given permission based on the given patch operation.
+     *
+     * @param <PermissionType>
+     *     The type of permission stored within the permission set.
+     *
+     * @param operation
+     *     The patch operation to perform.
+     *
+     * @param permissionSetPatch
+     *     The permission set patch being modified.
+     *
+     * @param permission
+     *     The permission being added or removed from the set.
+     */
+    private <PermissionType extends Permission> void updatePermissionSet(
+            APIPatch.Operation operation,
+            PermissionSetPatch<PermissionType> permissionSetPatch,
+            PermissionType permission) {
+
+        // Add or remove permission based on operation
+        switch (operation) {
+
+            // Add permission
+            case add:
+                permissionSetPatch.addPermission(permission);
+                break;
+
+            // Remove permission
+            case remove:
+                permissionSetPatch.removePermission(permission);
+                break;
+
+            // Unsupported patch operation
+            default:
+                throw new HTTPException(Status.BAD_REQUEST,
+                        "Unsupported patch operation: \"" + operation + "\"");
+
+        }
 
     }
     
@@ -412,18 +424,19 @@ public class UserRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
         
-        // Get the user directory
-        Directory<String, User> userDirectory = userContext.getUserDirectory();
-
         // Get the user
         User user = userContext.getUserDirectory().get(username);
         if (user == null)
             throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
+        // Permission patches for all types of permissions
+        PermissionSetPatch<ObjectPermission> connectionPermissionPatch      = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> userPermissionPatch            = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<SystemPermission> systemPermissionPatch          = new PermissionSetPatch<SystemPermission>();
+        
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
-
-            Permission permission;
 
             String path = patch.getPath();
 
@@ -434,8 +447,9 @@ public class UserRESTService {
                 String identifier = path.substring(CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new ConnectionPermission(type, identifier);
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), connectionPermissionPatch, permission);
                 
             }
 
@@ -446,8 +460,9 @@ public class UserRESTService {
                 String identifier = path.substring(CONNECTION_GROUP_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new ConnectionGroupPermission(type, identifier);
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
                 
             }
 
@@ -458,19 +473,21 @@ public class UserRESTService {
                 String identifier = path.substring(USER_PERMISSION_PATCH_PATH_PREFIX.length());
                 ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new UserPermission(type, identifier);
-                
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), userPermissionPatch, permission);
+
             }
 
             // Create system permission if path is system path
-            else if (path.startsWith(SYSTEM_PERMISSION_PATCH_PATH)) {
+            else if (path.equals(SYSTEM_PERMISSION_PATCH_PATH)) {
 
                 // Get identifier and type from patch operation
                 SystemPermission.Type type = SystemPermission.Type.valueOf(patch.getValue());
 
-                // Create corresponding permission
-                permission = new SystemPermission(type);
+                // Create and update corresponding permission
+                SystemPermission permission = new SystemPermission(type);
+                updatePermissionSet(patch.getOp(), systemPermissionPatch, permission);
                 
             }
 
@@ -478,30 +495,13 @@ public class UserRESTService {
             else
                 throw new HTTPException(Status.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
 
-            // Add or remove permission based on operation
-            switch (patch.getOp()) {
-
-                // Add permission
-                case add:
-                    user.addPermission(permission);
-                    break;
-
-                // Remove permission
-                case remove:
-                    user.removePermission(permission);
-                    break;
-
-                // Unsupported patch operation
-                default:
-                    throw new HTTPException(Status.BAD_REQUEST,
-                            "Unsupported patch operation: \"" + patch.getOp() + "\"");
-
-            }
-
         } // end for each patch operation
         
         // Save the permission changes
-        userDirectory.update(user);
+        connectionPermissionPatch.apply(user.getConnectionPermissions());
+        connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
+        userPermissionPatch.apply(user.getUserPermissions());
+        systemPermissionPatch.apply(user.getSystemPermissions());
 
     }
 

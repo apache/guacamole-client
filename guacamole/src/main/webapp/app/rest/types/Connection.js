@@ -81,13 +81,13 @@ angular.module('rest').factory('Connection', [function defineConnection() {
         this.parameters = template.parameters;
         
         /**
-         * The count of currently active users for this connection. This field
-         * will be returned from the REST API during a get operation, 
-         * but may not be set when doing an update or create operation.
+         * The count of currently active connections using this connection.
+         * This field will be returned from the REST API during a get
+         * operation, but manually setting this field will have no effect.
          * 
          * @type Number
          */
-        this.activeUsers = template.activeUsers;
+        this.activeConnections = template.activeConnections;
 
     };
 

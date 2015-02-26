@@ -23,9 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import com.google.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -39,20 +36,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
-import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionGroupPermission;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
-import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,176 +74,6 @@ public class ConnectionGroupRESTService {
     private ObjectRetrievalService retrievalService;
     
     /**
-     * Determines whether the given user has at least one of the given
-     * permissions for the connection having the given identifier.
-     * 
-     * @param user
-     *     The user to check permissions for.
-     * 
-     * @param identifier 
-     *     The identifier of the connection to check permissions for.
-     * 
-     * @param permissions
-     *     The permissions to check. The given user must have one or more of
-     *     these permissions for this function to return true.
-     * 
-     * @return
-     *     true if the user has at least one of the given permissions.
-     */
-    private boolean hasConnectionPermission(User user, String identifier,
-            List<ObjectPermission.Type> permissions) throws GuacamoleException {
-        
-        // Determine whether user has at least one of the given permissions
-        for (ObjectPermission.Type permission : permissions) {
-            
-            ConnectionPermission connectionPermission = new ConnectionPermission(permission, identifier);
-            if (user.hasPermission(connectionPermission))
-                return true;
-            
-        }
-        
-        // None of the given permissions were present
-        return false;
-        
-    }
-
-    /**
-     * Determines whether the given user has at least one of the given
-     * permissions for the connection group having the given identifier.
-     *
-     * @param user
-     *     The user to check permissions for.
-     *
-     * @param identifier
-     *     The identifier of the connection group to check permissions for.
-     *
-     * @param permissions
-     *     The permissions to check. The given user must have one or more of
-     *     these permissions for this function to return true.
-     *
-     * @return
-     *     true if the user has at least one of the given permissions.
-     */
-    private boolean hasConnectionGroupPermission(User user, String identifier,
-            List<ObjectPermission.Type> permissions) throws GuacamoleException {
-
-        // Determine whether user has at least one of the given permissions
-        for (ObjectPermission.Type permission : permissions) {
-
-            ConnectionGroupPermission connectionGroupPermission = new ConnectionGroupPermission(permission, identifier);
-            if (user.hasPermission(connectionGroupPermission))
-                return true;
-
-        }
-
-        // None of the given permissions were present
-        return false;
-
-    }
-
-    /**
-     * Retrieves the given connection group from the user context, including
-     * all descendant connections and groups if requested.
-     *
-     * @param userContext
-     *     The user context from which to retrieve the connection group.
-     *
-     * @param identifier
-     *     The unique identifier of the connection group to retrieve.
-     *
-     * @param includeDescendants
-     *     Whether the descendant connections and groups of the given
-     *     connection group should also be retrieved.
-     * 
-     * @param permissions
-     *     The set of permissions to filter with. A user must have one or more
-     *     of these permissions for a connection to appear in the result. 
-     *     If null, no filtering will be performed.
-     *
-     * @return
-     *     The requested connection group, or null if no such connection group
-     *     exists.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving the requested connection group
-     *     or any of its descendants.
-     */
-    private APIConnectionGroup retrieveConnectionGroup(UserContext userContext,
-            String identifier, boolean includeDescendants, List<ObjectPermission.Type> permissions)
-            throws GuacamoleException {
-
-        User self = userContext.self();
-        
-        // An admin user has access to any connection or connection group
-        boolean isAdmin = self.hasPermission(new SystemPermission(SystemPermission.Type.ADMINISTER));
-
-        // Retrieve specified connection group
-        ConnectionGroup connectionGroup;
-        try {
-            connectionGroup = retrievalService.retrieveConnectionGroup(userContext, identifier);
-        }
-        catch (GuacamoleResourceNotFoundException e) {
-            return null;
-        }
-
-        // Wrap queried connection group
-        APIConnectionGroup apiConnectionGroup = new APIConnectionGroup(connectionGroup);
-
-        // Recursively query all descendants if necessary, only querying the
-        // descendants of balancing groups if we have admin permission on that
-        // group
-        if (includeDescendants
-            && (connectionGroup.getType() != ConnectionGroup.Type.BALANCING
-                || isAdmin
-                || hasConnectionGroupPermission(self, identifier,
-                        Collections.singletonList(ObjectPermission.Type.ADMINISTER)))) {
-
-            // Query all child connections
-            Collection<APIConnection> apiConnections = new ArrayList<APIConnection>();
-            Directory<String, Connection> connectionDirectory = connectionGroup.getConnectionDirectory();
-
-            for (String childIdentifier : connectionDirectory.getIdentifiers()) {
-
-                // Pull current connection - silently ignore if connection was removed prior to read
-                Connection childConnection = connectionDirectory.get(childIdentifier);
-                if (childConnection == null)
-                    continue;
-
-                // Filter based on permission, if requested
-                if (isAdmin || permissions == null || hasConnectionPermission(self, childIdentifier, permissions))
-                    apiConnections.add(new APIConnection(childConnection));
-
-            }
-            
-            // Associate child connections with current connection group
-            apiConnectionGroup.setChildConnections(apiConnections);
-
-            // Query all child connection groups
-            Collection<APIConnectionGroup> apiConnectionGroups = new ArrayList<APIConnectionGroup>();
-            Directory<String, ConnectionGroup> groupDirectory = connectionGroup.getConnectionGroupDirectory();
-
-            for (String childIdentifier : groupDirectory.getIdentifiers()) {
-
-                // Pull current connection group - silently ignore if connection group was removed prior to read
-                APIConnectionGroup childConnectionGroup = retrieveConnectionGroup(userContext, childIdentifier, true, permissions);
-                if (childConnectionGroup == null)
-                    continue;
-
-                apiConnectionGroups.add(childConnectionGroup);
-
-            }
-            
-            // Associate child groups with current connection group
-            apiConnectionGroup.setChildConnectionGroups(apiConnectionGroups);
-
-        }
-        
-        // Return the connectiion group
-        return apiConnectionGroup;
-
-    }
-
-    /**
      * Gets an individual connection group.
      * 
      * @param authToken
@@ -277,12 +97,8 @@ public class ConnectionGroupRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Retrieve requested connection group only
-        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, false, null);
-        if (connectionGroup == null)
-            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
-
-        return connectionGroup;
+        // Retrieve the requested connection group
+        return new APIConnectionGroup(retrievalService.retrieveConnectionGroup(userContext, connectionGroupID));
 
     }
 
@@ -319,16 +135,12 @@ public class ConnectionGroupRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Do not filter on permissions if no permissions are specified
-        if (permissions != null && permissions.isEmpty())
-            permissions = null;
-        
-        // Retrieve requested connection group and all descendants
-        APIConnectionGroup connectionGroup = retrieveConnectionGroup(userContext, connectionGroupID, true, permissions);
-        if (connectionGroup == null)
-            throw new GuacamoleResourceNotFoundException("No such connection group: \"" + connectionGroupID + "\"");
+        // Retrieve the requested tree, filtering by the given permissions
+        ConnectionGroup treeRoot = retrievalService.retrieveConnectionGroup(userContext, connectionGroupID);
+        ConnectionGroupTree tree = new ConnectionGroupTree(userContext, treeRoot, permissions);
 
-        return connectionGroup;
+        // Return tree as a connection group
+        return tree.getRootAPIConnectionGroup();
 
     }
 
@@ -354,9 +166,7 @@ public class ConnectionGroupRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         
         // Get the connection group directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, ConnectionGroup> connectionGroupDirectory =
-                rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
 
         // Delete the connection group
         connectionGroupDirectory.remove(connectionGroupID);
@@ -393,12 +203,8 @@ public class ConnectionGroupRESTService {
         if (connectionGroup == null)
             throw new GuacamoleClientException("Connection group JSON must be submitted when creating connections groups.");
 
-        // Retrieve parent group
-        String parentID = connectionGroup.getParentIdentifier();
-        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
-
         // Add the new connection group
-        Directory<String, ConnectionGroup> connectionGroupDirectory = parentConnectionGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
         connectionGroupDirectory.add(new APIConnectionGroupWrapper(connectionGroup));
 
         // Return the new connection group identifier
@@ -438,9 +244,7 @@ public class ConnectionGroupRESTService {
             throw new GuacamoleClientException("Connection group JSON must be submitted when updating connection groups.");
 
         // Get the connection group directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, ConnectionGroup> connectionGroupDirectory =
-                rootGroup.getConnectionGroupDirectory();
+        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
 
         // Retrieve connection group to update
         ConnectionGroup existingConnectionGroup = connectionGroupDirectory.get(connectionGroupID);
@@ -449,15 +253,6 @@ public class ConnectionGroupRESTService {
         existingConnectionGroup.setName(connectionGroup.getName());
         existingConnectionGroup.setType(connectionGroup.getType());
         connectionGroupDirectory.update(existingConnectionGroup);
-
-        // Get old and new parents
-        String oldParentIdentifier = existingConnectionGroup.getParentIdentifier();
-        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroup.getParentIdentifier());
-
-        // Update connection group parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
-            connectionGroupDirectory.move(connectionGroupID, updatedParentGroup.getConnectionGroupDirectory());
 
     }
     

@@ -188,8 +188,8 @@ public class TokenRESTService {
             tokenSessionMap.put(authToken, new GuacamoleSession(credentials, userContext));
         }
         
-        logger.debug("Login was successful for user \"{}\".", userContext.self().getUsername());
-        return new APIAuthToken(authToken, userContext.self().getUsername());
+        logger.debug("Login was successful for user \"{}\".", userContext.self().getIdentifier());
+        return new APIAuthToken(authToken, userContext.self().getIdentifier());
 
     }
 

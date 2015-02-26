@@ -45,10 +45,10 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.permission.ConnectionPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.Permission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -71,12 +71,6 @@ public class ConnectionRESTService {
      */
     private static final Logger logger = LoggerFactory.getLogger(ConnectionRESTService.class);
 
-    /**
-     * System administration permission.
-     */
-    private static final Permission SYSTEM_PERMISSION = 
-                new SystemPermission(SystemPermission.Type.ADMINISTER);
-    
     /**
      * A service for authenticating users from auth tokens.
      */
@@ -143,9 +137,13 @@ public class ConnectionRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
         User self = userContext.self();
 
+        // Retrieve permission sets
+        SystemPermissionSet systemPermissions = self.getSystemPermissions();
+        ObjectPermissionSet connectionPermissions = self.getConnectionPermissions();
+
         // Deny access if adminstrative or update permission is missing
-        if (!self.hasPermission(SYSTEM_PERMISSION)
-         && !self.hasPermission(new ConnectionPermission(ObjectPermission.Type.UPDATE, connectionID)))
+        if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
+         && !connectionPermissions.hasPermission(ObjectPermission.Type.UPDATE, connectionID))
             throw new GuacamoleSecurityException("Permission to read connection parameters denied.");
 
         // Retrieve the requested connection
@@ -212,9 +210,7 @@ public class ConnectionRESTService {
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
 
         // Delete the specified connection
         connectionDirectory.remove(connectionID);
@@ -249,12 +245,8 @@ public class ConnectionRESTService {
         if (connection == null)
             throw new GuacamoleClientException("Connection JSON must be submitted when creating connections.");
 
-        // Retrieve parent group
-        String parentID = connection.getParentIdentifier();
-        ConnectionGroup parentConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, parentID);
-
         // Add the new connection
-        Directory<String, Connection> connectionDirectory = parentConnectionGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
         connectionDirectory.add(new APIConnectionWrapper(connection));
 
         // Return the new connection identifier
@@ -293,9 +285,7 @@ public class ConnectionRESTService {
             throw new GuacamoleClientException("Connection JSON must be submitted when updating connections.");
 
         // Get the connection directory
-        ConnectionGroup rootGroup = userContext.getRootConnectionGroup();
-        Directory<String, Connection> connectionDirectory =
-                rootGroup.getConnectionDirectory();
+        Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
         
         // Retrieve connection to update
         Connection existingConnection = retrievalService.retrieveConnection(userContext, connectionID);
@@ -309,15 +299,6 @@ public class ConnectionRESTService {
         existingConnection.setConfiguration(config);
         existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
-
-        // Get old and new parents
-        String oldParentIdentifier = existingConnection.getParentIdentifier();
-        ConnectionGroup updatedParentGroup = retrievalService.retrieveConnectionGroup(userContext, connection.getParentIdentifier());
-
-        // Update connection parent, if changed
-        if (    (oldParentIdentifier != null && !oldParentIdentifier.equals(updatedParentGroup.getIdentifier()))
-             || (oldParentIdentifier == null && updatedParentGroup.getIdentifier() != null))
-            connectionDirectory.move(connectionID, updatedParentGroup.getConnectionDirectory());
 
     }
     
