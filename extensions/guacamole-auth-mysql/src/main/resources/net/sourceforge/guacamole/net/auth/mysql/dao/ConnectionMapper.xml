@@ -28,7 +28,7 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionResultMap" type="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel" >
-        <id     column="connection_id"   property="identifier"       jdbcType="INTEGER"/>
+        <id     column="connection_id"   property="objectID"         jdbcType="INTEGER"/>
         <result column="connection_name" property="name"             jdbcType="VARCHAR"/>
         <result column="parent_id"       property="parentIdentifier" jdbcType="INTEGER"/>
         <result column="protocol"        property="protocol"         jdbcType="VARCHAR"/>
@@ -45,7 +45,7 @@
         SELECT connection_id
         FROM guacamole_connection_permission
         WHERE
-            user_id = #{user.userID,jdbcType=INTEGER}
+            user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -66,7 +66,7 @@
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
-            AND user_id = #{user.userID,jdbcType=INTEGER}
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
     </select>
 
@@ -102,7 +102,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND user_id = #{user.userID,jdbcType=INTEGER}
+            AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
 
     </select>
@@ -127,7 +127,7 @@
             #{object.protocol,jdbcType=VARCHAR}
         )
 
-        <selectKey resultType="java.lang.String" keyProperty="identifier" order="AFTER">
+        <selectKey resultType="java.lang.String" keyProperty="objectID" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
 
@@ -139,7 +139,7 @@
         SET connection_name = #{object.name,jdbcType=VARCHAR},
             parent_id       = #{object.parentIdentifier,jdbcType=VARCHAR},
             protocol        = #{object.protocol,jdbcType=VARCHAR}
-        WHERE connection_id = #{object.identifier,jdbcType=VARCHAR}
+        WHERE connection_id = #{object.objectID,jdbcType=INTEGER}
     </update>
 
 </mapper>

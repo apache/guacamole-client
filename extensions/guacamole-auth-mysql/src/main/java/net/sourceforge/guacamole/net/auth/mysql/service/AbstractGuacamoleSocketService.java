@@ -225,8 +225,8 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                     ConnectionRecordModel recordModel = new ConnectionRecordModel();
 
                     // Copy user information and timestamps into new record
-                    recordModel.setUserID(userModel.getUserID());
-                    recordModel.setUsername(userModel.getUsername());
+                    recordModel.setUserID(userModel.getObjectID());
+                    recordModel.setUsername(userModel.getIdentifier());
                     recordModel.setConnectionIdentifier(connection.getIdentifier());
                     recordModel.setStartDate(activeConnection.getStartDate());
                     recordModel.setEndDate(new Date());

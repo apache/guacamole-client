@@ -39,19 +39,8 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  * A MySQL based implementation of the Connection object.
  * @author James Muehlner
  */
-public class MySQLConnection implements Connection, DirectoryObject<ConnectionModel> {
-
-    /**
-     * The user this connection belongs to. Access is based on his/her permission
-     * settings.
-     */
-    private AuthenticatedUser currentUser;
-
-    /**
-     * The internal model object containing the values which represent this
-     * connection in the database.
-     */
-    private ConnectionModel connectionModel;
+public class MySQLConnection extends DirectoryObject<ConnectionModel>
+    implements Connection {
 
     /**
      * Service for managing connections.
@@ -83,57 +72,20 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
     }
 
     @Override
-    public void init(AuthenticatedUser currentUser, ConnectionModel connectionModel) {
-        this.currentUser = currentUser;
-        setModel(connectionModel);
-    }
-
-    @Override
-    public AuthenticatedUser getCurrentUser() {
-        return currentUser;
-    }
-
-    @Override
-    public void setCurrentUser(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    @Override
-    public ConnectionModel getModel() {
-        return connectionModel;
-    }
-
-    @Override
-    public void setModel(ConnectionModel connectionModel) {
-        this.connectionModel = connectionModel;
-        this.config = null;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return connectionModel.getIdentifier();
-    }
-
-    @Override
-    public void setIdentifier(String identifier) {
-        connectionModel.setIdentifier(identifier);
-    }
-
-    @Override
     public String getName() {
-        return connectionModel.getName();
+        return getModel().getName();
     }
 
     @Override
     public void setName(String name) {
-        connectionModel.setName(name);
+        getModel().setName(name);
     }
 
     @Override
     public String getParentIdentifier() {
 
         // Translate null parent to proper identifier
-        String parentIdentifier = connectionModel.getParentIdentifier();
+        String parentIdentifier = getModel().getParentIdentifier();
         if (parentIdentifier == null)
             return MySQLRootConnectionGroup.IDENTIFIER;
 
@@ -149,7 +101,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
                 && parentIdentifier.equals(MySQLRootConnectionGroup.IDENTIFIER))
             parentIdentifier = null;
 
-        connectionModel.setParentID(parentIdentifier);
+        getModel().setParentIdentifier(parentIdentifier);
 
     }
 
@@ -162,7 +114,7 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
 
         // Otherwise, return permission-controlled configuration
         MySQLGuacamoleConfiguration restrictedConfig = configProvider.get();
-        restrictedConfig.init(currentUser, connectionModel);
+        restrictedConfig.init(getCurrentUser(), getModel());
         return restrictedConfig;
 
     }
@@ -174,18 +126,18 @@ public class MySQLConnection implements Connection, DirectoryObject<ConnectionMo
         this.config = config;
 
         // Update model
-        connectionModel.setProtocol(config.getProtocol());
+        getModel().setProtocol(config.getProtocol());
         
     }
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return connectionService.retrieveHistory(currentUser, this);
+        return connectionService.retrieveHistory(getCurrentUser(), this);
     }
 
     @Override
     public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
-        return connectionService.connect(currentUser, this, info);
+        return connectionService.connect(getCurrentUser(), this, info);
     }
 
     @Override

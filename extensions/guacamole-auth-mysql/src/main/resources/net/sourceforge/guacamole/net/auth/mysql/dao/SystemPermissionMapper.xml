@@ -43,7 +43,7 @@
             permission
         FROM guacamole_system_permission
         JOIN guacamole_user ON guacamole_system_permission.user_id = guacamole_user.user_id
-        WHERE guacamole_system_permission.user_id = #{user.userID,jdbcType=INTEGER}
+        WHERE guacamole_system_permission.user_id = #{user.objectID,jdbcType=INTEGER}
 
     </select>
 
@@ -57,7 +57,7 @@
         FROM guacamole_system_permission
         JOIN guacamole_user ON guacamole_system_permission.user_id = guacamole_user.user_id
         WHERE
-            guacamole_system_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            guacamole_system_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
 
     </select>

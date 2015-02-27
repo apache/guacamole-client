@@ -27,18 +27,8 @@ package net.sourceforge.guacamole.net.auth.mysql.model;
  *
  * @author Michael Jumper
  */
-public class UserModel {
+public class UserModel extends ObjectModel {
 
-    /**
-     * The ID of this user in the database, if any.
-     */
-    private Integer userID;
-
-    /**
-     * The unique username which identifies this user.
-     */
-    private String username;
-    
     /**
      * The SHA-256 hash of the password and salt.
      */
@@ -54,47 +44,6 @@ public class UserModel {
      * Creates a new, empty user.
      */
     public UserModel() {
-    }
-
-    /**
-     * Returns the username that uniquely identifies this user.
-     *
-     * @return
-     *     The username that uniquely identifies this user.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Sets the username that uniquely identifies this user.
-     *
-     * @param username
-     *     The username that uniquely identifies this user.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * Returns the ID of this user in the database, if it exists.
-     *
-     * @return
-     *     The ID of this user in the database, or null if this user was not
-     *     retrieved from the database.
-     */
-    public Integer getUserID() {
-        return userID;
-    }
-
-    /**
-     * Sets the ID of this user to the given value.
-     *
-     * @param userID
-     *     The ID to assign to this user.
-     */
-    public void setUserID(Integer userID) {
-        this.userID = userID;
     }
 
     /**

@@ -138,7 +138,7 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
             UserModel updatedModel = object.getModel();
 
             // Do not rename to existing user
-            if (!existingModel.getUserID().equals(updatedModel.getUserID()))
+            if (!existingModel.getObjectID().equals(updatedModel.getObjectID()))
                 throw new GuacamoleClientException("User \"" + object.getIdentifier() + "\" already exists.");
             
         }

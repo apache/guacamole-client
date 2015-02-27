@@ -28,12 +28,7 @@ package net.sourceforge.guacamole.net.auth.mysql.model;
  *
  * @author Michael Jumper
  */
-public class ConnectionModel {
-
-    /**
-     * The identifier of this connection in the database, if any.
-     */
-    private String identifier;
+public class ConnectionModel extends ObjectModel {
 
     /**
      * The identifier of the parent connection group in the database, or null
@@ -117,29 +112,26 @@ public class ConnectionModel {
      *     The identifier of the parent connection group, or null if the parent
      *     connection group is the root connection group.
      */
-    public void setParentID(String parentIdentifier) {
+    public void setParentIdentifier(String parentIdentifier) {
         this.parentIdentifier = parentIdentifier;
     }
 
-    /**
-     * Returns the identifier of this connection in the database, if it exists.
-     *
-     * @return
-     *     The identifier of this connection in the database, or null if this
-     *     connection was not retrieved from the database.
-     */
+    @Override
     public String getIdentifier() {
-        return identifier;
+
+        // If no associated ID, then no associated identifier
+        Integer id = getObjectID();
+        if (id == null)
+            return null;
+
+        // Otherwise, the identifier is the ID as a string
+        return id.toString();
+
     }
 
-    /**
-     * Sets the identifier of this connection to the given value.
-     *
-     * @param identifier 
-     *     The identifier to assign to this connection.
-     */
+    @Override
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        throw new UnsupportedOperationException("Connection identifiers are derived from IDs. They cannot be set.");
     }
 
 }

@@ -28,8 +28,8 @@
 
     <!-- Result mapper for user objects -->
     <resultMap id="UserResultMap" type="net.sourceforge.guacamole.net.auth.mysql.model.UserModel" >
-        <id     column="user_id"       property="userID"       jdbcType="INTEGER"/>
-        <result column="username"      property="username"     jdbcType="VARCHAR"/>
+        <id     column="user_id"       property="objectID"     jdbcType="INTEGER"/>
+        <result column="username"      property="identifier"   jdbcType="VARCHAR"/>
         <result column="password_hash" property="passwordHash" jdbcType="BINARY"/>
         <result column="password_salt" property="passwordSalt" jdbcType="BINARY"/>
     </resultMap>
@@ -46,7 +46,7 @@
         FROM guacamole_user
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE
-            guacamole_user_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'read'
     </select>
 
@@ -82,7 +82,7 @@
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
-            AND guacamole_user_permission.user_id = #{user.userID,jdbcType=INTEGER}
+            AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'read'
 
     </select>
@@ -115,12 +115,12 @@
             password_salt
         )
         VALUES (
-            #{object.username,jdbcType=VARCHAR},
+            #{object.identifier,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY}
         )
 
-        <selectKey resultType="java.lang.Integer" keyProperty="userID" order="AFTER">
+        <selectKey resultType="java.lang.Integer" keyProperty="objectID" order="AFTER">
             SELECT LAST_INSERT_ID()
         </selectKey>
 
@@ -131,7 +131,7 @@
         UPDATE guacamole_user
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
             password_salt = #{object.passwordSalt,jdbcType=BINARY}
-        WHERE user_id = #{object.userID,jdbcType=VARCHAR}
+        WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
 
 </mapper>

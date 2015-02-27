@@ -29,6 +29,7 @@ import java.util.Set;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.DirectoryObject;
 import net.sourceforge.guacamole.net.auth.mysql.dao.DirectoryObjectMapper;
+import net.sourceforge.guacamole.net.auth.mysql.model.ObjectModel;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -53,7 +54,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  *     database.
  */
 public abstract class DirectoryObjectService<InternalType extends DirectoryObject<ModelType>,
-        ExternalType, ModelType> {
+        ExternalType, ModelType extends ObjectModel> {
 
     /**
      * Returns an instance of a mapper for the type of object used by this

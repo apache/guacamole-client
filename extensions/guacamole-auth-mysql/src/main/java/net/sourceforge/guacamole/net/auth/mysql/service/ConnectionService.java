@@ -112,7 +112,6 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
         MySQLConnection connection = getObjectInstance(currentUser, model);
 
         // Set model contents through MySQLConnection, copying the provided connection
-        connection.setIdentifier(object.getIdentifier());
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
@@ -145,7 +144,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getIdentifier().trim().isEmpty())
+        if (object.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
         
         // FIXME: Do not attempt to create duplicate connections
@@ -157,7 +156,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             MySQLConnection object) throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getIdentifier().trim().isEmpty())
+        if (object.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
         
         // FIXME: Check whether such a connection is already present

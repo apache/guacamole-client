@@ -38,13 +38,7 @@ import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
  * A MySQL based implementation of the User object.
  * @author James Muehlner
  */
-public class MySQLUser implements User, DirectoryObject<UserModel> {
-
-    /**
-     * The user this user belongs to. Access is based on his/her permission
-     * settings.
-     */
-    private AuthenticatedUser currentUser;
+public class MySQLUser extends DirectoryObject<UserModel> implements User {
 
     /**
      * Service for hashing passwords.
@@ -65,12 +59,6 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     private SystemPermissionService systemPermissionService;
     
     /**
-     * The internal model object containing the values which represent this
-     * user in the database.
-     */
-    private UserModel userModel;
-
-    /**
      * The plaintext password previously set by a call to setPassword(), if
      * any. The password of a user cannot be retrieved once saved into the
      * database, so this serves to ensure getPassword() returns a reasonable
@@ -86,43 +74,6 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     }
 
     @Override
-    public void init(AuthenticatedUser currentUser, UserModel userModel) {
-        this.currentUser = currentUser;
-        setModel(userModel);
-    }
-
-    @Override
-    public AuthenticatedUser getCurrentUser() {
-        return currentUser;
-    }
-
-    @Override
-    public void setCurrentUser(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
-
-    @Override
-    public UserModel getModel() {
-        return userModel;
-    }
-
-    @Override
-    public void setModel(UserModel userModel) {
-        this.userModel = userModel;
-        this.password = null;
-    }
-
-    @Override
-    public String getIdentifier() {
-        return userModel.getUsername();
-    }
-
-    @Override
-    public void setIdentifier(String username) {
-        userModel.setUsername(username);
-    }
-
-    @Override
     public String getPassword() {
         return password;
     }
@@ -130,6 +81,8 @@ public class MySQLUser implements User, DirectoryObject<UserModel> {
     @Override
     public void setPassword(String password) {
 
+        UserModel userModel = getModel();
+        
         // Store plaintext password internally
         this.password = password;
 
