@@ -21,7 +21,8 @@
  */
 
 /**
- * A directive which displays the contents of a connection group.
+ * A directive which displays the contents of a connection group within an
+ * automatically-paginated view.
  */
 angular.module('groupList').directive('guacGroupList', [function guacGroupList() {
 
@@ -75,7 +76,14 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * 
              * @type Boolean
              */
-            showRootGroup : '='
+            showRootGroup : '=',
+
+            /**
+             * The maximum number of connections or groups to show per page.
+             *
+             * @type Number
+             */
+            pageSize : '='
 
         },
 

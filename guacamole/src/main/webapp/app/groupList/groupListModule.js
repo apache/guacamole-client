@@ -24,4 +24,4 @@
  * Module for displaying the contents of a connection group, allowing the user
  * to select individual connections or groups.
  */
-angular.module('groupList', ['rest']);
+angular.module('groupList', ['pager', 'rest']);
