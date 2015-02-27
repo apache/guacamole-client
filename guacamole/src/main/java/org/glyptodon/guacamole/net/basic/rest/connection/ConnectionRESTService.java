@@ -40,7 +40,6 @@ import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Connection;
-import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
@@ -297,6 +296,7 @@ public class ConnectionRESTService {
 
         // Update the connection
         existingConnection.setConfiguration(config);
+        existingConnection.setParentIdentifier(connection.getParentIdentifier());
         existingConnection.setName(connection.getName());
         connectionDirectory.update(existingConnection);
 
