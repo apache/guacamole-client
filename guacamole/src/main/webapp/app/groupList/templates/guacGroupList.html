@@ -51,6 +51,13 @@
 
     </script>
 
-    <div class="list-item" ng-repeat="item in rootItem.children | orderBy : 'name'" ng-include="'nestedGroup.html'"></div>
+    <!-- Root-level connections / groups -->
+    <div class="group-list-page">
+        <div class="list-item" ng-repeat="item in childrenPage" ng-include="'nestedGroup.html'"></div>
+    </div>
+
+    <!-- Pager for connections / groups -->
+    <guac-pager page="childrenPage" items="rootItem.children | orderBy : 'name'"
+                page-size="pageSize"></guac-pager>
 
 </div>
