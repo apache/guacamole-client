@@ -346,66 +346,7 @@ div.logout-panel {
     padding-right: 1em;
 }
 
-.first-page,
-.prev-page,
-.set-page,
-.next-page,
-.last-page {
-    cursor: pointer;
-    vertical-align: middle;
-}
-
-.first-page.disabled,
-.prev-page.disabled,
-.set-page.disabled,
-.next-page.disabled,
-.last-page.disabled {
-    cursor: auto;
-    opacity: 0.25;
-}
-
-.set-page,
-.more-pages {
-    display: inline-block;
-    padding: 0.25em;
-    text-align: center;
-    min-width: 1.25em;
-}
-
-.set-page {
-    text-decoration: underline;
-}
-
-.set-page.current {
-    cursor: auto;
-    text-decoration: none;
-    font-weight: bold;
-    background: rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-}
-
-.icon.first-page {
-    background-image: url('images/action-icons/guac-first-page.png');
-}
-
-.icon.prev-page {
-    background-image: url('images/action-icons/guac-prev-page.png');
-}
-
-.icon.next-page {
-    background-image: url('images/action-icons/guac-next-page.png');
-}
-
-.icon.last-page {
-    background-image: url('images/action-icons/guac-last-page.png');
-}
-
-.buttons,
-.list-pager-buttons {
+.buttons {
     text-align: center;
     margin: 1em;
 }
