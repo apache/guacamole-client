@@ -30,3 +30,12 @@
     text-align: center;
     margin-bottom: 1em;
 }
+
+.manage .user-add-form {
+    margin-bottom: 0.5em;
+}
+
+.manage .user-add-form input.name {
+    max-width: 80%;
+    width: 20em;
+}

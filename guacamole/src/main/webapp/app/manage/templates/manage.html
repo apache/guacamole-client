@@ -44,7 +44,7 @@ THE SOFTWARE.
 
             <!-- List of users this user has access to -->
             <div class="user-list">
-                <div ng-repeat="user in users | orderBy : 'username'" class="user list-item">
+                <div ng-repeat="user in userPage" class="user list-item">
                     <a ng-href="#/manage/users/{{user.username}}">
                         <div class="caption">
                             <div class="icon user"></div>
@@ -53,6 +53,10 @@ THE SOFTWARE.
                     </a>
                 </div>
             </div>
+
+            <!-- Pager controls for user list -->
+            <guac-pager page="userPage" items="users | orderBy : 'username'"></guac-pager>
+
         </div>
     </div>
 

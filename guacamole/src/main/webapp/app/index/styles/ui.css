@@ -289,51 +289,6 @@ div.section {
     background-image: url('images/group-icons/guac-open.png');
 }
 
-/*
- * Settings formatting
- */
-
-.form dt,
-.settings dt {
-    border-bottom: 1px dotted #AAA;
-    padding-bottom: 0.25em;
-}
-
-.form dd,
-.settings dd {
-    margin: 1.5em;
-    margin-left: 2.5em;
-    font-size: 0.75em;
-}
-
-.connections input.name,
-.users input.name {
-    max-width: 80%;
-    width: 20em;
-}
-
-.connection-list,
-.user-list {
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    height: 20em;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-    overflow: auto;
-}
-
-.connections .add-connection,
-.connections .add-connection-group,
-.users .add-user {
-    font-size: 0.8em;
-}
-
-.connection-add-form,
-.user-add-form {
-    margin-bottom: 0.5em;
-}
-
 div.logout-panel {
     padding: 0.45em;
     text-align: right;
