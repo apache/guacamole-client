@@ -107,7 +107,8 @@
     </delete>
 
     <!-- Insert single user -->
-    <insert id="insert" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserModel">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
+            parameterType="net.sourceforge.guacamole.net.auth.mysql.model.UserModel">
 
         INSERT INTO guacamole_user (
             username,
@@ -119,10 +120,6 @@
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY}
         )
-
-        <selectKey resultType="java.lang.Integer" keyProperty="objectID" order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
 
     </insert>
 

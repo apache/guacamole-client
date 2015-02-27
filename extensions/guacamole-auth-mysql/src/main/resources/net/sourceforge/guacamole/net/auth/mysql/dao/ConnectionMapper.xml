@@ -114,7 +114,8 @@
     </delete>
 
     <!-- Insert single connection -->
-    <insert id="insert" parameterType="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="object.objectID"
+            parameterType="net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel">
 
         INSERT INTO guacamole_connection (
             connection_name,
@@ -126,10 +127,6 @@
             #{object.parentIdentifier,jdbcType=VARCHAR},
             #{object.protocol,jdbcType=VARCHAR}
         )
-
-        <selectKey resultType="java.lang.String" keyProperty="objectID" order="AFTER">
-            SELECT LAST_INSERT_ID()
-        </selectKey>
 
     </insert>
 
