@@ -124,7 +124,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     protected boolean hasCreatePermission(AuthenticatedUser user)
             throws GuacamoleException {
 
-        // Return whether user has explicit user creation permission
+        // Return whether user has explicit connection creation permission
         SystemPermissionSet permissionSet = user.getUser().getSystemPermissions();
         return permissionSet.hasPermission(SystemPermission.Type.CREATE_CONNECTION);
 

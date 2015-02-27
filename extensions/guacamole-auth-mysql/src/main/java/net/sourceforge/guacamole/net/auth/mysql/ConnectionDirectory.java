@@ -42,8 +42,8 @@ import org.mybatis.guice.transactional.Transactional;
 public class ConnectionDirectory implements Directory<Connection> {
 
     /**
-     * The user this user directory belongs to. Access is based on his/her
-     * permission settings.
+     * The user this connection directory belongs to. Access is based on
+     * his/her permission settings.
      */
     private AuthenticatedUser currentUser;
     
