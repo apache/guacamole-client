@@ -327,11 +327,14 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
      * @param object
      *     The object to create.
      *
+     * @return
+     *     The newly-created object.
+     *
      * @throws GuacamoleException
      *     If the user lacks permission to create the object, or an error
      *     occurs while creating the object.
      */
-    public void createObject(AuthenticatedUser user, ExternalType object)
+    public InternalType createObject(AuthenticatedUser user, ExternalType object)
         throws GuacamoleException {
 
         // Only create object if user has permission to do so
@@ -341,10 +344,11 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
             validateNewObject(user, object);
 
             // Create object
-            getObjectMapper().insert(getModelInstance(user, object));
+            ModelType model = getModelInstance(user, object);
+            getObjectMapper().insert(model);
 
             // FIXME: Insert implicit object permissions, too.
-            return;
+            return getObjectInstance(user, model);
         }
 
         // User lacks permission to create 

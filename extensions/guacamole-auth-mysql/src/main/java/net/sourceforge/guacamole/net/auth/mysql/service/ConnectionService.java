@@ -163,16 +163,22 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
         
     }
 
-    @Override
-    public void updateObject(AuthenticatedUser user, MySQLConnection object)
-            throws GuacamoleException {
+    /**
+     * Given an arbitrary Guacamole connection, produces a collection of
+     * parameter model objects containing the name/value pairs of that
+     * connection's parameters.
+     *
+     * @param connection
+     *     The connection whose configuration should be used to produce the
+     *     collection of parameter models.
+     *
+     * @return
+     *     A collection of parameter models containing the name/value pairs
+     *     of the given connection's parameters.
+     */
+    private Collection<ParameterModel> getParameterModels(MySQLConnection connection) {
 
-        // Update connection
-        super.updateObject(user, object);
-
-        // Get identifier and connection parameters
-        String identifier = object.getIdentifier();
-        Map<String, String> parameters = object.getConfiguration().getParameters();
+        Map<String, String> parameters = connection.getConfiguration().getParameters();
         
         // Convert parameters to model objects
         Collection<ParameterModel> parameterModels = new ArrayList(parameters.size());
@@ -188,7 +194,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             
             // Produce model object from parameter
             ParameterModel model = new ParameterModel();
-            model.setConnectionIdentifier(identifier);
+            model.setConnectionIdentifier(connection.getIdentifier());
             model.setName(name);
             model.setValue(value);
 
@@ -197,8 +203,37 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
             
         }
 
+        return parameterModels;
+
+    }
+
+    @Override
+    public MySQLConnection createObject(AuthenticatedUser user, Connection object)
+            throws GuacamoleException {
+
+        // Create connection
+        MySQLConnection connection = super.createObject(user, object);
+        connection.setConfiguration(object.getConfiguration());
+
+        // Insert new parameters, if any
+        Collection<ParameterModel> parameterModels = getParameterModels(connection);
+        if (!parameterModels.isEmpty())
+            parameterMapper.insert(parameterModels);
+
+        return connection;
+
+    }
+    
+    @Override
+    public void updateObject(AuthenticatedUser user, MySQLConnection object)
+            throws GuacamoleException {
+
+        // Update connection
+        super.updateObject(user, object);
+
         // Replace existing parameters with new parameters
-        parameterMapper.delete(identifier);
+        Collection<ParameterModel> parameterModels = getParameterModels(object);
+        parameterMapper.delete(object.getIdentifier());
         parameterMapper.insert(parameterModels);
         
     }
