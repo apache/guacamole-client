@@ -25,9 +25,11 @@ package net.sourceforge.guacamole.net.auth.mysql.service;
 import java.util.List;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
@@ -82,5 +84,49 @@ public interface GuacamoleSocketService {
      *     active connections.
      */
     public List<ConnectionRecord> getActiveConnections(Connection connection);
+
+    /**
+     * Creates a socket for the given user which connects to the given
+     * connection group. The given client information will be passed to guacd
+     * when the connection is established. This function will apply any
+     * concurrent usage rules in effect, but will NOT test object- or
+     * system-level permissions.
+     *
+     * @param user
+     *     The user for whom the connection is being established.
+     *
+     * @param connectionGroup
+     *     The connection group the user is connecting to.
+     *
+     * @param info
+     *     Information describing the Guacamole client connecting to the given
+     *     connection group.
+     *
+     * @return
+     *     A new GuacamoleSocket which is configured and connected to the given
+     *     connection group.
+     *
+     * @throws GuacamoleException
+     *     If the connection cannot be established due to concurrent usage
+     *     rules, or if the connection group is not balancing.
+     */
+    GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+            MySQLConnectionGroup connectionGroup,
+            GuacamoleClientInformation info)
+            throws GuacamoleException;
+
+    /**
+     * Returns a list containing connection records representing all currently-
+     * active connections using the given connection group. These records will
+     * have usernames and start dates, but no end date.
+     *
+     * @param connectionGroup
+     *     The connection group to check.
+     *
+     * @return
+     *     A list containing connection records representing all currently-
+     *     active connections.
+     */
+    public List<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
 
 }

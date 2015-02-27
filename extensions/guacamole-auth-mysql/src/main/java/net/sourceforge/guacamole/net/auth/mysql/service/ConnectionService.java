@@ -239,28 +239,38 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     }
 
     /**
-     * Returns the set of all identifiers for all connections within the root
-     * connection group that the user has read access to.
+     * Returns the set of all identifiers for all connections within the
+     * connection group having the given identifier. Only connections that the
+     * user has read access to will be returned.
+     * 
+     * Permission to read the connection group having the given identifier is
+     * NOT checked.
      *
      * @param user
      *     The user retrieving the identifiers.
+     * 
+     * @param identifier
+     *     The identifier of the parent connection group, or null to check the
+     *     root connection group.
      *
      * @return
-     *     The set of all identifiers for all connections in the root
-     *     connection group that the user has read access to.
+     *     The set of all identifiers for all connections in the connection
+     *     group having the given identifier that the user has read access to.
      *
      * @throws GuacamoleException
      *     If an error occurs while reading identifiers.
      */
-    public Set<String> getRootIdentifiers(AuthenticatedUser user) throws GuacamoleException {
+    public Set<String> getIdentifiersWithin(AuthenticatedUser user,
+            String identifier)
+            throws GuacamoleException {
 
         // Bypass permission checks if the user is a system admin
         if (user.getUser().isAdministrator())
-            return connectionMapper.selectIdentifiersWithin(null);
+            return connectionMapper.selectIdentifiersWithin(identifier);
 
         // Otherwise only return explicitly readable identifiers
         else
-            return connectionMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), null);
+            return connectionMapper.selectReadableIdentifiersWithin(user.getUser().getModel(), identifier);
 
     }
 

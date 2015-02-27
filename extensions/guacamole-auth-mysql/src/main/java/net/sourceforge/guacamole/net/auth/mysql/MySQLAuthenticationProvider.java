@@ -29,6 +29,7 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
+import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionGroupMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionRecordMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
@@ -39,6 +40,7 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import net.sourceforge.guacamole.net.auth.mysql.dao.UserMapper;
 import net.sourceforge.guacamole.net.auth.mysql.properties.MySQLGuacamoleProperties;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import net.sourceforge.guacamole.net.auth.mysql.service.GuacamoleSocketService;
 import net.sourceforge.guacamole.net.auth.mysql.service.PasswordEncryptionService;
@@ -145,6 +147,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
                     // Add MyBatis mappers
                     addMapperClass(ConnectionMapper.class);
+                    addMapperClass(ConnectionGroupMapper.class);
                     addMapperClass(ConnectionRecordMapper.class);
                     addMapperClass(ParameterMapper.class);
                     addMapperClass(SystemPermissionMapper.class);
@@ -153,7 +156,9 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
                     // Bind core implementations of guacamole-ext classes
                     bind(Environment.class).toInstance(environment);
                     bind(ConnectionDirectory.class);
+                    bind(ConnectionGroupDirectory.class);
                     bind(MySQLConnection.class);
+                    bind(MySQLConnectionGroup.class);
                     bind(MySQLGuacamoleConfiguration.class);
                     bind(MySQLUser.class);
                     bind(MySQLUserContext.class);
@@ -163,6 +168,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
                     // Bind services
                     bind(ConnectionService.class);
+                    bind(ConnectionGroupService.class);
                     bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
                     bind(SaltService.class).to(SecureRandomSaltService.class);
                     bind(SystemPermissionService.class);

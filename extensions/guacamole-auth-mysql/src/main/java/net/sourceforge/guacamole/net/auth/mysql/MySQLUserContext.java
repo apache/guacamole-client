@@ -25,15 +25,12 @@ package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroup;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
 
 /**
  * The MySQL representation of a UserContext.
@@ -61,6 +58,13 @@ public class MySQLUserContext implements UserContext {
     private ConnectionDirectory connectionDirectory;
 
     /**
+     * Connection group directory restricted by the permissions of the user
+     * associated with this context.
+     */
+    @Inject
+    private ConnectionGroupDirectory connectionGroupDirectory;
+
+    /**
      * Provider for creating the root group.
      */
     @Inject
@@ -79,6 +83,7 @@ public class MySQLUserContext implements UserContext {
         // Init directories
         userDirectory.init(currentUser);
         connectionDirectory.init(currentUser);
+        connectionGroupDirectory.init(currentUser);
 
     }
 
@@ -99,8 +104,7 @@ public class MySQLUserContext implements UserContext {
 
     @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
-        /* STUB */
-        return new SimpleConnectionGroupDirectory(Collections.singleton(getRootConnectionGroup()));
+        return connectionGroupDirectory;
     }
 
     @Override

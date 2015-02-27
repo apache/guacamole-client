@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import net.sourceforge.guacamole.net.auth.mysql.AuthenticatedUser;
 import net.sourceforge.guacamole.net.auth.mysql.MySQLConnection;
+import net.sourceforge.guacamole.net.auth.mysql.MySQLConnectionGroup;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ConnectionRecordMapper;
 import net.sourceforge.guacamole.net.auth.mysql.dao.ParameterMapper;
 import net.sourceforge.guacamole.net.auth.mysql.model.ConnectionModel;
@@ -43,6 +44,7 @@ import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
+import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -267,6 +269,20 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             return Collections.EMPTY_LIST;
 
         }
+    }
+
+    @Override
+    public GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+            MySQLConnectionGroup connectionGroup,
+            GuacamoleClientInformation info) throws GuacamoleException {
+        // STUB
+        throw new UnsupportedOperationException("STUB");
+    }
+
+    @Override
+    public List<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup) {
+        // STUB
+        return Collections.EMPTY_LIST;
     }
     
 }

@@ -23,8 +23,8 @@
 package net.sourceforge.guacamole.net.auth.mysql;
 
 import com.google.inject.Inject;
-import java.util.Collections;
 import java.util.Set;
+import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionGroupService;
 import net.sourceforge.guacamole.net.auth.mysql.service.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -65,6 +65,12 @@ public class MySQLRootConnectionGroup implements ConnectionGroup {
      */
     @Inject
     private ConnectionService connectionService;
+
+    /**
+     * Service for managing connection group objects.
+     */
+    @Inject
+    private ConnectionGroupService connectionGroupService;
     
     /**
      * Creates a new, empty MySQLRootConnectionGroup.
@@ -115,14 +121,13 @@ public class MySQLRootConnectionGroup implements ConnectionGroup {
 
     @Override
     public Set<String> getConnectionIdentifiers() throws GuacamoleException {
-        return connectionService.getRootIdentifiers(currentUser);
+        return connectionService.getIdentifiersWithin(currentUser, null);
     }
 
     @Override
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException {
-        /* STUB */
-        return Collections.EMPTY_SET;
+        return connectionGroupService.getIdentifiersWithin(currentUser, null);
     }
 
     @Override
