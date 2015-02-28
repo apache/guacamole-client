@@ -22,17 +22,31 @@
 
 package net.sourceforge.guacamole.net.auth.mysql;
 
-
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
+import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
  * functionality.
  *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public class MySQLAuthenticationProvider implements AuthenticationProvider {
+
+    /**
+     * Injector which will manage the object graph of this authentication
+     * provider.
+     */
+    private final Injector injector;
 
     /**
      * Creates a new MySQLAuthenticationProvider that reads and writes
@@ -44,6 +58,40 @@ public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
      *     a property.
      */
     public MySQLAuthenticationProvider() throws GuacamoleException {
+
+        // Get local environment
+        Environment environment = new LocalEnvironment();
+
+        // Set up Guice injector.
+        injector = Guice.createInjector(
+
+            // Configure MySQL-specific authentication
+            new MySQLAuthenticationProviderModule(environment),
+
+            // Configure JDBC authentication core
+            new JDBCAuthenticationProviderModule(environment)
+
+        );
+
     }
-    
+
+    @Override
+    public UserContext getUserContext(Credentials credentials)
+            throws GuacamoleException {
+
+        // Create UserContext based on credentials, if valid
+        UserContextService userContextService = injector.getInstance(UserContextService.class);
+        return userContextService.getUserContext(credentials);
+
+    }
+
+    @Override
+    public UserContext updateUserContext(UserContext context,
+        Credentials credentials) throws GuacamoleException {
+
+        // No need to update the context
+        return context;
+
+    }
+
 }
