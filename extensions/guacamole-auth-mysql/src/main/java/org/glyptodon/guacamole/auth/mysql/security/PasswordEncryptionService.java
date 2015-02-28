@@ -20,9 +20,22 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.security;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * A service to perform password encryption and checking.
+ * @author James Muehlner
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface PasswordEncryptionService {
+
+    /**
+     * Creates a password hash based on the provided username, password, and
+     * salt.
+     *
+     * @param password The password to hash.
+     * @param salt The salt to use when hashing the password.
+     * @return The generated password hash.
+     */
+    public byte[] createPasswordHash(String password, byte[] salt);
+
+}

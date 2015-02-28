@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,30 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.base;
+
+import org.glyptodon.guacamole.net.auth.Identifiable;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Common base class for objects that will ultimately be made available through
+ * the Directory class. All such objects will need the same base set of queries
+ * to fulfill the needs of the Directory class.
+ *
+ * @author Michael Jumper
+ * @param <ModelType>
+ *     The type of model object that corresponds to this object.
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public abstract class DirectoryObject<ModelType extends ObjectModel>
+    extends RestrictedObject<ModelType> implements Identifiable {
+
+    @Override
+    public String getIdentifier() {
+        return getModel().getIdentifier();
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        getModel().setIdentifier(identifier);
+    }
+
+}

@@ -20,9 +20,27 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.security;
+
+
+import java.security.SecureRandom;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Generates password salts via SecureRandom.
+ * @author James Muehlner
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public class SecureRandomSaltService implements SaltService {
+
+    /**
+     * Instance of SecureRandom for generating the salt.
+     */
+    private SecureRandom secureRandom = new SecureRandom();
+
+    @Override
+    public byte[] generateSalt() {
+        byte[] salt = new byte[32];
+        secureRandom.nextBytes(salt);
+        return salt;
+    }
+
+}

@@ -20,9 +20,16 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.security;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * A service to generate password salts.
+ * @author James Muehlner
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface SaltService {
+    /**
+     * Generates a new String that can be used as a password salt.
+     * @return a new salt for password encryption.
+     */
+    public byte[] generateSalt();
+}

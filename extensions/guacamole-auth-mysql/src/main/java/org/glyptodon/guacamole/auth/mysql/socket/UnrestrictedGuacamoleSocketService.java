@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,33 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.socket;
+
+import com.google.inject.Singleton;
+import org.glyptodon.guacamole.auth.mysql.user.AuthenticatedUser;
+import org.glyptodon.guacamole.auth.mysql.connection.MySQLConnection;
+import org.glyptodon.guacamole.GuacamoleException;
+
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * GuacamoleSocketService implementation which imposes no restrictions
+ * whatsoever on the number of concurrent or duplicate connections.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+@Singleton
+public class UnrestrictedGuacamoleSocketService
+    extends AbstractGuacamoleSocketService {
+
+    @Override
+    protected void acquire(AuthenticatedUser user, MySQLConnection connection)
+            throws GuacamoleException {
+        // Do nothing
+    }
+
+    @Override
+    protected void release(AuthenticatedUser user, MySQLConnection connection) {
+        // Do nothing
+    }
+
+}

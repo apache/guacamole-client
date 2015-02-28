@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,33 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.user;
+
+import org.glyptodon.guacamole.auth.mysql.base.DirectoryObjectMapper;
+import org.apache.ibatis.annotations.Param;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Mapper for user objects.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface UserMapper extends DirectoryObjectMapper<UserModel> {
+
+    /**
+     * Returns the user having the given username and password, if any. If no
+     * such user exists, null is returned.
+     *
+     * @param username
+     *     The username of the user to return.
+     *
+     * @param password
+     *     The password of the user to return.
+     *
+     * @return
+     *     The user having the given username and password, or null if no such
+     *     user exists.
+     */
+    UserModel selectByCredentials(@Param("username") String username,
+            @Param("password") String password);
+    
+}

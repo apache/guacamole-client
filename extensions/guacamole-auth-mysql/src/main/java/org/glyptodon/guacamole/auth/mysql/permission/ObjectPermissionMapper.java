@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,12 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.permission;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Mapper for object-related permissions.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,8 @@
  */
 
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Base classes supporting the MySQL authentication provider and defining the
+ * relationships between the model and the implementations of guacamole-ext
+ * classes.
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.glyptodon.guacamole.auth.mysql.base;

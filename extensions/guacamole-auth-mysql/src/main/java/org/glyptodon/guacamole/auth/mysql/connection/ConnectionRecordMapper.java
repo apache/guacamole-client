@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,41 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.connection;
+
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Mapper for connection record objects.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface ConnectionRecordMapper {
+
+    /**
+     * Returns a collection of all connection records associated with the
+     * connection having the given identifier.
+     *
+     * @param identifier
+     *     The identifier of the connection whose records are to be retrieved.
+     *
+     * @return
+     *     A collection of all connection records associated with the
+     *     connection having the given identifier. This collection will be
+     *     empty if no such connection exists.
+     */
+    List<ConnectionRecordModel> select(@Param("identifier") String identifier);
+
+    /**
+     * Inserts the given connection record.
+     *
+     * @param record
+     *     The connection record to insert.
+     *
+     * @return
+     *     The number of rows inserted.
+     */
+    int insert(@Param("record") ConnectionRecordModel record);
+    
+}

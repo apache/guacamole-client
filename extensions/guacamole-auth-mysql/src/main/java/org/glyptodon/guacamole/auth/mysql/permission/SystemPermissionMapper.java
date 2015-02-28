@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,34 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.permission;
+
+import org.glyptodon.guacamole.auth.mysql.user.UserModel;
+import org.apache.ibatis.annotations.Param;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Mapper for system-level permissions.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
+
+    /**
+     * Retrieve the permission of the given type associated with the given
+     * user, if it exists. If no such permission exists, null is returned.
+     *
+     * @param user
+     *     The user to retrieve permissions for.
+     * 
+     * @param type
+     *     The type of permission to return.
+     *
+     * @return
+     *     The requested permission, or null if no such permission is granted
+     *     to the given user.
+     */
+    SystemPermissionModel selectOne(@Param("user") UserModel user,
+            @Param("type") SystemPermission.Type type);
+
+}

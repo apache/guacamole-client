@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,9 +20,22 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.mysql.permission;
+
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
+
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility. All other classes have been moved to packages within
- * org.glyptodon.guacamole.auth.mysql.
+ * Object representation of an system-level Guacamole permission, as
+ * represented in the database.
+ *
+ * @author Michael Jumper
  */
-package net.sourceforge.guacamole.net.auth.mysql;
+public class SystemPermissionModel extends PermissionModel<SystemPermission.Type> {
+
+    /**
+     * Creates a new, empty System permission.
+     */
+    public SystemPermissionModel() {
+    }
+
+}
