@@ -130,8 +130,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
                 if (connectionGroup) {
 
-                    // Create item hierarchy
-                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup);
+                    // Create item hierarchy, including connections only if they will be visible
+                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup, !!$scope.connectionTemplate);
 
                     // If root group is to be shown, wrap that group as the child of a fake root group
                     if ($scope.showRootGroup)

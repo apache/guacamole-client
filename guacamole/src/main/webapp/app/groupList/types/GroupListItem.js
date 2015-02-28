@@ -160,17 +160,22 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      * @param {ConnectionGroup} connectionGroup
      *     The connection group whose contents and descendants should be
      *     represented by the new GroupListItem and its descendants.
+     *     
+     * @param {Boolean} [includeConnections=true]
+     *     Whether connections should be included in the contents of the
+     *     resulting GroupListItem. By default, connections are included.
      *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection group,
      *     including all descendants.
      */
-    GroupListItem.fromConnectionGroup = function fromConnectionGroup(connectionGroup) {
+    GroupListItem.fromConnectionGroup = function fromConnectionGroup(connectionGroup,
+        includeConnections) {
 
         var children = [];
 
         // Add any child connections
-        if (connectionGroup.childConnections) {
+        if (connectionGroup.childConnections && includeConnections !== false) {
             connectionGroup.childConnections.forEach(function addChildConnection(child) {
                 children.push(GroupListItem.fromConnection(child));
             });
@@ -179,7 +184,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         // Add any child groups 
         if (connectionGroup.childConnectionGroups) {
             connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
-                children.push(GroupListItem.fromConnectionGroup(child));
+                children.push(GroupListItem.fromConnectionGroup(child, includeConnections));
             });
         }
 
