@@ -17,29 +17,30 @@ Distribution-specific documentation is provided on the Guacamole wiki:
 
 
 ------------------------------------------------------------
- What is guacamole-auth-mysql?
+ What is guacamole-auth-jdbc?
 ------------------------------------------------------------
 
-guacamole-auth-ldap is a Java library for use with the Guacamole web
-application to provide MySQL based authentication.
+guacamole-auth-jdbc is a Java library for use with the Guacamole web
+application to provide database-driven authentication.
 
-guacamole-auth-mysql provides an authentication provider which can be
-set in guacamole.properties to allow MySQL authentication of Guacamole
-users. Additional properties are required to configure the mysql
-connection parameters.
+guacamole-auth-jdbc provides multiple authentication provider implementations
+which each provide a support for a different database. These authentication
+providers can be set in guacamole.properties to allow authentication of
+Guacamole users through that type of database.
 
-A schema file are provided to create the required tables in your
-mysql database.
+Schema files are provided to create the required tables in your database of
+choice.
 
 
 ------------------------------------------------------------
- Compiling and installing guacamole-auth-mysql
+ Compiling and installing guacamole-auth-jdbc
 ------------------------------------------------------------
 
-guacamole-auth-mysql is built using Maven. Building guacamole-auth-mysql
-compiles all classes and packages them into a redistributable .jar file. This
-.jar file can be installed in the library directory configured in
-guacamole.properties such that the authentication provider is available.
+guacamole-auth-jdbc is built using Maven. Building guacamole-auth-jdbc compiles
+all classes and packages them into a redistributable .tar.gz archive.  This
+archive contains multiple .jar files, each of this corresponds to a
+database-specific authentication provider implementation that can be installed
+in the library directory configured in guacamole.properties.
 
 1) Run mvn package
 
@@ -68,13 +69,16 @@ guacamole.properties such that the authentication provider is available.
     with username 'guacadmin' and password 'guacadmin'. This user can 
     be used to set up any other connections and users.
 
-6) Configure guacamole.properties for MySQL
+6) Configure guacamole.properties for your database
 
-    There are additional properties required by the MySQL JDBC driver
-    which must be added/changed in your guacamole.properties:
+    There are additional properties required by JDBC drivers which must
+    be added/changed in your guacamole.properties. These parameters are
+    specific to the database being used.
 
-    # Configuration for MySQL connection
-    mysql-hostname:           mysql.host.name
+    For MySQL, the following properties are available:
+
+    # Database connection configuration
+    mysql-hostname:           database.host.name
     mysql-port:               3306
     mysql-database:           guacamole.database.name
     mysql-username:           user
@@ -91,8 +95,8 @@ guacamole.properties such that the authentication provider is available.
  Reporting problems
 ------------------------------------------------------------
 
-Please report any bugs encountered by opening a new ticket at the Trac system
+Please report any bugs encountered by opening a new issue in the JIRA system
 hosted at:
     
-    http://guac-dev.org/trac/
+    http://glyptodon.org/jira/
 

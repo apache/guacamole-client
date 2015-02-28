@@ -11,25 +11,17 @@
         <format>tar.gz</format>
     </formats>
 
-    <!-- Include docs and schema -->
+    <!-- Include all implementations -->
     <fileSets>
 
-            <!-- Include docs -->
+            <!-- MySQL implementation -->
             <fileSet>
-                <outputDirectory>/</outputDirectory>
-                <directory>doc</directory>
+                <outputDirectory>/mysql/schema</outputDirectory>
+                <directory>modules/guacamole-auth-mysql/schema</directory>
             </fileSet>
-
-            <!-- Include schema -->
             <fileSet>
-                <outputDirectory>/schema</outputDirectory>
-                <directory>schema</directory>
-            </fileSet>
-
-            <!-- Include extension .jar -->
-            <fileSet>
-                <directory>${project.build.directory}/extension</directory>
-                <outputDirectory>/</outputDirectory>
+                <directory>modules/guacamole-auth-mysql/target/extension</directory>
+                <outputDirectory>/mysql</outputDirectory>
                 <includes>
                     <include>*.jar</include>
                 </includes>

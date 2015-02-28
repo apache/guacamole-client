@@ -45,20 +45,6 @@
                             </descriptorRefs>
                         </configuration>
                     </execution>                    
-                    <execution>
-                        <id>make-dist-archive</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptors>
-                                <descriptor>src/main/assembly/dist.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
 
@@ -78,7 +64,7 @@
         <!-- Guacamole JDBC Authentication -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc</artifactId>
+            <artifactId>guacamole-auth-jdbc-base</artifactId>
             <version>0.9.5</version>
         </dependency>
 
