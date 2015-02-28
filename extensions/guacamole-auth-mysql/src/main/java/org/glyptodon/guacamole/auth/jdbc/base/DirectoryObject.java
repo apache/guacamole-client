@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,30 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.glyptodon.guacamole.auth.jdbc.base;
 
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.Identifiable;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * Common base class for objects that will ultimately be made available through
+ * the Directory class. All such objects will need the same base set of queries
+ * to fulfill the needs of the Directory class.
  *
- * @author James Muehlner
+ * @author Michael Jumper
+ * @param <ModelType>
+ *     The type of model object that corresponds to this object.
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public abstract class DirectoryObject<ModelType extends ObjectModel>
+    extends RestrictedObject<ModelType> implements Identifiable {
 
-    /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
+    @Override
+    public String getIdentifier() {
+        return getModel().getIdentifier();
     }
-    
+
+    @Override
+    public void setIdentifier(String identifier) {
+        getModel().setIdentifier(identifier);
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,7 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
-
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
-
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
- *
- * @author James Muehlner
+ * Classes related to the configuration of the MySQL authentication provider.
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
-
-    /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-    }
-    
-}
+package org.glyptodon.guacamole.auth.jdbc.conf;

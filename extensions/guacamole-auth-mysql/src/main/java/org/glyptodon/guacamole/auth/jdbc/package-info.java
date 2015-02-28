@@ -20,30 +20,10 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
-
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
-
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
- *
- * @author James Muehlner
+ * The base JDBC authentication provider. This authentication provider serves
+ * as a basis for other JDBC authentication provider implementations which are
+ * driven by relatively-common schemas. The only difference between such
+ * implementations are maintained within database-specific MyBatis mappings.
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
-
-    /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-    }
-    
-}
+package org.glyptodon.guacamole.auth.jdbc;

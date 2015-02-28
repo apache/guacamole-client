@@ -20,30 +20,22 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
-
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+package org.glyptodon.guacamole.auth.jdbc.security;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
- *
+ * A service to perform password encryption and checking.
  * @author James Muehlner
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public interface PasswordEncryptionService {
 
     /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
+     * Creates a password hash based on the provided username, password, and
+     * salt.
      *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     * @param password The password to hash.
+     * @param salt The salt to use when hashing the password.
+     * @return The generated password hash.
      */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-    }
-    
+    public byte[] createPasswordHash(String password, byte[] salt);
+
 }

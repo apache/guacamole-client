@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,34 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.glyptodon.guacamole.auth.jdbc.permission;
 
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
+import org.apache.ibatis.annotations.Param;
+import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * Mapper for system-level permissions.
  *
- * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public interface SystemPermissionMapper extends PermissionMapper<SystemPermissionModel> {
 
     /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
+     * Retrieve the permission of the given type associated with the given
+     * user, if it exists. If no such permission exists, null is returned.
      *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     * @param user
+     *     The user to retrieve permissions for.
+     * 
+     * @param type
+     *     The type of permission to return.
+     *
+     * @return
+     *     The requested permission, or null if no such permission is granted
+     *     to the given user.
      */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-    }
-    
+    SystemPermissionModel selectOne(@Param("user") UserModel user,
+            @Param("type") SystemPermission.Type type);
+
 }

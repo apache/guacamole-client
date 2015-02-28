@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,41 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.glyptodon.guacamole.auth.jdbc.connection;
 
-
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * Mapper for connection record objects.
  *
- * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public interface ConnectionRecordMapper {
 
     /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
+     * Returns a collection of all connection records associated with the
+     * connection having the given identifier.
      *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     * @param identifier
+     *     The identifier of the connection whose records are to be retrieved.
+     *
+     * @return
+     *     A collection of all connection records associated with the
+     *     connection having the given identifier. This collection will be
+     *     empty if no such connection exists.
      */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-    }
+    List<ConnectionRecordModel> select(@Param("identifier") String identifier);
+
+    /**
+     * Inserts the given connection record.
+     *
+     * @param record
+     *     The connection record to insert.
+     *
+     * @return
+     *     The number of rows inserted.
+     */
+    int insert(@Param("record") ConnectionRecordModel record);
     
 }

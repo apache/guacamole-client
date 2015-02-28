@@ -20,30 +20,55 @@
  * THE SOFTWARE.
  */
 
-package net.sourceforge.guacamole.net.auth.mysql;
+package org.glyptodon.guacamole.auth.jdbc.connection;
 
 
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProvider;
+import java.util.Date;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * A ConnectionRecord which is based on data stored in MySQL.
  *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLAuthenticationProvider extends JDBCAuthenticationProvider {
+public class MySQLConnectionRecord implements ConnectionRecord {
 
     /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
+     * The model object backing this connection record.
      */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
+    private ConnectionRecordModel model;
+
+    /**
+     * Creates a new MySQLConnectionRecord backed by the given model object.
+     * Changes to this record will affect the backing model object, and changes
+     * to the backing model object will affect this record.
+     * 
+     * @param model
+     *     The model object to use to back this connection record.
+     */
+    public MySQLConnectionRecord(ConnectionRecordModel model) {
+        this.model = model;
     }
-    
+
+    @Override
+    public Date getStartDate() {
+        return model.getStartDate();
+    }
+
+    @Override
+    public Date getEndDate() {
+        return model.getEndDate();
+    }
+
+    @Override
+    public String getUsername() {
+        return model.getUsername();
+    }
+
+    @Override
+    public boolean isActive() {
+        return false;
+    }
+
 }
