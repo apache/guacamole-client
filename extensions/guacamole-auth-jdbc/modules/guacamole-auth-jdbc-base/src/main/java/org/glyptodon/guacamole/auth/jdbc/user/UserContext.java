@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.user;
 
 
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLRootConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
@@ -33,13 +33,16 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.UserContext;
 
 /**
- * The MySQL representation of a UserContext.
+ * UserContext implementation which is driven by an arbitrary, underlying
+ * database.
+ *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLUserContext implements UserContext {
+public class UserContext
+    implements org.glyptodon.guacamole.net.auth.UserContext {
 
     /**
      * The the user owning this context.
@@ -71,7 +74,7 @@ public class MySQLUserContext implements UserContext {
      * Provider for creating the root group.
      */
     @Inject
-    private Provider<MySQLRootConnectionGroup> rootGroupProvider;
+    private Provider<RootConnectionGroup> rootGroupProvider;
 
     /**
      * Initializes the user and directories associated with this context.
@@ -114,7 +117,7 @@ public class MySQLUserContext implements UserContext {
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
 
         // Build and return a root group for the current user
-        MySQLRootConnectionGroup rootGroup = rootGroupProvider.get();
+        RootConnectionGroup rootGroup = rootGroupProvider.get();
         rootGroup.init(currentUser);
         return rootGroup;
 

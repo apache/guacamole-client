@@ -33,7 +33,8 @@ import org.glyptodon.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * A MySQL based implementation of the User Directory.
+ * Implementation of the User Directory which is driven by an underlying,
+ * arbitrary database.
  *
  * @author James Muehlner
  * @author Michael Jumper
@@ -71,7 +72,7 @@ public class UserDirectory implements Directory<User> {
     @Override
     @Transactional
     public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<MySQLUser> objects = userService.retrieveObjects(currentUser, identifiers);
+        Collection<ModeledUser> objects = userService.retrieveObjects(currentUser, identifiers);
         return Collections.<User>unmodifiableCollection(objects);
     }
 
@@ -90,7 +91,7 @@ public class UserDirectory implements Directory<User> {
     @Override
     @Transactional
     public void update(User object) throws GuacamoleException {
-        MySQLUser user = (MySQLUser) object;
+        ModeledUser user = (ModeledUser) object;
         userService.updateObject(currentUser, user);
     }
 

@@ -33,7 +33,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  *
  * @author Michael Jumper
  */
-public class MySQLGuacamoleConfiguration extends GuacamoleConfiguration {
+public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
 
     /**
      * The user this configuration belongs to. Access is based on his/her
@@ -59,9 +59,9 @@ public class MySQLGuacamoleConfiguration extends GuacamoleConfiguration {
     private Map<String, String> parameters = null;
     
     /**
-     * Creates a new, empty MySQLGuacamoleConfiguration.
+     * Creates a new, empty ModelGuacamoleConfiguration.
      */
-    public MySQLGuacamoleConfiguration() {
+    public ModeledGuacamoleConfiguration() {
     }
 
     /**

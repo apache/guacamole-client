@@ -34,7 +34,8 @@ import org.glyptodon.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * A MySQL based implementation of the Connection Directory.
+ * Implementation of the Connection Directory which is driven by an underlying,
+ * arbitrary database.
  *
  * @author James Muehlner
  * @author Michael Jumper
@@ -72,7 +73,7 @@ public class ConnectionDirectory implements Directory<Connection> {
     @Override
     @Transactional
     public Collection<Connection> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<MySQLConnection> objects = connectionService.retrieveObjects(currentUser, identifiers);
+        Collection<ModeledConnection> objects = connectionService.retrieveObjects(currentUser, identifiers);
         return Collections.<Connection>unmodifiableCollection(objects);
     }
 
@@ -91,7 +92,7 @@ public class ConnectionDirectory implements Directory<Connection> {
     @Override
     @Transactional
     public void update(Connection object) throws GuacamoleException {
-        MySQLConnection connection = (MySQLConnection) object;
+        ModeledConnection connection = (ModeledConnection) object;
         connectionService.updateObject(currentUser, connection);
     }
 

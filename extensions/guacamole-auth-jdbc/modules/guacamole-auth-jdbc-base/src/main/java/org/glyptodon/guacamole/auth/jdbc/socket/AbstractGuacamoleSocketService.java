@@ -31,8 +31,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.connection.MySQLConnection;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
 import org.glyptodon.guacamole.auth.jdbc.connection.ParameterMapper;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionModel;
@@ -154,7 +154,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     If access is denied to the given user for any reason.
      */
     protected abstract void acquire(AuthenticatedUser user,
-            MySQLConnection connection) throws GuacamoleException;
+            ModeledConnection connection) throws GuacamoleException;
 
     /**
      * Releases possibly-exclusive access to the given connection on behalf of
@@ -168,11 +168,11 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     The connection being released.
      */
     protected abstract void release(AuthenticatedUser user,
-            MySQLConnection connection);
+            ModeledConnection connection);
 
     @Override
     public GuacamoleSocket getGuacamoleSocket(final AuthenticatedUser user,
-            final MySQLConnection connection, GuacamoleClientInformation info)
+            final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Create record for active connection
@@ -273,7 +273,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
     @Override
     public GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
-            MySQLConnectionGroup connectionGroup,
+            ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
         // STUB
         throw new UnsupportedOperationException("STUB");

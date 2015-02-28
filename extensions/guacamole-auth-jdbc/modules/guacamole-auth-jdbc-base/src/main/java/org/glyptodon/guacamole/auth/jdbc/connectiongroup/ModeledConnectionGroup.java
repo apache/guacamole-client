@@ -33,11 +33,12 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
- * A MySQL based implementation of the ConnectionGroup object.
+ * An implementation of the ConnectionGroup object which is backed by a
+ * database model.
  *
  * @author James Muehlner
  */
-public class MySQLConnectionGroup extends DirectoryObject<ConnectionGroupModel>
+public class ModeledConnectionGroup extends DirectoryObject<ConnectionGroupModel>
     implements ConnectionGroup {
 
     /**
@@ -59,9 +60,9 @@ public class MySQLConnectionGroup extends DirectoryObject<ConnectionGroupModel>
     private GuacamoleSocketService socketService;
 
     /**
-     * Creates a new, empty MySQLConnection.
+     * Creates a new, empty ModeledConnectionGroup.
      */
-    public MySQLConnectionGroup() {
+    public ModeledConnectionGroup() {
     }
 
     @Override
@@ -80,7 +81,7 @@ public class MySQLConnectionGroup extends DirectoryObject<ConnectionGroupModel>
         // Translate null parent to proper identifier
         String parentIdentifier = getModel().getParentIdentifier();
         if (parentIdentifier == null)
-            return MySQLRootConnectionGroup.IDENTIFIER;
+            return RootConnectionGroup.IDENTIFIER;
 
         return parentIdentifier;
         
@@ -91,7 +92,7 @@ public class MySQLConnectionGroup extends DirectoryObject<ConnectionGroupModel>
 
         // Translate root identifier back into null
         if (parentIdentifier != null
-                && parentIdentifier.equals(MySQLRootConnectionGroup.IDENTIFIER))
+                && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER))
             parentIdentifier = null;
 
         getModel().setParentIdentifier(parentIdentifier);

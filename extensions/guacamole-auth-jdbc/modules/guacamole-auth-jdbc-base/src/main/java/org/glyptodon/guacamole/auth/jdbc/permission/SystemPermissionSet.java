@@ -22,14 +22,13 @@
 
 package org.glyptodon.guacamole.auth.jdbc.permission;
 
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUser;
+import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
-import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * A database implementation of SystemPermissionSet which uses an injected
@@ -38,7 +37,8 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  *
  * @author Michael Jumper
  */
-public class MySQLSystemPermissionSet implements SystemPermissionSet {
+public class SystemPermissionSet
+    implements org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet {
 
     /**
      * The user that queried this permission set. Access is based on his/her
@@ -50,7 +50,7 @@ public class MySQLSystemPermissionSet implements SystemPermissionSet {
      * The user associated with this permission set. Each of the permissions in
      * this permission set is granted to this user.
      */
-    private MySQLUser user;
+    private ModeledUser user;
 
     /**
      * Service for reading and manipulating system permissions.
@@ -59,11 +59,11 @@ public class MySQLSystemPermissionSet implements SystemPermissionSet {
     private SystemPermissionService systemPermissionService;
     
     /**
-     * Creates a new MySQLSystemPermissionSet. The resulting permission set
+     * Creates a new SystemPermissionSet. The resulting permission set
      * must still be initialized by a call to init(), or the information
      * necessary to read and modify this set will be missing.
      */
-    public MySQLSystemPermissionSet() {
+    public SystemPermissionSet() {
     }
 
     /**
@@ -77,7 +77,7 @@ public class MySQLSystemPermissionSet implements SystemPermissionSet {
      * @param user
      *     The user to whom the permissions in this set are granted.
      */
-    public void init(AuthenticatedUser currentUser, MySQLUser user) {
+    public void init(AuthenticatedUser currentUser, ModeledUser user) {
         this.currentUser = currentUser;
         this.user = user;
     }

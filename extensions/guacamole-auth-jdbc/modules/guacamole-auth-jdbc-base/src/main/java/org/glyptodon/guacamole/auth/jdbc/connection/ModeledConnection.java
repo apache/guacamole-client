@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObject;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLRootConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
@@ -36,10 +36,13 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * A MySQL based implementation of the Connection object.
+ * An implementation of the Connection object which is backed by a database
+ * model.
+ *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLConnection extends DirectoryObject<ConnectionModel>
+public class ModeledConnection extends DirectoryObject<ConnectionModel>
     implements Connection {
 
     /**
@@ -58,7 +61,7 @@ public class MySQLConnection extends DirectoryObject<ConnectionModel>
      * Provider for lazy-loaded, permission-controlled configurations.
      */
     @Inject
-    private Provider<MySQLGuacamoleConfiguration> configProvider;
+    private Provider<ModeledGuacamoleConfiguration> configProvider;
     
     /**
      * The manually-set GuacamoleConfiguration, if any.
@@ -66,9 +69,9 @@ public class MySQLConnection extends DirectoryObject<ConnectionModel>
     private GuacamoleConfiguration config = null;
     
     /**
-     * Creates a new, empty MySQLConnection.
+     * Creates a new, empty ModeledConnection.
      */
-    public MySQLConnection() {
+    public ModeledConnection() {
     }
 
     @Override
@@ -87,7 +90,7 @@ public class MySQLConnection extends DirectoryObject<ConnectionModel>
         // Translate null parent to proper identifier
         String parentIdentifier = getModel().getParentIdentifier();
         if (parentIdentifier == null)
-            return MySQLRootConnectionGroup.IDENTIFIER;
+            return RootConnectionGroup.IDENTIFIER;
 
         return parentIdentifier;
         
@@ -98,7 +101,7 @@ public class MySQLConnection extends DirectoryObject<ConnectionModel>
 
         // Translate root identifier back into null
         if (parentIdentifier != null
-                && parentIdentifier.equals(MySQLRootConnectionGroup.IDENTIFIER))
+                && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER))
             parentIdentifier = null;
 
         getModel().setParentIdentifier(parentIdentifier);
@@ -113,7 +116,7 @@ public class MySQLConnection extends DirectoryObject<ConnectionModel>
             return config;
 
         // Otherwise, return permission-controlled configuration
-        MySQLGuacamoleConfiguration restrictedConfig = configProvider.get();
+        ModeledGuacamoleConfiguration restrictedConfig = configProvider.get();
         restrictedConfig.init(getCurrentUser(), getModel());
         return restrictedConfig;
 

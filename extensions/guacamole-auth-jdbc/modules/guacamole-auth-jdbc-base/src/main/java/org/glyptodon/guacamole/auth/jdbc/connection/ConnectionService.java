@@ -52,7 +52,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionService extends DirectoryObjectService<MySQLConnection, Connection, ConnectionModel> {
+public class ConnectionService extends DirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
 
     /**
      * Mapper for accessing connections.
@@ -76,7 +76,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
      * Provider for creating connections.
      */
     @Inject
-    private Provider<MySQLConnection> mySQLConnectionProvider;
+    private Provider<ModeledConnection> connectionProvider;
 
     /**
      * Service for creating and tracking sockets.
@@ -90,9 +90,9 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     }
 
     @Override
-    protected MySQLConnection getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledConnection getObjectInstance(AuthenticatedUser currentUser,
             ConnectionModel model) {
-        MySQLConnection connection = mySQLConnectionProvider.get();
+        ModeledConnection connection = connectionProvider.get();
         connection.init(currentUser, model);
         return connection;
     }
@@ -101,11 +101,11 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     protected ConnectionModel getModelInstance(AuthenticatedUser currentUser,
             final Connection object) {
 
-        // Create new MySQLConnection backed by blank model
+        // Create new ModeledConnection backed by blank model
         ConnectionModel model = new ConnectionModel();
-        MySQLConnection connection = getObjectInstance(currentUser, model);
+        ModeledConnection connection = getObjectInstance(currentUser, model);
 
-        // Set model contents through MySQLConnection, copying the provided connection
+        // Set model contents through ModeledConnection, copying the provided connection
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
@@ -147,7 +147,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
 
     @Override
     protected void validateExistingObject(AuthenticatedUser user,
-            MySQLConnection object) throws GuacamoleException {
+            ModeledConnection object) throws GuacamoleException {
 
         // Name must not be blank
         if (object.getName().trim().isEmpty())
@@ -170,7 +170,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
      *     A collection of parameter models containing the name/value pairs
      *     of the given connection's parameters.
      */
-    private Collection<ParameterModel> getParameterModels(MySQLConnection connection) {
+    private Collection<ParameterModel> getParameterModels(ModeledConnection connection) {
 
         Map<String, String> parameters = connection.getConfiguration().getParameters();
         
@@ -202,11 +202,11 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     }
 
     @Override
-    public MySQLConnection createObject(AuthenticatedUser user, Connection object)
+    public ModeledConnection createObject(AuthenticatedUser user, Connection object)
             throws GuacamoleException {
 
         // Create connection
-        MySQLConnection connection = super.createObject(user, object);
+        ModeledConnection connection = super.createObject(user, object);
         connection.setConfiguration(object.getConfiguration());
 
         // Insert new parameters, if any
@@ -219,7 +219,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
     }
     
     @Override
-    public void updateObject(AuthenticatedUser user, MySQLConnection object)
+    public void updateObject(AuthenticatedUser user, ModeledConnection object)
             throws GuacamoleException {
 
         // Update connection
@@ -330,7 +330,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
      *     If permission to read the connection history is denied.
      */
     public List<ConnectionRecord> retrieveHistory(AuthenticatedUser user,
-            MySQLConnection connection) throws GuacamoleException {
+            ModeledConnection connection) throws GuacamoleException {
 
         String identifier = connection.getIdentifier();
         
@@ -345,7 +345,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
 
             // Add past connections from model objects
             for (ConnectionRecordModel model : models)
-                records.add(new MySQLConnectionRecord(model));
+                records.add(new ModeledConnectionRecord(model));
 
             // Return converted history list
             return records;
@@ -379,7 +379,7 @@ public class ConnectionService extends DirectoryObjectService<MySQLConnection, C
      *     If permission to connect to this connection is denied.
      */
     public GuacamoleSocket connect(AuthenticatedUser user,
-            MySQLConnection connection, GuacamoleClientInformation info)
+            ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Connect only if READ permission is granted

@@ -34,7 +34,7 @@ public class AuthenticatedUser {
     /**
      * The user that authenticated.
      */
-    private final MySQLUser user;
+    private final ModeledUser user;
 
     /**
      * The credentials given when this user authenticated.
@@ -51,7 +51,7 @@ public class AuthenticatedUser {
      * @param credentials 
      *     The credentials given by the user when they authenticated.
      */
-    public AuthenticatedUser(MySQLUser user, Credentials credentials) {
+    public AuthenticatedUser(ModeledUser user, Credentials credentials) {
         this.user = user;
         this.credentials = credentials;
     }
@@ -62,7 +62,7 @@ public class AuthenticatedUser {
      * @return 
      *     The user that authenticated.
      */
-    public MySQLUser getUser() {
+    public ModeledUser getUser() {
         return user;
     }
 

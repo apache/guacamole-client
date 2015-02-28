@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUser;
+import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -89,7 +89,7 @@ public abstract class ObjectPermissionService<ModelType>
      *     If an error occurs while checking permission status, or if
      *     permission is denied to read the current user's permissions.
      */
-    protected boolean canAlterPermissions(AuthenticatedUser user, MySQLUser targetUser,
+    protected boolean canAlterPermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -123,7 +123,7 @@ public abstract class ObjectPermissionService<ModelType>
     }
     
     @Override
-    public void createPermissions(AuthenticatedUser user, MySQLUser targetUser,
+    public void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 
@@ -140,7 +140,7 @@ public abstract class ObjectPermissionService<ModelType>
     }
 
     @Override
-    public void deletePermissions(AuthenticatedUser user, MySQLUser targetUser,
+    public void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<ObjectPermission> permissions)
             throws GuacamoleException {
 

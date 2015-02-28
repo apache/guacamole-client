@@ -42,7 +42,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class UserService extends DirectoryObjectService<MySQLUser, User, UserModel> {
+public class UserService extends DirectoryObjectService<ModeledUser, User, UserModel> {
 
     /**
      * Mapper for accessing users.
@@ -54,7 +54,7 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
      * Provider for creating users.
      */
     @Inject
-    private Provider<MySQLUser> mySQLUserProvider;
+    private Provider<ModeledUser> userProvider;
 
     @Override
     protected DirectoryObjectMapper<UserModel> getObjectMapper() {
@@ -62,9 +62,9 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
     }
 
     @Override
-    protected MySQLUser getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledUser getObjectInstance(AuthenticatedUser currentUser,
             UserModel model) {
-        MySQLUser user = mySQLUserProvider.get();
+        ModeledUser user = userProvider.get();
         user.init(currentUser, model);
         return user;
     }
@@ -73,11 +73,11 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
     protected UserModel getModelInstance(AuthenticatedUser currentUser,
             final User object) {
 
-        // Create new MySQLUser backed by blank model
+        // Create new ModeledUser backed by blank model
         UserModel model = new UserModel();
-        MySQLUser user = getObjectInstance(currentUser, model);
+        ModeledUser user = getObjectInstance(currentUser, model);
 
-        // Set model contents through MySQLUser, copying the provided user
+        // Set model contents through ModeledUser, copying the provided user
         user.setIdentifier(object.getIdentifier());
         user.setPassword(object.getPassword());
 
@@ -121,14 +121,14 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
 
     @Override
     protected void validateExistingObject(AuthenticatedUser user,
-            MySQLUser object) throws GuacamoleException {
+            ModeledUser object) throws GuacamoleException {
 
         // Username must not be blank
         if (object.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Check whether such a user is already present
-        MySQLUser existing = retrieveObject(user, object.getIdentifier());
+        ModeledUser existing = retrieveObject(user, object.getIdentifier());
         if (existing != null) {
 
             UserModel existingModel = existing.getModel();
@@ -146,11 +146,14 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
      * Retrieves the user corresponding to the given credentials from the
      * database.
      *
-     * @param credentials The credentials to use when locating the user.
-     * @return The existing MySQLUser object if the credentials given are
-     *         valid, null otherwise.
+     * @param credentials
+     *     The credentials to use when locating the user.
+     *
+     * @return
+     *     The existing ModeledUser object if the credentials given are valid,
+     *     null otherwise.
      */
-    public MySQLUser retrieveUser(Credentials credentials) {
+    public ModeledUser retrieveUser(Credentials credentials) {
 
         // Get username and password
         String username = credentials.getUsername();
@@ -162,7 +165,7 @@ public class UserService extends DirectoryObjectService<MySQLUser, User, UserMod
             return null;
 
         // Return corresponding user, set up cyclic reference
-        MySQLUser user = getObjectInstance(null, userModel);
+        ModeledUser user = getObjectInstance(null, userModel);
         user.setCurrentUser(new AuthenticatedUser(user, credentials));
         return user;
 

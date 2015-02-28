@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import com.google.inject.Singleton;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.connection.MySQLConnection;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 
 
@@ -39,13 +39,13 @@ public class UnrestrictedGuacamoleSocketService
     extends AbstractGuacamoleSocketService {
 
     @Override
-    protected void acquire(AuthenticatedUser user, MySQLConnection connection)
+    protected void acquire(AuthenticatedUser user, ModeledConnection connection)
             throws GuacamoleException {
         // Do nothing
     }
 
     @Override
-    protected void release(AuthenticatedUser user, MySQLConnection connection) {
+    protected void release(AuthenticatedUser user, ModeledConnection connection) {
         // Do nothing
     }
 

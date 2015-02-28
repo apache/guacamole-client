@@ -24,8 +24,8 @@ package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import java.util.List;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.connection.MySQLConnection;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -68,7 +68,7 @@ public interface GuacamoleSocketService {
      *     rules.
      */
     GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
-            MySQLConnection connection, GuacamoleClientInformation info)
+            ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException;
 
     /**
@@ -111,7 +111,7 @@ public interface GuacamoleSocketService {
      *     rules, or if the connection group is not balancing.
      */
     GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
-            MySQLConnectionGroup connectionGroup,
+            ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info)
             throws GuacamoleException;
 

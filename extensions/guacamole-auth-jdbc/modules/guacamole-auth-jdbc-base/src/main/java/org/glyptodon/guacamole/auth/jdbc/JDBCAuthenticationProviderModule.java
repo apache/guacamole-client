@@ -22,15 +22,15 @@
 
 package org.glyptodon.guacamole.auth.jdbc;
 
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUserContext;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLRootConnectionGroup;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.MySQLConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.user.UserContext;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
-import org.glyptodon.guacamole.auth.jdbc.connection.MySQLGuacamoleConfiguration;
-import org.glyptodon.guacamole.auth.jdbc.connection.MySQLConnection;
-import org.glyptodon.guacamole.auth.jdbc.permission.MySQLSystemPermissionSet;
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUser;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledGuacamoleConfiguration;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.auth.jdbc.user.UserDirectory;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
@@ -100,13 +100,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(Environment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);
-        bind(MySQLConnection.class);
-        bind(MySQLConnectionGroup.class);
-        bind(MySQLGuacamoleConfiguration.class);
-        bind(MySQLUser.class);
-        bind(MySQLUserContext.class);
-        bind(MySQLRootConnectionGroup.class);
-        bind(MySQLSystemPermissionSet.class);
+        bind(ModeledConnection.class);
+        bind(ModeledConnectionGroup.class);
+        bind(ModeledGuacamoleConfiguration.class);
+        bind(ModeledUser.class);
+        bind(RootConnectionGroup.class);
+        bind(SystemPermissionSet.class);
+        bind(UserContext.class);
         bind(UserDirectory.class);
         
         // Bind services

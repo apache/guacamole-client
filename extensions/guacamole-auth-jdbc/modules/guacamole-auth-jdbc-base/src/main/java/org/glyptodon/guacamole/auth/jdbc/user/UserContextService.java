@@ -26,7 +26,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Credentials;
-import org.glyptodon.guacamole.net.auth.UserContext;
 
 /**
  * Service which creates new UserContext instances for valid users based on
@@ -46,7 +45,7 @@ public class UserContextService  {
      * Provider for retrieving UserContext instances.
      */
     @Inject
-    private Provider<MySQLUserContext> userContextProvider;
+    private Provider<UserContext> userContextProvider;
 
     /**
      * Authenticates the user having the given credentials, returning a new
@@ -62,15 +61,16 @@ public class UserContextService  {
      * @throws GuacamoleException
      *     If an error occurs during authentication.
      */
-    public UserContext getUserContext(Credentials credentials)
-            throws GuacamoleException {
+    public org.glyptodon.guacamole.net.auth.UserContext
+        getUserContext(Credentials credentials)
+                throws GuacamoleException {
 
         // Authenticate user
-        MySQLUser user = userService.retrieveUser(credentials);
+        ModeledUser user = userService.retrieveUser(credentials);
         if (user != null) {
 
             // Upon successful authentication, return new user context
-            MySQLUserContext context = userContextProvider.get();
+            UserContext context = userContextProvider.get();
             context.init(user.getCurrentUser());
             return context;
 

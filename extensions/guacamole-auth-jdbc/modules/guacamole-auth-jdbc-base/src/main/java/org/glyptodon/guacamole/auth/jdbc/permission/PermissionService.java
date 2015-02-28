@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUser;
+import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
@@ -112,7 +112,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     A model object which is based on the given permission and target
      *     user.
      */
-    protected abstract ModelType getModelInstance(MySQLUser targetUser,
+    protected abstract ModelType getModelInstance(ModeledUser targetUser,
             PermissionType permission);
     
     /**
@@ -129,7 +129,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     A collection of model objects which are based on the given
      *     permissions and target user.
      */
-    protected Collection<ModelType> getModelInstances(MySQLUser targetUser,
+    protected Collection<ModelType> getModelInstances(ModeledUser targetUser,
             Collection<PermissionType> permissions) {
 
         // Create new collection of models by manually converting each permission 
@@ -163,7 +163,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     user is denied.
      */
     public abstract PermissionSetType getPermissionSet(AuthenticatedUser user,
-            MySQLUser targetUser) throws GuacamoleException;
+            ModeledUser targetUser) throws GuacamoleException;
 
     /**
      * Retrieves all permissions associated with the given user.
@@ -181,7 +181,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     If an error occurs while retrieving the requested permissions.
      */
     public Set<PermissionType> retrievePermissions(AuthenticatedUser user,
-            MySQLUser targetUser) throws GuacamoleException {
+            ModeledUser targetUser) throws GuacamoleException {
 
         // Only an admin can read permissions that aren't his own
         if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
@@ -211,7 +211,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     occurs while creating the permissions.
      */
     public abstract void createPermissions(AuthenticatedUser user,
-            MySQLUser targetUser,
+            ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
     /**
@@ -232,7 +232,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     occurs while deleting the permissions.
      */
     public abstract void deletePermissions(AuthenticatedUser user,
-            MySQLUser targetUser,
+            ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
 }

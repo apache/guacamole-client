@@ -35,10 +35,12 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 
 /**
- * A MySQL based implementation of the User object.
+ * An implementation of the User object which is backed by a database model.
+ *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class MySQLUser extends DirectoryObject<UserModel> implements User {
+public class ModeledUser extends DirectoryObject<UserModel> implements User {
 
     /**
      * Service for hashing passwords.
@@ -68,9 +70,9 @@ public class MySQLUser extends DirectoryObject<UserModel> implements User {
     private String password = null;
     
     /**
-     * Creates a new, empty MySQLUser.
+     * Creates a new, empty ModeledUser.
      */
-    public MySQLUser() {
+    public ModeledUser() {
     }
 
     @Override

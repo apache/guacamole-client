@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.user.MySQLUser;
+import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -39,7 +39,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
  * @author Michael Jumper
  */
 public class SystemPermissionService
-    extends PermissionService<MySQLSystemPermissionSet, SystemPermission, SystemPermissionModel> {
+    extends PermissionService<SystemPermissionSet, SystemPermission, SystemPermissionModel> {
 
     /**
      * Mapper for system-level permissions.
@@ -51,7 +51,7 @@ public class SystemPermissionService
      * Provider for creating system permission sets.
      */
     @Inject
-    private Provider<MySQLSystemPermissionSet> systemPermissionSetProvider;
+    private Provider<SystemPermissionSet> systemPermissionSetProvider;
 
     @Override
     protected SystemPermissionMapper getPermissionMapper() {
@@ -64,7 +64,7 @@ public class SystemPermissionService
     }
 
     @Override
-    protected SystemPermissionModel getModelInstance(final MySQLUser targetUser,
+    protected SystemPermissionModel getModelInstance(final ModeledUser targetUser,
             final SystemPermission permission) {
 
         SystemPermissionModel model = new SystemPermissionModel();
@@ -79,11 +79,11 @@ public class SystemPermissionService
     }
 
     @Override
-    public MySQLSystemPermissionSet getPermissionSet(AuthenticatedUser user,
-            MySQLUser targetUser) throws GuacamoleException {
+    public SystemPermissionSet getPermissionSet(AuthenticatedUser user,
+            ModeledUser targetUser) throws GuacamoleException {
 
         // Create permission set for requested user
-        MySQLSystemPermissionSet permissionSet = systemPermissionSetProvider.get();
+        SystemPermissionSet permissionSet = systemPermissionSetProvider.get();
         permissionSet.init(user, targetUser);
 
         return permissionSet;
@@ -91,7 +91,7 @@ public class SystemPermissionService
     }
     
     @Override
-    public void createPermissions(AuthenticatedUser user, MySQLUser targetUser,
+    public void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can create system permissions
@@ -107,7 +107,7 @@ public class SystemPermissionService
     }
 
     @Override
-    public void deletePermissions(AuthenticatedUser user, MySQLUser targetUser,
+    public void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<SystemPermission> permissions) throws GuacamoleException {
 
         // Only an admin can delete system permissions
@@ -143,7 +143,7 @@ public class SystemPermissionService
      *     If an error occurs while retrieving the requested permission.
      */
     public SystemPermission retrievePermission(AuthenticatedUser user,
-            MySQLUser targetUser, SystemPermission.Type type) throws GuacamoleException {
+            ModeledUser targetUser, SystemPermission.Type type) throws GuacamoleException {
 
         // Only an admin can read permissions that aren't his own
         if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())

@@ -27,27 +27,27 @@ import java.util.Date;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
- * A ConnectionRecord which is based on data stored in MySQL.
+ * A ConnectionRecord which is backed by a database model.
  *
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class MySQLConnectionRecord implements ConnectionRecord {
+public class ModeledConnectionRecord implements ConnectionRecord {
 
     /**
      * The model object backing this connection record.
      */
-    private ConnectionRecordModel model;
+    private final ConnectionRecordModel model;
 
     /**
-     * Creates a new MySQLConnectionRecord backed by the given model object.
+     * Creates a new ModeledConnectionRecord backed by the given model object.
      * Changes to this record will affect the backing model object, and changes
      * to the backing model object will affect this record.
      * 
      * @param model
      *     The model object to use to back this connection record.
      */
-    public MySQLConnectionRecord(ConnectionRecordModel model) {
+    public ModeledConnectionRecord(ConnectionRecordModel model) {
         this.model = model;
     }
 

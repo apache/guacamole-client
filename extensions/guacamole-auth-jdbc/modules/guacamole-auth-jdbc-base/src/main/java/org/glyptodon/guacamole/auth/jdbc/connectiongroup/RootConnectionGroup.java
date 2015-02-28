@@ -38,7 +38,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper
  */
-public class MySQLRootConnectionGroup implements ConnectionGroup {
+public class RootConnectionGroup implements ConnectionGroup {
 
     /**
      * The identifier used to represent the root connection group. There is no
@@ -73,9 +73,9 @@ public class MySQLRootConnectionGroup implements ConnectionGroup {
     private ConnectionGroupService connectionGroupService;
     
     /**
-     * Creates a new, empty MySQLRootConnectionGroup.
+     * Creates a new, empty RootConnectionGroup.
      */
-    public MySQLRootConnectionGroup() {
+    public RootConnectionGroup() {
     }
 
     /**

@@ -46,7 +46,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionGroupService extends DirectoryObjectService<MySQLConnectionGroup,
+public class ConnectionGroupService extends DirectoryObjectService<ModeledConnectionGroup,
         ConnectionGroup, ConnectionGroupModel> {
 
     /**
@@ -59,7 +59,7 @@ public class ConnectionGroupService extends DirectoryObjectService<MySQLConnecti
      * Provider for creating connection groups.
      */
     @Inject
-    private Provider<MySQLConnectionGroup> connectionGroupProvider;
+    private Provider<ModeledConnectionGroup> connectionGroupProvider;
 
     /**
      * Service for creating and tracking sockets.
@@ -73,9 +73,9 @@ public class ConnectionGroupService extends DirectoryObjectService<MySQLConnecti
     }
 
     @Override
-    protected MySQLConnectionGroup getObjectInstance(AuthenticatedUser currentUser,
+    protected ModeledConnectionGroup getObjectInstance(AuthenticatedUser currentUser,
             ConnectionGroupModel model) {
-        MySQLConnectionGroup connectionGroup = connectionGroupProvider.get();
+        ModeledConnectionGroup connectionGroup = connectionGroupProvider.get();
         connectionGroup.init(currentUser, model);
         return connectionGroup;
     }
@@ -84,11 +84,11 @@ public class ConnectionGroupService extends DirectoryObjectService<MySQLConnecti
     protected ConnectionGroupModel getModelInstance(AuthenticatedUser currentUser,
             final ConnectionGroup object) {
 
-        // Create new MySQLConnectionGroup backed by blank model
+        // Create new ModeledConnectionGroup backed by blank model
         ConnectionGroupModel model = new ConnectionGroupModel();
-        MySQLConnectionGroup connectionGroup = getObjectInstance(currentUser, model);
+        ModeledConnectionGroup connectionGroup = getObjectInstance(currentUser, model);
 
-        // Set model contents through MySQLConnection, copying the provided connection group
+        // Set model contents through ModeledConnectionGroup, copying the provided connection group
         connectionGroup.setParentIdentifier(object.getParentIdentifier());
         connectionGroup.setName(object.getName());
         connectionGroup.setType(object.getType());
@@ -130,7 +130,7 @@ public class ConnectionGroupService extends DirectoryObjectService<MySQLConnecti
 
     @Override
     protected void validateExistingObject(AuthenticatedUser user,
-            MySQLConnectionGroup object) throws GuacamoleException {
+            ModeledConnectionGroup object) throws GuacamoleException {
 
         // Name must not be blank
         if (object.getName().trim().isEmpty())
@@ -199,7 +199,7 @@ public class ConnectionGroupService extends DirectoryObjectService<MySQLConnecti
      *     If permission to connect to this connection is denied.
      */
     public GuacamoleSocket connect(AuthenticatedUser user,
-            MySQLConnectionGroup connectionGroup, GuacamoleClientInformation info)
+            ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Connect only if READ permission is granted
