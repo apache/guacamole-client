@@ -38,12 +38,12 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  * permissions of the current user.
  *
  * @author Michael Jumper
- * @param <ModelType>
- *     The underlying model object used to represent PermissionType in the
- *     database.
  */
-public abstract class ObjectPermissionService<ModelType>
-    extends PermissionService<ObjectPermissionSet, ObjectPermission, ModelType> {
+public abstract class ObjectPermissionService
+    extends PermissionService<ObjectPermissionSet, ObjectPermission, ObjectPermissionModel> {
+
+    @Override
+    protected abstract ObjectPermissionMapper getPermissionMapper();
 
     /**
      * Returns the permission set associated with the given user and related
@@ -129,7 +129,7 @@ public abstract class ObjectPermissionService<ModelType>
 
         // Create permissions only if user has permission to do so
         if (canAlterPermissions(user, targetUser, permissions)) {
-            Collection<ModelType> models = getModelInstances(targetUser, permissions);
+            Collection<ObjectPermissionModel> models = getModelInstances(targetUser, permissions);
             getPermissionMapper().insert(models);
             return;
         }
@@ -146,7 +146,7 @@ public abstract class ObjectPermissionService<ModelType>
 
         // Delete permissions only if user has permission to do so
         if (canAlterPermissions(user, targetUser, permissions)) {
-            Collection<ModelType> models = getModelInstances(targetUser, permissions);
+            Collection<ObjectPermissionModel> models = getModelInstances(targetUser, permissions);
             getPermissionMapper().delete(models);
             return;
         }
@@ -154,6 +154,51 @@ public abstract class ObjectPermissionService<ModelType>
         // User lacks permission to delete object permissions
         throw new GuacamoleSecurityException("Permission denied.");
 
+    }
+
+    /**
+     * Retrieves the permission of the given type associated with the given
+     * user and object, if it exists. If no such permission exists, null is
+     *
+     * @param user
+     *     The user retrieving the permission.
+     *
+     * @param targetUser
+     *     The user associated with the permission to be retrieved.
+     * 
+     * @param type
+     *     The type of permission to retrieve.
+     *
+     * @param identifier
+     *     The identifier of the object affected by the permission to return.
+     *
+     * @return
+     *     The permission of the given type associated with the given user and
+     *     object, or null if no such permission exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the requested permission.
+     */
+    public ObjectPermission retrievePermission(AuthenticatedUser user,
+            ModeledUser targetUser, ObjectPermission.Type type,
+            String identifier) throws GuacamoleException {
+
+        // Only an admin can read permissions that aren't his own
+        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
+                || user.getUser().isAdministrator()) {
+
+            // Read permission from database, return null if not found
+            ObjectPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type, identifier);
+            if (model == null)
+                return null;
+
+            return getPermissionInstance(model);
+
+        }
+
+        // User cannot read this user's permissions
+        throw new GuacamoleSecurityException("Permission denied.");
+        
     }
 
 }

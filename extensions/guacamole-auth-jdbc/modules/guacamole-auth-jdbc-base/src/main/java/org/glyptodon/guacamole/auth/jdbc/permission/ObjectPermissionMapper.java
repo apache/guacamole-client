@@ -22,10 +22,37 @@
 
 package org.glyptodon.guacamole.auth.jdbc.permission;
 
+import org.apache.ibatis.annotations.Param;
+import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+
 /**
  * Mapper for object-related permissions.
  *
  * @author Michael Jumper
  */
 public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissionModel> {
+
+    /**
+     * Retrieve the permission of the given type associated with the given
+     * user and object, if it exists. If no such permission exists, null is
+     * returned.
+     *
+     * @param user
+     *     The user to retrieve permissions for.
+     * 
+     * @param type
+     *     The type of permission to return.
+     * 
+     * @param identifier
+     *     The identifier of the object affected by the permission to return.
+     *
+     * @return
+     *     The requested permission, or null if no such permission is granted
+     *     to the given user for the given object.
+     */
+    ObjectPermissionModel selectOne(@Param("user") UserModel user,
+            @Param("type") ObjectPermission.Type type,
+            @Param("identifier") String identifier);
+
 }
