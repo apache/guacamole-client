@@ -86,6 +86,8 @@ THE SOFTWARE.
     <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
     <div class="history section" ng-class="{loading: !historyEntryWrappers}">
         <p ng-hide="historyEntryWrappers.length">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | translate}}</p>
+
+        <!-- History list -->
         <table ng-show="historyEntryWrappers.length">
             <thead>
                 <tr>
@@ -95,13 +97,17 @@ THE SOFTWARE.
                 </tr>
             </thead>
             <tbody>
-                <tr ng-repeat="wrapper in historyEntryWrappers">
+                <tr ng-repeat="wrapper in wrapperPage">
                     <td class="username">{{wrapper.entry.username}}</td>
                     <td class="start">{{wrapper.entry.startDate | date:'short'}}</td>
                     <td class="duration">{{wrapper.durationText | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
                 </tr>
             </tbody>
         </table>
+
+        <!-- Pager controls for history list -->
+        <guac-pager page="wrapperPage" items="historyEntryWrappers"></guac-pager>
+
     </div>
 
 </div>
