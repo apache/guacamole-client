@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
@@ -39,66 +40,50 @@ import org.mybatis.guice.transactional.Transactional;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class UserDirectory implements Directory<User> {
+public class UserDirectory extends RestrictedObject
+    implements Directory<User> {
 
-    /**
-     * The user this user directory belongs to. Access is based on his/her
-     * permission settings.
-     */
-    private AuthenticatedUser currentUser;
-    
     /**
      * Service for managing user objects.
      */
     @Inject
     private UserService userService;
 
-    /**
-     * Set the user for this directory.
-     *
-     * @param currentUser
-     *     The user whose permissions define the visibility of other users in
-     *     this directory.
-     */
-    public void init(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
-    
     @Override
     public User get(String identifier) throws GuacamoleException {
-        return userService.retrieveObject(currentUser, identifier);
+        return userService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledUser> objects = userService.retrieveObjects(currentUser, identifiers);
+        Collection<ModeledUser> objects = userService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<User>unmodifiableCollection(objects);
     }
 
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return userService.getIdentifiers(currentUser);
+        return userService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(User object) throws GuacamoleException {
-        userService.createObject(currentUser, object);
+        userService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(User object) throws GuacamoleException {
         ModeledUser user = (ModeledUser) object;
-        userService.updateObject(currentUser, user);
+        userService.updateObject(getCurrentUser(), user);
     }
 
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
-        userService.deleteObject(currentUser, identifier);
+        userService.deleteObject(getCurrentUser(), identifier);
     }
 
 }

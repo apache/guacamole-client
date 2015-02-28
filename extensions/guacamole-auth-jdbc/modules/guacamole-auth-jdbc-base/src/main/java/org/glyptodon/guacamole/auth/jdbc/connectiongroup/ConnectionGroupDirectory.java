@@ -27,8 +27,8 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
@@ -40,66 +40,50 @@ import org.mybatis.guice.transactional.Transactional;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ConnectionGroupDirectory implements Directory<ConnectionGroup> {
+public class ConnectionGroupDirectory extends RestrictedObject
+    implements Directory<ConnectionGroup> {
 
-    /**
-     * The user this connection group directory belongs to. Access is based on
-     * his/her permission settings.
-     */
-    private AuthenticatedUser currentUser;
-    
     /**
      * Service for managing connection group objects.
      */
     @Inject
     private ConnectionGroupService connectionGroupService;
 
-    /**
-     * Set the user for this directory.
-     *
-     * @param currentUser
-     *     The user whose permissions define the visibility of connection
-     *     groups in this directory.
-     */
-    public void init(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
-    
     @Override
     public ConnectionGroup get(String identifier) throws GuacamoleException {
-        return connectionGroupService.retrieveObject(currentUser, identifier);
+        return connectionGroupService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<ConnectionGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(currentUser, identifiers);
+        Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<ConnectionGroup>unmodifiableCollection(objects);
     }
 
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return connectionGroupService.getIdentifiers(currentUser);
+        return connectionGroupService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(ConnectionGroup object) throws GuacamoleException {
-        connectionGroupService.createObject(currentUser, object);
+        connectionGroupService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(ConnectionGroup object) throws GuacamoleException {
         ModeledConnectionGroup connectionGroup = (ModeledConnectionGroup) object;
-        connectionGroupService.updateObject(currentUser, connectionGroup);
+        connectionGroupService.updateObject(getCurrentUser(), connectionGroup);
     }
 
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
-        connectionGroupService.deleteObject(currentUser, identifier);
+        connectionGroupService.deleteObject(getCurrentUser(), identifier);
     }
 
 }

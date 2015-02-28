@@ -25,18 +25,21 @@ package org.glyptodon.guacamole.auth.jdbc.base;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 
 /**
- * Common base class for objects that are associated with the users that
- * obtain them.
+ * Common base class for objects have an underlying model. For the purposes of
+ * JDBC-driven authentication providers, all modeled objects are also
+ * restricted.
  *
  * @author Michael Jumper
+ * @param <ModelType>
+ *     The type of model object which corresponds to this object.
  */
-public abstract class RestrictedObject {
+public abstract class ModeledObject<ModelType> extends RestrictedObject {
 
     /**
-     * The user this object belongs to. Access is based on his/her permission
-     * settings.
+     * The internal model object containing the values which represent this
+     * object in the database.
      */
-    private AuthenticatedUser currentUser;
+    private ModelType model;
 
     /**
      * Initializes this object, associating it with the current authenticated
@@ -44,33 +47,36 @@ public abstract class RestrictedObject {
      *
      * @param currentUser
      *     The user that created or retrieved this object.
+     *
+     * @param model 
+     *     The backing model object.
      */
-    public void init(AuthenticatedUser currentUser) {
-        setCurrentUser(currentUser);
+    public void init(AuthenticatedUser currentUser, ModelType model) {
+        super.init(currentUser);
+        setModel(model);
     }
 
     /**
-     * Returns the user that created or queried this object. This user's
-     * permissions dictate what operations can be performed on or through this
+     * Returns the backing model object. Changes to the model object will
+     * affect this object, and changes to this object will affect the model
      * object.
      *
      * @return
-     *     The user that created or queried this object.
+     *     The backing model object.
      */
-    public AuthenticatedUser getCurrentUser() {
-        return currentUser;
+    public ModelType getModel() {
+        return model;
     }
 
     /**
-     * Sets the user that created or queried this object. This user's
-     * permissions dictate what operations can be performed on or through this
-     * object.
+     * Sets the backing model object. This will effectively replace all data
+     * contained within this object.
      *
-     * @param currentUser 
-     *     The user that created or queried this object.
+     * @param model
+     *     The backing model object.
      */
-    public void setCurrentUser(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
+    public void setModel(ModelType model) {
+        this.model = model;
     }
 
 }

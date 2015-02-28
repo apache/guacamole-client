@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 
 /**
@@ -37,14 +38,8 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
  *
  * @author Michael Jumper
  */
-public class SystemPermissionSet
+public class SystemPermissionSet extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet {
-
-    /**
-     * The user that queried this permission set. Access is based on his/her
-     * permission settings.
-     */
-    private AuthenticatedUser currentUser;
 
     /**
      * The user associated with this permission set. Each of the permissions in
@@ -78,19 +73,19 @@ public class SystemPermissionSet
      *     The user to whom the permissions in this set are granted.
      */
     public void init(AuthenticatedUser currentUser, ModeledUser user) {
-        this.currentUser = currentUser;
+        super.init(currentUser);
         this.user = user;
     }
 
     @Override
     public Set<SystemPermission> getPermissions() throws GuacamoleException {
-        return systemPermissionService.retrievePermissions(currentUser, user);
+        return systemPermissionService.retrievePermissions(getCurrentUser(), user);
     }
 
     @Override
     public boolean hasPermission(SystemPermission.Type permission)
             throws GuacamoleException {
-        return systemPermissionService.retrievePermission(currentUser, user, permission) != null;
+        return systemPermissionService.retrievePermission(getCurrentUser(), user, permission) != null;
     }
 
     @Override
@@ -108,13 +103,13 @@ public class SystemPermissionSet
     @Override
     public void addPermissions(Set<SystemPermission> permissions)
             throws GuacamoleException {
-        systemPermissionService.createPermissions(currentUser, user, permissions);
+        systemPermissionService.createPermissions(getCurrentUser(), user, permissions);
     }
 
     @Override
     public void removePermissions(Set<SystemPermission> permissions)
             throws GuacamoleException {
-        systemPermissionService.deletePermissions(currentUser, user, permissions);
+        systemPermissionService.deletePermissions(getCurrentUser(), user, permissions);
     }
 
 }

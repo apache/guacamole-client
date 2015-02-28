@@ -27,8 +27,8 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
@@ -40,66 +40,50 @@ import org.mybatis.guice.transactional.Transactional;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ConnectionDirectory implements Directory<Connection> {
+public class ConnectionDirectory extends RestrictedObject
+    implements Directory<Connection> {
 
-    /**
-     * The user this connection directory belongs to. Access is based on
-     * his/her permission settings.
-     */
-    private AuthenticatedUser currentUser;
-    
     /**
      * Service for managing connection objects.
      */
     @Inject
     private ConnectionService connectionService;
 
-    /**
-     * Set the user for this directory.
-     *
-     * @param currentUser
-     *     The user whose permissions define the visibility of connections in
-     *     this directory.
-     */
-    public void init(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
-    
     @Override
     public Connection get(String identifier) throws GuacamoleException {
-        return connectionService.retrieveObject(currentUser, identifier);
+        return connectionService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<Connection> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnection> objects = connectionService.retrieveObjects(currentUser, identifiers);
+        Collection<ModeledConnection> objects = connectionService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<Connection>unmodifiableCollection(objects);
     }
 
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
-        return connectionService.getIdentifiers(currentUser);
+        return connectionService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(Connection object) throws GuacamoleException {
-        connectionService.createObject(currentUser, object);
+        connectionService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(Connection object) throws GuacamoleException {
         ModeledConnection connection = (ModeledConnection) object;
-        connectionService.updateObject(currentUser, connection);
+        connectionService.updateObject(getCurrentUser(), connection);
     }
 
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
-        connectionService.deleteObject(currentUser, identifier);
+        connectionService.deleteObject(getCurrentUser(), identifier);
     }
 
 }

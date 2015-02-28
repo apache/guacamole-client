@@ -34,7 +34,7 @@ import org.glyptodon.guacamole.net.auth.Identifiable;
  *     The type of model object that corresponds to this object.
  */
 public abstract class DirectoryObject<ModelType extends ObjectModel>
-    extends RestrictedObject<ModelType> implements Identifiable {
+    extends ModeledObject<ModelType> implements Identifiable {
 
     @Override
     public String getIdentifier() {

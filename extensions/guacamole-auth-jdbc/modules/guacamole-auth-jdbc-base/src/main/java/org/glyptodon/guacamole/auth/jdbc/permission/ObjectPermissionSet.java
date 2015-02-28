@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 
 /**
@@ -37,14 +38,8 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
  *
  * @author Michael Jumper
  */
-public abstract class ObjectPermissionSet
+public abstract class ObjectPermissionSet extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet {
-
-    /**
-     * The user that queried this permission set. Access is based on his/her
-     * permission settings.
-     */
-    private AuthenticatedUser currentUser;
 
     /**
      * The user associated with this permission set. Each of the permissions in
@@ -72,7 +67,7 @@ public abstract class ObjectPermissionSet
      *     The user to whom the permissions in this set are granted.
      */
     public void init(AuthenticatedUser currentUser, ModeledUser user) {
-        this.currentUser = currentUser;
+        super.init(currentUser);
         this.user = user;
     }
 
@@ -88,13 +83,13 @@ public abstract class ObjectPermissionSet
  
     @Override
     public Set<ObjectPermission> getPermissions() throws GuacamoleException {
-        return getObjectPermissionService().retrievePermissions(currentUser, user);
+        return getObjectPermissionService().retrievePermissions(getCurrentUser(), user);
     }
 
     @Override
     public boolean hasPermission(ObjectPermission.Type permission,
             String identifier) throws GuacamoleException {
-        return getObjectPermissionService().retrievePermission(currentUser, user, permission, identifier) != null;
+        return getObjectPermissionService().retrievePermission(getCurrentUser(), user, permission, identifier) != null;
     }
 
     @Override
@@ -118,13 +113,13 @@ public abstract class ObjectPermissionSet
     @Override
     public void addPermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
-        getObjectPermissionService().createPermissions(currentUser, user, permissions);
+        getObjectPermissionService().createPermissions(getCurrentUser(), user, permissions);
     }
 
     @Override
     public void removePermissions(Set<ObjectPermission> permissions)
             throws GuacamoleException {
-        getObjectPermissionService().deletePermissions(currentUser, user, permissions);
+        getObjectPermissionService().deletePermissions(getCurrentUser(), user, permissions);
     }
 
 }

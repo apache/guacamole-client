@@ -24,10 +24,10 @@ package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
 import com.google.inject.Inject;
 import java.util.Set;
-import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -38,7 +38,8 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper
  */
-public class RootConnectionGroup implements ConnectionGroup {
+public class RootConnectionGroup extends RestrictedObject
+    implements ConnectionGroup {
 
     /**
      * The identifier used to represent the root connection group. There is no
@@ -53,12 +54,6 @@ public class RootConnectionGroup implements ConnectionGroup {
      * interface for the sake of translation.
      */
     public static final String NAME = "ROOT";
-
-    /**
-     * The user this group belongs to. Access is based on his/her permission
-     * settings.
-     */
-    private AuthenticatedUser currentUser;
 
     /**
      * Service for managing connection objects.
@@ -76,17 +71,6 @@ public class RootConnectionGroup implements ConnectionGroup {
      * Creates a new, empty RootConnectionGroup.
      */
     public RootConnectionGroup() {
-    }
-
-    /**
-     * Initializes this root connection group, associating it with the current
-     * authenticated user.
-     *
-     * @param currentUser
-     *     The user that created or retrieved this object.
-     */
-    public void init(AuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
     }
 
     @Override
@@ -121,13 +105,13 @@ public class RootConnectionGroup implements ConnectionGroup {
 
     @Override
     public Set<String> getConnectionIdentifiers() throws GuacamoleException {
-        return connectionService.getIdentifiersWithin(currentUser, null);
+        return connectionService.getIdentifiersWithin(getCurrentUser(), null);
     }
 
     @Override
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException {
-        return connectionGroupService.getIdentifiersWithin(currentUser, null);
+        return connectionGroupService.getIdentifiersWithin(getCurrentUser(), null);
     }
 
     @Override

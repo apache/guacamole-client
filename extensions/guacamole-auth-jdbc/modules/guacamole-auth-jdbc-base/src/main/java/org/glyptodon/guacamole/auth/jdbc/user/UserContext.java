@@ -29,6 +29,7 @@ import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -41,13 +42,8 @@ import org.glyptodon.guacamole.net.auth.User;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class UserContext
+public class UserContext extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.UserContext {
-
-    /**
-     * The the user owning this context.
-     */
-    private AuthenticatedUser currentUser;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -76,16 +72,11 @@ public class UserContext
     @Inject
     private Provider<RootConnectionGroup> rootGroupProvider;
 
-    /**
-     * Initializes the user and directories associated with this context.
-     *
-     * @param currentUser
-     *     The user owning this context.
-     */
+    @Override
     public void init(AuthenticatedUser currentUser) {
 
-        this.currentUser = currentUser;
-
+        super.init(currentUser);
+        
         // Init directories
         userDirectory.init(currentUser);
         connectionDirectory.init(currentUser);
@@ -95,7 +86,7 @@ public class UserContext
 
     @Override
     public User self() {
-        return currentUser.getUser();
+        return getCurrentUser().getUser();
     }
 
     @Override
@@ -118,7 +109,7 @@ public class UserContext
 
         // Build and return a root group for the current user
         RootConnectionGroup rootGroup = rootGroupProvider.get();
-        rootGroup.init(currentUser);
+        rootGroup.init(getCurrentUser());
         return rootGroup;
 
     }
