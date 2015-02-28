@@ -26,29 +26,15 @@
                 <directory>schema</directory>
             </fileSet>
 
+            <!-- Include extension .jar -->
+            <fileSet>
+                <directory>${project.build.directory}/extension</directory>
+                <outputDirectory>/</outputDirectory>
+                <includes>
+                    <include>*.jar</include>
+                </includes>
+            </fileSet>
+
     </fileSets>
-
-    <!-- Include self and all dependencies except guacamole-common 
-         and guacamole-ext -->
-    <dependencySets>
-        <dependencySet>
-
-            <outputDirectory>/lib</outputDirectory>
-            <scope>runtime</scope>
-            <unpack>false</unpack>
-            <useProjectArtifact>true</useProjectArtifact>
-            <useTransitiveFiltering>true</useTransitiveFiltering>
-
-            <excludes>
-
-                <!-- Do not include guacamole-common -->
-                <exclude>org.glyptodon.guacamole:guacamole-common</exclude>
-
-                <!-- Do not include guacamole-ext -->
-                <exclude>org.glyptodon.guacamole:guacamole-ext</exclude>
-
-            </excludes>
-        </dependencySet>
-    </dependencySets>
 
 </assembly>

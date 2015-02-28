@@ -1,0 +1,85 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glyptodon.guacamole</groupId>
+    <artifactId>guacamole-auth-jdbc</artifactId>
+    <packaging>jar</packaging>
+    <version>0.9.5</version>
+    <name>guacamole-auth-jdbc</name>
+    <url>http://guac-dev.org/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <!-- Written for 1.6 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- Guacamole Java API -->
+        <dependency>
+            <groupId>org.glyptodon.guacamole</groupId>
+            <artifactId>guacamole-common</artifactId>
+            <version>0.9.4</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>org.glyptodon.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+            <version>0.9.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- SLF4J - logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.7</version>
+        </dependency>
+
+        <!-- MyBatis -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.2.8</version>
+        </dependency>
+        
+        <!-- MyBatis Guice -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-guice</artifactId>
+            <version>3.6</version>
+        </dependency>
+
+        <!-- Guice -->
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-multibindings</artifactId>
+            <version>3.0</version>
+        </dependency>
+               
+    </dependencies>
+
+</project>

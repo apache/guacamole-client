@@ -30,20 +30,34 @@
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.2-beta-5</version>
-                <configuration>
-                    <finalName>${project.artifactId}-${project.version}</finalName>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>src/main/assembly/dist.xml</descriptor>
-                    </descriptors>
-                </configuration>
                 <executions>
+                    <execution>
+                        <id>jar-with-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>extension/${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>                    
                     <execution>
                         <id>make-dist-archive</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/assembly/dist.xml</descriptor>
+                            </descriptors>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -53,54 +67,19 @@
 
     <dependencies>
 
-        <!-- Guacamole Java API -->
-        <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
-            <artifactId>guacamole-common</artifactId>
-            <version>0.9.4</version>
-        </dependency>
-
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
             <version>0.9.5</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- SLF4J - logging -->
+        <!-- Guacamole JDBC Authentication -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
-        </dependency>
-
-        <!-- MyBatis -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.2.8</version>
-        </dependency>
-        
-        <!-- MyBatis Guice -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-guice</artifactId>
-            <version>3.6</version>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>3.0</version>
-        </dependency>
-
-               
-        <!-- Google Collections -->
-        <dependency>
-            <groupId>com.google.collections</groupId>
-            <artifactId>google-collections</artifactId>
-            <version>1.0</version>
+            <groupId>org.glyptodon.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc</artifactId>
+            <version>0.9.5</version>
         </dependency>
 
     </dependencies>

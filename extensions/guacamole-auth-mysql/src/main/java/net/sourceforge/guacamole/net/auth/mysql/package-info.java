@@ -21,7 +21,7 @@
  */
 
 /**
- * The MySQL authentication provider. This package exists purely for backwards-
- * compatibility.
+ * The MySQL authentication provider. This package exists outside of
+ * org.glyptodon for backwards-compatibility.
  */
 package net.sourceforge.guacamole.net.auth.mysql;

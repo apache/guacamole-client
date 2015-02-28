@@ -27,7 +27,6 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.conf.MySQLGuacamoleProperties;
 import org.glyptodon.guacamole.environment.Environment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
