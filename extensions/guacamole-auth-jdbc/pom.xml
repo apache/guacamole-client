@@ -21,7 +21,7 @@
         <module>modules/guacamole-auth-jdbc-base</module>
 
         <!-- MySQL authentication -->
-        <module>modules/guacamole-auth-mysql</module>
+        <module>modules/guacamole-auth-jdbc-mysql</module>
 
     </modules>
 

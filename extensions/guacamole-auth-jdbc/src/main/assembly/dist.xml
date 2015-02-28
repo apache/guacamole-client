@@ -17,10 +17,10 @@
             <!-- MySQL implementation -->
             <fileSet>
                 <outputDirectory>/mysql/schema</outputDirectory>
-                <directory>modules/guacamole-auth-mysql/schema</directory>
+                <directory>modules/guacamole-auth-jdbc-mysql/schema</directory>
             </fileSet>
             <fileSet>
-                <directory>modules/guacamole-auth-mysql/target/extension</directory>
+                <directory>modules/guacamole-auth-jdbc-mysql/target/extension</directory>
                 <outputDirectory>/mysql</outputDirectory>
                 <includes>
                     <include>*.jar</include>
