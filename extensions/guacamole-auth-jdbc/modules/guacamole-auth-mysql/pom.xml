@@ -5,13 +5,19 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-mysql</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.5</version>
     <name>guacamole-auth-mysql</name>
     <url>http://guac-dev.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <parent>
+        <groupId>org.glyptodon.guacamole</groupId>
+        <artifactId>guacamole-auth-jdbc</artifactId>
+        <version>0.9.5</version>
+        <relativePath>../../</relativePath>
+    </parent>
 
     <build>
         <plugins>
@@ -57,7 +63,6 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.5</version>
             <scope>provided</scope>
         </dependency>
 

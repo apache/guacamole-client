@@ -5,13 +5,19 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-jdbc-base</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.5</version>
     <name>guacamole-auth-jdbc-base</name>
     <url>http://guac-dev.org/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <parent>
+        <groupId>org.glyptodon.guacamole</groupId>
+        <artifactId>guacamole-auth-jdbc</artifactId>
+        <version>0.9.5</version>
+        <relativePath>../../</relativePath>
+    </parent>
 
     <build>
         <plugins>
@@ -31,19 +37,10 @@
 
     <dependencies>
 
-        <!-- Guacamole Java API -->
-        <dependency>
-            <groupId>org.glyptodon.guacamole</groupId>
-            <artifactId>guacamole-common</artifactId>
-            <version>0.9.4</version>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>0.9.5</version>
             <scope>provided</scope>
         </dependency>
 
