@@ -107,7 +107,7 @@ public abstract class ObjectPermissionSet extends RestrictedObject
     @Override
     public Collection<String> getAccessibleObjects(Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getObjectPermissionService().retrieveAccessibleIdentifiers(getCurrentUser(), user, permissions, identifiers);
     }
 
     @Override

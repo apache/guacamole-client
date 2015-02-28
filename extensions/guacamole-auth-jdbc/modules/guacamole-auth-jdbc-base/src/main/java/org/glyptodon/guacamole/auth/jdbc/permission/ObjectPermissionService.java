@@ -201,4 +201,54 @@ public abstract class ObjectPermissionService
         
     }
 
+    /**
+     * Retrieves the subset of the given identifiers for which the given user
+     * has at least one of the given permissions.
+     *
+     * @param user
+     *     The user checking the permissions.
+     *
+     * @param targetUser
+     *     The user to check permissions of.
+     *
+     * @param permissions
+     *     The permissions to check. An identifier will be included in the
+     *     resulting collection if at least one of these permissions is granted
+     *     for the associated object
+     *
+     * @param identifiers
+     *     The identifiers of the objects affected by the permissions being
+     *     checked.
+     *
+     * @return
+     *     A collection containing the subset of identifiers for which at least
+     *     one of the specified permissions is granted.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving permissions.
+     */
+    public Collection<String> retrieveAccessibleIdentifiers(AuthenticatedUser user,
+            ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
+            Collection<String> identifiers) throws GuacamoleException {
+
+        // Determine whether the user is an admin
+        boolean isAdmin = user.getUser().isAdministrator();
+        
+        // Only an admin can read permissions that aren't his own
+        if (isAdmin || user.getUser().getIdentifier().equals(targetUser.getIdentifier())) {
+
+            // If user is an admin, everything is accessible
+            if (isAdmin)
+                return identifiers;
+
+            // Otherwise, return explicitly-retrievable identifiers
+            return getPermissionMapper().selectAccessibleIdentifiers(targetUser.getModel(), permissions, identifiers);
+            
+        }
+
+        // User cannot read this user's permissions
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
 }

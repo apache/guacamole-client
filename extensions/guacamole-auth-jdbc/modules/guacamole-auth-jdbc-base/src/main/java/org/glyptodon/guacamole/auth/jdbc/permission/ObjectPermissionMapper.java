@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.auth.jdbc.permission;
 
+import java.util.Collection;
 import org.apache.ibatis.annotations.Param;
 import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -54,5 +55,29 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
     ObjectPermissionModel selectOne(@Param("user") UserModel user,
             @Param("type") ObjectPermission.Type type,
             @Param("identifier") String identifier);
+
+    /**
+     * Retrieves the subset of the given identifiers for which the given user
+     * has at least one of the given permissions.
+     *
+     * @param user
+     *     The user to check permissions of.
+     *
+     * @param permissions
+     *     The permissions to check. An identifier will be included in the
+     *     resulting collection if at least one of these permissions is granted
+     *     for the associated object
+     *
+     * @param identifiers
+     *     The identifiers of the objects affected by the permissions being
+     *     checked.
+     *
+     * @return
+     *     A collection containing the subset of identifiers for which at least
+     *     one of the specified permissions is granted.
+     */
+    Collection<String> selectAccessibleIdentifiers(@Param("user") UserModel user,
+            @Param("permissions") Collection<ObjectPermission.Type> permissions,
+            @Param("identifiers") Collection<String> identifiers);
 
 }
