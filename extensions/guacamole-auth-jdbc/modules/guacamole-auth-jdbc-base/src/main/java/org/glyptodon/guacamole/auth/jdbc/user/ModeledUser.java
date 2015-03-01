@@ -30,11 +30,11 @@ import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
+import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
-import org.glyptodon.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 
 /**
  * An implementation of the User object which is backed by a database model.
@@ -73,6 +73,12 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
      */
     @Inject
     private ConnectionGroupPermissionService connectionGroupPermissionService;
+    
+    /**
+     * Service for retrieving user permissions.
+     */
+    @Inject
+    private UserPermissionService userPermissionService;
 
     /**
      * The plaintext password previously set by a call to setPassword(), if
@@ -157,8 +163,7 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
     @Override
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
-        // STUB
-        return new SimpleObjectPermissionSet();
+        return userPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
 }
