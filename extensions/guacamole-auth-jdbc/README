@@ -1,0 +1,102 @@
+
+------------------------------------------------------------
+ About this README
+------------------------------------------------------------
+
+This README is intended to provide quick and to-the-point documentation for
+technical users intending to compile parts of Guacamole themselves.
+
+Distribution-specific packages are available from the files section of the main
+project page:
+ 
+    http://sourceforge.net/projects/guacamole/files/
+
+Distribution-specific documentation is provided on the Guacamole wiki:
+
+    http://guac-dev.org/
+
+
+------------------------------------------------------------
+ What is guacamole-auth-jdbc?
+------------------------------------------------------------
+
+guacamole-auth-jdbc is a Java library for use with the Guacamole web
+application to provide database-driven authentication.
+
+guacamole-auth-jdbc provides multiple authentication provider implementations
+which each provide a support for a different database. These authentication
+providers can be set in guacamole.properties to allow authentication of
+Guacamole users through that type of database.
+
+Schema files are provided to create the required tables in your database of
+choice.
+
+
+------------------------------------------------------------
+ Compiling and installing guacamole-auth-jdbc
+------------------------------------------------------------
+
+guacamole-auth-jdbc is built using Maven. Building guacamole-auth-jdbc compiles
+all classes and packages them into a redistributable .tar.gz archive.  This
+archive contains multiple .jar files, each of this corresponds to a
+database-specific authentication provider implementation that can be installed
+in the library directory configured in guacamole.properties.
+
+1) Run mvn package
+
+    $ mvn package
+
+    Maven will download any needed dependencies for building the .jar file.
+    Once all dependencies have been downloaded, the .jar file will be
+    created in the target/ subdirectory of the current directory.
+
+4) Extract the .tar.gz file now present in the target/ directory, and
+   place the .jar files in the extracted lib/ subdirectory in the library 
+   directory specified in guacamole.properties.
+
+    You will likely need to do this as root.
+
+    If you do not have a library directory configured in your
+    guacamole.properties, you will need to specify one. The directory
+    is specified using the "lib-directory" property.
+
+5) Set up your MySQL database to authenticate Guacamole users
+
+    A schema file is provided in the schema directory for creating
+    the guacamole authentication tables in your MySQL database.
+
+    Additionally, a script is provided to create a default admin user
+    with username 'guacadmin' and password 'guacadmin'. This user can 
+    be used to set up any other connections and users.
+
+6) Configure guacamole.properties for your database
+
+    There are additional properties required by JDBC drivers which must
+    be added/changed in your guacamole.properties. These parameters are
+    specific to the database being used.
+
+    For MySQL, the following properties are available:
+
+    # Database connection configuration
+    mysql-hostname:           database.host.name
+    mysql-port:               3306
+    mysql-database:           guacamole.database.name
+    mysql-username:           user
+    mysql-password:           pass
+
+    Optionally, the authentication provider can be configured
+    not to allow multiple users to use the same connection
+    at the same time:
+
+    mysql-disallow-simultaneous-connections: true
+
+
+------------------------------------------------------------
+ Reporting problems
+------------------------------------------------------------
+
+Please report any bugs encountered by opening a new issue in the JIRA system
+hosted at:
+    
+    http://glyptodon.org/jira/
+

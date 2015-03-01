@@ -27,6 +27,11 @@
         <!-- Guacamole JavaScript API -->
         <module>guacamole-common-js</module>
 
+        <!-- Authentication extensions -->
+        <module>extensions/guacamole-auth-jdbc</module>
+        <module>extensions/guacamole-auth-ldap</module>
+        <module>extensions/guacamole-auth-noauth</module>
+
     </modules>
 
     <build>
