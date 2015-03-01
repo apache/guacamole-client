@@ -62,6 +62,27 @@
         WHERE
             guacamole_connection_group_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}
+            AND connection_group_id = #{identifier,jdbcType=VARCHAR}
+
+    </select>
+
+    <!-- Select identifiers accessible by the given user for the given permissions -->
+    <select id="selectAccessibleIdentifiers" resultType="string">
+
+        SELECT DISTINCT connection_group_id 
+        FROM guacamole_connection_group_permission
+        WHERE
+            user_id = #{user.objectID,jdbcType=INTEGER}
+            AND connection_group_id IN
+                <foreach collection="identifiers" item="identifier"
+                         open="(" separator="," close=")">
+                    #{identifier,jdbcType=VARCHAR}
+                </foreach>
+            AND permission IN
+                <foreach collection="permissions" item="permission"
+                         open="(" separator="," close=")">
+                    #{permission,jdbcType=VARCHAR}
+                </foreach>
 
     </select>
 
