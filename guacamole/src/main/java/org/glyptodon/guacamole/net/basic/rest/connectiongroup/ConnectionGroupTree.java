@@ -33,6 +33,7 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,11 +160,18 @@ public class ConnectionGroupTree {
      *
      * @param parents
      *     The parents whose descendants should be added to the tree.
+     * 
+     * @param permissions
+     *     If specified and non-empty, limit added connections to only
+     *     connections for which the current user has any of the given
+     *     permissions. Otherwise, all visible connections are added.
+     *     Connection groups are unaffected by this parameter.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the descendants.
      */
-    private void addDescendants(Collection<ConnectionGroup> parents)
+    private void addDescendants(Collection<ConnectionGroup> parents,
+            List<ObjectPermission.Type> permissions)
         throws GuacamoleException {
 
         // If no parents, nothing to do
@@ -179,6 +187,12 @@ public class ConnectionGroupTree {
             childConnectionGroupIdentifiers.addAll(parent.getConnectionGroupIdentifiers());
         }
 
+        // Filter identifiers based on permissions, if requested
+        if (permissions != null && !permissions.isEmpty()) {
+            ObjectPermissionSet permissionSet = userContext.self().getConnectionPermissions();
+            childConnectionIdentifiers = permissionSet.getAccessibleObjects(permissions, childConnectionIdentifiers);
+        }
+        
         // Retrieve child connections
         if (!childConnectionIdentifiers.isEmpty()) {
             Collection<Connection> childConnections = userContext.getConnectionDirectory().getAll(childConnectionIdentifiers);
@@ -189,7 +203,7 @@ public class ConnectionGroupTree {
         if (!childConnectionGroupIdentifiers.isEmpty()) {
             Collection<ConnectionGroup> childConnectionGroups = userContext.getConnectionGroupDirectory().getAll(childConnectionGroupIdentifiers);
             addConnectionGroups(childConnectionGroups);
-            addDescendants(childConnectionGroups);
+            addDescendants(childConnectionGroups, permissions);
         }
 
     }
@@ -225,7 +239,7 @@ public class ConnectionGroupTree {
         retrievedGroups.put(root.getIdentifier(), this.rootAPIGroup);
 
         // Add all descendants
-        addDescendants(Collections.singleton(root));
+        addDescendants(Collections.singleton(root), permissions);
         
     }
 
