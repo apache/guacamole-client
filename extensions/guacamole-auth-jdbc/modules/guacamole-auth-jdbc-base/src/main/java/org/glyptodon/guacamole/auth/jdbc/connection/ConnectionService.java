@@ -147,26 +147,37 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
     }
 
     @Override
-    protected void validateNewObject(AuthenticatedUser user, Connection object)
-            throws GuacamoleException {
+    protected void validateNewModel(AuthenticatedUser user,
+            ConnectionModel model) throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getName().trim().isEmpty())
+        if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
-        
-        // FIXME: Do not attempt to create duplicate connections
+
+        // Do not attempt to create duplicate connections
+        ConnectionModel existing = connectionMapper.selectOneByName(model.getParentIdentifier(), model.getName());
+        if (existing != null)
+            throw new GuacamoleClientException("The connection \"" + model.getName() + "\" already exists.");
 
     }
 
     @Override
-    protected void validateExistingObject(AuthenticatedUser user,
-            ModeledConnection object) throws GuacamoleException {
+    protected void validateExistingModel(AuthenticatedUser user,
+            ConnectionModel model) throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getName().trim().isEmpty())
+        if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
         
-        // FIXME: Check whether such a connection is already present
+        // Check whether such a connection is already present
+        ConnectionModel existing = connectionMapper.selectOneByName(model.getParentIdentifier(), model.getName());
+        if (existing != null) {
+
+            // If the specified name matches a DIFFERENT existing connection, the update cannot continue
+            if (!existing.getObjectID().equals(model.getObjectID()))
+                throw new GuacamoleClientException("The connection \"" + model.getName() + "\" already exists.");
+
+        }
         
     }
 
@@ -238,10 +249,11 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
         // Update connection
         super.updateObject(user, object);
 
-        // Replace existing parameters with new parameters
+        // Replace existing parameters with new parameters, if any
         Collection<ParameterModel> parameterModels = getParameterModels(object);
         parameterMapper.delete(object.getIdentifier());
-        parameterMapper.insert(parameterModels);
+        if (!parameterModels.isEmpty())
+            parameterMapper.insert(parameterModels);
         
     }
 

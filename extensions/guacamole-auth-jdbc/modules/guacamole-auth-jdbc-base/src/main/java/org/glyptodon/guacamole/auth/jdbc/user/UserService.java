@@ -118,38 +118,35 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     }
 
     @Override
-    protected void validateNewObject(AuthenticatedUser user, User object)
+    protected void validateNewModel(AuthenticatedUser user, UserModel model)
             throws GuacamoleException {
 
         // Username must not be blank
-        if (object.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Do not create duplicate users
-        Collection<UserModel> existing = userMapper.select(Collections.singleton(object.getIdentifier()));
+        Collection<UserModel> existing = userMapper.select(Collections.singleton(model.getIdentifier()));
         if (!existing.isEmpty())
-            throw new GuacamoleClientException("User \"" + object.getIdentifier() + "\" already exists.");
+            throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
 
     }
 
     @Override
-    protected void validateExistingObject(AuthenticatedUser user,
-            ModeledUser object) throws GuacamoleException {
+    protected void validateExistingModel(AuthenticatedUser user,
+            UserModel model) throws GuacamoleException {
 
         // Username must not be blank
-        if (object.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Check whether such a user is already present
-        ModeledUser existing = retrieveObject(user, object.getIdentifier());
+        UserModel existing = userMapper.selectOne(model.getIdentifier());
         if (existing != null) {
 
-            UserModel existingModel = existing.getModel();
-            UserModel updatedModel = object.getModel();
-
             // Do not rename to existing user
-            if (!existingModel.getObjectID().equals(updatedModel.getObjectID()))
-                throw new GuacamoleClientException("User \"" + object.getIdentifier() + "\" already exists.");
+            if (!existing.getObjectID().equals(model.getObjectID()))
+                throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
             
         }
         
@@ -173,7 +170,7 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
         String password = credentials.getPassword();
 
         // Retrieve user model, if the user exists
-        UserModel userModel = userMapper.selectByCredentials(username, password);
+        UserModel userModel = userMapper.selectOneByCredentials(username, password);
         if (userModel == null)
             return null;
 

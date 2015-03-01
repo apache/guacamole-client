@@ -215,49 +215,50 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     }
 
     /**
-     * Returns whether the given object is valid and can be created as-is. The
-     * object does not yet exist in the database, but the user desires to
-     * create a new object with the given values. This function will be called
-     * prior to any creation operation, and provides a means for the
-     * implementation to abort prior to completion. The default implementation
-     * does nothing.
+     * Returns whether the contents of the given model are valid and can be
+     * used to create a new object as-is. The object does not yet exist in the
+     * database, but the user desires to create a new object with the given
+     * model. This function will be called prior to any creation operation, and
+     * provides a means for the implementation to abort prior to completion. The
+     * default implementation does nothing.
      *
      * @param user
      *     The user creating the object.
      *
-     * @param object
-     *     The object to validate.
+     * @param model
+     *     The model to validate.
      *
      * @throws GuacamoleException
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void validateNewObject(AuthenticatedUser user,
-            ExternalType object) throws GuacamoleException {
+    protected void validateNewModel(AuthenticatedUser user,
+            ModelType model) throws GuacamoleException {
 
         // By default, do nothing.
 
     }
 
     /**
-     * Returns whether the given object is valid and can updated as-is. The
-     * object already exists in the database, but the user desires to update
-     * the object to the given values. This function will be called prior to
-     * update operation, and provides a means for the implementation to abort
-     * prior to completion. The default implementation does nothing.
+     * Returns whether the given model is valid and can be used to update an
+     * existing object as-is. The object already exists in the database, but the
+     * user desires to update the object to the given model. This function will
+     * be called prior to update operation, and provides a means for the
+     * implementation to abort prior to completion. The default implementation
+     * does nothing.
      *
      * @param user
      *     The user updating the existing object.
      *
-     * @param object 
-     *     The object to validate.
+     * @param model
+     *     The model to validate.
      *
      * @throws GuacamoleException
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void validateExistingObject(AuthenticatedUser user,
-            InternalType object) throws GuacamoleException {
+    protected void validateExistingModel(AuthenticatedUser user,
+            ModelType model) throws GuacamoleException {
 
         // By default, do nothing.
 
@@ -362,10 +363,10 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
         if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
 
             // Validate object prior to creation
-            validateNewObject(user, object);
+            ModelType model = getModelInstance(user, object);
+            validateNewModel(user, model);
 
             // Create object
-            ModelType model = getModelInstance(user, object);
             getObjectMapper().insert(model);
 
             // Build list of implicit permissions
@@ -447,10 +448,11 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
         if (hasObjectPermission(user, object.getIdentifier(), ObjectPermission.Type.UPDATE)) {
 
             // Validate object prior to creation
-            validateExistingObject(user, object);
+            ModelType model = object.getModel();
+            validateExistingModel(user, model);
 
             // Update object
-            getObjectMapper().update(object.getModel());
+            getObjectMapper().update(model);
             return;
         }
 

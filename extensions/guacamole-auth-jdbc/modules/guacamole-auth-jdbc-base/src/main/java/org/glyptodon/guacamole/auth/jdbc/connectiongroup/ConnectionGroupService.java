@@ -130,26 +130,37 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
     }
 
     @Override
-    protected void validateNewObject(AuthenticatedUser user, ConnectionGroup object)
-            throws GuacamoleException {
+    protected void validateNewModel(AuthenticatedUser user,
+            ConnectionGroupModel model) throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getName().trim().isEmpty())
+        if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
         
-        // FIXME: Do not attempt to create duplicate connection groups
+        // Do not attempt to create duplicate connection groups
+        ConnectionGroupModel existing = connectionGroupMapper.selectOneByName(model.getParentIdentifier(), model.getName());
+        if (existing != null)
+            throw new GuacamoleClientException("The connection group \"" + model.getName() + "\" already exists.");
 
     }
 
     @Override
-    protected void validateExistingObject(AuthenticatedUser user,
-            ModeledConnectionGroup object) throws GuacamoleException {
+    protected void validateExistingModel(AuthenticatedUser user,
+            ConnectionGroupModel model) throws GuacamoleException {
 
         // Name must not be blank
-        if (object.getName().trim().isEmpty())
+        if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
         
-        // FIXME: Check whether such a connection group is already present
+        // Check whether such a connection group is already present
+        ConnectionGroupModel existing = connectionGroupMapper.selectOneByName(model.getParentIdentifier(), model.getName());
+        if (existing != null) {
+
+            // If the specified name matches a DIFFERENT existing connection group, the update cannot continue
+            if (!existing.getObjectID().equals(model.getObjectID()))
+                throw new GuacamoleClientException("The connection group \"" + model.getName() + "\" already exists.");
+
+        }
         
     }
 

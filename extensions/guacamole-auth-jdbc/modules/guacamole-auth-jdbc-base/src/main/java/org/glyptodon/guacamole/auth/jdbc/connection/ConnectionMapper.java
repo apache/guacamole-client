@@ -71,5 +71,22 @@ public interface ConnectionMapper extends DirectoryObjectMapper<ConnectionModel>
      */
     Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
             @Param("parentIdentifier") String parentIdentifier);
+
+    /**
+     * Selects the connection within the given parent group and having the
+     * given name. If no such connection exists, null is returned.
+     *
+     * @param parentIdentifier
+     *     The identifier of the parent group to search within.
+     *
+     * @param name
+     *     The name of the connection to find.
+     *
+     * @return
+     *     The connection having the given name within the given parent group,
+     *     or null if no such connection exists.
+     */
+    ConnectionModel selectOneByName(@Param("parentIdentifier") String parentIdentifier,
+            @Param("name") String name);
     
 }

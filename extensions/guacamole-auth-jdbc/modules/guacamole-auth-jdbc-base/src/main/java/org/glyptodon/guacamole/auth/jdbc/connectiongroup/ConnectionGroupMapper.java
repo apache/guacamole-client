@@ -71,5 +71,22 @@ public interface ConnectionGroupMapper extends DirectoryObjectMapper<ConnectionG
      */
     Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
             @Param("parentIdentifier") String parentIdentifier);
+
+    /**
+     * Selects the connection group within the given parent group and having
+     * the given name. If no such connection group exists, null is returned.
+     *
+     * @param parentIdentifier
+     *     The identifier of the parent group to search within.
+     *
+     * @param name
+     *     The name of the connection group to find.
+     *
+     * @return
+     *     The connection group having the given name within the given parent
+     *     group, or null if no such connection group exists.
+     */
+    ConnectionGroupModel selectOneByName(@Param("parentIdentifier") String parentIdentifier,
+            @Param("name") String name);
     
 }

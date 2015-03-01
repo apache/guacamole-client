@@ -87,8 +87,8 @@
 
     </select>
 
-
-    <select id="selectByCredentials" resultMap="UserResultMap">
+    <!-- Select single user by credentials -->
+    <select id="selectOneByCredentials" resultMap="UserResultMap">
         SELECT
             user_id,
             username,
@@ -98,6 +98,20 @@
         WHERE
                 username      = #{username,jdbcType=VARCHAR}
             AND password_hash = UNHEX(SHA2(CONCAT(#{password,jdbcType=VARCHAR}, HEX(password_salt)), 256))
+    </select>
+
+    <!-- Select single user by username -->
+    <select id="selectOne" resultMap="UserResultMap">
+
+        SELECT
+            user_id,
+            username,
+            password_hash,
+            password_salt
+        FROM guacamole_user
+        WHERE
+            username = #{identifier,jdbcType=VARCHAR}
+
     </select>
 
     <!-- Delete single user by username -->

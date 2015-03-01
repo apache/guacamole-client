@@ -108,6 +108,22 @@
 
     </select>
 
+    <!-- Select single connection group by name -->
+    <select id="selectOneByName" resultMap="ConnectionGroupResultMap">
+
+        SELECT
+            connection_group_id,
+            connection_group_name,
+            parent_id,
+            type
+        FROM guacamole_connection_group
+        WHERE 
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
+            <if test="parentIdentifier == null">parent_id IS NULL</if>
+            AND connection_group_name = #{name,jdbcType=VARCHAR}
+
+    </select>
+
     <!-- Delete single connection group by identifier -->
     <delete id="delete">
         DELETE FROM guacamole_connection_group
