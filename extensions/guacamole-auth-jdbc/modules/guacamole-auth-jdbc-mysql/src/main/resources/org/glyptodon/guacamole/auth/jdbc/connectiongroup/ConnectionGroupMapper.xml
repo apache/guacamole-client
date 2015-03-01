@@ -95,7 +95,7 @@
             guacamole_connection_group.connection_group_id,
             connection_group_name,
             parent_id,
-            protocol 
+            type 
         FROM guacamole_connection_group
         JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
         WHERE guacamole_connection_group.connection_group_id IN

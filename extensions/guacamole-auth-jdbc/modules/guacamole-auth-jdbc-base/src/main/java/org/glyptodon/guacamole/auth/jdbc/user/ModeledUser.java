@@ -28,6 +28,7 @@ import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
 import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -66,7 +67,13 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
      */
     @Inject
     private ConnectionPermissionService connectionPermissionService;
-    
+
+    /**
+     * Service for retrieving connection group permissions.
+     */
+    @Inject
+    private ConnectionGroupPermissionService connectionGroupPermissionService;
+
     /**
      * The plaintext password previously set by a call to setPassword(), if
      * any. The password of a user cannot be retrieved once saved into the
@@ -144,8 +151,7 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
     @Override
     public ObjectPermissionSet getConnectionGroupPermissions()
             throws GuacamoleException {
-        // STUB
-        return new SimpleObjectPermissionSet();
+        return connectionGroupPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
     @Override
