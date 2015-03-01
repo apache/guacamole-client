@@ -37,6 +37,8 @@ import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -60,6 +62,12 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
     @Inject
     private ConnectionMapper connectionMapper;
 
+    /**
+     * Mapper for manipulating connection permissions.
+     */
+    @Inject
+    private ConnectionPermissionMapper connectionPermissionMapper;
+    
     /**
      * Mapper for accessing connection parameters.
      */
@@ -87,6 +95,11 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
     @Override
     protected DirectoryObjectMapper<ConnectionModel> getObjectMapper() {
         return connectionMapper;
+    }
+
+    @Override
+    protected ObjectPermissionMapper getPermissionMapper() {
+        return connectionPermissionMapper;
     }
 
     @Override

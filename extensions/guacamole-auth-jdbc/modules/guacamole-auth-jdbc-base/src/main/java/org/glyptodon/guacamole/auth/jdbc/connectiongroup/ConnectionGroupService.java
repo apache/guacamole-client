@@ -32,6 +32,8 @@ import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -56,6 +58,12 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
     private ConnectionGroupMapper connectionGroupMapper;
 
     /**
+     * Mapper for manipulating connection group permissions.
+     */
+    @Inject
+    private ConnectionGroupPermissionMapper connectionGroupPermissionMapper;
+    
+    /**
      * Provider for creating connection groups.
      */
     @Inject
@@ -70,6 +78,11 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
     @Override
     protected DirectoryObjectMapper<ConnectionGroupModel> getObjectMapper() {
         return connectionGroupMapper;
+    }
+
+    @Override
+    protected ObjectPermissionMapper getPermissionMapper() {
+        return connectionGroupPermissionMapper;
     }
 
     @Override

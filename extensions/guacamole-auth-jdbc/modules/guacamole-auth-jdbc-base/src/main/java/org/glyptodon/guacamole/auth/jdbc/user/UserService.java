@@ -31,6 +31,8 @@ import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -51,6 +53,12 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     private UserMapper userMapper;
 
     /**
+     * Mapper for manipulating user permissions.
+     */
+    @Inject
+    private UserPermissionMapper userPermissionMapper;
+    
+    /**
      * Provider for creating users.
      */
     @Inject
@@ -59,6 +67,11 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     @Override
     protected DirectoryObjectMapper<UserModel> getObjectMapper() {
         return userMapper;
+    }
+
+    @Override
+    protected ObjectPermissionMapper getPermissionMapper() {
+        return userPermissionMapper;
     }
 
     @Override

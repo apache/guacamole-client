@@ -29,6 +29,9 @@ import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
+import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -54,6 +57,17 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
         ExternalType, ModelType extends ObjectModel> {
 
     /**
+     * All object permissions which are implicitly granted upon creation to the
+     * creator of the object.
+     */
+    private static final ObjectPermission.Type[] IMPLICIT_OBJECT_PERMISSIONS = {
+        ObjectPermission.Type.READ,
+        ObjectPermission.Type.UPDATE,
+        ObjectPermission.Type.DELETE,
+        ObjectPermission.Type.ADMINISTER
+    };
+    
+    /**
      * Returns an instance of a mapper for the type of object used by this
      * service.
      *
@@ -62,6 +76,16 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
      *     the objects used by this service.
      */
     protected abstract DirectoryObjectMapper<ModelType> getObjectMapper();
+
+    /**
+     * Returns an instance of a mapper for the type of permissions that affect
+     * the type of object used by this service.
+     *
+     * @return
+     *     A mapper which provides access to the model objects associated with
+     *     the permissions that affect the objects used by this service.
+     */
+    protected abstract ObjectPermissionMapper getPermissionMapper();
 
     /**
      * Returns an instance of an object which is backed by the given model
@@ -344,7 +368,28 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
             ModelType model = getModelInstance(user, object);
             getObjectMapper().insert(model);
 
-            // FIXME: Insert implicit object permissions, too.
+            // Build list of implicit permissions
+            Collection<ObjectPermissionModel> implicitPermissions =
+                    new ArrayList<ObjectPermissionModel>(IMPLICIT_OBJECT_PERMISSIONS.length);
+
+            UserModel userModel = user.getUser().getModel();
+            for (ObjectPermission.Type permission : IMPLICIT_OBJECT_PERMISSIONS) {
+
+                // Create model which grants this permission to the current user
+                ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+                permissionModel.setUserID(userModel.getObjectID());
+                permissionModel.setUsername(userModel.getIdentifier());
+                permissionModel.setType(permission);
+                permissionModel.setObjectIdentifier(model.getIdentifier());
+
+                // Add permission
+                implicitPermissions.add(permissionModel);
+                
+            }
+
+            // Add implicit permissions
+            getPermissionMapper().insert(implicitPermissions);
+
             return getObjectInstance(user, model);
         }
 
