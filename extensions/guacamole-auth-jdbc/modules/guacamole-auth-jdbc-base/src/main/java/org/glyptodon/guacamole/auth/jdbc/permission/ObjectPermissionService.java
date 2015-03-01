@@ -233,6 +233,10 @@ public abstract class ObjectPermissionService
             ModeledUser targetUser, Collection<ObjectPermission.Type> permissions,
             Collection<String> identifiers) throws GuacamoleException {
 
+        // Nothing is always accessible
+        if (identifiers.isEmpty())
+            return identifiers;
+        
         // Determine whether the user is an admin
         boolean isAdmin = user.getUser().isAdministrator();
         
