@@ -28,6 +28,7 @@ import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
 import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -59,6 +60,12 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
      */
     @Inject
     private SystemPermissionService systemPermissionService;
+
+    /**
+     * Service for retrieving connection permissions.
+     */
+    @Inject
+    private ConnectionPermissionService connectionPermissionService;
     
     /**
      * The plaintext password previously set by a call to setPassword(), if
@@ -131,8 +138,7 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
     @Override
     public ObjectPermissionSet getConnectionPermissions()
             throws GuacamoleException {
-        // STUB
-        return new SimpleObjectPermissionSet();
+        return connectionPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
     @Override

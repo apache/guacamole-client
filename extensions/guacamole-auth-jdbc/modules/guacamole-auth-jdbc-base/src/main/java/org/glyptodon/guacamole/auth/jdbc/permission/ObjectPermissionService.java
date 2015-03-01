@@ -45,24 +45,26 @@ public abstract class ObjectPermissionService
     @Override
     protected abstract ObjectPermissionMapper getPermissionMapper();
 
-    /**
-     * Returns the permission set associated with the given user and related
-     * to the type of objects affected the permissions handled by this
-     * permission service.
-     *
-     * @param user
-     *     The user whose permissions are being retrieved.
-     *
-     * @return
-     *     A permission set which contains the permissions associated with the
-     *     given user and related to the type of objects handled by this
-     *     directory object service.
-     * 
-     * @throws GuacamoleException
-     *     If permission to read the user's permissions is denied.
-     */
-    protected abstract ObjectPermissionSet getAffectedPermissionSet(AuthenticatedUser user)
-            throws GuacamoleException;
+    @Override
+    protected ObjectPermission getPermissionInstance(ObjectPermissionModel model) {
+        return new ObjectPermission(model.getType(), model.getObjectIdentifier());
+    }
+
+    @Override
+    protected ObjectPermissionModel getModelInstance(ModeledUser targetUser,
+            ObjectPermission permission) {
+
+        ObjectPermissionModel model = new ObjectPermissionModel();
+
+        // Populate model object with data from user and permission
+        model.setUserID(targetUser.getModel().getObjectID());
+        model.setUsername(targetUser.getModel().getIdentifier());
+        model.setType(permission.getType());
+        model.setObjectIdentifier(permission.getObjectIdentifier());
+
+        return model;
+        
+    }
 
     /**
      * Determines whether the current user has permission to update the given
@@ -108,7 +110,7 @@ public abstract class ObjectPermissionService
             affectedIdentifiers.add(permission.getObjectIdentifier());
 
         // Determine subset of affected identifiers that we have admin access to
-        ObjectPermissionSet affectedPermissionSet = getAffectedPermissionSet(user);
+        ObjectPermissionSet affectedPermissionSet = getPermissionSet(user, user.getUser());
         Collection<String> allowedSubset = affectedPermissionSet.getAccessibleObjects(
             Collections.singleton(ObjectPermission.Type.ADMINISTER),
             affectedIdentifiers

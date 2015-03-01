@@ -49,6 +49,9 @@ import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.socket.UnrestrictedGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserService;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
+import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionSet;
 import org.glyptodon.guacamole.environment.Environment;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -91,6 +94,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);
+        addMapperClass(ConnectionPermissionMapper.class);
         addMapperClass(ConnectionRecordMapper.class);
         addMapperClass(ParameterMapper.class);
         addMapperClass(SystemPermissionMapper.class);
@@ -105,11 +109,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledGuacamoleConfiguration.class);
         bind(ModeledUser.class);
         bind(RootConnectionGroup.class);
+        bind(ConnectionPermissionSet.class);
         bind(SystemPermissionSet.class);
         bind(UserContext.class);
         bind(UserDirectory.class);
         
         // Bind services
+        bind(ConnectionPermissionService.class);
         bind(ConnectionService.class);
         bind(ConnectionGroupService.class);
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);

@@ -22,45 +22,26 @@
 
 package org.glyptodon.guacamole.auth.jdbc.permission;
 
-import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import com.google.inject.Inject;
 
 /**
- * Object representation of an object-related Guacamole permission, as
- * represented in the database.
+ * A database implementation of ObjectPermissionSet which uses an injected
+ * service to query and manipulate the connection permissions associated with
+ * a particular user.
  *
  * @author Michael Jumper
  */
-public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type> {
+public class ConnectionPermissionSet extends ObjectPermissionSet {
 
     /**
-     * The unique identifier of the object affected by this permission.
+     * Service for querying and manipulating connection permissions.
      */
-    private String objectIdentifier;
-
-    /**
-     * Creates a new, empty object permission.
-     */
-    public ObjectPermissionModel() {
+    @Inject
+    private ConnectionPermissionService connectionPermissionService;
+    
+    @Override
+    protected ObjectPermissionService getObjectPermissionService() {
+        return connectionPermissionService;
     }
-
-    /**
-     * Returns the unique identifier of the object affected by this permission.
-     *
-     * @return
-     *     The unique identifier of the object affected by this permission.
-     */
-    public String getObjectIdentifier() {
-        return objectIdentifier;
-    }
-
-    /**
-     * Sets the unique identifier of the object affected by this permission.
-     *
-     * @param objectIdentifier 
-     *     The unique identifier of the object affected by this permission.
-     */
-    public void setObjectIdentifier(String objectIdentifier) {
-        this.objectIdentifier = objectIdentifier;
-    }
-
+ 
 }

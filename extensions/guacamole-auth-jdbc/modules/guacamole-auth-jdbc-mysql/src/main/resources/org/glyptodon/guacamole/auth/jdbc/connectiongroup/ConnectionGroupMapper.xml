@@ -63,7 +63,7 @@
     <select id="selectReadableIdentifiersWithin" resultType="string">
         SELECT guacamole_connection_group.connection_group_id
         FROM guacamole_connection_group
-        JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection.group_connection_group_id
+        JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
         WHERE
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
