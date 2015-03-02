@@ -22,11 +22,12 @@
 
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 
@@ -43,8 +44,8 @@ public class ActiveConnectionMultimap {
     /**
      * All active connections to a connection having a given identifier.
      */
-    private final Map<String, LinkedList<ConnectionRecord>> records =
-            new HashMap<String, LinkedList<ConnectionRecord>>();
+    private final Map<String, Set<ConnectionRecord>> records =
+            new HashMap<String, Set<ConnectionRecord>>();
 
     /**
      * Stores the given connection record in the list of active connections
@@ -60,14 +61,14 @@ public class ActiveConnectionMultimap {
         synchronized (records) {
 
             // Get set of active connection records, creating if necessary
-            LinkedList<ConnectionRecord> connections = records.get(identifier);
+            Set<ConnectionRecord> connections = records.get(identifier);
             if (connections == null) {
-                connections = new LinkedList<ConnectionRecord>();
+                connections = Collections.newSetFromMap(new LinkedHashMap<ConnectionRecord, Boolean>());
                 records.put(identifier, connections);
             }
 
             // Add active connection
-            connections.addFirst(record);
+            connections.add(record);
 
         }
     }
@@ -86,7 +87,7 @@ public class ActiveConnectionMultimap {
         synchronized (records) {
 
             // Get set of active connection records
-            LinkedList<ConnectionRecord> connections = records.get(identifier);
+            Set<ConnectionRecord> connections = records.get(identifier);
             assert(connections != null);
 
             // Remove old record
@@ -100,25 +101,26 @@ public class ActiveConnectionMultimap {
     }
 
     /**
-     * Returns the current list of active connection records associated with
-     * the object having the given identifier. The list will be sorted in
-     * ascending order of connection age. If there are no such connections, an
-     * empty list is returned.
+     * Returns a collection of active connection records associated with the
+     * object having the given identifier. The collection will be sorted in
+     * insertion order. If there are no such connections, an empty collection is
+     * returned.
      *
      * @param identifier
      *     The identifier of the object to check.
      *
      * @return
-     *     An immutable list of records associated with the object having the
-     *     given identifier, or an empty list if there are no such records.
+     *     An immutable collection of records associated with the object having
+     *     the given identifier, or an empty collection if there are no such
+     *     records.
      */
-    public List<ConnectionRecord> get(String identifier) {
+    public Collection<ConnectionRecord> get(String identifier) {
         synchronized (records) {
 
             // Get set of active connection records
-            LinkedList<ConnectionRecord> connections = records.get(identifier);
+            Collection<ConnectionRecord> connections = records.get(identifier);
             if (connections != null)
-                return Collections.unmodifiableList(connections);
+                return Collections.unmodifiableCollection(connections);
 
             return Collections.EMPTY_LIST;
 

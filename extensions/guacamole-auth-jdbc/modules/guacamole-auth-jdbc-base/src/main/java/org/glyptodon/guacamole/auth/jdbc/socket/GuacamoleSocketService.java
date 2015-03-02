@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
-import java.util.List;
+import java.util.Collection;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -72,18 +72,19 @@ public interface GuacamoleSocketService {
             throws GuacamoleException;
 
     /**
-     * Returns a list containing connection records representing all currently-
-     * active connections using the given connection. These records will have
-     * usernames and start dates, but no end date.
+     * Returns a connection containing connection records representing all
+     * currently-active connections using the given connection. These records
+     * will have usernames and start dates, but no end date, and will be
+     * sorted in ascending order by start date.
      *
      * @param connection
      *     The connection to check.
      *
      * @return
-     *     A list containing connection records representing all currently-
-     *     active connections.
+     *     A connection containing connection records representing all
+     *     currently-active connections.
      */
-    public List<ConnectionRecord> getActiveConnections(Connection connection);
+    public Collection<ConnectionRecord> getActiveConnections(Connection connection);
 
     /**
      * Creates a socket for the given user which connects to the given
@@ -116,17 +117,18 @@ public interface GuacamoleSocketService {
             throws GuacamoleException;
 
     /**
-     * Returns a list containing connection records representing all currently-
-     * active connections using the given connection group. These records will
-     * have usernames and start dates, but no end date.
+     * Returns a collection containing connection records representing all
+     * currently-active connections using the given connection group. These
+     * records will have usernames and start dates, but no end date, and will
+     * be sorted in ascending order by start date.
      *
      * @param connectionGroup
      *     The connection group to check.
      *
      * @return
-     *     A list containing connection records representing all currently-
-     *     active connections.
+     *     A collection containing connection records representing all
+     *     currently-active connections.
      */
-    public List<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
+    public Collection<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
 
 }

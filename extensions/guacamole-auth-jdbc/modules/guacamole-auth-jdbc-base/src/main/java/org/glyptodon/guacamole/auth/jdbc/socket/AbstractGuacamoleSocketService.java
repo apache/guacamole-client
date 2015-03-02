@@ -268,7 +268,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     @Override
-    public List<ConnectionRecord> getActiveConnections(Connection connection) {
+    public Collection<ConnectionRecord> getActiveConnections(Connection connection) {
         return activeConnections.get(connection.getIdentifier());
     }
 
@@ -305,7 +305,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     @Override
-    public List<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup) {
+    public Collection<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup) {
 
         // If not a balancing group, assume no connections
         if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)
