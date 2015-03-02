@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2013 Glyptodon LLC
+-- Copyright (C) 2015 Glyptodon LLC
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -22,8 +22,8 @@
 
 -- Create default user "guacadmin" with password "guacadmin"
 insert into guacamole_user values(1, 'guacadmin',
-    x'CA458A7D494E3BE824F5E1E175A1556C0F8EEF2C2D7DF3633BEC4A29C4411960',  -- 'guacadmin'
-    x'FE24ADC5E11E2B25288D1704ABE67A79E342ECC26064CE69C5B3177795A82264');
+    E'\\xCA458A7D494E3BE824F5E1E175A1556C0F8EEF2C2D7DF3633BEC4A29C4411960',  -- 'guacadmin'
+    E'\\xFE24ADC5E11E2B25288D1704ABE67A79E342ECC26064CE69C5B3177795A82264');
 
 -- Grant this user create permissions
 insert into guacamole_system_permission values(1, 'CREATE_CONNECTION');

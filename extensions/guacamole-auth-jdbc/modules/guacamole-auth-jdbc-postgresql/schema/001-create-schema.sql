@@ -1,5 +1,5 @@
 --
--- Copyright (C) 2013 Glyptodon LLC
+-- Copyright (C) 2015 Glyptodon LLC
 --
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -21,25 +21,61 @@
 --
 
 --
+-- Connection group types
+--
+
+CREATE TYPE guacamole_connection_group_type AS ENUM(
+    'ORGANIZATIONAL',
+    'BALANCING'
+);
+
+--
+-- Object permission types
+--
+
+CREATE TYPE guacamole_object_permission_type AS ENUM(
+    'READ',
+    'UPDATE',
+    'DELETE',
+    'ADMINISTER'
+);
+
+--
+-- System permission types
+--
+
+CREATE TYPE guacamole_system_permission_type AS ENUM(
+    'CREATE_CONNECTION',
+    'CREATE_CONNECTION_GROUP',
+    'CREATE_USER',
+    'ADMINISTER'
+);
+
+--
 -- Table of connection groups. Each connection group has a name.
 --
 
-CREATE TABLE `guacamole_connection_group` (
+CREATE TABLE guacamole_connection_group (
 
-  `connection_group_id`   int(11)      NOT NULL AUTO_INCREMENT,
-  `parent_id`             int(11),
-  `connection_group_name` varchar(128) NOT NULL,
-  `type`                  enum('ORGANIZATIONAL',
-                               'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
+  connection_group_id   serial       NOT NULL,
+  parent_id             integer,
+  connection_group_name varchar(128) NOT NULL,
+  type                  guacamole_connection_group_type
+                        NOT NULL DEFAULT 'ORGANIZATIONAL',
 
-  PRIMARY KEY (`connection_group_id`),
-  UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
+  PRIMARY KEY (connection_group_id),
 
-  CONSTRAINT `guacamole_connection_group_ibfk_1`
-    FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+  CONSTRAINT connection_group_name_parent
+    UNIQUE (connection_group_name, parent_id),
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT guacamole_connection_group_ibfk_1
+    FOREIGN KEY (parent_id)
+    REFERENCES guacamole_connection_group (connection_group_id)
+    ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_connection_group(parent_id);
 
 --
 -- Table of connections. Each connection has a name, protocol, and
@@ -47,156 +83,164 @@ CREATE TABLE `guacamole_connection_group` (
 -- A connection may belong to a connection group.
 --
 
-CREATE TABLE `guacamole_connection` (
+CREATE TABLE guacamole_connection (
 
-  `connection_id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `connection_name`     varchar(128) NOT NULL,
-  `parent_id`           int(11),
-  `protocol`            varchar(32)  NOT NULL,
+  connection_id       serial       NOT NULL,
+  connection_name     varchar(128) NOT NULL,
+  parent_id           integer,
+  protocol            varchar(32)  NOT NULL,
   
-  PRIMARY KEY (`connection_id`),
-  UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
+  PRIMARY KEY (connection_id),
 
-  CONSTRAINT `guacamole_connection_ibfk_1`
-    FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+  CONSTRAINT connection_name_parent
+    UNIQUE (connection_name, parent_id),
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT guacamole_connection_ibfk_1
+    FOREIGN KEY (parent_id)
+    REFERENCES guacamole_connection_group (connection_group_id)
+    ON DELETE CASCADE
+
+);
+
+CREATE INDEX ON guacamole_connection(parent_id);
 
 --
 -- Table of users. Each user has a unique username and a hashed password
 -- with corresponding salt.
 --
 
-CREATE TABLE `guacamole_user` (
+CREATE TABLE guacamole_user (
 
-  `user_id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `username`      varchar(128) NOT NULL,
-  `password_hash` binary(32)   NOT NULL,
-  `password_salt` binary(32)   NOT NULL,
+  user_id       serial       NOT NULL,
+  username      varchar(128) NOT NULL,
+  password_hash bytea        NOT NULL,
+  password_salt bytea        NOT NULL,
 
-  PRIMARY KEY (`user_id`),
-  UNIQUE KEY `username` (`username`)
+  PRIMARY KEY (user_id),
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT username
+    UNIQUE (username)
+
+);
 
 --
 -- Table of connection parameters. Each parameter is simply a name/value pair
 -- associated with a connection.
 --
 
-CREATE TABLE `guacamole_connection_parameter` (
+CREATE TABLE guacamole_connection_parameter (
 
-  `connection_id`   int(11)       NOT NULL,
-  `parameter_name`  varchar(128)  NOT NULL,
-  `parameter_value` varchar(4096) NOT NULL,
+  connection_id   integer       NOT NULL,
+  parameter_name  varchar(128)  NOT NULL,
+  parameter_value varchar(4096) NOT NULL,
 
-  PRIMARY KEY (`connection_id`,`parameter_name`),
+  PRIMARY KEY (connection_id,parameter_name),
 
-  CONSTRAINT `guacamole_connection_parameter_ibfk_1`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_connection_parameter_ibfk_1
+    FOREIGN KEY (connection_id)
+    REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_connection_parameter(connection_id);
 
 --
 -- Table of connection permissions. Each connection permission grants a user
 -- specific access to a connection.
 --
 
-CREATE TABLE `guacamole_connection_permission` (
+CREATE TABLE guacamole_connection_permission (
 
-  `user_id`       int(11) NOT NULL,
-  `connection_id` int(11) NOT NULL,
-  `permission`    enum('READ',
-                       'UPDATE',
-                       'DELETE',
-                       'ADMINISTER') NOT NULL,
+  user_id       integer NOT NULL,
+  connection_id integer NOT NULL,
+  permission    guacamole_object_permission_type NOT NULL,
 
-  PRIMARY KEY (`user_id`,`connection_id`,`permission`),
+  PRIMARY KEY (user_id,connection_id,permission),
 
-  CONSTRAINT `guacamole_connection_permission_ibfk_1`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE,
+  CONSTRAINT guacamole_connection_permission_ibfk_1
+    FOREIGN KEY (connection_id)
+    REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_connection_permission_ibfk_2
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_connection_permission(connection_id);
+CREATE INDEX ON guacamole_connection_permission(user_id);
 
 --
 -- Table of connection group permissions. Each group permission grants a user
 -- specific access to a connection group.
 --
 
-CREATE TABLE `guacamole_connection_group_permission` (
+CREATE TABLE guacamole_connection_group_permission (
 
-  `user_id`             int(11) NOT NULL,
-  `connection_group_id` int(11) NOT NULL,
-  `permission`          enum('READ',
-                             'UPDATE',
-                             'DELETE',
-                             'ADMINISTER') NOT NULL,
+  user_id             integer NOT NULL,
+  connection_group_id integer NOT NULL,
+  permission          guacamole_object_permission_type NOT NULL,
 
-  PRIMARY KEY (`user_id`,`connection_group_id`,`permission`),
+  PRIMARY KEY (user_id,connection_group_id,permission),
 
-  CONSTRAINT `guacamole_connection_group_permission_ibfk_1`
-    FOREIGN KEY (`connection_group_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
+  CONSTRAINT guacamole_connection_group_permission_ibfk_1
+    FOREIGN KEY (connection_group_id)
+    REFERENCES guacamole_connection_group (connection_group_id) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_group_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_connection_group_permission_ibfk_2
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_connection_group_permission(connection_group_id);
+CREATE INDEX ON guacamole_connection_group_permission(user_id);
 
 --
 -- Table of system permissions. Each system permission grants a user a
 -- system-level privilege of some kind.
 --
 
-CREATE TABLE `guacamole_system_permission` (
+CREATE TABLE guacamole_system_permission (
 
-  `user_id`    int(11) NOT NULL,
-  `permission` enum('CREATE_CONNECTION',
-		    'CREATE_CONNECTION_GROUP',
-                    'CREATE_USER',
-                    'ADMINISTER') NOT NULL,
+  user_id    integer NOT NULL,
+  permission guacamole_system_permission_type NOT NULL,
 
-  PRIMARY KEY (`user_id`,`permission`),
+  PRIMARY KEY (user_id,permission),
 
-  CONSTRAINT `guacamole_system_permission_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_system_permission_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_system_permission(user_id);
 
 --
 -- Table of user permissions. Each user permission grants a user access to
 -- another user (the "affected" user) for a specific type of operation.
 --
 
-CREATE TABLE `guacamole_user_permission` (
+CREATE TABLE guacamole_user_permission (
 
-  `user_id`          int(11) NOT NULL,
-  `affected_user_id` int(11) NOT NULL,
-  `permission`       enum('READ',
-                          'UPDATE',
-                          'DELETE',
-                          'ADMINISTER') NOT NULL,
+  user_id          integer NOT NULL,
+  affected_user_id integer NOT NULL,
+  permission       guacamole_object_permission_type NOT NULL,
 
-  PRIMARY KEY (`user_id`,`affected_user_id`,`permission`),
+  PRIMARY KEY (user_id,affected_user_id,permission),
 
-  CONSTRAINT `guacamole_user_permission_ibfk_1`
-    FOREIGN KEY (`affected_user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT guacamole_user_permission_ibfk_1
+    FOREIGN KEY (affected_user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_user_permission_ibfk_2`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_user_permission_ibfk_2
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_user_permission(affected_user_id);
+CREATE INDEX ON guacamole_user_permission(user_id);
 
 --
 -- Table of connection history records. Each record defines a specific user's
@@ -204,25 +248,26 @@ CREATE TABLE `guacamole_user_permission` (
 -- (if any).
 --
 
-CREATE TABLE `guacamole_connection_history` (
+CREATE TABLE guacamole_connection_history (
 
-  `history_id`    int(11)  NOT NULL AUTO_INCREMENT,
-  `user_id`       int(11)  NOT NULL,
-  `connection_id` int(11)  NOT NULL,
-  `start_date`    datetime NOT NULL,
-  `end_date`      datetime DEFAULT NULL,
+  history_id    serial      NOT NULL,
+  user_id       integer     NOT NULL,
+  connection_id integer     NOT NULL,
+  start_date    timestamptz NOT NULL,
+  end_date      timestamptz DEFAULT NULL,
 
-  PRIMARY KEY (`history_id`),
-  KEY `user_id` (`user_id`),
-  KEY `connection_id` (`connection_id`),
+  PRIMARY KEY (history_id),
 
-  CONSTRAINT `guacamole_connection_history_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT guacamole_connection_history_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_history_ibfk_2`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
+  CONSTRAINT guacamole_connection_history_ibfk_2
+    FOREIGN KEY (connection_id)
+    REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
+
+CREATE INDEX ON guacamole_connection_history(user_id);
+CREATE INDEX ON guacamole_connection_history(connection_id);
 
