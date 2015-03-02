@@ -60,6 +60,18 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         this.user = user;
     }
 
+    /**
+     * Returns the user that connected to the connection associated with this
+     * connection record.
+     *
+     * @return
+     *     The user that connected to the connection associated with this
+     *     connection record.
+     */
+    public AuthenticatedUser getUser() {
+        return user;
+    }
+
     @Override
     public Date getStartDate() {
         return startDate;
