@@ -212,6 +212,35 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         connectionRecordMapper.insert(recordModel);
 
     }
+
+    /**
+     * Returns an unconfigured GuacamoleSocket that is already connected to
+     * guacd as specified in guacamole.properties, using SSL if necessary.
+     *
+     * @return
+     *     An unconfigured GuacamoleSocket, already connected to guacd.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while connecting to guacd, or while parsing
+     *     guacd-related properties.
+     */
+    private GuacamoleSocket getUnconfiguredGuacamoleSocket()
+        throws GuacamoleException {
+
+        // Use SSL if requested
+        if (environment.getProperty(Environment.GUACD_SSL, true))
+            return new InetGuacamoleSocket(
+                environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
+                environment.getRequiredProperty(Environment.GUACD_PORT)
+            );
+
+        // Otherwise, just use straight TCP
+        return new InetGuacamoleSocket(
+            environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
+            environment.getRequiredProperty(Environment.GUACD_PORT)
+        );
+
+    }
     
     /**
      * Creates a socket for the given user which connects to the given
@@ -251,7 +280,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         final AtomicBoolean released = new AtomicBoolean(false);
         final String identifier = connection.getIdentifier();
         final String parentIdentifier = connection.getParentIdentifier();
-        
+    
         // Return new socket
         try {
 
@@ -261,11 +290,9 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
             // Return newly-reserved connection
             return new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(
-                    environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
-                    environment.getRequiredProperty(Environment.GUACD_PORT)
-                ),
-                getGuacamoleConfiguration(user, connection)
+                getUnconfiguredGuacamoleSocket(),
+                getGuacamoleConfiguration(user, connection),
+                info
             ) {
 
                 @Override
