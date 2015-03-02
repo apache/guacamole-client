@@ -29,9 +29,15 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
+import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.socket.MultiseatGuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.socket.ReservedGuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.socket.SingleSeatGuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.socket.UnrestrictedGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
+import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
@@ -48,6 +54,55 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
      */
     private final Injector injector;
 
+    /**
+     * Returns the appropriate socket service class given the Guacamole
+     * environment. The class is chosen based on configuration options that
+     * dictate concurrent usage policy.
+     *
+     * @param environment
+     *     The environment of the Guacamole server.
+     *
+     * @return
+     *     The socket service class that matches the concurrent usage policy
+     *     options set in the Guacamole environment.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading the configuration options.
+     */
+    private Class<? extends GuacamoleSocketService>
+        getSocketServiceClass(Environment environment)
+                throws GuacamoleException {
+
+        // Read concurrency-related properties
+        boolean disallowSimultaneous = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false);
+        boolean disallowDuplicate    = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true);
+
+        if (disallowSimultaneous) {
+
+            // Connections may not be used concurrently
+            if (disallowDuplicate)
+                return SingleSeatGuacamoleSocketService.class;
+
+            // Connections are reserved for a single user when in use
+            else
+                return ReservedGuacamoleSocketService.class;
+
+        }
+
+        else {
+
+            // Connections may be used concurrently, but only once per user
+            if (disallowDuplicate)
+                return MultiseatGuacamoleSocketService.class;
+
+            // Connection use is not restricted
+            else
+                return UnrestrictedGuacamoleSocketService.class;
+
+        }
+         
+    }
+    
     /**
      * Creates a new MySQLAuthenticationProvider that reads and writes
      * authentication data to a MySQL database defined by properties in
@@ -69,7 +124,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
             new MySQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(environment)
+            new JDBCAuthenticationProviderModule(environment, getSocketServiceClass(environment))
 
         );
 
