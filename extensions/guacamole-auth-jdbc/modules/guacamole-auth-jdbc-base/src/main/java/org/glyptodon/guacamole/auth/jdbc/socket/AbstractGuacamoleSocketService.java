@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -173,6 +174,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         final ActiveConnectionRecord activeConnection = new ActiveConnectionRecord(user);
 
         // Get relevant identifiers
+        final AtomicBoolean released = new AtomicBoolean(false);
         final String identifier = connection.getIdentifier();
         final String parentIdentifier = connection.getParentIdentifier();
         
@@ -217,25 +219,30 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                     // Attempt to close connection
                     super.close();
                     
-                    // Release connection upon close
-                    activeConnections.remove(identifier, activeConnection);
-                    activeConnectionGroups.remove(parentIdentifier, activeConnection);
-                    release(user, connection);
+                    // Release connection upon close, if not already released
+                    if (released.compareAndSet(false, true)) {
 
-                    UserModel userModel = user.getUser().getModel();
-                    ConnectionRecordModel recordModel = new ConnectionRecordModel();
+                        // Release connection
+                        activeConnections.remove(identifier, activeConnection);
+                        activeConnectionGroups.remove(parentIdentifier, activeConnection);
+                        release(user, connection);
 
-                    // Copy user information and timestamps into new record
-                    recordModel.setUserID(userModel.getObjectID());
-                    recordModel.setUsername(userModel.getIdentifier());
-                    recordModel.setConnectionIdentifier(identifier);
-                    recordModel.setStartDate(activeConnection.getStartDate());
-                    recordModel.setEndDate(new Date());
+                        UserModel userModel = user.getUser().getModel();
+                        ConnectionRecordModel recordModel = new ConnectionRecordModel();
 
-                    // Insert connection record
-                    connectionRecordMapper.insert(recordModel);
+                        // Copy user information and timestamps into new record
+                        recordModel.setUserID(userModel.getObjectID());
+                        recordModel.setUsername(userModel.getIdentifier());
+                        recordModel.setConnectionIdentifier(identifier);
+                        recordModel.setStartDate(activeConnection.getStartDate());
+                        recordModel.setEndDate(new Date());
+
+                        // Insert connection record
+                        connectionRecordMapper.insert(recordModel);
+
+                    }
                     
-                }
+                } // end close()
                 
             };
 
@@ -244,10 +251,12 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         // Release connection in case of error
         catch (GuacamoleException e) {
 
-            // Atomically release access to connection
-            activeConnections.remove(identifier, activeConnection);
-            activeConnectionGroups.remove(parentIdentifier, activeConnection);
-            release(user, connection);
+            // Release connection if not already released
+            if (released.compareAndSet(false, true)) {
+                activeConnections.remove(identifier, activeConnection);
+                activeConnectionGroups.remove(parentIdentifier, activeConnection);
+                release(user, connection);
+            }
 
             throw e;
 
