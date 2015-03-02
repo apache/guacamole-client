@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import com.google.inject.Singleton;
+import java.util.List;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -39,9 +40,25 @@ public class UnrestrictedGuacamoleSocketService
     extends AbstractGuacamoleSocketService {
 
     @Override
-    protected void acquire(AuthenticatedUser user, ModeledConnection connection)
-            throws GuacamoleException {
-        // Do nothing
+    protected ModeledConnection acquire(AuthenticatedUser user,
+            List<ModeledConnection> connections) throws GuacamoleException {
+
+        ModeledConnection chosen = null;
+        int lowestUsage = 0;
+
+        // Find connection with lowest usage
+        for (ModeledConnection connection : connections) {
+
+            int usage = getActiveConnections(connection).size();
+            if (chosen == null || usage < lowestUsage) {
+                chosen = connection;
+                lowestUsage = usage;
+            }
+            
+        }
+
+        return chosen;
+        
     }
 
     @Override

@@ -110,7 +110,7 @@
             password_salt
         FROM guacamole_user
         WHERE
-            username = #{identifier,jdbcType=VARCHAR}
+            username = #{username,jdbcType=VARCHAR}
 
     </select>
 
