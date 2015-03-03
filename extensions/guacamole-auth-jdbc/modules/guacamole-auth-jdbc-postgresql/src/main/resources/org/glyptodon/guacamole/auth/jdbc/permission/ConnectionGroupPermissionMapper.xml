@@ -103,7 +103,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
-        INSERT IGNORE INTO guacamole_connection_group_permission (
+        INSERT INTO guacamole_connection_group_permission (
             user_id,
             permission,
             connection_group_id

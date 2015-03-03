@@ -78,7 +78,7 @@
     <!-- Insert all given permissions -->
     <insert id="insert" parameterType="org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
-        INSERT IGNORE INTO guacamole_system_permission (
+        INSERT INTO guacamole_system_permission (
             user_id,
             permission
         )
