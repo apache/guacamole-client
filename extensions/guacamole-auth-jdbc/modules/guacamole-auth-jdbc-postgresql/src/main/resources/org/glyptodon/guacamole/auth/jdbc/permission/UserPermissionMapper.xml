@@ -63,7 +63,7 @@
         JOIN guacamole_user affected ON guacamole_user_permission.affected_user_id = affected.user_id
         WHERE
             guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = #{type,jdbcType=VARCHAR}
+            AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
             AND affected.username = #{identifier,jdbcType=VARCHAR}
 
     </select>
@@ -84,7 +84,7 @@
             AND permission IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
-                    #{permission,jdbcType=VARCHAR}
+                    #{permission,jdbcType=VARCHAR}::guacamole_object_permission_type
                 </foreach>
 
     </select>
@@ -100,7 +100,7 @@
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
                     (#{permission.userID,jdbcType=INTEGER},
-                     #{permission.type,jdbcType=VARCHAR},
+                     #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
                      #{permission.objectIdentifier,jdbcType=VARCHAR})
                 </foreach>
 
@@ -117,9 +117,9 @@
         SELECT permissions.user_id, permissions.permission, guacamole_user.user_id FROM
             <foreach collection="permissions" item="permission"
                      open="(" separator="UNION ALL" close=")">
-                SELECT #{permission.userID,jdbcType=INTEGER}           AS user_id,
-                       #{permission.type,jdbcType=VARCHAR}             AS permission,
-                       #{permission.objectIdentifier,jdbcType=VARCHAR} AS username
+                SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
+                       #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
+                       #{permission.objectIdentifier,jdbcType=VARCHAR}                       AS username
             </foreach>
         AS permissions
         JOIN guacamole_user ON guacamole_user.username = permissions.username; 
