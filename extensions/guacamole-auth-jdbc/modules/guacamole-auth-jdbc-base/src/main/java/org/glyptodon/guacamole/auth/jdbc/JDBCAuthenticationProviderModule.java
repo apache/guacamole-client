@@ -46,7 +46,6 @@ import org.glyptodon.guacamole.auth.jdbc.security.SHA256PasswordEncryptionServic
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
 import org.glyptodon.guacamole.auth.jdbc.security.SecureRandomSaltService;
 import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
-import org.glyptodon.guacamole.auth.jdbc.socket.UnrestrictedGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserService;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
@@ -78,14 +77,26 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     private final Environment environment;
 
     /**
+     * The service class to use to provide GuacamoleSockets for each
+     * connection.
+     */
+    private final Class<? extends GuacamoleSocketService> socketServiceClass;
+
+    /**
      * Creates a new JDBC authentication provider module that configures the
-     * various injected base classes using the given environment.
+     * various injected base classes using the given environment, and provides
+     * connections using the given socket service.
      *
      * @param environment
      *     The environment to use to configure injected classes.
+     * 
+     * @param socketServiceClass
+     *     The socket service to use to provide sockets for connections.
      */
-    public JDBCAuthenticationProviderModule(Environment environment) {
+    public JDBCAuthenticationProviderModule(Environment environment,
+            Class<? extends GuacamoleSocketService> socketServiceClass) {
         this.environment = environment;
+        this.socketServiceClass = socketServiceClass;
     }
 
     @Override
@@ -135,8 +146,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(UserPermissionService.class);
         bind(UserService.class);
         
-        // Bind appropriate socket service based on policy
-        bind(GuacamoleSocketService.class).to(UnrestrictedGuacamoleSocketService.class);
+        // Bind provided socket service
+        bind(GuacamoleSocketService.class).to(socketServiceClass);
         
     }
 

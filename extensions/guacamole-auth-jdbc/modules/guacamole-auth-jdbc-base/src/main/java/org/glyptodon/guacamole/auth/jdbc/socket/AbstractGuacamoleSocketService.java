@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -139,6 +140,109 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             ModeledConnection connection);
 
     /**
+     * Returns a guacamole configuration containing the protocol and parameters
+     * from the given connection. If tokens are used in the connection
+     * parameter values, credentials from the given user will be substituted
+     * appropriately.
+     *
+     * @param user
+     *     The user whose credentials should be used if necessary.
+     *
+     * @param connection
+     *     The connection whose protocol and parameters should be added to the
+     *     returned configuration.
+     *
+     * @return
+     *     A GuacamoleConfiguration containing the protocol and parameters from
+     *     the given connection.
+     */
+    private GuacamoleConfiguration getGuacamoleConfiguration(AuthenticatedUser user,
+            ModeledConnection connection) {
+
+        // Generate configuration from available data
+        GuacamoleConfiguration config = new GuacamoleConfiguration();
+
+        // Set protocol from connection
+        ConnectionModel model = connection.getModel();
+        config.setProtocol(model.getProtocol());
+
+        // Set parameters from associated data
+        Collection<ParameterModel> parameters = parameterMapper.select(connection.getIdentifier());
+        for (ParameterModel parameter : parameters)
+            config.setParameter(parameter.getName(), parameter.getValue());
+
+        // Build token filter containing credential tokens
+        TokenFilter tokenFilter = new TokenFilter();
+        StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
+
+        // Filter the configuration
+        tokenFilter.filterValues(config.getParameters());
+
+        return config;
+        
+    }
+
+    /**
+     * Saves the given ActiveConnectionRecord to the database, associating it
+     * with the connection having the given identifier. The end date of the
+     * saved record will be populated with the current time.
+     *
+     * @param identifier
+     *     The connection to associate the new record with.
+     *
+     * @param record
+     *     The record to save.
+     */
+    private void saveConnectionRecord(String identifier,
+            ActiveConnectionRecord record) {
+
+        // Get associated models
+        AuthenticatedUser user = record.getUser();
+        UserModel userModel = user.getUser().getModel();
+        ConnectionRecordModel recordModel = new ConnectionRecordModel();
+
+        // Copy user information and timestamps into new record
+        recordModel.setUserID(userModel.getObjectID());
+        recordModel.setUsername(userModel.getIdentifier());
+        recordModel.setConnectionIdentifier(identifier);
+        recordModel.setStartDate(record.getStartDate());
+        recordModel.setEndDate(new Date());
+
+        // Insert connection record
+        connectionRecordMapper.insert(recordModel);
+
+    }
+
+    /**
+     * Returns an unconfigured GuacamoleSocket that is already connected to
+     * guacd as specified in guacamole.properties, using SSL if necessary.
+     *
+     * @return
+     *     An unconfigured GuacamoleSocket, already connected to guacd.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while connecting to guacd, or while parsing
+     *     guacd-related properties.
+     */
+    private GuacamoleSocket getUnconfiguredGuacamoleSocket()
+        throws GuacamoleException {
+
+        // Use SSL if requested
+        if (environment.getProperty(Environment.GUACD_SSL, true))
+            return new InetGuacamoleSocket(
+                environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
+                environment.getRequiredProperty(Environment.GUACD_PORT)
+            );
+
+        // Otherwise, just use straight TCP
+        return new InetGuacamoleSocket(
+            environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
+            environment.getRequiredProperty(Environment.GUACD_PORT)
+        );
+
+    }
+    
+    /**
      * Creates a socket for the given user which connects to the given
      * connection, which MUST already be acquired via acquire(). The given
      * client information will be passed to guacd when the connection is
@@ -173,28 +277,10 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         final ActiveConnectionRecord activeConnection = new ActiveConnectionRecord(user);
 
         // Get relevant identifiers
+        final AtomicBoolean released = new AtomicBoolean(false);
         final String identifier = connection.getIdentifier();
         final String parentIdentifier = connection.getParentIdentifier();
-        
-        // Generate configuration from available data
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-
-        // Set protocol from connection
-        ConnectionModel model = connection.getModel();
-        config.setProtocol(model.getProtocol());
-
-        // Set parameters from associated data
-        Collection<ParameterModel> parameters = parameterMapper.select(identifier);
-        for (ParameterModel parameter : parameters)
-            config.setParameter(parameter.getName(), parameter.getValue());
-
-        // Build token filter containing credential tokens
-        TokenFilter tokenFilter = new TokenFilter();
-        StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
-
-        // Filter the configuration
-        tokenFilter.filterValues(config.getParameters());
-
+    
         // Return new socket
         try {
 
@@ -204,11 +290,9 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
             // Return newly-reserved connection
             return new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(
-                    environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
-                    environment.getRequiredProperty(Environment.GUACD_PORT)
-                ),
-                config
+                getUnconfiguredGuacamoleSocket(),
+                getGuacamoleConfiguration(user, connection),
+                info
             ) {
 
                 @Override
@@ -217,25 +301,20 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                     // Attempt to close connection
                     super.close();
                     
-                    // Release connection upon close
-                    activeConnections.remove(identifier, activeConnection);
-                    activeConnectionGroups.remove(parentIdentifier, activeConnection);
-                    release(user, connection);
+                    // Release connection upon close, if not already released
+                    if (released.compareAndSet(false, true)) {
 
-                    UserModel userModel = user.getUser().getModel();
-                    ConnectionRecordModel recordModel = new ConnectionRecordModel();
+                        // Release connection
+                        activeConnections.remove(identifier, activeConnection);
+                        activeConnectionGroups.remove(parentIdentifier, activeConnection);
+                        release(user, connection);
 
-                    // Copy user information and timestamps into new record
-                    recordModel.setUserID(userModel.getObjectID());
-                    recordModel.setUsername(userModel.getIdentifier());
-                    recordModel.setConnectionIdentifier(identifier);
-                    recordModel.setStartDate(activeConnection.getStartDate());
-                    recordModel.setEndDate(new Date());
+                        // Save record to database
+                        saveConnectionRecord(identifier, activeConnection);
 
-                    // Insert connection record
-                    connectionRecordMapper.insert(recordModel);
+                    }
                     
-                }
+                } // end close()
                 
             };
 
@@ -244,10 +323,12 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         // Release connection in case of error
         catch (GuacamoleException e) {
 
-            // Atomically release access to connection
-            activeConnections.remove(identifier, activeConnection);
-            activeConnectionGroups.remove(parentIdentifier, activeConnection);
-            release(user, connection);
+            // Release connection if not already released
+            if (released.compareAndSet(false, true)) {
+                activeConnections.remove(identifier, activeConnection);
+                activeConnectionGroups.remove(parentIdentifier, activeConnection);
+                release(user, connection);
+            }
 
             throw e;
 
