@@ -55,7 +55,7 @@
         SELECT connection_group_id 
         FROM guacamole_connection_group
         WHERE
-            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
     </select>
 
@@ -65,7 +65,7 @@
         FROM guacamole_connection_group
         JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
         WHERE
-            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
@@ -83,7 +83,7 @@
         WHERE connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                #{identifier,jdbcType=INTEGER}
             </foreach>
 
     </select>
@@ -101,7 +101,7 @@
         WHERE guacamole_connection_group.connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                #{identifier,jdbcType=INTEGER}
             </foreach>
             AND user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = 'READ'
@@ -118,7 +118,7 @@
             type
         FROM guacamole_connection_group
         WHERE 
-            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=VARCHAR}</if>
+            <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}</if>
             <if test="parentIdentifier == null">parent_id IS NULL</if>
             AND connection_group_name = #{name,jdbcType=VARCHAR}
 
@@ -127,7 +127,7 @@
     <!-- Delete single connection group by identifier -->
     <delete id="delete">
         DELETE FROM guacamole_connection_group
-        WHERE connection_group_id = #{identifier,jdbcType=VARCHAR}
+        WHERE connection_group_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
     <!-- Insert single connection -->
@@ -141,7 +141,7 @@
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
-            #{object.parentIdentifier,jdbcType=VARCHAR},
+            #{object.parentIdentifier,jdbcType=INTEGER},
             #{object.type,jdbcType=VARCHAR}
         )
 
@@ -151,7 +151,7 @@
     <update id="update" parameterType="org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
         UPDATE guacamole_connection_group
         SET connection_group_name = #{object.name,jdbcType=VARCHAR},
-            parent_id             = #{object.parentIdentifier,jdbcType=VARCHAR},
+            parent_id             = #{object.parentIdentifier,jdbcType=INTEGER},
             type                  = #{object.type,jdbcType=VARCHAR}
         WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}
     </update>

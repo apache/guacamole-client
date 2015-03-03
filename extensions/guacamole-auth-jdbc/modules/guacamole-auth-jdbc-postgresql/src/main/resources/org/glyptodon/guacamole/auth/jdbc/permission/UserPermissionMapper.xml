@@ -64,7 +64,7 @@
         WHERE
             guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
-            AND affected.username = #{identifier,jdbcType=VARCHAR}
+            AND affected.username = #{identifier,jdbcType=INTEGER}
 
     </select>
 
@@ -79,7 +79,7 @@
             AND username IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
-                    #{identifier,jdbcType=VARCHAR}
+                    #{identifier,jdbcType=INTEGER}
                 </foreach>
             AND permission IN
                 <foreach collection="permissions" item="permission"
@@ -101,7 +101,7 @@
                          open="(" separator="," close=")">
                     (#{permission.userID,jdbcType=INTEGER},
                      #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
-                     #{permission.objectIdentifier,jdbcType=VARCHAR})
+                     #{permission.objectIdentifier,jdbcType=INTEGER})
                 </foreach>
 
     </delete>
@@ -119,7 +119,7 @@
                      open="(" separator="UNION ALL" close=")">
                 SELECT #{permission.userID,jdbcType=INTEGER}                                 AS user_id,
                        #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type AS permission,
-                       #{permission.objectIdentifier,jdbcType=VARCHAR}                       AS username
+                       #{permission.objectIdentifier,jdbcType=INTEGER}                       AS username
             </foreach>
         AS permissions
         JOIN guacamole_user ON guacamole_user.username = permissions.username; 

@@ -41,13 +41,13 @@
             parameter_value
         FROM guacamole_connection_parameter
         WHERE
-            connection_id = #{identifier,jdbcType=VARCHAR}
+            connection_id = #{identifier,jdbcType=INTEGER}
     </select>
 
     <!-- Delete all parameters of a given connection -->
     <delete id="delete">
         DELETE FROM guacamole_connection_parameter
-        WHERE connection_id = #{identifier,jdbcType=VARCHAR}
+        WHERE connection_id = #{identifier,jdbcType=INTEGER}
     </delete>
 
     <!-- Insert all given parameters -->
@@ -60,7 +60,7 @@
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
-                (#{parameter.connectionIdentifier,jdbcType=VARCHAR},
+                (#{parameter.connectionIdentifier,jdbcType=INTEGER},
                  #{parameter.name,jdbcType=VARCHAR},
                  #{parameter.value,jdbcType=VARCHAR})
             </foreach>

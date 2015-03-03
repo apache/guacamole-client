@@ -62,7 +62,7 @@
         WHERE
             guacamole_connection_group_permission.user_id = #{user.objectID,jdbcType=INTEGER}
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
-            AND connection_group_id = #{identifier,jdbcType=VARCHAR}
+            AND connection_group_id = #{identifier,jdbcType=INTEGER}
 
     </select>
 
@@ -76,7 +76,7 @@
             AND connection_group_id IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
-                    #{identifier,jdbcType=VARCHAR}
+                    #{identifier,jdbcType=INTEGER}
                 </foreach>
             AND permission IN
                 <foreach collection="permissions" item="permission"
@@ -95,7 +95,7 @@
                      open="(" separator="," close=")">
                 (#{permission.userID,jdbcType=INTEGER},
                  #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
-                 #{permission.objectIdentifier,jdbcType=VARCHAR})
+                 #{permission.objectIdentifier,jdbcType=INTEGER}::integer)
             </foreach>
 
     </delete>
@@ -112,7 +112,7 @@
             <foreach collection="permissions" item="permission" separator=",">
                 (#{permission.userID,jdbcType=INTEGER},
                  #{permission.type,jdbcType=VARCHAR}::guacamole_object_permission_type,
-                 #{permission.objectIdentifier,jdbcType=VARCHAR})
+                 #{permission.objectIdentifier,jdbcType=INTEGER})
             </foreach>
 
     </insert>
