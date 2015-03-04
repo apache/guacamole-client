@@ -247,7 +247,7 @@ public class ConnectionGroupRESTService {
         Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
 
         // Retrieve connection group to update
-        ConnectionGroup existingConnectionGroup = connectionGroupDirectory.get(connectionGroupID);
+        ConnectionGroup existingConnectionGroup = retrievalService.retrieveConnectionGroup(userContext, connectionGroupID);
         
         // Update the connection group
         existingConnectionGroup.setName(connectionGroup.getName());
