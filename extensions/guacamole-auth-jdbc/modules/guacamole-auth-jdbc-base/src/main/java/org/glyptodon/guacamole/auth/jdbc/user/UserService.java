@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import org.glyptodon.guacamole.net.auth.Credentials;
@@ -33,6 +34,7 @@ import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -63,6 +65,12 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
      */
     @Inject
     private Provider<ModeledUser> userProvider;
+
+    /**
+     * Service for hashing passwords.
+     */
+    @Inject
+    private PasswordEncryptionService encryptionService;
 
     @Override
     protected DirectoryObjectMapper<UserModel> getObjectMapper() {
@@ -169,15 +177,24 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
         String username = credentials.getUsername();
         String password = credentials.getPassword();
 
-        // Retrieve user model, if the user exists
-        UserModel userModel = userMapper.selectOneByCredentials(username, password);
+        // Retrieve corresponding user model, if such a user exists
+        UserModel userModel = userMapper.selectOne(username);
         if (userModel == null)
             return null;
 
-        // Return corresponding user, set up cyclic reference
-        ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new AuthenticatedUser(user, credentials));
-        return user;
+        // If password hash matches, return the retrieved user
+        byte[] hash = encryptionService.createPasswordHash(password, userModel.getPasswordSalt());
+        if (Arrays.equals(hash, userModel.getPasswordHash())) {
+
+            // Return corresponding user, set up cyclic reference
+            ModeledUser user = getObjectInstance(null, userModel);
+            user.setCurrentUser(new AuthenticatedUser(user, credentials));
+            return user;
+
+        }
+
+        // Otherwise, the credentials do not match
+        return null;
 
     }
 

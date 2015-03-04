@@ -33,23 +33,6 @@ import org.apache.ibatis.annotations.Param;
 public interface UserMapper extends DirectoryObjectMapper<UserModel> {
 
     /**
-     * Returns the user having the given username and password, if any. If no
-     * such user exists, null is returned.
-     *
-     * @param username
-     *     The username of the user to return.
-     *
-     * @param password
-     *     The password of the user to return.
-     *
-     * @return
-     *     The user having the given username and password, or null if no such
-     *     user exists.
-     */
-    UserModel selectOneByCredentials(@Param("username") String username,
-            @Param("password") String password);
-
-    /**
      * Returns the user having the given username, if any. If no such user
      * exists, null is returned.
      *
