@@ -25,6 +25,31 @@
     <div class="connection-list-ui">
 
         <div class="logout-panel">
+            <a class="change-password button" ng-click="showPasswordUpdate()" ng-show="canChangePassword">{{'HOME.ACTION_CHANGE_PASSWORD' | translate}}</a>
+            <div class="password-dialog" ng-show="showPasswordDialog">
+                <!-- Password editor -->
+                <div class="section">
+                    <table class="properties">
+                        <tr>
+                            <th>{{'HOME.FIELD_HEADER_PASSWORD' | translate}}</th>
+
+                            <td><input ng-model="password" type="password" /></td>
+                        </tr>
+                        <tr>
+                            <th>{{'HOME.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
+
+                            <td><input ng-model="passwordMatch" type="password" /></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Form action buttons -->
+                <div class="action-buttons">
+                    <button ng-click="updatePassword()">{{'HOME.ACTION_SAVE' | translate}}</button>
+                    <button ng-click="closePasswordUpdate()">{{'HOME.ACTION_CANCEL' | translate}}</button>
+                </div>
+            </div>
+            
             <a class="manage button" ng-show="canManageGuacamole" href="#/manage">{{'HOME.ACTION_MANAGE' | translate}}</a>
             <a class="logout button" ng-click="logout()">{{'HOME.ACTION_LOGOUT' | translate}}</a>
         </div>

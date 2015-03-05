@@ -339,6 +339,47 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     }
 
     /**
+     * Returns a collection of permissions that should be granted due to the
+     * creation of the given object. These permissions need not be granted
+     * solely to the user creating the object.
+     * 
+     * @param user
+     *     The user creating the object.
+     * 
+     * @param model
+     *     The object being created.
+     * 
+     * @return
+     *     The collection of implicit permissions that should be granted due to
+     *     the creation of the given object.
+     */
+    protected Collection<ObjectPermissionModel> getImplicitPermissions(AuthenticatedUser user,
+            ModelType model) {
+        
+        // Build list of implicit permissions
+        Collection<ObjectPermissionModel> implicitPermissions =
+                new ArrayList<ObjectPermissionModel>(IMPLICIT_OBJECT_PERMISSIONS.length);
+
+        UserModel userModel = user.getUser().getModel();
+        for (ObjectPermission.Type permission : IMPLICIT_OBJECT_PERMISSIONS) {
+
+            // Create model which grants this permission to the current user
+            ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+            permissionModel.setUserID(userModel.getObjectID());
+            permissionModel.setUsername(userModel.getIdentifier());
+            permissionModel.setType(permission);
+            permissionModel.setObjectIdentifier(model.getIdentifier());
+
+            // Add permission
+            implicitPermissions.add(permissionModel);
+
+        }
+        
+        return implicitPermissions;
+
+    }
+    
+    /**
      * Creates the given object within the database. If the object already
      * exists, an error will be thrown. The internal model object will be
      * updated appropriately to contain the new database ID.
@@ -369,27 +410,8 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
             // Create object
             getObjectMapper().insert(model);
 
-            // Build list of implicit permissions
-            Collection<ObjectPermissionModel> implicitPermissions =
-                    new ArrayList<ObjectPermissionModel>(IMPLICIT_OBJECT_PERMISSIONS.length);
-
-            UserModel userModel = user.getUser().getModel();
-            for (ObjectPermission.Type permission : IMPLICIT_OBJECT_PERMISSIONS) {
-
-                // Create model which grants this permission to the current user
-                ObjectPermissionModel permissionModel = new ObjectPermissionModel();
-                permissionModel.setUserID(userModel.getObjectID());
-                permissionModel.setUsername(userModel.getIdentifier());
-                permissionModel.setType(permission);
-                permissionModel.setObjectIdentifier(model.getIdentifier());
-
-                // Add permission
-                implicitPermissions.add(permissionModel);
-                
-            }
-
             // Add implicit permissions
-            getPermissionMapper().insert(implicitPermissions);
+            getPermissionMapper().insert(getImplicitPermissions(user, model));
 
             return getObjectInstance(user, model);
         }

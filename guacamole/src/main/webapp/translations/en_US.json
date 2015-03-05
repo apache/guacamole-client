@@ -2,16 +2,24 @@
 
     "APP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "OK",
-        "ACTION_CANCEL"        : "Cancel",
-        "ACTION_CLONE"         : "Clone",
-        "ACTION_DELETE"        : "Delete",
-        "ACTION_LOGIN"         : "Login",
-        "ACTION_LOGOUT"        : "Logout",
-        "ACTION_MANAGE"        : "Manage",
-        "ACTION_NAVIGATE_BACK" : "Back",
-        "ACTION_NAVIGATE_HOME" : "Home",
-        "ACTION_SAVE"          : "Save",
+        "ACTION_ACKNOWLEDGE"     : "OK",
+        "ACTION_CANCEL"          : "Cancel",
+        "ACTION_CHANGE_PASSWORD" : "Change Password",
+        "ACTION_CLONE"           : "Clone",
+        "ACTION_DELETE"          : "Delete",
+        "ACTION_LOGIN"           : "Login",
+        "ACTION_LOGOUT"          : "Logout",
+        "ACTION_MANAGE"          : "Manage",
+        "ACTION_NAVIGATE_BACK"   : "Back",
+        "ACTION_NAVIGATE_HOME"   : "Home",
+        "ACTION_SAVE"            : "Save",
+
+        "DIALOG_HEADER_ERROR"    : "Error",
+
+        "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
+        
+        "FIELD_HEADER_PASSWORD"       : "Password:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
         
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
 
@@ -106,12 +114,25 @@
 
     "HOME" : {
 
-        "ACTION_LOGOUT" : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE" : "@:APP.ACTION_MANAGE",
+        "ACTION_ACKNOWLEDGE"     : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"          : "@:APP.ACTION_CANCEL",
+        "ACTION_CHANGE_PASSWORD" : "@:APP.ACTION_CHANGE_PASSWORD",
+        "ACTION_LOGOUT"          : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE"          : "@:APP.ACTION_MANAGE",
+        "ACTION_SAVE"            : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        
+        "FIELD_HEADER_PASSWORD"       : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
+        
+        "PASSWORD_CHANGED" : "Password changed.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "All Connections",
         "SECTION_HEADER_RECENT_CONNECTIONS" : "Recent Connections"
@@ -224,14 +245,14 @@
         "DIALOG_HEADER_CONFIRM_DELETE"  : "Delete User",
         "DIALOG_HEADER_ERROR"           : "Error",
 
-        "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administer system:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Create new users:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Create new connections:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Create new connection groups:",
-        "FIELD_HEADER_PASSWORD"                      : "Password:",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "Re-enter Password:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Username:",
 
         "SECTION_HEADER_CONNECTIONS" : "Connections",
