@@ -23,7 +23,9 @@
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import com.google.inject.Singleton;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,9 +64,23 @@ public class MultiseatGuacamoleSocketService
             List<ModeledConnection> connections) throws GuacamoleException {
 
         String username = user.getUser().getIdentifier();
+
+        // Sort connections in ascending order of usage
+        ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
+        Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
+
+            @Override
+            public int compare(ModeledConnection a, ModeledConnection b) {
+
+                return getActiveConnections(a).size()
+                     - getActiveConnections(b).size();
+
+            }
+
+        });
         
         // Return the first unreserved connection
-        for (ModeledConnection connection : connections) {
+        for (ModeledConnection connection : sortedConnections) {
             if (activeSeats.add(new Seat(username, connection.getIdentifier())))
                 return connection;
         }
