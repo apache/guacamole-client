@@ -31,7 +31,7 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.socket.MultiseatGuacamoleSocketService;
-import org.glyptodon.guacamole.auth.jdbc.socket.ReservedGuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.socket.BalancedGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.socket.SingleSeatGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.socket.UnrestrictedGuacamoleSocketService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
@@ -85,7 +85,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
             // Connections are reserved for a single user when in use
             else
-                return ReservedGuacamoleSocketService.class;
+                return BalancedGuacamoleSocketService.class;
 
         }
 

@@ -140,6 +140,37 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             ModeledConnection connection);
 
     /**
+     * Acquires possibly-exclusive access to the given connection group on
+     * behalf of the given user. If access is denied for any reason, an
+     * exception is thrown.
+     *
+     * @param user
+     *     The user acquiring access.
+     *
+     * @param connectionGroup
+     *     The connection group being accessed.
+     *
+     * @throws GuacamoleException
+     *     If access is denied to the given user for any reason.
+     */
+    protected abstract void acquire(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) throws GuacamoleException;
+
+    /**
+     * Releases possibly-exclusive access to the given connection group on
+     * behalf of the given user. If the given user did not already have access,
+     * the behavior of this function is undefined.
+     *
+     * @param user
+     *     The user releasing access.
+     *
+     * @param connectionGroup
+     *     The connection group being released.
+     */
+    protected abstract void release(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup);
+
+    /**
      * Returns a guacamole configuration containing the protocol and parameters
      * from the given connection. If tokens are used in the connection
      * parameter values, credentials from the given user will be substituted
@@ -254,6 +285,11 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      * @param user
      *     The user for whom the connection is being established.
      *
+     * @param balancingGroup,
+     *     The associated balancing group, if any. If the connection is not
+     *     associated with a balancing group, or the connection is being used
+     *     manually, this will be null.
+     *
      * @param connection
      *     The connection the user is connecting to.
      *
@@ -270,6 +306,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     while connection configuration information is being retrieved.
      */
     private GuacamoleSocket connect(final AuthenticatedUser user,
+            final ModeledConnectionGroup balancingGroup,
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
@@ -309,6 +346,10 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                         activeConnectionGroups.remove(parentIdentifier, activeConnection);
                         release(user, connection);
 
+                        // Release any associated group
+                        if (balancingGroup != null)
+                            release(user, balancingGroup);
+                        
                         // Save record to database
                         saveConnectionRecord(identifier, activeConnection);
 
@@ -325,9 +366,16 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
             // Release connection if not already released
             if (released.compareAndSet(false, true)) {
+
+                // Release connection
                 activeConnections.remove(identifier, activeConnection);
                 activeConnectionGroups.remove(parentIdentifier, activeConnection);
                 release(user, connection);
+
+                // Release any associated group
+                if (balancingGroup != null)
+                    release(user, balancingGroup);
+                
             }
 
             throw e;
@@ -344,7 +392,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to single connection
         acquire(user, Collections.singletonList(connection));
-        return connect(user, connection, info);
+        return connect(user, null, connection, info);
 
     }
 
@@ -368,7 +416,10 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         if (identifiers.isEmpty())
             throw new GuacamoleSecurityException("Permission denied.");
 
-        // Otherwise, retrieve all children
+        // Acquire group
+        acquire(user, connectionGroup);
+
+        // Retrieve all children
         Collection<ConnectionModel> models = connectionMapper.select(identifiers);
         List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
 
@@ -381,7 +432,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to any child
         ModeledConnection connection = acquire(user, connections);
-        return connect(user, connection, info);
+        return connect(user, connectionGroup, connection, info);
 
     }
 

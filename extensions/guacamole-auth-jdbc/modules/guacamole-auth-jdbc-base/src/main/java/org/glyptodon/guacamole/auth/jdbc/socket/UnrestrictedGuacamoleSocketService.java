@@ -27,6 +27,7 @@ import java.util.List;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
 /**
@@ -63,6 +64,18 @@ public class UnrestrictedGuacamoleSocketService
 
     @Override
     protected void release(AuthenticatedUser user, ModeledConnection connection) {
+        // Do nothing
+    }
+
+    @Override
+    protected void acquire(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) throws GuacamoleException {
+        // Do nothing
+    }
+
+    @Override
+    protected void release(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) {
         // Do nothing
     }
 
