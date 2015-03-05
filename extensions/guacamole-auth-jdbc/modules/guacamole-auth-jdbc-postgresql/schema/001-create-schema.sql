@@ -106,7 +106,9 @@ CREATE INDEX ON guacamole_connection(parent_id);
 
 --
 -- Table of users. Each user has a unique username and a hashed password
--- with corresponding salt.
+-- with corresponding salt. Although the authentication system will always set
+-- salted passwords, other systems may set unsalted passwords by simply not
+-- providing the salt.
 --
 
 CREATE TABLE guacamole_user (
@@ -114,7 +116,7 @@ CREATE TABLE guacamole_user (
   user_id       serial       NOT NULL,
   username      varchar(128) NOT NULL,
   password_hash bytea        NOT NULL,
-  password_salt bytea        NOT NULL,
+  password_salt bytea,
 
   PRIMARY KEY (user_id),
 

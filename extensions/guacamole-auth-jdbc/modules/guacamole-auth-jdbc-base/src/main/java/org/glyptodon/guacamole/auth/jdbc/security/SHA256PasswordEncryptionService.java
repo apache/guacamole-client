@@ -38,26 +38,26 @@ public class SHA256PasswordEncryptionService implements PasswordEncryptionServic
 
         try {
 
-            // Build salted password
+            // Build salted password, if a salt was provided
             StringBuilder builder = new StringBuilder();
             builder.append(password);
-            builder.append(DatatypeConverter.printHexBinary(salt));
 
-            // Hash UTF-8 bytes of salted password
+            if (salt != null)
+                builder.append(DatatypeConverter.printHexBinary(salt));
+
+            // Hash UTF-8 bytes of possibly-salted password
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             md.update(builder.toString().getBytes("UTF-8"));
             return md.digest();
 
         }
 
-        // Should not happen
-        catch (UnsupportedEncodingException ex) {
-            throw new RuntimeException(ex);
+        // Throw hard errors if standard pieces of Java are missing
+        catch (UnsupportedEncodingException e) {
+            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
         }
-
-        // Should not happen
-        catch (NoSuchAlgorithmException ex) {
-            throw new RuntimeException(ex);
+        catch (NoSuchAlgorithmException e) {
+            throw new UnsupportedOperationException("Unexpected lack of SHA-256 support.", e);
         }
 
     }
