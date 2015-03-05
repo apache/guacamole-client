@@ -29,6 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.glyptodon.guacamole.GuacamoleClientTooManyException;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -102,7 +103,7 @@ public class MultiseatGuacamoleSocketService
         // Do not allow duplicate use of connection groups
         Seat seat = new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier());
         if (!activeGroupSeats.add(seat))
-            throw new GuacamoleResourceConflictException("Cannot connect. This connection is in use.");
+            throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
 
     }
 
