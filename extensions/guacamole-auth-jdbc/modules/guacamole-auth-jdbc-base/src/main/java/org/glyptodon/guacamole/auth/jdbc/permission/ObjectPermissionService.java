@@ -185,9 +185,8 @@ public abstract class ObjectPermissionService
             ModeledUser targetUser, ObjectPermission.Type type,
             String identifier) throws GuacamoleException {
 
-        // Only an admin can read permissions that aren't his own
-        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
-                || user.getUser().isAdministrator()) {
+        // Retrieve permissions only if allowed
+        if (canReadPermissions(user, targetUser)) {
 
             // Read permission from database, return null if not found
             ObjectPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type, identifier);
@@ -237,14 +236,11 @@ public abstract class ObjectPermissionService
         if (identifiers.isEmpty())
             return identifiers;
         
-        // Determine whether the user is an admin
-        boolean isAdmin = user.getUser().isAdministrator();
-        
-        // Only an admin can read permissions that aren't his own
-        if (isAdmin || user.getUser().getIdentifier().equals(targetUser.getIdentifier())) {
+        // Retrieve permissions only if allowed
+        if (canReadPermissions(user, targetUser)) {
 
             // If user is an admin, everything is accessible
-            if (isAdmin)
+            if (user.getUser().isAdministrator())
                 return identifiers;
 
             // Otherwise, return explicitly-retrievable identifiers
