@@ -51,8 +51,8 @@ in the library directory configured in guacamole.properties.
     created in the target/ subdirectory of the current directory.
 
 4) Extract the .tar.gz file now present in the target/ directory, and
-   place the .jar files in the extracted lib/ subdirectory in the library 
-   directory specified in guacamole.properties.
+   place the .jar files from the extracted database-specific subdirectory in
+   the library directory specified in guacamole.properties.
 
     You will likely need to do this as root.
 
@@ -60,10 +60,10 @@ in the library directory configured in guacamole.properties.
     guacamole.properties, you will need to specify one. The directory
     is specified using the "lib-directory" property.
 
-5) Set up your MySQL database to authenticate Guacamole users
+5) Set up your database to authenticate Guacamole users
 
     A schema file is provided in the schema directory for creating
-    the guacamole authentication tables in your MySQL database.
+    the guacamole authentication tables in your database of choice.
 
     Additionally, a script is provided to create a default admin user
     with username 'guacadmin' and password 'guacadmin'. This user can 
@@ -89,6 +89,17 @@ in the library directory configured in guacamole.properties.
     at the same time:
 
     mysql-disallow-simultaneous-connections: true
+
+    For PostgreSQL, the properties are the same, but have different prefixes:
+
+    # Database connection configuration
+    postgresql-hostname:      database.host.name
+    postgresql-port:          5432
+    postgresql-database:      guacamole.database.name
+    postgresql-username:      user
+    postgresql-password:      pass
+
+    postgresql-disallow-simultaneous-connections: true
 
 
 ------------------------------------------------------------
