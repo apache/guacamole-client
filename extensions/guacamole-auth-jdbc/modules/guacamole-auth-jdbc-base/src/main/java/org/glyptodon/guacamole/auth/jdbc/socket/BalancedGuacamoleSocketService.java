@@ -27,7 +27,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import org.glyptodon.guacamole.GuacamoleClientTooManyException;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -36,15 +35,16 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
 /**
- * GuacamoleSocketService implementation which allows exactly one use
- * of any connection at any time. Concurrent usage of connections is not
- * allowed, and concurrent usage of connection groups is allowed only between
- * different users.
+ * GuacamoleSocketService implementation which allows only one user per
+ * connection at any time, but does not disallow concurrent use of connection
+ * groups. If a user attempts to use a connection group multiple times, they
+ * will receive different underlying connections each time until the group is
+ * exhausted.
  *
  * @author Michael Jumper
  */
 @Singleton
-public class SingleSeatGuacamoleSocketService
+public class BalancedGuacamoleSocketService
     extends AbstractGuacamoleSocketService {
 
     /**
@@ -53,12 +53,6 @@ public class SingleSeatGuacamoleSocketService
     private final Set<String> activeConnections =
             Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
-    /**
-     * The set of all active user/connection group pairs.
-     */
-    private final Set<Seat> activeGroupSeats =
-            Collections.newSetFromMap(new ConcurrentHashMap<Seat, Boolean>());
-   
     @Override
     protected ModeledConnection acquire(AuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
@@ -82,18 +76,13 @@ public class SingleSeatGuacamoleSocketService
     @Override
     protected void acquire(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) throws GuacamoleException {
-
-        // Do not allow duplicate use of connection groups
-        Seat seat = new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier());
-        if (!activeGroupSeats.add(seat))
-            throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
-
+        // Do nothing
     }
 
     @Override
     protected void release(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup) {
-        activeGroupSeats.remove(new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier()));
+        // Do nothing
     }
 
 }

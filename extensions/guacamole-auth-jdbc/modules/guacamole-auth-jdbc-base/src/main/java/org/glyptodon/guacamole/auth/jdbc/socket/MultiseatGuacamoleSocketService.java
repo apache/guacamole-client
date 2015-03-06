@@ -23,20 +23,24 @@
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import com.google.inject.Singleton;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import org.glyptodon.guacamole.GuacamoleClientTooManyException;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceConflictException;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
 /**
  * GuacamoleSocketService implementation which restricts concurrency only on a
- * per-user basis. Each connection may be used concurrently any number of
- * times, but each concurrent use must be associated with a different user.
+ * per-user basis. Each connection or group may be used concurrently any number
+ * of times, but each concurrent use must be associated with a different user.
  *
  * @author Michael Jumper
  */
@@ -45,72 +49,15 @@ public class MultiseatGuacamoleSocketService
     extends AbstractGuacamoleSocketService {
 
     /**
-     * A unique pairing of user and connection.
-     */
-    private static class Seat {
-
-        /**
-         * The user using this seat.
-         */
-        private final String username;
-
-        /**
-         * The connection associated with this seat.
-         */
-        private final String connectionIdentifier;
-
-        /**
-         * Creates a new seat which associated the given user with the given
-         * connection.
-         *
-         * @param username
-         *     The username of the user using this seat.
-         *
-         * @param connectionIdentifier
-         *     The identifier of the connection associated with this seat.
-         */
-        public Seat(String username, String connectionIdentifier) {
-            this.username = username;
-            this.connectionIdentifier = connectionIdentifier;
-        }
-
-        @Override
-        public int hashCode() {
-
-            // The various properties will never be null
-            assert(username != null);
-            assert(connectionIdentifier != null);
-
-            // Derive hashcode from username and connection identifier
-            int hash = 5;
-            hash = 37 * hash + username.hashCode();
-            hash = 37 * hash + connectionIdentifier.hashCode();
-            return hash;
-
-        }
-
-        @Override
-        public boolean equals(Object object) {
-
-            // We are only comparing against other seats here
-            assert(object instanceof Seat);
-            Seat seat = (Seat) object;
-
-            // The various properties will never be null
-            assert(seat.username != null);
-            assert(seat.connectionIdentifier != null);
-
-            return username.equals(seat.username)
-                && connectionIdentifier.equals(seat.connectionIdentifier);
-
-        }
-
-    }
-    
-    /**
      * The set of all active user/connection pairs.
      */
     private final Set<Seat> activeSeats =
+            Collections.newSetFromMap(new ConcurrentHashMap<Seat, Boolean>());
+
+    /**
+     * The set of all active user/connection group pairs.
+     */
+    private final Set<Seat> activeGroupSeats =
             Collections.newSetFromMap(new ConcurrentHashMap<Seat, Boolean>());
    
     @Override
@@ -118,9 +65,23 @@ public class MultiseatGuacamoleSocketService
             List<ModeledConnection> connections) throws GuacamoleException {
 
         String username = user.getUser().getIdentifier();
+
+        // Sort connections in ascending order of usage
+        ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
+        Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
+
+            @Override
+            public int compare(ModeledConnection a, ModeledConnection b) {
+
+                return getActiveConnections(a).size()
+                     - getActiveConnections(b).size();
+
+            }
+
+        });
         
         // Return the first unreserved connection
-        for (ModeledConnection connection : connections) {
+        for (ModeledConnection connection : sortedConnections) {
             if (activeSeats.add(new Seat(username, connection.getIdentifier())))
                 return connection;
         }
@@ -133,6 +94,23 @@ public class MultiseatGuacamoleSocketService
     @Override
     protected void release(AuthenticatedUser user, ModeledConnection connection) {
         activeSeats.remove(new Seat(user.getUser().getIdentifier(), connection.getIdentifier()));
+    }
+
+    @Override
+    protected void acquire(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) throws GuacamoleException {
+
+        // Do not allow duplicate use of connection groups
+        Seat seat = new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier());
+        if (!activeGroupSeats.add(seat))
+            throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
+
+    }
+
+    @Override
+    protected void release(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) {
+        activeGroupSeats.remove(new Seat(user.getUser().getIdentifier(), connectionGroup.getIdentifier()));
     }
 
 }
