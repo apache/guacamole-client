@@ -142,7 +142,7 @@
         VALUES (
             #{object.name,jdbcType=VARCHAR},
             #{object.parentIdentifier,jdbcType=INTEGER}::integer,
-            #{object.type,jdbcType=VARCHAR}
+            #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type
         )
 
     </insert>
@@ -152,7 +152,7 @@
         UPDATE guacamole_connection_group
         SET connection_group_name = #{object.name,jdbcType=VARCHAR},
             parent_id             = #{object.parentIdentifier,jdbcType=INTEGER}::integer,
-            type                  = #{object.type,jdbcType=VARCHAR}
+            type                  = #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type
         WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}::integer
     </update>
 
