@@ -20,19 +20,34 @@
 -- THE SOFTWARE.
 --
 
+
 -- Create default user "guacadmin" with password "guacadmin"
-insert into guacamole_user values(1, 'guacadmin',
+INSERT INTO guacamole_user (username, password_hash, password_salt)
+VALUES ('guacadmin',
     E'\\xCA458A7D494E3BE824F5E1E175A1556C0F8EEF2C2D7DF3633BEC4A29C4411960',  -- 'guacadmin'
     E'\\xFE24ADC5E11E2B25288D1704ABE67A79E342ECC26064CE69C5B3177795A82264');
 
--- Grant this user create permissions
-insert into guacamole_system_permission values(1, 'CREATE_CONNECTION');
-insert into guacamole_system_permission values(1, 'CREATE_CONNECTION_GROUP');
-insert into guacamole_system_permission values(1, 'CREATE_USER');
-insert into guacamole_system_permission values(1, 'ADMINISTER');
+-- Grant this user all system permissions
+INSERT INTO guacamole_system_permission
+SELECT user_id, permission::guacamole_system_permission_type
+FROM (
+    VALUES
+        ('guacadmin', 'CREATE_CONNECTION'),
+        ('guacadmin', 'CREATE_CONNECTION_GROUP'),
+        ('guacadmin', 'CREATE_USER'),
+        ('guacadmin', 'ADMINISTER')
+) permissions (username, permission)
+JOIN guacamole_user ON permissions.username = guacamole_user.username;
 
 -- Grant admin permission to read/update/administer self
-insert into guacamole_user_permission values(1, 1, 'READ');
-insert into guacamole_user_permission values(1, 1, 'UPDATE');
-insert into guacamole_user_permission values(1, 1, 'ADMINISTER');
+INSERT INTO guacamole_user_permission
+SELECT guacamole_user.user_id, affected.user_id, permission::guacamole_object_permission_type
+FROM (
+    VALUES
+        ('guacadmin', 'guacadmin', 'READ'),
+        ('guacadmin', 'guacadmin', 'UPDATE'),
+        ('guacadmin', 'guacadmin', 'ADMINISTER')
+) permissions (username, affected_username, permission)
+JOIN guacamole_user          ON permissions.username = guacamole_user.username
+JOIN guacamole_user affected ON permissions.affected_username = affected.username;
 
