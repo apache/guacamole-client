@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.jdbc.socket;
 
 import java.util.Date;
+import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
@@ -44,20 +46,61 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     private final AuthenticatedUser user;
 
     /**
+     * The balancing group from which the associated connection was chosen, if
+     * any. If no balancing group was used, this will be null.
+     */
+    private final ModeledConnectionGroup balancingGroup;
+
+    /**
+     * The connection associated with this connection record.
+     */
+    private final ModeledConnection connection;
+
+    /**
      * The time this connection record was created.
      */
     private final Date startDate = new Date();
 
     /**
-     * Creates a new connection record associated with the given user. The
-     * start date of this connection record will be the time of its creation.
+     * Creates a new connection record associated with the given user,
+     * connection, and balancing connection group. The given balancing
+     * connection group MUST be the connection group from which the given
+     * connection was chosen. The start date of this connection record will be
+     * the time of its creation.
      *
      * @param user
      *     The user that connected to the connection associated with this
      *     connection record.
+     *
+     * @param balancingGroup
+     *     The balancing group from which the given connection was chosen.
+     *
+     * @param connection
+     *     The connection to associate with this connection record.
      */
-    public ActiveConnectionRecord(AuthenticatedUser user) {
+    public ActiveConnectionRecord(AuthenticatedUser user,
+            ModeledConnectionGroup balancingGroup,
+            ModeledConnection connection) {
         this.user = user;
+        this.balancingGroup = balancingGroup;
+        this.connection = connection;
+    }
+
+    /**
+     * Creates a new connection record associated with the given user and
+     * connection. The start date of this connection record will be the time of
+     * its creation.
+     *
+     * @param user
+     *     The user that connected to the connection associated with this
+     *     connection record.
+     *
+     * @param connection
+     *     The connection to associate with this connection record.
+     */
+    public ActiveConnectionRecord(AuthenticatedUser user,
+            ModeledConnection connection) {
+        this(user, null, connection);
     }
 
     /**
@@ -72,6 +115,40 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         return user;
     }
 
+    /**
+     * Returns the balancing group from which the connection associated with
+     * this connection record was chosen.
+     *
+     * @return
+     *     The balancing group from which the connection associated with this
+     *     connection record was chosen.
+     */
+    public ModeledConnectionGroup getBalancingGroup() {
+        return balancingGroup;
+    }
+
+    /**
+     * Returns the connection associated with this connection record.
+     *
+     * @return
+     *     The connection associated with this connection record.
+     */
+    public ModeledConnection getConnection() {
+        return connection;
+    }
+
+    /**
+     * Returns whether the connection associated with this connection record
+     * was chosen from a balancing group.
+     *
+     * @return
+     *     true if the connection associated with this connection record was
+     *     chosen from a balancing group, false otherwise.
+     */
+    public boolean hasBalancingGroup() {
+        return balancingGroup != null;
+    }
+    
     @Override
     public Date getStartDate() {
         return startDate;

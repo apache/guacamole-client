@@ -44,7 +44,6 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
-import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -214,19 +213,17 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     /**
-     * Saves the given ActiveConnectionRecord to the database, associating it
-     * with the connection having the given identifier. The end date of the
-     * saved record will be populated with the current time.
-     *
-     * @param identifier
-     *     The connection to associate the new record with.
+     * Saves the given ActiveConnectionRecord to the database. The end date of
+     * the saved record will be populated with the current time.
      *
      * @param record
      *     The record to save.
      */
-    private void saveConnectionRecord(String identifier,
-            ActiveConnectionRecord record) {
+    private void saveConnectionRecord(ActiveConnectionRecord record) {
 
+        // Get associated connection
+        ModeledConnection connection = record.getConnection();
+        
         // Get associated models
         AuthenticatedUser user = record.getUser();
         UserModel userModel = user.getUser().getModel();
@@ -235,7 +232,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         // Copy user information and timestamps into new record
         recordModel.setUserID(userModel.getObjectID());
         recordModel.setUsername(userModel.getIdentifier());
-        recordModel.setConnectionIdentifier(identifier);
+        recordModel.setConnectionIdentifier(connection.getIdentifier());
         recordModel.setStartDate(record.getStartDate());
         recordModel.setEndDate(new Date());
 
@@ -255,24 +252,88 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     If an error occurs while connecting to guacd, or while parsing
      *     guacd-related properties.
      */
-    private GuacamoleSocket getUnconfiguredGuacamoleSocket()
+    private GuacamoleSocket getUnconfiguredGuacamoleSocket(Runnable socketClosedCallback)
         throws GuacamoleException {
 
         // Use SSL if requested
         if (environment.getProperty(Environment.GUACD_SSL, true))
-            return new InetGuacamoleSocket(
+            return new ManagedInetGuacamoleSocket(
                 environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
-                environment.getRequiredProperty(Environment.GUACD_PORT)
+                environment.getRequiredProperty(Environment.GUACD_PORT),
+                socketClosedCallback
             );
 
         // Otherwise, just use straight TCP
-        return new InetGuacamoleSocket(
+        return new ManagedInetGuacamoleSocket(
             environment.getRequiredProperty(Environment.GUACD_HOSTNAME),
-            environment.getRequiredProperty(Environment.GUACD_PORT)
+            environment.getRequiredProperty(Environment.GUACD_PORT),
+            socketClosedCallback
         );
 
     }
-    
+
+    /**
+     * Task which handles cleanup of a connection associated with some given
+     * ActiveConnectionRecord.
+     */
+    private class ConnectionCleanupTask implements Runnable {
+
+        /**
+         * Whether this task has run.
+         */
+        private final AtomicBoolean hasRun = new AtomicBoolean(false);
+
+        /**
+         * The ActiveConnectionRecord whose connection will be cleaned up once
+         * this task runs.
+         */
+        private final ActiveConnectionRecord activeConnection;
+
+        /**
+         * Creates a new task which automatically cleans up after the
+         * connection associated with the given ActiveConnectionRecord. The
+         * connection and parent group will be removed from the maps of active
+         * connections and groups, and exclusive access will be released.
+         *
+         * @param activeConnection
+         *     The ActiveConnectionRecord whose associated connection should be
+         *     cleaned up once this task runs.
+         */
+        public ConnectionCleanupTask(ActiveConnectionRecord activeConnection) {
+            this.activeConnection = activeConnection;
+        }
+        
+        @Override
+        public void run() {
+
+            // Only run once
+            if (!hasRun.compareAndSet(false, true))
+                return;
+
+            // Get original user and connection
+            AuthenticatedUser user = activeConnection.getUser();
+            ModeledConnection connection = activeConnection.getConnection();
+
+            // Get associated identifiers
+            String identifier = connection.getIdentifier();
+            String parentIdentifier = connection.getParentIdentifier();
+
+            // Release connection
+            activeConnections.remove(identifier, activeConnection);
+            activeConnectionGroups.remove(parentIdentifier, activeConnection);
+            release(user, connection);
+
+            // Release any associated group
+            if (activeConnection.hasBalancingGroup())
+                release(user, activeConnection.getBalancingGroup());
+            
+            // Save history record to database
+            saveConnectionRecord(activeConnection);
+
+        }
+
+    }
+
     /**
      * Creates a socket for the given user which connects to the given
      * connection, which MUST already be acquired via acquire(). The given
@@ -284,11 +345,6 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *
      * @param user
      *     The user for whom the connection is being established.
-     *
-     * @param balancingGroup,
-     *     The associated balancing group, if any. If the connection is not
-     *     associated with a balancing group, or the connection is being used
-     *     manually, this will be null.
      *
      * @param connection
      *     The connection the user is connecting to.
@@ -305,83 +361,75 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     If an error occurs while the connection is being established, or
      *     while connection configuration information is being retrieved.
      */
-    private GuacamoleSocket connect(final AuthenticatedUser user,
-            final ModeledConnectionGroup balancingGroup,
-            final ModeledConnection connection, GuacamoleClientInformation info)
+    private GuacamoleSocket getGuacamoleSocket(ActiveConnectionRecord activeConnection,
+            GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Create record for active connection
-        final ActiveConnectionRecord activeConnection = new ActiveConnectionRecord(user);
+        ModeledConnection connection = activeConnection.getConnection();
+        
+        // Record new active connection
+        Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
+        activeConnections.put(connection.getIdentifier(), activeConnection);
+        activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
-        // Get relevant identifiers
-        final AtomicBoolean released = new AtomicBoolean(false);
-        final String identifier = connection.getIdentifier();
-        final String parentIdentifier = connection.getParentIdentifier();
-    
         // Return new socket
         try {
-
-            // Record new active connection
-            activeConnections.put(identifier, activeConnection);
-            activeConnectionGroups.put(parentIdentifier, activeConnection);
-
-            // Return newly-reserved connection
             return new ConfiguredGuacamoleSocket(
-                getUnconfiguredGuacamoleSocket(),
-                getGuacamoleConfiguration(user, connection),
+                getUnconfiguredGuacamoleSocket(cleanupTask),
+                getGuacamoleConfiguration(activeConnection.getUser(), connection),
                 info
-            ) {
-
-                @Override
-                public void close() throws GuacamoleException {
-
-                    // Attempt to close connection
-                    super.close();
-                    
-                    // Release connection upon close, if not already released
-                    if (released.compareAndSet(false, true)) {
-
-                        // Release connection
-                        activeConnections.remove(identifier, activeConnection);
-                        activeConnectionGroups.remove(parentIdentifier, activeConnection);
-                        release(user, connection);
-
-                        // Release any associated group
-                        if (balancingGroup != null)
-                            release(user, balancingGroup);
-                        
-                        // Save record to database
-                        saveConnectionRecord(identifier, activeConnection);
-
-                    }
-                    
-                } // end close()
-                
-            };
-
+            );
         }
 
-        // Release connection in case of error
+        // Execute cleanup if socket could not be created
         catch (GuacamoleException e) {
-
-            // Release connection if not already released
-            if (released.compareAndSet(false, true)) {
-
-                // Release connection
-                activeConnections.remove(identifier, activeConnection);
-                activeConnectionGroups.remove(parentIdentifier, activeConnection);
-                release(user, connection);
-
-                // Release any associated group
-                if (balancingGroup != null)
-                    release(user, balancingGroup);
-                
-            }
-
+            cleanupTask.run();
             throw e;
-
         }
 
+    }
+
+    /**
+     * Returns a list of all balanced connections within a given connection
+     * group. If the connection group is not balancing, or it contains no
+     * connections, an empty list is returned.
+     *
+     * @param user
+     *     The user on whose behalf the balanced connections within the given
+     *     connection group are being retrieved.
+     *
+     * @param connectionGroup
+     *     The connection group to retrieve the balanced connections of.
+     *
+     * @return
+     *     A list containing all balanced connections within the given group,
+     *     or an empty list if there are no such connections.
+     */
+    private List<ModeledConnection> getBalancedConnections(AuthenticatedUser user,
+            ModeledConnectionGroup connectionGroup) {
+
+        // If not a balancing group, there are no balanced connections
+        if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)
+            return Collections.EMPTY_LIST;
+
+        // If group has no children, there are no balanced connections
+        Collection<String> identifiers = connectionMapper.selectIdentifiersWithin(connectionGroup.getIdentifier());
+        if (identifiers.isEmpty())
+            return Collections.EMPTY_LIST;
+
+        // Retrieve all children
+        Collection<ConnectionModel> models = connectionMapper.select(identifiers);
+        List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
+
+        // Convert each retrieved model to a modeled connection
+        for (ConnectionModel model : models) {
+            ModeledConnection connection = connectionProvider.get();
+            connection.init(user, model);
+            connections.add(connection);
+        }
+
+        return connections;
+        
     }
 
     @Override
@@ -392,7 +440,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to single connection
         acquire(user, Collections.singletonList(connection));
-        return connect(user, null, connection, info);
+        return getGuacamoleSocket(new ActiveConnectionRecord(user, connection), info);
 
     }
 
@@ -407,32 +455,17 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
 
-        // If not a balancing group, cannot connect
-        if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)
-            throw new GuacamoleSecurityException("Permission denied.");
-        
-        // If group has no children, cannot connect
-        Collection<String> identifiers = connectionMapper.selectIdentifiersWithin(connectionGroup.getIdentifier());
-        if (identifiers.isEmpty())
+        // If group has no associated balanced connections, cannot connect
+        List<ModeledConnection> connections = getBalancedConnections(user, connectionGroup);
+        if (connections.isEmpty())
             throw new GuacamoleSecurityException("Permission denied.");
 
         // Acquire group
         acquire(user, connectionGroup);
 
-        // Retrieve all children
-        Collection<ConnectionModel> models = connectionMapper.select(identifiers);
-        List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
-
-        // Convert each retrieved model to a modeled connection
-        for (ConnectionModel model : models) {
-            ModeledConnection connection = connectionProvider.get();
-            connection.init(user, model);
-            connections.add(connection);
-        }
-
         // Acquire and connect to any child
         ModeledConnection connection = acquire(user, connections);
-        return connect(user, connectionGroup, connection, info);
+        return getGuacamoleSocket(new ActiveConnectionRecord(user, connectionGroup, connection), info);
 
     }
 
