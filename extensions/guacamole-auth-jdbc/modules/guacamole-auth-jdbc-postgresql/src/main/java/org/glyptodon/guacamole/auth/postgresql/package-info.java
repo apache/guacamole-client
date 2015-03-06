@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,27 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.security;
-
 /**
- * A service to perform password encryption and checking.
- * @author James Muehlner
+ * The PostgreSQL authentication provider.
  */
-public interface PasswordEncryptionService {
-
-    /**
-     * Creates a password hash based on the provided username, password, and
-     * salt. If the provided salt is null, only the password itself is hashed.
-     *
-     * @param password
-     *     The password to hash.
-     *
-     * @param salt
-     *     The salt to use when hashing the password, if any.
-     *
-     * @return
-     *     The generated password hash.
-     */
-    public byte[] createPasswordHash(String password, byte[] salt);
-
-}
+package org.glyptodon.guacamole.auth.postgresql;

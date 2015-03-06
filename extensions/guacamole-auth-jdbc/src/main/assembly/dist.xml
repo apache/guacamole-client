@@ -27,6 +27,19 @@
                 </includes>
             </fileSet>
 
+            <!-- PostgreSQL implementation -->
+            <fileSet>
+                <outputDirectory>/postgresql/schema</outputDirectory>
+                <directory>modules/guacamole-auth-jdbc-postgresql/schema</directory>
+            </fileSet>
+            <fileSet>
+                <directory>modules/guacamole-auth-jdbc-postgresql/target/extension</directory>
+                <outputDirectory>/postgresql</outputDirectory>
+                <includes>
+                    <include>*.jar</include>
+                </includes>
+            </fileSet>
+
     </fileSets>
 
 </assembly>

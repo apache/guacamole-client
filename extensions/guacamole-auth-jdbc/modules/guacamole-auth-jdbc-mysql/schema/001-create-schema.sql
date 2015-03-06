@@ -65,7 +65,9 @@ CREATE TABLE `guacamole_connection` (
 
 --
 -- Table of users. Each user has a unique username and a hashed password
--- with corresponding salt.
+-- with corresponding salt. Although the authentication system will always set
+-- salted passwords, other systems may set unsalted passwords by simply not
+-- providing the salt.
 --
 
 CREATE TABLE `guacamole_user` (
@@ -73,7 +75,7 @@ CREATE TABLE `guacamole_user` (
   `user_id`       int(11)      NOT NULL AUTO_INCREMENT,
   `username`      varchar(128) NOT NULL,
   `password_hash` binary(32)   NOT NULL,
-  `password_salt` binary(32)   NOT NULL,
+  `password_salt` binary(32),
 
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
