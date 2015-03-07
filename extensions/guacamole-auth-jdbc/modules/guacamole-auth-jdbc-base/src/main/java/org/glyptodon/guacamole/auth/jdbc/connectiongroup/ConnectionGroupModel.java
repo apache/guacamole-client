@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
-import org.glyptodon.guacamole.auth.jdbc.base.ObjectModel;
+import org.glyptodon.guacamole.auth.jdbc.base.GroupedObjectModel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 
 /**
@@ -31,14 +31,8 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
  *
  * @author Michael Jumper
  */
-public class ConnectionGroupModel extends ObjectModel {
+public class ConnectionGroupModel extends GroupedObjectModel {
 
-    /**
-     * The identifier of the parent connection group in the database, or null
-     * if the parent connection group is the root group.
-     */
-    private String parentIdentifier;
-    
     /**
      * The human-readable name associated with this connection group.
      */
@@ -73,29 +67,6 @@ public class ConnectionGroupModel extends ObjectModel {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns the identifier of the parent connection group, or null if the
-     * parent connection group is the root connection group.
-     *
-     * @return 
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
-     */
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
-
-    /**
-     * Sets the identifier of the parent connection group.
-     *
-     * @param parentIdentifier
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
-     */
-    public void setParentIdentifier(String parentIdentifier) {
-        this.parentIdentifier = parentIdentifier;
     }
 
     /**
