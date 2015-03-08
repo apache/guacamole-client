@@ -29,6 +29,7 @@ import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 
 /**
@@ -112,6 +113,11 @@ public class SystemPermissionService
 
         // Only an admin can delete system permissions
         if (user.getUser().isAdministrator()) {
+
+            // Do not allow users to remove their own admin powers
+            if (user.getUser().getIdentifier().equals(targetUser.getIdentifier()))
+                throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
+            
             Collection<SystemPermissionModel> models = getModelInstances(targetUser, permissions);
             systemPermissionMapper.delete(models);
             return;
