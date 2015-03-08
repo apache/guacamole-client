@@ -24,10 +24,10 @@ package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
 import com.google.inject.Inject;
 import java.util.Set;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObject;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObject;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -38,7 +38,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author James Muehlner
  */
-public class ModeledConnectionGroup extends DirectoryObject<ConnectionGroupModel>
+public class ModeledConnectionGroup extends GroupedDirectoryObject<ConnectionGroupModel>
     implements ConnectionGroup {
 
     /**
@@ -73,30 +73,6 @@ public class ModeledConnectionGroup extends DirectoryObject<ConnectionGroupModel
     @Override
     public void setName(String name) {
         getModel().setName(name);
-    }
-
-    @Override
-    public String getParentIdentifier() {
-
-        // Translate null parent to proper identifier
-        String parentIdentifier = getModel().getParentIdentifier();
-        if (parentIdentifier == null)
-            return RootConnectionGroup.IDENTIFIER;
-
-        return parentIdentifier;
-        
-    }
-
-    @Override
-    public void setParentIdentifier(String parentIdentifier) {
-
-        // Translate root identifier back into null
-        if (parentIdentifier != null
-                && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER))
-            parentIdentifier = null;
-
-        getModel().setParentIdentifier(parentIdentifier);
-
     }
 
     @Override

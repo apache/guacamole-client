@@ -126,9 +126,11 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     }
 
     @Override
-    protected void validateNewModel(AuthenticatedUser user, UserModel model)
+    protected void beforeCreate(AuthenticatedUser user, UserModel model)
             throws GuacamoleException {
 
+        super.beforeCreate(user, model);
+        
         // Username must not be blank
         if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
@@ -141,9 +143,11 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     }
 
     @Override
-    protected void validateExistingModel(AuthenticatedUser user,
+    protected void beforeUpdate(AuthenticatedUser user,
             UserModel model) throws GuacamoleException {
 
+        super.beforeUpdate(user, model);
+        
         // Username must not be blank
         if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
