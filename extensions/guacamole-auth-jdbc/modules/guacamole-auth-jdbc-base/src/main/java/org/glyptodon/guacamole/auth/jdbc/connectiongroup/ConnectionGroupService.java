@@ -31,6 +31,7 @@ import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
@@ -165,7 +166,21 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
                 throw new GuacamoleClientException("The connection group \"" + model.getName() + "\" already exists.");
 
         }
-        
+
+        // Verify that this connection group's location does not create a cycle
+        String relativeParentIdentifier = model.getParentIdentifier();
+        while (relativeParentIdentifier != null) {
+
+            // Abort if cycle is detected
+            if (relativeParentIdentifier.equals(model.getIdentifier()))
+                throw new GuacamoleUnsupportedException("A connection group may not contain itself.");
+
+            // Advance to next parent
+            ModeledConnectionGroup relativeParentGroup = retrieveObject(user, relativeParentIdentifier);
+            relativeParentIdentifier = relativeParentGroup.getModel().getParentIdentifier();
+
+        } 
+
     }
 
     /**
