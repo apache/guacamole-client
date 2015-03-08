@@ -83,7 +83,7 @@
         WHERE connection_group_id IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
-                #{identifier,jdbcType=INTEGER}
+                #{identifier,jdbcType=INTEGER}::integer
             </foreach>
 
     </select>
