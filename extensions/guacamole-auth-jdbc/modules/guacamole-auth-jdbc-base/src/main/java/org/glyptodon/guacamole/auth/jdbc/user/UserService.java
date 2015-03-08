@@ -32,6 +32,7 @@ import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
@@ -162,6 +163,17 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
             
         }
         
+    }
+
+    @Override
+    protected void beforeDelete(AuthenticatedUser user, String identifier) throws GuacamoleException {
+
+        super.beforeDelete(user, identifier);
+
+        // Do not allow users to delete themselves
+        if (identifier.equals(user.getUser().getIdentifier()))
+            throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
+
     }
 
     /**
