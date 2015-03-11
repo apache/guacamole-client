@@ -38,6 +38,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var permissionService      = $injector.get('permissionService');
     var userService            = $injector.get('userService');
 
+    // Identifier of the current user
+    var currentUserID = authenticationService.getCurrentUserID();
+
     /**
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
@@ -132,7 +135,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     };
 
     // Retrieve current permissions
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    permissionService.getPermissions(currentUserID)
     .success(function permissionsRetrieved(permissions) {
 
         // Ignore permission to update root group
@@ -189,7 +192,12 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     userService.getUsers([PermissionSet.ObjectPermissionType.UPDATE, 
         PermissionSet.ObjectPermissionType.DELETE])
     .success(function usersReceived(users) {
-        $scope.users = users;
+
+        // Display only other users, not self
+        $scope.users = users.filter(function isNotSelf(user) {
+            return user.username !== currentUserID;
+        });
+
     });
 
     /**
