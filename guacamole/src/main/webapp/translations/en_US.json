@@ -125,8 +125,9 @@
 
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
         
-        "FIELD_HEADER_PASSWORD"       : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN" : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 

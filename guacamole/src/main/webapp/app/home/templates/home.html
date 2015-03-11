@@ -31,14 +31,16 @@
                 <div class="section">
                     <table class="properties">
                         <tr>
-                            <th>{{'HOME.FIELD_HEADER_PASSWORD' | translate}}</th>
-
-                            <td><input ng-model="password" type="password" /></td>
+                            <th>{{'HOME.FIELD_HEADER_PASSWORD_OLD' | translate}}</th>
+                            <td><input ng-model="oldPassword" type="password" /></td>
                         </tr>
                         <tr>
-                            <th>{{'HOME.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
-
-                            <td><input ng-model="passwordMatch" type="password" /></td>
+                            <th>{{'HOME.FIELD_HEADER_PASSWORD_NEW' | translate}}</th>
+                            <td><input ng-model="newPassword" type="password" /></td>
+                        </tr>
+                        <tr>
+                            <th>{{'HOME.FIELD_HEADER_PASSWORD_NEW_AGAIN' | translate}}</th>
+                            <td><input ng-model="newPasswordMatch" type="password" /></td>
                         </tr>
                     </table>
                 </div>

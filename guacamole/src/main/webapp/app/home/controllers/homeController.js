@@ -74,15 +74,15 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      *
      * @type String
      */
-    $scope.password = null;
+    $scope.newPassword = null;
 
     /**
      * The password match for the user. The update password action will fail if
-     * $scope.password !== $scope.passwordMatch.
+     * $scope.newPassword !== $scope.passwordMatch.
      *
      * @type String
      */
-    $scope.passwordMatch = null;
+    $scope.newPasswordMatch = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -176,8 +176,9 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.closePasswordUpdate = function closePasswordUpdate() {
         
         // Clear the password fields and close the dialog
-        $scope.password = null;
-        $scope.passwordMatch = null;
+        $scope.oldPassword        = null;
+        $scope.newPassword        = null;
+        $scope.newPasswordMatch   = null;
         $scope.showPasswordDialog = false;
     };
     
@@ -188,29 +189,40 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.updatePassword = function updatePassword() {
 
         // Verify passwords match
-        if ($scope.passwordMatch !== $scope.password) {
+        if ($scope.newPasswordMatch !== $scope.newPassword) {
             $scope.showStatus({
-                'className'  : 'error',
-                'title'      : 'HOME.DIALOG_HEADER_ERROR',
-                'text'       : 'HOME.ERROR_PASSWORD_MISMATCH',
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                text       : 'HOME.ERROR_PASSWORD_MISMATCH',
+                actions    : [ ACKNOWLEDGE_ACTION ]
             });
             return;
         }
         
         // Save the user with the new password
-        userService.saveUser({
-            username: currentUserID, 
-            password: $scope.password
+        userService.updateUserPassword(currentUserID, $scope.oldPassword, $scope.newPassword)
+        .success(function passwordUpdated() {
+        
+            // Close the password update dialog
+            $scope.closePasswordUpdate();
+
+            // Indicate that the password has been changed
+            $scope.showStatus({
+                text    : 'HOME.PASSWORD_CHANGED',
+                actions : [ ACKNOWLEDGE_ACTION ]
+            });
+        })
+        
+        // Notify of any errors
+        .error(function passwordUpdateFailed(error) {
+            $scope.showStatus({
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                'text'       : error.message,
+                actions    : [ ACKNOWLEDGE_ACTION ]
+            });
         });
         
-        $scope.closePasswordUpdate();
-        
-        // Indicate that the password has been changed
-        $scope.showStatus({
-            'text'       : 'HOME.PASSWORD_CHANGED',
-            'actions'    : [ ACKNOWLEDGE_ACTION ]
-        });
     };
     
 }]);

@@ -23,8 +23,15 @@
 /**
  * Service for operating on users via the REST API.
  */
-angular.module('rest').factory('userService', ['$http', 'authenticationService',
-        function userService($http, authenticationService) {
+angular.module('rest').factory('userService', ['$injector',
+        function userService($injector) {
+
+    // Get required types
+    var UserPasswordUpdate = $injector.get("UserPasswordUpdate");
+            
+    // Get required services
+    var $http                 = $injector.get("$http");
+    var authenticationService = $injector.get("authenticationService");
             
     var service = {};
     
@@ -169,6 +176,44 @@ angular.module('rest').factory('userService', ['$http', 'authenticationService',
             url     : 'api/users/' + encodeURIComponent(user.username),
             params  : httpParameters,
             data    : user
+        });
+
+    };
+    
+    /**
+     * Makes a request to the REST API to update the password for a user, 
+     * returning a promise that can be used for processing the results of the call.
+     * 
+     * @param {String} username
+     *     The username of the user to update.
+     *     
+     * @param {String} oldPassword
+     *     The exiting password of the user to update.
+     *     
+     * @param {String} newPassword
+     *     The new password of the user to update.
+     *                          
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     password update operation is successful.
+     */
+    service.updateUserPassword = function updateUserPassword(username, 
+            oldPassword, newPassword) {
+
+        // Build HTTP parameters set
+        var httpParameters = {
+            token : authenticationService.getCurrentToken()
+        };
+
+        // Retrieve user
+        return $http({
+            method  : 'PUT',
+            url     : 'api/users/' + encodeURIComponent(username) + '/password',
+            params  : httpParameters,
+            data    : new UserPasswordUpdate({
+                oldPassword : oldPassword,
+                newPassword : newPassword
+            })
         });
 
     };
