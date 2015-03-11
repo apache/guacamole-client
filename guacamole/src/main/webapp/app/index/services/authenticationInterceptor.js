@@ -24,17 +24,24 @@ angular.module('index').factory('authenticationInterceptor', ['$location', '$q',
         function authenticationInterceptor($location, $q) {
             
     return {
-        'response': function(response) {
-            return response || $q.when(response);
-        },
 
-        'responseError': function(rejection) {
-            // Do not redirect failed api requests.
+        // Redirect users to login if authorization fails
+        responseError: function handleErrorResponse(rejection) {
+
+            // Only redirect failed authentication requests
             if ((rejection.status === 401 || rejection.status === 403)
-                    && rejection.config.url.search('api/') === -1) {
-                $location.path('/login');
+                    && rejection.config.url  === 'api/tokens') {
+
+                // Only redirect if not already on login page
+                if ($location.path() !== '/login/')
+                    $location.path('/login/');
+
             }
+
             return $q.reject(rejection);
+
         }
+
     };
+
 }]);
