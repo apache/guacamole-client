@@ -33,11 +33,11 @@ import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
@@ -55,7 +55,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionService extends DirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
+public class ConnectionService extends GroupedDirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
 
     /**
      * Mapper for accessing connections.
@@ -148,9 +148,11 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
     }
 
     @Override
-    protected void validateNewModel(AuthenticatedUser user,
+    protected void beforeCreate(AuthenticatedUser user,
             ConnectionModel model) throws GuacamoleException {
 
+        super.beforeCreate(user, model);
+        
         // Name must not be blank
         if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
@@ -163,9 +165,11 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
     }
 
     @Override
-    protected void validateExistingModel(AuthenticatedUser user,
+    protected void beforeUpdate(AuthenticatedUser user,
             ConnectionModel model) throws GuacamoleException {
 
+        super.beforeUpdate(user, model);
+        
         // Name must not be blank
         if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection names must not be blank.");
@@ -179,7 +183,7 @@ public class ConnectionService extends DirectoryObjectService<ModeledConnection,
                 throw new GuacamoleClientException("The connection \"" + model.getName() + "\" already exists.");
 
         }
-        
+
     }
 
     /**

@@ -20,8 +20,9 @@
         <!-- Base JDBC classes -->
         <module>modules/guacamole-auth-jdbc-base</module>
 
-        <!-- MySQL authentication -->
+        <!-- Database-specific implementations -->
         <module>modules/guacamole-auth-jdbc-mysql</module>
+        <module>modules/guacamole-auth-jdbc-postgresql</module>
 
     </modules>
 

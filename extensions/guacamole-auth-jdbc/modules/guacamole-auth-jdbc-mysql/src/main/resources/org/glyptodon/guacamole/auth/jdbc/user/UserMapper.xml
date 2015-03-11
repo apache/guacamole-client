@@ -47,7 +47,7 @@
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE
             guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'read'
+            AND permission = 'READ'
     </select>
 
     <!-- Select multiple users by username -->
@@ -83,7 +83,7 @@
                 #{identifier,jdbcType=VARCHAR}
             </foreach>
             AND guacamole_user_permission.user_id = #{user.objectID,jdbcType=INTEGER}
-            AND permission = 'read'
+            AND permission = 'READ'
 
     </select>
 

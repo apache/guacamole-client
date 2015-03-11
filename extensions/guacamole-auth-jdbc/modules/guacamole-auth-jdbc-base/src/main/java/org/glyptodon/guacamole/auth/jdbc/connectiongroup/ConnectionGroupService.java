@@ -27,11 +27,12 @@ import com.google.inject.Provider;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
@@ -48,7 +49,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionGroupService extends DirectoryObjectService<ModeledConnectionGroup,
+public class ConnectionGroupService extends GroupedDirectoryObjectService<ModeledConnectionGroup,
         ConnectionGroup, ConnectionGroupModel> {
 
     /**
@@ -130,9 +131,11 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
     }
 
     @Override
-    protected void validateNewModel(AuthenticatedUser user,
+    protected void beforeCreate(AuthenticatedUser user,
             ConnectionGroupModel model) throws GuacamoleException {
 
+        super.beforeCreate(user, model);
+        
         // Name must not be blank
         if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
@@ -145,9 +148,11 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
     }
 
     @Override
-    protected void validateExistingModel(AuthenticatedUser user,
+    protected void beforeUpdate(AuthenticatedUser user,
             ConnectionGroupModel model) throws GuacamoleException {
 
+        super.beforeUpdate(user, model);
+        
         // Name must not be blank
         if (model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
@@ -161,7 +166,21 @@ public class ConnectionGroupService extends DirectoryObjectService<ModeledConnec
                 throw new GuacamoleClientException("The connection group \"" + model.getName() + "\" already exists.");
 
         }
-        
+
+        // Verify that this connection group's location does not create a cycle
+        String relativeParentIdentifier = model.getParentIdentifier();
+        while (relativeParentIdentifier != null) {
+
+            // Abort if cycle is detected
+            if (relativeParentIdentifier.equals(model.getIdentifier()))
+                throw new GuacamoleUnsupportedException("A connection group may not contain itself.");
+
+            // Advance to next parent
+            ModeledConnectionGroup relativeParentGroup = retrieveObject(user, relativeParentIdentifier);
+            relativeParentIdentifier = relativeParentGroup.getModel().getParentIdentifier();
+
+        } 
+
     }
 
     /**

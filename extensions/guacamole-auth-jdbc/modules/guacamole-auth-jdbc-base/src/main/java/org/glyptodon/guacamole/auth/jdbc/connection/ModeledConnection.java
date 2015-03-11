@@ -25,10 +25,9 @@ package org.glyptodon.guacamole.auth.jdbc.connection;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.List;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObject;
-import org.glyptodon.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObject;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -42,7 +41,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ModeledConnection extends DirectoryObject<ConnectionModel>
+public class ModeledConnection extends GroupedDirectoryObject<ConnectionModel>
     implements Connection {
 
     /**
@@ -67,7 +66,7 @@ public class ModeledConnection extends DirectoryObject<ConnectionModel>
      * The manually-set GuacamoleConfiguration, if any.
      */
     private GuacamoleConfiguration config = null;
-    
+
     /**
      * Creates a new, empty ModeledConnection.
      */
@@ -82,30 +81,6 @@ public class ModeledConnection extends DirectoryObject<ConnectionModel>
     @Override
     public void setName(String name) {
         getModel().setName(name);
-    }
-
-    @Override
-    public String getParentIdentifier() {
-
-        // Translate null parent to proper identifier
-        String parentIdentifier = getModel().getParentIdentifier();
-        if (parentIdentifier == null)
-            return RootConnectionGroup.IDENTIFIER;
-
-        return parentIdentifier;
-        
-    }
-
-    @Override
-    public void setParentIdentifier(String parentIdentifier) {
-
-        // Translate root identifier back into null
-        if (parentIdentifier != null
-                && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER))
-            parentIdentifier = null;
-
-        getModel().setParentIdentifier(parentIdentifier);
-
     }
 
     @Override

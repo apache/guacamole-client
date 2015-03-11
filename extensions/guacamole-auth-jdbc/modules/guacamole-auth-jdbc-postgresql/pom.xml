@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glyptodon.guacamole</groupId>
+    <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
+    <packaging>jar</packaging>
+    <name>guacamole-auth-jdbc-postgresql</name>
+    <url>http://guac-dev.org/</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <parent>
+        <groupId>org.glyptodon.guacamole</groupId>
+        <artifactId>guacamole-auth-jdbc</artifactId>
+        <version>0.9.5</version>
+        <relativePath>../../</relativePath>
+    </parent>
+
+    <build>
+        <plugins>
+
+            <!-- Written for 1.6 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+            <!-- Assembly plugin - for easy distribution -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <executions>
+                    <execution>
+                        <id>jar-with-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>extension/${project.artifactId}-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
+                        </configuration>
+                    </execution>                    
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>org.glyptodon.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Guacamole JDBC Authentication -->
+        <dependency>
+            <groupId>org.glyptodon.guacamole</groupId>
+            <artifactId>guacamole-auth-jdbc-base</artifactId>
+            <version>0.9.5</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

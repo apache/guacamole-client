@@ -32,6 +32,7 @@ import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
@@ -137,9 +138,11 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     }
 
     @Override
-    protected void validateNewModel(AuthenticatedUser user, UserModel model)
+    protected void beforeCreate(AuthenticatedUser user, UserModel model)
             throws GuacamoleException {
 
+        super.beforeCreate(user, model);
+        
         // Username must not be blank
         if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
@@ -152,9 +155,11 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     }
 
     @Override
-    protected void validateExistingModel(AuthenticatedUser user,
+    protected void beforeUpdate(AuthenticatedUser user,
             UserModel model) throws GuacamoleException {
 
+        super.beforeUpdate(user, model);
+        
         // Username must not be blank
         if (model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
@@ -193,7 +198,17 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
         }
         
         return implicitPermissions;
+    }
         
+    @Override
+    protected void beforeDelete(AuthenticatedUser user, String identifier) throws GuacamoleException {
+
+        super.beforeDelete(user, identifier);
+
+        // Do not allow users to delete themselves
+        if (identifier.equals(user.getUser().getIdentifier()))
+            throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
+
     }
 
     /**

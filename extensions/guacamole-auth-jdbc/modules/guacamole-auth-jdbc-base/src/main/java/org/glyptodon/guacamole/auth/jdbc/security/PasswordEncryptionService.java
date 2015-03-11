@@ -30,11 +30,16 @@ public interface PasswordEncryptionService {
 
     /**
      * Creates a password hash based on the provided username, password, and
-     * salt.
+     * salt. If the provided salt is null, only the password itself is hashed.
      *
-     * @param password The password to hash.
-     * @param salt The salt to use when hashing the password.
-     * @return The generated password hash.
+     * @param password
+     *     The password to hash.
+     *
+     * @param salt
+     *     The salt to use when hashing the password, if any.
+     *
+     * @return
+     *     The generated password hash.
      */
     public byte[] createPasswordHash(String password, byte[] salt);
 

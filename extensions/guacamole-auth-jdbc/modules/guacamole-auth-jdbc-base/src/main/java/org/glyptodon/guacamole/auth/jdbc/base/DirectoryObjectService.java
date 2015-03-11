@@ -37,8 +37,8 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
- * manipulating users. This service will automatically enforce the
- * permissions of the current user.
+ * manipulating objects within directories. This service will automatically
+ * enforce the permissions of the current user.
  *
  * @author Michael Jumper
  * @param <InternalType>
@@ -215,52 +215,77 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     }
 
     /**
-     * Returns whether the contents of the given model are valid and can be
-     * used to create a new object as-is. The object does not yet exist in the
-     * database, but the user desires to create a new object with the given
-     * model. This function will be called prior to any creation operation, and
-     * provides a means for the implementation to abort prior to completion. The
-     * default implementation does nothing.
+     * Called before any object is created through this directory object
+     * service. This function serves as a final point of validation before
+     * the create operation occurs. In its default implementation,
+     * beforeCreate() performs basic permissions checks.
      *
      * @param user
      *     The user creating the object.
      *
      * @param model
-     *     The model to validate.
+     *     The model of the object being created.
      *
      * @throws GuacamoleException
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void validateNewModel(AuthenticatedUser user,
-            ModelType model) throws GuacamoleException {
+    protected void beforeCreate(AuthenticatedUser user,
+            ModelType model ) throws GuacamoleException {
 
-        // By default, do nothing.
+        // Verify permission to create objects
+        if (!user.getUser().isAdministrator() && !hasCreatePermission(user))
+            throw new GuacamoleSecurityException("Permission denied.");
 
     }
 
     /**
-     * Returns whether the given model is valid and can be used to update an
-     * existing object as-is. The object already exists in the database, but the
-     * user desires to update the object to the given model. This function will
-     * be called prior to update operation, and provides a means for the
-     * implementation to abort prior to completion. The default implementation
-     * does nothing.
+     * Called before any object is updated through this directory object
+     * service. This function serves as a final point of validation before
+     * the update operation occurs. In its default implementation,
+     * beforeUpdate() performs basic permissions checks.
      *
      * @param user
      *     The user updating the existing object.
      *
      * @param model
-     *     The model to validate.
+     *     The model of the object being updated.
      *
      * @throws GuacamoleException
      *     If the object is invalid, or an error prevents validating the given
      *     object.
      */
-    protected void validateExistingModel(AuthenticatedUser user,
+    protected void beforeUpdate(AuthenticatedUser user,
             ModelType model) throws GuacamoleException {
 
         // By default, do nothing.
+        if (!hasObjectPermission(user, model.getIdentifier(), ObjectPermission.Type.UPDATE))
+            throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
+    /**
+     * Called before any object is deleted through this directory object
+     * service. This function serves as a final point of validation before
+     * the delete operation occurs. In its default implementation,
+     * beforeDelete() performs basic permissions checks.
+     *
+     * @param user
+     *     The user deleting the existing object.
+     *
+     * @param identifier
+     *     The identifier of the object being deleted.
+     *
+     * @throws GuacamoleException
+     *     If the object is invalid, or an error prevents validating the given
+     *     object.
+     */
+    protected void beforeDelete(AuthenticatedUser user,
+            String identifier) throws GuacamoleException {
+
+        // Verify permission to delete objects
+        if (!hasObjectPermission(user, identifier, ObjectPermission.Type.DELETE))
+            throw new GuacamoleSecurityException("Permission denied.");
 
     }
 
@@ -400,24 +425,16 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     public InternalType createObject(AuthenticatedUser user, ExternalType object)
         throws GuacamoleException {
 
-        // Only create object if user has permission to do so
-        if (user.getUser().isAdministrator() || hasCreatePermission(user)) {
+        ModelType model = getModelInstance(user, object);
+        beforeCreate(user, model);
+        
+        // Create object
+        getObjectMapper().insert(model);
 
-            // Validate object prior to creation
-            ModelType model = getModelInstance(user, object);
-            validateNewModel(user, model);
+        // Add implicit permissions
+        getPermissionMapper().insert(getImplicitPermissions(user, model));
 
-            // Create object
-            getObjectMapper().insert(model);
-
-            // Add implicit permissions
-            getPermissionMapper().insert(getImplicitPermissions(user, model));
-
-            return getObjectInstance(user, model);
-        }
-
-        // User lacks permission to create 
-        throw new GuacamoleSecurityException("Permission denied.");
+        return getObjectInstance(user, model);
 
     }
 
@@ -438,14 +455,10 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     public void deleteObject(AuthenticatedUser user, String identifier)
         throws GuacamoleException {
 
-        // Only delete object if user has permission to do so
-        if (hasObjectPermission(user, identifier, ObjectPermission.Type.DELETE)) {
-            getObjectMapper().delete(identifier);
-            return;
-        }
-
-        // User lacks permission to delete 
-        throw new GuacamoleSecurityException("Permission denied.");
+        beforeDelete(user, identifier);
+        
+        // Delete object
+        getObjectMapper().delete(identifier);
 
     }
 
@@ -466,20 +479,11 @@ public abstract class DirectoryObjectService<InternalType extends DirectoryObjec
     public void updateObject(AuthenticatedUser user, InternalType object)
         throws GuacamoleException {
 
-        // Only update object if user has permission to do so
-        if (hasObjectPermission(user, object.getIdentifier(), ObjectPermission.Type.UPDATE)) {
-
-            // Validate object prior to creation
-            ModelType model = object.getModel();
-            validateExistingModel(user, model);
-
-            // Update object
-            getObjectMapper().update(model);
-            return;
-        }
-
-        // User lacks permission to update
-        throw new GuacamoleSecurityException("Permission denied.");
+        ModelType model = object.getModel();
+        beforeUpdate(user, model);
+        
+        // Update object
+        getObjectMapper().update(model);
 
     }
 
