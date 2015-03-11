@@ -71,11 +71,34 @@ div.recent-connections div.connection {
 }
 
 .password-dialog {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: visibility 0.125s, opacity 0.125s;
+    -moz-transition: visibility 0.125s, opacity 0.125s;
+    -ms-transition: visibility 0.125s, opacity 0.125s;
+    -o-transition: visibility 0.125s, opacity 0.125s;
+    transition: visibility 0.125s, opacity 0.125s;
     position: absolute;
     background: white;
+    padding: 1em;
     border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     margin: 1em;
-    width: 5in;
     right: 0;
+    top: 0;
     z-index: 1;
+}
+
+.password-dialog.shown {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 0.125s;
+    -moz-transition: opacity 0.125s;
+    -ms-transition: opacity 0.125s;
+    -o-transition: opacity 0.125s;
+    transition: opacity 0.125s;
+}
+
+.password-dialog .fields {
+    width: 100%;
 }

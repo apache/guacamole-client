@@ -199,6 +199,17 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
             return;
         }
         
+        // Verify that the new password is not blank
+        if (!$scope.newPassword) {
+            $scope.showStatus({
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                text       : 'HOME.ERROR_PASSWORD_BLANK',
+                actions    : [ ACKNOWLEDGE_ACTION ]
+            });
+            return;
+        }
+        
         // Save the user with the new password
         userService.updateUserPassword(currentUserID, $scope.oldPassword, $scope.newPassword)
         .success(function passwordUpdated() {
