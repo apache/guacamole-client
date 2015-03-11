@@ -154,7 +154,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
+        name        : "HOME.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             $scope.showStatus(false);
