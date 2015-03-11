@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -36,11 +37,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -111,6 +115,12 @@ public class UserRESTService {
      */
     @Inject
     private ObjectRetrievalService retrievalService;
+    
+    /**
+     * The authentication provider used to authenticating a user.
+     */
+    @Inject
+    private AuthenticationProvider authProvider;
     
     /**
      * Gets a list of users in the system, filtering the returned list by the
@@ -262,6 +272,12 @@ public class UserRESTService {
         if (!user.getUsername().equals(username))
             throw new HTTPException(Response.Status.BAD_REQUEST,
                     "Username in path does not match username provided JSON data.");
+        
+        // A user may not use this endpoint to modify himself
+        if (userContext.self().getIdentifier().equals(user.getUsername())) {
+            throw new HTTPException(Response.Status.FORBIDDEN,
+                    "Permission denied.");
+        }
 
         // Get the user
         User existingUser = retrievalService.retrieveUser(userContext, username);
@@ -273,6 +289,63 @@ public class UserRESTService {
         // Update the user
         userDirectory.update(existingUser);
 
+    }
+    
+    /**
+     * Updates the password for an individual existing user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param username
+     *     The username of the user to update.
+     *
+     * @param userPasswordUpdate
+     *     The object containing the old password for the user, as well as the
+     *     new password to set for that user.
+     *
+     * @param request
+     *     The HttpServletRequest associated with the password update attempt.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the user's password.
+     */
+    @PUT
+    @Path("/{username}/password")
+    @AuthProviderRESTExposure
+    public void updatePassword(@QueryParam("token") String authToken,
+            @PathParam("username") String username, 
+            APIUserPasswordUpdate userPasswordUpdate,
+            @Context HttpServletRequest request) throws GuacamoleException {
+
+        UserContext userContext = authenticationService.getUserContext(authToken);
+        
+        // Build credentials
+        Credentials credentials = new Credentials();
+        credentials.setUsername(username);
+        credentials.setPassword(userPasswordUpdate.getOldPassword());
+        credentials.setRequest(request);
+        credentials.setSession(request.getSession(true));
+        
+        // Verify that the old password was correct 
+        if (authProvider.getUserContext(credentials) == null) {
+            throw new HTTPException(Response.Status.FORBIDDEN,
+                    "Permission denied.");
+        }
+        
+        // Get the user directory
+        Directory<User> userDirectory = userContext.getUserDirectory();
+        
+        // Get the user that we want to updates
+        User user = retrievalService.retrieveUser(userContext, username);
+        
+        // Set password to the newly provided one
+        user.setPassword(userPasswordUpdate.getNewPassword());
+        
+        // Update the user
+        userDirectory.update(user);
+        
     }
     
     /**

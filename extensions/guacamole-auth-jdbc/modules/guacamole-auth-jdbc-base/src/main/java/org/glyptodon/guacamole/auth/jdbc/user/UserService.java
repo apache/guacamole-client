@@ -34,9 +34,11 @@ import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.net.auth.User;
+import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
@@ -48,7 +50,16 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  * @author Michael Jumper, James Muehlner
  */
 public class UserService extends DirectoryObjectService<ModeledUser, User, UserModel> {
-
+    
+    /**
+     * All user permissions which are implicitly granted to the new user upon
+     * creation.
+     */
+    private static final ObjectPermission.Type[] IMPLICIT_USER_PERMISSIONS = {
+        ObjectPermission.Type.READ,
+        ObjectPermission.Type.UPDATE
+    };
+    
     /**
      * Mapper for accessing users.
      */
@@ -165,6 +176,30 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
         
     }
 
+    @Override
+    protected Collection<ObjectPermissionModel>
+        getImplicitPermissions(AuthenticatedUser user, UserModel model) {
+            
+        // Get original set of implicit permissions
+        Collection<ObjectPermissionModel> implicitPermissions = super.getImplicitPermissions(user, model);
+        
+        // Grant implicit permissions to the new user
+        for (ObjectPermission.Type permissionType : IMPLICIT_USER_PERMISSIONS) {
+            
+            ObjectPermissionModel permissionModel = new ObjectPermissionModel();
+            permissionModel.setUserID(model.getObjectID());
+            permissionModel.setUsername(model.getIdentifier());
+            permissionModel.setType(permissionType);
+            permissionModel.setObjectIdentifier(model.getIdentifier());
+
+            // Add new permission to implicit permission set 
+            implicitPermissions.add(permissionModel);
+            
+        }
+        
+        return implicitPermissions;
+    }
+        
     @Override
     protected void beforeDelete(AuthenticatedUser user, String identifier) throws GuacamoleException {
 

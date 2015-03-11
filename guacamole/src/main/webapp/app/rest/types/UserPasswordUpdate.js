@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,21 +20,42 @@
  * THE SOFTWARE.
  */
 
-angular.module('index').factory('authenticationInterceptor', ['$location', '$q', 
-        function authenticationInterceptor($location, $q) {
+/**
+ * Service which defines the UserPasswordUpdate class.
+ */
+angular.module('rest').factory('UserPasswordUpdate', [function defineUserPasswordUpdate() {
             
-    return {
-        'response': function(response) {
-            return response || $q.when(response);
-        },
+    /**
+     * The object sent to the REST API when representing the data
+     * associated with a user password update.
+     * 
+     * @constructor
+     * @param {UserPasswordUpdate|Object} [template={}]
+     *     The object whose properties should be copied within the new
+     *     UserPasswordUpdate.
+     */
+    var UserPasswordUpdate = function UserPasswordUpdate(template) {
 
-        'responseError': function(rejection) {
-            // Do not redirect failed api requests.
-            if ((rejection.status === 401 || rejection.status === 403)
-                    && rejection.config.url.search('api/') === -1) {
-                $location.path('/login');
-            }
-            return $q.reject(rejection);
-        }
+        // Use empty object by default
+        template = template || {};
+
+        /**
+         * This user's current password. Required for authenticating the user
+         * as part of to the password update operation.
+         * 
+         * @type String
+         */
+        this.oldPassword = template.oldPassword;
+
+        /**
+         * The new password to set for the user.
+         * 
+         * @type String
+         */
+        this.newPassword = template.newPassword;
+
     };
+
+    return UserPasswordUpdate;
+
 }]);

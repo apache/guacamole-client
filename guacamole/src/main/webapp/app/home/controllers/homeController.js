@@ -34,6 +34,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     var authenticationService  = $injector.get("authenticationService");
     var connectionGroupService = $injector.get("connectionGroupService");
     var permissionService      = $injector.get("permissionService");
+    var userService            = $injector.get("userService");
     
     /**
      * The root connection group, or null if the connection group hierarchy has
@@ -53,6 +54,37 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.canManageGuacamole = null;
 
     /**
+     * Whether the current user has sufficient permissions to change
+     * his/her own password. If permissions have not yet been loaded, this will
+     * be null.
+     *
+     * @type Boolean
+     */
+    $scope.canChangePassword = null;
+
+    /**
+     * Whether the password edit dialog should be shown.
+     *
+     * @type Boolean
+     */
+    $scope.showPasswordDialog = false;
+
+    /**
+     * The new password for the user.
+     *
+     * @type String
+     */
+    $scope.newPassword = null;
+
+    /**
+     * The password match for the user. The update password action will fail if
+     * $scope.newPassword !== $scope.passwordMatch.
+     *
+     * @type String
+     */
+    $scope.newPasswordMatch = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -62,7 +94,8 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.isLoaded = function isLoaded() {
 
         return $scope.rootConnectionGroup !== null
-            && $scope.canManageGuacamole  !== null;
+            && $scope.canManageGuacamole  !== null
+            && $scope.canChangePassword   !== null;
 
     };
 
@@ -71,13 +104,24 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     .success(function rootGroupRetrieved(rootConnectionGroup) {
         $scope.rootConnectionGroup = rootConnectionGroup;
     });
+    
+    // Identifier of the current user
+    var currentUserID = authenticationService.getCurrentUserID();
 
     // Retrieve current permissions
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    permissionService.getPermissions(currentUserID)
     .success(function permissionsRetrieved(permissions) {
+        
+        // Determine whether the current user can change his/her own password
+        $scope.canChangePassword = 
+                PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, currentUserID)
+             && PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.READ,   currentUserID);
 
         // Ignore permission to update root group
         PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+        
+        // Ignore permission to update self
+        PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, currentUserID);
 
         // Determine whether the current user needs access to the management UI
         $scope.canManageGuacamole =
@@ -104,5 +148,92 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
                 || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
         
     });
+    
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "HOME.ACTION_ACKNOWLEDGE",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            $scope.showStatus(false);
+        }
+    };
+    
+    /**
+     * Show the password update dialog.
+     */
+    $scope.showPasswordUpdate = function showPasswordUpdate() {
+        
+        // Show the dialog
+        $scope.showPasswordDialog = true;
+    };
+    
+    /**
+     * Close the password update dialog.
+     */
+    $scope.closePasswordUpdate = function closePasswordUpdate() {
+        
+        // Clear the password fields and close the dialog
+        $scope.oldPassword        = null;
+        $scope.newPassword        = null;
+        $scope.newPasswordMatch   = null;
+        $scope.showPasswordDialog = false;
+    };
+    
+    /**
+     * Update the current user's password to the password currently set within
+     * the password change dialog.
+     */
+    $scope.updatePassword = function updatePassword() {
+
+        // Verify passwords match
+        if ($scope.newPasswordMatch !== $scope.newPassword) {
+            $scope.showStatus({
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                text       : 'HOME.ERROR_PASSWORD_MISMATCH',
+                actions    : [ ACKNOWLEDGE_ACTION ]
+            });
+            return;
+        }
+        
+        // Verify that the new password is not blank
+        if (!$scope.newPassword) {
+            $scope.showStatus({
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                text       : 'HOME.ERROR_PASSWORD_BLANK',
+                actions    : [ ACKNOWLEDGE_ACTION ]
+            });
+            return;
+        }
+        
+        // Save the user with the new password
+        userService.updateUserPassword(currentUserID, $scope.oldPassword, $scope.newPassword)
+        .success(function passwordUpdated() {
+        
+            // Close the password update dialog
+            $scope.closePasswordUpdate();
+
+            // Indicate that the password has been changed
+            $scope.showStatus({
+                text    : 'HOME.PASSWORD_CHANGED',
+                actions : [ ACKNOWLEDGE_ACTION ]
+            });
+        })
+        
+        // Notify of any errors
+        .error(function passwordUpdateFailed(error) {
+            $scope.showStatus({
+                className  : 'error',
+                title      : 'HOME.DIALOG_HEADER_ERROR',
+                'text'       : error.message,
+                actions    : [ ACKNOWLEDGE_ACTION ]
+            });
+        });
+        
+    };
     
 }]);
