@@ -106,6 +106,13 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
             $scope.newPasswordMatch = null;
 
             /**
+             * Whether the contents of the user menu are currently shown.
+             *
+             * @type Boolean
+             */
+            $scope.menuShown = false;
+
+            /**
              * The username of the current user.
              *
              * @type String
@@ -158,6 +165,13 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                         || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
                 
             });
+
+            /**
+             * Toggles visibility of the user menu.
+             */
+            $scope.toggleMenu = function toggleMenu() {
+                $scope.menuShown = !$scope.menuShown;
+            };
 
             /**
              * Show the password update dialog.
