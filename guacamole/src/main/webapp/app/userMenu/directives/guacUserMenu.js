@@ -59,7 +59,7 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
              * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
-                name        : "HOME.ACTION_ACKNOWLEDGE",
+                name        : "USER_MENU.ACTION_ACKNOWLEDGE",
                 // Handle action
                 callback    : function acknowledgeCallback() {
                     $scope.showStatus(false);
@@ -236,8 +236,8 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                 if ($scope.newPasswordMatch !== $scope.newPassword) {
                     $scope.showStatus({
                         className  : 'error',
-                        title      : 'HOME.DIALOG_HEADER_ERROR',
-                        text       : 'HOME.ERROR_PASSWORD_MISMATCH',
+                        title      : 'USER_MENU.DIALOG_HEADER_ERROR',
+                        text       : 'USER_MENU.ERROR_PASSWORD_MISMATCH',
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
                     return;
@@ -247,8 +247,8 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                 if (!$scope.newPassword) {
                     $scope.showStatus({
                         className  : 'error',
-                        title      : 'HOME.DIALOG_HEADER_ERROR',
-                        text       : 'HOME.ERROR_PASSWORD_BLANK',
+                        title      : 'USER_MENU.DIALOG_HEADER_ERROR',
+                        text       : 'USER_MENU.ERROR_PASSWORD_BLANK',
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
                     return;
@@ -263,7 +263,7 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
 
                     // Indicate that the password has been changed
                     $scope.showStatus({
-                        text    : 'HOME.PASSWORD_CHANGED',
+                        text    : 'USER_MENU.PASSWORD_CHANGED',
                         actions : [ ACKNOWLEDGE_ACTION ]
                     });
                 })
@@ -272,7 +272,7 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                 .error(function passwordUpdateFailed(error) {
                     $scope.showStatus({
                         className  : 'error',
-                        title      : 'HOME.DIALOG_HEADER_ERROR',
+                        title      : 'USER_MENU.DIALOG_HEADER_ERROR',
                         'text'       : error.message,
                         actions    : [ ACKNOWLEDGE_ACTION ]
                     });
