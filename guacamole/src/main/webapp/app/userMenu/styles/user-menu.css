@@ -215,6 +215,7 @@
     transition: visibility 0.125s, opacity 0.125s;
     position: absolute;
     background: white;
+    text-align: right;
     padding: 1em;
     border: 1px solid rgba(0, 0, 0, 0.25);
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
@@ -222,6 +223,10 @@
     right: 0;
     top: 0;
     z-index: 8;
+}
+
+.user-menu .password-dialog .action-buttons {
+    margin: 0;
 }
 
 .user-menu .password-dialog.shown {
