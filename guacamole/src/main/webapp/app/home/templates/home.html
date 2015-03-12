@@ -24,17 +24,17 @@
 
     <div class="connection-list-ui">
 
-        <!-- User menu -->
-        <guac-user-menu permissions="permissions"></guac-user-menu>
-
         <!-- The recent connections for this user -->
-        <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+        <div class="header">
+            <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+            <guac-user-menu permissions="permissions"></guac-user-menu>
+        </div>
         <div class="recent-connections">
             <guac-recent-connections root-group="rootConnectionGroup"></guac-recent-connections>
         </div>
 
         <!-- All connections for this user -->
-        <h2>{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
+        <h2 class="header">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
         <div class="all-connections">
             <guac-group-list
                 connection-group="rootConnectionGroup"

@@ -21,15 +21,17 @@
        THE SOFTWARE.
     -->
 
-    <a class="username">{{username}}</a>
-    
-    <!-- Menu options -->
-    <ul class="options">
-        <li><a class="home" href="#/">{{'USER_MENU.ACTION_NAVIGATE_HOME' | translate}}</a></li>
-        <li><a class="manage" ng-show="canManageGuacamole" href="#/manage/">{{'USER_MENU.ACTION_MANAGE' | translate}}</a></li>
-        <li><a class="change-password" ng-click="showPasswordUpdate()" ng-show="canChangePassword">{{'USER_MENU.ACTION_CHANGE_PASSWORD' | translate}}</a></li>
-        <li><a class="logout" ng-click="logout()">{{'USER_MENU.ACTION_LOGOUT' | translate}}</a></li>
-    </ul>
+    <div class="user-menu-dropdown">
+        <div class="username">{{username}}</div>
+        
+        <!-- Menu options -->
+        <ul class="options">
+            <li><a class="home" href="#/">{{'USER_MENU.ACTION_NAVIGATE_HOME' | translate}}</a></li>
+            <li><a class="manage" ng-show="canManageGuacamole" href="#/manage/">{{'USER_MENU.ACTION_MANAGE' | translate}}</a></li>
+            <li><a class="change-password" ng-click="showPasswordUpdate()" ng-show="canChangePassword">{{'USER_MENU.ACTION_CHANGE_PASSWORD' | translate}}</a></li>
+            <li><a class="logout" ng-click="logout()">{{'USER_MENU.ACTION_LOGOUT' | translate}}</a></li>
+        </ul>
+    </div>
 
     <!-- Password dialog -->
     <div class="password-dialog" ng-class="{shown: showPasswordDialog}">

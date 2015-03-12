@@ -22,10 +22,10 @@ THE SOFTWARE.
 
 <div class="view" ng-class="{loading: !isLoaded()}">
 
-    <!-- User menu -->
-    <guac-user-menu permissions="permissions"></guac-user-menu>
-
-    <h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
+    <div class="header">
+        <h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
+        <guac-user-menu permissions="permissions"></guac-user-menu>
+    </div>
 
     <!-- User management -->
     <div class="settings section" ng-show="canManageUsers">
