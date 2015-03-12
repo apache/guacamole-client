@@ -87,7 +87,7 @@
 }
 
 .user-menu .user-menu-dropdown:hover {
-    background: rgba(0,0,0,0.02);
+    background: rgba(0,0,0,0.01);
 }
 
 .user-menu .user-menu-dropdown.open,
@@ -103,12 +103,11 @@
 
     font-size: 1.25em;
     font-weight: bold;
-    padding: .75em .5em;
+    padding: 0.5em 2em;
 
-    padding-left: 2em;
     background-repeat: no-repeat;
     background-size: 1em;
-    background-position: 0.5em 0.75em;
+    background-position: 0.5em center;
     background-image: url('images/user-icons/guac-user.png');
 
     -ms-flex: 0 0 auto;
@@ -117,6 +116,21 @@
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
    
+}
+
+.user-menu .menu-indicator {
+
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 2em;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: center center;
+    background-image: url('images/action-icons/guac-open-downward.png');
+
 }
 
 .user-menu .options {
@@ -151,7 +165,7 @@
     cursor: pointer;
     color: black;
     text-decoration: none;
-    padding: 0.35em 0.5em;
+    padding: 0.75em;
 }
 
 .user-menu .options li a:hover {
@@ -164,8 +178,8 @@
 .user-menu .options li a.logout {
     background-repeat: no-repeat;
     background-size: 1em;
-    background-position: 0.5em 0.45em;
-    padding-left: 2em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
 }
 
 .user-menu .options li a.home {
