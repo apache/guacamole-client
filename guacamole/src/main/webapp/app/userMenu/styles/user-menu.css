@@ -47,8 +47,6 @@
     align-items: stretch;
     flex-direction: row;
 
-    z-index: 5;
-    
 }
 
 .user-menu .user-menu-dropdown {
@@ -149,6 +147,8 @@
     border-left: 1px solid rgba(0,0,0,0.125);
     border-bottom: 1px solid rgba(0,0,0,0.125);
 
+    z-index: 5;
+    
 }
 
 .user-menu .user-menu-dropdown.open .options {

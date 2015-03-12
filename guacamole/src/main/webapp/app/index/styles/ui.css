@@ -67,6 +67,7 @@ h2 {
     margin-bottom: 1em;
     margin-top: 0;
     border-top: none;
+    width: 100%;
 
     /* IE10 */
     display: -ms-flexbox;
