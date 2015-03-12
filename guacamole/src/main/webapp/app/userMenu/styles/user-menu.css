@@ -169,7 +169,14 @@
 }
 
 .user-menu .options li a:hover {
-    background: #CDA;
+    background-color: #CDA;
+}
+
+.user-menu .options li a.disabled,
+.user-menu .options li a.disabled:hover {
+    background-color: transparent;
+    cursor: default;
+    opacity: 0.25;
 }
 
 .user-menu .options li a.home,

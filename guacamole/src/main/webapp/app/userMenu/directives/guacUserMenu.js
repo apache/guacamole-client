@@ -81,6 +81,23 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
             var document = $document[0];
 
             /**
+             * Whether the option to go to the home screen is disabled.
+             *
+             * @type Boolean
+             */
+            $scope.homeDisabled = ($location.path() === '/');
+
+            /**
+             * Whether the option to go to the management interface is
+             * disabled. Note that shis is different from canManageGuacamole,
+             * which deals with whether permission to manage is granted. A user
+             * may have permission, yet see this option as currently disabled.
+             *
+             * @type Boolean
+             */
+            $scope.manageDisabled = ($location.path() === '/manage/');
+
+            /**
              * Whether the current user has sufficient permissions to use the
              * management interface. If permissions have not yet been loaded,
              * this will be null.
@@ -264,12 +281,26 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
             };
 
             /**
+             * Navigates to the home screen.
+             */
+            $scope.navigateHome = function navigateHome() {
+                $location.path('/');
+            };
+
+            /**
+             * Navigates to the management interface.
+             */
+            $scope.manage = function manage() {
+                $location.path('/manage/');
+            };
+
+            /**
              * Logs out the current user, redirecting them to back to the login
              * screen after logout completes.
              */
             $scope.logout = function logout() {
                 authenticationService.logout()['finally'](function logoutComplete() {
-                    $location.path('/login');
+                    $location.path('/login/');
                 });
             };
 
