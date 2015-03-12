@@ -22,8 +22,25 @@
 
 .user-menu {
     padding: 0.45em;
-    text-align: right;
     float: right;
+}
+
+.user-menu a.username {
+    display: block;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+}
+
+.user-menu .options {
+    margin: 0;
+    padding: 0;
+    background: gray;
+}
+
+.user-menu .options li {
+    padding: 0.25em 0.5em;
+    list-style-type: none;
 }
 
 .user-menu .password-dialog {
