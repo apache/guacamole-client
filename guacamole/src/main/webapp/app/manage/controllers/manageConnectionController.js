@@ -36,6 +36,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var authenticationService    = $injector.get('authenticationService');
+    var guacNotification         = $injector.get('guacNotification');
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var permissionService        = $injector.get('permissionService');
@@ -50,7 +51,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
     
@@ -317,7 +318,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
         // Notify of any errors
         .error(function connectionSaveFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -337,7 +338,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         // Handle action
         callback    : function deleteCallback() {
             deleteConnectionImmediately();
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -349,7 +350,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         name        : "MANAGE_CONNECTION.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -367,7 +368,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
 
         // Notify of any errors
         .error(function connectionDeletionFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -384,7 +385,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.deleteConnection = function deleteConnection() {
 
         // Confirm deletion request
-        $scope.showStatus({
+        guacNotification.showStatus({
             'title'      : 'MANAGE_CONNECTION.DIALOG_HEADER_CONFIRM_DELETE',
             'text'       : 'MANAGE_CONNECTION.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]

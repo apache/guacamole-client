@@ -33,6 +33,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Required services
     var $location          = $injector.get('$location');
     var guacClientManager  = $injector.get('guacClientManager');
+    var guacNotification   = $injector.get('guacNotification');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -142,7 +143,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         name     : "CLIENT.ACTION_RECONNECT",
         callback : function reconnectCallback() {
             $scope.client = guacClientManager.replaceManagedClient(uniqueId, $routeParams.params);
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -407,7 +408,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
         // Hide any existing status
-        $scope.showStatus(false);
+        guacNotification.showStatus(false);
 
         // Do not display status if status not known
         if (!connectionState)
@@ -419,7 +420,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Connecting 
         if (connectionState === ManagedClientState.ConnectionState.CONNECTING
          || connectionState === ManagedClientState.ConnectionState.WAITING) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 title: "CLIENT.DIALOG_HEADER_CONNECTING",
                 text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
             });
@@ -435,7 +436,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
             // Show error status
-            $scope.showStatus({
+            guacNotification.showStatus({
                 className: "error",
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_CLIENT_" + errorName,
@@ -455,7 +456,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
             // Show error status
-            $scope.showStatus({
+            guacNotification.showStatus({
                 className: "error",
                 title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text: "CLIENT.ERROR_TUNNEL_" + errorName,
@@ -467,7 +468,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
                 text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
                 actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
@@ -476,7 +477,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Hide status for all other states
         else
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
 
     });
 

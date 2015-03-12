@@ -35,6 +35,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     var $routeParams           = $injector.get('$routeParams');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
+    var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
     
     /**
@@ -45,7 +46,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         name        : "MANAGE_CONNECTION_GROUP.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -187,7 +188,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         // Notify of any errors
         .error(function connectionGroupSaveFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -207,7 +208,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         // Handle action
         callback    : function deleteCallback() {
             deleteConnectionGroupImmediately();
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -219,7 +220,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         name        : "MANAGE_CONNECTION_GROUP.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -237,7 +238,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         // Notify of any errors
         .error(function connectionGroupDeletionFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -254,7 +255,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.deleteConnectionGroup = function deleteConnectionGroup() {
 
         // Confirm deletion request
-        $scope.showStatus({
+        guacNotification.showStatus({
             'title'      : 'MANAGE_CONNECTION_GROUP.DIALOG_HEADER_CONFIRM_DELETE',
             'text'       : 'MANAGE_CONNECTION_GROUP.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]

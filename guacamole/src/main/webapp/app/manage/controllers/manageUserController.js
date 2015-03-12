@@ -36,6 +36,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $routeParams           = $injector.get('$routeParams');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
+    var guacNotification       = $injector.get('guacNotification');
     var userService            = $injector.get('userService');
     var permissionService      = $injector.get('permissionService');
 
@@ -47,7 +48,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -409,7 +410,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Verify passwords match
         if ($scope.passwordMatch !== $scope.user.password) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                 'text'       : 'MANAGE_USER.ERROR_PASSWORD_MISMATCH',
@@ -430,7 +431,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
             // Notify of any errors
             .error(function userPermissionsPatchFailed(error) {
-                $scope.showStatus({
+                guacNotification.showStatus({
                     'className'  : 'error',
                     'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                     'text'       : error.message,
@@ -442,7 +443,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Notify of any errors
         .error(function userSaveFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -462,7 +463,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Handle action
         callback    : function deleteCallback() {
             deleteUserImmediately();
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -474,7 +475,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         name        : "MANAGE_USER.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -492,7 +493,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         // Notify of any errors
         .error(function userDeletionFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
                 'text'       : error.message,
@@ -509,7 +510,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.deleteUser = function deleteUser() {
 
         // Confirm deletion request
-        $scope.showStatus({
+        guacNotification.showStatus({
             'title'      : 'MANAGE_USER.DIALOG_HEADER_CONFIRM_DELETE',
             'text'       : 'MANAGE_USER.TEXT_CONFIRM_DELETE',
             'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
