@@ -42,13 +42,14 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
         },
 
         templateUrl: 'app/userMenu/templates/guacUserMenu.html',
-        controller: ['$scope', '$injector', function guacUserMenuController($scope, $injector) {
+        controller: ['$scope', '$injector', '$element', function guacUserMenuController($scope, $injector, $element) {
 
             // Get required types
             var ConnectionGroup = $injector.get("ConnectionGroup");
             var PermissionSet   = $injector.get("PermissionSet");
             
             // Get required services
+            var $document             = $injector.get("$document");
             var $location             = $injector.get("$location");
             var authenticationService = $injector.get("authenticationService");
             var userService           = $injector.get("userService");
@@ -64,7 +65,21 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                     $scope.showStatus(false);
                 }
             };
-            
+
+            /**
+             * The outermost element of the user menu directive.
+             *
+             * @type Element
+             */
+            var element = $element[0];
+
+            /**
+             * The main document object.
+             *
+             * @type Document
+             */
+            var document = $document[0];
+
             /**
              * Whether the current user has sufficient permissions to use the
              * management interface. If permissions have not yet been loaded,
@@ -257,6 +272,18 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                     $location.path('/login');
                 });
             };
+
+            // Close menu when use clicks anywhere else
+            document.body.addEventListener("click", function clickOutsideMenu() {
+                $scope.$apply(function closeMenu() {
+                    $scope.menuShown = false;
+                });
+            }, false);
+
+            // Prevent click within menu from triggering the outside-menu handler
+            element.addEventListener("click", function clickInsideMenu(e) {
+                e.stopPropagation();
+            }, false);
 
         }] // end controller
 
