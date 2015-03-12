@@ -94,6 +94,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.hasDeletePermission = null;
 
     /**
+     * All permissions associated with the current user, or null if the user's
+     * permissions have not yet been loaded.
+     *
+     * @type PermissionSet
+     */
+    $scope.permissions = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -105,6 +113,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         return $scope.user                !== null
             && $scope.permissionFlags     !== null
             && $scope.rootGroup           !== null
+            && $scope.permissions         !== null
             && $scope.canSaveUser         !== null
             && $scope.canDeleteUser       !== null;
 
@@ -129,7 +138,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     // Query the user's permissions for the current connection
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
-                
+
+        $scope.permissions = permissions;
+                        
         // Check if the user is new or if the user has UPDATE permission
         $scope.canSaveUser =
               !username

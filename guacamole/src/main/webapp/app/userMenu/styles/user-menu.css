@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,46 +20,41 @@
  * THE SOFTWARE.
  */
 
-.history-unavailable div.recent-connections {
-    display: none;
+.user-menu {
+    padding: 0.45em;
+    text-align: right;
+    float: right;
 }
 
-div.recent-connections,
-div.clipboardDiv,
-div.settings,
-div.all-connections {
-    margin: 1em;
-    padding: 0;
-}
-
-.all-connections .list-buttons {
-    text-align: center;
-    padding: 0;
-}
-
-div.recent-connections {
-    text-align: center;
-}
-
-.no-recent {
-
-    color: rgba(255, 255, 255, 0.5);
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
-    opacity: 0.5;
-    
-    font-size: 2em;
-    font-weight: bolder;
-}
-
-div.recent-connections div.connection {
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-    display: inline-block;
+.user-menu .password-dialog {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: visibility 0.125s, opacity 0.125s;
+    -moz-transition: visibility 0.125s, opacity 0.125s;
+    -ms-transition: visibility 0.125s, opacity 0.125s;
+    -o-transition: visibility 0.125s, opacity 0.125s;
+    transition: visibility 0.125s, opacity 0.125s;
+    position: absolute;
+    background: white;
     padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     margin: 1em;
-    text-align: center;
-    max-width: 75%;
-    overflow: hidden;
+    right: 0;
+    top: 0;
+    z-index: 1;
+}
+
+.user-menu .password-dialog.shown {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 0.125s;
+    -moz-transition: opacity 0.125s;
+    -ms-transition: opacity 0.125s;
+    -o-transition: opacity 0.125s;
+    transition: opacity 0.125s;
+}
+
+.user-menu .password-dialog .fields {
+    width: 100%;
 }

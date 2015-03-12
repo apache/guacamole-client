@@ -116,6 +116,14 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.newUsername = "";
 
     /**
+     * All permissions associated with the current user, or null if the user's
+     * permissions have not yet been loaded.
+     *
+     * @type PermissionSet
+     */
+    $scope.permissions = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -126,6 +134,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
 
         return $scope.users                     !== null
             && $scope.rootGroup                 !== null
+            && $scope.permissions               !== null
             && $scope.canManageUsers            !== null
             && $scope.canManageConnections      !== null
             && $scope.canCreateUsers            !== null
@@ -138,6 +147,8 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     permissionService.getPermissions(currentUserID)
     .success(function permissionsRetrieved(permissions) {
 
+        $scope.permissions = permissions;
+                        
         // Ignore permission to update root group
         PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
 

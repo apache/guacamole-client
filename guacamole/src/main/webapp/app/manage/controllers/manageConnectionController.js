@@ -129,6 +129,14 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.canCloneConnection = null;
 
     /**
+     * All permissions associated with the current user, or null if the user's
+     * permissions have not yet been loaded.
+     *
+     * @type PermissionSet
+     */
+    $scope.permissions = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -142,6 +150,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             && $scope.connection           !== null
             && $scope.parameters           !== null
             && $scope.historyEntryWrappers !== null
+            && $scope.permissions          !== null
             && $scope.canSaveConnection    !== null
             && $scope.canDeleteConnection  !== null
             && $scope.canCloneConnection   !== null;
@@ -159,21 +168,23 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
                 
-         // Check if the connection is new or if the user has UPDATE permission
-         $scope.canSaveConnection =
+        $scope.permissions = permissions;
+                        
+        // Check if the connection is new or if the user has UPDATE permission
+        $scope.canSaveConnection =
                !identifier
             || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
             || PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier);
             
-         // Check if connection is not new and the user has DELETE permission
-         $scope.canDeleteConnection =
+        // Check if connection is not new and the user has DELETE permission
+        $scope.canDeleteConnection =
             !!identifier && (
                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
                ||  PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, identifier)
             );
                 
-         // Check if the connection is not new and the user has UPDATE and CREATE_CONNECTION permissions
-         $scope.canCloneConnection =
+        // Check if the connection is not new and the user has UPDATE and CREATE_CONNECTION permissions
+        $scope.canCloneConnection =
             !!identifier && (
                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER) || (
                        PermissionSet.hasConnectionPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier)

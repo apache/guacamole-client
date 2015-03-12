@@ -24,37 +24,8 @@
 
     <div class="connection-list-ui">
 
-        <div class="logout-panel">
-            <a class="change-password button" ng-click="showPasswordUpdate()" ng-show="canChangePassword">{{'HOME.ACTION_CHANGE_PASSWORD' | translate}}</a>
-            <div class="password-dialog" ng-class="{shown: showPasswordDialog}">
-                <!-- Password editor -->
-                <div class="section">
-                    <table class="fields">
-                        <tr>
-                            <th>{{'HOME.FIELD_HEADER_PASSWORD_OLD' | translate}}</th>
-                            <td><input ng-model="oldPassword" type="password" /></td>
-                        </tr>
-                        <tr>
-                            <th>{{'HOME.FIELD_HEADER_PASSWORD_NEW' | translate}}</th>
-                            <td><input ng-model="newPassword" type="password" /></td>
-                        </tr>
-                        <tr>
-                            <th>{{'HOME.FIELD_HEADER_PASSWORD_NEW_AGAIN' | translate}}</th>
-                            <td><input ng-model="newPasswordMatch" type="password" /></td>
-                        </tr>
-                    </table>
-                </div>
-
-                <!-- Form action buttons -->
-                <div class="action-buttons">
-                    <button ng-click="updatePassword()">{{'HOME.ACTION_SAVE' | translate}}</button>
-                    <button ng-click="closePasswordUpdate()">{{'HOME.ACTION_CANCEL' | translate}}</button>
-                </div>
-            </div>
-            
-            <a class="manage button" ng-show="canManageGuacamole" href="#/manage">{{'HOME.ACTION_MANAGE' | translate}}</a>
-            <a class="logout button" ng-click="logout()">{{'HOME.ACTION_LOGOUT' | translate}}</a>
-        </div>
+        <!-- User menu -->
+        <guac-user-menu permissions="permissions"></guac-user-menu>
 
         <!-- The recent connections for this user -->
         <h2>{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>

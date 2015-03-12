@@ -289,12 +289,6 @@ div.section {
     background-image: url('images/group-icons/guac-open.png');
 }
 
-div.logout-panel {
-    padding: 0.45em;
-    text-align: right;
-    float: right;
-}
-
 .history th,
 .history td {
     padding-left: 1em;

@@ -22,10 +22,8 @@ THE SOFTWARE.
 
 <div class="view" ng-class="{loading: !isLoaded()}">
 
-    <div class="logout-panel">
-        <a class="home button" href="#/">{{'MANAGE.ACTION_NAVIGATE_HOME' | translate}}</a>
-        <a class="logout button" ng-click="logout()">{{'MANAGE.ACTION_LOGOUT' | translate}}</a>
-    </div>
+    <!-- User menu -->
+    <guac-user-menu permissions="permissions"></guac-user-menu>
 
     <h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
 
