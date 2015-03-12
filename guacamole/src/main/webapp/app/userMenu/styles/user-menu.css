@@ -20,11 +20,38 @@
  * THE SOFTWARE.
  */
 
-.user-menu .user-menu-dropdown {
+.user-menu {
 
-    position: relative;
-    border-left: 1px solid rgba(0,0,0,0.125);
-    background: rgba(0,0,0,0.04);
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+
+    z-index: 5;
+    
+}
+
+.user-menu .user-menu-dropdown {
 
     /* IE10 */
     display: -ms-flexbox;
@@ -51,12 +78,26 @@
     align-items: center;
     flex-direction: row;
 
-    z-index: 5;
-    
+}
+
+.user-menu .user-menu-dropdown {
+    position: relative;
+    border-left: 1px solid rgba(0,0,0,0.125);
+    background: rgba(0,0,0,0.04);
+}
+
+.user-menu .user-menu-dropdown:hover {
+    background: rgba(0,0,0,0.02);
+}
+
+.user-menu .user-menu-dropdown.open,
+.user-menu .user-menu-dropdown.open:hover {
+    background: rgba(0,0,0,0.3);
 }
 
 .user-menu .username {
 
+    cursor: default;
     margin: 0;
     min-width: 1.75in;
 
@@ -80,6 +121,8 @@
 
 .user-menu .options {
 
+    visibility: hidden;
+
     position: absolute;
     top: 100%;
     right: 0;
@@ -94,6 +137,10 @@
 
 }
 
+.user-menu .user-menu-dropdown.open .options {
+    visibility: visible;
+}
+
 .user-menu .options li {
     padding: 0;
     list-style-type: none;
@@ -101,14 +148,14 @@
 
 .user-menu .options li a {
     display: block;
-    cursor: default;
+    cursor: pointer;
     color: black;
     text-decoration: none;
     padding: 0.35em 0.5em;
 }
 
 .user-menu .options li a:hover {
-    background: rgba(0, 0, 0, 0.125);
+    background: #CDA;
 }
 
 .user-menu .options li a.home,
