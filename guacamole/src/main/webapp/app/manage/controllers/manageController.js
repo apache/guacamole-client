@@ -35,6 +35,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var $location              = $injector.get('$location');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
+    var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
     var userService            = $injector.get('userService');
 
@@ -49,7 +50,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         name        : "MANAGE.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
-            $scope.showStatus(false);
+            guacNotification.showStatus(false);
         }
     };
 
@@ -232,7 +233,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
 
         // Notify of any errors
         .error(function userCreationFailed(error) {
-            $scope.showStatus({
+            guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE.DIALOG_HEADER_ERROR',
                 'text'       : error.message,

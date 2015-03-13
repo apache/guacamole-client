@@ -23,5 +23,15 @@
 /**
  * The module for the root of the application.
  */
-angular.module('index', ['ngRoute', 'ngTouch', 'pascalprecht.translate',
-    'auth', 'home', 'manage', 'login', 'client', 'notification', 'rest']);
+angular.module('index', [
+    'auth',
+    'client',
+    'home',
+    'login',
+    'manage',
+    'ngRoute',
+    'ngTouch',
+    'notification',
+    'pascalprecht.translate',
+    'rest'
+]);

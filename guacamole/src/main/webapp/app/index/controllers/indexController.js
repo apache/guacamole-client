@@ -27,23 +27,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
     // Required services
-    var $document = $injector.get("$document");
-    var $window   = $injector.get("$window");
+    var $document        = $injector.get('$document');
+    var $window          = $injector.get('$window');
+    var guacNotification = $injector.get('guacNotification');
     
     /**
-     * The current status notification, or false if no status is currently
-     * shown.
-     * 
-     * @type Notification|Boolean
+     * The notification service.
      */
-    $scope.status = false;
-
-    /**
-     * All currently-visible notifications.
-     * 
-     * @type Notification[]
-     */
-    $scope.notifications = [];
+    $scope.guacNotification = guacNotification;
 
     /**
      * Basic page-level information.
@@ -66,91 +57,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     };
 
-    /**
-     * The ID of the most recently shown notification, or 0 if no notifications
-     * have yet been shown.
-     *
-     * @type Number
-     */
-    var notificationUniqueID = 0;
-    
-    /**
-     * Shows or hides the given notification as a modal status. If a status
-     * notification is currently shown, no further statuses will be shown
-     * until the current status is hidden.
-     *
-     * @param {Notification|Boolean|Object} status
-     *     The status notification to show.
-     *
-     * @example
-     * 
-     * // To show a status message with actions
-     * $scope.showStatus({
-     *     'title'      : 'Disconnected',
-     *     'text'       : 'You have been disconnected!',
-     *     'actions'    : {
-     *         'name'       : 'reconnect',
-     *         'callback'   : function () {
-     *             // Reconnection code goes here
-     *         }
-     *     }
-     * });
-     * 
-     * // To hide the status message
-     * $scope.showStatus(false);
-     */
-    $scope.showStatus = function showStatus(status) {
-        if (!$scope.status || !status)
-            $scope.status = status;
-    };
-    
-    /**
-     * Adds a notification to the the list of notifications shown.
-     * 
-     * @param {Notification|Object} notification The notification to add.
-     *
-     * @returns {Number}
-     *     A unique ID for the notification that's just been added.
-     * 
-     * @example
-     * 
-     * var id = $scope.addNotification({
-     *     'title'      : 'Download',
-     *     'text'       : 'You have a file ready for download!',
-     *     'actions'    : {
-     *         'name'       : 'download',
-     *         'callback'   : function () {
-     *             // download the file and remove the notification here
-     *         }
-     *     }
-     * });
-     */
-    $scope.addNotification = function addNotification(notification) {
-        var id = ++notificationUniqueID;
-
-        $scope.notifications.push({
-            notification    : notification,
-            id              : id
-        });
-        
-        return id;
-    };
-    
-    /**
-     * Remove a notification by unique ID.
-     * 
-     * @param {type} id The unique ID of the notification to remove. This ID is
-     *                  retrieved from the initial call to addNotification.
-     */
-    $scope.removeNotification = function removeNotification(id) {
-        for(var i = 0; i < $scope.notifications.length; i++) {
-            if($scope.notifications[i].id === id) {
-                $scope.notifications.splice(i, 1);
-                return;
-            }
-        }
-    };
-           
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
 
@@ -196,9 +102,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
         // Set body CSS class
         $scope.page.bodyClassName = current.$$route.bodyClassName || '';
-
-        // Hide any status dialog
-        $scope.showStatus(false);
 
     });
 

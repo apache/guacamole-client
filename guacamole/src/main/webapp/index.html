@@ -35,9 +35,9 @@ THE SOFTWARE.
     <body ng-class="page.bodyClassName">
 
         <!-- Global status/error dialog -->
-        <div ng-class="{shown: status}" class="status-outer">
+        <div ng-class="{shown: guacNotification.status}" class="status-outer">
             <div class="status-middle">
-                <guac-notification notification="status"></guac-notification>
+                <guac-notification notification="guacNotification.status"></guac-notification>
             </div>
         </div>
         
@@ -46,7 +46,7 @@ THE SOFTWARE.
         
         <!-- Notification area -->
         <div id="notificationArea">
-            <div ng-repeat="wrapper in notifications">
+            <div ng-repeat="wrapper in guacNotification.notifications">
                 <guac-notification notification="wrapper.notification"></guac-notification>
             </div>                
         </div>

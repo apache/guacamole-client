@@ -24,4 +24,4 @@
  * Module for displaying a user-oriented menu, containing the current username
  * and options for navigation, changing the user's password, logging out, etc.
  */
-angular.module('userMenu', []);
+angular.module('userMenu', ['notification']);
