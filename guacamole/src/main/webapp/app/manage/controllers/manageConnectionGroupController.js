@@ -86,6 +86,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.hasDeletePermission = null;
 
     /**
+     * All permissions associated with the current user, or null if the user's
+     * permissions have not yet been loaded.
+     *
+     * @type PermissionSet
+     */
+    $scope.permissions = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -96,6 +104,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
         return $scope.rootGroup                !== null
             && $scope.connectionGroup          !== null
+            && $scope.permissions              !== null
             && $scope.canSaveConnectionGroup   !== null
             && $scope.canDeleteConnectionGroup !== null;
 
@@ -105,6 +114,8 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {
                 
+        $scope.permissions = permissions;
+                        
         // Check if the connection group is new or if the user has UPDATE permission
         $scope.canSaveConnectionGroup =
               !identifier

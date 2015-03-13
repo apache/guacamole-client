@@ -27,10 +27,8 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
     // Required services
-    var $document             = $injector.get("$document");
-    var $location             = $injector.get("$location");
-    var $window               = $injector.get("$window");
-    var authenticationService = $injector.get("authenticationService");
+    var $document = $injector.get("$document");
+    var $window   = $injector.get("$window");
     
     /**
      * The current status notification, or false if no status is currently
@@ -153,13 +151,6 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         }
     };
            
-    // Provide simple mechanism for logging out the current user
-    $scope.logout = function logout() {
-        authenticationService.logout()['finally'](function logoutComplete() {
-            $location.path('/login');
-        });
-    };
-    
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
 

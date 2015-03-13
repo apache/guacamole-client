@@ -51,12 +51,15 @@ h1 {
 }
 
 h2 {
-
     font-size: 1.25em;
     font-weight: bold;
-    padding: 0.75em 0.5em;
-
     text-transform: uppercase;
+    padding: 0.75em 0.5em;
+    margin: 0;
+}
+
+.header {
+
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
     background: rgba(0, 0, 0, 0.04);
@@ -64,11 +67,46 @@ h2 {
     margin-bottom: 1em;
     margin-top: 0;
     border-top: none;
+    width: 100%;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+
 }
 
-h2 ~ h2 {
+.header ~ .header {
     margin-top: 1em;
     border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.header h2 {
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
 }
 
 div.section {
@@ -287,12 +325,6 @@ div.section {
 .group .icon.type.group.empty {
     opacity: 0.25;
     background-image: url('images/group-icons/guac-open.png');
-}
-
-div.logout-panel {
-    padding: 0.45em;
-    text-align: right;
-    float: right;
 }
 
 .history th,

@@ -23,5 +23,5 @@
 /**
  * The module for the administration functionality.
  */
-angular.module('manage', ['groupList', 'locale', 'pager', 'rest']);
+angular.module('manage', ['groupList', 'locale', 'pager', 'rest', 'userMenu']);
 

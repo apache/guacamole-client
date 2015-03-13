@@ -114,22 +114,6 @@
 
     "HOME" : {
 
-        "ACTION_ACKNOWLEDGE"     : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"          : "@:APP.ACTION_CANCEL",
-        "ACTION_CHANGE_PASSWORD" : "@:APP.ACTION_CHANGE_PASSWORD",
-        "ACTION_LOGOUT"          : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE"          : "@:APP.ACTION_MANAGE",
-        "ACTION_SAVE"            : "@:APP.ACTION_SAVE",
-
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
-
-        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
-        
-        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
-        
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
@@ -155,8 +139,6 @@
     "MANAGE" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_LOGOUT"               : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_HOME"        : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_NEW_USER"             : "New User",
         "ACTION_NEW_CONNECTION"       : "New Connection",
         "ACTION_NEW_CONNECTION_GROUP" : "New Group",
@@ -182,8 +164,6 @@
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
         "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection",
@@ -215,8 +195,6 @@
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection Group",
@@ -240,8 +218,6 @@
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_LOGOUT"        : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK" : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE"  : "Delete User",
@@ -402,6 +378,29 @@
         "FIELD_OPTION_CURSOR_REMOTE" : "Remote",
 
         "NAME" : "VNC"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_ACKNOWLEDGE"     : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"          : "@:APP.ACTION_CANCEL",
+        "ACTION_CHANGE_PASSWORD" : "@:APP.ACTION_CHANGE_PASSWORD",
+        "ACTION_LOGOUT"          : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE"          : "@:APP.ACTION_MANAGE",
+        "ACTION_NAVIGATE_HOME"   : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_SAVE"            : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        
+        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
+        
+        "PASSWORD_CHANGED" : "Password changed."
 
     }
 

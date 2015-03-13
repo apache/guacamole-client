@@ -1,0 +1,248 @@
+/*
+ * Copyright (C) 2015 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+.user-menu {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+
+}
+
+.user-menu .user-menu-dropdown {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+.user-menu .user-menu-dropdown {
+    position: relative;
+    border-left: 1px solid rgba(0,0,0,0.125);
+    background: rgba(0,0,0,0.04);
+}
+
+.user-menu .user-menu-dropdown:hover {
+    background: rgba(0,0,0,0.01);
+}
+
+.user-menu .user-menu-dropdown.open,
+.user-menu .user-menu-dropdown.open:hover {
+    background: rgba(0,0,0,0.3);
+}
+
+.user-menu .username {
+
+    cursor: default;
+    margin: 0;
+    min-width: 1.75in;
+
+    font-size: 1.25em;
+    font-weight: bold;
+    padding: 0.5em 2em;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.5em center;
+    background-image: url('images/user-icons/guac-user.png');
+
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+   
+}
+
+.user-menu .menu-indicator {
+
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+
+    width: 2em;
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: center center;
+    background-image: url('images/action-icons/guac-open-downward.png');
+
+}
+
+.user-menu .options {
+
+    visibility: hidden;
+
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: -1px;
+    margin: 0;
+    padding: 0;
+
+    background: #EEE;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
+    border-left: 1px solid rgba(0,0,0,0.125);
+    border-bottom: 1px solid rgba(0,0,0,0.125);
+
+    z-index: 5;
+    
+}
+
+.user-menu .user-menu-dropdown.open .options {
+    visibility: visible;
+}
+
+.user-menu .options li {
+    padding: 0;
+    list-style-type: none;
+}
+
+.user-menu .options li a {
+    display: block;
+    cursor: pointer;
+    color: black;
+    text-decoration: none;
+    padding: 0.75em;
+}
+
+.user-menu .options li a:hover {
+    background-color: #CDA;
+}
+
+.user-menu .options li a.disabled,
+.user-menu .options li a.disabled:hover {
+    background-color: transparent;
+    cursor: default;
+    opacity: 0.25;
+}
+
+.user-menu .options li a.home,
+.user-menu .options li a.manage,
+.user-menu .options li a.change-password,
+.user-menu .options li a.logout {
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
+}
+
+.user-menu .options li a.home {
+    background-image: url('images/action-icons/guac-home-dark.png');
+}
+
+.user-menu .options li a.manage {
+    background-image: url('images/action-icons/guac-config-dark.png');
+}
+
+.user-menu .options li a.change-password {
+    background-image: url('images/action-icons/guac-key-dark.png');
+}
+
+.user-menu .options li a.logout {
+    background-image: url('images/action-icons/guac-logout-dark.png');
+}
+
+.user-menu .password-dialog {
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: visibility 0.125s, opacity 0.125s;
+    -moz-transition: visibility 0.125s, opacity 0.125s;
+    -ms-transition: visibility 0.125s, opacity 0.125s;
+    -o-transition: visibility 0.125s, opacity 0.125s;
+    transition: visibility 0.125s, opacity 0.125s;
+    position: absolute;
+    background: white;
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+    margin: 1em;
+    right: 0;
+    top: 0;
+    z-index: 8;
+}
+
+.user-menu .password-dialog .fields {
+    text-align: right;
+}
+
+.user-menu .password-dialog .action-buttons {
+    text-align: center;
+    margin: 0;
+}
+
+.user-menu .password-dialog.shown {
+    visibility: visible;
+    opacity: 1;
+    -webkit-transition: opacity 0.125s;
+    -moz-transition: opacity 0.125s;
+    -ms-transition: opacity 0.125s;
+    -o-transition: opacity 0.125s;
+    transition: opacity 0.125s;
+}
+
+.user-menu .password-dialog .fields {
+    width: 100%;
+}

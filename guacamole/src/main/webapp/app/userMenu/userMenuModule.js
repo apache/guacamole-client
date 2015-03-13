@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,46 +20,8 @@
  * THE SOFTWARE.
  */
 
-.history-unavailable div.recent-connections {
-    display: none;
-}
-
-div.recent-connections,
-div.clipboardDiv,
-div.settings,
-div.all-connections {
-    margin: 1em;
-    padding: 0;
-}
-
-.all-connections .list-buttons {
-    text-align: center;
-    padding: 0;
-}
-
-div.recent-connections {
-    text-align: center;
-}
-
-.no-recent {
-
-    color: rgba(255, 255, 255, 0.5);
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
-    opacity: 0.5;
-    
-    font-size: 2em;
-    font-weight: bolder;
-}
-
-div.recent-connections div.connection {
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
-    display: inline-block;
-    padding: 1em;
-    margin: 1em;
-    text-align: center;
-    max-width: 75%;
-    overflow: hidden;
-}
+/**
+ * Module for displaying a user-oriented menu, containing the current username
+ * and options for navigation, changing the user's password, logging out, etc.
+ */
+angular.module('userMenu', []);

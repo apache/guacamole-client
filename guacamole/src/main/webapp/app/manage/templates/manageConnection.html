@@ -22,13 +22,11 @@ THE SOFTWARE.
 
 <div class="view" ng-class="{loading: !isLoaded()}">
 
-    <div class="logout-panel">
-        <a class="back button" href="#/manage/">{{'MANAGE_CONNECTION.ACTION_NAVIGATE_BACK' | translate}}</a>
-        <a class="logout button" ng-click="logout()">{{'MANAGE_CONNECTION.ACTION_LOGOUT' | translate}}</a>
-    </div>
-
     <!-- Main property editor -->
-    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | translate}}</h2>
+    <div class="header">
+        <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | translate}}</h2>
+        <guac-user-menu permissions="permissions"></guac-user-menu>
+    </div>
     <div class="section">
         <table class="properties">
             
@@ -60,7 +58,7 @@ THE SOFTWARE.
     </div>
 
     <!-- Connection parameters -->
-    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
+    <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
     <div class="section" ng-class="{loading: !parameters}">
         <table class="properties">
             
@@ -83,7 +81,7 @@ THE SOFTWARE.
     </div>
 
     <!-- Connection history -->
-    <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
+    <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | translate}}</h2>
     <div class="history section" ng-class="{loading: !historyEntryWrappers}">
         <p ng-hide="historyEntryWrappers.length">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | translate}}</p>
 
