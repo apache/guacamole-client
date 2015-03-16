@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import java.util.Date;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 
 /**
  * A logging record describing when a user started and ended usage of a
@@ -48,6 +49,17 @@ public interface ConnectionRecord {
     public Date getEndDate();
 
     /**
+     * Returns the hostname or IP address of the remote host that used the
+     * connection associated with this record, if known. If the hostname or IP
+     * address is not known, null is returned.
+     *
+     * @return
+     *     The hostname or IP address of the remote host, or null if this
+     *     information is not available.
+     */
+    public String getRemoteHost();
+
+    /**
      * Returns the name of the user who used or is using the connection at the
      * times given by this connection record.
      *
@@ -64,5 +76,16 @@ public interface ConnectionRecord {
      *         active, false otherwise.
      */
     public boolean isActive();
+
+    /**
+     * Returns the connected GuacamoleSocket of the connection associated with
+     * this record, if any. If the connection is not active, or access to
+     * the socket is denied, null is returned.
+     *
+     * @return
+     *     The connected GuacamoleSocket, if any, or null if the connection is
+     *     not active or permission is denied.
+     */
+    public GuacamoleSocket getActiveSocket();
 
 }

@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.auth.jdbc.connection;
 
 
 import java.util.Date;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
@@ -62,6 +63,12 @@ public class ModeledConnectionRecord implements ConnectionRecord {
     }
 
     @Override
+    public String getRemoteHost() {
+        // STUB
+        return "STUB";
+    }
+
+    @Override
     public String getUsername() {
         return model.getUsername();
     }
@@ -69,6 +76,11 @@ public class ModeledConnectionRecord implements ConnectionRecord {
     @Override
     public boolean isActive() {
         return false;
+    }
+
+    @Override
+    public GuacamoleSocket getActiveSocket() {
+        return null;
     }
 
 }

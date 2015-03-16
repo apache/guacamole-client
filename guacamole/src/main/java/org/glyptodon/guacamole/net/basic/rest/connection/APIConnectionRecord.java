@@ -44,6 +44,11 @@ public class APIConnectionRecord {
     private final Date endDate;
 
     /**
+     * The host from which the connection originated, if known.
+     */
+    private final String remoteHost;
+    
+    /**
      * The name of the user who used or is using the connection.
      */
     private final String username;
@@ -61,10 +66,11 @@ public class APIConnectionRecord {
      *     The record to copy data from.
      */
     public APIConnectionRecord(ConnectionRecord record) {
-        this.startDate = record.getStartDate();
-        this.endDate   = record.getEndDate();
-        this.username  = record.getUsername();
-        this.active    = record.isActive();
+        this.startDate  = record.getStartDate();
+        this.endDate    = record.getEndDate();
+        this.remoteHost = record.getRemoteHost();
+        this.username   = record.getUsername();
+        this.active     = record.isActive();
     }
 
     /**
@@ -86,6 +92,16 @@ public class APIConnectionRecord {
      */
     public Date getEndDate() {
         return endDate;
+    }
+
+    /**
+     * Returns the remote host from which this connection originated.
+     *
+     * @return
+     *     The remote host from which this connection originated.
+     */
+    public String getRemoteHost() {
+        return remoteHost;
     }
 
     /**
