@@ -41,6 +41,13 @@ angular.module('rest').factory('ActiveTunnel', [function defineActiveTunnel() {
         template = template || {};
 
         /**
+         * The identifier of the connection associated with this tunnel.
+         *
+         * @type String
+         */
+        this.identifier = template.identifier;
+
+        /**
          * The time that the tunnel began, in seconds since
          * 1970-01-01 00:00:00 UTC.
          *

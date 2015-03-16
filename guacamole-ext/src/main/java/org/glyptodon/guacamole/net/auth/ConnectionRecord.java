@@ -34,6 +34,16 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
 public interface ConnectionRecord {
 
     /**
+     * Returns the identifier of the connection associated with this connection
+     * record.
+     *
+     * @return
+     *     The identifier of the connection associated with this connection
+     *     record.
+     */
+    public String getIdentifier();
+    
+    /**
      * Returns the date and time the connection began.
      *
      * @return The date and time the connection began.

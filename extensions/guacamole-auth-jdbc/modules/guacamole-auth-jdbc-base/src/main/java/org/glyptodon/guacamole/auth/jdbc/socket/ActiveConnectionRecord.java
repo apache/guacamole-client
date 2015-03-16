@@ -149,6 +149,11 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     public boolean hasBalancingGroup() {
         return balancingGroup != null;
     }
+
+    @Override
+    public String getIdentifier() {
+        return connection.getIdentifier();
+    }
     
     @Override
     public Date getStartDate() {

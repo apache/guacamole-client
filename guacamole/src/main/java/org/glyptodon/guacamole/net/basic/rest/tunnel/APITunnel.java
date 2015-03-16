@@ -33,6 +33,11 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 public class APITunnel {
 
     /**
+     * The identifier of the connection associated with this tunnel.
+     */
+    private final String identifier;
+    
+    /**
      * The date and time the connection began.
      */
     private final Date startDate;
@@ -60,12 +65,23 @@ public class APITunnel {
      *     The record to copy data from.
      */
     public APITunnel(ConnectionRecord record) {
+        this.identifier = record.getIdentifier();
         this.startDate  = record.getStartDate();
         this.remoteHost = record.getRemoteHost();
         this.username   = record.getUsername();
         this.uuid       = "STUB"; // STUB
     }
 
+    /**
+     * Returns the identifier of the connection associated with this tunnel.
+     *
+     * @return
+     *     The identifier of the connection associated with this tunnel.
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+    
     /**
      * Returns the date and time the connection began.
      *
