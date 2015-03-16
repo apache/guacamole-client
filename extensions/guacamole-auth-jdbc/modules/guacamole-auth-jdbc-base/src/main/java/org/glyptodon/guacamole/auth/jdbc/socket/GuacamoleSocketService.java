@@ -43,6 +43,24 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 public interface GuacamoleSocketService {
 
     /**
+     * Returns a connection containing connection records representing all
+     * currently-active connections visible by the given user.
+     *
+     * @param user
+     *     The user retrieving active connections.
+     *
+     * @return
+     *     A collection containing connection records representing all
+     *     currently-active connections.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving all active connections, or if
+     *     permission is denied.
+     */
+    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+            throws GuacamoleException;
+
+    /**
      * Creates a socket for the given user which connects to the given
      * connection. The given client information will be passed to guacd when
      * the connection is established. This function will apply any concurrent
@@ -81,7 +99,7 @@ public interface GuacamoleSocketService {
      *     The connection to check.
      *
      * @return
-     *     A connection containing connection records representing all
+     *     A collection containing connection records representing all
      *     currently-active connections.
      */
     public Collection<ConnectionRecord> getActiveConnections(Connection connection);

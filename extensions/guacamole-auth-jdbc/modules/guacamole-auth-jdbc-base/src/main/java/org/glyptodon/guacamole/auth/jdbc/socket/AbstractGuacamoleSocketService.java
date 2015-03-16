@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
@@ -94,6 +96,12 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     @Inject
     private ConnectionRecordMapper connectionRecordMapper;
 
+    /**
+     * All records associated with active connections.
+     */
+    private final Set<ConnectionRecord> activeConnectionRecords =
+            Collections.newSetFromMap(new ConcurrentHashMap<ConnectionRecord, Boolean>());
+    
     /**
      * All active connections to a connection having a given identifier.
      */
@@ -321,6 +329,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             // Release connection
             activeConnections.remove(identifier, activeConnection);
             activeConnectionGroups.remove(parentIdentifier, activeConnection);
+            activeConnectionRecords.remove(activeConnection);
             release(user, connection);
 
             // Release any associated group
@@ -369,6 +378,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
+        activeConnectionRecords.add(activeConnection);
         activeConnections.put(connection.getIdentifier(), activeConnection);
         activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
@@ -430,6 +440,18 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         return connections;
         
+    }
+
+    @Override
+    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+        throws GuacamoleException {
+
+        // Only administrators may see all active connections
+        if (!user.getUser().isAdministrator())
+            return Collections.EMPTY_LIST;
+
+        return Collections.unmodifiableCollection(activeConnectionRecords);
+
     }
 
     @Override
