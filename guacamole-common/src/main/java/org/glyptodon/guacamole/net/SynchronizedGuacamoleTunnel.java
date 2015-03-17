@@ -76,104 +76,54 @@ public class SynchronizedGuacamoleTunnel implements GuacamoleTunnel {
 
     }
 
-    /**
-     * Acquires exclusive read access to the Guacamole instruction stream
-     * and returns a GuacamoleReader for reading from that stream.
-     *
-     * @return A GuacamoleReader for reading from the Guacamole instruction
-     *         stream.
-     */
+    @Override
     public GuacamoleReader acquireReader() {
         readerLock.lock();
         return socket.getReader();
     }
 
-    /**
-     * Relinquishes exclusive read access to the Guacamole instruction
-     * stream. This function should be called whenever a thread finishes using
-     * a GuacamoleTunnel's GuacamoleReader.
-     */
+    @Override
     public void releaseReader() {
         readerLock.unlock();
     }
 
-    /**
-     * Returns whether there are threads waiting for read access to the
-     * Guacamole instruction stream.
-     *
-     * @return true if threads are waiting for read access the Guacamole
-     *         instruction stream, false otherwise.
-     */
+    @Override
     public boolean hasQueuedReaderThreads() {
         return readerLock.hasQueuedThreads();
     }
 
-    /**
-     * Acquires exclusive write access to the Guacamole instruction stream
-     * and returns a GuacamoleWriter for writing to that stream.
-     *
-     * @return A GuacamoleWriter for writing to the Guacamole instruction
-     *         stream.
-     */
+    @Override
     public GuacamoleWriter acquireWriter() {
         writerLock.lock();
         return socket.getWriter();
     }
 
-    /**
-     * Relinquishes exclusive write access to the Guacamole instruction
-     * stream. This function should be called whenever a thread finishes using
-     * a GuacamoleTunnel's GuacamoleWriter.
-     */
+    @Override
     public void releaseWriter() {
         writerLock.unlock();
     }
 
-    /**
-     * Returns whether there are threads waiting for write access to the
-     * Guacamole instruction stream.
-     *
-     * @return true if threads are waiting for write access the Guacamole
-     *         instruction stream, false otherwise.
-     */
+    @Override
     public boolean hasQueuedWriterThreads() {
         return writerLock.hasQueuedThreads();
     }
 
-    /**
-     * Returns the unique identifier associated with this GuacamoleTunnel.
-     *
-     * @return The unique identifier associated with this GuacamoleTunnel.
-     */
+    @Override
     public UUID getUUID() {
         return uuid;
     }
 
-    /**
-     * Returns the GuacamoleSocket used by this GuacamoleTunnel for reading
-     * and writing.
-     *
-     * @return The GuacamoleSocket used by this GuacamoleTunnel.
-     */
+    @Override
     public GuacamoleSocket getSocket() {
         return socket;
     }
 
-    /**
-     * Release all resources allocated to this GuacamoleTunnel.
-     *
-     * @throws GuacamoleException if an error occurs while releasing
-     *                            resources.
-     */
+    @Override
     public void close() throws GuacamoleException {
         socket.close();
     }
 
-    /**
-     * Returns whether this GuacamoleTunnel is open, or has been closed.
-     *
-     * @return true if this GuacamoleTunnel is open, false if it is closed.
-     */
+    @Override
     public boolean isOpen() {
         return socket.isOpen();
     }
