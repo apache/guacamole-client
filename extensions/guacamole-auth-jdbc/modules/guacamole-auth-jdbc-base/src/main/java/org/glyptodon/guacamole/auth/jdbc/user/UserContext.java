@@ -49,7 +49,7 @@ public class UserContext extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.UserContext {
 
     /**
-     * Service for creating and tracking sockets.
+     * Service for creating and tracking tunnels.
      */
     @Inject
     private GuacamoleTunnelService tunnelService;

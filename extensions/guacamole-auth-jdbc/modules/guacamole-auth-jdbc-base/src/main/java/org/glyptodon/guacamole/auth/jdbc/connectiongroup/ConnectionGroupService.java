@@ -71,7 +71,7 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
     private Provider<ModeledConnectionGroup> connectionGroupProvider;
 
     /**
-     * Service for creating and tracking sockets.
+     * Service for creating and tracking tunnels.
      */
     @Inject
     private GuacamoleTunnelService tunnelService;
