@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
 import java.util.Collections;

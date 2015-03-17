@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -91,7 +91,7 @@ public class ConnectionService extends GroupedDirectoryObjectService<ModeledConn
      * Service for creating and tracking sockets.
      */
     @Inject
-    private GuacamoleSocketService socketService;
+    private GuacamoleTunnelService tunnelService;
     
     @Override
     protected DirectoryObjectMapper<ConnectionModel> getObjectMapper() {
@@ -371,7 +371,7 @@ public class ConnectionService extends GroupedDirectoryObjectService<ModeledConn
             List<ConnectionRecordModel> models = connectionRecordMapper.select(identifier);
 
             // Get currently-active connections
-            List<ConnectionRecord> records = new ArrayList<ConnectionRecord>(socketService.getActiveConnections(connection));
+            List<ConnectionRecord> records = new ArrayList<ConnectionRecord>(tunnelService.getActiveConnections(connection));
             Collections.reverse(records);
 
             // Add past connections from model objects
@@ -415,7 +415,7 @@ public class ConnectionService extends GroupedDirectoryObjectService<ModeledConn
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ))
-            return socketService.getGuacamoleTunnel(user, connection, info);
+            return tunnelService.getGuacamoleTunnel(user, connection, info);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

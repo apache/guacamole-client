@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -60,13 +60,13 @@ import org.mybatis.guice.transactional.Transactional;
 
 
 /**
- * Base implementation of the GuacamoleSocketService, handling retrieval of
+ * Base implementation of the GuacamoleTunnelService, handling retrieval of
  * connection parameters, load balancing, and connection usage counts. The
  * implementation of concurrency rules is up to policy-specific subclasses.
  *
  * @author Michael Jumper
  */
-public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketService {
+public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelService {
 
     /**
      * The environment of the Guacamole server.

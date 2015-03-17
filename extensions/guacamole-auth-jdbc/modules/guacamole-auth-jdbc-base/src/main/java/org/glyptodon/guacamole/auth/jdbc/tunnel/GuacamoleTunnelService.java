@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
@@ -40,7 +40,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper
  */
-public interface GuacamoleSocketService {
+public interface GuacamoleTunnelService {
 
     /**
      * Returns a connection containing connection records representing all

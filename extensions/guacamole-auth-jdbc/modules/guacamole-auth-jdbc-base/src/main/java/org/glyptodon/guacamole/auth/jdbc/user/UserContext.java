@@ -32,7 +32,7 @@ import java.util.Collection;
 import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -53,7 +53,7 @@ public class UserContext extends RestrictedObject
      * Service for creating and tracking sockets.
      */
     @Inject
-    private GuacamoleSocketService socketService;
+    private GuacamoleTunnelService tunnelService;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -127,7 +127,7 @@ public class UserContext extends RestrictedObject
     @Override
     public Collection<ConnectionRecord> getActiveConnections()
             throws GuacamoleException {
-        return socketService.getActiveConnections(getCurrentUser());
+        return tunnelService.getActiveConnections(getCurrentUser());
     }
 
     @Override

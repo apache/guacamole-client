@@ -27,7 +27,7 @@ import com.google.inject.Provider;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -74,7 +74,7 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
      * Service for creating and tracking sockets.
      */
     @Inject
-    private GuacamoleSocketService socketService;
+    private GuacamoleTunnelService tunnelService;
     
     @Override
     protected DirectoryObjectMapper<ConnectionGroupModel> getObjectMapper() {
@@ -247,7 +247,7 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connectionGroup.getIdentifier(), ObjectPermission.Type.READ))
-            return socketService.getGuacamoleTunnel(user, connectionGroup, info);
+            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

@@ -21,7 +21,7 @@
  */
 
 /**
- * Classes related to obtaining/configuring Guacamole sockets, and restricting
- * access to those sockets.
+ * Classes related to obtaining/configuring Guacamole tunnels, and restricting
+ * access to those tunnels.
  */
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;

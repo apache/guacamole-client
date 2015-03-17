@@ -40,7 +40,7 @@ import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.user.UserMapper;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupService;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SHA256PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
@@ -80,7 +80,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      * The service class to use to provide GuacamoleSockets for each
      * connection.
      */
-    private final Class<? extends GuacamoleSocketService> socketServiceClass;
+    private final Class<? extends GuacamoleTunnelService> tunnelServiceClass;
 
     /**
      * Creates a new JDBC authentication provider module that configures the
@@ -90,13 +90,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      * @param environment
      *     The environment to use to configure injected classes.
      * 
-     * @param socketServiceClass
+     * @param tunnelServiceClass
      *     The socket service to use to provide sockets for connections.
      */
     public JDBCAuthenticationProviderModule(Environment environment,
-            Class<? extends GuacamoleSocketService> socketServiceClass) {
+            Class<? extends GuacamoleTunnelService> tunnelServiceClass) {
         this.environment = environment;
-        this.socketServiceClass = socketServiceClass;
+        this.tunnelServiceClass = tunnelServiceClass;
     }
 
     @Override
@@ -147,7 +147,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(UserService.class);
         
         // Bind provided socket service
-        bind(GuacamoleSocketService.class).to(socketServiceClass);
+        bind(GuacamoleTunnelService.class).to(tunnelServiceClass);
         
     }
 
