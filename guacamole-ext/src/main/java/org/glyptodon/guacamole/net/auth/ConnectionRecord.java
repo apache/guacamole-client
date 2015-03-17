@@ -96,6 +96,6 @@ public interface ConnectionRecord {
      *     The connected GuacamoleSocket, if any, or null if the connection is
      *     not active or permission is denied.
      */
-    public GuacamoleSocket getActiveSocket();
+    public GuacamoleSocket getSocket();
 
 }

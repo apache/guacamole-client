@@ -84,7 +84,7 @@ public class ModeledConnectionRecord implements ConnectionRecord {
     }
 
     @Override
-    public GuacamoleSocket getActiveSocket() {
+    public GuacamoleSocket getSocket() {
         return null;
     }
 

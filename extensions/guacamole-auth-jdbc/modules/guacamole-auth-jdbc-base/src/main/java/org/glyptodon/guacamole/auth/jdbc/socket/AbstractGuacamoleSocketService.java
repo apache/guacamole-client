@@ -389,7 +389,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             );
 
             // Assign and return new socket
-            activeConnection.setActiveSocket(socket);
+            activeConnection.setSocket(socket);
             return socket;
             
         }

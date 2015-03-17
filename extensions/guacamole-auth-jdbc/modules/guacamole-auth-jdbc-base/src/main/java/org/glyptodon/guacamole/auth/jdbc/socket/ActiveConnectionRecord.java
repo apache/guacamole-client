@@ -194,7 +194,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
-    public GuacamoleSocket getActiveSocket() {
+    public GuacamoleSocket getSocket() {
         return socket;
     }
 
@@ -204,7 +204,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      * @param socket
      *     The GuacamoleSocket to associate with this connection record.
      */
-    public void setActiveSocket(GuacamoleSocket socket) {
+    public void setSocket(GuacamoleSocket socket) {
         this.socket = socket;
     }
 
