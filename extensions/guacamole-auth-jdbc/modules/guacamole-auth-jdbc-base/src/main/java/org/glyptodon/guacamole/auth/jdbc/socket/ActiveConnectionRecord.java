@@ -63,6 +63,12 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     private final Date startDate = new Date();
 
     /**
+     * The GuacamoleSocket used by the connection associated with this
+     * connection record.
+     */
+    private GuacamoleSocket socket;
+    
+    /**
      * Creates a new connection record associated with the given user,
      * connection, and balancing connection group. The given balancing
      * connection group MUST be the connection group from which the given
@@ -189,8 +195,17 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
     @Override
     public GuacamoleSocket getActiveSocket() {
-        // STUB
-        return null;
+        return socket;
+    }
+
+    /**
+     * Associates the given GuacamoleSocket with this connection record.
+     *
+     * @param socket
+     *     The GuacamoleSocket to associate with this connection record.
+     */
+    public void setActiveSocket(GuacamoleSocket socket) {
+        this.socket = socket;
     }
 
 }

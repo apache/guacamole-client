@@ -352,11 +352,8 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      * The connection will be automatically released when it closes, or if it
      * fails to establish entirely.
      *
-     * @param user
-     *     The user for whom the connection is being established.
-     *
-     * @param connection
-     *     The connection the user is connecting to.
+     * @param activeConnection
+     *     The active connection record of the connection in use.
      *
      * @param info
      *     Information describing the Guacamole client connecting to the given
@@ -370,7 +367,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     If an error occurs while the connection is being established, or
      *     while connection configuration information is being retrieved.
      */
-    private GuacamoleSocket getGuacamoleSocket(ActiveConnectionRecord activeConnection,
+    private GuacamoleSocket assignGuacamoleSocket(ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
@@ -382,13 +379,19 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         activeConnections.put(connection.getIdentifier(), activeConnection);
         activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
-        // Return new socket
         try {
-            return new ConfiguredGuacamoleSocket(
+
+            // Obtain socket which will automatically run the cleanup task
+            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                 getUnconfiguredGuacamoleSocket(cleanupTask),
                 getGuacamoleConfiguration(activeConnection.getUser(), connection),
                 info
             );
+
+            // Assign and return new socket
+            activeConnection.setActiveSocket(socket);
+            return socket;
+            
         }
 
         // Execute cleanup if socket could not be created
@@ -462,7 +465,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to single connection
         acquire(user, Collections.singletonList(connection));
-        return getGuacamoleSocket(new ActiveConnectionRecord(user, connection), info);
+        return assignGuacamoleSocket(new ActiveConnectionRecord(user, connection), info);
 
     }
 
@@ -487,7 +490,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to any child
         ModeledConnection connection = acquire(user, connections);
-        return getGuacamoleSocket(new ActiveConnectionRecord(user, connectionGroup, connection), info);
+        return assignGuacamoleSocket(new ActiveConnectionRecord(user, connectionGroup, connection), info);
 
     }
 
