@@ -23,9 +23,12 @@
 package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
+import java.util.UUID;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.glyptodon.guacamole.net.AbstractGuacamoleTunnel;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
@@ -62,6 +65,11 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      */
     private final Date startDate = new Date();
 
+    /**
+     * The UUID that will be assigned to the underlying tunnel.
+     */
+    private final UUID uuid = UUID.randomUUID();
+    
     /**
      * The GuacamoleTunnel used by the connection associated with this
      * connection record.
@@ -198,13 +206,48 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     /**
-     * Associates the given GuacamoleTunnel with this connection record.
+     * Associates a new GuacamoleTunnel with this connection record using the
+     * given socket.
      *
-     * @param tunnel
-     *     The GuacamoleTunnel to associate with this connection record.
+     * @param socket
+     *     The GuacamoleSocket to use to create the tunnel associated with this
+     *     connection record.
+     * 
+     * @return
+     *     The newly-created tunnel associated with this connection record.
      */
-    public void setTunnel(GuacamoleTunnel tunnel) {
-        this.tunnel = tunnel;
+    public GuacamoleTunnel assignGuacamoleTunnel(final GuacamoleSocket socket) {
+
+        // Create tunnel with given socket
+        this.tunnel = new AbstractGuacamoleTunnel() {
+
+            @Override
+            public GuacamoleSocket getSocket() {
+                return socket;
+            }
+            
+            @Override
+            public UUID getUUID() {
+                return uuid;
+            }
+
+        };
+
+        // Return newly-created tunnel
+        return this.tunnel;
+        
     }
 
+    /**
+     * Returns the UUID of the underlying tunnel. If there is no underlying
+     * tunnel, this will be the UUID assigned to the underlying tunnel when the
+     * tunnel is set.
+     *
+     * @return
+     *     The current or future UUID of the underlying tunnel.
+     */
+    public UUID getUUID() {
+        return uuid;
+    }
+    
 }

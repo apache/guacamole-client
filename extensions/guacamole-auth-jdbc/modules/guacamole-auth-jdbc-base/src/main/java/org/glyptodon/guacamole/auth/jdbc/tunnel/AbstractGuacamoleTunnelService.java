@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
@@ -47,7 +47,6 @@ import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.SynchronizedGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -99,10 +98,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private ConnectionRecordMapper connectionRecordMapper;
 
     /**
-     * All records associated with active connections.
+     * All active connections through the tunnel having a given UUID.
      */
-    private final Set<ConnectionRecord> activeConnectionRecords =
-            Collections.newSetFromMap(new ConcurrentHashMap<ConnectionRecord, Boolean>());
+    private final Map<String, ConnectionRecord> activeTunnels =
+            new ConcurrentHashMap<String, ConnectionRecord>();
     
     /**
      * All active connections to a connection having a given identifier.
@@ -329,9 +328,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             String parentIdentifier = connection.getParentIdentifier();
 
             // Release connection
+            activeTunnels.remove(activeConnection.getUUID().toString());
             activeConnections.remove(identifier, activeConnection);
             activeConnectionGroups.remove(parentIdentifier, activeConnection);
-            activeConnectionRecords.remove(activeConnection);
             release(user, connection);
 
             // Release any associated group
@@ -377,7 +376,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
-        activeConnectionRecords.add(activeConnection);
+        activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         activeConnections.put(connection.getIdentifier(), activeConnection);
         activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
@@ -391,9 +390,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             );
 
             // Assign and return new tunnel 
-            GuacamoleTunnel tunnel = new SynchronizedGuacamoleTunnel(socket);
-            activeConnection.setTunnel(tunnel);
-            return tunnel;
+            return activeConnection.assignGuacamoleTunnel(socket);
             
         }
 
@@ -456,8 +453,20 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         if (!user.getUser().isAdministrator())
             return Collections.EMPTY_LIST;
 
-        return Collections.unmodifiableCollection(activeConnectionRecords);
+        return Collections.unmodifiableCollection(activeTunnels.values());
 
+    }
+
+    @Override
+    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+            String tunnelUUID) throws GuacamoleException {
+
+        // Only administrators may see all active connections
+        if (!user.getUser().isAdministrator())
+            return null;
+
+        return activeTunnels.get(tunnelUUID);
+        
     }
 
     @Override

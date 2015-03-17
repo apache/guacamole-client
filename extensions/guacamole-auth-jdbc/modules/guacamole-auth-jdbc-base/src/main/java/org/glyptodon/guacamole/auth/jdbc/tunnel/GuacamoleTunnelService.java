@@ -43,7 +43,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 public interface GuacamoleTunnelService {
 
     /**
-     * Returns a connection containing connection records representing all
+     * Returns a collection containing connection records representing all
      * currently-active connections visible by the given user.
      *
      * @param user
@@ -58,6 +58,30 @@ public interface GuacamoleTunnelService {
      *     permission is denied.
      */
     public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+            throws GuacamoleException;
+
+    /**
+     * Returns the connection records representing the connection associated
+     * with the tunnel having the given UUID, if that connection is visible to
+     * the given user.
+     *
+     * @param user
+     *     The user retrieving the active connection.
+     * 
+     * @param tunnelUUID
+     *     The UUID of the tunnel associated with the active connection being
+     *     retrieved.
+     *
+     * @return
+     *     The active connection associated with the tunnel having the given
+     *     UUID, or null if no such connection exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving all active connections, or if
+     *     permission is denied.
+     */
+    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+            String tunnelUUID)
             throws GuacamoleException;
 
     /**
