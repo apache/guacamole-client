@@ -59,7 +59,7 @@ public interface GuacamoleTunnel {
      * @return true if threads are waiting for read access the Guacamole
      *         instruction stream, false otherwise.
      */
-    public boolean hasQueuedReaderThreads();
+    boolean hasQueuedReaderThreads();
 
     /**
      * Acquires exclusive write access to the Guacamole instruction stream
@@ -68,14 +68,14 @@ public interface GuacamoleTunnel {
      * @return A GuacamoleWriter for writing to the Guacamole instruction
      *         stream.
      */
-    public GuacamoleWriter acquireWriter();
+    GuacamoleWriter acquireWriter();
 
     /**
      * Relinquishes exclusive write access to the Guacamole instruction
      * stream. This function should be called whenever a thread finishes using
      * a GuacamoleTunnel's GuacamoleWriter.
      */
-    public void releaseWriter();
+    void releaseWriter();
 
     /**
      * Returns whether there are threads waiting for write access to the
@@ -84,14 +84,14 @@ public interface GuacamoleTunnel {
      * @return true if threads are waiting for write access the Guacamole
      *         instruction stream, false otherwise.
      */
-    public boolean hasQueuedWriterThreads();
+    boolean hasQueuedWriterThreads();
 
     /**
      * Returns the unique identifier associated with this GuacamoleTunnel.
      *
      * @return The unique identifier associated with this GuacamoleTunnel.
      */
-    public UUID getUUID();
+    UUID getUUID();
 
     /**
      * Returns the GuacamoleSocket used by this GuacamoleTunnel for reading
@@ -99,7 +99,7 @@ public interface GuacamoleTunnel {
      *
      * @return The GuacamoleSocket used by this GuacamoleTunnel.
      */
-    public GuacamoleSocket getSocket();
+    GuacamoleSocket getSocket();
 
     /**
      * Release all resources allocated to this GuacamoleTunnel.
@@ -107,13 +107,13 @@ public interface GuacamoleTunnel {
      * @throws GuacamoleException if an error occurs while releasing
      *                            resources.
      */
-    public void close() throws GuacamoleException;
+    void close() throws GuacamoleException;
 
     /**
      * Returns whether this GuacamoleTunnel is open, or has been closed.
      *
      * @return true if this GuacamoleTunnel is open, false if it is closed.
      */
-    public boolean isOpen();
+    boolean isOpen();
 
 }
