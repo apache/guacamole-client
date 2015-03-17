@@ -63,13 +63,16 @@ public class APITunnel {
      *
      * @param record
      *     The record to copy data from.
+     * 
+     * @param uuid
+     *     The UUID of the associated GuacamoleTunnel.
      */
-    public APITunnel(ConnectionRecord record) {
+    public APITunnel(ConnectionRecord record, String uuid) {
         this.identifier = record.getIdentifier();
         this.startDate  = record.getStartDate();
         this.remoteHost = record.getRemoteHost();
         this.username   = record.getUsername();
-        this.uuid       = "STUB"; // STUB
+        this.uuid       = uuid;
     }
 
     /**

@@ -34,7 +34,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
@@ -62,7 +64,7 @@ public class TunnelRESTService {
      */
     @Inject
     private AuthenticationService authenticationService;
-    
+
     /**
      * Retrieves the tunnels of all active connections visible to the current
      * user.
@@ -87,8 +89,14 @@ public class TunnelRESTService {
 
         // Retrieve all active tunnels
         List<APITunnel> apiTunnels = new ArrayList<APITunnel>();
-        for (ConnectionRecord record : userContext.getActiveConnections())
-            apiTunnels.add(new APITunnel(record));
+        for (ConnectionRecord record : userContext.getActiveConnections()) {
+
+            // Locate associated tunnel and UUID
+            GuacamoleTunnel tunnel = record.getTunnel();
+            if (tunnel != null)
+                apiTunnels.add(new APITunnel(record, tunnel.getUUID().toString()));
+
+        }
 
         return apiTunnels;
 
@@ -117,9 +125,16 @@ public class TunnelRESTService {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // STUB
-        throw new GuacamoleUnsupportedException("STUB");
-        
+        // Retrieve specified tunnel
+        ConnectionRecord record = userContext.getActiveConnection(tunnelUUID);
+        if (record == null)
+            throw new GuacamoleResourceNotFoundException("No such tunnel: \"" + tunnelUUID + "\"");
+
+        // Close tunnel, if not already closed
+        GuacamoleTunnel tunnel = record.getTunnel();
+        if (tunnel != null && tunnel.isOpen())
+            tunnel.close();
+
     }
     
 }
