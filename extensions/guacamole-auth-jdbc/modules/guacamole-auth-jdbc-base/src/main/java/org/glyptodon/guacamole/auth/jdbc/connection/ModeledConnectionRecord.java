@@ -69,8 +69,7 @@ public class ModeledConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getRemoteHost() {
-        // STUB
-        return "STUB";
+        return null;
     }
 
     @Override

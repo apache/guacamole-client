@@ -176,8 +176,7 @@ public class ActiveConnectionRecord implements ConnectionRecord {
 
     @Override
     public String getRemoteHost() {
-        // STUB
-        return "STUB";
+        return user.getRemoteHost();
     }
 
     @Override
