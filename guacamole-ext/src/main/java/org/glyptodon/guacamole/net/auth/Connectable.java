@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 /**
@@ -42,13 +42,13 @@ public interface Connectable {
      *     Information associated with the connecting client.
      *
      * @return
-     *     A fully-established GuacamoleSocket.
+     *     A fully-established GuacamoleTunnel.
      *
      * @throws GuacamoleException
      *     If an error occurs while connecting to guacd, or if permission to
      *     connect is denied.
      */
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException;
 
     /**

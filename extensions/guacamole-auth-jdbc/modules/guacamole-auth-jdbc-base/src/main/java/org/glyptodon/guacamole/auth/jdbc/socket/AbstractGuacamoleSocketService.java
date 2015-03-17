@@ -46,6 +46,8 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.net.SynchronizedGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -344,7 +346,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     /**
-     * Creates a socket for the given user which connects to the given
+     * Creates a tunnel for the given user which connects to the given
      * connection, which MUST already be acquired via acquire(). The given
      * client information will be passed to guacd when the connection is
      * established.
@@ -360,14 +362,14 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      *     connection.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
      *
      * @throws GuacamoleException
      *     If an error occurs while the connection is being established, or
      *     while connection configuration information is being retrieved.
      */
-    private GuacamoleSocket assignGuacamoleSocket(ActiveConnectionRecord activeConnection,
+    private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
@@ -388,9 +390,10 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
                 info
             );
 
-            // Assign and return new socket
-            activeConnection.setSocket(socket);
-            return socket;
+            // Assign and return new tunnel 
+            GuacamoleTunnel tunnel = new SynchronizedGuacamoleTunnel(socket);
+            activeConnection.setTunnel(tunnel);
+            return tunnel;
             
         }
 
@@ -459,13 +462,13 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
     @Override
     @Transactional
-    public GuacamoleSocket getGuacamoleSocket(final AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(final AuthenticatedUser user,
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Acquire and connect to single connection
         acquire(user, Collections.singletonList(connection));
-        return assignGuacamoleSocket(new ActiveConnectionRecord(user, connection), info);
+        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connection), info);
 
     }
 
@@ -476,7 +479,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
     @Override
     @Transactional
-    public GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
 
@@ -490,7 +493,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to any child
         ModeledConnection connection = acquire(user, connections);
-        return assignGuacamoleSocket(new ActiveConnectionRecord(user, connectionGroup, connection), info);
+        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);
 
     }
 

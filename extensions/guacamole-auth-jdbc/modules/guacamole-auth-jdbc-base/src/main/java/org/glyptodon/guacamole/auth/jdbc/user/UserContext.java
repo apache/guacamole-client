@@ -125,8 +125,16 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
-    public Collection<ConnectionRecord> getActiveConnections() throws GuacamoleException {
+    public Collection<ConnectionRecord> getActiveConnections()
+            throws GuacamoleException {
         return socketService.getActiveConnections(getCurrentUser());
+    }
+
+    @Override
+    public ConnectionRecord getActiveConnection(String tunnelUUID)
+            throws GuacamoleException {
+        // STUB
+        return null;
     }
 
 }

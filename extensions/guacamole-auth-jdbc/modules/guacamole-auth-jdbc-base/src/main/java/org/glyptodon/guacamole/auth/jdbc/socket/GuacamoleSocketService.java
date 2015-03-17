@@ -27,7 +27,7 @@ import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -78,14 +78,14 @@ public interface GuacamoleSocketService {
      *     connection.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
      *
      * @throws GuacamoleException
      *     If the connection cannot be established due to concurrent usage
      *     rules.
      */
-    GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException;
 
@@ -122,14 +122,14 @@ public interface GuacamoleSocketService {
      *     connection group.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection group.
      *
      * @throws GuacamoleException
      *     If the connection cannot be established due to concurrent usage
      *     rules, or if the connection group is not balancing.
      */
-    GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info)
             throws GuacamoleException;

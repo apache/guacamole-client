@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import java.util.Date;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 
 /**
  * A logging record describing when a user started and ended usage of a
@@ -88,14 +88,14 @@ public interface ConnectionRecord {
     public boolean isActive();
 
     /**
-     * Returns the connected GuacamoleSocket of the connection associated with
+     * Returns the connected GuacamoleTunnel of the connection associated with
      * this record, if any. If the connection is not active, or access to
      * the socket is denied, null is returned.
      *
      * @return
-     *     The connected GuacamoleSocket, if any, or null if the connection is
+     *     The connected GuacamoleTunnel, if any, or null if the connection is
      *     not active or permission is denied.
      */
-    public GuacamoleSocket getSocket();
+    public GuacamoleTunnel getTunnel();
 
 }

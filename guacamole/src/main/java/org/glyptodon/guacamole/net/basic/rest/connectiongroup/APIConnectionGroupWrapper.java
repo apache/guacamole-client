@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
@@ -106,7 +106,7 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
+    public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 

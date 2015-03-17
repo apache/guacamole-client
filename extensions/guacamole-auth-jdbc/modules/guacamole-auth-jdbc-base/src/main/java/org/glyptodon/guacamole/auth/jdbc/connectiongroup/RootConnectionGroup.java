@@ -28,7 +28,7 @@ import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
@@ -125,7 +125,7 @@ public class RootConnectionGroup extends RestrictedObject
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

@@ -40,7 +40,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
@@ -403,19 +403,19 @@ public class ConnectionService extends GroupedDirectoryObjectService<ModeledConn
      *     Information associated with the connecting client.
      *
      * @return
-     *     A connected GuacamoleSocket associated with a newly-established
+     *     A connected GuacamoleTunnel associated with a newly-established
      *     connection.
      *
      * @throws GuacamoleException
      *     If permission to connect to this connection is denied.
      */
-    public GuacamoleSocket connect(AuthenticatedUser user,
+    public GuacamoleTunnel connect(AuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connection.getIdentifier(), ObjectPermission.Type.READ))
-            return socketService.getGuacamoleSocket(user, connection, info);
+            return socketService.getGuacamoleTunnel(user, connection, info);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

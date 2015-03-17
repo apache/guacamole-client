@@ -26,7 +26,7 @@ import java.util.Date;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 
@@ -63,10 +63,10 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     private final Date startDate = new Date();
 
     /**
-     * The GuacamoleSocket used by the connection associated with this
+     * The GuacamoleTunnel used by the connection associated with this
      * connection record.
      */
-    private GuacamoleSocket socket;
+    private GuacamoleTunnel tunnel;
     
     /**
      * Creates a new connection record associated with the given user,
@@ -194,18 +194,18 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
-    public GuacamoleSocket getSocket() {
-        return socket;
+    public GuacamoleTunnel getTunnel() {
+        return tunnel;
     }
 
     /**
-     * Associates the given GuacamoleSocket with this connection record.
+     * Associates the given GuacamoleTunnel with this connection record.
      *
-     * @param socket
-     *     The GuacamoleSocket to associate with this connection record.
+     * @param tunnel
+     *     The GuacamoleTunnel to associate with this connection record.
      */
-    public void setSocket(GuacamoleSocket socket) {
-        this.socket = socket;
+    public void setTunnel(GuacamoleTunnel tunnel) {
+        this.tunnel = tunnel;
     }
 
 }

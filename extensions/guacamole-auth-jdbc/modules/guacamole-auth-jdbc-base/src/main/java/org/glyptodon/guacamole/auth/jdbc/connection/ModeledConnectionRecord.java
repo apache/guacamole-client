@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.auth.jdbc.connection;
 
 
 import java.util.Date;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
@@ -84,7 +84,7 @@ public class ModeledConnectionRecord implements ConnectionRecord {
     }
 
     @Override
-    public GuacamoleSocket getSocket() {
+    public GuacamoleTunnel getTunnel() {
         return null;
     }
 
