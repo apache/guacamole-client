@@ -31,7 +31,7 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.SSLGuacamoleSocket;
-import org.glyptodon.guacamole.net.SynchronizedGuacamoleTunnel;
+import org.glyptodon.guacamole.net.SimpleGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.AbstractConnection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
@@ -111,7 +111,7 @@ public class SimpleConnection extends AbstractConnection {
                 config, info
             );
 
-        return new SynchronizedGuacamoleTunnel(socket);
+        return new SimpleGuacamoleTunnel(socket);
         
     }
 

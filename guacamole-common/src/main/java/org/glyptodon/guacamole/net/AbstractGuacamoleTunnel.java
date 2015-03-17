@@ -23,32 +23,19 @@
 package org.glyptodon.guacamole.net;
 
 
-import java.util.UUID;
 import java.util.concurrent.locks.ReentrantLock;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.io.GuacamoleWriter;
 
 /**
- * GuacamoleTunnel implementation which synchronizes access to the underlying
- * reader and write with reentrant locks.
+ * Base GuacamoleTunnel implementation which synchronizes access to the
+ * underlying reader and writer with reentrant locks. Implementations need only
+ * provide the tunnel's UUID and socket.
  *
  * @author Michael Jumper
  */
-public class SynchronizedGuacamoleTunnel implements GuacamoleTunnel {
-
-    /**
-     * The UUID associated with this tunnel. Every tunnel must have a
-     * corresponding UUID such that tunnel read/write requests can be
-     * directed to the proper tunnel.
-     */
-    private final UUID uuid;
-
-    /**
-     * The GuacamoleSocket that tunnel should use for communication on
-     * behalf of the connecting user.
-     */
-    private final GuacamoleSocket socket;
+public abstract class AbstractGuacamoleTunnel implements GuacamoleTunnel {
 
     /**
      * Lock acquired when a read operation is in progress.
@@ -62,42 +49,67 @@ public class SynchronizedGuacamoleTunnel implements GuacamoleTunnel {
 
     /**
      * Creates a new GuacamoleTunnel which synchronizes access to the
-     * Guacamole instruction stream associated with the given GuacamoleSocket.
-     *
-     * @param socket The GuacamoleSocket to provide synchronized access for.
+     * Guacamole instruction stream associated with the underlying
+     * GuacamoleSocket.
      */
-    public SynchronizedGuacamoleTunnel(GuacamoleSocket socket) {
-
-        this.socket = socket;
-        uuid = UUID.randomUUID();
-
+    public AbstractGuacamoleTunnel() {
         readerLock = new ReentrantLock();
         writerLock = new ReentrantLock();
-
     }
 
+    /**
+     * Acquires exclusive read access to the Guacamole instruction stream
+     * and returns a GuacamoleReader for reading from that stream.
+     *
+     * @return A GuacamoleReader for reading from the Guacamole instruction
+     *         stream.
+     */
     @Override
     public GuacamoleReader acquireReader() {
         readerLock.lock();
-        return socket.getReader();
+        return getSocket().getReader();
     }
 
+    /**
+     * Relinquishes exclusive read access to the Guacamole instruction
+     * stream. This function should be called whenever a thread finishes using
+     * a GuacamoleTunnel's GuacamoleReader.
+     */
     @Override
     public void releaseReader() {
         readerLock.unlock();
     }
 
+    /**
+     * Returns whether there are threads waiting for read access to the
+     * Guacamole instruction stream.
+     *
+     * @return true if threads are waiting for read access the Guacamole
+     *         instruction stream, false otherwise.
+     */
     @Override
     public boolean hasQueuedReaderThreads() {
         return readerLock.hasQueuedThreads();
     }
 
+    /**
+     * Acquires exclusive write access to the Guacamole instruction stream
+     * and returns a GuacamoleWriter for writing to that stream.
+     *
+     * @return A GuacamoleWriter for writing to the Guacamole instruction
+     *         stream.
+     */
     @Override
     public GuacamoleWriter acquireWriter() {
         writerLock.lock();
-        return socket.getWriter();
+        return getSocket().getWriter();
     }
 
+    /**
+     * Relinquishes exclusive write access to the Guacamole instruction
+     * stream. This function should be called whenever a thread finishes using
+     * a GuacamoleTunnel's GuacamoleWriter.
+     */
     @Override
     public void releaseWriter() {
         writerLock.unlock();
@@ -109,23 +121,13 @@ public class SynchronizedGuacamoleTunnel implements GuacamoleTunnel {
     }
 
     @Override
-    public UUID getUUID() {
-        return uuid;
-    }
-
-    @Override
-    public GuacamoleSocket getSocket() {
-        return socket;
-    }
-
-    @Override
     public void close() throws GuacamoleException {
-        socket.close();
+        getSocket().close();
     }
 
     @Override
     public boolean isOpen() {
-        return socket.isOpen();
+        return getSocket().isOpen();
     }
 
 }
