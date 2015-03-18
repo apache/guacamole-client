@@ -31,7 +31,7 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
@@ -204,7 +204,7 @@ public class TunnelRequestService {
             info.getVideoMimetypes().addAll(video_mimetypes);
 
         // Create connected socket from identifier
-        GuacamoleSocket socket;
+        GuacamoleTunnel tunnel;
         switch (id_type) {
 
             // Connection identifiers
@@ -221,8 +221,8 @@ public class TunnelRequestService {
                     throw new GuacamoleSecurityException("Requested connection is not authorized.");
                 }
 
-                // Connect socket
-                socket = connection.connect(info);
+                // Connect tunnel
+                tunnel = connection.connect(info);
                 logger.info("User \"{}\" successfully connected to \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
@@ -241,8 +241,8 @@ public class TunnelRequestService {
                     throw new GuacamoleSecurityException("Requested connection group is not authorized.");
                 }
 
-                // Connect socket
-                socket = group.connect(info);
+                // Connect tunnel
+                tunnel = group.connect(info);
                 logger.info("User \"{}\" successfully connected to group \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
@@ -253,8 +253,8 @@ public class TunnelRequestService {
 
         }
 
-        // Associate socket with tunnel
-        GuacamoleTunnel tunnel = new GuacamoleTunnel(socket) {
+        // Track tunnel open/close
+        GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
 
             @Override
             public GuacamoleReader acquireReader() {
@@ -308,13 +308,13 @@ public class TunnelRequestService {
         };
 
         // Notify listeners about connection
-        if (!notifyConnect(session, tunnel)) {
+        if (!notifyConnect(session, monitoredTunnel)) {
             logger.info("Successful connection canceled by hook.");
             return null;
         }
 
-        session.addTunnel(tunnel);
-        return tunnel;
+        session.addTunnel(monitoredTunnel);
+        return monitoredTunnel;
 
     }
 

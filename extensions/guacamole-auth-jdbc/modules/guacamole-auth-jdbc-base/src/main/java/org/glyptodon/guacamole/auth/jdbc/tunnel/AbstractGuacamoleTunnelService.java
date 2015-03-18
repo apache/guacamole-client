@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -29,6 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
@@ -44,6 +46,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -56,13 +59,13 @@ import org.mybatis.guice.transactional.Transactional;
 
 
 /**
- * Base implementation of the GuacamoleSocketService, handling retrieval of
+ * Base implementation of the GuacamoleTunnelService, handling retrieval of
  * connection parameters, load balancing, and connection usage counts. The
  * implementation of concurrency rules is up to policy-specific subclasses.
  *
  * @author Michael Jumper
  */
-public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketService {
+public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelService {
 
     /**
      * The environment of the Guacamole server.
@@ -94,6 +97,12 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     @Inject
     private ConnectionRecordMapper connectionRecordMapper;
 
+    /**
+     * All active connections through the tunnel having a given UUID.
+     */
+    private final Map<String, ConnectionRecord> activeTunnels =
+            new ConcurrentHashMap<String, ConnectionRecord>();
+    
     /**
      * All active connections to a connection having a given identifier.
      */
@@ -319,6 +328,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
             String parentIdentifier = connection.getParentIdentifier();
 
             // Release connection
+            activeTunnels.remove(activeConnection.getUUID().toString());
             activeConnections.remove(identifier, activeConnection);
             activeConnectionGroups.remove(parentIdentifier, activeConnection);
             release(user, connection);
@@ -335,7 +345,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     /**
-     * Creates a socket for the given user which connects to the given
+     * Creates a tunnel for the given user which connects to the given
      * connection, which MUST already be acquired via acquire(). The given
      * client information will be passed to guacd when the connection is
      * established.
@@ -343,25 +353,22 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
      * The connection will be automatically released when it closes, or if it
      * fails to establish entirely.
      *
-     * @param user
-     *     The user for whom the connection is being established.
-     *
-     * @param connection
-     *     The connection the user is connecting to.
+     * @param activeConnection
+     *     The active connection record of the connection in use.
      *
      * @param info
      *     Information describing the Guacamole client connecting to the given
      *     connection.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
      *
      * @throws GuacamoleException
      *     If an error occurs while the connection is being established, or
      *     while connection configuration information is being retrieved.
      */
-    private GuacamoleSocket getGuacamoleSocket(ActiveConnectionRecord activeConnection,
+    private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info)
             throws GuacamoleException {
 
@@ -369,16 +376,22 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
         
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
+        activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         activeConnections.put(connection.getIdentifier(), activeConnection);
         activeConnectionGroups.put(connection.getParentIdentifier(), activeConnection);
 
-        // Return new socket
         try {
-            return new ConfiguredGuacamoleSocket(
+
+            // Obtain socket which will automatically run the cleanup task
+            GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
                 getUnconfiguredGuacamoleSocket(cleanupTask),
                 getGuacamoleConfiguration(activeConnection.getUser(), connection),
                 info
             );
+
+            // Assign and return new tunnel 
+            return activeConnection.assignGuacamoleTunnel(socket);
+            
         }
 
         // Execute cleanup if socket could not be created
@@ -433,14 +446,38 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
     }
 
     @Override
+    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+        throws GuacamoleException {
+
+        // Only administrators may see all active connections
+        if (!user.getUser().isAdministrator())
+            return Collections.EMPTY_LIST;
+
+        return Collections.unmodifiableCollection(activeTunnels.values());
+
+    }
+
+    @Override
+    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+            String tunnelUUID) throws GuacamoleException {
+
+        // Only administrators may see all active connections
+        if (!user.getUser().isAdministrator())
+            return null;
+
+        return activeTunnels.get(tunnelUUID);
+        
+    }
+
+    @Override
     @Transactional
-    public GuacamoleSocket getGuacamoleSocket(final AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(final AuthenticatedUser user,
             final ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Acquire and connect to single connection
         acquire(user, Collections.singletonList(connection));
-        return getGuacamoleSocket(new ActiveConnectionRecord(user, connection), info);
+        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connection), info);
 
     }
 
@@ -451,7 +488,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
     @Override
     @Transactional
-    public GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    public GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info) throws GuacamoleException {
 
@@ -465,7 +502,7 @@ public abstract class AbstractGuacamoleSocketService implements GuacamoleSocketS
 
         // Acquire and connect to any child
         ModeledConnection connection = acquire(user, connections);
-        return getGuacamoleSocket(new ActiveConnectionRecord(user, connectionGroup, connection), info);
+        return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);
 
     }
 

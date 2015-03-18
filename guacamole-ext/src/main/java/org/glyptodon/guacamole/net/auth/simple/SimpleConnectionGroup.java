@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.AbstractConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -102,7 +102,7 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info) 
+    public GuacamoleTunnel connect(GuacamoleClientInformation info) 
             throws GuacamoleException {
         throw new GuacamoleSecurityException("Permission denied.");
     }

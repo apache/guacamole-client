@@ -37,6 +37,14 @@
 
     <dependencies>
 
+        <!-- Java servlet API -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>

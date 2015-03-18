@@ -29,11 +29,11 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
-import org.glyptodon.guacamole.auth.jdbc.socket.MultiseatGuacamoleSocketService;
-import org.glyptodon.guacamole.auth.jdbc.socket.BalancedGuacamoleSocketService;
-import org.glyptodon.guacamole.auth.jdbc.socket.SingleSeatGuacamoleSocketService;
-import org.glyptodon.guacamole.auth.jdbc.socket.UnrestrictedGuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.MultiseatGuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.BalancedGuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.SingleSeatGuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.UnrestrictedGuacamoleTunnelService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
@@ -69,7 +69,7 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
      * @throws GuacamoleException
      *     If an error occurs while reading the configuration options.
      */
-    private Class<? extends GuacamoleSocketService>
+    private Class<? extends GuacamoleTunnelService>
         getSocketServiceClass(Environment environment)
                 throws GuacamoleException {
 
@@ -81,11 +81,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
             // Connections may not be used concurrently
             if (disallowDuplicate)
-                return SingleSeatGuacamoleSocketService.class;
+                return SingleSeatGuacamoleTunnelService.class;
 
             // Connections are reserved for a single user when in use
             else
-                return BalancedGuacamoleSocketService.class;
+                return BalancedGuacamoleTunnelService.class;
 
         }
 
@@ -93,11 +93,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
 
             // Connections may be used concurrently, but only once per user
             if (disallowDuplicate)
-                return MultiseatGuacamoleSocketService.class;
+                return MultiseatGuacamoleTunnelService.class;
 
             // Connection use is not restricted
             else
-                return UnrestrictedGuacamoleSocketService.class;
+                return UnrestrictedGuacamoleTunnelService.class;
 
         }
          

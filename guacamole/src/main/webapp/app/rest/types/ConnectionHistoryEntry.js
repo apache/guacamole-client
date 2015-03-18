@@ -61,6 +61,13 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         this.endDate = template.endDate;
 
         /**
+         * The remote host that initiated this connection, if known.
+         *
+         * @type String
+         */
+        this.remoteHost = template.remoteHost;
+
+        /**
          * The username of the user associated with this particular usage of
          * the connection.
          * 

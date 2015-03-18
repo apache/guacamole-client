@@ -20,51 +20,57 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Singleton;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceConflictException;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
 /**
- * GuacamoleSocketService implementation which imposes no restrictions
- * whatsoever on the number of concurrent or duplicate connections.
+ * GuacamoleTunnelService implementation which allows only one user per
+ * connection at any time, but does not disallow concurrent use of connection
+ * groups. If a user attempts to use a connection group multiple times, they
+ * will receive different underlying connections each time until the group is
+ * exhausted.
  *
  * @author Michael Jumper
  */
 @Singleton
-public class UnrestrictedGuacamoleSocketService
-    extends AbstractGuacamoleSocketService {
+public class BalancedGuacamoleTunnelService
+    extends AbstractGuacamoleTunnelService {
+
+    /**
+     * The set of all active connection identifiers.
+     */
+    private final Set<String> activeConnections =
+            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     @Override
     protected ModeledConnection acquire(AuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
 
-        ModeledConnection chosen = null;
-        int lowestUsage = 0;
-
-        // Find connection with lowest usage
+        // Return the first unused connection
         for (ModeledConnection connection : connections) {
-
-            int usage = getActiveConnections(connection).size();
-            if (chosen == null || usage < lowestUsage) {
-                chosen = connection;
-                lowestUsage = usage;
-            }
-            
+            if (activeConnections.add(connection.getIdentifier()))
+                return connection;
         }
 
-        return chosen;
-        
+        // Already in use
+        throw new GuacamoleResourceConflictException("Cannot connect. This connection is in use.");
+
     }
 
     @Override
     protected void release(AuthenticatedUser user, ModeledConnection connection) {
-        // Do nothing
+        activeConnections.remove(connection.getIdentifier());
     }
 
     @Override

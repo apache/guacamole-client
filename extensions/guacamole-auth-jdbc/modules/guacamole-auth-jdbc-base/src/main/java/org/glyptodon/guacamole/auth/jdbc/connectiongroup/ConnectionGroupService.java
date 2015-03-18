@@ -27,7 +27,7 @@ import com.google.inject.Provider;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -35,7 +35,7 @@ import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -71,10 +71,10 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
     private Provider<ModeledConnectionGroup> connectionGroupProvider;
 
     /**
-     * Service for creating and tracking sockets.
+     * Service for creating and tracking tunnels.
      */
     @Inject
-    private GuacamoleSocketService socketService;
+    private GuacamoleTunnelService tunnelService;
     
     @Override
     protected DirectoryObjectMapper<ConnectionGroupModel> getObjectMapper() {
@@ -235,19 +235,19 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
      *     Information associated with the connecting client.
      *
      * @return
-     *     A connected GuacamoleSocket associated with a newly-established
+     *     A connected GuacamoleTunnel associated with a newly-established
      *     connection.
      *
      * @throws GuacamoleException
      *     If permission to connect to this connection is denied.
      */
-    public GuacamoleSocket connect(AuthenticatedUser user,
+    public GuacamoleTunnel connect(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup, GuacamoleClientInformation info)
             throws GuacamoleException {
 
         // Connect only if READ permission is granted
         if (hasObjectPermission(user, connectionGroup.getIdentifier(), ObjectPermission.Type.READ))
-            return socketService.getGuacamoleSocket(user, connectionGroup, info);
+            return tunnelService.getGuacamoleTunnel(user, connectionGroup, info);
 
         // The user does not have permission to connect
         throw new GuacamoleSecurityException("Permission denied.");

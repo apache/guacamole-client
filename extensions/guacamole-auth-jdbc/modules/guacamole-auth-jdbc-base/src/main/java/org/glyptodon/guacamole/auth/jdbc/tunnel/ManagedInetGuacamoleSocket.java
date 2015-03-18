@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;

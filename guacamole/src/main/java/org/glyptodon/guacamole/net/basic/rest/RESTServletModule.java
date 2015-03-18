@@ -31,6 +31,7 @@ import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRESTService;
+import org.glyptodon.guacamole.net.basic.rest.tunnel.TunnelRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
 
 /**
@@ -50,6 +51,7 @@ public class RESTServletModule extends ServletModule {
         bind(ProtocolRESTService.class);
         bind(UserRESTService.class);
         bind(TokenRESTService.class);
+        bind(TunnelRESTService.class);
         
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);

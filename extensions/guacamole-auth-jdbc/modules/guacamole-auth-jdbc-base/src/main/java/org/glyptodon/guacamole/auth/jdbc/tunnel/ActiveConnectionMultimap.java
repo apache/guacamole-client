@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -63,7 +63,7 @@ public class ActiveConnectionMultimap {
             // Get set of active connection records, creating if necessary
             Set<ConnectionRecord> connections = records.get(identifier);
             if (connections == null) {
-                connections = Collections.newSetFromMap(new LinkedHashMap<ConnectionRecord, Boolean>());
+                connections = Collections.synchronizedSet(Collections.newSetFromMap(new LinkedHashMap<ConnectionRecord, Boolean>()));
                 records.put(identifier, connections);
             }
 

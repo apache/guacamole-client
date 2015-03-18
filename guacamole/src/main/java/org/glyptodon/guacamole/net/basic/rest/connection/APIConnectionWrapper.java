@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -116,7 +116,7 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info) throws GuacamoleException {
+    public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }
 

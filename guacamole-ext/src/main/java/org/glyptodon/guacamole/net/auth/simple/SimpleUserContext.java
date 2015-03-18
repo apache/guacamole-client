@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -165,6 +166,18 @@ public class SimpleUserContext implements UserContext {
     @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
         return rootGroup;
+    }
+
+    @Override
+    public Collection<ConnectionRecord> getActiveConnections()
+            throws GuacamoleException {
+        return Collections.EMPTY_LIST;
+    }
+
+    @Override
+    public ConnectionRecord getActiveConnection(String tunnelUUID)
+            throws GuacamoleException {
+        return null;
     }
 
 }

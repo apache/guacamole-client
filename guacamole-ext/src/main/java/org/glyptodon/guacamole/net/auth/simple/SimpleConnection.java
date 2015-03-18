@@ -28,8 +28,10 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.InetGuacamoleSocket;
 import org.glyptodon.guacamole.net.SSLGuacamoleSocket;
+import org.glyptodon.guacamole.net.SimpleGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.AbstractConnection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
@@ -84,7 +86,7 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 
         Environment env = new LocalEnvironment();
@@ -93,19 +95,24 @@ public class SimpleConnection extends AbstractConnection {
         String hostname = env.getProperty(Environment.GUACD_HOSTNAME);
         int port = env.getProperty(Environment.GUACD_PORT);
 
+        GuacamoleSocket socket;
+        
         // If guacd requires SSL, use it
         if (env.getProperty(Environment.GUACD_SSL, false))
-            return new ConfiguredGuacamoleSocket(
+            socket = new ConfiguredGuacamoleSocket(
                 new SSLGuacamoleSocket(hostname, port),
                 config, info
             );
 
-        // Return connected socket
-        return new ConfiguredGuacamoleSocket(
-            new InetGuacamoleSocket(hostname, port),
-            config, info
-        );
+        // Otherwise, just connect directly via TCP
+        else
+            socket = new ConfiguredGuacamoleSocket(
+                new InetGuacamoleSocket(hostname, port),
+                config, info
+            );
 
+        return new SimpleGuacamoleTunnel(socket);
+        
     }
 
     @Override

@@ -25,10 +25,10 @@ package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 import com.google.inject.Inject;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
-import org.glyptodon.guacamole.auth.jdbc.socket.GuacamoleSocketService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObject;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
@@ -54,10 +54,10 @@ public class ModeledConnectionGroup extends GroupedDirectoryObject<ConnectionGro
     private ConnectionGroupService connectionGroupService;
 
     /**
-     * Service for creating and tracking sockets.
+     * Service for creating and tracking tunnels.
      */
     @Inject
-    private GuacamoleSocketService socketService;
+    private GuacamoleTunnelService tunnelService;
 
     /**
      * Creates a new, empty ModeledConnectionGroup.
@@ -76,14 +76,14 @@ public class ModeledConnectionGroup extends GroupedDirectoryObject<ConnectionGro
     }
 
     @Override
-    public GuacamoleSocket connect(GuacamoleClientInformation info)
+    public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
         return connectionGroupService.connect(getCurrentUser(), this, info);
     }
 
     @Override
     public int getActiveConnections() {
-        return socketService.getActiveConnections(this).size();
+        return tunnelService.getActiveConnections(this).size();
     }
 
     @Override

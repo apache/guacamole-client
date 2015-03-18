@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 
 /**
@@ -94,5 +95,42 @@ public interface UserContext {
      *                            Directory.
      */
     ConnectionGroup getRootConnectionGroup() throws GuacamoleException;
+
+    /**
+     * Returns a collection of connection records associated with all active
+     * connections to which the current user has access. For an administrative
+     * user, this may include connections associated with other users.
+     *
+     * @return
+     *     A collection of all connection records associated with active
+     *     connections to which the current user has access.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading active connection records, or if
+     *     permission is denied.
+     */
+    Collection<ConnectionRecord> getActiveConnections()
+            throws GuacamoleException;
+
+    /**
+     * Returns the connection record associated with the active connection
+     * having the tunnel with the given UUID. The active connection will only
+     * be returned if the current user has access.
+     *
+     * @param tunnelUUID
+     *     The UUID of the tunnel whose associated connection record should be
+     *     returned.
+     *
+     * @return
+     *     The connection record associated with the active connection having
+     *     the tunnel with the given UUID, if any, or null if no such
+     *     connection exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading active connection records, or if
+     *     permission is denied.
+     */
+    ConnectionRecord getActiveConnection(String tunnelUUID)
+            throws GuacamoleException;
 
 }

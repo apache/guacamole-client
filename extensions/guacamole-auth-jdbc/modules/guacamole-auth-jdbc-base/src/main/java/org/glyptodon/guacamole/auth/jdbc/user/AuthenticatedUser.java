@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.auth.jdbc.user;
 
+import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.net.auth.Credentials;
 
 /**
@@ -42,6 +43,27 @@ public class AuthenticatedUser {
     private final Credentials credentials;
 
     /**
+     * The host from which this user authenticated.
+     */
+    private final String remoteHost;
+
+    /**
+     * Derives the remote host of the authenticating user from the given
+     * credentials object.
+     *
+     * @param credentials
+     *     The credentials to derive the remote host from.
+     *
+     * @return
+     *     The remote host from which the user with the given credentials is
+     *     authenticating.
+     */
+    private static String getRemoteHost(Credentials credentials) {
+        HttpServletRequest request = credentials.getRequest();
+        return request.getRemoteAddr();
+    }
+    
+    /**
      * Creates a new AuthenticatedUser associating the given user with their
      * corresponding credentials.
      *
@@ -54,6 +76,7 @@ public class AuthenticatedUser {
     public AuthenticatedUser(ModeledUser user, Credentials credentials) {
         this.user = user;
         this.credentials = credentials;
+        this.remoteHost = getRemoteHost(credentials);
     }
 
     /**
@@ -74,6 +97,16 @@ public class AuthenticatedUser {
      */
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    /**
+     * Returns the host from which this user authenticated.
+     *
+     * @return
+     *     The host from which this user authenticated.
+     */
+    public String getRemoteHost() {
+        return remoteHost;
     }
 
 }

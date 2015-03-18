@@ -20,14 +20,14 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Collection;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
@@ -40,7 +40,49 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper
  */
-public interface GuacamoleSocketService {
+public interface GuacamoleTunnelService {
+
+    /**
+     * Returns a collection containing connection records representing all
+     * currently-active connections visible by the given user.
+     *
+     * @param user
+     *     The user retrieving active connections.
+     *
+     * @return
+     *     A collection containing connection records representing all
+     *     currently-active connections.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving all active connections, or if
+     *     permission is denied.
+     */
+    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+            throws GuacamoleException;
+
+    /**
+     * Returns the connection records representing the connection associated
+     * with the tunnel having the given UUID, if that connection is visible to
+     * the given user.
+     *
+     * @param user
+     *     The user retrieving the active connection.
+     * 
+     * @param tunnelUUID
+     *     The UUID of the tunnel associated with the active connection being
+     *     retrieved.
+     *
+     * @return
+     *     The active connection associated with the tunnel having the given
+     *     UUID, or null if no such connection exists.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving all active connections, or if
+     *     permission is denied.
+     */
+    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+            String tunnelUUID)
+            throws GuacamoleException;
 
     /**
      * Creates a socket for the given user which connects to the given
@@ -60,14 +102,14 @@ public interface GuacamoleSocketService {
      *     connection.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection.
      *
      * @throws GuacamoleException
      *     If the connection cannot be established due to concurrent usage
      *     rules.
      */
-    GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnection connection, GuacamoleClientInformation info)
             throws GuacamoleException;
 
@@ -81,7 +123,7 @@ public interface GuacamoleSocketService {
      *     The connection to check.
      *
      * @return
-     *     A connection containing connection records representing all
+     *     A collection containing connection records representing all
      *     currently-active connections.
      */
     public Collection<ConnectionRecord> getActiveConnections(Connection connection);
@@ -104,14 +146,14 @@ public interface GuacamoleSocketService {
      *     connection group.
      *
      * @return
-     *     A new GuacamoleSocket which is configured and connected to the given
+     *     A new GuacamoleTunnel which is configured and connected to the given
      *     connection group.
      *
      * @throws GuacamoleException
      *     If the connection cannot be established due to concurrent usage
      *     rules, or if the connection group is not balancing.
      */
-    GuacamoleSocket getGuacamoleSocket(AuthenticatedUser user,
+    GuacamoleTunnel getGuacamoleTunnel(AuthenticatedUser user,
             ModeledConnectionGroup connectionGroup,
             GuacamoleClientInformation info)
             throws GuacamoleException;

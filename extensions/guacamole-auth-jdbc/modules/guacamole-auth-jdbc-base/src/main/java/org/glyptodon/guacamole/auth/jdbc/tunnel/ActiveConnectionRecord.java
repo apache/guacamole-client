@@ -20,12 +20,16 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
+import java.util.UUID;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.glyptodon.guacamole.net.AbstractGuacamoleTunnel;
+import org.glyptodon.guacamole.net.GuacamoleSocket;
+import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 
@@ -61,6 +65,17 @@ public class ActiveConnectionRecord implements ConnectionRecord {
      */
     private final Date startDate = new Date();
 
+    /**
+     * The UUID that will be assigned to the underlying tunnel.
+     */
+    private final UUID uuid = UUID.randomUUID();
+    
+    /**
+     * The GuacamoleTunnel used by the connection associated with this
+     * connection record.
+     */
+    private GuacamoleTunnel tunnel;
+    
     /**
      * Creates a new connection record associated with the given user,
      * connection, and balancing connection group. The given balancing
@@ -148,6 +163,11 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     public boolean hasBalancingGroup() {
         return balancingGroup != null;
     }
+
+    @Override
+    public String getIdentifier() {
+        return connection.getIdentifier();
+    }
     
     @Override
     public Date getStartDate() {
@@ -163,6 +183,11 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
+    public String getRemoteHost() {
+        return user.getRemoteHost();
+    }
+
+    @Override
     public String getUsername() {
         return user.getUser().getIdentifier();
     }
@@ -175,4 +200,54 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         
     }
 
+    @Override
+    public GuacamoleTunnel getTunnel() {
+        return tunnel;
+    }
+
+    /**
+     * Associates a new GuacamoleTunnel with this connection record using the
+     * given socket.
+     *
+     * @param socket
+     *     The GuacamoleSocket to use to create the tunnel associated with this
+     *     connection record.
+     * 
+     * @return
+     *     The newly-created tunnel associated with this connection record.
+     */
+    public GuacamoleTunnel assignGuacamoleTunnel(final GuacamoleSocket socket) {
+
+        // Create tunnel with given socket
+        this.tunnel = new AbstractGuacamoleTunnel() {
+
+            @Override
+            public GuacamoleSocket getSocket() {
+                return socket;
+            }
+            
+            @Override
+            public UUID getUUID() {
+                return uuid;
+            }
+
+        };
+
+        // Return newly-created tunnel
+        return this.tunnel;
+        
+    }
+
+    /**
+     * Returns the UUID of the underlying tunnel. If there is no underlying
+     * tunnel, this will be the UUID assigned to the underlying tunnel when the
+     * tunnel is set.
+     *
+     * @return
+     *     The current or future UUID of the underlying tunnel.
+     */
+    public UUID getUUID() {
+        return uuid;
+    }
+    
 }

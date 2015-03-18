@@ -20,12 +20,10 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.socket;
+package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Singleton;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,21 +36,22 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
 /**
- * GuacamoleSocketService implementation which restricts concurrency only on a
- * per-user basis. Each connection or group may be used concurrently any number
- * of times, but each concurrent use must be associated with a different user.
+ * GuacamoleTunnelService implementation which allows exactly one use
+ * of any connection at any time. Concurrent usage of connections is not
+ * allowed, and concurrent usage of connection groups is allowed only between
+ * different users.
  *
  * @author Michael Jumper
  */
 @Singleton
-public class MultiseatGuacamoleSocketService
-    extends AbstractGuacamoleSocketService {
+public class SingleSeatGuacamoleTunnelService
+    extends AbstractGuacamoleTunnelService {
 
     /**
-     * The set of all active user/connection pairs.
+     * The set of all active connection identifiers.
      */
-    private final Set<Seat> activeSeats =
-            Collections.newSetFromMap(new ConcurrentHashMap<Seat, Boolean>());
+    private final Set<String> activeConnections =
+            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     /**
      * The set of all active user/connection group pairs.
@@ -64,25 +63,9 @@ public class MultiseatGuacamoleSocketService
     protected ModeledConnection acquire(AuthenticatedUser user,
             List<ModeledConnection> connections) throws GuacamoleException {
 
-        String username = user.getUser().getIdentifier();
-
-        // Sort connections in ascending order of usage
-        ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
-        Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
-
-            @Override
-            public int compare(ModeledConnection a, ModeledConnection b) {
-
-                return getActiveConnections(a).size()
-                     - getActiveConnections(b).size();
-
-            }
-
-        });
-        
-        // Return the first unreserved connection
-        for (ModeledConnection connection : sortedConnections) {
-            if (activeSeats.add(new Seat(username, connection.getIdentifier())))
+        // Return the first unused connection
+        for (ModeledConnection connection : connections) {
+            if (activeConnections.add(connection.getIdentifier()))
                 return connection;
         }
 
@@ -93,7 +76,7 @@ public class MultiseatGuacamoleSocketService
 
     @Override
     protected void release(AuthenticatedUser user, ModeledConnection connection) {
-        activeSeats.remove(new Seat(user.getUser().getIdentifier(), connection.getIdentifier()));
+        activeConnections.remove(connection.getIdentifier());
     }
 
     @Override
