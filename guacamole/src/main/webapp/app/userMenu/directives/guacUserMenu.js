@@ -89,23 +89,64 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
             $scope.homeDisabled = ($location.path() === '/');
 
             /**
-             * Whether the option to go to the management interface is
-             * disabled. Note that shis is different from canManageGuacamole,
+             * Whether the option to go to the user management interface is
+             * disabled. Note that shis is different from canManageUsers,
              * which deals with whether permission to manage is granted. A user
              * may have permission, yet see this option as currently disabled.
              *
              * @type Boolean
              */
-            $scope.manageDisabled = ($location.path() === '/manage/');
+            $scope.manageUsersDisabled = 
+                    ($location.path() === '/manage/modules/user');
 
             /**
-             * Whether the current user has sufficient permissions to use the
-             * management interface. If permissions have not yet been loaded,
-             * this will be null.
+             * Whether the option to go to the connection management interface is
+             * disabled. Note that shis is different from canManageConnections,
+             * which deals with whether permission to manage is granted. A user
+             * may have permission, yet see this option as currently disabled.
              *
              * @type Boolean
              */
-            $scope.canManageGuacamole = null;
+            $scope.manageConnectionsDisabled = 
+                    ($location.path() === '/manage/modules/connections');
+
+            /**
+             * Whether the option to go to the session management interface is
+             * disabled. Note that shis is different from canManageConnections,
+             * which deals with whether permission to manage is granted. A user
+             * may have permission, yet see this option as currently disabled.
+             *
+             * @type Boolean
+             */
+            $scope.manageSessionsDisabled = 
+                    ($location.path() === '/manage/modules/sessions');
+
+            /**
+             * Whether the current user has sufficient permissions to use the
+             * user management interface. If permissions have not yet been 
+             * loaded, this will be null.
+             *
+             * @type Boolean
+             */
+            $scope.canManageUsers = null;
+
+            /**
+             * Whether the current user has sufficient permissions to use the
+             * connection management interface. If permissions have not yet been 
+             * loaded, this will be null.
+             *
+             * @type Boolean
+             */
+            $scope.canManageConnections = null;
+
+            /**
+             * Whether the current user has sufficient permissions to use the
+             * session management interface. If permissions have not yet been 
+             * loaded, this will be null.
+             *
+             * @type Boolean
+             */
+            $scope.canManageSessions = null;
 
             /**
              * Whether the current user has sufficient permissions to change
@@ -173,29 +214,46 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
                 // Ignore permission to update self
                 PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, $scope.username);
 
-                // Determine whether the current user needs access to the management UI
-                $scope.canManageGuacamole =
+                // Determine whether the current user needs access to the user management UI
+                $scope.canManageUsers =
 
                         // System permissions
                            PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
                         || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
+
+                        // Permission to update users
+                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.UPDATE)
+
+                        // Permission to delete users
+                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.DELETE)
+
+                        // Permission to administer users
+                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
+
+                // Determine whether the current user needs access to the connection management UI
+                $scope.canManageConnections =
+
+                        // System permissions
+                           PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
                         || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
                         || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
 
-                        // Permission to update objects
+                        // Permission to update connections or connection groups
                         || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
                         || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
-                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.UPDATE)
 
-                        // Permission to delete objects
+                        // Permission to delete connections or connection groups
                         || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
                         || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
-                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.DELETE)
 
-                        // Permission to administer objects
+                        // Permission to administer connections or connection groups
                         || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
-                        || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
-                        || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
+                        || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+                
+                $scope.canManageSessions = 
+                        
+                        // A user must be a system administrator to manage sessions
+                        PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
                 
             });
 
@@ -289,10 +347,24 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
             };
 
             /**
-             * Navigates to the management interface.
+             * Navigates to the user management interface.
              */
-            $scope.manage = function manage() {
-                $location.path('/manage/');
+            $scope.manageUsers = function manageUsers() {
+                $location.path('/manage/modules/users');
+            };
+
+            /**
+             * Navigates to the connection management interface.
+             */
+            $scope.manageConnections = function manageConnections() {
+                $location.path('/manage/modules/connections');
+            };
+
+            /**
+             * Navigates to the user session management interface.
+             */
+            $scope.manageSessions = function manageSessions() {
+                $location.path('/manage/modules/sessions');
             };
 
             /**

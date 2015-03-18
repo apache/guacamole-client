@@ -21,15 +21,14 @@
  */
 
 /**
- * The controller for the administration page.
+ * The controller for the connection and connection group administration page.
  */
-angular.module('manage').controller('manageController', ['$scope', '$injector', 
-        function manageController($scope, $injector) {
+angular.module('manage').controller('manageConnectionsController', ['$scope', '$injector', 
+        function manageConnectionsController($scope, $injector) {
 
     // Required types
     var ConnectionGroup = $injector.get('ConnectionGroup');
     var PermissionSet   = $injector.get('PermissionSet');
-    var User            = $injector.get('User');
 
     // Required services
     var $location              = $injector.get('$location');
@@ -37,7 +36,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     var connectionGroupService = $injector.get('connectionGroupService');
     var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
-    var userService            = $injector.get('userService');
 
     // Identifier of the current user
     var currentUserID = authenticationService.getCurrentUserID();
@@ -47,19 +45,12 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
      * closes the currently-shown status dialog.
      */
     var ACKNOWLEDGE_ACTION = {
-        name        : "MANAGE.ACTION_ACKNOWLEDGE",
+        name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
         // Handle action
         callback    : function acknowledgeCallback() {
             guacNotification.showStatus(false);
         }
     };
-
-    /**
-     * All visible users.
-     *
-     * @type User[]
-     */
-    $scope.users = null;
 
     /**
      * The root connection group of the connection group hierarchy.
@@ -69,28 +60,12 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.rootGroup = null;
 
     /**
-     * Whether the current user can manage users. If the current permissions
-     * have not yet been loaded, this will be null.
-     *
-     * @type Boolean
-     */
-    $scope.canManageUsers = null;
-
-    /**
      * Whether the current user can manage connections. If the current
      * permissions have not yet been loaded, this will be null.
      *
      * @type Boolean
      */
     $scope.canManageConnections = null;
-
-    /**
-     * Whether the current user can create new users. If the current
-     * permissions have not yet been loaded, this will be null.
-     *
-     * @type Boolean
-     */
-    $scope.canCreateUsers = null;
 
     /**
      * Whether the current user can create new connections. If the current
@@ -109,14 +84,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     $scope.canCreateConnectionGroups = null;
 
     /**
-     * The name of the new user to create, if any, when user creation is
-     * requested via newUser().
-     *
-     * @type String
-     */
-    $scope.newUsername = "";
-
-    /**
      * All permissions associated with the current user, or null if the user's
      * permissions have not yet been loaded.
      *
@@ -133,12 +100,9 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.users                     !== null
-            && $scope.rootGroup                 !== null
+        return $scope.rootGroup                 !== null
             && $scope.permissions               !== null
-            && $scope.canManageUsers            !== null
             && $scope.canManageConnections      !== null
-            && $scope.canCreateUsers            !== null
             && $scope.canCreateConnections      !== null
             && $scope.canCreateConnectionGroups !== null;
 
@@ -154,11 +118,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
 
         // Determine whether the current user can create new users
-        $scope.canCreateUsers =
-               PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER);
-
-        // Determine whether the current user can create new users
         $scope.canCreateConnections =
                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
             || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION);
@@ -167,12 +126,6 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
         $scope.canCreateConnectionGroups =
                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
             || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP);
-
-        // Determine whether the current user can manage other users
-        $scope.canManageUsers =
-               $scope.canCreateUsers
-            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
-            || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE);
 
         // Determine whether the current user can manage other connections or groups
         $scope.canManageConnections =
@@ -188,7 +141,7 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
             || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE);
 
         // Return to home if there's nothing to do here
-        if (!$scope.canManageUsers && !$scope.canManageConnections)
+        if (!$scope.canManageConnections)
             $location.path('/');
         
     });
@@ -199,51 +152,5 @@ angular.module('manage').controller('manageController', ['$scope', '$injector',
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });
-
-    // Retrieve all users for whom we have UPDATE or DELETE permission
-    userService.getUsers([PermissionSet.ObjectPermissionType.UPDATE, 
-        PermissionSet.ObjectPermissionType.DELETE])
-    .success(function usersReceived(users) {
-
-        // Display only other users, not self
-        $scope.users = users.filter(function isNotSelf(user) {
-            return user.username !== currentUserID;
-        });
-
-    });
-
-    /**
-     * Creates a new user having the username specified in the user creation
-     * interface.
-     */
-    $scope.newUser = function newUser() {
-
-        // Create user skeleton
-        var user = new User({
-            username: $scope.newUsername || ''
-        });
-
-        // Create specified user
-        userService.createUser(user)
-
-        // Add user to visible list upon success
-        .success(function userCreated() {
-            $scope.users.push(user);
-        })
-
-        // Notify of any errors
-        .error(function userCreationFailed(error) {
-            guacNotification.showStatus({
-                'className'  : 'error',
-                'title'      : 'MANAGE.DIALOG_HEADER_ERROR',
-                'text'       : error.message,
-                'actions'    : [ ACKNOWLEDGE_ACTION ]
-            });
-        });
-
-        // Reset username
-        $scope.newUsername = "";
-
-    };
     
 }]);

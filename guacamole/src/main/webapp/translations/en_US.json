@@ -2,19 +2,22 @@
 
     "APP" : {
 
-        "ACTION_ACKNOWLEDGE"     : "OK",
-        "ACTION_CANCEL"          : "Cancel",
-        "ACTION_CHANGE_PASSWORD" : "Change Password",
-        "ACTION_CLONE"           : "Clone",
-        "ACTION_DELETE"          : "Delete",
-        "ACTION_LOGIN"           : "Login",
-        "ACTION_LOGOUT"          : "Logout",
-        "ACTION_MANAGE"          : "Manage",
-        "ACTION_NAVIGATE_BACK"   : "Back",
-        "ACTION_NAVIGATE_HOME"   : "Home",
-        "ACTION_SAVE"            : "Save",
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Cancel",
+        "ACTION_CHANGE_PASSWORD"    : "Change Password",
+        "ACTION_CLONE"              : "Clone",
+        "ACTION_DELETE"             : "Delete",
+        "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
+        "ACTION_LOGIN"              : "Login",
+        "ACTION_LOGOUT"             : "Logout",
+        "ACTION_MANAGE_CONNECTIONS" : "Manage Connections",
+        "ACTION_MANAGE_SESSIONS"    : "Manage Sessions",
+        "ACTION_MANAGE_USERS"       : "Manage Users",
+        "ACTION_NAVIGATE_BACK"      : "Back",
+        "ACTION_NAVIGATE_HOME"      : "Home",
+        "ACTION_SAVE"               : "Save",
 
-        "DIALOG_HEADER_ERROR"    : "Error",
+        "DIALOG_HEADER_ERROR" : "Error",
 
         "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
         
@@ -135,36 +138,16 @@
         "FIELD_PLACEHOLDER_PASSWORD" : "Password"
 
     },
-    
-    "MANAGE" : {
-
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_NEW_USER"             : "New User",
-        "ACTION_NEW_CONNECTION"       : "New Connection",
-        "ACTION_NEW_CONNECTION_GROUP" : "New Group",
-
-        "DIALOG_HEADER_ERROR"           : "Error",
-
-        "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
-        "HELP_SHOW_PASSWORD" : "Click to show password",
-        "HELP_HIDE_PASSWORD" : "Click to hide password",
-        "HELP_USERS"         : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
-
-        "SECTION_HEADER_ADMINISTRATION" : "Administration",
-        "SECTION_HEADER_CONNECTIONS"    : "Connections",
-        "SECTION_HEADER_USERS"          : "Users"
-
-    },
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_NEW_CONNECTION"       : "New Connection",
+        "ACTION_NEW_CONNECTION_GROUP" : "New Group",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection",
         "DIALOG_HEADER_ERROR"          : "Error",
@@ -172,11 +155,17 @@
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
-
+        
+        "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
+        "HELP_SHOW_PASSWORD" : "Click to show password",
+        "HELP_HIDE_PASSWORD" : "Click to hide password",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Active Now",
         "INFO_CONNECTION_NOT_USED"         : "This connection has not yet been used.",
 
+        "SECTION_HEADER_CONNECTIONS"     : "Connections",
         "SECTION_HEADER_EDIT_CONNECTION" : "Edit Connection",
         "SECTION_HEADER_HISTORY"         : "Usage History",
         "SECTION_HEADER_PARAMETERS"      : "Parameters",
@@ -218,6 +207,7 @@
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_NEW_USER"      : "New User",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE"  : "Delete User",
@@ -232,12 +222,35 @@
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Username:",
+        
+        "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
         "SECTION_HEADER_CONNECTIONS" : "Connections",
         "SECTION_HEADER_EDIT_USER"   : "Edit User",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",
+        "SECTION_HEADER_USERS"       : "Users",
 
         "TEXT_CONFIRM_DELETE" : "Users cannot be restored after they have been deleted. Are you sure you want to delete this user?"
+
+    },
+    
+    "MANAGE_SESSION" : {
+        
+        "ACTION_DELETE" : "Kill all selected sessions",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
+        "DIALOG_HEADER_ERROR"          : "Error",
+        
+        "HELP_SESSIONS" : "Click to kill a user session.",
+        
+        "SECTION_HEADER_SESSIONS" : "Sessions",
+        
+        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Start date",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
+        
+        "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill these sessions?"
 
     },
 
@@ -383,13 +396,15 @@
 
     "USER_MENU" : {
 
-        "ACTION_ACKNOWLEDGE"     : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"          : "@:APP.ACTION_CANCEL",
-        "ACTION_CHANGE_PASSWORD" : "@:APP.ACTION_CHANGE_PASSWORD",
-        "ACTION_LOGOUT"          : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE"          : "@:APP.ACTION_MANAGE",
-        "ACTION_NAVIGATE_HOME"   : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_SAVE"            : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CHANGE_PASSWORD"    : "@:APP.ACTION_CHANGE_PASSWORD",
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
 

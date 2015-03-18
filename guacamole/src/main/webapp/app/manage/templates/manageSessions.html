@@ -1,0 +1,80 @@
+<!--
+Copyright 2015 Glyptodon LLC.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<div class="view" ng-class="{loading: !isLoaded()}">
+
+    <div class="header">
+        <h2>{{'MANAGE_SESSION.SECTION_HEADER_SESSIONS' | translate}}</h2>
+        <guac-user-menu permissions="permissions"></guac-user-menu>
+    </div>
+
+    <!-- User Session management -->
+    <div class="settings section">
+        <div class="sessions">
+
+            <p>{{'MANAGE_SESSION.HELP_SESSIONS' | translate}}</p>
+            <button class="delete-sessions" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
+
+            <!-- List of current user sessions -->
+            <table class="session-list">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                        </th>
+                        <th>
+                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                        </th>
+                        <th>
+                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                        </th>
+                        <th>
+                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="wrapper in wrapperPage" class="session">
+                        <td>
+                            <input ng-change="wrapperSelectionChange(wrapper.checked)" type="checkbox" ng-model="wrapper.checked" />
+                        </td>
+                        <td>
+                            {{wrapper.tunnel.username}}
+                        </td>
+                        <td>
+                            {{wrapper.tunnel.startDate | date:'short'}}
+                        </td>
+                        <td>
+                            {{wrapper.tunnel.remoteHost}}
+                        </td>
+                        <td>
+                            {{connections[wrapper.tunnel.identifier].name}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : 'username'"></guac-pager>
+        </div>
+    </div>
+
+</div>

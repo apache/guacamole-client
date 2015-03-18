@@ -74,12 +74,30 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
-        // Management screen
-        .when('/manage/', {
+        // Connection management screen
+        .when('/manage/modules/connections/', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
-            templateUrl   : 'app/manage/templates/manage.html',
-            controller    : 'manageController',
+            templateUrl   : 'app/manage/templates/manageConnections.html',
+            controller    : 'manageConnectionsController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
+        // User management screen
+        .when('/manage/modules/users/', {
+            title         : 'APP.NAME',
+            bodyClassName : 'manage',
+            templateUrl   : 'app/manage/templates/manageUsers.html',
+            controller    : 'manageUsersController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
+        // Session management screen
+        .when('/manage/modules/sessions/', {
+            title         : 'APP.NAME',
+            bodyClassName : 'manage',
+            templateUrl   : 'app/manage/templates/manageSessions.html',
+            controller    : 'manageSessionsController',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 

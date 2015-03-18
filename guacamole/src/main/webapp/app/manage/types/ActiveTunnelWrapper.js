@@ -20,12 +20,38 @@
  * THE SOFTWARE.
  */
 
-.manage .connection-list .group-list-page,
-.manage .user-list {
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    min-height: 15em;
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    border-radius: 0.2em;
-}
+/**
+ * A service for defining the ActiveTunnelWrapper class.
+ */
+angular.module('manage').factory('ActiveTunnelWrapper', [
+    function defineActiveTunnelWrapper() {
+
+    /**
+     * Wrapper for ActiveTunnel which adds display-specific
+     * properties, such as a checked option.
+     * 
+     * @constructor
+     * @param {ActiveTunnel} activeTunnel
+     *     The ActiveTunnel to wrap.
+     */
+    var ActiveTunnelWrapper = function ActiveTunnelWrapper(activeTunnel) {
+
+        /**
+         * The wrapped ActiveTunnel.
+         *
+         * @type ActiveTunnel
+         */
+        this.tunnel = activeTunnel;
+
+        /**
+         * A flag indicating that the tunnel has been selected.
+         *
+         * @type Boolean
+         */
+        this.checked = false;
+
+    };
+
+    return ActiveTunnelWrapper;
+
+}]);
