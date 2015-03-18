@@ -1,5 +1,5 @@
 <!--
-Copyright 2014 Glyptodon LLC.
+Copyright 2015 Glyptodon LLC.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -23,64 +23,33 @@ THE SOFTWARE.
 <div class="view" ng-class="{loading: !isLoaded()}">
 
     <div class="header">
-        <h2>{{'MANAGE.SECTION_HEADER_ADMINISTRATION' | translate}}</h2>
+        <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
         <guac-user-menu permissions="permissions"></guac-user-menu>
-    </div>
-
-    <!-- User management -->
-    <div class="settings section" ng-show="canManageUsers">
-        <h3>{{'MANAGE.SECTION_HEADER_USERS' | translate}}</h3>
-        <div class="users">
-
-            <p>{{'MANAGE.HELP_USERS' | translate}}</p>
-
-            <!-- User creation form -->
-            <div class="user-add-form" ng-show="canCreateUsers">
-                <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
-                <button class="add-user" ng-click="newUser()">{{'MANAGE.ACTION_NEW_USER' | translate}}</button>
-            </div>
-
-            <!-- List of users this user has access to -->
-            <div class="user-list">
-                <div ng-repeat="user in userPage" class="user list-item">
-                    <a ng-href="#/manage/users/{{user.username}}">
-                        <div class="caption">
-                            <div class="icon user"></div>
-                            <span class="name">{{user.username}}</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Pager controls for user list -->
-            <guac-pager page="userPage" items="users | orderBy : 'username'"></guac-pager>
-
-        </div>
     </div>
 
     <!-- Connection management -->
     <div class="settings section" ng-show="canManageConnections">
-        <h3>{{'MANAGE.SECTION_HEADER_CONNECTIONS' | translate}}</h3>
         <div class="connections">
 
-            <p>{{'MANAGE.HELP_CONNECTIONS' | translate}}</p>
+            <p>{{'MANAGE_CONNECTION.HELP_CONNECTIONS' | translate}}</p>
 
             <!-- Connection/group creation buttons -->
             <div class="connection-add-form">
 
                 <a class="add-connection button"
                    ng-show="canCreateConnections"
-                   href="#/manage/connections/">{{'MANAGE.ACTION_NEW_CONNECTION' | translate}}</a>
+                   href="#/manage/connections/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION' | translate}}</a>
 
                 <a class="add-connection-group button"
                    ng-show="canCreateConnectionGroups"
-                   href="#/manage/connectionGroups/">{{'MANAGE.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+                   href="#/manage/connectionGroups/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
 
             </div>
 
             <!-- List of accessible connections and groups -->
             <div class="connection-list">
                 <guac-group-list
+                    page-size="25"
                     connection-group="rootGroup"
                     connection-template="'app/manage/templates/connection.html'"
                     connection-group-template="'app/manage/templates/connectionGroup.html'"/>

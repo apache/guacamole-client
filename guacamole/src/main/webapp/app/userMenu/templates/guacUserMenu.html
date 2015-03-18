@@ -35,10 +35,24 @@
                 </a>
             </li>
 
-            <!-- Manage -->
+            <!-- Manage Users -->
             <li>
-                <a class="manage" ng-click="manage()" ng-class="{disabled: manageDisabled}" ng-show="canManageGuacamole" href="#/manage/">
-                    {{'USER_MENU.ACTION_MANAGE' | translate}}
+                <a class="manage-users" ng-click="manageUsers()" ng-class="{disabled: manageUsersDisabled}" ng-show="canManageUsers" href="#/manage/modules/users">
+                    {{'USER_MENU.ACTION_MANAGE_USERS' | translate}}
+                </a>
+            </li>
+
+            <!-- Manage Connections -->
+            <li>
+                <a class="manage-connections" ng-click="manageConnections()" ng-class="{disabled: manageConnectionsDisabled}" ng-show="canManageConnections" href="#/manage/modules/connections">
+                    {{'USER_MENU.ACTION_MANAGE_CONNECTIONS' | translate}}
+                </a>
+            </li>
+
+            <!-- Manage Sessions -->
+            <li>
+                <a class="manage-sessions" ng-click="manageSessions()" ng-class="{disabled: manageSessionsDisabled}" ng-show="canManageSessions" href="#/manage/modules/sessions">
+                    {{'USER_MENU.ACTION_MANAGE_SESSIONS' | translate}}
                 </a>
             </li>
 
