@@ -25,7 +25,7 @@
     border-collapse: collapse;
 }
 
-.manage table.session-list tbody tr:hover {
+.manage table.session-list tr.session:hover {
     background: #CDA;
 }
 

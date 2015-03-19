@@ -60,6 +60,11 @@ THE SOFTWARE.
             </tbody>
         </table>
 
+        <!-- Text displayed if no sessions exist -->
+        <p class="placeholder" ng-hide="wrapperPage.length">
+            {{'MANAGE_SESSION.INFO_NO_SESSIONS' | translate}}
+        </p>
+
         <!-- Pager for session list -->
         <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : 'username'"></guac-pager>
     </div>

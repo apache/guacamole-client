@@ -245,6 +245,8 @@
         
         "HELP_SESSIONS" : "All currently-active Guacamole sessions are listed here. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
         
+        "INFO_NO_SESSIONS" : "No active sessions",
+
         "SECTION_HEADER_SESSIONS" : "Sessions",
         
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
