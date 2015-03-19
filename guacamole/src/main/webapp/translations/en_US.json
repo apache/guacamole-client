@@ -236,7 +236,9 @@
     
     "MANAGE_SESSION" : {
         
-        "ACTION_DELETE" : "Kill all selected sessions",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Kill all selected sessions",
         
         "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
         "DIALOG_HEADER_ERROR"          : "Error",

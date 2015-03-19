@@ -74,11 +74,11 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.connections = {};
     
     /**
-     * The count of currently selected tunnel wrappers.
+     * Map of all currently-selected tunnel wrappers by UUID.
      * 
-     * @type Number
+     * @type Object.<String, ActiveTunnelWrapper>
      */
-    var selectedWrapperCount = 0;
+    var selectedWrappers = {};
 
     /**
      * Adds the given connection to the internal set of visible
@@ -126,9 +126,9 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
         
         // Wrap all active tunnels for sake of display
         $scope.wrappers = [];
-        tunnels.forEach(function wrapActiveTunnel(tunnel) {
-           $scope.wrappers.push(new ActiveTunnelWrapper(tunnel)); 
-        });
+        for (var tunnelUUID in tunnels) {
+            $scope.wrappers.push(new ActiveTunnelWrapper(tunnels[tunnelUUID])); 
+        }
         
     });
 
@@ -151,8 +151,20 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
      */
+    var ACKNOWLEDGE_ACTION = {
+        name        : "MANAGE_SESSION.ACTION_ACKNOWLEDGE",
+        // Handle action
+        callback    : function acknowledgeCallback() {
+            guacNotification.showStatus(false);
+        }
+    };
+
+    /**
+     * An action to be provided along with the object sent to showStatus which
+     * closes the currently-shown status dialog.
+     */
     var CANCEL_ACTION = {
-        name        : "MANAGE_USER.ACTION_CANCEL",
+        name        : "MANAGE_SESSION.ACTION_CANCEL",
         // Handle action
         callback    : function cancelCallback() {
             guacNotification.showStatus(false);
@@ -178,7 +190,31 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * confirmation.
      */
     var deleteSessionsImmediately = function deleteSessionsImmediately() {
-        // TODO: Use a batch delete function to delete the sessions.
+
+        // Perform deletion
+        tunnelService.deleteActiveTunnels(Object.keys(selectedWrappers))
+        .success(function tunnelsDeleted() {
+
+            // Remove deleted tunnels from wrapper array
+            $scope.wrappers = $scope.wrappers.filter(function tunnelStillExists(wrapper) {
+                return !(wrapper.tunnel.uuid in selectedWrappers);
+            });
+
+            // Clear selection
+            selectedWrappers = {};
+
+        })
+
+        // Notify of any errors
+        .error(function tunnelDeletionFailed(error) {
+            guacNotification.showStatus({
+                'className'  : 'error',
+                'title'      : 'MANAGE_SESSION.DIALOG_HEADER_ERROR',
+                'text'       : error.message,
+                'actions'    : [ ACKNOWLEDGE_ACTION ]
+            });
+        });
+
     }; 
     
     /**
@@ -201,20 +237,31 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      *     true if selected sessions can be deleted, false otherwise.
      */
     $scope.canDeleteSessions = function canDeleteSessions() {
-        return selectedWrapperCount > 0;
+
+        // We can delete sessions if at least one is selected
+        for (var tunnelUUID in selectedWrappers)
+            return true;
+
+        return false;
+
     };
     
     /**
      * Called whenever a tunnel wrapper changes selected status.
      * 
-     * @param {Boolean} selected
-     *     Whether the wrapper is now selected.
+     * @param {ActiveTunnelWrapper} wrapper
+     *     The wrapper whose selected status has changed.
      */
-    $scope.wrapperSelectionChange = function wrapperSelectionChange(selected) {
-        if (selected)
-            selectedWrapperCount++;
+    $scope.wrapperSelectionChange = function wrapperSelectionChange(wrapper) {
+
+        // Add wrapper to map if selected
+        if (wrapper.checked)
+            selectedWrappers[wrapper.tunnel.uuid] = wrapper;
+
+        // Otherwise, remove wrapper from map
         else
-            selectedWrapperCount--;
+            delete selectedWrappers[wrapper.tunnel.uuid];
+
     };
 
 }]);

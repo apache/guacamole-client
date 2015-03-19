@@ -56,7 +56,7 @@ THE SOFTWARE.
                 <tbody>
                     <tr ng-repeat="wrapper in wrapperPage" class="session">
                         <td>
-                            <input ng-change="wrapperSelectionChange(wrapper.checked)" type="checkbox" ng-model="wrapper.checked" />
+                            <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
                         </td>
                         <td>
                             {{wrapper.tunnel.username}}
