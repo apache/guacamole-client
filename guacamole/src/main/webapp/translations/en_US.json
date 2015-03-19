@@ -238,12 +238,12 @@
         
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"      : "Kill all selected sessions",
+        "ACTION_DELETE"      : "Kill Sessions",
         
         "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
         "DIALOG_HEADER_ERROR"          : "Error",
         
-        "HELP_SESSIONS" : "Click to kill a user session.",
+        "HELP_SESSIONS" : "All currently-active Guacamole sessions are listed here. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
         
         "SECTION_HEADER_SESSIONS" : "Sessions",
         
@@ -252,7 +252,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         
-        "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill these sessions?"
+        "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill all selected sessions? The users using these sessions will be immediately disconnected."
 
     },
 
