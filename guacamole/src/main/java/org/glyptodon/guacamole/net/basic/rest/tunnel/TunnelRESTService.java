@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.tunnel;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -34,8 +35,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -103,37 +102,38 @@ public class TunnelRESTService {
     }
 
     /**
-     * Deletes the tunnel having the given UUID, effectively closing the
-     * tunnel and killing the associated connection.
+     * Deletes the tunnels having the given UUIDs, effectively closing the
+     * tunnels and killing the associated connections.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
-     * @param tunnelUUID
-     *     The UUID associated with the tunnel being deleted.
+     * @param tunnelUUIDs
+     *     The UUIDs associated with the tunnels being deleted.
      *
      * @throws GuacamoleException
-     *     If an error occurs while deleting the tunnel.
+     *     If an error occurs while deleting the tunnels.
      */
     @DELETE
-    @Path("/{tunnelUUID}")
+    @Path("/")
     @AuthProviderRESTExposure
-    public void deleteTunnel(@QueryParam("token") String authToken,
-            @PathParam("tunnelUUID") String tunnelUUID) 
+    public void deleteTunnels(@QueryParam("token") String authToken,
+            @QueryParam("tunnelUUID") Collection<String> tunnelUUIDs) 
             throws GuacamoleException {
 
+        // Attempt to get all requested tunnels
         UserContext userContext = authenticationService.getUserContext(authToken);
+        Collection<ConnectionRecord> records = userContext.getActiveConnections(tunnelUUIDs);
 
-        // Retrieve specified tunnel
-        ConnectionRecord record = userContext.getActiveConnection(tunnelUUID);
-        if (record == null)
-            throw new GuacamoleResourceNotFoundException("No such tunnel: \"" + tunnelUUID + "\"");
+        // Close each tunnel, if not already closed
+        for (ConnectionRecord record : records) {
 
-        // Close tunnel, if not already closed
-        GuacamoleTunnel tunnel = record.getTunnel();
-        if (tunnel != null && tunnel.isOpen())
-            tunnel.close();
+            GuacamoleTunnel tunnel = record.getTunnel();
+            if (tunnel != null && tunnel.isOpen())
+                tunnel.close();
+
+        }
 
     }
     
