@@ -28,6 +28,7 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirector
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.ArrayList;
 import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
@@ -130,9 +131,22 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
-    public ConnectionRecord getActiveConnection(String tunnelUUID)
+    public Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUIDs)
             throws GuacamoleException {
-        return tunnelService.getActiveConnection(getCurrentUser(), tunnelUUID);
+
+        // Look up active connections for each given tunnel UUID
+        Collection<ConnectionRecord> records = new ArrayList<ConnectionRecord>(tunnelUUIDs.size());
+        for (String tunnelUUID : tunnelUUIDs) {
+
+            // Add corresponding record only if it exists
+            ConnectionRecord record = tunnelService.getActiveConnection(getCurrentUser(), tunnelUUID);
+            if (record != null)
+                records.add(record);
+
+        }
+
+        return records;
+        
     }
 
 }

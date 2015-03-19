@@ -175,9 +175,9 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public ConnectionRecord getActiveConnection(String tunnelUUID)
+    public Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUID)
             throws GuacamoleException {
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
 }

@@ -24,22 +24,25 @@ package org.glyptodon.guacamole.net.basic.rest.tunnel;
 
 import com.google.inject.Inject;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +77,8 @@ public class TunnelRESTService {
      *     performing the operation.
      *
      * @return
-     *     The tunnels of all active connections visible to the current user.
+     *     A map of the tunnels of all active connections visible to the
+     *     current user, where the key of each entry is the tunnel's UUID.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the tunnels.
@@ -82,19 +86,21 @@ public class TunnelRESTService {
     @GET
     @Path("/")
     @AuthProviderRESTExposure
-    public List<APITunnel> getTunnels(@QueryParam("token") String authToken)
+    public Map<String, APITunnel> getTunnels(@QueryParam("token") String authToken)
             throws GuacamoleException {
 
         UserContext userContext = authenticationService.getUserContext(authToken);
 
         // Retrieve all active tunnels
-        List<APITunnel> apiTunnels = new ArrayList<APITunnel>();
+        Map<String, APITunnel> apiTunnels = new HashMap<String, APITunnel>();
         for (ConnectionRecord record : userContext.getActiveConnections()) {
 
             // Locate associated tunnel and UUID
             GuacamoleTunnel tunnel = record.getTunnel();
-            if (tunnel != null)
-                apiTunnels.add(new APITunnel(record, tunnel.getUUID().toString()));
+            if (tunnel != null) {
+                APITunnel apiTunnel = new APITunnel(record, tunnel.getUUID().toString());
+                apiTunnels.put(apiTunnel.getUUID(), apiTunnel);
+            }
 
         }
 
@@ -103,37 +109,58 @@ public class TunnelRESTService {
     }
 
     /**
-     * Deletes the tunnel having the given UUID, effectively closing the
-     * tunnel and killing the associated connection.
+     * Applies the given tunnel patches. This operation currently only supports
+     * deletion of tunnels through the "remove" patch operation. Deleting a
+     * tunnel effectively closing the tunnel and kills the associated
+     * connection. The path of each patch operation is of the form "/UUID"
+     * where UUID is the UUID of the tunnel being modified.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
-     * @param tunnelUUID
-     *     The UUID associated with the tunnel being deleted.
+     * @param patches
+     *     The tunnel patches to apply for this request.
      *
      * @throws GuacamoleException
-     *     If an error occurs while deleting the tunnel.
+     *     If an error occurs while deleting the tunnels.
      */
-    @DELETE
-    @Path("/{tunnelUUID}")
+    @PATCH
+    @Path("/")
     @AuthProviderRESTExposure
-    public void deleteTunnel(@QueryParam("token") String authToken,
-            @PathParam("tunnelUUID") String tunnelUUID) 
-            throws GuacamoleException {
+    public void patchTunnels(@QueryParam("token") String authToken,
+            List<APIPatch<String>> patches) throws GuacamoleException {
 
+        // Attempt to get all requested tunnels
         UserContext userContext = authenticationService.getUserContext(authToken);
 
-        // Retrieve specified tunnel
-        ConnectionRecord record = userContext.getActiveConnection(tunnelUUID);
-        if (record == null)
-            throw new GuacamoleResourceNotFoundException("No such tunnel: \"" + tunnelUUID + "\"");
+        // Build list of tunnels to delete
+        Collection<String> tunnelUUIDs = new ArrayList<String>(patches.size());
+        for (APIPatch<String> patch : patches) {
 
-        // Close tunnel, if not already closed
-        GuacamoleTunnel tunnel = record.getTunnel();
-        if (tunnel != null && tunnel.isOpen())
-            tunnel.close();
+            // Only remove is supported
+            if (patch.getOp() != APIPatch.Operation.remove)
+                throw new GuacamoleUnsupportedException("Only the \"remove\" operation is supported when patching tunnels.");
+
+            // Retrieve and validate path
+            String path = patch.getPath();
+            if (!path.startsWith("/"))
+                throw new GuacamoleClientException("Patch paths must start with \"/\".");
+            
+            // Add UUID
+            tunnelUUIDs.add(path.substring(1));
+            
+        }
+        
+        // Close each tunnel, if not already closed
+        Collection<ConnectionRecord> records = userContext.getActiveConnections(tunnelUUIDs);
+        for (ConnectionRecord record : records) {
+
+            GuacamoleTunnel tunnel = record.getTunnel();
+            if (tunnel != null && tunnel.isOpen())
+                tunnel.close();
+
+        }
 
     }
     

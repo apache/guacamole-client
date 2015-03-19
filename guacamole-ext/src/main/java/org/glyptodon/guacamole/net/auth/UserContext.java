@@ -113,24 +113,24 @@ public interface UserContext {
             throws GuacamoleException;
 
     /**
-     * Returns the connection record associated with the active connection
-     * having the tunnel with the given UUID. The active connection will only
+     * Returns the connection records associated with the active connections
+     * having the tunnels with the given UUIDs. An active connection will only
      * be returned if the current user has access.
      *
-     * @param tunnelUUID
-     *     The UUID of the tunnel whose associated connection record should be
-     *     returned.
+     * @param tunnelUUIDs
+     *     The UUIDs of the tunnels whose associated connection records should
+     *     be returned.
      *
      * @return
-     *     The connection record associated with the active connection having
-     *     the tunnel with the given UUID, if any, or null if no such
-     *     connection exists.
+     *     A collection of all connection records associated with the active
+     *     connections having the tunnels with the given UUIDs, if any, or an
+     *     empty collection if no such connections exist.
      *
      * @throws GuacamoleException
      *     If an error occurs while reading active connection records, or if
      *     permission is denied.
      */
-    ConnectionRecord getActiveConnection(String tunnelUUID)
+    Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUIDs)
             throws GuacamoleException;
 
 }

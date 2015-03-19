@@ -30,12 +30,12 @@ angular.module('rest').factory('tunnelService', ['$http', 'authenticationService
 
     /**
      * Makes a request to the REST API to get the list of active tunnels,
-     * returning a promise that provides an array of @link{ActiveTunnel}
+     * returning a promise that provides a map of @link{ActiveTunnel}
      * objects if successful.
      *
-     * @returns {Promise.<ActiveTunnel[]>}
-     *     A promise which will resolve with an array of @link{ActiveTunnel}
-     *     objects upon success.
+     * @returns {Promise.<Object.<String, ActiveTunnel>>}
+     *     A promise which will resolve with a map of @link{ActiveTunnel}
+     *     objects, where each key is the UUID of the corresponding tunnel.
      */
     service.getActiveTunnels = function getActiveTunnels() {
 
@@ -54,31 +54,41 @@ angular.module('rest').factory('tunnelService', ['$http', 'authenticationService
     };
 
     /**
-     * Makes a request to the REST API to delete the tunnel having the given
-     * UUID, effectively disconnecting the tunnel, returning a promise that can
-     * be used for processing the results of the call.
+     * Makes a request to the REST API to delete the tunnels having the given
+     * UUIDs, effectively disconnecting the tunnels, returning a promise that
+     * can be used for processing the results of the call.
      *
-     * @param {String} uuid
-     *     The UUID of the tunnel to delete.
+     * @param {String[]} uuids
+     *     The UUIDs of the tunnels to delete.
      *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteActiveTunnel = function deleteActiveTunnel(uuid) {
+    service.deleteActiveTunnels = function deleteActiveTunnels(uuids) {
 
         // Build HTTP parameters set
         var httpParameters = {
             token : authenticationService.getCurrentToken()
         };
 
-        // Delete connection
-        return $http({
-            method  : 'DELETE',
-            url     : 'api/tunnels/' + encodeURIComponent(uuid),
-            params  : httpParameters
+        // Convert provided array of UUIDs to a patch
+        var tunnelPatch = [];
+        uuids.forEach(function addTunnelPatch(uuid) {
+            tunnelPatch.push({
+                op   : 'remove',
+                path : '/' + uuid
+            });
         });
 
+        // Perform tunnel deletion via PATCH
+        return $http({
+            method  : 'PATCH',
+            url     : 'api/tunnels',
+            params  : httpParameters,
+            data    : tunnelPatch
+        });
+        
     };
 
     return service;
