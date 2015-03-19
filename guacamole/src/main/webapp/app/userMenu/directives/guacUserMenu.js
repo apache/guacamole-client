@@ -97,29 +97,30 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
              * @type Boolean
              */
             $scope.manageUsersDisabled = 
-                    ($location.path() === '/manage/modules/user');
+                    ($location.path() === '/manage/modules/users/');
 
             /**
-             * Whether the option to go to the connection management interface is
-             * disabled. Note that shis is different from canManageConnections,
-             * which deals with whether permission to manage is granted. A user
-             * may have permission, yet see this option as currently disabled.
+             * Whether the option to go to the connection management interface
+             * is disabled. Note that shis is different from
+             * canManageConnections, which deals with whether permission to
+             * manage is granted. A user may have permission, yet see this
+             * option as currently disabled.
              *
              * @type Boolean
              */
             $scope.manageConnectionsDisabled = 
-                    ($location.path() === '/manage/modules/connections');
+                    ($location.path() === '/manage/modules/connections/');
 
             /**
              * Whether the option to go to the session management interface is
-             * disabled. Note that shis is different from canManageConnections,
+             * disabled. Note that shis is different from canManageSessions,
              * which deals with whether permission to manage is granted. A user
              * may have permission, yet see this option as currently disabled.
              *
              * @type Boolean
              */
             $scope.manageSessionsDisabled = 
-                    ($location.path() === '/manage/modules/sessions');
+                    ($location.path() === '/manage/modules/sessions/');
 
             /**
              * Whether the current user has sufficient permissions to use the
@@ -350,21 +351,21 @@ angular.module('userMenu').directive('guacUserMenu', [function guacUserMenu() {
              * Navigates to the user management interface.
              */
             $scope.manageUsers = function manageUsers() {
-                $location.path('/manage/modules/users');
+                $location.path('/manage/modules/users/');
             };
 
             /**
              * Navigates to the connection management interface.
              */
             $scope.manageConnections = function manageConnections() {
-                $location.path('/manage/modules/connections');
+                $location.path('/manage/modules/connections/');
             };
 
             /**
              * Navigates to the user session management interface.
              */
             $scope.manageSessions = function manageSessions() {
-                $location.path('/manage/modules/sessions');
+                $location.path('/manage/modules/sessions/');
             };
 
             /**
