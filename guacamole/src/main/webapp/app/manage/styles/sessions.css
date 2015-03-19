@@ -36,5 +36,10 @@
 .manage table.session-list th,
 .manage table.session-list td {
     border: 1px solid #AAA;
-    padding: 0.25em;
+    padding: 0.5em 1em;
+}
+
+.manage table.session-list .select-session {
+    min-width: 2em;
+    text-align: center;
 }

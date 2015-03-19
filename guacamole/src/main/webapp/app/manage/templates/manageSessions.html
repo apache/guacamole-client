@@ -40,7 +40,7 @@ THE SOFTWARE.
         <table class="session-list">
             <thead>
                 <tr>
-                    <th></th>
+                    <th class="select-session"></th>
                     <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}</th>
                     <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}</th>
                     <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}</th>
@@ -49,7 +49,7 @@ THE SOFTWARE.
             </thead>
             <tbody>
                 <tr ng-repeat="wrapper in wrapperPage" class="session">
-                    <td>
+                    <td class="select-session">
                         <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
                     </td>
                     <td>{{wrapper.tunnel.username}}</td>
