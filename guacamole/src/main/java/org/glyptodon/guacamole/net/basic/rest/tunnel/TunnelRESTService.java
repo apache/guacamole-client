@@ -109,8 +109,11 @@ public class TunnelRESTService {
     }
 
     /**
-     * Deletes the tunnels having the given UUIDs, effectively closing the
-     * tunnels and killing the associated connections.
+     * Applies the given tunnel patches. This operation currently only supports
+     * deletion of tunnels through the "remove" patch operation. Deleting a
+     * tunnel effectively closing the tunnel and kills the associated
+     * connection. The path of each patch operation is of the form "/UUID"
+     * where UUID is the UUID of the tunnel being modified.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
