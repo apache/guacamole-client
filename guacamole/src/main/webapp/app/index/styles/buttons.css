@@ -73,6 +73,12 @@ button.danger:active, a.button.danger:active {
     background: #932;
 }
 
+input[type="submit"]:disabled, button:disabled, button.danger:disabled {
+    background-color: #3C3C3C;
+    color: rgba(255, 255, 255, 0.5);
+    opacity: 0.75;
+}
+
 .button.logout, .button.manage, .button.back, .button.home, .button.change-password {
     background-repeat: no-repeat;
     background-size: 1em;
