@@ -212,44 +212,6 @@ div.section {
 }
 
 /*
- * List element fields (editing)
- */
-
-.form .fields th,
-.form .permissions th {
-    font-weight: normal;
-    vertical-align: middle;
-    text-align: left;
-}
-
-.form h2 {
-    border-top: none;
-}
-
-.form h3 {
-    font-size: 1em;
-    margin-bottom: 0.25em;
-}
-
-.form {
-    cursor: auto;
-    animation-name: fadein;
-    -webkit-animation-name: fadein;
-    animation-duration: 0.125s;
-    -webkit-animation-duration: 0.125s;
-}
-
-.object-buttons {
-
-    text-align: right;
-
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-    padding-top: 0.5em;
-    margin: 0.5em;
-
-}
-
-/*
  * List element icons
  */
 

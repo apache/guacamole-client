@@ -11,8 +11,8 @@
         "ACTION_LOGIN"              : "Login",
         "ACTION_LOGOUT"             : "Logout",
         "ACTION_MANAGE_CONNECTIONS" : "Manage Connections",
-        "ACTION_MANAGE_SESSIONS"    : "Manage Sessions",
-        "ACTION_MANAGE_USERS"       : "Manage Users",
+        "ACTION_MANAGE_SESSIONS"    : "Active Sessions",
+        "ACTION_MANAGE_USERS"       : "Users",
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
@@ -165,7 +165,7 @@
         "INFO_CONNECTION_ACTIVE_NOW"       : "Active Now",
         "INFO_CONNECTION_NOT_USED"         : "This connection has not yet been used.",
 
-        "SECTION_HEADER_CONNECTIONS"     : "Connections",
+        "SECTION_HEADER_CONNECTIONS"     : "Manage Connections",
         "SECTION_HEADER_EDIT_CONNECTION" : "Edit Connection",
         "SECTION_HEADER_HISTORY"         : "Usage History",
         "SECTION_HEADER_PARAMETERS"      : "Parameters",
@@ -245,10 +245,12 @@
         
         "HELP_SESSIONS" : "All currently-active Guacamole sessions are listed here. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
         
-        "SECTION_HEADER_SESSIONS" : "Sessions",
+        "INFO_NO_SESSIONS" : "No active sessions",
+
+        "SECTION_HEADER_SESSIONS" : "Active Sessions",
         
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Start date",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         

@@ -28,32 +28,29 @@ THE SOFTWARE.
     </div>
 
     <!-- Connection management -->
-    <div class="settings section" ng-show="canManageConnections">
-        <div class="connections">
+    <div class="settings section connections">
+        <p>{{'MANAGE_CONNECTION.HELP_CONNECTIONS' | translate}}</p>
 
-            <p>{{'MANAGE_CONNECTION.HELP_CONNECTIONS' | translate}}</p>
+        <!-- Form action buttons -->
+        <div class="action-buttons">
 
-            <!-- Connection/group creation buttons -->
-            <div class="connection-add-form">
+            <a class="add-connection button"
+               ng-show="canCreateConnections"
+               href="#/manage/connections/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION' | translate}}</a>
 
-                <a class="add-connection button"
-                   ng-show="canCreateConnections"
-                   href="#/manage/connections/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION' | translate}}</a>
+            <a class="add-connection-group button"
+               ng-show="canCreateConnectionGroups"
+               href="#/manage/connectionGroups/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
 
-                <a class="add-connection-group button"
-                   ng-show="canCreateConnectionGroups"
-                   href="#/manage/connectionGroups/">{{'MANAGE_CONNECTION.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+        </div>
 
-            </div>
-
-            <!-- List of accessible connections and groups -->
-            <div class="connection-list">
-                <guac-group-list
-                    page-size="25"
-                    connection-group="rootGroup"
-                    connection-template="'app/manage/templates/connection.html'"
-                    connection-group-template="'app/manage/templates/connectionGroup.html'"/>
-            </div>
+        <!-- List of accessible connections and groups -->
+        <div class="connection-list">
+            <guac-group-list
+                page-size="25"
+                connection-group="rootGroup"
+                connection-template="'app/manage/templates/connection.html'"
+                connection-group-template="'app/manage/templates/connectionGroup.html'"/>
         </div>
     </div>
 

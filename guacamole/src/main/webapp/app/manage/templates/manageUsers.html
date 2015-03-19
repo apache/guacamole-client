@@ -28,33 +28,29 @@ THE SOFTWARE.
     </div>
 
     <!-- User management -->
-    <div class="settings section" ng-show="canManageUsers">
-        <div class="users">
+    <div class="settings section users">
+        <p>{{'MANAGE_USER.HELP_USERS' | translate}}</p>
 
-            <p>{{'MANAGE_USER.HELP_USERS' | translate}}</p>
-
-            <!-- User creation form -->
-            <div class="user-add-form" ng-show="canCreateUsers">
-                <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
-                <button class="add-user" ng-click="newUser()">{{'MANAGE_USER.ACTION_NEW_USER' | translate}}</button>
-            </div>
-
-            <!-- List of users this user has access to -->
-            <div class="user-list">
-                <div ng-repeat="user in userPage" class="user list-item">
-                    <a ng-href="#/manage/users/{{user.username}}">
-                        <div class="caption">
-                            <div class="icon user"></div>
-                            <span class="name">{{user.username}}</span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Pager controls for user list -->
-            <guac-pager page="userPage" page-size="25" items="users | orderBy : 'username'"></guac-pager>
-
+        <!-- Form action buttons -->
+        <div class="action-buttons" ng-show="canCreateUsers">
+            <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
+            <button class="add-user" ng-click="newUser()">{{'MANAGE_USER.ACTION_NEW_USER' | translate}}</button>
         </div>
+
+        <!-- List of users this user has access to -->
+        <div class="user-list">
+            <div ng-repeat="user in userPage" class="user list-item">
+                <a ng-href="#/manage/users/{{user.username}}">
+                    <div class="caption">
+                        <div class="icon user"></div>
+                        <span class="name">{{user.username}}</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pager controls for user list -->
+        <guac-pager page="userPage" page-size="25" items="users | orderBy : 'username'"></guac-pager>
     </div>
 
 </div>

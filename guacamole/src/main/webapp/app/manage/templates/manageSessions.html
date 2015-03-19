@@ -28,57 +28,45 @@ THE SOFTWARE.
     </div>
 
     <!-- User Session management -->
-    <div class="settings section">
-        <div class="sessions">
+    <div class="settings section sessions">
+        <p>{{'MANAGE_SESSION.HELP_SESSIONS' | translate}}</p>
 
-            <p>{{'MANAGE_SESSION.HELP_SESSIONS' | translate}}</p>
-
-            <!-- Form action buttons -->
-            <div class="action-buttons">
-                <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
-            </div>
-
-            <!-- List of current user sessions -->
-            <table class="session-list">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>
-                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
-                        </th>
-                        <th>
-                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
-                        </th>
-                        <th>
-                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
-                        </th>
-                        <th>
-                            {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="wrapper in wrapperPage" class="session">
-                        <td>
-                            <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
-                        </td>
-                        <td>
-                            {{wrapper.tunnel.username}}
-                        </td>
-                        <td>
-                            {{wrapper.tunnel.startDate | date:'short'}}
-                        </td>
-                        <td>
-                            {{wrapper.tunnel.remoteHost}}
-                        </td>
-                        <td>
-                            {{connections[wrapper.tunnel.identifier].name}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : 'username'"></guac-pager>
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
         </div>
+
+        <!-- List of current user sessions -->
+        <table class="session-list">
+            <thead>
+                <tr>
+                    <th class="select-session"></th>
+                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}</th>
+                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}</th>
+                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}</th>
+                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="wrapper in wrapperPage" class="session">
+                    <td class="select-session">
+                        <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
+                    </td>
+                    <td>{{wrapper.tunnel.username}}</td>
+                    <td>{{wrapper.tunnel.startDate | date:'short'}}</td>
+                    <td>{{wrapper.tunnel.remoteHost}}</td>
+                    <td>{{connections[wrapper.tunnel.identifier].name}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Text displayed if no sessions exist -->
+        <p class="placeholder" ng-hide="wrapperPage.length">
+            {{'MANAGE_SESSION.INFO_NO_SESSIONS' | translate}}
+        </p>
+
+        <!-- Pager for session list -->
+        <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : 'username'"></guac-pager>
     </div>
 
 </div>

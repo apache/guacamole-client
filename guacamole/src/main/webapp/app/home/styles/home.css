@@ -41,16 +41,6 @@ div.recent-connections {
     text-align: center;
 }
 
-.no-recent {
-
-    color: rgba(255, 255, 255, 0.5);
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
-    opacity: 0.5;
-    
-    font-size: 2em;
-    font-weight: bolder;
-}
-
 div.recent-connections div.connection {
     -moz-border-radius: 0.5em;
     -webkit-border-radius: 0.5em;

@@ -22,7 +22,7 @@
     -->
 
     <!-- Text displayed if no recent connections exist -->
-    <p class="no-recent" ng-hide="hasRecentConnections()">{{'HOME.INFO_NO_RECENT_CONNECTIONS' | translate}}</p>
+    <p class="placeholder" ng-hide="hasRecentConnections()">{{'HOME.INFO_NO_RECENT_CONNECTIONS' | translate}}</p>
 
     <!-- All active connections -->
     <div ng-repeat="activeConnection in activeConnections" class="connection">
