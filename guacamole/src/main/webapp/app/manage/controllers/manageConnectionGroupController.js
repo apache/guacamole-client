@@ -171,7 +171,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/manage/');
+        $location.path('/manage/modules/connections/');
     };
    
     /**
@@ -183,7 +183,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         // Save the connection
         connectionGroupService.saveConnectionGroup($scope.connectionGroup)
         .success(function savedConnectionGroup() {
-            $location.path('/manage/');
+            $location.path('/manage/modules/connections/');
         })
 
         // Notify of any errors
@@ -233,7 +233,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         // Delete the connection group
         connectionGroupService.deleteConnectionGroup($scope.connectionGroup)
         .success(function deletedConnectionGroup() {
-            $location.path('/manage/');
+            $location.path('/manage/modules/connections/');
         })
 
         // Notify of any errors
