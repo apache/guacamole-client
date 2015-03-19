@@ -165,7 +165,7 @@
         "INFO_CONNECTION_ACTIVE_NOW"       : "Active Now",
         "INFO_CONNECTION_NOT_USED"         : "This connection has not yet been used.",
 
-        "SECTION_HEADER_CONNECTIONS"     : "Connections",
+        "SECTION_HEADER_CONNECTIONS"     : "Manage Connections",
         "SECTION_HEADER_EDIT_CONNECTION" : "Edit Connection",
         "SECTION_HEADER_HISTORY"         : "Usage History",
         "SECTION_HEADER_PARAMETERS"      : "Parameters",
@@ -247,10 +247,10 @@
         
         "INFO_NO_SESSIONS" : "No active sessions",
 
-        "SECTION_HEADER_SESSIONS" : "Sessions",
+        "SECTION_HEADER_SESSIONS" : "Active Sessions",
         
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Start date",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         
