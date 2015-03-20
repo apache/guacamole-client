@@ -49,9 +49,9 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  *     The underlying model object used to represent InternalType in the
  *     database.
  */
-public abstract class GroupedDirectoryObjectService<InternalType extends GroupedDirectoryObject<ModelType>,
+public abstract class ModeledGroupedDirectoryObjectService<InternalType extends ModeledGroupedDirectoryObject<ModelType>,
         ExternalType, ModelType extends GroupedObjectModel>
-        extends DirectoryObjectService<InternalType, ExternalType, ModelType> {
+        extends ModeledDirectoryObjectService<InternalType, ExternalType, ModelType> {
 
     /**
      * Returns the set of parent connection groups that are modified by the

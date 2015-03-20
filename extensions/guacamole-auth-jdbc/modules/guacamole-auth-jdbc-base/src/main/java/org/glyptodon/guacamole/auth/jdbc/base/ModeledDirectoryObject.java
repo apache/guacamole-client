@@ -26,14 +26,15 @@ import org.glyptodon.guacamole.net.auth.Identifiable;
 
 /**
  * Common base class for objects that will ultimately be made available through
- * the Directory class. All such objects will need the same base set of queries
- * to fulfill the needs of the Directory class.
+ * the Directory class and are persisted to an underlying database model. All
+ * such objects will need the same base set of queries to fulfill the needs of
+ * the Directory class.
  *
  * @author Michael Jumper
  * @param <ModelType>
  *     The type of model object that corresponds to this object.
  */
-public abstract class DirectoryObject<ModelType extends ObjectModel>
+public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
     extends ModeledObject<ModelType> implements Identifiable {
 
     @Override

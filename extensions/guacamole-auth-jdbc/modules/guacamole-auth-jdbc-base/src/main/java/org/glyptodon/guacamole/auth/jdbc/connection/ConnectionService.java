@@ -32,12 +32,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -55,7 +55,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionService extends GroupedDirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
+public class ConnectionService extends ModeledGroupedDirectoryObjectService<ModeledConnection, Connection, ConnectionModel> {
 
     /**
      * Mapper for accessing connections.
@@ -94,7 +94,7 @@ public class ConnectionService extends GroupedDirectoryObjectService<ModeledConn
     private GuacamoleTunnelService tunnelService;
     
     @Override
-    protected DirectoryObjectMapper<ConnectionModel> getObjectMapper() {
+    protected ModeledDirectoryObjectMapper<ConnectionModel> getObjectMapper() {
         return connectionMapper;
     }
 

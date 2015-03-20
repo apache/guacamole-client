@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.auth.jdbc.user;
 
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.ibatis.annotations.Param;
  *
  * @author Michael Jumper
  */
-public interface UserMapper extends DirectoryObjectMapper<UserModel> {
+public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
 
     /**
      * Returns the user having the given username, if any. If no such user

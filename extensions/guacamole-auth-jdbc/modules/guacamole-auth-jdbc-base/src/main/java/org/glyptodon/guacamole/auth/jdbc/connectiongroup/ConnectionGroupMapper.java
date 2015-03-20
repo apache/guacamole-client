@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
 import java.util.Set;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
 import org.apache.ibatis.annotations.Param;
 
@@ -32,7 +32,7 @@ import org.apache.ibatis.annotations.Param;
  *
  * @author Michael Jumper
  */
-public interface ConnectionGroupMapper extends DirectoryObjectMapper<ConnectionGroupModel> {
+public interface ConnectionGroupMapper extends ModeledDirectoryObjectMapper<ConnectionGroupModel> {
 
     /**
      * Selects the identifiers of all connection groups within the given parent

@@ -23,7 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObject;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObject;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
 import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
@@ -42,7 +42,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class ModeledUser extends DirectoryObject<UserModel> implements User {
+public class ModeledUser extends ModeledDirectoryObject<UserModel> implements User {
 
     /**
      * Service for hashing passwords.
@@ -73,7 +73,7 @@ public class ModeledUser extends DirectoryObject<UserModel> implements User {
      */
     @Inject
     private ConnectionGroupPermissionService connectionGroupPermissionService;
-    
+
     /**
      * Service for retrieving user permissions.
      */

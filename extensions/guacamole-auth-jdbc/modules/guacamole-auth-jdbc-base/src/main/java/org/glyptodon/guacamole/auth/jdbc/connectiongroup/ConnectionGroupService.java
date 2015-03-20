@@ -26,13 +26,13 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
-import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObjectService;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObjectService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -49,7 +49,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class ConnectionGroupService extends GroupedDirectoryObjectService<ModeledConnectionGroup,
+public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService<ModeledConnectionGroup,
         ConnectionGroup, ConnectionGroupModel> {
 
     /**
@@ -77,7 +77,7 @@ public class ConnectionGroupService extends GroupedDirectoryObjectService<Modele
     private GuacamoleTunnelService tunnelService;
     
     @Override
-    protected DirectoryObjectMapper<ConnectionGroupModel> getObjectMapper() {
+    protected ModeledDirectoryObjectMapper<ConnectionGroupModel> getObjectMapper() {
         return connectionGroupMapper;
     }
 
