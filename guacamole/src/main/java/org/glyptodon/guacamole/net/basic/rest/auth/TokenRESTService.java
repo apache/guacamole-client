@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
 import java.io.UnsupportedEncodingException;
+import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
@@ -76,7 +77,53 @@ public class TokenRESTService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(TokenRESTService.class);
-    
+
+    /**
+     * Regular expression which matches any IPv4 address.
+     */
+    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
+
+    /**
+     * Regular expression which matches any IPv6 address.
+     */
+    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
+
+    /**
+     * Regular expression which matches any IP address, regardless of version.
+     */
+    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
+
+    /**
+     * Pattern which matches valid values of the de-facto standard
+     * "X-Forwarded-For" header.
+     */
+    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + "(, " + IP_ADDRESS_REGEX + ")*$");
+
+    /**
+     * Returns a formatted string containing an IP address, or list of IP
+     * addresses, which represent the HTTP client and any involved proxies. As
+     * the headers used to determine proxies can easily be forged, this data is
+     * superficially validated to ensure that it at least looks like a list of
+     * IPs.
+     *
+     * @param request
+     *     The HTTP request to format.
+     *
+     * @return
+     *     A formatted string containing one or more IP addresses.
+     */
+    private String getLoggableAddress(HttpServletRequest request) {
+
+        // Log X-Forwarded-For, if present and valid
+        String header = request.getHeader("X-Forwarded-For");
+        if (header != null && X_FORWARDED_FOR.matcher(header).matches())
+            return "[" + header + ", " + request.getRemoteAddr() + "]";
+
+        // If header absent or invalid, just use source IP
+        return request.getRemoteAddr();
+
+    }
+
     /**
      * Authenticates a user, generates an auth token, associates that auth token
      * with the user's UserContext for use by further requests. If an existing
@@ -160,8 +207,16 @@ public class TokenRESTService {
                 userContext = authProvider.updateUserContext(existingSession.getUserContext(), credentials);
 
             /// Otherwise, generate a new user context
-            else
+            else {
+
                 userContext = authProvider.getUserContext(credentials);
+
+                // Log successful authentication
+                if (userContext != null && logger.isInfoEnabled())
+                    logger.info("User \"{}\" successfully authenticated from {}.",
+                            userContext.self().getIdentifier(), getLoggableAddress(request));
+
+            }
 
         }
         catch(GuacamoleException e) {
@@ -171,8 +226,23 @@ public class TokenRESTService {
         }
         
         // Authentication failed.
-        if (userContext == null)
+        if (userContext == null) {
+
+            // Log authentication failures with associated usernames
+            if (username != null) {
+                if (logger.isWarnEnabled())
+                    logger.warn("Authentication attempt from {} for user \"{}\" failed.",
+                            getLoggableAddress(request), username);
+            }
+
+            // Log anonymous authentication failures
+            else if (logger.isDebugEnabled())
+                logger.debug("Anonymous authentication attempt from {} failed.",
+                        getLoggableAddress(request), username);
+
             throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
+
+        }
 
         // Update existing session, if it exists
         String authToken;
