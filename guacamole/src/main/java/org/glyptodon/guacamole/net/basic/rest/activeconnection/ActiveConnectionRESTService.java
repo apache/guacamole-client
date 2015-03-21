@@ -116,8 +116,8 @@ public class ActiveConnectionRESTService {
         // Filter users, if requested
         Collection<String> activeConnectionIdentifiers = activeConnectionDirectory.getIdentifiers();
         if (!isAdmin && permissions != null) {
-            ObjectPermissionSet userPermissions = self.getUserPermissions();
-            activeConnectionIdentifiers = userPermissions.getAccessibleObjects(permissions, activeConnectionIdentifiers);
+            ObjectPermissionSet activeConnectionPermissions = self.getActiveConnectionPermissions();
+            activeConnectionIdentifiers = activeConnectionPermissions.getAccessibleObjects(permissions, activeConnectionIdentifiers);
         }
             
         // Retrieve all active connections , converting to API active connections
