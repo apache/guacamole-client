@@ -28,7 +28,7 @@ import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
 import org.glyptodon.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
@@ -74,6 +74,12 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      */
     @Inject
     private ConnectionGroupPermissionService connectionGroupPermissionService;
+
+    /**
+     * Service for retrieving active connection permissions.
+     */
+    @Inject
+    private ActiveConnectionPermissionService activeConnectionPermissionService;
 
     /**
      * Service for retrieving user permissions.
@@ -164,7 +170,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     @Override
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("STUB");
+        return activeConnectionPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
     @Override

@@ -58,6 +58,8 @@ import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionSet;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionService;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.glyptodon.guacamole.environment.Environment;
@@ -124,6 +126,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
+        bind(ActiveConnectionPermissionSet.class);
         bind(Environment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);
@@ -142,6 +145,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         
         // Bind services
         bind(ActiveConnectionService.class);
+        bind(ActiveConnectionPermissionService.class);
         bind(ConnectionGroupPermissionService.class);
         bind(ConnectionGroupService.class);
         bind(ConnectionPermissionService.class);
