@@ -30,8 +30,6 @@ import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
-import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
 
@@ -54,7 +52,7 @@ import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
  */
 public abstract class ModeledPermissionService<PermissionSetType extends PermissionSet<PermissionType>,
         PermissionType extends Permission, ModelType>
-    implements PermissionService<PermissionSetType, PermissionType> {
+    extends AbstractPermissionService<PermissionSetType, PermissionType> {
 
     /**
      * Returns an instance of a mapper for the type of permission used by this
@@ -141,42 +139,6 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
             models.add(getModelInstance(targetUser, permission));
 
         return models;
-
-    }
-
-    /**
-     * Determines whether the given user can read the permissions currently
-     * granted to the given target user. If the reading user and the target
-     * user are not the same, then explicit READ or SYSTEM_ADMINISTER access is
-     * required.
-     *
-     * @param user
-     *     The user attempting to read permissions.
-     *
-     * @param targetUser
-     *     The user whose permissions are being read.
-     *
-     * @return
-     *     true if permission is granted, false otherwise.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while checking permission status, or if
-     *     permission is denied to read the current user's permissions.
-     */
-    protected boolean canReadPermissions(AuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
-
-        // A user can always read their own permissions
-        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier()))
-            return true;
-        
-        // A system adminstrator can do anything
-        if (user.getUser().isAdministrator())
-            return true;
-
-        // Can read permissions on target user if explicit READ is granted
-        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
-        return userPermissionSet.hasPermission(ObjectPermission.Type.READ, targetUser.getIdentifier());
 
     }
 
