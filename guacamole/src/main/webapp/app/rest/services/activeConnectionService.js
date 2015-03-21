@@ -33,17 +33,28 @@ angular.module('rest').factory('activeConnectionService', ['$http', 'authenticat
      * returning a promise that provides a map of @link{ActiveConnection}
      * objects if successful.
      *
+     * @param {String[]} [permissionTypes]
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for an active connection to appear in the
+     *     result.  If null, no filtering will be performed. Valid values are
+     *     listed within PermissionSet.ObjectType.
+     *                          
+
      * @returns {Promise.<Object.<String, ActiveConnection>>}
      *     A promise which will resolve with a map of @link{ActiveConnection}
      *     objects, where each key is the identifier of the corresponding
      *     active connection.
      */
-    service.getActiveConnections = function getActiveConnections() {
+    service.getActiveConnections = function getActiveConnections(permissionTypes) {
 
         // Build HTTP parameters set
         var httpParameters = {
             token : authenticationService.getCurrentToken()
         };
+
+        // Add permission filter if specified
+        if (permissionTypes)
+            httpParameters.permission = permissionTypes;
 
         // Retrieve tunnels
         return $http({
