@@ -28,9 +28,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -169,15 +169,9 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public Collection<ConnectionRecord> getActiveConnections()
+    public Directory<ActiveConnection> getActiveConnectionDirectory()
             throws GuacamoleException {
-        return Collections.EMPTY_LIST;
-    }
-
-    @Override
-    public Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUID)
-            throws GuacamoleException {
-        return Collections.EMPTY_LIST;
+        return new SimpleDirectory<ActiveConnection>();
     }
 
 }

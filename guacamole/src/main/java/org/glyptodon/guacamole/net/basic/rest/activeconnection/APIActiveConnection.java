@@ -20,22 +20,29 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest.tunnel;
+package org.glyptodon.guacamole.net.basic.rest.activeconnection;
 
 import java.util.Date;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.net.auth.ActiveConnection;
 
 /**
- * Tunnel-related information which may be exposed through the REST endpoints.
+ * Information related to active connections which may be exposed through the
+ * REST endpoints.
  * 
  * @author Michael Jumper
  */
-public class APITunnel {
+public class APIActiveConnection {
 
     /**
-     * The identifier of the connection associated with this tunnel.
+     * The identifier of the active connection itself.
      */
     private final String identifier;
+
+    /**
+     * The identifier of the connection associated with this
+     * active connection.
+     */
+    private final String connectionIdentifier;
     
     /**
      * The date and time the connection began.
@@ -53,26 +60,18 @@ public class APITunnel {
     private final String username;
 
     /**
-     * The UUID of the tunnel.
-     */
-    private final String uuid;
-    
-    /**
-     * Creates a new APITunnel, copying the information from the given
-     * connection record.
+     * Creates a new APIActiveConnection, copying the information from the given
+     * active connection.
      *
-     * @param record
-     *     The record to copy data from.
-     * 
-     * @param uuid
-     *     The UUID of the associated GuacamoleTunnel.
+     * @param connection
+     *     The active connection to copy data from.
      */
-    public APITunnel(ConnectionRecord record, String uuid) {
-        this.identifier = record.getIdentifier();
-        this.startDate  = record.getStartDate();
-        this.remoteHost = record.getRemoteHost();
-        this.username   = record.getUsername();
-        this.uuid       = uuid;
+    public APIActiveConnection(ActiveConnection connection) {
+        this.identifier           = connection.getIdentifier();
+        this.connectionIdentifier = connection.getConnectionIdentifier();
+        this.startDate            = connection.getStartDate();
+        this.remoteHost           = connection.getRemoteHost();
+        this.username             = connection.getUsername();
     }
 
     /**
@@ -81,8 +80,8 @@ public class APITunnel {
      * @return
      *     The identifier of the connection associated with this tunnel.
      */
-    public String getIdentifier() {
-        return identifier;
+    public String getConnectionIdentifier() {
+        return connectionIdentifier;
     }
     
     /**
@@ -117,14 +116,15 @@ public class APITunnel {
     }
 
     /**
-     * Returns the UUID of the underlying Guacamole tunnel. Absolutely every
-     * Guacamole tunnel has an associated UUID.
+     * Returns the identifier of the active connection itself. This is
+     * distinct from the connection identifier, and uniquely identifies a
+     * specific use of a connection.
      *
      * @return
-     *     The UUID of the underlying Guacamole tunnel.
+     *     The identifier of the active connection.
      */
-    public String getUUID() {
-        return uuid;
+    public String getIdentifier() {
+        return identifier;
     }
     
 }

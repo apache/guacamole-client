@@ -130,4 +130,10 @@ public class SimpleUser extends AbstractUser {
         return new SimpleObjectPermissionSet();
     }
 
+    @Override
+    public ObjectPermissionSet getActiveConnectionPermissions()
+            throws GuacamoleException {
+        return new SimpleObjectPermissionSet();
+    }
+
 }

@@ -94,6 +94,12 @@ public class UserRESTService {
 
     /**
      * The prefix of any path within an operation of a JSON patch which
+     * modifies the permissions of a user regarding a specific active connection.
+     */
+    private static final String ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX = "/activeConnectionPermissions/";
+
+    /**
+     * The prefix of any path within an operation of a JSON patch which
      * modifies the permissions of a user regarding another, specific user.
      */
     private static final String USER_PERMISSION_PATCH_PATH_PREFIX = "/userPermissions/";
@@ -503,10 +509,11 @@ public class UserRESTService {
             throw new GuacamoleResourceNotFoundException("No such user: \"" + username + "\"");
 
         // Permission patches for all types of permissions
-        PermissionSetPatch<ObjectPermission> connectionPermissionPatch      = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<ObjectPermission> userPermissionPatch            = new PermissionSetPatch<ObjectPermission>();
-        PermissionSetPatch<SystemPermission> systemPermissionPatch          = new PermissionSetPatch<SystemPermission>();
+        PermissionSetPatch<ObjectPermission> connectionPermissionPatch       = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> connectionGroupPermissionPatch  = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> activeConnectionPermissionPatch = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<ObjectPermission> userPermissionPatch             = new PermissionSetPatch<ObjectPermission>();
+        PermissionSetPatch<SystemPermission> systemPermissionPatch           = new PermissionSetPatch<SystemPermission>();
         
         // Apply all patch operations individually
         for (APIPatch<String> patch : patches) {
@@ -536,6 +543,19 @@ public class UserRESTService {
                 // Create and update corresponding permission
                 ObjectPermission permission = new ObjectPermission(type, identifier);
                 updatePermissionSet(patch.getOp(), connectionGroupPermissionPatch, permission);
+                
+            }
+
+            // Create active connection permission if path has active connection prefix
+            else if (path.startsWith(ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX)) {
+
+                // Get identifier and type from patch operation
+                String identifier = path.substring(ACTIVE_CONNECTION_PERMISSION_PATCH_PATH_PREFIX.length());
+                ObjectPermission.Type type = ObjectPermission.Type.valueOf(patch.getValue());
+
+                // Create and update corresponding permission
+                ObjectPermission permission = new ObjectPermission(type, identifier);
+                updatePermissionSet(patch.getOp(), activeConnectionPermissionPatch, permission);
                 
             }
 
@@ -573,6 +593,7 @@ public class UserRESTService {
         // Save the permission changes
         connectionPermissionPatch.apply(user.getConnectionPermissions());
         connectionGroupPermissionPatch.apply(user.getConnectionGroupPermissions());
+        activeConnectionPermissionPatch.apply(user.getActiveConnectionPermissions());
         userPermissionPatch.apply(user.getUserPermissions());
         systemPermissionPatch.apply(user.getSystemPermissions());
 

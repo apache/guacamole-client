@@ -93,6 +93,21 @@ public interface User extends Identifiable {
             throws GuacamoleException;
 
     /**
+     * Returns all permissions given to this user regarding currently-active
+     * connections.
+     *
+     * @return
+     *     An ObjectPermissionSet of all active connection permissions granted
+     *     to this user.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving permissions, or if reading all
+     *     permissions is not allowed.
+     */
+    ObjectPermissionSet getActiveConnectionPermissions()
+            throws GuacamoleException;
+
+    /**
      * Returns all user permissions given to this user.
      *
      * @return
