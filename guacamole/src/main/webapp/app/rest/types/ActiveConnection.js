@@ -21,34 +21,44 @@
  */
 
 /**
- * Service which defines the ActiveTunnel class.
+ * Service which defines the ActiveConnection class.
  */
-angular.module('rest').factory('ActiveTunnel', [function defineActiveTunnel() {
+angular.module('rest').factory('ActiveConnection', [function defineActiveConnection() {
             
     /**
      * The object returned by REST API calls when representing the data
-     * associated with an active tunnel. Each tunnel denotes an active
-     * connection, uniquely identified by the tunnel UUID.
+     * associated with an active connection. Each active connection is
+     * effectively a pairing of a connection and the user currently using it,
+     * along with other information.
      * 
      * @constructor
-     * @param {ActiveTunnel|Object} [template={}]
+     * @param {ActiveConnection|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     ActiveTunnel.
+     *     ActiveConnection.
      */
-    var ActiveTunnel = function ActiveTunnel(template) {
+    var ActiveConnection = function ActiveConnection(template) {
 
         // Use empty object by default
         template = template || {};
 
         /**
-         * The identifier of the connection associated with this tunnel.
-         *
+         * The identifier which uniquely identifies this specific active
+         * connection.
+         * 
          * @type String
          */
         this.identifier = template.identifier;
 
         /**
-         * The time that the tunnel began, in seconds since
+         * The identifier of the connection associated with this active
+         * connection.
+         *
+         * @type String
+         */
+        this.connectionIdentifier = template.connectionIdentifier;
+
+        /**
+         * The time that the connection began, in seconds since
          * 1970-01-01 00:00:00 UTC.
          *
          * @type Number 
@@ -56,28 +66,21 @@ angular.module('rest').factory('ActiveTunnel', [function defineActiveTunnel() {
         this.startDate = template.startDate;
 
         /**
-         * The remote host that initiated the tunnel, if known.
+         * The remote host that initiated the connection, if known.
          *
          * @type String
          */
         this.remoteHost = template.remoteHost;
 
         /**
-         * The username of the user associated with the tunnel.
+         * The username of the user associated with the connection.
          * 
          * @type String
          */
         this.username = template.username;
 
-        /**
-         * The UUID which uniquely identifies the tunnel.
-         * 
-         * @type String
-         */
-        this.uuid = template.uuid;
-
     };
 
-    return ActiveTunnel;
+    return ActiveConnection;
 
 }]);

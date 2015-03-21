@@ -21,30 +21,30 @@
  */
 
 /**
- * A service for defining the ActiveTunnelWrapper class.
+ * A service for defining the ActiveConnectionWrapper class.
  */
-angular.module('manage').factory('ActiveTunnelWrapper', [
-    function defineActiveTunnelWrapper() {
+angular.module('manage').factory('ActiveConnectionWrapper', [
+    function defineActiveConnectionWrapper() {
 
     /**
-     * Wrapper for ActiveTunnel which adds display-specific
+     * Wrapper for ActiveConnection which adds display-specific
      * properties, such as a checked option.
      * 
      * @constructor
-     * @param {ActiveTunnel} activeTunnel
-     *     The ActiveTunnel to wrap.
+     * @param {ActiveConnection} activeConnection
+     *     The ActiveConnection to wrap.
      */
-    var ActiveTunnelWrapper = function ActiveTunnelWrapper(activeTunnel) {
+    var ActiveConnectionWrapper = function ActiveConnectionWrapper(activeConnection) {
 
         /**
-         * The wrapped ActiveTunnel.
+         * The wrapped ActiveConnection.
          *
-         * @type ActiveTunnel
+         * @type ActiveConnection
          */
-        this.tunnel = activeTunnel;
+        this.activeConnection = activeConnection;
 
         /**
-         * A flag indicating that the tunnel has been selected.
+         * A flag indicating that the active connection has been selected.
          *
          * @type Boolean
          */
@@ -52,6 +52,6 @@ angular.module('manage').factory('ActiveTunnelWrapper', [
 
     };
 
-    return ActiveTunnelWrapper;
+    return ActiveConnectionWrapper;
 
 }]);
