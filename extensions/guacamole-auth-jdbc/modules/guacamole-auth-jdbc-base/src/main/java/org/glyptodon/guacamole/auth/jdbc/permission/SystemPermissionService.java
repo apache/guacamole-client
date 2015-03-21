@@ -40,7 +40,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
  * @author Michael Jumper
  */
 public class SystemPermissionService
-    extends PermissionService<SystemPermissionSet, SystemPermission, SystemPermissionModel> {
+    extends ModeledPermissionService<SystemPermissionSet, SystemPermission, SystemPermissionModel> {
 
     /**
      * Mapper for system-level permissions.

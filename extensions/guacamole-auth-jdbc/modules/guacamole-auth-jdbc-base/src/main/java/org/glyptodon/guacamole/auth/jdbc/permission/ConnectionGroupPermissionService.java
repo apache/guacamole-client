@@ -35,7 +35,7 @@ import org.glyptodon.guacamole.auth.jdbc.user.ModeledUser;
  *
  * @author Michael Jumper
  */
-public class ConnectionGroupPermissionService extends ObjectPermissionService {
+public class ConnectionGroupPermissionService extends ModeledObjectPermissionService {
 
     /**
      * Mapper for connection group permissions.
