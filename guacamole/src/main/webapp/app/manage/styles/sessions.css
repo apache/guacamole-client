@@ -31,6 +31,7 @@
 
 .manage table.session-list th {
     background: rgba(0, 0, 0, 0.125);
+    font-weight: normal;
 }
 
 .manage table.session-list th,
@@ -53,13 +54,25 @@
 }
 
 .manage table.session-list th.sort-primary {
-    text-decoration: underline;
+    font-weight: bold;
+    padding-right: 0;
 }
 
 .manage table.session-list th.sort-primary:after {
-    content: ' \25be';
+
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    content: ' ';
+
+    background-size: 1em 1em;
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image: url('images/arrows/down.png');
+
 }
 
 .manage table.session-list th.sort-primary.sort-descending:after {
-    content: ' \25b2';
+    background-image: url('images/arrows/up.png');
 }
