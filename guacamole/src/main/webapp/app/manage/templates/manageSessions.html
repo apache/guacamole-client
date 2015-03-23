@@ -41,10 +41,18 @@ THE SOFTWARE.
             <thead>
                 <tr>
                     <th class="select-session"></th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}</th>
+                    <th ng-class="{'sort-primary': sortedByUsername(), 'sort-descending': wrapperOrder.descending}">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': sortedByStartDate(), 'sort-descending': wrapperOrder.descending}">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': sortedByRemoteHost(), 'sort-descending': wrapperOrder.descending}">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': sortedByConnectionName(), 'sort-descending': wrapperOrder.descending}">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                    </th>
                 </tr>
             </thead>
             <tbody>

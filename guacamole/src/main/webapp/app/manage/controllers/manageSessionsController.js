@@ -202,6 +202,50 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     };
 
     /**
+     * Returns whether the wrapped session list is sorted by username.
+     *
+     * @returns {Boolean}
+     *     true if the wrapped session list is sorted by username, false
+     *     otherwise.
+     */
+    $scope.sortedByUsername = function sortedByUsername() {
+        return $scope.wrapperOrder.primary === 'activeConnection.username';
+    };
+
+    /**
+     * Returns whether the wrapped session list is sorted by start date.
+     *
+     * @returns {Boolean}
+     *     true if the wrapped session list is sorted by start date, false
+     *     otherwise.
+     */
+    $scope.sortedByStartDate = function sortedByStartDate() {
+        return $scope.wrapperOrder.primary === 'activeConnection.startDate';
+    };
+
+    /**
+     * Returns whether the wrapped session list is sorted by remote host.
+     *
+     * @returns {Boolean}
+     *     true if the wrapped session list is sorted by remote host, false
+     *     otherwise.
+     */
+    $scope.sortedByRemoteHost = function sortedByRemoteHost() {
+        return $scope.wrapperOrder.primary === 'activeConnection.remoteHost';
+    };
+
+    /**
+     * Returns whether the wrapped session list is sorted by connection name.
+     *
+     * @returns {Boolean}
+     *     true if the wrapped session list is sorted by connection name, false
+     *     otherwise.
+     */
+    $scope.sortedByConnectionName = function sortedByConnectionName() {
+        return $scope.wrapperOrder.primary === 'name';
+    };
+
+    /**
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
      */

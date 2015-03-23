@@ -43,3 +43,15 @@
     min-width: 2em;
     text-align: center;
 }
+
+.manage table.session-list th.sort-primary {
+    text-decoration: underline;
+}
+
+.manage table.session-list th.sort-primary:after {
+    content: ' \25be';
+}
+
+.manage table.session-list th.sort-primary.sort-descending:after {
+    content: ' \25b2';
+}
