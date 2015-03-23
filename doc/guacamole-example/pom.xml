@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-example</artifactId>
     <packaging>war</packaging>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
     <name>guacamole-example</name>
     <url>http://guac-dev.org/</url>
 
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.4</version>
+            <version>0.9.6</version>
             <scope>compile</scope>
         </dependency>
 

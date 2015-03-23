@@ -7,7 +7,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-auth-jdbc</artifactId>
     <packaging>pom</packaging>
-    <version>0.9.5</version>
+    <version>0.9.6</version>
     <name>guacamole-auth-jdbc</name>
     <url>http://guac-dev.org/</url>
 
@@ -62,7 +62,7 @@
             <dependency>
                 <groupId>org.glyptodon.guacamole</groupId>
                 <artifactId>guacamole-ext</artifactId>
-                <version>0.9.5</version>
+                <version>0.9.6</version>
                 <scope>provided</scope>
             </dependency>
 
