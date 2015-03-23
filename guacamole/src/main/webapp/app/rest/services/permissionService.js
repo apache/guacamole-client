@@ -153,6 +153,10 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
         addObjectPatchOperations(patch, operation, "/connectionGroupPermissions",
             permissions.connectionGroupPermissions);
 
+        // Add active connection permission operations to patch
+        addObjectPatchOperations(patch, operation, "/activeConnectionPermissions",
+            permissions.activeConnectionPermissions);
+
         // Add user permission operations to patch
         addObjectPatchOperations(patch, operation, "/userPermissions",
             permissions.userPermissions);

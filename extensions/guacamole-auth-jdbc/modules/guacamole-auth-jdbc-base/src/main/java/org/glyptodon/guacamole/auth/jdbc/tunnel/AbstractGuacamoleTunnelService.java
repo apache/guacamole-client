@@ -49,7 +49,6 @@ import org.glyptodon.guacamole.net.GuacamoleSocket;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -100,8 +99,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * All active connections through the tunnel having a given UUID.
      */
-    private final Map<String, ConnectionRecord> activeTunnels =
-            new ConcurrentHashMap<String, ConnectionRecord>();
+    private final Map<String, ActiveConnectionRecord> activeTunnels =
+            new ConcurrentHashMap<String, ActiveConnectionRecord>();
     
     /**
      * All active connections to a connection having a given identifier.
@@ -446,7 +445,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     @Override
-    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+    public Collection<ActiveConnectionRecord> getActiveConnections(AuthenticatedUser user)
         throws GuacamoleException {
 
         // Only administrators may see all active connections
@@ -458,7 +457,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     @Override
-    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+    public ActiveConnectionRecord getActiveConnection(AuthenticatedUser user,
             String tunnelUUID) throws GuacamoleException {
 
         // Only administrators may see all active connections
@@ -482,7 +481,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     @Override
-    public Collection<ConnectionRecord> getActiveConnections(Connection connection) {
+    public Collection<ActiveConnectionRecord> getActiveConnections(Connection connection) {
         return activeConnections.get(connection.getIdentifier());
     }
 
@@ -507,7 +506,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     @Override
-    public Collection<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup) {
+    public Collection<ActiveConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup) {
 
         // If not a balancing group, assume no connections
         if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)

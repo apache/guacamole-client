@@ -95,4 +95,10 @@ public class APIUserWrapper implements User {
         throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
     }
 
+    @Override
+    public ObjectPermissionSet getActiveConnectionPermissions()
+            throws GuacamoleException {
+        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+    }
+
 }

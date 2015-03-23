@@ -22,7 +22,6 @@
 
 package org.glyptodon.guacamole.net.auth;
 
-import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 
 /**
@@ -84,6 +83,21 @@ public interface UserContext {
             throws GuacamoleException;
 
     /**
+     * Retrieves a Directory which can be used to view and manipulate
+     * active connections, but only as allowed by the permissions given to the
+     * user.
+     *
+     * @return
+     *     A Directory whose operations are bound by the permissions of the
+     *     user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the Directory.
+     */
+    Directory<ActiveConnection> getActiveConnectionDirectory()
+            throws GuacamoleException;
+
+    /**
      * Retrieves a connection group which can be used to view and manipulate
      * connections, but only as allowed by the permissions given to the user of 
      * this UserContext.
@@ -95,42 +109,5 @@ public interface UserContext {
      *                            Directory.
      */
     ConnectionGroup getRootConnectionGroup() throws GuacamoleException;
-
-    /**
-     * Returns a collection of connection records associated with all active
-     * connections to which the current user has access. For an administrative
-     * user, this may include connections associated with other users.
-     *
-     * @return
-     *     A collection of all connection records associated with active
-     *     connections to which the current user has access.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading active connection records, or if
-     *     permission is denied.
-     */
-    Collection<ConnectionRecord> getActiveConnections()
-            throws GuacamoleException;
-
-    /**
-     * Returns the connection records associated with the active connections
-     * having the tunnels with the given UUIDs. An active connection will only
-     * be returned if the current user has access.
-     *
-     * @param tunnelUUIDs
-     *     The UUIDs of the tunnels whose associated connection records should
-     *     be returned.
-     *
-     * @return
-     *     A collection of all connection records associated with the active
-     *     connections having the tunnels with the given UUIDs, if any, or an
-     *     empty collection if no such connections exist.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading active connection records, or if
-     *     permission is denied.
-     */
-    Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUIDs)
-            throws GuacamoleException;
 
 }

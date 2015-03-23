@@ -165,11 +165,6 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
-    public String getIdentifier() {
-        return connection.getIdentifier();
-    }
-    
-    @Override
     public Date getStartDate() {
         return startDate;
     }
@@ -200,7 +195,14 @@ public class ActiveConnectionRecord implements ConnectionRecord {
         
     }
 
-    @Override
+    /**
+     * Returns the GuacamoleTunnel currently associated with the active
+     * connection represented by this connection record.
+     *
+     * @return
+     *     The GuacamoleTunnel currently associated with the active connection
+     *     represented by this connection record.
+     */
     public GuacamoleTunnel getTunnel() {
         return tunnel;
     }

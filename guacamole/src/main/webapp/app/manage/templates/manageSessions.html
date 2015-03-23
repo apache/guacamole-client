@@ -52,10 +52,10 @@ THE SOFTWARE.
                     <td class="select-session">
                         <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
                     </td>
-                    <td>{{wrapper.tunnel.username}}</td>
-                    <td>{{wrapper.tunnel.startDate | date:'short'}}</td>
-                    <td>{{wrapper.tunnel.remoteHost}}</td>
-                    <td>{{connections[wrapper.tunnel.identifier].name}}</td>
+                    <td>{{wrapper.activeConnection.username}}</td>
+                    <td>{{wrapper.activeConnection.startDate | date:'short'}}</td>
+                    <td>{{wrapper.activeConnection.remoteHost}}</td>
+                    <td>{{connections[wrapper.activeConnection.connectionIdentifier].name}}</td>
                 </tr>
             </tbody>
         </table>

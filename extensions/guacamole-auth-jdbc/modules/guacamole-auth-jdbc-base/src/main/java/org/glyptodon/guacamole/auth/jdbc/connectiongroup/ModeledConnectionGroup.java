@@ -27,7 +27,7 @@ import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.auth.jdbc.base.GroupedDirectoryObject;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
@@ -38,7 +38,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
  *
  * @author James Muehlner
  */
-public class ModeledConnectionGroup extends GroupedDirectoryObject<ConnectionGroupModel>
+public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<ConnectionGroupModel>
     implements ConnectionGroup {
 
     /**

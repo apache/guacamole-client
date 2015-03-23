@@ -33,8 +33,8 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
  * @param <ModelType>
  *     The type of model object that corresponds to this object.
  */
-public abstract class GroupedDirectoryObject<ModelType extends GroupedObjectModel>
-    extends DirectoryObject<ModelType> {
+public abstract class ModeledGroupedDirectoryObject<ModelType extends GroupedObjectModel>
+    extends ModeledDirectoryObject<ModelType> {
 
     /**
      * Returns the identifier of the parent connection group, which cannot be

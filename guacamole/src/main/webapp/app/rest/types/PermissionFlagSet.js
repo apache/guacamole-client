@@ -91,6 +91,25 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
         };
 
         /**
+         * The granted state of each permission for each active connection, as
+         * a map of object permission type string to permission map. The
+         * permission map is, in turn, a map of active connection identifier to
+         * boolean value. A particular permission is granted if its
+         * corresponding boolean value is set to true. Valid permission type
+         * strings are defined within PermissionSet.ObjectPermissionType.
+         * Permissions which are not granted may be set to false, but this is
+         * not required.
+         * 
+         * @type Object.<String, Object.<String, Boolean>>
+         */
+        this.activeConnectionPermissions = template.activeConnectionPermissions || {
+            'READ'       : {},
+            'UPDATE'     : {},
+            'DELETE'     : {},
+            'ADMINISTER' : {}
+        };
+
+        /**
          * The granted state of each permission for each user, as a map of
          * object permission type string to permission map. The permission map
          * is, in turn, a map of username to boolean value. A particular
@@ -110,6 +129,20 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
 
     };
 
+    /**
+     * Iterates through all permissions in the given permission map, setting
+     * the corresponding permission flags in the given permission flag map.
+     *
+     * @param {Object.<String, String[]>} permMap
+     *     Map of object identifiers to the set of granted permissions. Each
+     *     permission is represented by a string listed within
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {Object.<String, Object.<String, Boolean>>} flagMap
+     *     Map of permission type strings to identifier/flag pairs representing
+     *     whether the permission of that type is granted for the object having
+     *     having the associated identifier.
+     */
     var addObjectPermissions = function addObjectPermissions(permMap, flagMap) {
 
         // For each defined identifier in the permission map
@@ -157,6 +190,9 @@ angular.module('rest').factory('PermissionFlagSet', ['PermissionSet',
 
         // Add all granted connection group permissions
         addObjectPermissions(permissionSet.connectionGroupPermissions, permissionFlagSet.connectionGroupPermissions);
+
+        // Add all granted active connection permissions
+        addObjectPermissions(permissionSet.activeConnectionPermissions, permissionFlagSet.activeConnectionPermissions);
 
         // Add all granted user permissions
         addObjectPermissions(permissionSet.userPermissions, permissionFlagSet.userPermissions);

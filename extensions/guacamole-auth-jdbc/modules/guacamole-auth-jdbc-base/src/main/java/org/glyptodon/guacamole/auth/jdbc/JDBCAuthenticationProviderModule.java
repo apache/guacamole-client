@@ -57,6 +57,11 @@ import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionSet;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionSet;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionService;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.glyptodon.guacamole.environment.Environment;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -120,6 +125,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(UserPermissionMapper.class);
         
         // Bind core implementations of guacamole-ext classes
+        bind(ActiveConnectionDirectory.class);
+        bind(ActiveConnectionPermissionSet.class);
         bind(Environment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);
@@ -131,11 +138,14 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ModeledUser.class);
         bind(RootConnectionGroup.class);
         bind(SystemPermissionSet.class);
+        bind(TrackedActiveConnection.class);
         bind(UserContext.class);
         bind(UserDirectory.class);
         bind(UserPermissionSet.class);
         
         // Bind services
+        bind(ActiveConnectionService.class);
+        bind(ActiveConnectionPermissionService.class);
         bind(ConnectionGroupPermissionService.class);
         bind(ConnectionGroupService.class);
         bind(ConnectionPermissionService.class);

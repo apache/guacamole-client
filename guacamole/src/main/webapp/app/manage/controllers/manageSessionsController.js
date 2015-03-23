@@ -27,15 +27,15 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
         function manageSessionsController($scope, $injector) {
 
     // Required types
-    var ActiveTunnelWrapper = $injector.get('ActiveTunnelWrapper');
-    var ConnectionGroup     = $injector.get('ConnectionGroup');
+    var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
+    var ConnectionGroup         = $injector.get('ConnectionGroup');
 
     // Required services
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var guacNotification       = $injector.get('guacNotification');
-    var permissionService      = $injector.get('permissionService');
-    var tunnelService          = $injector.get('tunnelService');
+    var activeConnectionService = $injector.get('activeConnectionService');
+    var authenticationService   = $injector.get('authenticationService');
+    var connectionGroupService  = $injector.get('connectionGroupService');
+    var guacNotification        = $injector.get('guacNotification');
+    var permissionService       = $injector.get('permissionService');
 
     /**
      * The root connection group of the connection group hierarchy.
@@ -53,10 +53,10 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.permissions = null;
 
     /**
-     * The ActiveTunnelWrappers of all active sessions accessible by the current 
-     * user, or null if the tunnels have not yet been loaded.
+     * The ActiveConnectionWrappers of all active sessions accessible by the
+     * current user, or null if the active sessions have not yet been loaded.
      *
-     * @type ActiveTunnelWrapper[]
+     * @type ActiveConnectionWrapper[]
      */
     $scope.wrappers = null;
 
@@ -74,9 +74,9 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.connections = {};
     
     /**
-     * Map of all currently-selected tunnel wrappers by UUID.
+     * Map of all currently-selected active connection wrappers by identifier.
      * 
-     * @type Object.<String, ActiveTunnelWrapper>
+     * @type Object.<String, ActiveConnectionWrapper>
      */
     var selectedWrappers = {};
 
@@ -122,12 +122,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     });
     
     // Query active sessions
-    tunnelService.getActiveTunnels().success(function sessionsRetrieved(tunnels) {
+    activeConnectionService.getActiveConnections().success(function sessionsRetrieved(activeConnections) {
         
-        // Wrap all active tunnels for sake of display
+        // Wrap all active connections for sake of display
         $scope.wrappers = [];
-        for (var tunnelUUID in tunnels) {
-            $scope.wrappers.push(new ActiveTunnelWrapper(tunnels[tunnelUUID])); 
+        for (var identifier in activeConnections) {
+            $scope.wrappers.push(new ActiveConnectionWrapper(activeConnections[identifier])); 
         }
         
     });
@@ -192,12 +192,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var deleteSessionsImmediately = function deleteSessionsImmediately() {
 
         // Perform deletion
-        tunnelService.deleteActiveTunnels(Object.keys(selectedWrappers))
-        .success(function tunnelsDeleted() {
+        activeConnectionService.deleteActiveConnections(Object.keys(selectedWrappers))
+        .success(function activeConnectionsDeleted() {
 
-            // Remove deleted tunnels from wrapper array
-            $scope.wrappers = $scope.wrappers.filter(function tunnelStillExists(wrapper) {
-                return !(wrapper.tunnel.uuid in selectedWrappers);
+            // Remove deleted connections from wrapper array
+            $scope.wrappers = $scope.wrappers.filter(function activeConnectionStillExists(wrapper) {
+                return !(wrapper.activeConnection.identifier in selectedWrappers);
             });
 
             // Clear selection
@@ -206,7 +206,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
         })
 
         // Notify of any errors
-        .error(function tunnelDeletionFailed(error) {
+        .error(function activeConnectionDeletionFailed(error) {
             guacNotification.showStatus({
                 'className'  : 'error',
                 'title'      : 'MANAGE_SESSION.DIALOG_HEADER_ERROR',
@@ -239,7 +239,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.canDeleteSessions = function canDeleteSessions() {
 
         // We can delete sessions if at least one is selected
-        for (var tunnelUUID in selectedWrappers)
+        for (var identifier in selectedWrappers)
             return true;
 
         return false;
@@ -247,20 +247,20 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     };
     
     /**
-     * Called whenever a tunnel wrapper changes selected status.
+     * Called whenever an active connection wrapper changes selected status.
      * 
-     * @param {ActiveTunnelWrapper} wrapper
+     * @param {ActiveConnectionWrapper} wrapper
      *     The wrapper whose selected status has changed.
      */
     $scope.wrapperSelectionChange = function wrapperSelectionChange(wrapper) {
 
         // Add wrapper to map if selected
         if (wrapper.checked)
-            selectedWrappers[wrapper.tunnel.uuid] = wrapper;
+            selectedWrappers[wrapper.activeConnection.identifier] = wrapper;
 
         // Otherwise, remove wrapper from map
         else
-            delete selectedWrappers[wrapper.tunnel.uuid];
+            delete selectedWrappers[wrapper.activeConnection.identifier];
 
     };
 

@@ -20,28 +20,38 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.user;
-
-import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.ibatis.annotations.Param;
-
 /**
- * Mapper for user objects.
- *
- * @author Michael Jumper
+ * A service for defining the ActiveConnectionWrapper class.
  */
-public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
+angular.module('manage').factory('ActiveConnectionWrapper', [
+    function defineActiveConnectionWrapper() {
 
     /**
-     * Returns the user having the given username, if any. If no such user
-     * exists, null is returned.
-     *
-     * @param username
-     *     The username of the user to return.
-     *
-     * @return
-     *     The user having the given username, or null if no such user exists.
+     * Wrapper for ActiveConnection which adds display-specific
+     * properties, such as a checked option.
+     * 
+     * @constructor
+     * @param {ActiveConnection} activeConnection
+     *     The ActiveConnection to wrap.
      */
-    UserModel selectOne(@Param("username") String username);
-    
-}
+    var ActiveConnectionWrapper = function ActiveConnectionWrapper(activeConnection) {
+
+        /**
+         * The wrapped ActiveConnection.
+         *
+         * @type ActiveConnection
+         */
+        this.activeConnection = activeConnection;
+
+        /**
+         * A flag indicating that the active connection has been selected.
+         *
+         * @type Boolean
+         */
+        this.checked = false;
+
+    };
+
+    return ActiveConnectionWrapper;
+
+}]);

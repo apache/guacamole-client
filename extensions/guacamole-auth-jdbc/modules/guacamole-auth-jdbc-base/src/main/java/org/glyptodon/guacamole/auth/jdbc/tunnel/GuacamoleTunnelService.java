@@ -30,7 +30,6 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 
 
@@ -57,7 +56,7 @@ public interface GuacamoleTunnelService {
      *     If an error occurs while retrieving all active connections, or if
      *     permission is denied.
      */
-    public Collection<ConnectionRecord> getActiveConnections(AuthenticatedUser user)
+    public Collection<ActiveConnectionRecord> getActiveConnections(AuthenticatedUser user)
             throws GuacamoleException;
 
     /**
@@ -80,7 +79,7 @@ public interface GuacamoleTunnelService {
      *     If an error occurs while retrieving all active connections, or if
      *     permission is denied.
      */
-    public ConnectionRecord getActiveConnection(AuthenticatedUser user,
+    public ActiveConnectionRecord getActiveConnection(AuthenticatedUser user,
             String tunnelUUID)
             throws GuacamoleException;
 
@@ -114,7 +113,7 @@ public interface GuacamoleTunnelService {
             throws GuacamoleException;
 
     /**
-     * Returns a connection containing connection records representing all
+     * Returns a collection containing connection records representing all
      * currently-active connections using the given connection. These records
      * will have usernames and start dates, but no end date, and will be
      * sorted in ascending order by start date.
@@ -126,7 +125,7 @@ public interface GuacamoleTunnelService {
      *     A collection containing connection records representing all
      *     currently-active connections.
      */
-    public Collection<ConnectionRecord> getActiveConnections(Connection connection);
+    public Collection<ActiveConnectionRecord> getActiveConnections(Connection connection);
 
     /**
      * Creates a socket for the given user which connects to the given
@@ -171,6 +170,6 @@ public interface GuacamoleTunnelService {
      *     A collection containing connection records representing all
      *     currently-active connections.
      */
-    public Collection<ConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
+    public Collection<ActiveConnectionRecord> getActiveConnections(ConnectionGroup connectionGroup);
 
 }

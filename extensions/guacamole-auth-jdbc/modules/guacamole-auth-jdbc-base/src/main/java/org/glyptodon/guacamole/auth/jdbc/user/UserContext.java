@@ -28,14 +28,12 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirector
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
-import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 
@@ -48,12 +46,6 @@ import org.glyptodon.guacamole.net.auth.User;
  */
 public class UserContext extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.UserContext {
-
-    /**
-     * Service for creating and tracking tunnels.
-     */
-    @Inject
-    private GuacamoleTunnelService tunnelService;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -77,6 +69,13 @@ public class UserContext extends RestrictedObject
     private ConnectionGroupDirectory connectionGroupDirectory;
 
     /**
+     * ActiveConnection directory restricted by the permissions of the user
+     * associated with this context.
+     */
+    @Inject
+    private ActiveConnectionDirectory activeConnectionDirectory;
+
+    /**
      * Provider for creating the root group.
      */
     @Inject
@@ -91,6 +90,7 @@ public class UserContext extends RestrictedObject
         userDirectory.init(currentUser);
         connectionDirectory.init(currentUser);
         connectionGroupDirectory.init(currentUser);
+        activeConnectionDirectory.init(currentUser);
 
     }
 
@@ -115,6 +115,12 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
+    public Directory<ActiveConnection> getActiveConnectionDirectory()
+            throws GuacamoleException {
+        return activeConnectionDirectory;
+    }
+
+    @Override
     public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
 
         // Build and return a root group for the current user
@@ -122,31 +128,6 @@ public class UserContext extends RestrictedObject
         rootGroup.init(getCurrentUser());
         return rootGroup;
 
-    }
-
-    @Override
-    public Collection<ConnectionRecord> getActiveConnections()
-            throws GuacamoleException {
-        return tunnelService.getActiveConnections(getCurrentUser());
-    }
-
-    @Override
-    public Collection<ConnectionRecord> getActiveConnections(Collection<String> tunnelUUIDs)
-            throws GuacamoleException {
-
-        // Look up active connections for each given tunnel UUID
-        Collection<ConnectionRecord> records = new ArrayList<ConnectionRecord>(tunnelUUIDs.size());
-        for (String tunnelUUID : tunnelUUIDs) {
-
-            // Add corresponding record only if it exists
-            ConnectionRecord record = tunnelService.getActiveConnection(getCurrentUser(), tunnelUUID);
-            if (record != null)
-                records.add(record);
-
-        }
-
-        return records;
-        
     }
 
 }

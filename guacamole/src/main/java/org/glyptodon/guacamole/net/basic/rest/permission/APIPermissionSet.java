@@ -57,6 +57,12 @@ public class APIPermissionSet {
             new HashMap<String, Set<ObjectPermission.Type>>();
 
     /**
+     * Map of active connection ID to the set of granted permissions.
+     */
+    private Map<String, Set<ObjectPermission.Type>> activeConnectionPermissions =
+            new HashMap<String, Set<ObjectPermission.Type>>();
+
+    /**
      * Map of user ID to the set of granted permissions.
      */
     private Map<String, Set<ObjectPermission.Type>> userPermissions =
@@ -149,10 +155,11 @@ public class APIPermissionSet {
     public APIPermissionSet(User user) throws GuacamoleException {
 
         // Add all permissions from the provided user
-        addSystemPermissions(systemPermissions,          user.getSystemPermissions());
-        addObjectPermissions(connectionPermissions,      user.getConnectionPermissions());
-        addObjectPermissions(connectionGroupPermissions, user.getConnectionGroupPermissions());
-        addObjectPermissions(userPermissions,            user.getUserPermissions());
+        addSystemPermissions(systemPermissions,           user.getSystemPermissions());
+        addObjectPermissions(connectionPermissions,       user.getConnectionPermissions());
+        addObjectPermissions(connectionGroupPermissions,  user.getConnectionGroupPermissions());
+        addObjectPermissions(activeConnectionPermissions, user.getActiveConnectionPermissions());
+        addObjectPermissions(userPermissions,             user.getUserPermissions());
         
     }
 
@@ -184,6 +191,21 @@ public class APIPermissionSet {
      */
     public Map<String, Set<ObjectPermission.Type>> getConnectionGroupPermissions() {
         return connectionGroupPermissions;
+    }
+
+    /**
+     * Returns a map of active connection IDs to the set of permissions granted
+     * for that active connection. If no permissions are granted to a particular
+     * active connection, its ID will not be present as a key in the map. This
+     * map is mutable, and changes to this map will affect the permission set
+     * directly.
+     *
+     * @return
+     *     A map of active connection IDs to the set of permissions granted for
+     *     that active connection.
+     */
+    public Map<String, Set<ObjectPermission.Type>> getActiveConnectionPermissions() {
+        return activeConnectionPermissions;
     }
 
     /**
@@ -236,6 +258,19 @@ public class APIPermissionSet {
      */
     public void setConnectionGroupPermissions(Map<String, Set<ObjectPermission.Type>> connectionGroupPermissions) {
         this.connectionGroupPermissions = connectionGroupPermissions;
+    }
+
+    /**
+     * Replaces the current map of active connection permissions with the give
+     * map, which must map active connection ID to its corresponding set of
+     * granted permissions. If an active connection has no permissions, its ID
+     * must not be present as a key in the map.
+     *
+     * @param activeConnectionPermissions
+     *     The map which must replace the currently-stored map of permissions.
+     */
+    public void setActiveConnectionPermissions(Map<String, Set<ObjectPermission.Type>> activeConnectionPermissions) {
+        this.activeConnectionPermissions = activeConnectionPermissions;
     }
 
     /**

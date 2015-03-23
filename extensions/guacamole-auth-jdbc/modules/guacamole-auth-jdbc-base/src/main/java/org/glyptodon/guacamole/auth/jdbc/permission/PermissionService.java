@@ -47,137 +47,9 @@ import org.glyptodon.guacamole.net.auth.permission.PermissionSet;
  *
  * @param <PermissionType>
  *     The type of permission this service provides access to.
- *
- * @param <ModelType>
- *     The underlying model object used to represent PermissionType in the
- *     database.
  */
-public abstract class PermissionService<PermissionSetType extends PermissionSet<PermissionType>,
-        PermissionType extends Permission, ModelType> {
-
-    /**
-     * Returns an instance of a mapper for the type of permission used by this
-     * service.
-     *
-     * @return
-     *     A mapper which provides access to the model objects associated with
-     *     the permissions used by this service.
-     */
-    protected abstract PermissionMapper<ModelType> getPermissionMapper();
-
-    /**
-     * Returns an instance of a permission which is based on the given model
-     * object.
-     *
-     * @param model
-     *     The model object to use to produce the returned permission.
-     *
-     * @return
-     *     A permission which is based on the given model object.
-     */
-    protected abstract PermissionType getPermissionInstance(ModelType model);
-
-    /**
-     * Returns a collection of permissions which are based on the models in
-     * the given collection.
-     *
-     * @param models
-     *     The model objects to use to produce the permissions within the
-     *     returned set.
-     *
-     * @return
-     *     A set of permissions which are based on the models in the given
-     *     collection.
-     */
-    protected Set<PermissionType> getPermissionInstances(Collection<ModelType> models) {
-
-        // Create new collection of permissions by manually converting each model
-        Set<PermissionType> permissions = new HashSet<PermissionType>(models.size());
-        for (ModelType model : models)
-            permissions.add(getPermissionInstance(model));
-
-        return permissions;
-        
-    }
-
-    /**
-     * Returns an instance of a model object which is based on the given
-     * permission and target user.
-     *
-     * @param targetUser
-     *     The user to whom this permission is granted.
-     *
-     * @param permission
-     *     The permission to use to produce the returned model object.
-     *
-     * @return
-     *     A model object which is based on the given permission and target
-     *     user.
-     */
-    protected abstract ModelType getModelInstance(ModeledUser targetUser,
-            PermissionType permission);
-    
-    /**
-     * Returns a collection of model objects which are based on the given
-     * permissions and target user.
-     *
-     * @param targetUser
-     *     The user to whom this permission is granted.
-     *
-     * @param permissions
-     *     The permissions to use to produce the returned model objects.
-     *
-     * @return
-     *     A collection of model objects which are based on the given
-     *     permissions and target user.
-     */
-    protected Collection<ModelType> getModelInstances(ModeledUser targetUser,
-            Collection<PermissionType> permissions) {
-
-        // Create new collection of models by manually converting each permission 
-        Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
-        for (PermissionType permission : permissions)
-            models.add(getModelInstance(targetUser, permission));
-
-        return models;
-
-    }
-
-    /**
-     * Determines whether the given user can read the permissions currently
-     * granted to the given target user. If the reading user and the target
-     * user are not the same, then explicit READ or SYSTEM_ADMINISTER access is
-     * required.
-     *
-     * @param user
-     *     The user attempting to read permissions.
-     *
-     * @param targetUser
-     *     The user whose permissions are being read.
-     *
-     * @return
-     *     true if permission is granted, false otherwise.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while checking permission status, or if
-     *     permission is denied to read the current user's permissions.
-     */
-    protected boolean canReadPermissions(AuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
-
-        // A user can always read their own permissions
-        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier()))
-            return true;
-        
-        // A system adminstrator can do anything
-        if (user.getUser().isAdministrator())
-            return true;
-
-        // Can read permissions on target user if explicit READ is granted
-        ObjectPermissionSet userPermissionSet = user.getUser().getUserPermissions();
-        return userPermissionSet.hasPermission(ObjectPermission.Type.READ, targetUser.getIdentifier());
-
-    }
+public interface PermissionService<PermissionSetType extends PermissionSet<PermissionType>,
+        PermissionType extends Permission> {
 
     /**
      * Returns a permission set that can be used to retrieve and manipulate the
@@ -200,7 +72,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     user, or if permission to retrieve the permissions of the given
      *     user is denied.
      */
-    public abstract PermissionSetType getPermissionSet(AuthenticatedUser user,
+    PermissionSetType getPermissionSet(AuthenticatedUser user,
             ModeledUser targetUser) throws GuacamoleException;
 
     /**
@@ -218,17 +90,8 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      * @throws GuacamoleException
      *     If an error occurs while retrieving the requested permissions.
      */
-    public Set<PermissionType> retrievePermissions(AuthenticatedUser user,
-            ModeledUser targetUser) throws GuacamoleException {
-
-        // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetUser))
-            return getPermissionInstances(getPermissionMapper().select(targetUser.getModel()));
-
-        // User cannot read this user's permissions
-        throw new GuacamoleSecurityException("Permission denied.");
-        
-    }
+    Set<PermissionType> retrievePermissions(AuthenticatedUser user,
+            ModeledUser targetUser) throws GuacamoleException;
 
     /**
      * Creates the given permissions within the database. If any permissions
@@ -247,8 +110,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     If the user lacks permission to create the permissions, or an error
      *     occurs while creating the permissions.
      */
-    public abstract void createPermissions(AuthenticatedUser user,
-            ModeledUser targetUser,
+    void createPermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
     /**
@@ -268,8 +130,7 @@ public abstract class PermissionService<PermissionSetType extends PermissionSet<
      *     If the user lacks permission to delete the permissions, or an error
      *     occurs while deleting the permissions.
      */
-    public abstract void deletePermissions(AuthenticatedUser user,
-            ModeledUser targetUser,
+    void deletePermissions(AuthenticatedUser user, ModeledUser targetUser,
             Collection<PermissionType> permissions) throws GuacamoleException;
 
 }

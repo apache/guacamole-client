@@ -20,38 +20,31 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.auth.jdbc.base;
+
+import org.glyptodon.guacamole.net.auth.Identifiable;
+
 /**
- * A service for defining the ActiveTunnelWrapper class.
+ * Common base class for objects that will ultimately be made available through
+ * the Directory class and are persisted to an underlying database model. All
+ * such objects will need the same base set of queries to fulfill the needs of
+ * the Directory class.
+ *
+ * @author Michael Jumper
+ * @param <ModelType>
+ *     The type of model object that corresponds to this object.
  */
-angular.module('manage').factory('ActiveTunnelWrapper', [
-    function defineActiveTunnelWrapper() {
+public abstract class ModeledDirectoryObject<ModelType extends ObjectModel>
+    extends ModeledObject<ModelType> implements Identifiable {
 
-    /**
-     * Wrapper for ActiveTunnel which adds display-specific
-     * properties, such as a checked option.
-     * 
-     * @constructor
-     * @param {ActiveTunnel} activeTunnel
-     *     The ActiveTunnel to wrap.
-     */
-    var ActiveTunnelWrapper = function ActiveTunnelWrapper(activeTunnel) {
+    @Override
+    public String getIdentifier() {
+        return getModel().getIdentifier();
+    }
 
-        /**
-         * The wrapped ActiveTunnel.
-         *
-         * @type ActiveTunnel
-         */
-        this.tunnel = activeTunnel;
+    @Override
+    public void setIdentifier(String identifier) {
+        getModel().setIdentifier(identifier);
+    }
 
-        /**
-         * A flag indicating that the tunnel has been selected.
-         *
-         * @type Boolean
-         */
-        this.checked = false;
-
-    };
-
-    return ActiveTunnelWrapper;
-
-}]);
+}

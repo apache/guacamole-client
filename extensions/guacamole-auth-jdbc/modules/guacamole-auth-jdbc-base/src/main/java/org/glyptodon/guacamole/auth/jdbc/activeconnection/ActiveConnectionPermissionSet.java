@@ -20,28 +20,29 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.auth.jdbc.user;
+package org.glyptodon.guacamole.auth.jdbc.activeconnection;
 
-import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.ibatis.annotations.Param;
+import com.google.inject.Inject;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionService;
+import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionSet;
 
 /**
- * Mapper for user objects.
+ * An implementation of ObjectPermissionSet which uses an injected service to
+ * query and manipulate the permissions associated with active connections.
  *
  * @author Michael Jumper
  */
-public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
+public class ActiveConnectionPermissionSet extends ObjectPermissionSet {
 
     /**
-     * Returns the user having the given username, if any. If no such user
-     * exists, null is returned.
-     *
-     * @param username
-     *     The username of the user to return.
-     *
-     * @return
-     *     The user having the given username, or null if no such user exists.
+     * Service for querying and manipulating active connection permissions.
      */
-    UserModel selectOne(@Param("username") String username);
+    @Inject
+    private ActiveConnectionPermissionService activeConnectionPermissionService;
     
+    @Override
+    protected ObjectPermissionService getObjectPermissionService() {
+        return activeConnectionPermissionService;
+    }
+ 
 }

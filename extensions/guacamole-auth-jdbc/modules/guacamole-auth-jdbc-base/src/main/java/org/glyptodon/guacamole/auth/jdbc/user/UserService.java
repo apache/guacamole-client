@@ -28,8 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import org.glyptodon.guacamole.net.auth.Credentials;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectMapper;
-import org.glyptodon.guacamole.auth.jdbc.base.DirectoryObjectService;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
@@ -49,7 +49,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  *
  * @author Michael Jumper, James Muehlner
  */
-public class UserService extends DirectoryObjectService<ModeledUser, User, UserModel> {
+public class UserService extends ModeledDirectoryObjectService<ModeledUser, User, UserModel> {
     
     /**
      * All user permissions which are implicitly granted to the new user upon
@@ -85,7 +85,7 @@ public class UserService extends DirectoryObjectService<ModeledUser, User, UserM
     private PasswordEncryptionService encryptionService;
 
     @Override
-    protected DirectoryObjectMapper<UserModel> getObjectMapper() {
+    protected ModeledDirectoryObjectMapper<UserModel> getObjectMapper() {
         return userMapper;
     }
 
