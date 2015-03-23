@@ -202,47 +202,37 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     };
 
     /**
-     * Returns whether the wrapped session list is sorted by username.
+     * Returns whether the wrapped session list is sorted by the given
+     * property.
+     *
+     * @param {String} property
+     *     The name of the property to check.
      *
      * @returns {Boolean}
-     *     true if the wrapped session list is sorted by username, false
-     *     otherwise.
+     *     true if the wrapped session list is sorted by the given property,
+     *     false otherwise.
      */
-    $scope.sortedByUsername = function sortedByUsername() {
-        return $scope.wrapperOrder.primary === 'activeConnection.username';
+    $scope.isSortedBy = function isSortedBy(property) {
+        return $scope.wrapperOrder.primary === property;
     };
 
     /**
-     * Returns whether the wrapped session list is sorted by start date.
+     * Sets the primary sorting property to the given property, if not already
+     * set. If already set, the ascending/descending sort order is toggled.
      *
-     * @returns {Boolean}
-     *     true if the wrapped session list is sorted by start date, false
-     *     otherwise.
+     * @param {String} property
+     *     The name of the property to assign as the primary sorting property.
      */
-    $scope.sortedByStartDate = function sortedByStartDate() {
-        return $scope.wrapperOrder.primary === 'activeConnection.startDate';
-    };
+    $scope.toggleSort = function toggleSort(property) {
 
-    /**
-     * Returns whether the wrapped session list is sorted by remote host.
-     *
-     * @returns {Boolean}
-     *     true if the wrapped session list is sorted by remote host, false
-     *     otherwise.
-     */
-    $scope.sortedByRemoteHost = function sortedByRemoteHost() {
-        return $scope.wrapperOrder.primary === 'activeConnection.remoteHost';
-    };
+        // Sort in ascending order by new property, if different
+        if (!$scope.isSortedBy(property))
+            $scope.wrapperOrder.reorder(property, false);
 
-    /**
-     * Returns whether the wrapped session list is sorted by connection name.
-     *
-     * @returns {Boolean}
-     *     true if the wrapped session list is sorted by connection name, false
-     *     otherwise.
-     */
-    $scope.sortedByConnectionName = function sortedByConnectionName() {
-        return $scope.wrapperOrder.primary === 'name';
+        // Otherwise, toggle sort order
+        else
+            $scope.wrapperOrder.reorder(property, !$scope.wrapperOrder.descending);
+
     };
 
     /**

@@ -44,6 +44,14 @@
     text-align: center;
 }
 
+.manage table.session-list th {
+    cursor: pointer;
+}
+
+.manage table.session-list th.select-session {
+    cursor: auto;
+}
+
 .manage table.session-list th.sort-primary {
     text-decoration: underline;
 }
