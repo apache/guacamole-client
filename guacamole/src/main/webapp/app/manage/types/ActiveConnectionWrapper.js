@@ -31,10 +31,20 @@ angular.module('manage').factory('ActiveConnectionWrapper', [
      * properties, such as a checked option.
      * 
      * @constructor
+     * @param {String} name
+     *     The display name of the active connection.
+     *
      * @param {ActiveConnection} activeConnection
      *     The ActiveConnection to wrap.
      */
-    var ActiveConnectionWrapper = function ActiveConnectionWrapper(activeConnection) {
+    var ActiveConnectionWrapper = function ActiveConnectionWrapper(name, activeConnection) {
+
+        /**
+         * The display name of this connection.
+         *
+         * @type String
+         */
+        this.name = name;
 
         /**
          * The wrapped ActiveConnection.

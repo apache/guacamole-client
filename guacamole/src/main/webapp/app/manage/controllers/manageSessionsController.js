@@ -29,6 +29,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
+    var StableSort              = $injector.get('StableSort');
 
     // Required services
     var activeConnectionService = $injector.get('activeConnectionService');
@@ -36,13 +37,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var connectionGroupService  = $injector.get('connectionGroupService');
     var guacNotification        = $injector.get('guacNotification');
     var permissionService       = $injector.get('permissionService');
-
-    /**
-     * The root connection group of the connection group hierarchy.
-     *
-     * @type ConnectionGroup
-     */
-    $scope.rootGroup = null;
 
     /**
      * All permissions associated with the current user, or null if the user's
@@ -60,19 +54,41 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      */
     $scope.wrappers = null;
 
-    // Query the user's permissions
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
-            .success(function permissionsReceived(permissions) {
-        $scope.permissions = permissions;
-    });
+    /**
+     * StableSort instance which maintains the sort order of the visible
+     * connection wrappers.
+     *
+     * @type StableSort
+     */
+    $scope.wrapperOrder = new StableSort([
+        'activeConnection.username',
+        'activeConnection.startDate',
+        'activeConnection.remoteHost',
+        'name'
+    ]);
+
+    /**
+     * The root connection group of the connection group hierarchy.
+     *
+     * @type ConnectionGroup
+     */
+    var rootGroup = null;
+
+    /**
+     * All active connections, if known, or null if active connections have not
+     * yet been loaded.
+     *
+     * @type ActiveConnection
+     */
+    var activeConnections = null;
 
     /**
      * Map of all visible connections by object identifier.
      *
      * @type Object.<String, Connection>
      */
-    $scope.connections = {};
-    
+    var connections = {};
+
     /**
      * Map of all currently-selected active connection wrappers by identifier.
      * 
@@ -90,7 +106,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var addConnection = function addConnection(connection) {
 
         // Add given connection to set of visible connections
-        $scope.connections[connection.identifier] = connection;
+        connections[connection.identifier] = connection;
 
     };
 
@@ -113,23 +129,62 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
             connectionGroup.childConnectionGroups.forEach(addDescendantConnections);
 
     };
-    
-    // Retrieve all connections 
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-    .success(function connectionGroupReceived(rootGroup) {
-        $scope.rootGroup = rootGroup;
-        addDescendantConnections($scope.rootGroup);
-    });
-    
-    // Query active sessions
-    activeConnectionService.getActiveConnections().success(function sessionsRetrieved(activeConnections) {
-        
+
+    /**
+     * Wraps all loaded active connections, storing the resulting array within
+     * the scope. If required data has not yet finished loading, this function
+     * has no effect.
+     */
+    var wrapActiveConnections = function wrapActiveConnections() {
+
+        // Abort if not all required data is available
+        if (!activeConnections || !connections)
+            return;
+
         // Wrap all active connections for sake of display
         $scope.wrappers = [];
         for (var identifier in activeConnections) {
-            $scope.wrappers.push(new ActiveConnectionWrapper(activeConnections[identifier])); 
+
+            var activeConnection = activeConnections[identifier];
+            var connection = connections[activeConnection.connectionIdentifier];
+
+            $scope.wrappers.push(new ActiveConnectionWrapper(
+                connection.name,
+                activeConnection
+            )); 
+
         }
-        
+
+    };
+
+    // Query the user's permissions
+    permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsReceived(retrievedPermissions) {
+        $scope.permissions = retrievedPermissions;
+    });
+
+    // Retrieve all connections 
+    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
+    .success(function connectionGroupReceived(retrievedRootGroup) {
+
+        // Load connections from retrieved group tree
+        rootGroup = retrievedRootGroup;
+        addDescendantConnections(rootGroup);
+
+        // Attempt to produce wrapped list of active connections
+        wrapActiveConnections();
+
+    });
+    
+    // Query active sessions
+    activeConnectionService.getActiveConnections().success(function sessionsRetrieved(retrievedActiveConnections) {
+
+        // Store received list
+        activeConnections = retrievedActiveConnections;
+
+        // Attempt to produce wrapped list of active connections
+        wrapActiveConnections();
+
     });
 
     /**
@@ -141,9 +196,8 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.wrappers             !== null
-            && $scope.permissions          !== null
-            && $scope.rootGroup            !== null;
+        return $scope.wrappers    !== null
+            && $scope.permissions !== null;
 
     };
 
