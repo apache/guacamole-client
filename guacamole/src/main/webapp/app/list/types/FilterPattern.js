@@ -23,7 +23,7 @@
 /**
  * A service for defining the FilterPattern class.
  */
-angular.module('manage').factory('FilterPattern', [
+angular.module('list').factory('FilterPattern', [
     function defineFilterPattern() {
 
     /**

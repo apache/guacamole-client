@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,17 @@
  * THE SOFTWARE.
  */
 
-/**
- * Module for displaying the contents of a connection group, allowing the user
- * to select individual connections or groups.
- */
-angular.module('groupList', ['list', 'rest']);
+.filter {
+    margin: 0.5em 0;
+}
+
+.filter .search-string {
+    background-image: url('images/magnifier.png');
+    background-repeat: no-repeat;
+    background-size: 1.75em;
+    background-position: 0.25em center;
+    padding: 0.5em;
+    padding-left: 2.25em;
+    width: 100%;
+    max-width: none;
+}

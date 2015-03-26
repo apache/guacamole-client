@@ -24,7 +24,7 @@
  * A directive which provides pagination controls, along with a paginated
  * subset of the elements of some given array.
  */
-angular.module('pager').directive('guacPager', [function guacPager() {
+angular.module('list').directive('guacPager', [function guacPager() {
 
     return {
         restrict: 'E',
@@ -64,7 +64,7 @@ angular.module('pager').directive('guacPager', [function guacPager() {
 
         },
 
-        templateUrl: 'app/pager/templates/guacPager.html',
+        templateUrl: 'app/list/templates/guacPager.html',
         controller: ['$scope', function guacPagerController($scope) {
 
             /**
@@ -265,7 +265,7 @@ angular.module('pager').directive('guacPager', [function guacPager() {
              *     pageNumbers array, false otherwise.
              */
             $scope.hasMorePagesBefore = function hasMorePagesBefore() {
-                var firstPageNumber = $scope.pageNumbers[0]
+                var firstPageNumber = $scope.pageNumbers[0];
                 return firstPageNumber !== $scope.firstPage;
             };
 

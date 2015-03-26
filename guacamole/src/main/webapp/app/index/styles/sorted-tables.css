@@ -20,7 +20,45 @@
  * THE SOFTWARE.
  */
 
-/**
- * Module for displaying the contents of a list, split into multiple pages.
- */
-angular.module('pager', []);
+table.sorted {
+    border-collapse: collapse;
+}
+
+table.sorted th {
+    background: rgba(0, 0, 0, 0.125);
+    font-weight: normal;
+}
+
+table.sorted th,
+table.sorted td {
+    border: 1px solid #AAA;
+    padding: 0.5em 1em;
+}
+
+table.sorted th.sortable {
+    cursor: pointer;
+}
+
+table.sorted th.sort-primary {
+    font-weight: bold;
+    padding-right: 0;
+}
+
+table.sorted th.sort-primary:after {
+
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    content: ' ';
+
+    background-size: 1em 1em;
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image: url('images/arrows/down.png');
+
+}
+
+table.sorted th.sort-primary.sort-descending:after {
+    background-image: url('images/arrows/up.png');
+}

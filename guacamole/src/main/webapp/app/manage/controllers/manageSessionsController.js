@@ -29,8 +29,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
-    var FilterPattern           = $injector.get('FilterPattern');
-    var StableSort              = $injector.get('StableSort');
+    var SortOrder               = $injector.get('SortOrder');
 
     // Required services
     var activeConnectionService = $injector.get('activeConnectionService');
@@ -56,26 +55,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.wrappers = null;
 
     /**
-     * The filter search string to use to restrict the displayed active sessions
-     *
-     * @type String
-     */
-    $scope.filterSearchString = null;
-
-    /**
-     * The pattern object to use when filtering active sessions.
-     *
-     * @type FilterPattern
-     */
-    $scope.filterPattern = new FilterPattern();
-
-    /**
-     * StableSort instance which maintains the sort order of the visible
+     * SortOrder instance which maintains the sort order of the visible
      * connection wrappers.
      *
-     * @type StableSort
+     * @type SortOrder
      */
-    $scope.wrapperOrder = new StableSort([
+    $scope.wrapperOrder = new SortOrder([
         'activeConnection.username',
         'activeConnection.startDate',
         'activeConnection.remoteHost',
@@ -211,40 +196,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     };
 
     /**
-     * Returns whether the wrapped session list is sorted by the given
-     * property.
-     *
-     * @param {String} property
-     *     The name of the property to check.
-     *
-     * @returns {Boolean}
-     *     true if the wrapped session list is sorted by the given property,
-     *     false otherwise.
-     */
-    $scope.isSortedBy = function isSortedBy(property) {
-        return $scope.wrapperOrder.primary === property;
-    };
-
-    /**
-     * Sets the primary sorting property to the given property, if not already
-     * set. If already set, the ascending/descending sort order is toggled.
-     *
-     * @param {String} property
-     *     The name of the property to assign as the primary sorting property.
-     */
-    $scope.toggleSort = function toggleSort(property) {
-
-        // Sort in ascending order by new property, if different
-        if (!$scope.isSortedBy(property))
-            $scope.wrapperOrder.reorder(property, false);
-
-        // Otherwise, toggle sort order
-        else
-            $scope.wrapperOrder.reorder(property, !$scope.wrapperOrder.descending);
-
-    };
-
-    /**
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
      */
@@ -361,9 +312,4 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
 
     };
     
-    // Recompile the filter pattern when changed
-    $scope.$watch('filterSearchString', function recompilePredicate(searchString) {
-        $scope.filterPattern.compile(searchString);
-    });
-
 }]);

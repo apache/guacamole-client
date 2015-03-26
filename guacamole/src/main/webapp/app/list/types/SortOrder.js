@@ -21,10 +21,10 @@
  */
 
 /**
- * A service for defining the StableSort class.
+ * A service for defining the SortOrder class.
  */
-angular.module('manage').factory('StableSort', [
-    function defineStableSort() {
+angular.module('list').factory('SortOrder', [
+    function defineSortOrder() {
 
     /**
      * Maintains a sorting predicate as required by the Angular orderBy filter.
@@ -35,14 +35,14 @@ angular.module('manage').factory('StableSort', [
      * @param {String[]} predicate
      *     The properties to sort by, in order of precidence.
      */
-    var StableSort = function StableSort(predicate) {
+    var SortOrder = function SortOrder(predicate) {
 
         /**
          * Reference to this instance.
          *
-         * @type StableSort
+         * @type SortOrder
          */
-        var stableSort = this;
+        var sortOrder = this;
 
         /**
          * The current sorting predicate.
@@ -91,25 +91,59 @@ angular.module('manage').factory('StableSort', [
             var descendingName = '-' + name;
 
             // Remove requested property from current predicate
-            stableSort.predicate = stableSort.predicate.filter(function notRequestedProperty(current) {
+            sortOrder.predicate = sortOrder.predicate.filter(function notRequestedProperty(current) {
                 return current !== ascendingName
                     && current !== descendingName;
             });
 
             // Add property to beginning of predicate
             if (descending)
-                stableSort.predicate.unshift(descendingName);
+                sortOrder.predicate.unshift(descendingName);
             else
-                stableSort.predicate.unshift(ascendingName);
+                sortOrder.predicate.unshift(ascendingName);
 
             // Update sorted state
-            stableSort.primary    = name;
-            stableSort.descending = !!descending;
+            sortOrder.primary    = name;
+            sortOrder.descending = !!descending;
+
+        };
+
+        /**
+         * Returns whether the sort order is primarily determined by the given
+         * property.
+         *
+         * @param {String} property
+         *     The name of the property to check.
+         *
+         * @returns {Boolean}
+         *     true if the sort order is primarily determined by the given
+         *     property, false otherwise.
+         */
+        this.isSortedBy = function isSortedBy(property) {
+            return sortOrder.primary === property;
+        };
+
+        /**
+         * Sets the primary sorting property to the given property, if not already
+         * set. If already set, the ascending/descending sort order is toggled.
+         *
+         * @param {String} property
+         *     The name of the property to assign as the primary sorting property.
+         */
+        this.togglePrimary = function togglePrimary(property) {
+
+            // Sort in ascending order by new property, if different
+            if (!sortOrder.isSortedBy(property))
+                sortOrder.reorder(property, false);
+
+            // Otherwise, toggle sort order
+            else
+                sortOrder.reorder(property, !sortOrder.descending);
 
         };
 
     };
 
-    return StableSort;
+    return SortOrder;
 
 }]);

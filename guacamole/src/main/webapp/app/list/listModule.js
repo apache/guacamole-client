@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  */
 
 /**
- * Module for displaying the contents of a connection group, allowing the user
- * to select individual connections or groups.
+ * Module for displaying, sorting, and filtering the contents of a list, split
+ * into multiple pages.
  */
-angular.module('groupList', ['list', 'rest']);
+angular.module('list', []);
