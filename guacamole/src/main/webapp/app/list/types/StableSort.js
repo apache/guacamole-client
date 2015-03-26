@@ -23,7 +23,7 @@
 /**
  * A service for defining the StableSort class.
  */
-angular.module('manage').factory('StableSort', [
+angular.module('list').factory('StableSort', [
     function defineStableSort() {
 
     /**

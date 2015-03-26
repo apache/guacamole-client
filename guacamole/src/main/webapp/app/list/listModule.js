@@ -21,6 +21,7 @@
  */
 
 /**
- * Module for displaying the contents of a list, split into multiple pages.
+ * Module for displaying, sorting, and filtering the contents of a list, split
+ * into multiple pages.
  */
 angular.module('list', []);
