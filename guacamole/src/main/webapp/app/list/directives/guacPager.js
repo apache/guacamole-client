@@ -265,7 +265,7 @@ angular.module('list').directive('guacPager', [function guacPager() {
              *     pageNumbers array, false otherwise.
              */
             $scope.hasMorePagesBefore = function hasMorePagesBefore() {
-                var firstPageNumber = $scope.pageNumbers[0]
+                var firstPageNumber = $scope.pageNumbers[0];
                 return firstPageNumber !== $scope.firstPage;
             };
 
