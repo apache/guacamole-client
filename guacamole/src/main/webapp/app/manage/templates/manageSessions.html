@@ -41,24 +41,20 @@ THE SOFTWARE.
                      placeholder="'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate"></guac-filter>
 
         <!-- List of current user sessions -->
-        <table class="session-list">
+        <table class="sorted session-list">
             <thead>
                 <tr>
                     <th class="select-session"></th>
-                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.username'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="wrapperOrder.toggleSort('activeConnection.username')">
+                    <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.username'">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.startDate'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="wrapperOrder.toggleSort('activeConnection.startDate')">
+                    <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.startDate'">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.remoteHost'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="wrapperOrder.toggleSort('activeConnection.remoteHost')">
+                    <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.remoteHost'">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('name'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="wrapperOrder.toggleSort('name')">
+                    <th guac-sort-order="wrapperOrder" guac-sort-property="'name'">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
                     </th>
                 </tr>
