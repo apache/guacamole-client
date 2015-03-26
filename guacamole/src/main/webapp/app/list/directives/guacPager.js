@@ -64,7 +64,7 @@ angular.module('list').directive('guacPager', [function guacPager() {
 
         },
 
-        templateUrl: 'app/pager/templates/guacPager.html',
+        templateUrl: 'app/list/templates/guacPager.html',
         controller: ['$scope', function guacPagerController($scope) {
 
             /**
