@@ -36,8 +36,8 @@ THE SOFTWARE.
             <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
         </div>
         
-        <div>
-            <input class="filter" placeholder="{{'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate}}" type="text" ng-model="filterSearchString"/>
+        <div class="filter">
+            <input class="filter-string" placeholder="{{'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate}}" type="text" ng-model="filterSearchString"/>
         </div>
 
         <!-- List of current user sessions -->

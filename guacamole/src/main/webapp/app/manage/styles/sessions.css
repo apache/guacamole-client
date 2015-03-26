@@ -77,11 +77,17 @@
     background-image: url('images/arrows/up.png');
 }
 
-.manage .sessions .filter{
+.manage .sessions .filter {
+    margin: 0.5em 0;
+}
+
+.manage .sessions .filter-string {
     background-image: url('images/magnifier.png');
     background-repeat: no-repeat;
     background-size: 1.75em;
-    padding-left: 1.75em;
+    background-position: 0.25em center;
+    padding: 0.5em;
+    padding-left: 2.25em;
     width: 100%;
     max-width: none;
 }
