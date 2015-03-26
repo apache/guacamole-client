@@ -55,6 +55,13 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.wrappers = null;
 
     /**
+     * The filter search string to use to restrict the displayed active sessions
+     *
+     * @type String
+     */
+    $scope.filterSearchString = null;
+
+    /**
      * StableSort instance which maintains the sort order of the visible
      * connection wrappers.
      *
@@ -68,13 +75,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     ]);
 
     /**
-     * The root connection group of the connection group hierarchy.
-     *
-     * @type ConnectionGroup
-     */
-    var rootGroup = null;
-
-    /**
      * All active connections, if known, or null if active connections have not
      * yet been loaded.
      *
@@ -83,11 +83,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var activeConnections = null;
 
     /**
-     * Map of all visible connections by object identifier.
+     * Map of all visible connections by object identifier, or null if visible
+     * connections have not yet been loaded.
      *
      * @type Object.<String, Connection>
      */
-    var connections = {};
+    var connections = null;
 
     /**
      * Map of all currently-selected active connection wrappers by identifier.
@@ -118,7 +119,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      *     The connection group whose descendant connections should be added to
      *     the internal set of connections.
      */
-    var addDescendantConnections  = function addDescendantConnections(connectionGroup) {
+    var addDescendantConnections = function addDescendantConnections(connectionGroup) {
 
         // Add all child connections
         if (connectionGroup.childConnections)
@@ -168,8 +169,8 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     .success(function connectionGroupReceived(retrievedRootGroup) {
 
         // Load connections from retrieved group tree
-        rootGroup = retrievedRootGroup;
-        addDescendantConnections(rootGroup);
+        connections = {};
+        addDescendantConnections(retrievedRootGroup);
 
         // Attempt to produce wrapped list of active connections
         wrapActiveConnections();
@@ -350,6 +351,41 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
         else
             delete selectedWrappers[wrapper.activeConnection.identifier];
 
+    };
+    
+    /**
+     * A predicate to be used for filtering the active sessions based on a plain
+     * text search string. A wrapper will be considered a match iff the search string
+     * appears (case insensitive) in the connection name, username, or remote host.
+     * 
+     * @param {ActiveConnectionWrapper} wrapper
+     *     The wrapper to match against the search string..
+     * 
+     * @returns {Boolean} 
+     *     true if the wrapper matches the specified search string, false otherwise.
+     */
+    $scope.globalFilterPredicate = function globalFilterPredicate(wrapper) {
+        
+        // If no search term is provided, always consider it a match
+        if (!$scope.filterSearchString)
+            return true;
+        
+        // Convert to lower case for case insensitive matching
+        var searchString = $scope.filterSearchString.toLowerCase();
+        
+        // Check to see if the search string matches the connection name
+        if (wrapper.name.toLowerCase().indexOf(searchString) !== -1) 
+            return true;
+        
+        // Check to see if the search string matches the username
+        if (wrapper.activeConnection.username.toLowerCase().indexOf(searchString) !== -1) 
+            return true;
+        
+        // Check to see if the search string matches the remote host
+        if (wrapper.activeConnection.remoteHost.toLowerCase().indexOf(searchString) !== -1) 
+            return true;
+        
+        return false;
     };
 
 }]);
