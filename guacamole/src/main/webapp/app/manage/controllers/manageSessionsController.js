@@ -29,6 +29,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
+    var FilterPattern           = $injector.get('FilterPattern');
     var StableSort              = $injector.get('StableSort');
 
     // Required services
@@ -60,6 +61,13 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * @type String
      */
     $scope.filterSearchString = null;
+
+    /**
+     * The pattern object to use when filtering active sessions.
+     *
+     * @type FilterPattern
+     */
+    $scope.filterPattern = new FilterPattern();
 
     /**
      * StableSort instance which maintains the sort order of the visible
@@ -353,39 +361,9 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
 
     };
     
-    /**
-     * A predicate to be used for filtering the active sessions based on a plain
-     * text search string. A wrapper will be considered a match iff the search string
-     * appears (case insensitive) in the connection name, username, or remote host.
-     * 
-     * @param {ActiveConnectionWrapper} wrapper
-     *     The wrapper to match against the search string..
-     * 
-     * @returns {Boolean} 
-     *     true if the wrapper matches the specified search string, false otherwise.
-     */
-    $scope.globalFilterPredicate = function globalFilterPredicate(wrapper) {
-        
-        // If no search term is provided, always consider it a match
-        if (!$scope.filterSearchString)
-            return true;
-        
-        // Convert to lower case for case insensitive matching
-        var searchString = $scope.filterSearchString.toLowerCase();
-        
-        // Check to see if the search string matches the connection name
-        if (wrapper.name.toLowerCase().indexOf(searchString) !== -1) 
-            return true;
-        
-        // Check to see if the search string matches the username
-        if (wrapper.activeConnection.username.toLowerCase().indexOf(searchString) !== -1) 
-            return true;
-        
-        // Check to see if the search string matches the remote host
-        if (wrapper.activeConnection.remoteHost.toLowerCase().indexOf(searchString) !== -1) 
-            return true;
-        
-        return false;
-    };
+    // Recompile the filter pattern when changed
+    $scope.$watch('filterSearchString', function recompilePredicate(searchString) {
+        $scope.filterPattern.compile(searchString);
+    });
 
 }]);

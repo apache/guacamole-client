@@ -82,7 +82,8 @@ THE SOFTWARE.
         </p>
 
         <!-- Pager for session list -->
-        <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : wrapperOrder.predicate | filter : globalFilterPredicate"></guac-pager>
+        <guac-pager page="wrapperPage" page-size="25"
+                    items="wrappers | filter : filterPattern.predicate | orderBy : wrapperOrder.predicate"></guac-pager>
     </div>
 
 </div>
