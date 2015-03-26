@@ -76,3 +76,12 @@
 .manage table.session-list th.sort-primary.sort-descending:after {
     background-image: url('images/arrows/up.png');
 }
+
+.manage .sessions .filter{
+    background-image: url('images/magnifier.png');
+    background-repeat: no-repeat;
+    background-size: 1.75em;
+    padding-left: 1.75em;
+    width: 100%;
+    max-width: none;
+}

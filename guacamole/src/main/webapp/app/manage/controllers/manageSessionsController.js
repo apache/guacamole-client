@@ -29,6 +29,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
+    var FilterPattern           = $injector.get('FilterPattern');
     var StableSort              = $injector.get('StableSort');
 
     // Required services
@@ -55,6 +56,20 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.wrappers = null;
 
     /**
+     * The filter search string to use to restrict the displayed active sessions
+     *
+     * @type String
+     */
+    $scope.filterSearchString = null;
+
+    /**
+     * The pattern object to use when filtering active sessions.
+     *
+     * @type FilterPattern
+     */
+    $scope.filterPattern = new FilterPattern();
+
+    /**
      * StableSort instance which maintains the sort order of the visible
      * connection wrappers.
      *
@@ -68,13 +83,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     ]);
 
     /**
-     * The root connection group of the connection group hierarchy.
-     *
-     * @type ConnectionGroup
-     */
-    var rootGroup = null;
-
-    /**
      * All active connections, if known, or null if active connections have not
      * yet been loaded.
      *
@@ -83,11 +91,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var activeConnections = null;
 
     /**
-     * Map of all visible connections by object identifier.
+     * Map of all visible connections by object identifier, or null if visible
+     * connections have not yet been loaded.
      *
      * @type Object.<String, Connection>
      */
-    var connections = {};
+    var connections = null;
 
     /**
      * Map of all currently-selected active connection wrappers by identifier.
@@ -118,7 +127,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      *     The connection group whose descendant connections should be added to
      *     the internal set of connections.
      */
-    var addDescendantConnections  = function addDescendantConnections(connectionGroup) {
+    var addDescendantConnections = function addDescendantConnections(connectionGroup) {
 
         // Add all child connections
         if (connectionGroup.childConnections)
@@ -168,8 +177,8 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     .success(function connectionGroupReceived(retrievedRootGroup) {
 
         // Load connections from retrieved group tree
-        rootGroup = retrievedRootGroup;
-        addDescendantConnections(rootGroup);
+        connections = {};
+        addDescendantConnections(retrievedRootGroup);
 
         // Attempt to produce wrapped list of active connections
         wrapActiveConnections();
@@ -351,5 +360,10 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
             delete selectedWrappers[wrapper.activeConnection.identifier];
 
     };
+    
+    // Recompile the filter pattern when changed
+    $scope.$watch('filterSearchString', function recompilePredicate(searchString) {
+        $scope.filterPattern.compile(searchString);
+    });
 
 }]);
