@@ -24,7 +24,7 @@
  * A directive which provides pagination controls, along with a paginated
  * subset of the elements of some given array.
  */
-angular.module('pager').directive('guacPager', [function guacPager() {
+angular.module('list').directive('guacPager', [function guacPager() {
 
     return {
         restrict: 'E',

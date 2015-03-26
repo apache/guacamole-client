@@ -25,9 +25,9 @@
  */
 angular.module('manage', [
     'groupList',
+    'list',
     'locale',
     'notification',
-    'pager',
     'rest',
     'userMenu'
 ]);
