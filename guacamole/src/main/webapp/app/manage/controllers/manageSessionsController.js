@@ -196,40 +196,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     };
 
     /**
-     * Returns whether the wrapped session list is sorted by the given
-     * property.
-     *
-     * @param {String} property
-     *     The name of the property to check.
-     *
-     * @returns {Boolean}
-     *     true if the wrapped session list is sorted by the given property,
-     *     false otherwise.
-     */
-    $scope.isSortedBy = function isSortedBy(property) {
-        return $scope.wrapperOrder.primary === property;
-    };
-
-    /**
-     * Sets the primary sorting property to the given property, if not already
-     * set. If already set, the ascending/descending sort order is toggled.
-     *
-     * @param {String} property
-     *     The name of the property to assign as the primary sorting property.
-     */
-    $scope.toggleSort = function toggleSort(property) {
-
-        // Sort in ascending order by new property, if different
-        if (!$scope.isSortedBy(property))
-            $scope.wrapperOrder.reorder(property, false);
-
-        // Otherwise, toggle sort order
-        else
-            $scope.wrapperOrder.reorder(property, !$scope.wrapperOrder.descending);
-
-    };
-
-    /**
      * An action to be provided along with the object sent to showStatus which
      * closes the currently-shown status dialog.
      */

@@ -108,6 +108,40 @@ angular.module('list').factory('StableSort', [
 
         };
 
+        /**
+         * Returns whether the sort order is primarily determined by the given
+         * property.
+         *
+         * @param {String} property
+         *     The name of the property to check.
+         *
+         * @returns {Boolean}
+         *     true if the sort order is primarily determined by the given
+         *     property, false otherwise.
+         */
+        this.isSortedBy = function isSortedBy(property) {
+            return stableSort.primary === property;
+        };
+
+        /**
+         * Sets the primary sorting property to the given property, if not already
+         * set. If already set, the ascending/descending sort order is toggled.
+         *
+         * @param {String} property
+         *     The name of the property to assign as the primary sorting property.
+         */
+        this.togglePrimary = function togglePrimary(property) {
+
+            // Sort in ascending order by new property, if different
+            if (!stableSort.isSortedBy(property))
+                stableSort.reorder(property, false);
+
+            // Otherwise, toggle sort order
+            else
+                stableSort.reorder(property, !stableSort.descending);
+
+        };
+
     };
 
     return StableSort;

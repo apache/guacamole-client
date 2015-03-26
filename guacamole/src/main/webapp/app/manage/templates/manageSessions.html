@@ -45,20 +45,20 @@ THE SOFTWARE.
             <thead>
                 <tr>
                     <th class="select-session"></th>
-                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.username'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="toggleSort('activeConnection.username')">
+                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.username'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="wrapperOrder.toggleSort('activeConnection.username')">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.startDate'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="toggleSort('activeConnection.startDate')">
+                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.startDate'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="wrapperOrder.toggleSort('activeConnection.startDate')">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.remoteHost'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="toggleSort('activeConnection.remoteHost')">
+                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('activeConnection.remoteHost'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="wrapperOrder.toggleSort('activeConnection.remoteHost')">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
                     </th>
-                    <th ng-class="{'sort-primary': isSortedBy('name'), 'sort-descending': wrapperOrder.descending}"
-                        ng-click="toggleSort('name')">
+                    <th ng-class="{'sort-primary': wrapperOrder.isSortedBy('name'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="wrapperOrder.toggleSort('name')">
                         {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
                     </th>
                 </tr>
