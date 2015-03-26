@@ -21,10 +21,10 @@
  */
 
 /**
- * A service for defining the StableSort class.
+ * A service for defining the SortOrder class.
  */
-angular.module('list').factory('StableSort', [
-    function defineStableSort() {
+angular.module('list').factory('SortOrder', [
+    function defineSortOrder() {
 
     /**
      * Maintains a sorting predicate as required by the Angular orderBy filter.
@@ -35,14 +35,14 @@ angular.module('list').factory('StableSort', [
      * @param {String[]} predicate
      *     The properties to sort by, in order of precidence.
      */
-    var StableSort = function StableSort(predicate) {
+    var SortOrder = function SortOrder(predicate) {
 
         /**
          * Reference to this instance.
          *
-         * @type StableSort
+         * @type SortOrder
          */
-        var stableSort = this;
+        var sortOrder = this;
 
         /**
          * The current sorting predicate.
@@ -91,20 +91,20 @@ angular.module('list').factory('StableSort', [
             var descendingName = '-' + name;
 
             // Remove requested property from current predicate
-            stableSort.predicate = stableSort.predicate.filter(function notRequestedProperty(current) {
+            sortOrder.predicate = sortOrder.predicate.filter(function notRequestedProperty(current) {
                 return current !== ascendingName
                     && current !== descendingName;
             });
 
             // Add property to beginning of predicate
             if (descending)
-                stableSort.predicate.unshift(descendingName);
+                sortOrder.predicate.unshift(descendingName);
             else
-                stableSort.predicate.unshift(ascendingName);
+                sortOrder.predicate.unshift(ascendingName);
 
             // Update sorted state
-            stableSort.primary    = name;
-            stableSort.descending = !!descending;
+            sortOrder.primary    = name;
+            sortOrder.descending = !!descending;
 
         };
 
@@ -120,7 +120,7 @@ angular.module('list').factory('StableSort', [
          *     property, false otherwise.
          */
         this.isSortedBy = function isSortedBy(property) {
-            return stableSort.primary === property;
+            return sortOrder.primary === property;
         };
 
         /**
@@ -133,17 +133,17 @@ angular.module('list').factory('StableSort', [
         this.togglePrimary = function togglePrimary(property) {
 
             // Sort in ascending order by new property, if different
-            if (!stableSort.isSortedBy(property))
-                stableSort.reorder(property, false);
+            if (!sortOrder.isSortedBy(property))
+                sortOrder.reorder(property, false);
 
             // Otherwise, toggle sort order
             else
-                stableSort.reorder(property, !stableSort.descending);
+                sortOrder.reorder(property, !sortOrder.descending);
 
         };
 
     };
 
-    return StableSort;
+    return SortOrder;
 
 }]);

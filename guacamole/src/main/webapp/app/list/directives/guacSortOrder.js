@@ -22,7 +22,7 @@
 
 /**
  * Updates the priority of the sorting property given by "guac-sort-property"
- * within the StableSort object given by "guac-sort-order". The CSS classes
+ * within the SortOrder object given by "guac-sort-order". The CSS classes
  * "sort-primary" and "sort-descending" will be applied to the associated
  * element depending on the priority and sort direction of the given property.
  * 
@@ -39,7 +39,7 @@ angular.module('list').directive('guacSortOrder', [function guacFocus() {
             /**
              * The object defining the sorting order.
              *
-             * @type StableSort
+             * @type SortOrder
              */
             var sortOrder = $scope.$eval($attrs.guacSortOrder);
 

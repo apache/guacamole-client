@@ -29,7 +29,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
-    var StableSort              = $injector.get('StableSort');
+    var SortOrder               = $injector.get('SortOrder');
 
     // Required services
     var activeConnectionService = $injector.get('activeConnectionService');
@@ -55,12 +55,12 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     $scope.wrappers = null;
 
     /**
-     * StableSort instance which maintains the sort order of the visible
+     * SortOrder instance which maintains the sort order of the visible
      * connection wrappers.
      *
-     * @type StableSort
+     * @type SortOrder
      */
-    $scope.wrapperOrder = new StableSort([
+    $scope.wrapperOrder = new SortOrder([
         'activeConnection.username',
         'activeConnection.startDate',
         'activeConnection.remoteHost',
