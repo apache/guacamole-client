@@ -41,10 +41,22 @@ THE SOFTWARE.
             <thead>
                 <tr>
                     <th class="select-session"></th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}</th>
-                    <th>{{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}</th>
+                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.username'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="toggleSort('activeConnection.username')">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.startDate'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="toggleSort('activeConnection.startDate')">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': isSortedBy('activeConnection.remoteHost'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="toggleSort('activeConnection.remoteHost')">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                    </th>
+                    <th ng-class="{'sort-primary': isSortedBy('name'), 'sort-descending': wrapperOrder.descending}"
+                        ng-click="toggleSort('name')">
+                        {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -55,7 +67,7 @@ THE SOFTWARE.
                     <td>{{wrapper.activeConnection.username}}</td>
                     <td>{{wrapper.activeConnection.startDate | date:'short'}}</td>
                     <td>{{wrapper.activeConnection.remoteHost}}</td>
-                    <td>{{connections[wrapper.activeConnection.connectionIdentifier].name}}</td>
+                    <td>{{wrapper.name}}</td>
                 </tr>
             </tbody>
         </table>
@@ -66,7 +78,7 @@ THE SOFTWARE.
         </p>
 
         <!-- Pager for session list -->
-        <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : 'username'"></guac-pager>
+        <guac-pager page="wrapperPage" page-size="25" items="wrappers | orderBy : wrapperOrder.predicate"></guac-pager>
     </div>
 
 </div>

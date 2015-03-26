@@ -31,6 +31,7 @@
 
 .manage table.session-list th {
     background: rgba(0, 0, 0, 0.125);
+    font-weight: normal;
 }
 
 .manage table.session-list th,
@@ -42,4 +43,36 @@
 .manage table.session-list .select-session {
     min-width: 2em;
     text-align: center;
+}
+
+.manage table.session-list th {
+    cursor: pointer;
+}
+
+.manage table.session-list th.select-session {
+    cursor: auto;
+}
+
+.manage table.session-list th.sort-primary {
+    font-weight: bold;
+    padding-right: 0;
+}
+
+.manage table.session-list th.sort-primary:after {
+
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    content: ' ';
+
+    background-size: 1em 1em;
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-image: url('images/arrows/down.png');
+
+}
+
+.manage table.session-list th.sort-primary.sort-descending:after {
+    background-image: url('images/arrows/up.png');
 }
