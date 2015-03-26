@@ -29,7 +29,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     // Required types
     var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
     var ConnectionGroup         = $injector.get('ConnectionGroup');
-    var FilterPattern           = $injector.get('FilterPattern');
     var StableSort              = $injector.get('StableSort');
 
     // Required services
@@ -54,20 +53,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * @type ActiveConnectionWrapper[]
      */
     $scope.wrappers = null;
-
-    /**
-     * The filter search string to use to restrict the displayed active sessions
-     *
-     * @type String
-     */
-    $scope.filterSearchString = null;
-
-    /**
-     * The pattern object to use when filtering active sessions.
-     *
-     * @type FilterPattern
-     */
-    $scope.filterPattern = new FilterPattern();
 
     /**
      * StableSort instance which maintains the sort order of the visible
@@ -361,9 +346,4 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
 
     };
     
-    // Recompile the filter pattern when changed
-    $scope.$watch('filterSearchString', function recompilePredicate(searchString) {
-        $scope.filterPattern.compile(searchString);
-    });
-
 }]);

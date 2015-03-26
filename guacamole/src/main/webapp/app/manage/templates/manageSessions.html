@@ -35,10 +35,10 @@ THE SOFTWARE.
         <div class="action-buttons">
             <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
         </div>
-        
-        <div class="filter">
-            <input class="filter-string" placeholder="{{'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate}}" type="text" ng-model="filterSearchString"/>
-        </div>
+
+        <!-- Session filter -->
+        <guac-filter filtered-items="filteredWrappers" items="wrappers"
+                     placeholder="'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate"></guac-filter>
 
         <!-- List of current user sessions -->
         <table class="session-list">
@@ -83,7 +83,7 @@ THE SOFTWARE.
 
         <!-- Pager for session list -->
         <guac-pager page="wrapperPage" page-size="25"
-                    items="wrappers | filter : filterPattern.predicate | orderBy : wrapperOrder.predicate"></guac-pager>
+                    items="filteredWrappers | orderBy : wrapperOrder.predicate"></guac-pager>
     </div>
 
 </div>
