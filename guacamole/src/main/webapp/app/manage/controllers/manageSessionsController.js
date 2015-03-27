@@ -68,6 +68,17 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     ]);
 
     /**
+     * Array of all wrapper properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredWrapperProperties = [
+        'activeConnection.username',
+        'activeConnection.remoteHost',
+        'name'
+    ];
+
+    /**
      * All active connections, if known, or null if active connections have not
      * yet been loaded.
      *

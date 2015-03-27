@@ -48,12 +48,21 @@ angular.module('list').directive('guacFilter', [function guacFilter() {
             placeholder : '&',
 
             /**
-             * An array objects to filter. A subset of this array will be
+             * An array of objects to filter. A subset of this array will be
              * exposed as filteredItems.
              *
              * @type Array
              */
-            items : '&'
+            items : '&',
+
+            /**
+             * An array of expressions to filter against for each object in the
+             * items array. These expressions must be Angular expressions
+             * which resolve to properties on the objects in the items array.
+             *
+             * @type String[]
+             */
+            properties : '&'
 
         },
 
@@ -68,7 +77,7 @@ angular.module('list').directive('guacFilter', [function guacFilter() {
              *
              * @type FilterPattern
              */
-            var filterPattern = new FilterPattern();
+            var filterPattern = new FilterPattern($scope.properties());
 
             /**
              * The filter search string to use to restrict the displayed items.
