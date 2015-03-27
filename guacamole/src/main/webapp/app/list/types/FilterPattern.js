@@ -23,8 +23,14 @@
 /**
  * A service for defining the FilterPattern class.
  */
-angular.module('list').factory('FilterPattern', ['$parse',
-    function defineFilterPattern($parse) {
+angular.module('list').factory('FilterPattern', ['$injector',
+    function defineFilterPattern($injector) {
+
+    // Required types
+    var FilterToken = $injector.get('FilterToken');
+
+    // Required services
+    var $parse = $injector.get('$parse');
 
     /**
      * Object which handles compilation of filtering predicates as used by
@@ -70,6 +76,43 @@ angular.module('list').factory('FilterPattern', ['$parse',
         });
 
         /**
+         * Determines whether the given object matches the given filter pattern
+         * token.
+         *
+         * @param {Object} object
+         *     The object to match the token against.
+         * 
+         * @param {FilterToken} token
+         *     The token from the tokenized filter pattern to match aginst the
+         *     given object.
+         *
+         * @returns {Boolean}
+         *     true if the object matches the token, false otherwise.
+         */
+        var matchesToken = function matchToken(object, token) {
+
+            // Only match against literals
+            if (token.type !== 'LITERAL')
+                return false;
+
+            // For each defined getter
+            for (var i=0; i < getters.length; i++) {
+
+                // Retrieve value of current getter
+                var value = getters[i](object);
+
+                // If the value matches the pattern, the whole object matches
+                if (String(value).toLowerCase().indexOf(token.value) !== -1) 
+                    return true;
+
+            }
+
+            // No matches found
+            return false;
+
+        };
+
+        /**
          * The current filtering predicate.
          *
          * @type Function
@@ -92,26 +135,20 @@ angular.module('list').factory('FilterPattern', ['$parse',
                 return;
             }
                 
-            // Convert to lower case for case insensitive matching            
-            pattern = pattern.toLowerCase();
+            // Tokenize pattern, converting to lower case for case-insensitive matching
+            var tokens = FilterToken.tokenize(pattern.toLowerCase());
 
             // Return predicate which matches against the value of any getter in the getters array
-            filterPattern.predicate = function matchAny(object) {
+            filterPattern.predicate = function matchesAllTokens(object) {
 
-                // For each defined getter
-                for (var i=0; i < getters.length; i++) {
-
-                    // Retrieve value of current getter
-                    var value = getters[i](object);
-
-                    // If the value matches the pattern, the whole object matches
-                    if (String(value).toLowerCase().indexOf(pattern) !== -1) 
-                        return true;
-
+                // False if any token does not match
+                for (var i=0; i < tokens.length; i++) {
+                    if (!matchesToken(object, tokens[i]))
+                        return false;
                 }
 
-                // No matches found
-                return false;
+                // True if all tokens matched
+                return true;
 
             };
             
