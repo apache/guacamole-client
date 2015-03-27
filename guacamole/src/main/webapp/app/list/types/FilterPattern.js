@@ -23,8 +23,8 @@
 /**
  * A service for defining the FilterPattern class.
  */
-angular.module('list').factory('FilterPattern', [
-    function defineFilterPattern() {
+angular.module('list').factory('FilterPattern', ['$parse',
+    function defineFilterPattern($parse) {
 
     /**
      * Object which handles compilation of filtering predicates as used by
@@ -32,8 +32,10 @@ angular.module('list').factory('FilterPattern', [
      * specified search string.
      *
      * @constructor
+     * @param {String[]} expressions 
+     *     The Angular expressions whose values are to be filtered.
      */
-    var FilterPattern = function FilterPattern() {
+    var FilterPattern = function FilterPattern(expressions) {
 
         /**
          * Reference to this instance.
@@ -52,6 +54,20 @@ angular.module('list').factory('FilterPattern', [
         var nullPredicate = function nullPredicate() {
             return true;
         };
+
+        /**
+         * Array of getters corresponding to the Angular expressions provided
+         * to the constructor of this class. The functions returns are those
+         * produced by the $parse service.
+         *
+         * @type Function[]
+         */
+        var getters = [];
+
+        // Parse all expressions
+        angular.forEach(expressions, function parseExpression(expression) {
+            getters.push($parse(expression));
+        });
 
         /**
          * The current filtering predicate.
@@ -79,22 +95,24 @@ angular.module('list').factory('FilterPattern', [
             // Convert to lower case for case insensitive matching            
             pattern = pattern.toLowerCase();
 
-            // TODONT: Return predicate specific to a type of object this class should know nothing about
-            filterPattern.predicate = function oddlySpecificPredicate(wrapper) {
+            // Return predicate which matches against the value of any getter in the getters array
+            filterPattern.predicate = function matchAny(object) {
 
-                // Check to see if the search string matches the connection name
-                if (wrapper.name.toLowerCase().indexOf(pattern) !== -1) 
-                    return true;
+                // For each defined getter
+                for (var i=0; i < getters.length; i++) {
 
-                // Check to see if the search string matches the username
-                if (wrapper.activeConnection.username.toLowerCase().indexOf(pattern) !== -1) 
-                    return true;
+                    // Retrieve value of current getter
+                    var value = getters[i](object);
 
-                // Check to see if the search string matches the remote host
-                if (wrapper.activeConnection.remoteHost.toLowerCase().indexOf(pattern) !== -1) 
-                    return true;
+                    // If the value matches the pattern, the whole object matches
+                    if (String(value).toLowerCase().indexOf(pattern) !== -1) 
+                        return true;
 
+                }
+
+                // No matches found
                 return false;
+
             };
             
         };
