@@ -29,7 +29,7 @@ angular.module('list').factory('IPv6Network', [
     /**
      * Represents an IPv6 network as a pairing of base address and netmask,
      * both of which are in binary form. To obtain an IPv6Network from
-     * standard CIDR or dot-decimal notation, use IPv6Network.parse().
+     * standard CIDR notation, use IPv6Network.parse().
      *
      * @constructor 
      * @param {Number[]} addressGroups
