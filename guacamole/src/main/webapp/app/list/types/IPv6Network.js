@@ -113,13 +113,13 @@ angular.module('list').factory('IPv6Network', [
         // Only generate up to 128 bits
         bits = Math.min(128, bits);
 
-        // Add any contiguous 16-bit sections of 1's
+        // Add any contiguous 16-bit sections of ones
         while (bits >= 16) {
             netmask.push(0xFFFF);
             bits -= 16;
         }
 
-        // Add remaining 1's
+        // Add remaining ones
         if (bits > 0 && bits <= 16)
             netmask.push(0xFFFF & (0xFFFF << (16 - bits)));
 
