@@ -23,8 +23,12 @@
 /**
  * A service for defining the FilterToken class.
  */
-angular.module('list').factory('FilterToken', [
-    function defineFilterToken() {
+angular.module('list').factory('FilterToken', ['$injector',
+    function defineFilterToken($injector) {
+
+    // Required types
+    var IPv4Network = $injector.get('IPv4Network');
+    var IPv6Network = $injector.get('IPv6Network');
 
     /**
      * An arbitrary token having an associated type and value.
@@ -75,6 +79,50 @@ angular.module('list').factory('FilterToken', [
      * @type Object.<String, Function>
      */
     FilterToken.Types = {
+
+        /**
+         * An IPv4 address or subnet. The value of an IPV4_NETWORK token is an
+         * IPv4Network.
+         */
+        IPV4_NETWORK: function parseIPv4(str) {
+
+            var pattern = /^\S+/;
+
+            // Read first word via regex
+            var matches = pattern.exec(str);
+            if (!matches)
+                return null;
+
+            // Validate and parse as IPv4 address
+            var network = IPv4Network.parse(matches[0]);
+            if (!network)
+                return null;
+
+            return new FilterToken(matches[0], 'IPV4_NETWORK', network);
+
+        },
+
+        /**
+         * An IPv6 address or subnet. The value of an IPV6_NETWORK token is an
+         * IPv6Network.
+         */
+        IPV6_NETWORK: function parseIPv6(str) {
+
+            var pattern = /^\S+/;
+
+            // Read first word via regex
+            var matches = pattern.exec(str);
+            if (!matches)
+                return null;
+
+            // Validate and parse as IPv6 address
+            var network = IPv6Network.parse(matches[0]);
+            if (!network)
+                return null;
+
+            return new FilterToken(matches[0], 'IPV6_NETWORK', network);
+
+        },
 
         /**
          * A string literal, which may be quoted. The value of a LITERAL token
