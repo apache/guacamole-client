@@ -27,17 +27,28 @@ angular.module('list').factory('FilterToken', [
     function defineFilterToken() {
 
     /**
-     * An arbitrary token having an associated type and string value.
+     * An arbitrary token having an associated type and value.
      *
      * @constructor
+     * @param {String} consumed
+     *     The input string consumed to produce this token.
+     *
      * @param {String} type
      *     The type of this token. Each legal type name is a property within
      *     FilterToken.Types.
      *
-     * @param {String} value
-     *     The string value of this token.
+     * @param {Object} value
+     *     The value of this token. The type of this value is determined by
+     *     the token type.
      */
-    var FilterToken = function FilterToken(type, value) {
+    var FilterToken = function FilterToken(consumed, type, value) {
+
+        /**
+         * The input string that was consumed to produce this token.
+         *
+         * @type String
+         */
+        this.consumed = consumed;
 
         /**
          * The type of this token. Each legal type name is a property within
@@ -48,32 +59,62 @@ angular.module('list').factory('FilterToken', [
         this.type = type;
 
         /**
-         * The string value of this token.
+         * The value of this token.
          *
-         * @type String
+         * @type Object
          */
         this.value = value;
 
     };
 
     /**
-     * All legal token types, and corresponding regular expressions which match
-     * them. If the regular expression contains capturing groups, the last
-     * matching group will be used as the value of the token.
+     * All legal token types, and corresponding functions which match them.
+     * Each function returns the parsed token, or null if no such token was
+     * found.
      *
-     * @type Object.<String, RegExp>
+     * @type Object.<String, Function>
      */
     FilterToken.Types = {
 
         /**
-         * A string literal.
+         * A string literal, which may be quoted. The value of a LITERAL token
+         * is a String.
          */
-        LITERAL: /^"([^"]*)"|^\S+/,
+        LITERAL: function parseLiteral(str) {
+
+            var pattern = /^"([^"]*)"|^\S+/;
+
+            // Validate against pattern
+            var matches = pattern.exec(str);
+            if (!matches)
+                return null;
+
+            // If literal is quoted, parse within the quotes
+            if (matches[1])
+                return new FilterToken(matches[0], 'LITERAL', matches[1]);
+
+            //  Otherwise, literal is unquoted
+            return new FilterToken(matches[0], 'LITERAL', matches[0]);
+
+        },
 
         /**
-         * Arbitrary contiguous whitespace.
+         * Arbitrary contiguous whitespace. The value of a WHITESPACE token is
+         * a String.
          */
-        WHITESPACE: /^\s+/
+        WHITESPACE: function parseWhitespace(str) {
+
+            var pattern = /^\s+/;
+
+            // Validate against pattern
+            var matches = pattern.exec(str);
+            if (!matches)
+                return null;
+
+            //  Generate token from matching whitespace
+            return new FilterToken(matches[0], 'WHITESPACE', matches[0]);
+
+        }
 
     };
 
@@ -103,24 +144,14 @@ angular.module('list').factory('FilterToken', [
             // Attempt to find a matching token
             for (var type in FilterToken.Types) {
 
-                // Get regular expression for current type
-                var regex = FilterToken.Types[type];
+                // Get matching function for current type
+                var matcher = FilterToken.Types[type];
 
                 // If token matches, return the matching group
-                var match = regex.exec(str);
-                if (match) {
-
-                    // Advance to next token
-                    str = str.substring(match[0].length);
-
-                    // Grab last matching group
-                    var matchingGroup = match[0];
-                    for (var i=1; i < match.length; i++)
-                        matchingGroup = match[i] || matchingGroup;
-
-                    // Return new token
-                    return new FilterToken(type, matchingGroup);
-
+                var token = matcher(str);
+                if (token) {
+                    str = str.substring(token.consumed.length);
+                    return token;
                 }
 
             }
