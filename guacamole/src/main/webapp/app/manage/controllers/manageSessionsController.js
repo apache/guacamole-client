@@ -32,6 +32,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var SortOrder               = $injector.get('SortOrder');
 
     // Required services
+    var $filter                 = $injector.get('$filter');
     var $translate              = $injector.get('$translate');
     var activeConnectionService = $injector.get('activeConnectionService');
     var authenticationService   = $injector.get('authenticationService');
@@ -54,13 +55,6 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * @type ActiveConnectionWrapper[]
      */
     $scope.wrappers = null;
-
-    /**
-     * The date format for use for session-related dates.
-     *
-     * @type String
-     */
-    $scope.sessionDateFormat = null;
 
     /**
      * SortOrder instance which maintains the sort order of the visible
@@ -101,6 +95,13 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * @type Object.<String, Connection>
      */
     var connections = null;
+
+    /**
+     * The date format for use for session-related dates.
+     *
+     * @type String
+     */
+    var sessionDateFormat = null;
 
     /**
      * Map of all currently-selected active connection wrappers by identifier.
@@ -151,7 +152,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var wrapActiveConnections = function wrapActiveConnections() {
 
         // Abort if not all required data is available
-        if (!activeConnections || !connections)
+        if (!activeConnections || !connections || !sessionDateFormat)
             return;
 
         // Wrap all active connections for sake of display
@@ -163,6 +164,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
 
             $scope.wrappers.push(new ActiveConnectionWrapper(
                 connection.name,
+                $filter('date')(activeConnection.startDate, sessionDateFormat),
                 activeConnection
             )); 
 
@@ -201,8 +203,14 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     });
 
     // Get session date format
-    $translate('MANAGE_SESSION.FORMAT_STARTDATE').then(function sessionDateFormatReceived(sessionDateFormat) {
-        $scope.sessionDateFormat = sessionDateFormat;
+    $translate('MANAGE_SESSION.FORMAT_STARTDATE').then(function sessionDateFormatReceived(retrievedSessionDateFormat) {
+
+        // Store received date format
+        sessionDateFormat = retrievedSessionDateFormat;
+
+        // Attempt to produce wrapped list of active connections
+        wrapActiveConnections();
+
     });
 
     /**
