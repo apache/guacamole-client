@@ -32,6 +32,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
     var SortOrder               = $injector.get('SortOrder');
 
     // Required services
+    var $translate              = $injector.get('$translate');
     var activeConnectionService = $injector.get('activeConnectionService');
     var authenticationService   = $injector.get('authenticationService');
     var connectionGroupService  = $injector.get('connectionGroupService');
@@ -53,6 +54,13 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      * @type ActiveConnectionWrapper[]
      */
     $scope.wrappers = null;
+
+    /**
+     * The date format for use for session-related dates.
+     *
+     * @type String
+     */
+    $scope.sessionDateFormat = null;
 
     /**
      * SortOrder instance which maintains the sort order of the visible
@@ -192,6 +200,11 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
 
     });
 
+    // Get session date format
+    $translate('MANAGE_SESSION.FORMAT_STARTDATE').then(function sessionDateFormatReceived(sessionDateFormat) {
+        $scope.sessionDateFormat = sessionDateFormat;
+    });
+
     /**
      * Returns whether critical data has completed being loaded.
      *
@@ -201,8 +214,9 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.wrappers    !== null
-            && $scope.permissions !== null;
+        return $scope.wrappers          !== null
+            && $scope.sessionDateFormat !== null
+            && $scope.permissions       !== null;
 
     };
 
