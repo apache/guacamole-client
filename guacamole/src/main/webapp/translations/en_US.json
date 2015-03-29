@@ -23,7 +23,9 @@
         
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
-        
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
 
         "NAME" : "Guacamole ${project.version}"
@@ -155,7 +157,9 @@
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
-        
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
         "HELP_SHOW_PASSWORD" : "Click to show password",
         "HELP_HIDE_PASSWORD" : "Click to hide password",
@@ -245,6 +249,8 @@
         
         "FIELD_PLACEHOLDER_FILTER" : "Filter",
         
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
         "HELP_SESSIONS" : "All currently-active Guacamole sessions are listed here. If you wish to kill one or more sessions, check the box next to those sessions and click \"Kill Sessions\". Killing a session will immediately disconnect the user from the associated connection.",
         
         "INFO_NO_SESSIONS" : "No active sessions",

@@ -33,11 +33,14 @@ angular.module('manage').factory('ActiveConnectionWrapper', [
      * @constructor
      * @param {String} name
      *     The display name of the active connection.
+     *     
+     * @param {String} startDate
+     *     The date and time this session began, pre-formatted for display.
      *
      * @param {ActiveConnection} activeConnection
      *     The ActiveConnection to wrap.
      */
-    var ActiveConnectionWrapper = function ActiveConnectionWrapper(name, activeConnection) {
+    var ActiveConnectionWrapper = function ActiveConnectionWrapper(name, startDate, activeConnection) {
 
         /**
          * The display name of this connection.
@@ -45,6 +48,13 @@ angular.module('manage').factory('ActiveConnectionWrapper', [
          * @type String
          */
         this.name = name;
+
+        /**
+         * The date and time this session began, pre-formatted for display.
+         *
+         * @type String
+         */
+        this.startDate = startDate;
 
         /**
          * The wrapped ActiveConnection.

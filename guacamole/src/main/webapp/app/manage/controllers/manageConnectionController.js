@@ -35,6 +35,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
+    var $translate               = $injector.get('$translate');
     var authenticationService    = $injector.get('authenticationService');
     var guacNotification         = $injector.get('guacNotification');
     var connectionService        = $injector.get('connectionService');
@@ -101,6 +102,13 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.parameters = null;
 
     /**
+     * The date format for use within the connection history.
+     *
+     * @type String
+     */
+    $scope.historyDateFormat = null;
+
+    /**
      * The usage history of the connection being modified.
      *
      * @type HistoryEntryWrapper[]
@@ -150,6 +158,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             && $scope.rootGroup            !== null
             && $scope.connection           !== null
             && $scope.parameters           !== null
+            && $scope.historyDateFormat    !== null
             && $scope.historyEntryWrappers !== null
             && $scope.permissions          !== null
             && $scope.canSaveConnection    !== null
@@ -199,7 +208,12 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     protocolService.getProtocols().success(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
-   
+
+    // Get history date format
+    $translate('MANAGE_CONNECTION.FORMAT_HISTORY_START').then(function historyDateFormatReceived(historyDateFormat) {
+        $scope.historyDateFormat = historyDateFormat;
+    });
+
     // If we are editing an existing connection, pull its data
     if (identifier) {
 
