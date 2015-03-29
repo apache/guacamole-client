@@ -64,7 +64,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      */
     $scope.wrapperOrder = new SortOrder([
         'activeConnection.username',
-        'activeConnection.startDate',
+        'startDate',
         'activeConnection.remoteHost',
         'name'
     ]);
@@ -76,6 +76,7 @@ angular.module('manage').controller('manageSessionsController', ['$scope', '$inj
      */
     $scope.filteredWrapperProperties = [
         'activeConnection.username',
+        'startDate',
         'activeConnection.remoteHost',
         'name'
     ];
