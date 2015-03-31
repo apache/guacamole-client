@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * that use purely the Guacamole API.
  *
  * @author Michael Jumper
+ * @author Vasily Loginov
  */
 @Singleton
 public class TunnelRequestService {
