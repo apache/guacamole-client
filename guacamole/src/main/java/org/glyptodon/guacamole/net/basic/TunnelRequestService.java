@@ -29,7 +29,6 @@ import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -187,15 +186,20 @@ public class TunnelRequestService {
     }
 
     /**
-     * Creates a new tunnel using client information specified in the
-     * {@code info} parameter, connection information from {@code request} and
-     * credentials from the {@code session} parameter.
+     * Creates a new tunnel using which is connected to the connection or
+     * connection group identifier by the given ID. Client information
+     * is specified in the {@code info} parameter.
      *
-     * @param request
-     *     The request describing tunnel to create.
+     * @param context
+     *     The UserContext associated with the user for whom the tunnel is
+     *     being created.
      *
-     * @param session
-     *     The Guacamole session for which the tunnel is being created.
+     * @param id
+     *     The ID of the connection or connection group being connected to. For
+     *     connections, this will be of the form "c/IDENTIFIER", where
+     *     IDENTIFIER is the connection identifier. For connection groups, this
+     *     will be of the form "g/IDENTIFIER", where IDENTIFIER is the
+     *     connection group identifier.
      *
      * @param info
      *     Information describing the connected Guacamole client.
@@ -206,13 +210,11 @@ public class TunnelRequestService {
      * @throws GuacamoleException
      *     If an error occurs while creating the tunnel.
      */
-    protected GuacamoleTunnel createConnectedTunnel(TunnelRequest request, GuacamoleSession session,
+    protected GuacamoleTunnel createConnectedTunnel(UserContext context, String id,
                                                     GuacamoleClientInformation info) throws GuacamoleException {
-        // Get ID of connection
-        String id = request.getParameter("id");
-        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
 
-        // Do not continue if unable to determine type
+        // Determine ID type
+        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
         if (id_type == null)
             throw new GuacamoleClientException("Illegal identifier - unknown type.");
 
@@ -227,7 +229,6 @@ public class TunnelRequestService {
             case CONNECTION: {
 
                 // Get connection directory
-                UserContext context = session.getUserContext();
                 Directory<Connection> directory = context.getConnectionDirectory();
 
                 // Get authorized connection
@@ -247,7 +248,6 @@ public class TunnelRequestService {
             case CONNECTION_GROUP: {
 
                 // Get connection group directory
-                UserContext context = session.getUserContext();
                 Directory<ConnectionGroup> directory = context.getConnectionGroupDirectory();
 
                 // Get authorized connection group
@@ -274,24 +274,29 @@ public class TunnelRequestService {
     }
 
     /**
-     * Creates and returns a tunnel which wraps the given tunnel, monitoring it
-     * for closure and, if enabled, clipboard changes. The tunnel is associated
-     * with a session identified by the {@code authToken} parameter.
+     * Associates the given tunnel with the given session, returning a wrapped
+     * version of the same tunnel which automatically handles closure and
+     * removal from the session.
      *
      * @param tunnel
      *     The connected tunnel to wrap and monitor.
      *
-     * @param authToken
-     *     The authorization token associated with the session for which this
-     *     tunnel is being created.
+     * @param session
+     *     The Guacamole session to associate the tunnel with.
      *
      * @return
-     *     A new tunnel which monitors the given tunnel.
+     *     A new tunnel, associated with the given session, which delegates all
+     *     functionality to the given tunnel while monitoring and automatically
+     *     handling closure.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while obtaining the tunnel.
      */
-    protected GuacamoleTunnel createAssociatedTunnel(GuacamoleTunnel tunnel, final String authToken) {
+    protected GuacamoleTunnel createAssociatedTunnel(final GuacamoleSession session,
+            GuacamoleTunnel tunnel) throws GuacamoleException {
 
         // Monitor tunnel closure and data
-        return new DelegatingGuacamoleTunnel(tunnel) {
+        GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
 
             @Override
             public GuacamoleReader acquireReader() {
@@ -300,9 +305,7 @@ public class TunnelRequestService {
                 try {
                     if (GuacamoleProperties.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
 
-                        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
                         ClipboardState clipboard = session.getClipboardState();
-
                         return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
 
                     }
@@ -320,18 +323,7 @@ public class TunnelRequestService {
             @Override
             public void close() throws GuacamoleException {
 
-                // Get session - just close if session does not exist
-                GuacamoleSession session;
-                try {
-                    session = authenticationService.getGuacamoleSession(authToken);
-                }
-                catch (GuacamoleUnauthorizedException e) {
-                    logger.debug("Session destroyed prior to tunnel closure.", e);
-                    super.close();
-                    return;
-                }
-
-                // If we have a session, signal listeners
+                // Signal listeners
                 if (!notifyClose(session, this))
                     throw new GuacamoleException("Tunnel close canceled by listener.");
 
@@ -344,9 +336,18 @@ public class TunnelRequestService {
 
         };
 
+        // Notify listeners about connection
+        if (!notifyConnect(session, monitoredTunnel)) {
+            logger.info("Successful connection canceled by hook.");
+            return null;
+        }
+
+        // Associate tunnel with session
+        session.addTunnel(monitoredTunnel);
+        return monitoredTunnel;
+        
     }
 
-    
     /**
      * Creates a new tunnel using the parameters and credentials present in
      * the given request.
@@ -367,25 +368,16 @@ public class TunnelRequestService {
         final String authToken = request.getParameter("authToken");
         final GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
-        // Get client information
+        // Get client information and connection ID from request
+        final String id = request.getParameter("id");
         final GuacamoleClientInformation info = getClientInformation(request);
 
-        // Create connected tunnel from request 
-        final GuacamoleTunnel tunnel = createConnectedTunnel(request, session, info);
+        // Create connected tunnel using provided connection ID and client information
+        final GuacamoleTunnel tunnel = createConnectedTunnel(session.getUserContext(), id, info);
 
         // Associate tunnel with session
-        final GuacamoleTunnel monitoredTunnel = createAssociatedTunnel(tunnel, authToken);
-
-        // Notify listeners about connection
-        if (!notifyConnect(session, monitoredTunnel)) {
-            logger.info("Successful connection canceled by hook.");
-            return null;
-        }
-
-        session.addTunnel(monitoredTunnel);
-        return monitoredTunnel;
+        return createAssociatedTunnel(session, tunnel);
 
     }
 
 }
-
