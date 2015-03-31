@@ -148,10 +148,15 @@ public class TunnelRequestService {
     }
 
     /**
-     * Reads and returns client information provided by the {@code request} parameter.
+     * Reads and returns the client information provided within the given
+     * request.
      *
-     * @param request The request describing tunnel to create.
-     * @return GuacamoleClientInformation Object containing information about the client sending the tunnel request.
+     * @param request
+     *     The request describing tunnel to create.
+     *
+     * @return GuacamoleClientInformation
+     *     An object containing information about the client sending the tunnel
+     *     request.
      */
     protected GuacamoleClientInformation getClientInformation(TunnelRequest request) {
         // Get client information
