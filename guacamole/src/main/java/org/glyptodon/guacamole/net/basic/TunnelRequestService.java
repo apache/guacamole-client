@@ -187,14 +187,24 @@ public class TunnelRequestService {
     }
 
     /**
-     * Creates a new socket using client information specified in the {@code info} parameter,
-     * connection information from {@code request} and credentials from the {@code session} parameter.
+     * Creates a new tunnel using client information specified in the
+     * {@code info} parameter, connection information from {@code request} and
+     * credentials from the {@code session} parameter.
      *
-     * @param request The request describing tunnel to create.
-     * @param session Current guacamole session.
-     * @param info Guacamole client information.
-     * @return Socket connected using the provided settings.
-     * @throws GuacamoleException If an error occurs while creating the socket.
+     * @param request
+     *     The request describing tunnel to create.
+     *
+     * @param session
+     *     The Guacamole session for which the tunnel is being created.
+     *
+     * @param info
+     *     Information describing the connected Guacamole client.
+     *
+     * @return
+     *     A new tunnel, connected as required by the request.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the tunnel.
      */
     protected GuacamoleTunnel createConnectedTunnel(TunnelRequest request, GuacamoleSession session,
                                                     GuacamoleClientInformation info) throws GuacamoleException {
@@ -209,7 +219,7 @@ public class TunnelRequestService {
         // Remove prefix
         id = id.substring(id_type.PREFIX.length());
 
-        // Create connected socket from identifier
+        // Create connected tunnel from identifier
         GuacamoleTunnel tunnel;
         switch (id_type) {
 
@@ -264,17 +274,23 @@ public class TunnelRequestService {
     }
 
     /**
-     * Creates and returns a tunnel using the specified guacd socket.
-     * The tunnel is associated with a session identified
-     * by the {@code authToken} parameter.
+     * Creates and returns a tunnel which wraps the given tunnel, monitoring it
+     * for closure and, if enabled, clipboard changes. The tunnel is associated
+     * with a session identified by the {@code authToken} parameter.
      *
-     * @param tunnel The connected tunnel.
-     * @param authToken Current authorization token.
-     * @return The created tunnel.
+     * @param tunnel
+     *     The connected tunnel to wrap and monitor.
+     *
+     * @param authToken
+     *     The authorization token associated with the session for which this
+     *     tunnel is being created.
+     *
+     * @return
+     *     A new tunnel which monitors the given tunnel.
      */
     protected GuacamoleTunnel createAssociatedTunnel(GuacamoleTunnel tunnel, final String authToken) {
 
-        // Associate socket with tunnel
+        // Monitor tunnel closure and data
         return new DelegatingGuacamoleTunnel(tunnel) {
 
             @Override
@@ -334,10 +350,15 @@ public class TunnelRequestService {
     /**
      * Creates a new tunnel using the parameters and credentials present in
      * the given request.
-     * 
-     * @param request The request describing the tunnel to create.
-     * @return The created tunnel, or null if the tunnel could not be created.
-     * @throws GuacamoleException If an error occurs while creating the tunnel.
+     *
+     * @param request
+     *     The request describing the tunnel to create.
+     *
+     * @return
+     *     The created tunnel, or null if the tunnel could not be created.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the tunnel.
      */
     public GuacamoleTunnel createTunnel(TunnelRequest request)
             throws GuacamoleException {
