@@ -24,6 +24,7 @@
         <option value="en-us-qwerty">US English (Qwerty)</option>
         <option value="fr-fr-azerty">French (Azerty)</option>
         <option value="de-de-qwertz">German (Qwertz)</option>
+        <option value="it-it-qwerty">Italian (Qwerty)</option>
         <option value="sv-se-qwerty">Swedish (Qwerty)</option>
         <option value="failsafe">Unicode</option>
     </param>
