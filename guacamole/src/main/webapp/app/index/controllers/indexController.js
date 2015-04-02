@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,14 +94,18 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
+       
+        // If the current route is available
+        if (current.$$route) {
 
-        // Set title
-        var title = current.$$route.title;
-        if (title)
-            $scope.page.title = title;
+            // Set title
+            var title = current.$$route.title;
+            if (title)
+                $scope.page.title = title;
 
-        // Set body CSS class
-        $scope.page.bodyClassName = current.$$route.bodyClassName || '';
+            // Set body CSS class
+            $scope.page.bodyClassName = current.$$route.bodyClassName || '';
+        }
 
     });
 

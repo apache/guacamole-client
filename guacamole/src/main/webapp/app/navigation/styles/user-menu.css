@@ -191,19 +191,19 @@
     padding-left: 2.5em;
 }
 
-.user-menu .options li a.home {
+.user-menu .options li a[href="#/"] {
     background-image: url('images/action-icons/guac-home-dark.png');
 }
 
-.user-menu .options li a.manage-users {
+.user-menu .options li a[href="#/manage/modules/users/"] {
     background-image: url('images/user-icons/guac-user.png');
 }
 
-.user-menu .options li a.manage-connections {
+.user-menu .options li a[href="#/manage/modules/connections/"] {
     background-image: url('images/protocol-icons/guac-monitor.png');
 }
 
-.user-menu .options li a.manage-sessions {
+.user-menu .options li a[href="#/manage/modules/sessions/"] {
     background-image: url('images/protocol-icons/guac-plug.png');
 }
 
