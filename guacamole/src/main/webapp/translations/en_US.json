@@ -310,6 +310,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US English (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "French (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
 
         "NAME" : "RDP"

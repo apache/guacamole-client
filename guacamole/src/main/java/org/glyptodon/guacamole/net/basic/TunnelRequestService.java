@@ -29,7 +29,6 @@ import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -55,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * that use purely the Guacamole API.
  *
  * @author Michael Jumper
+ * @author Vasily Loginov
  */
 @Singleton
 public class TunnelRequestService {
@@ -148,33 +148,18 @@ public class TunnelRequestService {
 
     }
 
-    
     /**
-     * Creates a new tunnel using the parameters and credentials present in
-     * the given request.
-     * 
-     * @param request The request describing the tunnel to create.
-     * @return The created tunnel, or null if the tunnel could not be created.
-     * @throws GuacamoleException If an error occurs while creating the tunnel.
+     * Reads and returns the client information provided within the given
+     * request.
+     *
+     * @param request
+     *     The request describing tunnel to create.
+     *
+     * @return GuacamoleClientInformation
+     *     An object containing information about the client sending the tunnel
+     *     request.
      */
-    public GuacamoleTunnel createTunnel(TunnelRequest request)
-            throws GuacamoleException {
-
-        // Get auth token and session
-        final String authToken = request.getParameter("authToken");
-        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-
-        // Get ID of connection
-        String id = request.getParameter("id");
-        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
-
-        // Do not continue if unable to determine type
-        if (id_type == null)
-            throw new GuacamoleClientException("Illegal identifier - unknown type.");
-
-        // Remove prefix
-        id = id.substring(id_type.PREFIX.length());
-
+    protected GuacamoleClientInformation getClientInformation(TunnelRequest request) {
         // Get client information
         GuacamoleClientInformation info = new GuacamoleClientInformation();
 
@@ -203,7 +188,46 @@ public class TunnelRequestService {
         if (video_mimetypes != null)
             info.getVideoMimetypes().addAll(video_mimetypes);
 
-        // Create connected socket from identifier
+        return info;
+    }
+
+    /**
+     * Creates a new tunnel using which is connected to the connection or
+     * connection group identifier by the given ID. Client information
+     * is specified in the {@code info} parameter.
+     *
+     * @param context
+     *     The UserContext associated with the user for whom the tunnel is
+     *     being created.
+     *
+     * @param id
+     *     The ID of the connection or connection group being connected to. For
+     *     connections, this will be of the form "c/IDENTIFIER", where
+     *     IDENTIFIER is the connection identifier. For connection groups, this
+     *     will be of the form "g/IDENTIFIER", where IDENTIFIER is the
+     *     connection group identifier.
+     *
+     * @param info
+     *     Information describing the connected Guacamole client.
+     *
+     * @return
+     *     A new tunnel, connected as required by the request.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the tunnel.
+     */
+    protected GuacamoleTunnel createConnectedTunnel(UserContext context, String id,
+                                                    GuacamoleClientInformation info) throws GuacamoleException {
+
+        // Determine ID type
+        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
+        if (id_type == null)
+            throw new GuacamoleClientException("Illegal identifier - unknown type.");
+
+        // Remove prefix
+        id = id.substring(id_type.PREFIX.length());
+
+        // Create connected tunnel from identifier
         GuacamoleTunnel tunnel;
         switch (id_type) {
 
@@ -211,7 +235,6 @@ public class TunnelRequestService {
             case CONNECTION: {
 
                 // Get connection directory
-                UserContext context = session.getUserContext();
                 Directory<Connection> directory = context.getConnectionDirectory();
 
                 // Get authorized connection
@@ -231,7 +254,6 @@ public class TunnelRequestService {
             case CONNECTION_GROUP: {
 
                 // Get connection group directory
-                UserContext context = session.getUserContext();
                 Directory<ConnectionGroup> directory = context.getConnectionGroupDirectory();
 
                 // Get authorized connection group
@@ -253,7 +275,33 @@ public class TunnelRequestService {
 
         }
 
-        // Track tunnel open/close
+        return tunnel;
+
+    }
+
+    /**
+     * Associates the given tunnel with the given session, returning a wrapped
+     * version of the same tunnel which automatically handles closure and
+     * removal from the session.
+     *
+     * @param tunnel
+     *     The connected tunnel to wrap and monitor.
+     *
+     * @param session
+     *     The Guacamole session to associate the tunnel with.
+     *
+     * @return
+     *     A new tunnel, associated with the given session, which delegates all
+     *     functionality to the given tunnel while monitoring and automatically
+     *     handling closure.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while obtaining the tunnel.
+     */
+    protected GuacamoleTunnel createAssociatedTunnel(final GuacamoleSession session,
+            GuacamoleTunnel tunnel) throws GuacamoleException {
+
+        // Monitor tunnel closure and data
         GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
 
             @Override
@@ -263,9 +311,7 @@ public class TunnelRequestService {
                 try {
                     if (GuacamoleProperties.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
 
-                        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
                         ClipboardState clipboard = session.getClipboardState();
-
                         return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
 
                     }
@@ -277,29 +323,18 @@ public class TunnelRequestService {
 
                 // Pass through by default.
                 return super.acquireReader();
-                
+
             }
 
             @Override
             public void close() throws GuacamoleException {
 
-                // Get session - just close if session does not exist
-                GuacamoleSession session;
-                try {
-                    session = authenticationService.getGuacamoleSession(authToken);
-                }
-                catch (GuacamoleUnauthorizedException e) {
-                    logger.debug("Session destroyed prior to tunnel closure.", e);
-                    super.close();
-                    return;
-                }
-
-                // If we have a session, signal listeners
+                // Signal listeners
                 if (!notifyClose(session, this))
                     throw new GuacamoleException("Tunnel close canceled by listener.");
 
                 session.removeTunnel(getUUID().toString());
-                
+
                 // Close if no exception due to listener
                 super.close();
 
@@ -313,10 +348,42 @@ public class TunnelRequestService {
             return null;
         }
 
+        // Associate tunnel with session
         session.addTunnel(monitoredTunnel);
         return monitoredTunnel;
+        
+    }
+
+    /**
+     * Creates a new tunnel using the parameters and credentials present in
+     * the given request.
+     *
+     * @param request
+     *     The request describing the tunnel to create.
+     *
+     * @return
+     *     The created tunnel, or null if the tunnel could not be created.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the tunnel.
+     */
+    public GuacamoleTunnel createTunnel(TunnelRequest request)
+            throws GuacamoleException {
+
+        // Get auth token and session
+        final String authToken = request.getParameter("authToken");
+        final GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+
+        // Get client information and connection ID from request
+        final String id = request.getParameter("id");
+        final GuacamoleClientInformation info = getClientInformation(request);
+
+        // Create connected tunnel using provided connection ID and client information
+        final GuacamoleTunnel tunnel = createConnectedTunnel(session.getUserContext(), id, info);
+
+        // Associate tunnel with session
+        return createAssociatedTunnel(session, tunnel);
 
     }
 
 }
-
