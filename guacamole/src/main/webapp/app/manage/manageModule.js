@@ -27,7 +27,7 @@ angular.module('manage', [
     'groupList',
     'list',
     'locale',
+    'navigation',
     'notification',
-    'rest',
-    'userMenu'
+    'rest'
 ]);

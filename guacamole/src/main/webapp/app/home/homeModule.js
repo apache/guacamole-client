@@ -20,4 +20,4 @@
  * THE SOFTWARE.
  */
 
-angular.module('home', ['client', 'history', 'groupList', 'rest', 'userMenu']);
+angular.module('home', ['client', 'groupList', 'history', 'navigation', 'rest']);

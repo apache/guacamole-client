@@ -27,6 +27,7 @@ angular.module('client', [
     'auth',
     'element',
     'history',
+    'navigation',
     'notification',
     'osk',
     'rest',
