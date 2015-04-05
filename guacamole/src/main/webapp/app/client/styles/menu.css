@@ -69,7 +69,7 @@
 
 }
 
-.menu-header {
+.menu-content .header {
 
     -ms-flex: 0 0 auto;
     -moz-box-flex: 0;
@@ -77,61 +77,8 @@
     -webkit-flex: 0 0 auto;
     flex: 0 0 auto;
 
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: center;
-    -ms-flex-direction: row;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: center;
-    -moz-box-orient: horizontal;
+    margin-bottom: 0;
     
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: center;
-    -webkit-box-orient: horizontal;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: center;
-    -webkit-flex-direction: row;
-
-    /* W3C */
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-
-    padding: 0.75em 0.5em;
-
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
-    background: rgba(0, 0, 0, 0.04);
-
-}
-
-.menu-header > * {
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
-}
-
-.menu-header > h2 {
-
-    -ms-flex: 1 1 auto;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1 1 auto;
-    flex: 1 1 auto;
-
-    border: none;
-    padding: 0;
-    box-shadow: none;
-    background: none;
-    margin: 0;
-
 }
 
 .menu-body {

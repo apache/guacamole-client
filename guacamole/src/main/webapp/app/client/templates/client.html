@@ -57,10 +57,9 @@
         <div class="menu-content">
 
             <!-- Stationary header -->
-            <div class="menu-header">
+            <div class="header">
                 <h2>{{client.name}}</h2>
-                <a class="home button" href="#/">{{'CLIENT.ACTION_NAVIGATE_HOME' | translate}}</a>
-                <a class="disconnect danger button" ng-click="disconnect()">{{'CLIENT.ACTION_DISCONNECT' | translate}}</a>
+                <guac-user-menu permissions="permissions" root-group="rootConnectionGroup"></guac-user-menu>
             </div>
 
             <!-- Scrollable body -->
