@@ -36,18 +36,16 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
         controller: ['$scope', '$injector', '$element', function guacUserMenuController($scope, $injector, $element) {
 
             // Get required types
-            var ConnectionGroup = $injector.get('ConnectionGroup');
-            var PermissionSet   = $injector.get('PermissionSet');
+            var PermissionSet = $injector.get('PermissionSet');
             
             // Get required services
-            var $document              = $injector.get('$document');
-            var $location              = $injector.get('$location');
-            var authenticationService  = $injector.get('authenticationService');
-            var connectionGroupService = $injector.get("connectionGroupService");
-            var guacNotification       = $injector.get('guacNotification');
-            var permissionService      = $injector.get("permissionService");
-            var userService            = $injector.get('userService');
-            var userPageService        = $injector.get('userPageService');
+            var $document             = $injector.get('$document');
+            var $location             = $injector.get('$location');
+            var authenticationService = $injector.get('authenticationService');
+            var guacNotification      = $injector.get('guacNotification');
+            var permissionService     = $injector.get("permissionService");
+            var userService           = $injector.get('userService');
+            var userPageService       = $injector.get('userPageService');
 
             /**
              * An action to be provided along with the object sent to
@@ -74,22 +72,6 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * @type Document
              */
             var document = $document[0];
-
-            /**
-             * The root connection group, or null if the connection group hierarchy has
-             * not yet been loaded.
-             *
-             * @type ConnectionGroup
-             */
-            var rootConnectionGroup = null;
-
-            /**
-             * All permissions associated with the current user, or null if the user's
-             * permissions have not yet been loaded.
-             *
-             * @type PermissionSet
-             */
-            var permissions = null;
 
             /**
              * Whether the current user has sufficient permissions to change
@@ -143,49 +125,22 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.pages = null;
 
-            /**
-             * Updates the visible menu items based on the permissions and root
-             * group on the scope, if available. If either the permissions or
-             * the root group are not yet available, this function has no
-             * effect.
-             */
-            var updateMenuItems = function updateMenuItems() {
-                
-                // Menu items are unknown until permissions and rootConnectionGroup are both available
-                if (!permissions || !rootConnectionGroup) {
-                    $scope.canChangePassword = null;
-                    $scope.pages = [];
-                    return;
-                }
-    
-                // Retrieve the main pages from the user page service
-                $scope.pages = userPageService.getMainPages(rootConnectionGroup, permissions);
-                
+            // Retrieve current permissions
+            permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsRetrieved(permissions) {
+
                 // Check whether the current user can change their own password
                 $scope.canChangePassword = PermissionSet.hasUserPermission(
                         permissions, PermissionSet.ObjectPermissionType.UPDATE, 
                         authenticationService.getCurrentUserID()
                 );
-            };
 
-            // Retrieve root group and all descendants
-            connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-            .success(function rootConnectionGroupRetrieved(retrievedRootConnectionGroup) {
-                
-                rootConnectionGroup = retrievedRootConnectionGroup;
-
-                // Navigate to home page, if not already there
-                var homePage = userPageService.getHomePage(rootConnectionGroup);
-                $location.url(homePage.url);
-                
-                updateMenuItems();
             });
-            
-            // Retrieve current permissions
-            permissionService.getPermissions(authenticationService.getCurrentUserID())
-            .success(function permissionsRetrieved(retrievedPermissions) {
-                permissions = retrievedPermissions;
-                updateMenuItems();
+
+            // Retrieve the main pages from the user page service
+            userPageService.getMainPages()
+            .then(function retrievedMainPages(pages) {
+                $scope.pages = pages;
             });
             
             /**
