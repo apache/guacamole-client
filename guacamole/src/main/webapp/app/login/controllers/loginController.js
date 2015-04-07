@@ -49,11 +49,11 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
      */
     $scope.login = function login() {
 
-        // Attempt login
+        // Attempt login once existing session is destroyed
         authenticationService.login($scope.username, $scope.password)
 
         // Redirect to main view upon success
-        .success(function success(data, status, headers, config) {
+        .then(function loginSuccessful() {
 
             // Provide user with clean environment
             guacClientManager.clear();
@@ -67,7 +67,7 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
         })
 
         // Reset and focus password upon failure
-        .error(function error(data, status, headers, config) {
+        ['catch'](function loginFailed() {
             $scope.loginError = true;
             $scope.passwordFocused = true;
             $scope.password = '';

@@ -23,8 +23,13 @@
 /**
  * A service for authenticating a user against the REST API.
  */
-angular.module('auth').factory('authenticationService', ['$http', '$cookieStore',
-        function authenticationService($http, $cookieStore) {
+angular.module('auth').factory('authenticationService', ['$injector',
+        function authenticationService($injector) {
+
+    // Required services
+    var $cookieStore = $injector.get('$cookieStore');
+    var $http        = $injector.get('$http');
+    var $q           = $injector.get('$q');
 
     var service = {};
 
@@ -58,19 +63,65 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
      *     A promise which succeeds only if the login operation was successful.
      */
     service.authenticate = function authenticate(parameters) {
-        return $http({
+
+        var authenticationProcess = $q.defer();
+
+        /**
+         * Stores the given authentication data within the browser and marks
+         * the authentication process as completed.
+         *
+         * @param {Object} data
+         *     The authentication data returned by the token REST endpoint.
+         */
+        var completeAuthentication = function completeAuthentication(data) {
+
+            // Store auth data
+            $cookieStore.put(AUTH_COOKIE_ID, {
+                authToken : data.authToken,
+                userID    : data.userID
+            });
+
+            // Process is complete
+            authenticationProcess.resolve();
+
+        };
+
+        // Attempt authentication
+        $http({
             method: 'POST',
             url: 'api/tokens',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             data: $.param(parameters),
-        }).success(function success(data, status, headers, config) {
-            $cookieStore.put(AUTH_COOKIE_ID, {
-                authToken : data.authToken,
-                userID    : data.userID
-            });
+        })
+
+        // If authentication succeeds, handle received auth data
+        .success(function authenticationSuccessful(data) {
+
+            var currentToken = service.getCurrentToken();
+
+            // If a new token was received, ensure the old token is invalidated
+            if (currentToken && data.authToken !== currentToken) {
+                service.logout()
+                ['finally'](function logoutComplete() {
+                    completeAuthentication(data);
+                });
+            }
+
+            // Otherwise, just finish the auth process
+            else
+                completeAuthentication(data);
+
+        })
+
+        // If authentication fails, propogate failure to returned promise
+        .error(function authenticationFailed() {
+            authenticationProcess.reject();
         });
+
+        return authenticationProcess.promise;
+
     };
 
     /**
@@ -142,10 +193,17 @@ angular.module('auth').factory('authenticationService', ['$http', '$cookieStore'
      *     successful.
      */
     service.logout = function logout() {
+
+        // Clear authentication data
+        var token = service.getCurrentToken();
+        $cookieStore.remove(AUTH_COOKIE_ID);
+
+        // Delete old token
         return $http({
             method: 'DELETE',
-            url: 'api/tokens/' + encodeURIComponent(service.getCurrentToken())
+            url: 'api/tokens/' + token
         });
+
     };
 
     /**
