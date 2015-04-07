@@ -83,19 +83,33 @@
 
 .menu-content .header button.close {
 
-    margin: 0;
+    margin: 0 0.75em;
     padding: 0;
-    min-width: 3em;
-
-    border: none;
+    width: 1.5em;
+    height: 1.5em;
+    min-width: 0;
+    
     box-shadow: none;
-    background: none;
+    -moz-border-radius: 1.5em;
+    -webkit-border-radius: 1.5em;
+    -khtml-border-radius: 1.5em;
+    border-radius: 1.5em;
 
-    background-image: url('images/x.png');
-    background-size: 1em;
+    -moz-background-size: 0.75em;
+    -webkit-background-size: 0.75em;
+    -khtml-background-size: 0.75em;
+    background-size: 0.75em;
+
+    background-image: url('images/x-shadow.png');
     background-repeat: no-repeat;
     background-position: center;
 
+    vertical-align: middle;
+    -ms-flex-align-self: center;
+    -moz-align-self: center;
+    -webkit-align-self: center;
+    align-self: center;
+    
 }
 
 .menu-body {
