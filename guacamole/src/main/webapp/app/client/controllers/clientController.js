@@ -31,9 +31,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var $location          = $injector.get('$location');
-    var guacClientManager  = $injector.get('guacClientManager');
-    var guacNotification   = $injector.get('guacNotification');
+    var $location         = $injector.get('$location');
+    var guacClientManager = $injector.get('guacClientManager');
+    var guacNotification  = $injector.get('guacNotification');
+    var userPageService   = $injector.get('userPageService');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -126,15 +127,27 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
-     * Action which returns the user to the home screen.
+     * Action which returns the user to the home screen. If the home page has
+     * not yet been determined, this will be null.
      */
-    var NAVIGATE_HOME_ACTION = {
-        name      : "CLIENT.ACTION_NAVIGATE_HOME",
-        className : "home button",
-        callback  : function navigateHomeCallback() {
-            $location.path('/');
+    var NAVIGATE_HOME_ACTION = null;
+
+    // Assign home page action once user's home page has been determined
+    userPageService.getHomePage()
+    .then(function homePageRetrieved(homePage) {
+
+        // Define home action only if different from current location
+        if ($location.path() !== homePage.url) {
+            NAVIGATE_HOME_ACTION = {
+                name      : "CLIENT.ACTION_NAVIGATE_HOME",
+                className : "home button",
+                callback  : function navigateHomeCallback() {
+                    $location.url(homePage.url);
+                }
+            };
         }
-    };
+
+    });
 
     /**
      * Action which replaces the current client with a newly-connected client.
@@ -414,6 +427,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (!connectionState)
             return;
 
+        // Build array of available actions
+        var actions;
+        if (NAVIGATE_HOME_ACTION)
+            actions = [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ];
+        else
+            actions = [ RECONNECT_ACTION ];
+
         // Get any associated status code
         var status = $scope.client.clientState.statusCode;
 
@@ -437,11 +457,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
             // Show error status
             guacNotification.showStatus({
-                className: "error",
-                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                text: "CLIENT.ERROR_CLIENT_" + errorName,
-                countdown: countdown,
-                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
+                className : "error",
+                title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text      : "CLIENT.ERROR_CLIENT_" + errorName,
+                countdown : countdown,
+                actions   : actions
             });
 
         }
@@ -457,11 +477,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
             // Show error status
             guacNotification.showStatus({
-                className: "error",
-                title: "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                text: "CLIENT.ERROR_TUNNEL_" + errorName,
-                countdown: countdown,
-                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
+                className : "error",
+                title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                text      : "CLIENT.ERROR_TUNNEL_" + errorName,
+                countdown : countdown,
+                actions   : actions
             });
 
         }
@@ -469,9 +489,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
             guacNotification.showStatus({
-                title: "CLIENT.DIALOG_HEADER_DISCONNECTED",
-                text: "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
-                actions: [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ]
+                title   : "CLIENT.DIALOG_HEADER_DISCONNECTED",
+                text    : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
+                actions : actions
             });
         }
 
