@@ -24,8 +24,9 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
         function loginController($scope, $injector) {
             
     // Required services
-    var $location             = $injector.get("$location");
-    var authenticationService = $injector.get("authenticationService");
+    var $location             = $injector.get('$location');
+    var authenticationService = $injector.get('authenticationService');
+    var guacClientManager     = $injector.get('guacClientManager');
     var userPageService       = $injector.get('userPageService');
 
     /**
@@ -53,10 +54,16 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
 
         // Redirect to main view upon success
         .success(function success(data, status, headers, config) {
+
+            // Provide user with clean environment
+            guacClientManager.clear();
+
+            // Redirect to main view
             userPageService.getHomePage()
             .then(function homePageRetrieved(homePage) {
                 $location.url(homePage.url);
             });
+
         })
 
         // Reset and focus password upon failure

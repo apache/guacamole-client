@@ -127,14 +127,22 @@ angular.module('client').factory('guacClientManager', ['$injector',
 
     };
 
-    // Disconnect all clients when window is unloaded
-    $window.addEventListener('unload', function disconnectAllClients() {
+    /**
+     * Disconnects and removes all currently-connected clients.
+     */
+    service.clear = function clear() {
 
         // Disconnect each managed client
         for (var id in service.managedClients)
             service.managedClients[id].client.disconnect();
 
-    });
+        // Clear managed clients
+        service.managedClients = {};
+
+    };
+
+    // Disconnect all clients when window is unloaded
+    $window.addEventListener('unload', service.clear);
 
     return service;
 
