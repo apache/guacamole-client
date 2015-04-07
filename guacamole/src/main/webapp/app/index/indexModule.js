@@ -29,6 +29,7 @@ angular.module('index', [
     'home',
     'login',
     'manage',
+    'navigation',
     'ngRoute',
     'ngTouch',
     'notification',

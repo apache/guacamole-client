@@ -32,7 +32,6 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     // Get required services
     var authenticationService  = $injector.get("authenticationService");
     var connectionGroupService = $injector.get("connectionGroupService");
-    var userPageService        = $injector.get("userPageService");
     
     /**
      * The root connection group, or null if the connection group hierarchy has
@@ -59,12 +58,6 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
     .success(function rootGroupRetrieved(rootConnectionGroup) {
         $scope.rootConnectionGroup = rootConnectionGroup;
-    });
-
-    // Navigate to home page, if not already there
-    userPageService.getHomePage()
-    .then(function homePageRetrieved(homePage) {
-        $location.url(homePage.url);
     });
 
 }]);
