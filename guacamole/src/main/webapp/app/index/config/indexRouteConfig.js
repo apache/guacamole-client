@@ -62,6 +62,57 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
     }];
 
+    /**
+     * Redirects the user to their home page. This necessarily requires
+     * attempting to re-authenticate with the Guacamole server, as the user's
+     * credentials may have changed, and thus their most-appropriate home page
+     * may have changed as well.
+     *
+     * @param {Service} $injector
+     *     The Angular $injector service.
+     * 
+     * @returns {Promise}
+     *     A promise which resolves successfully only after an attempt to
+     *     re-authenticate and determine the user's proper home page has been
+     *     made.
+     */
+    var routeToUserHomePage = ['$injector', function routeToUserHomePage($injector) {
+
+        // Required services
+        var $location       = $injector.get('$location');
+        var $q              = $injector.get('$q');
+        var userPageService = $injector.get('userPageService');
+
+        // Promise for redirection attempt
+        var redirect = $q.defer();
+
+        // Re-authenticate including any parameters in URL
+        $injector.invoke(updateCurrentToken)
+        .then(function tokenUpdateComplete() {
+
+            // Redirect to home page
+            userPageService.getHomePage()
+            .then(function homePageRetrieved(homePage) {
+                $location.url(homePage.url);
+            })
+
+            // If retrieval of home page fails, assume '/'
+            ['catch'](function homePageFailed() {
+                $location.url('/');
+            })
+
+            // Resolve promise in either case
+            ['finally'](function retrievalAttemptComplete() {
+                redirect.resolve();
+            });
+
+        });
+
+        // Return promise that will resolve regardless of success/failure
+        return redirect.promise;
+
+    }];
+
     // Configure each possible route
     $routeProvider
 
@@ -71,7 +122,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             bodyClassName : 'home',
             templateUrl   : 'app/home/templates/home.html',
             controller    : 'homeController',
-            resolve       : { updateCurrentToken: updateCurrentToken }
+            resolve       : { routeToUserHomePage: routeToUserHomePage }
         })
 
         // Connection management screen
@@ -147,9 +198,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Redirect to home screen if page not found
         .otherwise({
-            redirectTo : '/'
+            resolve : { routeToUserHomePage: routeToUserHomePage }
         });
 
 }]);
-
-

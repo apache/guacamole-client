@@ -31,7 +31,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var PermissionSet   = $injector.get('PermissionSet');
 
     // Get required services
-    var authenticationService = $injector.get('authenticationService');
+    var $q                     = $injector.get('$q');
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get("connectionGroupService");
+    var permissionService      = $injector.get("permissionService");
     
     var service = {};
     
@@ -52,7 +55,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         this.name = name;
         this.url  = url;
     };
-    
+
     /**
      * Returns an appropriate home page for the current user.
      *
@@ -62,7 +65,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @returns {Page}
      *     The user's home page.
      */
-    service.getHomePage = function getHomePage(rootGroup) {
+    var generateHomePage = function generateHomePage(rootGroup) {
 
         // Get children
         var connections      = rootGroup.childConnections      || [];
@@ -96,11 +99,32 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         }
 
-        // Default home page
+        // Resolve promise with default home page
         return new Page(
             'USER_MENU.ACTION_NAVIGATE_HOME',
             '/'
         );
+
+    };
+
+    /**
+     * Returns a promise which resolves with an appropriate home page for the
+     * current user.
+     *
+     * @returns {Promise.<Page>}
+     *     A promise which resolves with the user's default home page.
+     */
+    service.getHomePage = function getHomePage() {
+
+        var deferred = $q.defer();
+
+        // Resolve promise using home page derived from root connection group
+        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
+        .success(function rootConnectionGroupRetrieved(rootGroup) {
+            deferred.resolve(generateHomePage(rootGroup));
+        });
+
+        return deferred.promise;
 
     };
 
@@ -115,10 +139,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @param {PermissionSet} permissions
      *     The permissions for the current user.
      * 
-     * @returns {Array} 
-     *     An array of objects like this
+     * @returns {Page[]} 
+     *     An array of all main pages that the current user can visit.
      */
-    service.getMainPages = function getMainPages(rootGroup, permissions) {
+    var generateMainPages = function generateMainPages(rootGroup, permissions) {
         
         var pages = [];
         
@@ -172,7 +196,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
         
         // Add home page
-        pages.push(service.getHomePage(rootGroup));
+        pages.push(generateHomePage(rootGroup));
         
         // If user can manage users, add link to user management page
         if (canManageUsers) {
@@ -200,7 +224,51 @@ angular.module('navigation').factory('userPageService', ['$injector',
         
         return pages;
     };
-    
+
+    /**
+     * Returns a promise which resolves to an array of all main pages that the
+     * current user can visit. This can include the home page, manage pages,
+     * etc. In the case that there are no applicable pages of this sort, it may
+     * return a client page.
+     *
+     * @returns {Promise.<Page[]>} 
+     *     A promise which resolves to an array of all main pages that the
+     *     current user can visit.
+     */
+    service.getMainPages = function getMainPages() {
+
+        var deferred = $q.defer();
+
+        var rootGroup   = null;
+        var permissions = null;
+
+        /**
+         * Resolves the main pages retrieval promise, if possible. If
+         * insufficient data is available, this function does nothing.
+         */
+        var resolveMainPages = function resolveMainPages() {
+            if (rootGroup && permissions)
+                deferred.resolve(generateMainPages(rootGroup, permissions));
+        };
+
+        // Retrieve root group, resolving main pages if possible
+        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
+        .success(function rootConnectionGroupRetrieved(retrievedRootGroup) {
+            rootGroup = retrievedRootGroup;
+            resolveMainPages();
+        });
+
+        // Retrieve current permissions, resolving main pages if possible
+        permissionService.getPermissions(authenticationService.getCurrentUserID())
+        .success(function permissionsRetrieved(retrievedPermissions) {
+            permissions = retrievedPermissions;
+            resolveMainPages();
+        });
+        
+        return deferred.promise;
+
+    };
+   
     return service;
     
 }]);

@@ -30,11 +30,8 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     var ConnectionGroup = $injector.get("ConnectionGroup");
             
     // Get required services
-    var $location              = $injector.get("$location");
     var authenticationService  = $injector.get("authenticationService");
     var connectionGroupService = $injector.get("connectionGroupService");
-    var permissionService      = $injector.get("permissionService");
-    var userPageService        = $injector.get("userPageService");
     
     /**
      * The root connection group, or null if the connection group hierarchy has
@@ -45,14 +42,6 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.rootConnectionGroup = null;
 
     /**
-     * All permissions associated with the current user, or null if the user's
-     * permissions have not yet been loaded.
-     *
-     * @type PermissionSet
-     */
-    $scope.permissions = null;
-
-    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -61,27 +50,14 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.rootConnectionGroup !== null
-            && $scope.permissions         !== null;
+        return $scope.rootConnectionGroup !== null;
 
     };
 
     // Retrieve root group and all descendants
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
     .success(function rootGroupRetrieved(rootConnectionGroup) {
-        
         $scope.rootConnectionGroup = rootConnectionGroup;
+    });
 
-        // Navigate to home page, if not already there
-        var homePage = userPageService.getHomePage(rootConnectionGroup);
-        $location.url(homePage.url);
-        
-    });
-    
-    // Retrieve current permissions
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
-    .success(function permissionsRetrieved(permissions) {
-        $scope.permissions = permissions;
-    });
-    
 }]);

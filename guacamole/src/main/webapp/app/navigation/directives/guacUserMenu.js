@@ -30,36 +30,20 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
         restrict: 'E',
         replace: true,
         scope: {
-
-            /**
-             * The permissions associated with the user for whom this menu is
-             * being displayed.
-             *
-             * @type PermissionSet
-             */
-            permissions : '=',
-
-            /**
-             * The root of the connection group tree.
-             * 
-             * @type ConnectionGroup
-             */
-            rootGroup : '='
-
         },
 
         templateUrl: 'app/navigation/templates/guacUserMenu.html',
         controller: ['$scope', '$injector', '$element', function guacUserMenuController($scope, $injector, $element) {
 
             // Get required types
-            var ConnectionGroup = $injector.get('ConnectionGroup');
-            var PermissionSet   = $injector.get('PermissionSet');
+            var PermissionSet = $injector.get('PermissionSet');
             
             // Get required services
             var $document             = $injector.get('$document');
             var $location             = $injector.get('$location');
             var authenticationService = $injector.get('authenticationService');
             var guacNotification      = $injector.get('guacNotification');
+            var permissionService     = $injector.get("permissionService");
             var userService           = $injector.get('userService');
             var userPageService       = $injector.get('userPageService');
 
@@ -141,41 +125,24 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              */
             $scope.pages = null;
 
-            /**
-             * Updates the visible menu items based on the permissions and root
-             * group on the scope, if available. If either the permissions or
-             * the root group are not yet available, this function has no
-             * effect.
-             */
-            var updateMenuItems = function updateMenuItems() {
-                
-                // Menu items are unknown until permissions and rootGroup are both available
-                if (!$scope.permissions || !$scope.rootGroup) {
-                    $scope.canChangePassword = null;
-                    $scope.pages = [];
-                    return;
-                }
-    
-                // Retrieve the main pages from the user page service
-                $scope.pages = userPageService.getMainPages($scope.rootGroup, $scope.permissions);
-                
+            // Retrieve current permissions
+            permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsRetrieved(permissions) {
+
                 // Check whether the current user can change their own password
                 $scope.canChangePassword = PermissionSet.hasUserPermission(
-                        $scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, 
+                        permissions, PermissionSet.ObjectPermissionType.UPDATE, 
                         authenticationService.getCurrentUserID()
                 );
-            };
 
-            // Update available menu options when permissions are changed
-            $scope.$watch('permissions', function permissionsChanged() {
-                updateMenuItems();
+            });
+
+            // Retrieve the main pages from the user page service
+            userPageService.getMainPages()
+            .then(function retrievedMainPages(pages) {
+                $scope.pages = pages;
             });
             
-            // Update available menu options when root group is changed
-            $scope.$watch('rootGroup', function rootGroupChanged() {
-                updateMenuItems();
-            });
-
             /**
              * Toggles visibility of the user menu.
              */

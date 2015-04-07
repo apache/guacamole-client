@@ -26,6 +26,7 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
     // Required services
     var $location             = $injector.get("$location");
     var authenticationService = $injector.get("authenticationService");
+    var userPageService       = $injector.get('userPageService');
 
     /**
      * Whether an error occurred during login.
@@ -52,7 +53,10 @@ angular.module('login').controller('loginController', ['$scope', '$injector',
 
         // Redirect to main view upon success
         .success(function success(data, status, headers, config) {
-            $location.path('/');
+            userPageService.getHomePage()
+            .then(function homePageRetrieved(homePage) {
+                $location.url(homePage.url);
+            });
         })
 
         // Reset and focus password upon failure
