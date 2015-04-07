@@ -81,6 +81,23 @@
     
 }
 
+.menu-content .header button.close {
+
+    margin: 0;
+    padding: 0;
+    min-width: 3em;
+
+    border: none;
+    box-shadow: none;
+    background: none;
+
+    background-image: url('images/x.png');
+    background-size: 1em;
+    background-repeat: no-repeat;
+    background-position: center;
+
+}
+
 .menu-body {
 
     -ms-flex: 1 1 auto;
