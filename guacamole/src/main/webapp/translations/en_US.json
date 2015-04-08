@@ -220,6 +220,7 @@
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administer system:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Change own password:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Create new users:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Create new connections:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Create new connection groups:",
