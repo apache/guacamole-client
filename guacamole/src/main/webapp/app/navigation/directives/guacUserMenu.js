@@ -30,6 +30,16 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
         restrict: 'E',
         replace: true,
         scope: {
+
+            /**
+             * Optional array of actions which are specific to this particular
+             * location, as these actions may not be appropriate for other
+             * locations which contain the user menu.
+             *
+             * @type MenuAction[]
+             */
+            localActions : '='
+
         },
 
         templateUrl: 'app/navigation/templates/guacUserMenu.html',

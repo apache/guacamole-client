@@ -118,3 +118,11 @@ body.client {
     height: auto;
 
 }
+
+.client .user-menu .options li a.disconnect {
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
+    background-image: url('images/x.png');
+}

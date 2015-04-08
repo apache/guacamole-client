@@ -28,6 +28,13 @@
         <!-- Menu options -->
         <ul class="options">
             
+            <!-- Local actions -->
+            <li ng-repeat="action in localActions">
+                <a ng-class="action.className" ng-click="action.callback()">
+                    {{action.name | translate}}
+                </a>
+            </li>
+
             <!-- Navigation links -->
             <li ng-repeat="page in pages">
                 <a class="home" ng-click="navigateToPage(page)"

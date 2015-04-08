@@ -215,6 +215,16 @@
     background-image: url('images/action-icons/guac-logout-dark.png');
 }
 
+.user-menu .options li a.danger {
+    color: white;
+    font-weight: bold;
+    background-color: #A43;
+}
+
+.user-menu .options li a.danger:hover {
+    background-color: #C54;
+}
+
 .user-menu .password-dialog {
     visibility: hidden;
     opacity: 0;
