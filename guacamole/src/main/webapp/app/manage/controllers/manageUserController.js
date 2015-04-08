@@ -205,7 +205,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * reflect the addition of the given system permission.
      * 
      * @param {String} type
-     *     The system permission to remove, as defined by
+     *     The system permission to add, as defined by
      *     PermissionSet.SystemPermissionType.
      */
     var addSystemPermission = function addSystemPermission(type) {
@@ -225,7 +225,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * reflect the removal of the given system permission.
      *
      * @param {String} type
-     *     The system permission to add, as defined by
+     *     The system permission to remove, as defined by
      *     PermissionSet.SystemPermissionType.
      */
     var removeSystemPermission = function removeSystemPermission(type) {
