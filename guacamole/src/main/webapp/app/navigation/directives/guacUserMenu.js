@@ -74,15 +74,6 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             var document = $document[0];
 
             /**
-             * Whether the current user has sufficient permissions to change
-             * his/her own password. If permissions have not yet been loaded,
-             * this will be null.
-             *
-             * @type Boolean
-             */
-            $scope.canChangePassword = null;
-
-            /**
              * Whether the password edit dialog should be shown.
              *
              * @type Boolean
@@ -124,18 +115,6 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * @type Page[]
              */
             $scope.pages = null;
-
-            // Retrieve current permissions
-            permissionService.getPermissions(authenticationService.getCurrentUserID())
-            .success(function permissionsRetrieved(permissions) {
-
-                // Check whether the current user can change their own password
-                $scope.canChangePassword = PermissionSet.hasUserPermission(
-                        permissions, PermissionSet.ObjectPermissionType.UPDATE, 
-                        authenticationService.getCurrentUserID()
-                );
-
-            });
 
             // Retrieve the main pages from the user page service
             userPageService.getMainPages()
@@ -257,6 +236,44 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
                     $location.path('/login/');
                 });
             };
+
+            /**
+             * Action which logs out the current user, redirecting them to back
+             * to the login screen after logout completes.
+             */
+            var LOGOUT_ACTION = {
+                name      : 'USER_MENU.ACTION_LOGOUT',
+                className : 'logout',
+                callback  : $scope.logout
+            };
+
+            /**
+             * Action which shows the password update dialog.
+             */
+            var CHANGE_PASSWORD_ACTION = {
+                name      : 'USER_MENU.ACTION_CHANGE_PASSWORD',
+                className : 'change-password',
+                callback  : $scope.showPasswordUpdate
+            };
+
+            /**
+             * All available actions for the current user.
+             */
+            $scope.actions = [ LOGOUT_ACTION ];
+
+            // Retrieve current permissions
+            permissionService.getPermissions(authenticationService.getCurrentUserID())
+            .success(function permissionsRetrieved(permissions) {
+
+                // Add action for changing password if permission is granted
+                if (PermissionSet.hasUserPermission(permissions,
+                        PermissionSet.ObjectPermissionType.UPDATE, 
+                        authenticationService.getCurrentUserID()))
+                    $scope.actions.unshift(CHANGE_PASSWORD_ACTION);
+                        
+
+            });
+
 
             // Close menu when use clicks anywhere else
             document.body.addEventListener('click', function clickOutsideMenu() {
