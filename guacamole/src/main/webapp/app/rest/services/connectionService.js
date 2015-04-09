@@ -23,9 +23,14 @@
 /**
  * Service for operating on connections via the REST API.
  */
-angular.module('rest').factory('connectionService', ['$http', 'authenticationService',
-        function connectionService($http, authenticationService) {
-            
+angular.module('rest').factory('connectionService', ['$injector',
+        function connectionService($injector) {
+
+    // Required services
+    var $http                 = $injector.get('$http');
+    var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
+    
     var service = {};
     
     /**
@@ -52,6 +57,7 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
 
         // Retrieve connection
         return $http({
+            cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/connections/' + encodeURIComponent(id),
             params  : httpParameters
@@ -108,6 +114,7 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
 
         // Retrieve connection parameters
         return $http({
+            cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/connections/' + encodeURIComponent(id) + '/parameters',
             params  : httpParameters
@@ -144,9 +151,10 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
                 data    : connection
             })
 
-            // Set the identifier on the new connection
+            // Set the identifier on the new connection and clear the cache
             .success(function connectionCreated(identifier){
                 connection.identifier = identifier;
+                cacheService.connections.removeAll();
             });
         }
 
@@ -157,6 +165,11 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
                 url     : 'api/connections/' + encodeURIComponent(connection.identifier),
                 params  : httpParameters,
                 data    : connection
+            })
+            
+            // Clear the cache
+            .success(function connectionUpdated(){
+                cacheService.connections.removeAll();
             });
         }
 
@@ -184,6 +197,11 @@ angular.module('rest').factory('connectionService', ['$http', 'authenticationSer
             method  : 'DELETE',
             url     : 'api/connections/' + encodeURIComponent(connection.identifier),
             params  : httpParameters
+        })
+
+        // Clear the cache
+        .success(function connectionDeleted(){
+            cacheService.connections.removeAll();
         });
 
     };

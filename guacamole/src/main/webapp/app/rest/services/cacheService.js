@@ -21,6 +21,49 @@
  */
 
 /**
- * The module for authentication and management of tokens.
+ * Service which contains all REST API response caches.
  */
-angular.module('auth', ['ngCookies', 'rest']);
+angular.module('rest').factory('cacheService', ['$injector',
+        function cacheService($injector) {
+
+    // Required services
+    var $cacheFactory = $injector.get('$cacheFactory');
+    
+
+    // Service containing all caches
+    var service = {};
+
+    /**
+     * Shared cache used by both connectionGroupService and
+     * connectionService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.connections = $cacheFactory('API-CONNECTIONS');
+
+    /**
+     * Cache used by protocolService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.protocols = $cacheFactory('API-PROTOCOLS');
+
+    /**
+     * Shared cache used by both userService and permissionService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.users = $cacheFactory('API-USERS');
+
+    /**
+     * Clear all caches defined in this service.
+     */
+    service.clearCaches = function clearCaches() {
+        service.protocols.removeAll();
+        service.connections.removeAll();
+        service.users.removeAll();
+    };
+    
+    return service;
+
+}]);

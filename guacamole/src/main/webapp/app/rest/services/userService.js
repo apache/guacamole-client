@@ -26,12 +26,13 @@
 angular.module('rest').factory('userService', ['$injector',
         function userService($injector) {
 
+    // Required services
+    var $http                 = $injector.get('$http');
+    var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
+
     // Get required types
     var UserPasswordUpdate = $injector.get("UserPasswordUpdate");
-            
-    // Get required services
-    var $http                 = $injector.get("$http");
-    var authenticationService = $injector.get("authenticationService");
             
     var service = {};
     
@@ -63,6 +64,7 @@ angular.module('rest').factory('userService', ['$injector',
 
         // Retrieve users
         return $http({
+            cache   : cacheService.users,
             method  : 'GET',
             url     : 'api/users',
             params  : httpParameters
@@ -90,6 +92,7 @@ angular.module('rest').factory('userService', ['$injector',
 
         // Retrieve user
         return $http({
+            cache   : cacheService.users,
             method  : 'GET',
             url     : 'api/users/' + encodeURIComponent(username),
             params  : httpParameters
@@ -115,12 +118,18 @@ angular.module('rest').factory('userService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        // Retrieve user
+        // Delete user
         return $http({
             method  : 'DELETE',
             url     : 'api/users/' + encodeURIComponent(user.username),
             params  : httpParameters
+        })
+
+        // Clear the cache
+        .success(function userDeleted(){
+            cacheService.users.removeAll();
         });
+
 
     };
     
@@ -142,12 +151,17 @@ angular.module('rest').factory('userService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        // Retrieve user
+        // Create user
         return $http({
             method  : 'POST',
             url     : 'api/users',
             params  : httpParameters,
             data    : user
+        })
+
+        // Clear the cache
+        .success(function userCreated(){
+            cacheService.users.removeAll();
         });
 
     };
@@ -170,12 +184,17 @@ angular.module('rest').factory('userService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        // Retrieve user
+        // Update user
         return $http({
             method  : 'PUT',
             url     : 'api/users/' + encodeURIComponent(user.username),
             params  : httpParameters,
             data    : user
+        })
+
+        // Clear the cache
+        .success(function userUpdated(){
+            cacheService.users.removeAll();
         });
 
     };
@@ -205,7 +224,7 @@ angular.module('rest').factory('userService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        // Retrieve user
+        // Update user password
         return $http({
             method  : 'PUT',
             url     : 'api/users/' + encodeURIComponent(username) + '/password',
@@ -214,6 +233,11 @@ angular.module('rest').factory('userService', ['$injector',
                 oldPassword : oldPassword,
                 newPassword : newPassword
             })
+        })
+
+        // Clear the cache
+        .success(function passwordChanged(){
+            cacheService.users.removeAll();
         });
 
     };

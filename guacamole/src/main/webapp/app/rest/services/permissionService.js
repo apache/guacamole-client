@@ -23,11 +23,19 @@
 /**
  * Service for operating on user permissions via the REST API.
  */
-angular.module('rest').factory('permissionService', ['$http', 'authenticationService', 'PermissionPatch',
-        function permissionService($http, authenticationService, PermissionPatch) {
-            
-    var service = {};
+angular.module('rest').factory('permissionService', ['$injector',
+        function permissionService($injector) {
+
+    // Required services
+    var $http                 = $injector.get('$http');
+    var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
     
+    // Required types
+    var PermissionPatch = $injector.get('PermissionPatch');
+
+    var service = {};
+
     /**
      * Makes a request to the REST API to get the list of permissions for a
      * given user, returning a promise that provides an array of
@@ -49,6 +57,7 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
 
         // Retrieve user permissions
         return $http({
+            cache   : cacheService.users,
             method  : 'GET',
             url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters
@@ -211,8 +220,12 @@ angular.module('rest').factory('permissionService', ['$http', 'authenticationSer
             url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters,
             data    : permissionPatch
+        })
+        
+        // Clear the cache
+        .success(function permissionsPatched(){
+            cacheService.users.removeAll();
         });
-
     };
     
     return service;
