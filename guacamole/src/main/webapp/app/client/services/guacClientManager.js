@@ -30,7 +30,8 @@ angular.module('client').factory('guacClientManager', ['$injector',
     var ManagedClient = $injector.get('ManagedClient');
 
     // Required services
-    var $window = $injector.get('$window');
+    var $window    = $injector.get('$window');
+    var $rootScope = $injector.get('$rootScope');
 
     var service = {};
 
@@ -143,6 +144,11 @@ angular.module('client').factory('guacClientManager', ['$injector',
 
     // Disconnect all clients when window is unloaded
     $window.addEventListener('unload', service.clear);
+
+    // Clear clients on logout
+    $rootScope.$on('guacLogout', function handleLogout() {
+        service.clear();
+    });
 
     return service;
 

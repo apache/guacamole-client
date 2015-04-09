@@ -23,4 +23,4 @@
 /**
  * The module for authentication and management of tokens.
  */
-angular.module('auth', ['ngCookies', 'rest']);
+angular.module('auth', ['ngCookies']);

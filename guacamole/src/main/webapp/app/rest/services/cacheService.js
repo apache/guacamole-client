@@ -28,7 +28,7 @@ angular.module('rest').factory('cacheService', ['$injector',
 
     // Required services
     var $cacheFactory = $injector.get('$cacheFactory');
-    
+    var $rootScope    = $injector.get('$rootScope');
 
     // Service containing all caches
     var service = {};
@@ -63,7 +63,12 @@ angular.module('rest').factory('cacheService', ['$injector',
         service.connections.removeAll();
         service.users.removeAll();
     };
-    
+
+    // Clear caches on logout
+    $rootScope.$on('guacLogout', function handleLogout() {
+        service.clearCaches();
+    });
+
     return service;
 
 }]);
