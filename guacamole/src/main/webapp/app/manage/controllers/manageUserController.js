@@ -241,8 +241,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Notifies of a change to the selected system permissions for the user
-     * being edited.
+     * Notifies the controller that a change has been made to the given
+     * system permission for the user being edited.
      *
      * @param {String} type
      *     The system permission that was changed, as defined by
@@ -308,8 +308,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Notifies of a change to the selected user permissions for the user
-     * being edited.
+     * Notifies the controller that a change has been made to the given user
+     * permission for the user being edited.
      *
      * @param {String} type
      *     The user permission that was changed, as defined by
@@ -423,8 +423,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         },
 
         /**
-         * Notifies of a change to the selected connection permission for the
-         * user being edited. This only applies to READ permissions.
+         * Notifies the controller that a change has been made to the given
+         * connection permission for the user being edited. This only applies
+         * to READ permissions.
          *
          * @param {String} identifier
          *     The identifier of the connection affected by the changed
@@ -444,8 +445,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         },
 
         /**
-         * Notifies of a change to the selected connection group permission for
-         * the user being edited. This only applies to READ permissions.
+         * Notifies the controller that a change has been made to the given
+         * connection group permission for the user being edited. This only
+         * applies to READ permissions.
          *
          * @param {String} identifier
          *     The identifier of the connection group affected by the changed
