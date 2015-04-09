@@ -93,10 +93,10 @@
     <delete id="delete" parameterType="org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel">
 
         DELETE FROM guacamole_user_permission
-        USING guacamole_user_permission
-        JOIN guacamole_user affected ON guacamole_user_permission.affected_user_id = affected.user_id
+        USING guacamole_user affected
         WHERE
-            (guacamole_user_permission.user_id, permission, affected.username) IN
+            guacamole_user_permission.affected_user_id = affected.user_id
+            AND (guacamole_user_permission.user_id, permission, affected.username) IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
                     (#{permission.userID,jdbcType=INTEGER},

@@ -205,7 +205,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * reflect the addition of the given system permission.
      * 
      * @param {String} type
-     *     The system permission to remove, as defined by
+     *     The system permission to add, as defined by
      *     PermissionSet.SystemPermissionType.
      */
     var addSystemPermission = function addSystemPermission(type) {
@@ -225,7 +225,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * reflect the removal of the given system permission.
      *
      * @param {String} type
-     *     The system permission to add, as defined by
+     *     The system permission to remove, as defined by
      *     PermissionSet.SystemPermissionType.
      */
     var removeSystemPermission = function removeSystemPermission(type) {
@@ -241,8 +241,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Notifies of a change to the selected system permissions for the user
-     * being edited.
+     * Notifies the controller that a change has been made to the given
+     * system permission for the user being edited.
      *
      * @param {String} type
      *     The system permission that was changed, as defined by
@@ -258,6 +258,76 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             addSystemPermission(type);
         else
             removeSystemPermission(type);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the addition of the given user permission.
+     * 
+     * @param {String} type
+     *     The user permission to add, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user affected by the permission being added.
+     */
+    var addUserPermission = function addUserPermission(type, identifier) {
+
+        // If permission was previously removed, simply un-remove it
+        if (PermissionSet.hasUserPermission(permissionsRemoved, type, identifier))
+            PermissionSet.removeUserPermission(permissionsRemoved, type, identifier);
+
+        // Otherwise, explicitly add the permission
+        else
+            PermissionSet.addUserPermission(permissionsAdded, type, identifier);
+
+    };
+
+    /**
+     * Updates the permissionsAdded and permissionsRemoved permission sets to
+     * reflect the removal of the given user permission.
+     *
+     * @param {String} type
+     *     The user permission to remove, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user affected by the permission being removed.
+     */
+    var removeUserPermission = function removeUserPermission(type, identifier) {
+
+        // If permission was previously added, simply un-add it
+        if (PermissionSet.hasUserPermission(permissionsAdded, type, identifier))
+            PermissionSet.removeUserPermission(permissionsAdded, type, identifier);
+
+        // Otherwise, explicitly remove the permission
+        else
+            PermissionSet.addUserPermission(permissionsRemoved, type, identifier);
+
+    };
+
+    /**
+     * Notifies the controller that a change has been made to the given user
+     * permission for the user being edited.
+     *
+     * @param {String} type
+     *     The user permission that was changed, as defined by
+     *     PermissionSet.ObjectPermissionType.
+     *
+     * @param {String} identifier
+     *     The identifier of the user affected by the changed permission.
+     */
+    $scope.userPermissionChanged = function userPermissionChanged(type, identifier) {
+
+        // Determine current permission setting
+        var value = $scope.permissionFlags.userPermissions[type][identifier];
+
+        // Add/remove permission depending on flag state
+        if (value)
+            addUserPermission(type, identifier);
+        else
+            removeUserPermission(type, identifier);
 
     };
 
@@ -353,8 +423,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         },
 
         /**
-         * Notifies of a change to the selected connection permission for the
-         * user being edited. This only applies to READ permissions.
+         * Notifies the controller that a change has been made to the given
+         * connection permission for the user being edited. This only applies
+         * to READ permissions.
          *
          * @param {String} identifier
          *     The identifier of the connection affected by the changed
@@ -374,8 +445,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         },
 
         /**
-         * Notifies of a change to the selected connection group permission for
-         * the user being edited. This only applies to READ permissions.
+         * Notifies the controller that a change has been made to the given
+         * connection group permission for the user being edited. This only
+         * applies to READ permissions.
          *
          * @param {String} identifier
          *     The identifier of the connection group affected by the changed
