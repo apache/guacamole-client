@@ -28,32 +28,42 @@ angular.module('rest').factory('cacheService', ['$injector',
 
     // Required services
     var $cacheFactory = $injector.get('$cacheFactory');
+    
 
-    // Return service containing all caches
-    return {
+    // Service containing all caches
+    var service = {};
 
-        /**
-         * Shared cache used by both connectionGroupService and
-         * connectionService.
-         *
-         * @type $cacheFactory.Cache
-         */
-        connections : $cacheFactory('API-CONNECTIONS'),
+    /**
+     * Shared cache used by both connectionGroupService and
+     * connectionService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.connections = $cacheFactory('API-CONNECTIONS');
 
-        /**
-         * Cache used by protocolService.
-         *
-         * @type $cacheFactory.Cache
-         */
-        protocols : $cacheFactory('API-PROTOCOLS'),
+    /**
+     * Cache used by protocolService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.protocols = $cacheFactory('API-PROTOCOLS');
 
-        /**
-         * Shared cache used by both userService and permissionService.
-         *
-         * @type $cacheFactory.Cache
-         */
-        users : $cacheFactory('API-USERS')
+    /**
+     * Shared cache used by both userService and permissionService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.users = $cacheFactory('API-USERS');
 
+    /**
+     * Clear all caches defined in this service.
+     */
+    service.clearCaches = function clearCaches() {
+        service.protocols.removeAll();
+        service.connections.removeAll();
+        service.users.removeAll();
     };
+    
+    return service;
 
 }]);

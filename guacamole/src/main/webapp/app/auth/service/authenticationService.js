@@ -30,6 +30,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var $cookieStore = $injector.get('$cookieStore');
     var $http        = $injector.get('$http');
     var $q           = $injector.get('$q');
+    var cacheService = $injector.get('cacheService');
 
     var service = {};
 
@@ -193,6 +194,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     successful.
      */
     service.logout = function logout() {
+        
+        // Clear all caches
+        cacheService.clearCaches();
 
         // Clear authentication data
         var token = service.getCurrentToken();
