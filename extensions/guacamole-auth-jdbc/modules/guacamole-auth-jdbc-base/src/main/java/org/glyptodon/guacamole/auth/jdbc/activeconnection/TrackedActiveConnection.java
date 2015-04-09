@@ -69,26 +69,40 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
 
     /**
      * Initializes this TrackedActiveConnection, copying the data associated
-     * with the given active connection record.
+     * with the given active connection record. At a minimum, the identifier
+     * of this active connection will be set, the start date, and the
+     * identifier of the associated connection will be copied. If requested,
+     * sensitive information like the associated username will be copied, as
+     * well.
      *
      * @param currentUser
      *     The user that created or retrieved this object.
      *
      * @param activeConnectionRecord
      *     The active connection record to copy.
+     *
+     * @param includeSensitiveInformation
+     *     Whether sensitive data should be copied from the connection record
+     *     as well. This includes the remote host, associated tunnel, and
+     *     username.
      */
     public void init(AuthenticatedUser currentUser,
-            ActiveConnectionRecord activeConnectionRecord) {
+            ActiveConnectionRecord activeConnectionRecord,
+            boolean includeSensitiveInformation) {
 
         super.init(currentUser);
         
-        // Copy all data from given record
+        // Copy all non-sensitive data from given record
         this.connectionIdentifier = activeConnectionRecord.getConnection().getIdentifier();
         this.identifier           = activeConnectionRecord.getUUID().toString();
-        this.remoteHost           = activeConnectionRecord.getRemoteHost();
         this.startDate            = activeConnectionRecord.getStartDate();
-        this.tunnel               = activeConnectionRecord.getTunnel();
-        this.username             = activeConnectionRecord.getUsername();
+
+        // Include sensitive data, too, if requested
+        if (includeSensitiveInformation) {
+            this.remoteHost = activeConnectionRecord.getRemoteHost();
+            this.tunnel     = activeConnectionRecord.getTunnel();
+            this.username   = activeConnectionRecord.getUsername();
+        }
 
     }
 

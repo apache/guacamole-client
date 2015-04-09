@@ -83,6 +83,7 @@ public class ActiveConnectionService
     public Collection<TrackedActiveConnection> retrieveObjects(AuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
+        boolean isAdmin = user.getUser().isAdministrator();
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
         // Retrieve all visible connections (permissions enforced by tunnel service)
@@ -95,7 +96,7 @@ public class ActiveConnectionService
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {
                 TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-                activeConnection.init(user, record);
+                activeConnection.init(user, record, isAdmin);
                 activeConnections.add(activeConnection);
             }
 
