@@ -22,6 +22,16 @@
 
 /**
  * A service for authenticating a user against the REST API.
+ *
+ * This service broadcasts two events on $rootScope depending on the result of
+ * authentication operations: 'guacLogin' if authentication was successful and
+ * a new token was created, and 'guacLogout' if an existing token is being
+ * destroyed or replaced. Both events will be passed the related token as their
+ * sole parameter.
+ *
+ * If a login attempt results in an existing token being replaced, 'guacLogout'
+ * will be broadcast first for the token being replaced, followed by
+ * 'guacLogin' for the new token.
  */
 angular.module('auth').factory('authenticationService', ['$injector',
         function authenticationService($injector) {
@@ -30,7 +40,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var $cookieStore = $injector.get('$cookieStore');
     var $http        = $injector.get('$http');
     var $q           = $injector.get('$q');
-    var cacheService = $injector.get('cacheService');
+    var $rootScope   = $injector.get('$rootScope');
 
     var service = {};
 
@@ -102,12 +112,25 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             var currentToken = service.getCurrentToken();
 
-            // If a new token was received, ensure the old token is invalidated
-            if (currentToken && data.authToken !== currentToken) {
-                service.logout()
-                ['finally'](function logoutComplete() {
+            // If a new token was received, ensure the old token is invalidated,
+            // if any, and notify listeners of the new token
+            if (data.authToken !== currentToken) {
+
+                // If an old token existed, explicitly logout first
+                if (currentToken) {
+                    service.logout()
+                    ['finally'](function logoutComplete() {
+                        completeAuthentication(data);
+                        $rootScope.$broadcast('guacLogin', data.authToken);
+                    });
+                }
+
+                // Otherwise, simply complete authentication and notify of login
+                else {
                     completeAuthentication(data);
-                });
+                    $rootScope.$broadcast('guacLogin', data.authToken);
+                }
+
             }
 
             // Otherwise, just finish the auth process
@@ -195,12 +218,12 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.logout = function logout() {
         
-        // Clear all caches
-        cacheService.clearCaches();
-
         // Clear authentication data
         var token = service.getCurrentToken();
         $cookieStore.remove(AUTH_COOKIE_ID);
+
+        // Notify listeners that a token is being destroyed
+        $rootScope.$broadcast('guacLogout', token);
 
         // Delete old token
         return $http({
@@ -249,6 +272,6 @@ angular.module('auth').factory('authenticationService', ['$injector',
         return null;
 
     };
-    
+
     return service;
 }]);
