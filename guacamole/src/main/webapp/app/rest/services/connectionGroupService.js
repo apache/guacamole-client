@@ -23,9 +23,17 @@
 /**
  * Service for operating on connection groups via the REST API.
  */
-angular.module('rest').factory('connectionGroupService', ['$http', 'authenticationService', 'ConnectionGroup',
-        function connectionGroupService($http, authenticationService, ConnectionGroup) {
-            
+angular.module('rest').factory('connectionGroupService', ['$injector',
+        function connectionGroupService($injector) {
+
+    // Required services
+    var $http                 = $injector.get('$http');
+    var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
+    
+    // Required types
+    var ConnectionGroup = $injector.get('ConnectionGroup');
+
     var service = {};
     
     /**
@@ -65,6 +73,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
 
         // Retrieve connection group 
         return $http({
+            cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             params  : httpParameters
@@ -97,6 +106,7 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
 
         // Retrieve connection group
         return $http({
+            cache   : cacheService.connections,
             method  : 'GET',
             url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID),
             params  : httpParameters
@@ -133,9 +143,10 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
                 data    : connectionGroup
             })
 
-            // Set the identifier on the new connection group
+            // Set the identifier on the new connection group and clear the cache
             .success(function connectionGroupCreated(identifier){
                 connectionGroup.identifier = identifier;
+                cacheService.connections.removeAll();
             });
         }
 
@@ -146,6 +157,11 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
                 url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 params  : httpParameters,
                 data    : connectionGroup
+            })
+
+            // Clear the cache
+            .success(function connectionGroupUpdated(){
+                cacheService.connections.removeAll();
             });
         }
 
@@ -173,6 +189,11 @@ angular.module('rest').factory('connectionGroupService', ['$http', 'authenticati
             method  : 'DELETE',
             url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
             params  : httpParameters
+        })
+
+        // Clear the cache
+        .success(function connectionGroupDeleted(){
+            cacheService.connections.removeAll();
         });
 
     };

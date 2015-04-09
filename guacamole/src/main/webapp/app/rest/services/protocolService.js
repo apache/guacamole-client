@@ -23,9 +23,14 @@
 /**
  * Service for operating on protocol metadata via the REST API.
  */
-angular.module('rest').factory('protocolService', ['$http', 'authenticationService',
-        function protocolService($http, authenticationService) {
-            
+angular.module('rest').factory('protocolService', ['$injector',
+        function protocolService($injector) {
+
+    // Required services
+    var $http                 = $injector.get('$http');
+    var authenticationService = $injector.get('authenticationService');
+    var cacheService          = $injector.get('cacheService');
+
     var service = {};
     
     /**
@@ -46,6 +51,7 @@ angular.module('rest').factory('protocolService', ['$http', 'authenticationServi
 
         // Retrieve available protocols
         return $http({
+            cache   : cacheService.protocols,
             method  : 'GET',
             url     : 'api/protocols',
             params  : httpParameters
