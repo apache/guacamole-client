@@ -106,14 +106,14 @@ public class ActiveConnectionRESTService {
         if (permissions != null && permissions.isEmpty())
             permissions = null;
 
-        // An admin user has access to any user
+        // An admin user has access to any connection
         SystemPermissionSet systemPermissions = self.getSystemPermissions();
         boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
         // Get the directory
         Directory<ActiveConnection> activeConnectionDirectory = userContext.getActiveConnectionDirectory();
 
-        // Filter users, if requested
+        // Filter connections, if requested
         Collection<String> activeConnectionIdentifiers = activeConnectionDirectory.getIdentifiers();
         if (!isAdmin && permissions != null) {
             ObjectPermissionSet activeConnectionPermissions = self.getActiveConnectionPermissions();

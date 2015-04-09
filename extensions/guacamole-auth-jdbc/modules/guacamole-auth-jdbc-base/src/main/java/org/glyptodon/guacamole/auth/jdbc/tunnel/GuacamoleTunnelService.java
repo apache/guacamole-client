@@ -60,30 +60,6 @@ public interface GuacamoleTunnelService {
             throws GuacamoleException;
 
     /**
-     * Returns the connection records representing the connection associated
-     * with the tunnel having the given UUID, if that connection is visible to
-     * the given user.
-     *
-     * @param user
-     *     The user retrieving the active connection.
-     * 
-     * @param tunnelUUID
-     *     The UUID of the tunnel associated with the active connection being
-     *     retrieved.
-     *
-     * @return
-     *     The active connection associated with the tunnel having the given
-     *     UUID, or null if no such connection exists.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving all active connections, or if
-     *     permission is denied.
-     */
-    public ActiveConnectionRecord getActiveConnection(AuthenticatedUser user,
-            String tunnelUUID)
-            throws GuacamoleException;
-
-    /**
      * Creates a socket for the given user which connects to the given
      * connection. The given client information will be passed to guacd when
      * the connection is established. This function will apply any concurrent
