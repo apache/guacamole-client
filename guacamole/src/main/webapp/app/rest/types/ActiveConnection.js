@@ -59,7 +59,7 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
 
         /**
          * The time that the connection began, in seconds since
-         * 1970-01-01 00:00:00 UTC.
+         * 1970-01-01 00:00:00 UTC, if known.
          *
          * @type Number 
          */
@@ -73,7 +73,7 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
         this.remoteHost = template.remoteHost;
 
         /**
-         * The username of the user associated with the connection.
+         * The username of the user associated with the connection, if known.
          * 
          * @type String
          */

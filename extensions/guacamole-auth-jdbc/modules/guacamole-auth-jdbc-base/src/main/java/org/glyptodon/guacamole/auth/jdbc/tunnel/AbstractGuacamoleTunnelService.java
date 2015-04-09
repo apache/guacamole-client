@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
@@ -448,24 +450,33 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     public Collection<ActiveConnectionRecord> getActiveConnections(AuthenticatedUser user)
         throws GuacamoleException {
 
-        // Only administrators may see all active connections
-        if (!user.getUser().isAdministrator())
+        // Simply return empty list if there are no active tunnels
+        Collection<ActiveConnectionRecord> records = activeTunnels.values();
+        if (records.isEmpty())
             return Collections.EMPTY_LIST;
 
-        return Collections.unmodifiableCollection(activeTunnels.values());
+        // Build set of all connection identifiers associated with active tunnels
+        Set<String> identifiers = new HashSet<String>(records.size());
+        for (ActiveConnectionRecord record : records)
+            identifiers.add(record.getConnection().getIdentifier());
 
-    }
+        // Produce collection of readable connection identifiers
+        Collection<ConnectionModel> connections = connectionMapper.selectReadable(user.getUser().getModel(), identifiers);
 
-    @Override
-    public ActiveConnectionRecord getActiveConnection(AuthenticatedUser user,
-            String tunnelUUID) throws GuacamoleException {
+        // Ensure set contains only identifiers of readable connections
+        identifiers.clear();
+        for (ConnectionModel connection : connections)
+            identifiers.add(connection.getIdentifier());
 
-        // Only administrators may see all active connections
-        if (!user.getUser().isAdministrator())
-            return null;
+        // Produce readable subset of records
+        Collection<ActiveConnectionRecord> visibleRecords = new ArrayList<ActiveConnectionRecord>(records.size());
+        for (ActiveConnectionRecord record : records) {
+            if (identifiers.contains(record.getConnection().getIdentifier()))
+                visibleRecords.add(record);
+        }
 
-        return activeTunnels.get(tunnelUUID);
-        
+        return visibleRecords;
+
     }
 
     @Override

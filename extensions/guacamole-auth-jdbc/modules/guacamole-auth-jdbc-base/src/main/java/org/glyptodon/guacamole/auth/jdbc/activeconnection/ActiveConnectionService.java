@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
@@ -62,35 +63,43 @@ public class ActiveConnectionService
     public TrackedActiveConnection retrieveObject(AuthenticatedUser user,
             String identifier) throws GuacamoleException {
 
-        // Only administrators may retrieve active connections
-        if (!user.getUser().isAdministrator())
-            throw new GuacamoleSecurityException("Permission denied.");
+        // Pull objects having given identifier
+        Collection<TrackedActiveConnection> objects = retrieveObjects(user, Collections.singleton(identifier));
 
-        // Retrieve record associated with requested connection
-        ActiveConnectionRecord record = tunnelService.getActiveConnection(user, identifier);
-        if (record == null)
+        // If no such object, return null
+        if (objects.isEmpty())
             return null;
 
-        // Return tracked active connection using retrieved record
-        TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-        activeConnection.init(user, record);
-        return activeConnection;
-        
+        // The object collection will have exactly one element unless the
+        // database has seriously lost integrity
+        assert(objects.size() == 1);
+
+        // Return first and only object
+        return objects.iterator().next();
+
     }
     
     @Override
     public Collection<TrackedActiveConnection> retrieveObjects(AuthenticatedUser user,
             Collection<String> identifiers) throws GuacamoleException {
 
-        // Build list of all active connections with given identifiers
-        Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(identifiers.size());
-        for (String identifier : identifiers) {
+        boolean isAdmin = user.getUser().isAdministrator();
+        Set<String> identifierSet = new HashSet<String>(identifiers);
 
-            // Add connection to list if it exists
-            TrackedActiveConnection activeConnection = retrieveObject(user, identifier);
-            if (activeConnection != null)
+        // Retrieve all visible connections (permissions enforced by tunnel service)
+        Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
+
+        // Restrict to subset of records which match given identifiers
+        Collection<TrackedActiveConnection> activeConnections = new ArrayList<TrackedActiveConnection>(identifiers.size());
+        for (ActiveConnectionRecord record : records) {
+
+            // Add connection if within requested identifiers
+            if (identifierSet.contains(record.getUUID().toString())) {
+                TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
+                activeConnection.init(user, record, isAdmin);
                 activeConnections.add(activeConnection);
-            
+            }
+
         }
 
         return activeConnections;
@@ -100,6 +109,10 @@ public class ActiveConnectionService
     @Override
     public void deleteObject(AuthenticatedUser user, String identifier)
         throws GuacamoleException {
+
+        // Only administrators may delete active connections
+        if (!user.getUser().isAdministrator())
+            throw new GuacamoleSecurityException("Permission denied.");
 
         // Close connection, if it exists (and we have permission)
         ActiveConnection activeConnection = retrieveObject(user, identifier);

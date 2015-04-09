@@ -88,10 +88,57 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
         },
 
         templateUrl: 'app/groupList/templates/guacGroupList.html',
-        controller: ['$scope', '$injector', '$interval', function guacGroupListController($scope, $injector, $interval) {
+        controller: ['$scope', '$injector', function guacGroupListController($scope, $injector) {
 
-            // Get required types
+            // Required services
+            var activeConnectionService = $injector.get('activeConnectionService');
+
+            // Required types
             var GroupListItem = $injector.get('GroupListItem');
+
+            /**
+             * The number of active connections associated with a given
+             * connection identifier. If this information is unknown, or there
+             * are no active connections for a given identifier, no number will
+             * be stored.
+             *
+             * @type Object.<String, Number>
+             */
+            var connectionCount = {};
+
+            // Count active connections by connection identifier
+            activeConnectionService.getActiveConnections()
+            .success(function activeConnectionsRetrieved(activeConnections) {
+
+                // Count each active connection by identifier
+                angular.forEach(activeConnections, function addActiveConnection(activeConnection) {
+
+                    // If counter already exists, increment
+                    var identifier = activeConnection.connectionIdentifier;
+                    if (connectionCount[identifier])
+                        connectionCount[identifier]++;
+
+                    // Otherwise, initialize counter to 1
+                    else
+                        connectionCount[identifier] = 1;
+
+                });
+
+            });
+
+            /**
+             * Returns the number of active usages of a given connection.
+             *
+             * @param {Connection} connection
+             *     The connection whose active connections should be counted.
+             *
+             * @returns {Number}
+             *     The number of currently-active usages of the given
+             *     connection.
+             */
+            var countActiveConnections = function countActiveConnections(connection) {
+                return connectionCount[connection.identifier];
+            };
 
             /**
              * Returns whether the given item represents a connection that can
@@ -131,7 +178,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                 if (connectionGroup) {
 
                     // Create item hierarchy, including connections only if they will be visible
-                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup, !!$scope.connectionTemplate);
+                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup,
+                        !!$scope.connectionTemplate, countActiveConnections);
 
                     // If root group is to be shown, wrap that group as the child of a fake root group
                     if ($scope.showRootGroup)
@@ -161,7 +209,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             $scope.toggleExpanded = function toggleExpanded(groupListItem) {
                 groupListItem.isExpanded = !groupListItem.isExpanded;
             };
-            
+
         }]
 
     };

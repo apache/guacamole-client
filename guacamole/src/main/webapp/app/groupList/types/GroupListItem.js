@@ -102,12 +102,14 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         this.isExpanded = template.isExpanded;
         
         /**
-         * The number of currently active users for this connection or
+         * Returns the number of currently active users for this connection or
          * connection group, if known.
          * 
          * @type Number
          */
-        this.activeConnections = template.activeConnections;
+        this.getActiveConnections = template.getActiveConnections || (function getActiveConnections() {
+            return null;
+        });
 
         /**
          * The connection or connection group whose data is exposed within
@@ -126,10 +128,15 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     The connection whose contents should be represented by the new
      *     GroupListItem.
      *
+     * @param {Function} [countActiveConnections]
+     *     A getter which returns the current number of active connections for
+     *     the given connection. If omitted, the number of active connections
+     *     known at the time this function was called is used instead.
+     *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection.
      */
-    GroupListItem.fromConnection = function fromConnection(connection) {
+    GroupListItem.fromConnection = function fromConnection(connection, countActiveConnections) {
 
         // Return item representing the given connection
         return new GroupListItem({
@@ -144,7 +151,15 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             isConnectionGroup : false,
             
             // Count of currently active connections using this connection
-            activeConnections : connection.activeConnections,
+            getActiveConnections : function getActiveConnections() {
+
+                // Use getter, if provided
+                if (countActiveConnections)
+                    return countActiveConnections(connection);
+
+                return connection.activeConnections;
+
+            },
 
             // Wrapped item
             wrappedItem : connection
@@ -165,26 +180,37 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     Whether connections should be included in the contents of the
      *     resulting GroupListItem. By default, connections are included.
      *
+     * @param {Function} [countActiveConnections]
+     *     A getter which returns the current number of active connections for
+     *     the given connection. If omitted, the number of active connections
+     *     known at the time this function was called is used instead.
+     *
+     * @param {Function} [countActiveConnectionGroups]
+     *     A getter which returns the current number of active connections for
+     *     the given connection group. If omitted, the number of active
+     *     connections known at the time this function was called is used
+     *     instead.
+     *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection group,
      *     including all descendants.
      */
     GroupListItem.fromConnectionGroup = function fromConnectionGroup(connectionGroup,
-        includeConnections) {
+        includeConnections, countActiveConnections, countActiveConnectionGroups) {
 
         var children = [];
 
         // Add any child connections
         if (connectionGroup.childConnections && includeConnections !== false) {
             connectionGroup.childConnections.forEach(function addChildConnection(child) {
-                children.push(GroupListItem.fromConnection(child));
+                children.push(GroupListItem.fromConnection(child, countActiveConnections));
             });
         }
 
         // Add any child groups 
         if (connectionGroup.childConnectionGroups) {
             connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
-                children.push(GroupListItem.fromConnectionGroup(child, includeConnections));
+                children.push(GroupListItem.fromConnectionGroup(child, includeConnections, countActiveConnections, countActiveConnectionGroups));
             });
         }
 
@@ -204,7 +230,16 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             children : children,
 
             // Count of currently active connection groups using this connection
-            activeConnections : connectionGroup.activeConnections,
+            getActiveConnections : function getActiveConnections() {
+
+                // Use getter, if provided
+                if (countActiveConnectionGroups)
+                    return countActiveConnectionGroups(connectionGroup);
+
+                return connectionGroup.activeConnections;
+
+            },
+
 
             // Wrapped item
             wrappedItem : connectionGroup

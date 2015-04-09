@@ -34,7 +34,9 @@ import org.glyptodon.guacamole.net.GuacamoleTunnel;
 public interface ActiveConnection extends Identifiable {
 
     /**
-     * Returns the identifier of the connection being actively used.
+     * Returns the identifier of the connection being actively used. Unlike the
+     * other information stored in this object, the connection identifier must
+     * be present and MAY NOT be null.
      *
      * @return
      *     The identifier of the connection being actively used.
@@ -53,7 +55,8 @@ public interface ActiveConnection extends Identifiable {
      * Returns the date and time the connection began.
      *
      * @return
-     *     The date and time the connection began.
+     *     The date and time the connection began, or null if this
+     *     information is not available.
      */
     Date getStartDate();
 
@@ -61,7 +64,8 @@ public interface ActiveConnection extends Identifiable {
      * Sets the date and time the connection began.
      *
      * @param startDate 
-     *     The date and time the connection began.
+     *     The date and time the connection began, or null if this
+     *     information is not available.
      */
     void setStartDate(Date startDate);
 
@@ -90,7 +94,8 @@ public interface ActiveConnection extends Identifiable {
      * Returns the name of the user who is using this connection.
      *
      * @return
-     *     The name of the user who is using this connection.
+     *     The name of the user who is using this connection, or null if this
+     *     information is not available.
      */
     String getUsername();
 
@@ -98,7 +103,8 @@ public interface ActiveConnection extends Identifiable {
      * Sets the name of the user who is using this connection.
      *
      * @param username 
-     *     The name of the user who is using this connection.
+     *     The name of the user who is using this connection, or null if this
+     *     information is not available.
      */
     void setUsername(String username);
 
