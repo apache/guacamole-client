@@ -52,7 +52,7 @@ angular.module('rest').factory('cacheService', ['$injector',
          *
          * @type $cacheFactory.Cache
          */
-        users : $cacheFactory('API-USER')
+        users : $cacheFactory('API-USERS')
 
     };
 
