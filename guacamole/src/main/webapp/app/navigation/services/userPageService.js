@@ -55,6 +55,17 @@ angular.module('navigation').factory('userPageService', ['$injector',
         this.name = name;
         this.url  = url;
     };
+            
+    /**
+     * The home page to assign to a user if they can navigate to more than one
+     * page.
+     * 
+     * @type Page
+     */
+    var SYSTEM_HOME_PAGE = new Page(
+        'USER_MENU.ACTION_NAVIGATE_HOME',
+        '/'
+    );
 
     /**
      * Returns an appropriate home page for the current user.
@@ -100,10 +111,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         }
 
         // Resolve promise with default home page
-        return new Page(
-            'USER_MENU.ACTION_NAVIGATE_HOME',
-            '/'
-        );
+        return SYSTEM_HOME_PAGE;
 
     };
 
@@ -195,8 +203,11 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 // A user must be a system administrator to manage sessions
                 PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
         
-        // Add home page
-        pages.push(generateHomePage(rootGroup));
+        // Only include the home page in the list of main pages if the user
+        // can navigate elsewhere.
+        var homePage = generateHomePage(rootGroup);
+        if (homePage === SYSTEM_HOME_PAGE)
+            pages.push(homePage);
         
         // If user can manage users, add link to user management page
         if (canManageUsers) {
