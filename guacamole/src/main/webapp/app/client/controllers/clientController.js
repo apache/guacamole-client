@@ -544,6 +544,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
+    /**
+     * Action which immediately disconnects the currently-connected client, if
+     * any.
+     */
+    var DISCONNECT_MENU_ACTION = {
+        name      : 'CLIENT.ACTION_DISCONNECT',
+        className : 'danger disconnect',
+        callback  : $scope.disconnect
+    };
+
+    // Set client-specific menu actions
+    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 
