@@ -34,6 +34,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -41,6 +42,7 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
+import org.glyptodon.guacamole.net.basic.rest.APIRequest;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.HTTPException;
 import org.slf4j.Logger;
@@ -140,8 +142,16 @@ public class TokenRESTService {
      *     An optional existing auth token for the user who is to be
      *     authenticated.
      *
-     * @param request
-     *     The HttpServletRequest associated with the login attempt.
+     * @param consumedRequest
+     *     The HttpServletRequest associated with the login attempt. The
+     *     parameters of this request may not be accessible, as the request may
+     *     have been fully consumed by JAX-RS.
+     *
+     * @param parameters
+     *     A MultivaluedMap containing all parameters from the given HTTP
+     *     request. All request parameters must be made available through this
+     *     map, even if those parameters are no longer accessible within the
+     *     now-fully-consumed HTTP request.
      *
      * @return The auth token for the newly logged-in user.
      * @throws GuacamoleException If an error prevents successful login.
@@ -151,8 +161,13 @@ public class TokenRESTService {
     public APIAuthToken createToken(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("token") String token,
-            @Context HttpServletRequest request) throws GuacamoleException {
+            @Context HttpServletRequest consumedRequest,
+            MultivaluedMap<String, String> parameters)
+            throws GuacamoleException {
 
+        // Reconstitute the HTTP request with the map of parameters
+        HttpServletRequest request = new APIRequest(consumedRequest, parameters);
+        
         // Pull existing session if token provided
         GuacamoleSession existingSession;
         if (token != null)
