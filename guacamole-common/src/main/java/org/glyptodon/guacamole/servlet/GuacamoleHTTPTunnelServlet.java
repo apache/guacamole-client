@@ -305,8 +305,10 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 } while (tunnel.isOpen() && (message = reader.read()) != null);
 
                 // Close tunnel immediately upon EOF
-                if (message == null)
+                if (message == null) {
+                    session.detachTunnel(tunnel);
                     tunnel.close();
+                }
 
                 // End-of-instructions marker
                 out.write("0.;");
@@ -314,11 +316,18 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
                 response.flushBuffer();
             }
 
-            // Send end-of-stream marker if connection is closed
+            // Send end-of-stream marker and close tunnel if connection is closed
             catch (GuacamoleConnectionClosedException e) {
+
+                // Detach and close
+                session.detachTunnel(tunnel);
+                tunnel.close();
+
+                // End-of-instructions marker
                 out.write("0.;");
                 out.flush();
                 response.flushBuffer();
+
             }
 
             catch (GuacamoleException e) {
