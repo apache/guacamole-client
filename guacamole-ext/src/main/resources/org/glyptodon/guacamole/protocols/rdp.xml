@@ -7,6 +7,7 @@
     <param name="password"        type="password" title="Password"/>
     <param name="domain"          type="text"     title="Domain"/>
     <param name="initial-program" type="text"     title="Initial program"/>
+    <param name="client-name"     type="text"     title="Client name"/>
 
     <param name="width"           type="numeric"  title="Display width"/>
     <param name="height"          type="numeric"  title="Display height"/>
