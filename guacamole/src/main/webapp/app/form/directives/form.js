@@ -33,6 +33,17 @@ angular.module('form').directive('guacForm', [function form() {
         scope: {
 
             /**
+             * The translation namespace of the translation strings that will
+             * be generated for all fields. This namespace is absolutely
+             * required. If this namespace is omitted, all generated
+             * translation strings will be placed within the MISSING_NAMESPACE
+             * namespace, as a warning.
+             *
+             * @type String
+             */
+            namespace : '=',
+
+            /**
              * The fields to display.
              *
              * @type Field[]
@@ -50,7 +61,10 @@ angular.module('form').directive('guacForm', [function form() {
 
         },
         templateUrl: 'app/form/templates/form.html',
-        controller: ['$scope', function formController($scope) {
+        controller: ['$scope', '$injector', function formController($scope, $injector) {
+
+            // Required services
+            var translationStringService = $injector.get('translationStringService');
 
             /**
              * The object which will receive all field values. Normally, this
@@ -62,6 +76,30 @@ angular.module('form').directive('guacForm', [function form() {
              * @type Object.<String, String>
              */
             $scope.values = {};
+
+            /**
+             * Produces the translation string for the header of the given
+             * field. The translation string will be of the form:
+             *
+             * <code>NAMESPACE.FIELD_HEADER_NAME<code>
+             *
+             * where <code>NAMESPACE</code> is the namespace provided to the
+             * directive and <code>NAME</code> is the field name transformed
+             * via translationStringService.canonicalize().
+             *
+             * @param {Field} field
+             *     The field for which to produce the translation string.
+             *
+             * @returns {String}
+             *     The translation string which produces the translated header
+             *     of the field.
+             */
+            $scope.getFieldHeader = function getFieldHeader(field) {
+
+                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
+                        + '.FIELD_HEADER_' + translationStringService.canonicalize(field.name);
+
+            };
 
             // Update string value and re-assign to model when field is changed
             $scope.$watch('model', function setModel(model) {

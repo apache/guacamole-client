@@ -37,6 +37,6 @@
     <textarea ng-show="field.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
 
     <!-- Enumerated field -->
-    <select ng-show="field.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as option.title | translate for option in field.options | orderBy: value"></select>
+    <select ng-show="field.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getFieldOption(option.value) | translate for option in field.options | orderBy: value"></select>
 
 </div>

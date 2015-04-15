@@ -33,6 +33,17 @@ angular.module('form').directive('guacFormField', [function formField() {
         scope: {
 
             /**
+             * The translation namespace of the translation strings that will
+             * be generated for this field. This namespace is absolutely
+             * required. If this namespace is omitted, all generated
+             * translation strings will be placed within the MISSING_NAMESPACE
+             * namespace, as a warning.
+             *
+             * @type String
+             */
+            namespace : '=',
+
+            /**
              * The field to display.
              *
              * @type Field
@@ -50,6 +61,9 @@ angular.module('form').directive('guacFormField', [function formField() {
         },
         templateUrl: 'app/form/templates/formField.html',
         controller: ['$scope', '$injector', function formFieldController($scope, $injector) {
+
+            // Required services
+            var translationStringService = $injector.get('translationStringService');
 
             /**
              * The type to use for password input fields. By default, password
@@ -72,10 +86,10 @@ angular.module('form').directive('guacFormField', [function formField() {
 
                 // If password is hidden, togglePassword() will show the password
                 if ($scope.passwordInputType === 'password')
-                    return 'MANAGE.HELP_SHOW_PASSWORD';
+                    return 'FORM.HELP_SHOW_PASSWORD';
 
                 // If password is shown, togglePassword() will hide the password
-                return 'MANAGE.HELP_HIDE_PASSWORD';
+                return 'FORM.HELP_HIDE_PASSWORD';
 
             };
 
@@ -97,6 +111,37 @@ angular.module('form').directive('guacFormField', [function formField() {
             };
 
             /**
+             * Produces the translation string for the given field option
+             * value. The translation string will be of the form:
+             *
+             * <code>NAMESPACE.FIELD_OPTION_NAME_VALUE<code>
+             *
+             * where <code>NAMESPACE</code> is the namespace provided to the
+             * directive, <code>NAME</code> is the field name transformed
+             * via translationStringService.canonicalize(), and
+             * <code>VALUE</code> is the option value transformed via
+             * translationStringService.canonicalize()
+             *
+             * @param {String} value
+             *     The name of the option value.
+             *
+             * @returns {String}
+             *     The translation string which produces the translated name of the
+             *     value specified.
+             */
+            $scope.getFieldOption = function getFieldOption(value) {
+
+                // Don't bother if the model is not yet defined
+                if (!$scope.field)
+                    return '';
+
+                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
+                        + '.FIELD_OPTION_' + translationStringService.canonicalize($scope.field.name)
+                        + '_'              + translationStringService.canonicalize(value || 'EMPTY');
+
+            };
+
+            /**
              * Translates the given string field value into an appropriately-
              * typed value as dictated by the attributes of the field,
              * exposing that typed value within the scope as
@@ -107,7 +152,7 @@ angular.module('form').directive('guacFormField', [function formField() {
              */
             var setTypedValue = function setTypedValue(modelValue) {
 
-                // Don't bother if the modelValue is not yet defined
+                // Don't bother if the model is not yet defined
                 if (!$scope.field)
                     return;
 
@@ -148,7 +193,7 @@ angular.module('form').directive('guacFormField', [function formField() {
                         $scope.model = typedValue.toString();
                 }
 
-                // Convert boolean values back into strings based on protocol description
+                // Convert boolean values back into strings based on field description
                 else if ($scope.field.type === 'BOOLEAN')
                     $scope.model = (typedValue ? $scope.field.value : '');
 

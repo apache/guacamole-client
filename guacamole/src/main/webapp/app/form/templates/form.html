@@ -23,9 +23,9 @@
 
     <!-- All fields in form -->
     <tr ng-repeat="field in fields">
-        <th>{{field.title | translate}}</th>
+        <th>{{getFieldHeader(field) | translate}}</th>
         <td>
-            <guac-form-field field="field" model="values[field.name]"></guac-form-field>
+            <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
         </td>
     </tr>
 

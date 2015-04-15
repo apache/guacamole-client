@@ -60,7 +60,9 @@ THE SOFTWARE.
     <!-- Connection parameters -->
     <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
     <div class="section connection-parameters" ng-class="{loading: !parameters}">
-        <guac-form fields="protocols[connection.protocol].parameters" model="parameters"></guac-form>
+        <guac-form namespace="getNamespace(connection.protocol)"
+                   fields="protocols[connection.protocol].parameters"
+                   model="parameters"></guac-form>
     </div>
 
     <!-- Form action buttons -->
