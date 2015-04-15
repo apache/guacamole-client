@@ -59,17 +59,8 @@ THE SOFTWARE.
 
     <!-- Connection parameters -->
     <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
-    <div class="section" ng-class="{loading: !parameters}">
-        <table class="properties connection-parameters">
-            
-            <!-- All the different possible editable field types -->
-            <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
-                <th>{{parameter.title | translate}}</th>
-                <td>
-                    <guac-form-field field="parameter" model="parameters[parameter.name]"></guac-form-field>
-                </td>
-            </tr>
-        </table>
+    <div class="section connection-parameters" ng-class="{loading: !parameters}">
+        <guac-form fields="protocols[connection.protocol].parameters" model="parameters"></guac-form>
     </div>
 
     <!-- Form action buttons -->
