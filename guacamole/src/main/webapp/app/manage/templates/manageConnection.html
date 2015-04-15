@@ -60,13 +60,13 @@ THE SOFTWARE.
     <!-- Connection parameters -->
     <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
     <div class="section" ng-class="{loading: !parameters}">
-        <table class="properties">
+        <table class="properties connection-parameters">
             
             <!-- All the different possible editable field types -->
             <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
                 <th>{{parameter.title | translate}}</th>
                 <td>
-                    <guac-connection-parameter field="parameter" model="parameters[parameter.name]"></guac-connection-parameter>
+                    <guac-form-field field="parameter" model="parameters[parameter.name]"></guac-form-field>
                 </td>
             </tr>
         </table>

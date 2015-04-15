@@ -21,37 +21,8 @@
  */
 
 /* Do not stretch connection parameters to fit available area */
-.connection-parameter input[type=text],
-.connection-parameter input[type=password],
-.connection-parameter input[type=number] {
+.connection-parameters input[type=text],
+.connection-parameters input[type=password],
+.connection-parameters input[type=number] {
     width: auto;
-}
-
-/* Keep toggle-password icon on same line */
-.connection-parameter .password-field {
-    white-space: nowrap;
-}
-
-/* Generic 1x1em icon/button */
-.connection-parameter .password-field .icon.toggle-password {
-
-    display: inline-block;
-    opacity: 0.5;
-    cursor: default;
-
-    background-repeat: no-repeat;
-    background-size: 1em;
-    width: 1em;
-    height: 1em;
-
-}
-
-/* Icon for unmasking passwords */
-.connection-parameter .password-field input[type=password] ~ .icon.toggle-password {
-    background-image: url('images/action-icons/guac-show-pass.png');
-}
-
-/* Icon for masking passwords */
-.connection-parameter .password-field input[type=text] ~ .icon.toggle-password {
-    background-image: url('images/action-icons/guac-hide-pass.png');
 }

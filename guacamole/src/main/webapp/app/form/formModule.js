@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,14 +21,6 @@
  */
 
 /**
- * The module for the administration functionality.
+ * Module for displaying dynamic forms.
  */
-angular.module('manage', [
-    'form',
-    'groupList',
-    'list',
-    'locale',
-    'navigation',
-    'notification',
-    'rest'
-]);
+angular.module('form', []);

@@ -22,9 +22,9 @@
 
 
 /**
- * A directive that allows editing of a connection parameter.
+ * A directive that allows editing of a field.
  */
-angular.module('manage').directive('guacConnectionParameter', [function connectionParameter() {
+angular.module('form').directive('guacFormField', [function formField() {
     
     return {
         // Element only
@@ -48,8 +48,8 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
             model : '='
 
         },
-        templateUrl: 'app/manage/templates/connectionParameter.html',
-        controller: ['$scope', '$injector', function connectionParameterController($scope, $injector) {
+        templateUrl: 'app/form/templates/formField.html',
+        controller: ['$scope', '$injector', function formFieldController($scope, $injector) {
 
             /**
              * The type to use for password input fields. By default, password
@@ -80,9 +80,9 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
             };
 
             /**
-             * Toggles visibility of the parameter contents, if this parameter
-             * is a password parameter. Initially, password contents are
-             * masked (invisible).
+             * Toggles visibility of the field contents, if this field is a 
+             * password field. Initially, password contents are masked
+             * (invisible).
              */
             $scope.togglePassword = function togglePassword() {
 
@@ -119,7 +119,7 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
                 else if ($scope.field.type === 'BOOLEAN')
                     $scope.typedValue = (modelValue === $scope.field.value);
 
-                // All other parameter types are represented internally as strings
+                // All other field types are represented internally as strings
                 else
                     $scope.typedValue = modelValue || '';
 
@@ -152,7 +152,7 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
                 else if ($scope.field.type === 'BOOLEAN')
                     $scope.model = (typedValue ? $scope.field.value : '');
 
-                // All other parameter types are already strings
+                // All other field types are already strings
                 else
                     $scope.model = typedValue || '';
 
@@ -164,12 +164,12 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
                 setModelValue($scope.typedValue);
             });
 
-            // Update typed value when parameter set is changed
+            // Update typed value when model is changed
             $scope.$watch('model', function setModel(model) {
                 setTypedValue(model);
             });
 
-            // Update string value in parameter set when typed value is changed
+            // Update string value in model when typed value is changed
             $scope.$watch('typedValue', function typedValueChanged(typedValue) {
                 setModelValue(typedValue);
             });
