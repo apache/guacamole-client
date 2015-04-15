@@ -282,26 +282,6 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
     /**
-     * Given the internal name of a protocol and the internal name of a
-     * parameter for that protocol, produces the translation string
-     * for the localized, human-readable name of that protocol parameter.
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     * 
-     * @param {String} parameterName
-     *     The name of the protocol parameter.
-     * 
-     * @returns {String}
-     *     The translation string which produces the translated name of the
-     *     protocol parameter specified.
-     */
-    $scope.getProtocolParameterName = function getProtocolParameterName(protocolName, parameterName) {
-        return 'PROTOCOL_'      + translationStringService.canonicalize(protocolName)
-             + '.FIELD_HEADER_' + translationStringService.canonicalize(parameterName);
-    };
-
-    /**
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {

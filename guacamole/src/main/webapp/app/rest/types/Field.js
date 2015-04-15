@@ -21,20 +21,20 @@
  */
 
 /**
- * Service which defines the ProtocolParameter class.
+ * Service which defines the Field class.
  */
-angular.module('rest').factory('ProtocolParameter', [function defineProtocolParameter() {
+angular.module('rest').factory('Field', [function defineField() {
             
     /**
      * The object returned by REST API calls when representing the data
      * associated with a configuration parameter of a remote desktop protocol.
      * 
      * @constructor
-     * @param {ProtocolParameter|Object} [template={}]
+     * @param {Field|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     ProtocolParameter.
+     *     Field.
      */
-    var ProtocolParameter = function ProtocolParameter(template) {
+    var Field = function Field(template) {
 
         // Use empty object by default
         template = template || {};
@@ -56,12 +56,12 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
         /**
          * The type string defining which values this parameter may contain,
          * as well as what properties are applicable. Valid types are listed
-         * within ProtocolParameter.Type.
+         * within Field.Type.
          *
          * @type String
-         * @default ProtocolParameter.Type.TEXT
+         * @default Field.Type.TEXT
          */
-        this.type = template.type || ProtocolParameter.Type.TEXT;
+        this.type = template.type || Field.Type.TEXT;
 
         /**
          * The value to set the parameter to, in the case of a BOOLEAN
@@ -75,7 +75,7 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
          * All possible legal values for this parameter. This property is only
          * applicable to ENUM type parameters.
          *
-         * @type ProtocolParameterOption[]
+         * @type FieldOption[]
          */
         this.options = template.options;
 
@@ -84,7 +84,7 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
     /**
      * All valid protocol parameter types.
      */
-    ProtocolParameter.Type = {
+    Field.Type = {
 
         /**
          * The type string associated with parameters that may contain a single
@@ -147,6 +147,6 @@ angular.module('rest').factory('ProtocolParameter', [function defineProtocolPara
 
     };
 
-    return ProtocolParameter;
+    return Field;
 
 }]);

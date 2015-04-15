@@ -33,35 +33,23 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
         scope: {
 
             /**
-             * The protocol this parameter is associated with.
+             * The field to display.
              *
-             * @type Protocol
+             * @type Field
              */
-            protocol : '=',
+            field : '=',
 
             /**
-             * The unique name of this parameter within the protocol
-             * definition.
-             * 
+             * The property which contains this fields current value. When this
+             * field changes, the property will be updated accordingly.
+             *
              * @type String
              */
-            name : '=',
-
-            /**
-             * The current map of parameter names to their corresponding string
-             * values.
-             * 
-             * @type Object.<String, String>
-             */
-            parameters : '='
+            model : '='
 
         },
         templateUrl: 'app/manage/templates/connectionParameter.html',
         controller: ['$scope', '$injector', function connectionParameterController($scope, $injector) {
-
-            // Required services
-            var $q                       = $injector.get('$q');
-            var translationStringService = $injector.get('translationStringService');
 
             /**
              * The type to use for password input fields. By default, password
@@ -109,122 +97,82 @@ angular.module('manage').directive('guacConnectionParameter', [function connecti
             };
 
             /**
-             * Deferred load of the parameter definition, pending availability
-             * of the protocol definition as a whole.
+             * Translates the given string field value into an appropriately-
+             * typed value as dictated by the attributes of the field,
+             * exposing that typed value within the scope as
+             * <code>$scope.typedValue<code>.
              *
-             * @type Deferred
+             * @param {String} modelValue
+             *     The current string value of the field.
              */
-            var parameterDefinitionAvailable = $q.defer();
+            var setTypedValue = function setTypedValue(modelValue) {
 
-            /**
-             * Populates the parameter definition on the scope as
-             * <code>$scope.parameter</code> if both the parameter name and
-             * protocol definition are available. If either are unavailable,
-             * this function has no effect.
-             */
-            var retrieveParameterDefinition = function retrieveParameterDefinition() {
-
-                // Both name and protocol are needed to retrieve the parameter definition
-                if (!$scope.name || !$scope.protocol)
+                // Don't bother if the modelValue is not yet defined
+                if (!$scope.field)
                     return;
 
-                // Once protocol definition is available, locate parameter definition by name
-                $scope.protocol.parameters.forEach(function findParameter(parameter) {
-                    if (parameter.name === $scope.name) {
-                        $scope.parameter = parameter;
-                        parameterDefinitionAvailable.resolve(parameter);
-                    }
-                });
+                // Coerce numeric strings to numbers
+                if ($scope.field.type === 'NUMERIC')
+                    $scope.typedValue = (modelValue ? Number($scope.field.value) : null);
+
+                // Coerce boolean strings to boolean values
+                else if ($scope.field.type === 'BOOLEAN')
+                    $scope.typedValue = (modelValue === $scope.field.value);
+
+                // All other parameter types are represented internally as strings
+                else
+                    $scope.typedValue = modelValue || '';
 
             };
 
-            // Load parameter definition once protocol definition is available.
-            $scope.$watch('name',     retrieveParameterDefinition);
-            $scope.$watch('protocol', retrieveParameterDefinition);
+            /**
+             * Translates the given typed field value into a string as dictated
+             * by the attributes of the field, assigning that string value to
+             * the model.
+             *
+             * @param {String|Number|Boolean} typedValue
+             *     The current value of the field, as an appropriate JavaScript
+             *     type.
+             */
+            var setModelValue = function setModelValue(typedValue) {
+
+                // Don't bother if the model is not yet defined
+                if (!$scope.field)
+                    return;
+
+                // Convert numeric values back into strings
+                if ($scope.field.type === 'NUMERIC') {
+                    if (!typedValue)
+                        $scope.model = '';
+                    else
+                        $scope.model = typedValue.toString();
+                }
+
+                // Convert boolean values back into strings based on protocol description
+                else if ($scope.field.type === 'BOOLEAN')
+                    $scope.model = (typedValue ? $scope.field.value : '');
+
+                // All other parameter types are already strings
+                else
+                    $scope.model = typedValue || '';
+
+            };
+
+            // Update string value and re-assign to model when field is changed
+            $scope.$watch('field', function setField(field) {
+                setTypedValue($scope.model);
+                setModelValue($scope.typedValue);
+            });
 
             // Update typed value when parameter set is changed
-            $scope.$watch('parameters', function setParameters(parameters) {
-
-                // Don't bother if no parameters were provided
-                if (!parameters)
-                    return;
-
-                // Wait for parameter definition
-                parameterDefinitionAvailable.promise.then(function setTypedValue() {
-
-                    // Pull parameter value
-                    var value = parameters[$scope.name];
-
-                    // Coerce numeric strings to numbers
-                    if ($scope.parameter.type === 'NUMERIC')
-                        $scope.typedValue = (value ? Number(value) : null);
-                    
-                    // Coerce boolean strings to boolean values
-                    else if ($scope.parameter.type === 'BOOLEAN')
-                        $scope.typedValue = (value === $scope.parameter.value);
-                    
-                    // All other parameter types are represented internally as strings
-                    else
-                        $scope.typedValue = value || '';
-
-                });
-            
+            $scope.$watch('model', function setModel(model) {
+                setTypedValue(model);
             });
-            
+
             // Update string value in parameter set when typed value is changed
             $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-                
-                // Don't bother if there's nothing to set
-                if (!$scope.parameters)
-                    return;
-
-                // Wait for parameter definition
-                parameterDefinitionAvailable.promise.then(function setValue() {
-
-                    // Convert numeric values back into strings
-                    if ($scope.parameter.type === 'NUMERIC') {
-                        if (!typedValue)
-                            $scope.parameters[$scope.name] = '';
-                        else
-                            $scope.parameters[$scope.name] = typedValue.toString();
-                    }
-                    
-                    // Convert boolean values back into strings based on protocol description
-                    else if ($scope.parameter.type === 'BOOLEAN')
-                        $scope.parameters[$scope.name] = (typedValue ? $scope.parameter.value : '');
-                    
-                    // All other parameter types are already strings
-                    else
-                        $scope.parameters[$scope.name] = typedValue || '';
-                
-                });
-
-            }); // end watch typedValue
-
-            /**
-             * Given the internal name of a protocol, the internal name of a
-             * parameter for that protocol, and the internal name for a valid
-             * value of that parameter, produces the translation string for the
-             * localized, human-readable name of that parameter value.
-             *
-             * @param {String} protocolName
-             *     The name of the protocol.
-             * 
-             * @param {String} parameterName
-             *     The name of the protocol parameter.
-             * 
-             * @param {String} parameterValue
-             *     The name of the parameter value.
-             * 
-             * @returns {String}
-             *     The translation string which produces the translated name of the
-             *     parameter value specified.
-             */
-            $scope.getProtocolParameterOption = function getProtocolParameterOption(protocolName, parameterName, parameterValue) {
-                return 'PROTOCOL_'      + translationStringService.canonicalize(protocolName)
-                     + '.FIELD_OPTION_' + translationStringService.canonicalize(parameterName)
-                     + '_'              + translationStringService.canonicalize(parameterValue || 'EMPTY');
-            };
+                setModelValue(typedValue);
+            });
 
         }] // end controller
     };

@@ -64,9 +64,9 @@ THE SOFTWARE.
             
             <!-- All the different possible editable field types -->
             <tr ng-repeat="parameter in protocols[connection.protocol].parameters">
-                <th>{{getProtocolParameterName(connection.protocol, parameter.name) | translate}}</th>
+                <th>{{parameter.title | translate}}</th>
                 <td>
-                    <guac-connection-parameter protocol="protocols[connection.protocol]" name="parameter.name" parameters="parameters"></guac-connection-parameter>
+                    <guac-connection-parameter field="parameter" model="parameters[parameter.name]"></guac-connection-parameter>
                 </td>
             </tr>
         </table>
