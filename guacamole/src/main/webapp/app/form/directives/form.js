@@ -44,11 +44,12 @@ angular.module('form').directive('guacForm', [function form() {
             namespace : '=',
 
             /**
-             * The fields to display.
+             * The form content to display. This may be a form, an array of
+             * forms, or a simple array of fields.
              *
-             * @type Field[]
+             * @type Form[]|Form|Field[]|Field
              */
-            fields : '=',
+            content : '=',
 
             /**
              * The object which will receive all field values. Each field value
@@ -67,6 +68,13 @@ angular.module('form').directive('guacForm', [function form() {
             var translationStringService = $injector.get('translationStringService');
 
             /**
+             * The array of all forms to display.
+             *
+             * @type Form[]
+             */
+            $scope.forms = [];
+
+            /**
              * The object which will receive all field values. Normally, this
              * will be the object provided within the "model" attribute. If
              * no such object has been provided, a blank model will be used
@@ -76,6 +84,30 @@ angular.module('form').directive('guacForm', [function form() {
              * @type Object.<String, String>
              */
             $scope.values = {};
+
+            /**
+             * Produces the translation string for the section header of the
+             * given form. The translation string will be of the form:
+             *
+             * <code>NAMESPACE.SECTION_HEADER_NAME<code>
+             *
+             * where <code>NAMESPACE</code> is the namespace provided to the
+             * directive and <code>NAME</code> is the form name transformed
+             * via translationStringService.canonicalize().
+             *
+             * @param {Form} form
+             *     The form for which to produce the translation string.
+             *
+             * @returns {String}
+             *     The translation string which produces the translated header
+             *     of the form.
+             */
+            $scope.getSectionHeader = function getSectionHeader(form) {
+
+                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
+                        + '.SECTION_HEADER_' + translationStringService.canonicalize(form.name);
+
+            };
 
             /**
              * Produces the translation string for the header of the given
@@ -100,6 +132,46 @@ angular.module('form').directive('guacForm', [function form() {
                         + '.FIELD_HEADER_' + translationStringService.canonicalize(field.name);
 
             };
+
+            /**
+             * Determines whether the given object is a form, under the
+             * assumption that the object is either a form or a field.
+             *
+             * @param {Form|Field} obj
+             *     The object to test.
+             *
+             * @returns {Boolean}
+             *     true if the given object appears to be a form, false
+             *     otherwise.
+             */
+            var isForm = function isForm(obj) {
+                return !!('name' in obj && 'fields' in obj);
+            };
+
+            // Produce set of forms from any given content
+            $scope.$watch('content', function setContent(content) {
+
+                // If no content provided, there are no forms
+                if (!content) {
+                    $scope.forms = [];
+                    return;
+                }
+
+                // Ensure content is an array
+                if (!angular.isArray(content))
+                    content = [content];
+
+                // If content is an array of fields, convert to an array of forms
+                if (content.length && !isForm(content[0])) {
+                    content = [{
+                        fields : content
+                    }];
+                }
+
+                // Content is now an array of forms
+                $scope.forms = content;
+
+            });
 
             // Update string value and re-assign to model when field is changed
             $scope.$watch('model', function setModel(model) {

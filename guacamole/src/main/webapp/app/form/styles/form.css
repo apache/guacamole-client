@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-table.form th {
+.form table.fields th {
     text-align: left;
     font-weight: normal;
     padding-right: 1em;
