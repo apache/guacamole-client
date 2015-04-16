@@ -27,7 +27,7 @@ angular.module('rest').factory('FieldOption', [function defineFieldOption() {
             
     /**
      * The object returned by REST API calls when representing a single possible
-     * legal value of a configuration parameter of a remote desktop protocol.
+     * legal value of a field.
      * 
      * @constructor
      * @param {FieldOption|Object} [template={}]

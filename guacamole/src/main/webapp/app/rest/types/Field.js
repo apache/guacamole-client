@@ -27,7 +27,7 @@ angular.module('rest').factory('Field', [function defineField() {
             
     /**
      * The object returned by REST API calls when representing the data
-     * associated with a configuration parameter of a remote desktop protocol.
+     * associated with a field or configuration parameter.
      * 
      * @constructor
      * @param {Field|Object} [template={}]
