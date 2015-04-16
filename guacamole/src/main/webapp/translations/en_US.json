@@ -117,6 +117,13 @@
 
     },
 
+    "FORM" : {
+
+        "HELP_SHOW_PASSWORD" : "Click to show password",
+        "HELP_HIDE_PASSWORD" : "Click to hide password"
+
+    },
+
     "HOME" : {
 
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
@@ -161,8 +168,6 @@
         "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
-        "HELP_SHOW_PASSWORD" : "Click to show password",
-        "HELP_HIDE_PASSWORD" : "Click to hide password",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",

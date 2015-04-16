@@ -21,20 +21,20 @@
  */
 
 /**
- * Service which defines the ProtocolParameterOption class.
+ * Service which defines the FieldOption class.
  */
-angular.module('rest').factory('ProtocolParameterOption', [function defineProtocolParameterOption() {
+angular.module('rest').factory('FieldOption', [function defineFieldOption() {
             
     /**
      * The object returned by REST API calls when representing a single possible
-     * legal value of a configuration parameter of a remote desktop protocol.
+     * legal value of a field.
      * 
      * @constructor
-     * @param {ProtocolParameterOption|Object} [template={}]
+     * @param {FieldOption|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     ProtocolParameterOption.
+     *     FieldOption.
      */
-    var ProtocolParameterOption = function ProtocolParameterOption(template) {
+    var FieldOption = function FieldOption(template) {
 
         // Use empty object by default
         template = template || {};
@@ -56,6 +56,6 @@ angular.module('rest').factory('ProtocolParameterOption', [function defineProtoc
 
     };
 
-    return ProtocolParameterOption;
+    return FieldOption;
 
 }]);

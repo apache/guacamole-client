@@ -1,4 +1,4 @@
-<div class="connection-parameter">
+<div class="form-field">
     <!--
         Copyright 2014 Glyptodon LLC.
 
@@ -22,21 +22,21 @@
     -->
 
     <!-- Generic input types -->
-    <input    ng-show="parameter.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input    ng-show="parameter.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input    ng-show="parameter.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input    ng-show="parameter.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input ng-show="field.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input ng-show="field.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input ng-show="field.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <input ng-show="field.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
 
-    <!-- Password parameter -->
-    <div ng-show="parameter.type === 'PASSWORD'" class="password-field">
+    <!-- Password field -->
+    <div ng-show="field.type === 'PASSWORD'" class="password-field">
         <input type="{{passwordInputType}}" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
         <div class="icon toggle-password" ng-click="togglePassword()" title="{{getTogglePasswordHelpText() | translate}}"></div>
     </div>
 
-    <!-- Multiline parameter -->
-    <textarea ng-show="parameter.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
+    <!-- Multiline field -->
+    <textarea ng-show="field.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
 
-    <!-- Enumerated parameter -->
-    <select   ng-show="parameter.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getProtocolParameterOption(protocol.name, parameter.name, option.value) | translate for option in parameter.options | orderBy: value"></select>
+    <!-- Enumerated field -->
+    <select ng-show="field.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getFieldOption(option.value) | translate for option in field.options | orderBy: value"></select>
 
 </div>

@@ -267,8 +267,40 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     }
 
     /**
+     * Returns the translation string namespace for the protocol having the
+     * given name. The namespace will be of the form:
+     *
+     * <code>PROTOCOL_NAME</code>
+     *
+     * where <code>NAME</code> is the protocol name transformed via
+     * translationStringService.canonicalize().
+     *
+     * @param {String} protocolName
+     *     The name of the protocol.
+     *
+     * @returns {String}
+     *     The translation namespace for the protocol specified, or null if no
+     *     namespace could be generated.
+     */
+    $scope.getNamespace = function getNamespace(protocolName) {
+
+        // Do not generate a namespace if no protocol is selected
+        if (!protocolName)
+            return null;
+
+        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
+
+    };
+
+    /**
      * Given the internal name of a protocol, produces the translation string
-     * for the localized version of that protocol's name.
+     * for the localized version of that protocol's name. The translation
+     * string will be of the form:
+     *
+     * <code>NAMESPACE.NAME<code>
+     *
+     * where <code>NAMESPACE</code> is the namespace generated from
+     * $scope.getNamespace().
      *
      * @param {String} protocolName
      *     The name of the protocol.
@@ -278,27 +310,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      *     protocol specified.
      */
     $scope.getProtocolName = function getProtocolName(protocolName) {
-        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName) + '.NAME';
-    };
-
-    /**
-     * Given the internal name of a protocol and the internal name of a
-     * parameter for that protocol, produces the translation string
-     * for the localized, human-readable name of that protocol parameter.
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     * 
-     * @param {String} parameterName
-     *     The name of the protocol parameter.
-     * 
-     * @returns {String}
-     *     The translation string which produces the translated name of the
-     *     protocol parameter specified.
-     */
-    $scope.getProtocolParameterName = function getProtocolParameterName(protocolName, parameterName) {
-        return 'PROTOCOL_'      + translationStringService.canonicalize(protocolName)
-             + '.FIELD_HEADER_' + translationStringService.canonicalize(parameterName);
+        return $scope.getNamespace(protocolName) + '.NAME';
     };
 
     /**

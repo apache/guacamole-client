@@ -57,7 +57,7 @@ angular.module('rest').factory('Protocol', [function defineProtocol() {
          * An array of all known parameters for this protocol, their types,
          * and other information.
          *
-         * @type ProtocolParameter[]
+         * @type Field[]
          * @default []
          */
         this.parameters = template.parameters || [];
