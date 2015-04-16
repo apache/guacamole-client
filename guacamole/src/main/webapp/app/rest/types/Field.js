@@ -82,7 +82,7 @@ angular.module('rest').factory('Field', [function defineField() {
     };
 
     /**
-     * All valid protocol parameter types.
+     * All valid field types.
      */
     Field.Type = {
 
