@@ -198,9 +198,9 @@
     background-image: url('images/action-icons/guac-home-dark.png');
 }
 
-.user-menu .options li a[href="#/manage/modules/users/"],
-.user-menu .options li a[href="#/manage/modules/connections/"],
-.user-menu .options li a[href="#/manage/modules/sessions/"] {
+.user-menu .options li a[href="#/settings/users"],
+.user-menu .options li a[href="#/settings/connections"],
+.user-menu .options li a[href="#/settings/sessions"] {
     background-image: url('images/action-icons/guac-config-dark.png');
 }
 

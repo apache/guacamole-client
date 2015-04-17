@@ -1,0 +1,48 @@
+<div class="settings section users" ng-class="{loading: !isLoaded()}">
+    <!--
+    Copyright 2015 Glyptodon LLC.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+    -->
+
+    <!-- User management -->
+    <p>{{'MANAGE_USER.HELP_USERS' | translate}}</p>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons" ng-show="canCreateUsers">
+        <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
+        <button class="add-user" ng-click="newUser()">{{'MANAGE_USER.ACTION_NEW_USER' | translate}}</button>
+    </div>
+
+    <!-- List of users this user has access to -->
+    <div class="user-list">
+        <div ng-repeat="user in userPage" class="user list-item">
+            <a ng-href="#/manage/users/{{user.username}}">
+                <div class="caption">
+                    <div class="icon user"></div>
+                    <span class="name">{{user.username}}</span>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Pager controls for user list -->
+    <guac-pager page="userPage" page-size="25" items="users | orderBy : 'username'"></guac-pager>
+
+</div>

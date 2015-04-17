@@ -21,19 +21,13 @@
  */
 
 /**
- * The module for the root of the application.
+ * The module for manipulation of general settings. This is distinct from the
+ * "manage" module, which deals only with administrator-level system management.
  */
-angular.module('index', [
-    'auth',
-    'client',
-    'home',
-    'login',
-    'manage',
+angular.module('settings', [
+    'groupList',
+    'list',
     'navigation',
-    'ngRoute',
-    'ngTouch',
     'notification',
-    'pascalprecht.translate',
-    'rest',
-    'settings'
+    'rest'
 ]);

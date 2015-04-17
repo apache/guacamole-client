@@ -273,6 +273,12 @@
 
     },
 
+    "MANAGE_SETTINGS" : {
+
+        "SECTION_HEADER_MANAGE_SETTINGS" : "Settings"
+
+    },
+
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_COLOR_DEPTH"     : "Color depth:",

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,35 @@
  */
 
 /**
- * The module for the root of the application.
+ * The controller for the general settings page.
  */
-angular.module('index', [
-    'auth',
-    'client',
-    'home',
-    'login',
-    'manage',
-    'navigation',
-    'ngRoute',
-    'ngTouch',
-    'notification',
-    'pascalprecht.translate',
-    'rest',
-    'settings'
-]);
+angular.module('manage').controller('settingsController', ['$scope', '$injector', 
+        function settingsController($scope, $injector) {
+
+    // Required services
+    var $routeParams    = $injector.get('$routeParams');
+    var userPageService = $injector.get('userPageService');
+
+    /**
+     * The array of settings pages available to the current user, or null if
+     * not yet known.
+     *
+     * @type Page[]
+     */
+    $scope.settingsPages = null;
+
+    /**
+     * The currently-selected settings tab. This may be 'users', 'connections',
+     * or 'sessions'.
+     *
+     * @type String
+     */
+    $scope.activeTab = $routeParams.tab;
+
+    // Retrieve settings pages
+    userPageService.getSettingsPages()
+    .then(function settingsPagesRetrieved(pages) {
+        $scope.settingsPages = pages;
+    });
+
+}]);

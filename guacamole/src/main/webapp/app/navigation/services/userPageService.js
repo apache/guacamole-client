@@ -203,7 +203,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         if (canManageUsers) {
             pages.push(new Page(
                 'USER_MENU.ACTION_MANAGE_USERS',
-                '/manage/modules/users/'
+                '/settings/users'
             ));
         }
 
@@ -211,7 +211,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         if (canManageConnections) {
             pages.push(new Page(
                 'USER_MENU.ACTION_MANAGE_CONNECTIONS',
-                '/manage/modules/connections/'
+                '/settings/connections'
             ));
         }
         
@@ -219,7 +219,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         if (canManageSessions) {
             pages.push(new Page(
                 'USER_MENU.ACTION_MANAGE_SESSIONS',
-                '/manage/modules/sessions/'
+                '/settings/sessions'
             ));
         }
         
