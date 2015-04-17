@@ -137,20 +137,16 @@ angular.module('navigation').factory('userPageService', ['$injector',
     };
 
     /**
-     * Returns all the main pages that the current user can visit. This can 
-     * include the home page, manage pages, etc. In the case that there are no 
-     * applicable pages of this sort, it may return a client page.
+     * Returns all settings pages that the current user can visit. This can
+     * include any of the various manage pages.
      * 
-     * @param {ConnectionGroup} rootGroup
-     *     The root of the connection group tree for the current user.
-     *     
      * @param {PermissionSet} permissions
      *     The permissions for the current user.
      * 
      * @returns {Page[]} 
-     *     An array of all main pages that the current user can visit.
+     *     An array of all settings pages that the current user can visit.
      */
-    var generateMainPages = function generateMainPages(rootGroup, permissions) {
+    var generateSettingsPages = function generateSettingsPages(permissions) {
         
         var pages = [];
         
@@ -203,12 +199,6 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 // A user must be a system administrator to manage sessions
                 PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
         
-        // Only include the home page in the list of main pages if the user
-        // can navigate elsewhere.
-        var homePage = generateHomePage(rootGroup);
-        if (homePage === SYSTEM_HOME_PAGE)
-            pages.push(homePage);
-        
         // If user can manage users, add link to user management page
         if (canManageUsers) {
             pages.push(new Page(
@@ -232,6 +222,60 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 '/manage/modules/sessions/'
             ));
         }
+        
+        return pages;
+    };
+
+    /**
+     * Returns a promise which resolves to an array of all settings pages that
+     * the current user can visit. This can include any of the various manage
+     * pages.
+     *
+     * @returns {Promise.<Page[]>} 
+     *     A promise which resolves to an array of all settings pages that the
+     *     current user can visit.
+     */
+    service.getSettingsPages = function getSettingsPages() {
+
+        var deferred = $q.defer();
+
+        // Retrieve current permissions, resolving main pages if possible
+        // Resolve promise using settings pages derived from permissions
+        permissionService.getPermissions(authenticationService.getCurrentUserID())
+        .success(function permissionsRetrieved(permissions) {
+            deferred.resolve(generateSettingsPages(permissions));
+        });
+        
+        return deferred.promise;
+
+    };
+   
+    /**
+     * Returns all the main pages that the current user can visit. This can 
+     * include the home page, manage pages, etc. In the case that there are no 
+     * applicable pages of this sort, it may return a client page.
+     * 
+     * @param {ConnectionGroup} rootGroup
+     *     The root of the connection group tree for the current user.
+     *     
+     * @param {PermissionSet} permissions
+     *     The permissions for the current user.
+     * 
+     * @returns {Page[]} 
+     *     An array of all main pages that the current user can visit.
+     */
+    var generateMainPages = function generateMainPages(rootGroup, permissions) {
+        
+        var pages = [];
+
+        // Only include the home page in the list of main pages if the user
+        // can navigate elsewhere.
+        var homePage = generateHomePage(rootGroup);
+        if (homePage === SYSTEM_HOME_PAGE)
+            pages.push(homePage);
+
+        // Add any settings pages
+        pages = pages.concat(generateSettingsPages(permissions));
         
         return pages;
     };
