@@ -215,29 +215,6 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             };
 
             /**
-             * Navigate to the given page.
-             * 
-             * @param {Page} page
-             *     The page to navigate to.
-             */
-            $scope.navigateToPage = function navigateToPage(page) {
-                $location.path(page.url);
-            };
-            
-            /**
-             * Tests whether the given page should be disabled.
-             *
-             * @param {Page} page
-             *     The page to test.
-             *
-             * @returns {Boolean}
-             *     true if the given page should be disabled, false otherwise.
-             */
-            $scope.isPageDisabled = function isPageDisabled(page) {
-                return $location.url() === page.url;
-            };
-            
-            /**
              * Logs out the current user, redirecting them to back to the login
              * screen after logout completes.
              */

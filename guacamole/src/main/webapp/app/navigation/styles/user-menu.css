@@ -139,8 +139,6 @@
     top: 100%;
     right: 0;
     left: -1px;
-    margin: 0;
-    padding: 0;
 
     background: #EEE;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
@@ -149,6 +147,11 @@
 
     z-index: 5;
     
+}
+
+.user-menu .options ul {
+    margin: 0;
+    padding: 0;
 }
 
 .user-menu .user-menu-dropdown.open .options {
@@ -172,8 +175,8 @@
     background-color: #CDA;
 }
 
-.user-menu .options li a.disabled,
-.user-menu .options li a.disabled:hover {
+.user-menu .options li a.current,
+.user-menu .options li a.current:hover {
     background-color: transparent;
     cursor: default;
     opacity: 0.25;
