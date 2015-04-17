@@ -1,4 +1,4 @@
-<table class="form">
+<div ng-repeat="form in forms" class="form">
     <!--
         Copyright 2015 Glyptodon LLC.
 
@@ -21,12 +21,17 @@
         THE SOFTWARE.
     -->
 
-    <!-- All fields in form -->
-    <tr ng-repeat="field in fields">
-        <th>{{getFieldHeader(field) | translate}}</th>
-        <td>
-            <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
-        </td>
-    </tr>
+    <!-- Form name -->
+    <h3 ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
 
-</table>
+    <!-- All fields in form -->
+    <table class="fields">
+        <tr ng-repeat="field in form.fields">
+            <th>{{getFieldHeader(field) | translate}}</th>
+            <td>
+                <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
+            </td>
+        </tr>
+    </table>
+
+</div>
