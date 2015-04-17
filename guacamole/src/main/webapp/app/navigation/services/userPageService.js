@@ -274,8 +274,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
         if (homePage === SYSTEM_HOME_PAGE)
             pages.push(homePage);
 
-        // Add any settings pages
-        pages = pages.concat(generateSettingsPages(permissions));
+        // Add generic link to the first-available settings page
+        var settingsPages = generateSettingsPages(permissions);
+        if (settingsPages.length) {
+            pages.push(new Page(
+                'USER_MENU.ACTION_MANAGE_SETTINGS',
+                settingsPages[0].url
+            ));
+        }
         
         return pages;
     };
