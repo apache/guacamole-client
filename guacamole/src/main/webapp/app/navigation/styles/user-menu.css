@@ -164,11 +164,19 @@
 }
 
 .user-menu .options li a {
+
     display: block;
     cursor: pointer;
     color: black;
     text-decoration: none;
     padding: 0.75em;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
+    background-image: url('images/protocol-icons/guac-monitor.png');
+
 }
 
 .user-menu .options li a:hover {
@@ -180,18 +188,6 @@
     background-color: transparent;
     cursor: default;
     opacity: 0.25;
-}
-
-.user-menu .options li a.home,
-.user-menu .options li a.manage-users,
-.user-menu .options li a.manage-connections,
-.user-menu .options li a.manage-sessions,
-.user-menu .options li a.change-password,
-.user-menu .options li a.logout {
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: 0.75em center;
-    padding-left: 2.5em;
 }
 
 .user-menu .options li a[href="#/"] {

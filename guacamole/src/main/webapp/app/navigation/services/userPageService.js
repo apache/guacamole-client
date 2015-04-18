@@ -268,14 +268,16 @@ angular.module('navigation').factory('userPageService', ['$injector',
         
         var pages = [];
 
+        // Get home page and settings pages
+        var homePage = generateHomePage(rootGroup);
+        var settingsPages = generateSettingsPages(permissions);
+
         // Only include the home page in the list of main pages if the user
         // can navigate elsewhere.
-        var homePage = generateHomePage(rootGroup);
-        if (homePage === SYSTEM_HOME_PAGE)
+        if (homePage === SYSTEM_HOME_PAGE || settingsPages.length)
             pages.push(homePage);
 
         // Add generic link to the first-available settings page
-        var settingsPages = generateSettingsPages(permissions);
         if (settingsPages.length) {
             pages.push(new Page(
                 'USER_MENU.ACTION_MANAGE_SETTINGS',
