@@ -51,8 +51,8 @@ angular.module('settings').directive('guacManageConnections', [function guacMana
             var currentUserID = authenticationService.getCurrentUserID();
 
             /**
-             * An action to be provided along with the object sent to showStatus which
-             * closes the currently-shown status dialog.
+             * An action to be provided along with the object sent to
+             * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
                 name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
@@ -78,24 +78,25 @@ angular.module('settings').directive('guacManageConnections', [function guacMana
             $scope.canManageConnections = null;
 
             /**
-             * Whether the current user can create new connections. If the current
-             * permissions have not yet been loaded, this will be null.
+             * Whether the current user can create new connections. If the
+             * current permissions have not yet been loaded, this will be null.
              *
              * @type Boolean
              */
             $scope.canCreateConnections = null;
 
             /**
-             * Whether the current user can create new connection groups. If the
-             * current permissions have not yet been loaded, this will be null.
+             * Whether the current user can create new connection groups. If
+             * the current permissions have not yet been loaded, this will be
+             * null.
              *
              * @type Boolean
              */
             $scope.canCreateConnectionGroups = null;
 
             /**
-             * All permissions associated with the current user, or null if the user's
-             * permissions have not yet been loaded.
+             * All permissions associated with the current user, or null if the
+             * user's permissions have not yet been loaded.
              *
              * @type PermissionSet
              */
@@ -105,8 +106,8 @@ angular.module('settings').directive('guacManageConnections', [function guacMana
              * Returns whether critical data has completed being loaded.
              *
              * @returns {Boolean}
-             *     true if enough data has been loaded for the user interface to be
-             *     useful, false otherwise.
+             *     true if enough data has been loaded for the user interface
+             *     to be useful, false otherwise.
              */
             $scope.isLoaded = function isLoaded() {
 

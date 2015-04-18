@@ -52,16 +52,17 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             var permissionService       = $injector.get('permissionService');
 
             /**
-             * All permissions associated with the current user, or null if the user's
-             * permissions have not yet been loaded.
+             * All permissions associated with the current user, or null if the
+             * user's permissions have not yet been loaded.
              *
              * @type PermissionSet
              */
             $scope.permissions = null;
 
             /**
-             * The ActiveConnectionWrappers of all active sessions accessible by the
-             * current user, or null if the active sessions have not yet been loaded.
+             * The ActiveConnectionWrappers of all active sessions accessible
+             * by the current user, or null if the active sessions have not yet
+             * been loaded.
              *
              * @type ActiveConnectionWrapper[]
              */
@@ -93,16 +94,16 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             ];
 
             /**
-             * All active connections, if known, or null if active connections have not
-             * yet been loaded.
+             * All active connections, if known, or null if active connections
+             * have not yet been loaded.
              *
              * @type ActiveConnection
              */
             var activeConnections = null;
 
             /**
-             * Map of all visible connections by object identifier, or null if visible
-             * connections have not yet been loaded.
+             * Map of all visible connections by object identifier, or null if
+             * visible connections have not yet been loaded.
              *
              * @type Object.<String, Connection>
              */
@@ -116,7 +117,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             var sessionDateFormat = null;
 
             /**
-             * Map of all currently-selected active connection wrappers by identifier.
+             * Map of all currently-selected active connection wrappers by
+             * identifier.
              * 
              * @type Object.<String, ActiveConnectionWrapper>
              */
@@ -127,7 +129,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
              * connections.
              * 
              * @param {Connection} connection
-             *     The connection to add to the internal set of visible connections.
+             *     The connection to add to the internal set of visible
+             *     connections.
              */
             var addConnection = function addConnection(connection) {
 
@@ -137,12 +140,12 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
 
             /**
-             * Adds all descendant connections of the given connection group to the
-             * internal set of connections.
+             * Adds all descendant connections of the given connection group to
+             * the internal set of connections.
              * 
              * @param {ConnectionGroup} connectionGroup
-             *     The connection group whose descendant connections should be added to
-             *     the internal set of connections.
+             *     The connection group whose descendant connections should be
+             *     added to the internal set of connections.
              */
             var addDescendantConnections = function addDescendantConnections(connectionGroup) {
 
@@ -157,9 +160,9 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
 
             /**
-             * Wraps all loaded active connections, storing the resulting array within
-             * the scope. If required data has not yet finished loading, this function
-             * has no effect.
+             * Wraps all loaded active connections, storing the resulting array
+             * within the scope. If required data has not yet finished loading,
+             * this function has no effect.
              */
             var wrapActiveConnections = function wrapActiveConnections() {
 
@@ -229,8 +232,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
              * Returns whether critical data has completed being loaded.
              *
              * @returns {Boolean}
-             *     true if enough data has been loaded for the user interface to be
-             *     useful, false otherwise.
+             *     true if enough data has been loaded for the user interface
+             *     to be useful, false otherwise.
              */
             $scope.isLoaded = function isLoaded() {
 
@@ -241,8 +244,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
 
             /**
-             * An action to be provided along with the object sent to showStatus which
-             * closes the currently-shown status dialog.
+             * An action to be provided along with the object sent to
+             * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
                 name        : "MANAGE_SESSION.ACTION_ACKNOWLEDGE",
@@ -253,8 +256,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
 
             /**
-             * An action to be provided along with the object sent to showStatus which
-             * closes the currently-shown status dialog.
+             * An action to be provided along with the object sent to
+             * showStatus which closes the currently-shown status dialog.
              */
             var CANCEL_ACTION = {
                 name        : "MANAGE_SESSION.ACTION_CANCEL",
@@ -265,8 +268,9 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
             
             /**
-             * An action to be provided along with the object sent to showStatus which
-             * immediately deletes the currently selected sessions.
+             * An action to be provided along with the object sent to
+             * showStatus which immediately deletes the currently selected
+             * sessions.
              */
             var DELETE_ACTION = {
                 name        : "MANAGE_SESSION.ACTION_DELETE",
@@ -279,8 +283,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
             
             /**
-             * Immediately deletes the selected sessions, without prompting the user for
-             * confirmation.
+             * Immediately deletes the selected sessions, without prompting the
+             * user for confirmation.
              */
             var deleteSessionsImmediately = function deleteSessionsImmediately() {
 
@@ -311,8 +315,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             }; 
             
             /**
-             * Delete all selected sessions, prompting the user first to confirm that 
-             * deletion is desired.
+             * Delete all selected sessions, prompting the user first to
+             * confirm that deletion is desired.
              */
             $scope.deleteSessions = function deleteSessions() {
                 // Confirm deletion request
@@ -340,7 +344,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             };
             
             /**
-             * Called whenever an active connection wrapper changes selected status.
+             * Called whenever an active connection wrapper changes selected
+             * status.
              * 
              * @param {ActiveConnectionWrapper} wrapper
              *     The wrapper whose selected status has changed.

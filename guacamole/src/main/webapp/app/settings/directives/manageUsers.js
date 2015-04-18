@@ -51,8 +51,8 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
             var currentUserID = authenticationService.getCurrentUserID();
 
             /**
-             * An action to be provided along with the object sent to showStatus which
-             * closes the currently-shown status dialog.
+             * An action to be provided along with the object sent to
+             * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
                 name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
@@ -70,8 +70,8 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
             $scope.users = null;
 
             /**
-             * Whether the current user can manage users. If the current permissions
-             * have not yet been loaded, this will be null.
+             * Whether the current user can manage users. If the current
+             * permissions have not yet been loaded, this will be null.
              *
              * @type Boolean
              */
@@ -86,16 +86,16 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
             $scope.canCreateUsers = null;
 
             /**
-             * The name of the new user to create, if any, when user creation is
-             * requested via newUser().
+             * The name of the new user to create, if any, when user creation
+             * is requested via newUser().
              *
              * @type String
              */
             $scope.newUsername = "";
 
             /**
-             * All permissions associated with the current user, or null if the user's
-             * permissions have not yet been loaded.
+             * All permissions associated with the current user, or null if the
+             * user's permissions have not yet been loaded.
              *
              * @type PermissionSet
              */
@@ -105,8 +105,8 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
              * Returns whether critical data has completed being loaded.
              *
              * @returns {Boolean}
-             *     true if enough data has been loaded for the user interface to be
-             *     useful, false otherwise.
+             *     true if enough data has been loaded for the user interface
+             *     to be useful, false otherwise.
              */
             $scope.isLoaded = function isLoaded() {
 
@@ -153,8 +153,8 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
             });
 
             /**
-             * Creates a new user having the username specified in the user creation
-             * interface.
+             * Creates a new user having the username specified in the user
+             * creation interface.
              */
             $scope.newUser = function newUser() {
 
