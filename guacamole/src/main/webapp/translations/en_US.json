@@ -10,7 +10,7 @@
         "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
         "ACTION_LOGIN"              : "Login",
         "ACTION_LOGOUT"             : "Logout",
-        "ACTION_MANAGE_CONNECTIONS" : "Manage Connections",
+        "ACTION_MANAGE_CONNECTIONS" : "Connections",
         "ACTION_MANAGE_SETTINGS"    : "Settings",
         "ACTION_MANAGE_SESSIONS"    : "Active Sessions",
         "ACTION_MANAGE_USERS"       : "Users",
@@ -395,7 +395,7 @@
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
-        "SECTION_HEADER_CONNECTIONS"     : "Manage Connections"
+        "SECTION_HEADER_CONNECTIONS"     : "Connections"
 
     },
 
