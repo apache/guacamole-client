@@ -23,7 +23,7 @@
 /**
  * A service for defining the ActiveConnectionWrapper class.
  */
-angular.module('manage').factory('ActiveConnectionWrapper', [
+angular.module('settings').factory('ActiveConnectionWrapper', [
     function defineActiveConnectionWrapper() {
 
     /**

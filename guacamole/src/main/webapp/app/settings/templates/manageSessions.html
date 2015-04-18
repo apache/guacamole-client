@@ -1,0 +1,77 @@
+<div class="settings section sessions" ng-class="{loading: !isLoaded()}">
+    <!--
+    Copyright 2015 Glyptodon LLC.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+    -->
+
+    <!-- User Session management -->
+    <p>{{'MANAGE_SESSION.HELP_SESSIONS' | translate}}</p>
+
+    <!-- Form action buttons -->
+    <div class="action-buttons">
+        <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
+    </div>
+
+    <!-- Session filter -->
+    <guac-filter filtered-items="filteredWrappers" items="wrappers"
+                 placeholder="'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate"
+                 properties="filteredWrapperProperties"></guac-filter>
+
+    <!-- List of current user sessions -->
+    <table class="sorted session-list">
+        <thead>
+            <tr>
+                <th class="select-session"></th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.username'">
+                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'startDate'">
+                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.remoteHost'">
+                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                </th>
+                <th guac-sort-order="wrapperOrder" guac-sort-property="'name'">
+                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="wrapper in wrapperPage" class="session">
+                <td class="select-session">
+                    <input ng-change="wrapperSelectionChange(wrapper)" type="checkbox" ng-model="wrapper.checked" />
+                </td>
+                <td>{{wrapper.activeConnection.username}}</td>
+                <td>{{wrapper.startDate}}</td>
+                <td>{{wrapper.activeConnection.remoteHost}}</td>
+                <td>{{wrapper.name}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Text displayed if no sessions exist -->
+    <p class="placeholder" ng-hide="wrapperPage.length">
+        {{'MANAGE_SESSION.INFO_NO_SESSIONS' | translate}}
+    </p>
+
+    <!-- Pager for session list -->
+    <guac-pager page="wrapperPage" page-size="25"
+                items="filteredWrappers | orderBy : wrapperOrder.predicate"></guac-pager>
+</div>
