@@ -198,6 +198,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
                 // A user must be a system administrator to manage sessions
                 PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+
+        // If user can manage sessions, add link to sessions management page
+        if (canManageSessions) {
+            pages.push(new Page(
+                'USER_MENU.ACTION_MANAGE_SESSIONS',
+                '/settings/sessions'
+            ));
+        }
         
         // If user can manage users, add link to user management page
         if (canManageUsers) {
@@ -214,15 +222,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 '/settings/connections'
             ));
         }
-        
-        // If user can manage sessions, add link to sessions management page
-        if (canManageSessions) {
-            pages.push(new Page(
-                'USER_MENU.ACTION_MANAGE_SESSIONS',
-                '/settings/sessions'
-            ));
-        }
-        
+
         return pages;
     };
 
