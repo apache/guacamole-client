@@ -23,7 +23,7 @@
 /**
  * A directive for managing all users in the system.
  */
-angular.module('settings').directive('guacManageUsers', [function guacManageUsers() {
+angular.module('settings').directive('guacSettingsUsers', [function guacSettingsUsers() {
     
     return {
         // Element only
@@ -33,8 +33,8 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
         scope: {
         },
 
-        templateUrl: 'app/settings/templates/manageUsers.html',
-        controller: ['$scope', '$injector', function manageUsersController($scope, $injector) {
+        templateUrl: 'app/settings/templates/settingsUsers.html',
+        controller: ['$scope', '$injector', function settingsUsersController($scope, $injector) {
 
             // Required types
             var PermissionSet   = $injector.get('PermissionSet');
@@ -55,7 +55,7 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
              * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
-                name        : "MANAGE_USER.ACTION_ACKNOWLEDGE",
+                name        : "SETTINGS_USERS.ACTION_ACKNOWLEDGE",
                 // Handle action
                 callback    : function acknowledgeCallback() {
                     guacNotification.showStatus(false);
@@ -175,7 +175,7 @@ angular.module('settings').directive('guacManageUsers', [function guacManageUser
                 .error(function userCreationFailed(error) {
                     guacNotification.showStatus({
                         'className'  : 'error',
-                        'title'      : 'MANAGE_USER.DIALOG_HEADER_ERROR',
+                        'title'      : 'SETTINGS_USERS.DIALOG_HEADER_ERROR',
                         'text'       : error.message,
                         'actions'    : [ ACKNOWLEDGE_ACTION ]
                     });

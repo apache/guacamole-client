@@ -23,7 +23,7 @@ THE SOFTWARE.
 <div class="view">
 
     <div class="header">
-        <h2>{{'MANAGE_SETTINGS.SECTION_HEADER_MANAGE_SETTINGS' | translate}}</h2>
+        <h2>{{'SETTINGS.SECTION_HEADER_SETTINGS' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
@@ -33,8 +33,8 @@ THE SOFTWARE.
     </div>
 
     <!-- Selected tab -->
-    <guac-manage-users       ng-if="activeTab === 'users'"></guac-manage-users>
-    <guac-manage-connections ng-if="activeTab === 'connections'"></guac-manage-connections>
-    <guac-manage-sessions    ng-if="activeTab === 'sessions'"></guac-manage-sessions>
+    <guac-settings-users       ng-if="activeTab === 'users'"></guac-settings-users>
+    <guac-settings-connections ng-if="activeTab === 'connections'"></guac-settings-connections>
+    <guac-settings-sessions    ng-if="activeTab === 'sessions'"></guac-settings-sessions>
 
 </div>

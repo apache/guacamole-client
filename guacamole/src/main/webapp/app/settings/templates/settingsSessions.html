@@ -22,16 +22,16 @@
     -->
 
     <!-- User Session management -->
-    <p>{{'MANAGE_SESSION.HELP_SESSIONS' | translate}}</p>
+    <p>{{'SETTINGS_SESSIONS.HELP_SESSIONS' | translate}}</p>
 
     <!-- Form action buttons -->
     <div class="action-buttons">
-        <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'MANAGE_SESSION.ACTION_DELETE' | translate}}</button>
+        <button class="delete-sessions danger" ng-disabled="!canDeleteSessions()" ng-click="deleteSessions()">{{'SETTINGS_SESSIONS.ACTION_DELETE' | translate}}</button>
     </div>
 
     <!-- Session filter -->
     <guac-filter filtered-items="filteredWrappers" items="wrappers"
-                 placeholder="'MANAGE_SESSION.FIELD_PLACEHOLDER_FILTER' | translate"
+                 placeholder="'SETTINGS_SESSIONS.FIELD_PLACEHOLDER_FILTER' | translate"
                  properties="filteredWrapperProperties"></guac-filter>
 
     <!-- List of current user sessions -->
@@ -40,16 +40,16 @@
             <tr>
                 <th class="select-session"></th>
                 <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.username'">
-                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_USERNAME' | translate}}
                 </th>
                 <th guac-sort-order="wrapperOrder" guac-sort-property="'startDate'">
-                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_STARTDATE' | translate}}
                 </th>
                 <th guac-sort-order="wrapperOrder" guac-sort-property="'activeConnection.remoteHost'">
-                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_REMOTEHOST' | translate}}
                 </th>
                 <th guac-sort-order="wrapperOrder" guac-sort-property="'name'">
-                    {{'MANAGE_SESSION.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                    {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
                 </th>
             </tr>
         </thead>
@@ -68,7 +68,7 @@
 
     <!-- Text displayed if no sessions exist -->
     <p class="placeholder" ng-hide="wrapperPage.length">
-        {{'MANAGE_SESSION.INFO_NO_SESSIONS' | translate}}
+        {{'SETTINGS_SESSIONS.INFO_NO_SESSIONS' | translate}}
     </p>
 
     <!-- Pager for session list -->

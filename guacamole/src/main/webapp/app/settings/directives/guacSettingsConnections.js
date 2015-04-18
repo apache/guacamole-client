@@ -23,7 +23,7 @@
 /**
  * A directive for managing all connections and connection groups in the system.
  */
-angular.module('settings').directive('guacManageConnections', [function guacManageConnections() {
+angular.module('settings').directive('guacSettingsConnections', [function guacSettingsConnections() {
     
     return {
         // Element only
@@ -33,8 +33,8 @@ angular.module('settings').directive('guacManageConnections', [function guacMana
         scope: {
         },
 
-        templateUrl: 'app/settings/templates/manageConnections.html',
-        controller: ['$scope', '$injector', function manageConnectionsController($scope, $injector) {
+        templateUrl: 'app/settings/templates/settingsConnections.html',
+        controller: ['$scope', '$injector', function settingsConnectionsController($scope, $injector) {
 
             // Required types
             var ConnectionGroup = $injector.get('ConnectionGroup');
@@ -55,7 +55,7 @@ angular.module('settings').directive('guacManageConnections', [function guacMana
              * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
-                name        : "MANAGE_CONNECTION.ACTION_ACKNOWLEDGE",
+                name        : "SETTINGS_CONNECTIONS.ACTION_ACKNOWLEDGE",
                 // Handle action
                 callback    : function acknowledgeCallback() {
                     guacNotification.showStatus(false);

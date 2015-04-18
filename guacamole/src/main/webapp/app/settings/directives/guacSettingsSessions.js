@@ -23,7 +23,7 @@
 /**
  * A directive for managing all active Guacamole sessions.
  */
-angular.module('settings').directive('guacManageSessions', [function guacManageSessions() {
+angular.module('settings').directive('guacSettingsSessions', [function guacSettingsSessions() {
     
     return {
         // Element only
@@ -33,9 +33,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
         scope: {
         },
 
-        templateUrl: 'app/settings/templates/manageSessions.html',
-        controller: ['$scope', '$injector', 
-        function manageSessionsController($scope, $injector) {
+        templateUrl: 'app/settings/templates/settingsSessions.html',
+        controller: ['$scope', '$injector', function settingsSessionsController($scope, $injector) {
 
             // Required types
             var ActiveConnectionWrapper = $injector.get('ActiveConnectionWrapper');
@@ -218,7 +217,7 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             });
 
             // Get session date format
-            $translate('MANAGE_SESSION.FORMAT_STARTDATE').then(function sessionDateFormatReceived(retrievedSessionDateFormat) {
+            $translate('SETTINGS_SESSIONS.FORMAT_STARTDATE').then(function sessionDateFormatReceived(retrievedSessionDateFormat) {
 
                 // Store received date format
                 sessionDateFormat = retrievedSessionDateFormat;
@@ -248,7 +247,7 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
              * showStatus which closes the currently-shown status dialog.
              */
             var ACKNOWLEDGE_ACTION = {
-                name        : "MANAGE_SESSION.ACTION_ACKNOWLEDGE",
+                name        : "SETTINGS_SESSIONS.ACTION_ACKNOWLEDGE",
                 // Handle action
                 callback    : function acknowledgeCallback() {
                     guacNotification.showStatus(false);
@@ -260,7 +259,7 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
              * showStatus which closes the currently-shown status dialog.
              */
             var CANCEL_ACTION = {
-                name        : "MANAGE_SESSION.ACTION_CANCEL",
+                name        : "SETTINGS_SESSIONS.ACTION_CANCEL",
                 // Handle action
                 callback    : function cancelCallback() {
                     guacNotification.showStatus(false);
@@ -273,7 +272,7 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
              * sessions.
              */
             var DELETE_ACTION = {
-                name        : "MANAGE_SESSION.ACTION_DELETE",
+                name        : "SETTINGS_SESSIONS.ACTION_DELETE",
                 className   : "danger",
                 // Handle action
                 callback    : function deleteCallback() {
@@ -306,7 +305,7 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
                 .error(function activeConnectionDeletionFailed(error) {
                     guacNotification.showStatus({
                         'className'  : 'error',
-                        'title'      : 'MANAGE_SESSION.DIALOG_HEADER_ERROR',
+                        'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_ERROR',
                         'text'       : error.message,
                         'actions'    : [ ACKNOWLEDGE_ACTION ]
                     });
@@ -321,8 +320,8 @@ angular.module('settings').directive('guacManageSessions', [function guacManageS
             $scope.deleteSessions = function deleteSessions() {
                 // Confirm deletion request
                 guacNotification.showStatus({
-                    'title'      : 'MANAGE_SESSION.DIALOG_HEADER_CONFIRM_DELETE',
-                    'text'       : 'MANAGE_SESSION.TEXT_CONFIRM_DELETE',
+                    'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_CONFIRM_DELETE',
+                    'text'       : 'SETTINGS_SESSIONS.TEXT_CONFIRM_DELETE',
                     'actions'    : [ DELETE_ACTION, CANCEL_ACTION]
                 });
             };

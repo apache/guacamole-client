@@ -1,4 +1,4 @@
-<div class="settings section users" ng-class="{loading: !isLoaded()}">
+<div class="settings section connections" ng-class="{loading: !isLoaded()}">
     <!--
     Copyright 2015 Glyptodon LLC.
 
@@ -21,28 +21,28 @@
     THE SOFTWARE.
     -->
 
-    <!-- User management -->
-    <p>{{'MANAGE_USER.HELP_USERS' | translate}}</p>
+    <!-- Connection management -->
+    <p>{{'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | translate}}</p>
 
     <!-- Form action buttons -->
-    <div class="action-buttons" ng-show="canCreateUsers">
-        <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
-        <button class="add-user" ng-click="newUser()">{{'MANAGE_USER.ACTION_NEW_USER' | translate}}</button>
+    <div class="action-buttons">
+
+        <a class="add-connection button"
+           ng-show="canCreateConnections"
+           href="#/manage/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>
+
+        <a class="add-connection-group button"
+           ng-show="canCreateConnectionGroups"
+           href="#/manage/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+
     </div>
 
-    <!-- List of users this user has access to -->
-    <div class="user-list">
-        <div ng-repeat="user in userPage" class="user list-item">
-            <a ng-href="#/manage/users/{{user.username}}">
-                <div class="caption">
-                    <div class="icon user"></div>
-                    <span class="name">{{user.username}}</span>
-                </div>
-            </a>
-        </div>
+    <!-- List of accessible connections and groups -->
+    <div class="connection-list">
+        <guac-group-list
+            page-size="25"
+            connection-group="rootGroup"
+            connection-template="'app/settings/templates/connection.html'"
+            connection-group-template="'app/settings/templates/connectionGroup.html'"/>
     </div>
-
-    <!-- Pager controls for user list -->
-    <guac-pager page="userPage" page-size="25" items="users | orderBy : 'username'"></guac-pager>
-
 </div>
