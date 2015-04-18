@@ -11,6 +11,7 @@
         "ACTION_LOGIN"              : "Login",
         "ACTION_LOGOUT"             : "Logout",
         "ACTION_MANAGE_CONNECTIONS" : "Connections",
+        "ACTION_MANAGE_PREFERENCES" : "Preferences",
         "ACTION_MANAGE_SETTINGS"    : "Settings",
         "ACTION_MANAGE_SESSIONS"    : "Active Sessions",
         "ACTION_MANAGE_USERS"       : "Users",
@@ -399,6 +400,10 @@
 
     },
 
+    "SETTINGS_PREFERENCES" : {
+
+    },
+
     "SETTINGS_USERS" : {
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
@@ -447,6 +452,7 @@
         "ACTION_CHANGE_PASSWORD"    : "@:APP.ACTION_CHANGE_PASSWORD",
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",

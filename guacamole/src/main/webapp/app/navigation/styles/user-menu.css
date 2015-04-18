@@ -196,7 +196,8 @@
 
 .user-menu .options li a[href="#/settings/users"],
 .user-menu .options li a[href="#/settings/connections"],
-.user-menu .options li a[href="#/settings/sessions"] {
+.user-menu .options li a[href="#/settings/sessions"],
+.user-menu .options li a[href="#/settings/preferences"] {
     background-image: url('images/action-icons/guac-config-dark.png');
 }
 
