@@ -417,9 +417,9 @@
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
         "FIELD_HEADER_USERNAME"           : "Username:",
         
-        "INFO_PASSWORD_CHANGED" : "Password changed.",
+        "HELP_UPDATE_PASSWORD" : "If you wish to change your password, enter your current password and the desired new password below, and click \"Update Password\". The change will take effect immediately.",
 
-        "SECTION_HEADER_CHANGE_PASSWORD" : "Change Password"
+        "INFO_PASSWORD_CHANGED" : "Password changed."
 
     },
 

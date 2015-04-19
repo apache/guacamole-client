@@ -32,7 +32,7 @@
 
 .settings .action-buttons {
     text-align: center;
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 
 .settings-tabs .page-list {
