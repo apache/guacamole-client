@@ -472,7 +472,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/manage/modules/users/');
+        $location.path('/settings/users');
     };
             
     /**
@@ -498,7 +498,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             // Upon success, save any changed permissions
             permissionService.patchPermissions($scope.user.username, permissionsAdded, permissionsRemoved)
             .success(function patchedUserPermissions() {
-                $location.path('/manage/modules/users/');
+                $location.path('/settings/users');
             })
 
             // Notify of any errors
@@ -560,7 +560,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Delete the user 
         userService.deleteUser($scope.user)
         .success(function deletedUser() {
-            $location.path('/manage/modules/users/');
+            $location.path('/settings/users');
         })
 
         // Notify of any errors

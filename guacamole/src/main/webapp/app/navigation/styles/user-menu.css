@@ -139,8 +139,6 @@
     top: 100%;
     right: 0;
     left: -1px;
-    margin: 0;
-    padding: 0;
 
     background: #EEE;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
@@ -149,6 +147,11 @@
 
     z-index: 5;
     
+}
+
+.user-menu .options ul {
+    margin: 0;
+    padding: 0;
 }
 
 .user-menu .user-menu-dropdown.open .options {
@@ -161,50 +164,40 @@
 }
 
 .user-menu .options li a {
+
     display: block;
     cursor: pointer;
     color: black;
     text-decoration: none;
     padding: 0.75em;
+
+    background-repeat: no-repeat;
+    background-size: 1em;
+    background-position: 0.75em center;
+    padding-left: 2.5em;
+    background-image: url('images/protocol-icons/guac-monitor.png');
+
 }
 
 .user-menu .options li a:hover {
     background-color: #CDA;
 }
 
-.user-menu .options li a.disabled,
-.user-menu .options li a.disabled:hover {
+.user-menu .options li a.current,
+.user-menu .options li a.current:hover {
     background-color: transparent;
     cursor: default;
     opacity: 0.25;
-}
-
-.user-menu .options li a.home,
-.user-menu .options li a.manage-users,
-.user-menu .options li a.manage-connections,
-.user-menu .options li a.manage-sessions,
-.user-menu .options li a.change-password,
-.user-menu .options li a.logout {
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: 0.75em center;
-    padding-left: 2.5em;
 }
 
 .user-menu .options li a[href="#/"] {
     background-image: url('images/action-icons/guac-home-dark.png');
 }
 
-.user-menu .options li a[href="#/manage/modules/users/"] {
-    background-image: url('images/user-icons/guac-user.png');
-}
-
-.user-menu .options li a[href="#/manage/modules/connections/"] {
-    background-image: url('images/protocol-icons/guac-monitor.png');
-}
-
-.user-menu .options li a[href="#/manage/modules/sessions/"] {
-    background-image: url('images/protocol-icons/guac-plug.png');
+.user-menu .options li a[href="#/settings/users"],
+.user-menu .options li a[href="#/settings/connections"],
+.user-menu .options li a[href="#/settings/sessions"] {
+    background-image: url('images/action-icons/guac-config-dark.png');
 }
 
 .user-menu .options li a.change-password {

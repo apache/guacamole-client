@@ -104,6 +104,10 @@ angular.module('form').directive('guacForm', [function form() {
              */
             $scope.getSectionHeader = function getSectionHeader(form) {
 
+                // If no form, or no name, then no header
+                if (!form || !form.name)
+                    return '';
+
                 return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
                         + '.SECTION_HEADER_' + translationStringService.canonicalize(form.name);
 
@@ -127,6 +131,10 @@ angular.module('form').directive('guacForm', [function form() {
              *     of the field.
              */
             $scope.getFieldHeader = function getFieldHeader(field) {
+
+                // If no field, or no name, then no header
+                if (!field || !field.name)
+                    return '';
 
                 return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
                         + '.FIELD_HEADER_' + translationStringService.canonicalize(field.name);

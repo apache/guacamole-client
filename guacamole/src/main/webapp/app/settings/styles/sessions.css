@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,15 @@
  * THE SOFTWARE.
  */
 
-/**
- * The module for the root of the application.
- */
-angular.module('index', [
-    'auth',
-    'client',
-    'home',
-    'login',
-    'manage',
-    'navigation',
-    'ngRoute',
-    'ngTouch',
-    'notification',
-    'pascalprecht.translate',
-    'rest',
-    'settings'
-]);
+.settings table.session-list {
+    width: 100%;
+}
+
+.settings table.session-list tr.session:hover {
+    background: #CDA;
+}
+
+.settings table.session-list .select-session {
+    min-width: 2em;
+    text-align: center;
+}

@@ -317,7 +317,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/manage/modules/connections/');
+        $location.path('/settings/connections');
     };
     
     /**
@@ -339,7 +339,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         // Save the connection
         connectionService.saveConnection($scope.connection)
         .success(function savedConnection() {
-            $location.path('/manage/modules/connections/');
+            $location.path('/settings/connections');
         })
 
         // Notify of any errors
@@ -389,7 +389,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         // Delete the connection
         connectionService.deleteConnection($scope.connection)
         .success(function deletedConnection() {
-            $location.path('/manage/modules/connections/');
+            $location.path('/settings/connections');
         })
 
         // Notify of any errors
