@@ -4,7 +4,6 @@
 
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
-        "ACTION_CHANGE_PASSWORD"    : "Change Password",
         "ACTION_CLONE"              : "Clone",
         "ACTION_DELETE"             : "Delete",
         "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
@@ -18,6 +17,7 @@
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
+        "ACTION_UPDATE_PASSWORD"    : "Update Password",
 
         "DIALOG_HEADER_ERROR" : "Error",
 
@@ -402,6 +402,25 @@
 
     "SETTINGS_PREFERENCES" : {
 
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_PASSWORD"           : "Password:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
+        "FIELD_HEADER_USERNAME"           : "Username:",
+        
+        "INFO_PASSWORD_CHANGED" : "Password changed.",
+
+        "SECTION_HEADER_CHANGE_PASSWORD" : "Change Password"
+
     },
 
     "SETTINGS_USERS" : {
@@ -447,28 +466,13 @@
 
     "USER_MENU" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_CHANGE_PASSWORD"    : "@:APP.ACTION_CHANGE_PASSWORD",
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
         "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
-
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
-
-        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
-        
-        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
-        
-        "PASSWORD_CHANGED" : "Password changed."
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
 
     }
 

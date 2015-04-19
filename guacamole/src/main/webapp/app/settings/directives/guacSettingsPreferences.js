@@ -36,6 +36,123 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         templateUrl: 'app/settings/templates/settingsPreferences.html',
         controller: ['$scope', '$injector', function settingsPreferencesController($scope, $injector) {
 
+            // Get required types
+            var PermissionSet = $injector.get('PermissionSet');
+            
+            // Required services
+            var authenticationService = $injector.get('authenticationService');
+            var guacNotification      = $injector.get('guacNotification');
+            var userService           = $injector.get('userService');
+            var permissionService     = $injector.get("permissionService");
+
+            /**
+             * An action to be provided along with the object sent to
+             * showStatus which closes the currently-shown status dialog.
+             */
+            var ACKNOWLEDGE_ACTION = {
+                name        : 'SETTINGS_PREFERENCES.ACTION_ACKNOWLEDGE',
+                // Handle action
+                callback    : function acknowledgeCallback() {
+                    guacNotification.showStatus(false);
+                }
+            };
+
+            /**
+             * The username of the current user.
+             *
+             * @type String
+             */
+            var username = authenticationService.getCurrentUserID();
+
+            /**
+             * The new password for the user.
+             *
+             * @type String
+             */
+            $scope.newPassword = null;
+
+            /**
+             * The password match for the user. The update password action will
+             * fail if $scope.newPassword !== $scope.passwordMatch.
+             *
+             * @type String
+             */
+            $scope.newPasswordMatch = null;
+
+            /**
+             * Whether the current user can change their own password, or null
+             * if this is not yet known.
+             *
+             * @type Boolean
+             */
+            $scope.canChangePassword = null;
+
+            /**
+             * Update the current user's password to the password currently set within
+             * the password change dialog.
+             */
+            $scope.updatePassword = function updatePassword() {
+
+                // Verify passwords match
+                if ($scope.newPasswordMatch !== $scope.newPassword) {
+                    guacNotification.showStatus({
+                        className  : 'error',
+                        title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
+                        text       : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_MISMATCH',
+                        actions    : [ ACKNOWLEDGE_ACTION ]
+                    });
+                    return;
+                }
+                
+                // Verify that the new password is not blank
+                if (!$scope.newPassword) {
+                    guacNotification.showStatus({
+                        className  : 'error',
+                        title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
+                        text       : 'SETTINGS_PREFERENCES.ERROR_PASSWORD_BLANK',
+                        actions    : [ ACKNOWLEDGE_ACTION ]
+                    });
+                    return;
+                }
+                
+                // Save the user with the new password
+                userService.updateUserPassword(username, $scope.oldPassword, $scope.newPassword)
+                .success(function passwordUpdated() {
+                
+                    // Clear the password fields
+                    $scope.oldPassword      = null;
+                    $scope.newPassword      = null;
+                    $scope.newPasswordMatch = null;
+
+                    // Indicate that the password has been changed
+                    guacNotification.showStatus({
+                        text    : 'SETTINGS_PREFERENCES.INFO_PASSWORD_CHANGED',
+                        actions : [ ACKNOWLEDGE_ACTION ]
+                    });
+                })
+                
+                // Notify of any errors
+                .error(function passwordUpdateFailed(error) {
+                    guacNotification.showStatus({
+                        className  : 'error',
+                        title      : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
+                        'text'       : error.message,
+                        actions    : [ ACKNOWLEDGE_ACTION ]
+                    });
+                });
+                
+            };
+
+            // Retrieve current permissions
+            permissionService.getPermissions(username)
+            .success(function permissionsRetrieved(permissions) {
+
+                // Add action for changing password if permission is granted
+                $scope.canChangePassword = PermissionSet.hasUserPermission(permissions,
+                        PermissionSet.ObjectPermissionType.UPDATE, username);
+                        
+            });
+
         }]
     };
     

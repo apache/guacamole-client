@@ -21,7 +21,32 @@
     THE SOFTWARE.
     -->
 
-    <!-- User preferences -->
-    <p>TODO</p>
+    <!-- Password update -->
+    <div class="update-password" ng-show="canChangePassword">
+        <h3>{{'SETTINGS_PREFERENCES.SECTION_HEADER_CHANGE_PASSWORD' | translate}}</h3>
+
+        <!-- Password editor -->
+        <div class="form">
+            <table class="fields">
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_OLD' | translate}}</th>
+                    <td><input ng-model="oldPassword" type="password" /></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW' | translate}}</th>
+                    <td><input ng-model="newPassword" type="password" /></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW_AGAIN' | translate}}</th>
+                    <td><input ng-model="newPasswordMatch" type="password" /></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <button class="change-password" ng-click="updatePassword()">{{'SETTINGS_PREFERENCES.ACTION_UPDATE_PASSWORD' | translate}}</button>
+        </div>
+    </div>
 
 </div>

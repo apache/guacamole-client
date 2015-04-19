@@ -79,29 +79,35 @@ input[type="submit"]:disabled, button:disabled, button.danger:disabled {
     opacity: 0.75;
 }
 
-.button.logout, .button.manage, .button.back, .button.home, .button.change-password {
+.button.logout, .button.manage, .button.back, .button.home, .button.change-password,
+button.logout, button.manage, button.back, button.home, button.change-password {
     background-repeat: no-repeat;
     background-size: 1em;
     background-position: 0.5em 0.45em;
     padding-left: 1.8em;
 }
 
-.button.logout {
+.button.logout,
+button.logout {
     background-image: url('images/action-icons/guac-logout.png');
 }
 
-.button.manage {
+.button.manage,
+button.manage {
     background-image: url('images/action-icons/guac-config.png');
 }
 
-.button.back {
+.button.back,
+button.back {
     background-image: url('images/action-icons/guac-back.png');
 }
 
-.button.home {
+.button.home,
+button.home {
     background-image: url('images/action-icons/guac-home.png');
 }
 
-.button.change-password {
+.button.change-password,
+button.change-password {
     background-image: url('images/action-icons/guac-key.png');
 }
