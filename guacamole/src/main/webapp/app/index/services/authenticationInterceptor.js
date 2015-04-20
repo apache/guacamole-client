@@ -20,28 +20,44 @@
  * THE SOFTWARE.
  */
 
-angular.module('index').factory('authenticationInterceptor', ['$location', '$q', 
-        function authenticationInterceptor($location, $q) {
-            
-    return {
+angular.module('index').factory('authenticationInterceptor', ['$injector',
+        function authenticationInterceptor($injector) {
 
-        // Redirect users to login if authorization fails
-        responseError: function handleErrorResponse(rejection) {
+    // Required services
+    var $location = $injector.get('$location');
+    var $q        = $injector.get('$q');
 
-            // Only redirect failed authentication requests
-            if ((rejection.status === 401 || rejection.status === 403)
-                    && rejection.config.url  === 'api/tokens') {
+    var service = {};
 
-                // Only redirect if not already on login page
-                if ($location.path() !== '/login/')
-                    $location.path('/login/');
+    /**
+     * Redirect users to login if authorization fails. This is called
+     * automatically when this service is registered as an interceptor, as
+     * documented at:
+     * 
+     * https://docs.angularjs.org/api/ng/service/$http#interceptors
+     *
+     * @param {HttpPromise} rejection
+     *     The promise associated with the HTTP request that failed.
+     *
+     * @returns {Promise}
+     *     A rejected promise containing the originally-rejected HttpPromise.
+     */
+    service.responseError = function responseError(rejection) {
 
-            }
+        // Only redirect failed authentication requests
+        if ((rejection.status === 401 || rejection.status === 403)
+                && rejection.config.url  === 'api/tokens') {
 
-            return $q.reject(rejection);
+            // Only redirect if not already on login page
+            if ($location.path() !== '/login/')
+                $location.path('/login/');
 
         }
 
+        return $q.reject(rejection);
+
     };
+
+    return service;
 
 }]);
