@@ -38,12 +38,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
             // Get required types
             var PermissionSet = $injector.get('PermissionSet');
-            
+
             // Required services
             var authenticationService = $injector.get('authenticationService');
             var guacNotification      = $injector.get('guacNotification');
             var userService           = $injector.get('userService');
-            var permissionService     = $injector.get("permissionService");
+            var permissionService     = $injector.get('permissionService');
+            var preferenceService     = $injector.get('preferenceService');
 
             /**
              * An action to be provided along with the object sent to
@@ -63,6 +64,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type String
              */
             var username = authenticationService.getCurrentUserID();
+
+            /**
+             * All currently-set preferences, or their defaults if not yet set.
+             *
+             * @type Object.<String, Object>
+             */
+            $scope.preferences = preferenceService.preferences;
 
             /**
              * The new password for the user.
