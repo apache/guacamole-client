@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.xml.protocol;
 
-import org.glyptodon.guacamole.protocols.ProtocolParameterOption;
+import org.glyptodon.guacamole.form.ParameterOption;
 import org.glyptodon.guacamole.xml.TagHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -37,7 +37,7 @@ public class OptionTagHandler implements TagHandler {
     /**
      * The option backing this option tag.
      */
-    private ProtocolParameterOption option = new ProtocolParameterOption();
+    private ParameterOption option = new ParameterOption();
 
     @Override
     public void init(Attributes attributes) throws SAXException {
@@ -55,10 +55,10 @@ public class OptionTagHandler implements TagHandler {
     }
 
     /**
-     * Returns the ProtocolParameterOption backing this tag.
-     * @return The ProtocolParameterOption backing this tag.
+     * Returns the ParameterOption backing this tag.
+     * @return The ParameterOption backing this tag.
      */
-    public ProtocolParameterOption asProtocolParameterOption() {
+    public ParameterOption asParameterOption() {
         return option;
     }
 

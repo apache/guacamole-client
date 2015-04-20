@@ -56,7 +56,7 @@ public class ProtocolTagHandler implements TagHandler {
             ParamTagHandler tagHandler = new ParamTagHandler();
 
             // Store stub in parameters collection
-            info.getParameters().add(tagHandler.asProtocolParameter());
+            info.getParameters().add(tagHandler.asParameter());
             return tagHandler;
 
         }

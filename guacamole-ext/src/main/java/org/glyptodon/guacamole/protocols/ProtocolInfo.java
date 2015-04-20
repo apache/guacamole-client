@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.protocols;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import org.glyptodon.guacamole.form.Parameter;
 
 /**
  * Describes a protocol and all parameters associated with it, as required by
@@ -47,8 +48,49 @@ public class ProtocolInfo {
     /**
      * A collection of all associated protocol parameters.
      */
-    private Collection<ProtocolParameter> parameters =
-            new ArrayList<ProtocolParameter>();
+    private Collection<Parameter> parameters;
+
+    /**
+     * Creates a new ProtocolInfo with no associated name, title, or
+     * parameters.
+     */
+    public ProtocolInfo() {
+        this.parameters = new ArrayList<Parameter>();
+    }
+
+    /**
+     * Creates a new ProtocolInfo having the given name and title, but without
+     * any parameters.
+     *
+     * @param name
+     *     The unique name associated with the protocol.
+     *
+     * @param title
+     *     The human-readable title to associate with the protocol.
+     */
+    public ProtocolInfo(String name, String title) {
+        this.name       = name;
+        this.title      = title;
+        this.parameters = new ArrayList<Parameter>();
+    }
+
+    /**
+     * Creates a new ProtocolInfo having the given name, title, and parameters.
+     *
+     * @param name
+     *     The unique name associated with the protocol.
+     *
+     * @param title
+     *     The human-readable title to associate with the protocol.
+     * 
+     * @param parameters
+     *     The parameters to associate with the protocol.
+     */
+    public ProtocolInfo(String name, String title, Collection<Parameter> parameters) {
+        this.name       = name;
+        this.title      = title;
+        this.parameters = parameters;
+    }
 
     /**
      * Returns the human-readable title associated with this protocol.
@@ -95,8 +137,19 @@ public class ProtocolInfo {
      *
      * @return A mutable collection of protocol parameters.
      */
-    public Collection<ProtocolParameter> getParameters() {
+    public Collection<Parameter> getParameters() {
         return parameters;
     }
 
+    /**
+     * Sets the collection of protocol parameters associated with this
+     * protocol.
+     *
+     * @param parameters
+     *     The collection of parameters to associate with this protocol.
+     */
+    public void setParameters(Collection<Parameter> parameters) {
+        this.parameters = parameters;
+    }
+    
 }
