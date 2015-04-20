@@ -192,8 +192,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         autoFit : true,
 
         /**
-         * The currently selected input method. This may be either "none",
-         * "osk", or "text".
+         * The currently selected input method. This may be any of the values
+         * defined within preferenceService.inputMethods.
          *
          * @type String
          */
