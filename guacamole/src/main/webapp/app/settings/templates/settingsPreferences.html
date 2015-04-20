@@ -53,50 +53,54 @@
     <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_INPUT_METHOD' | translate}}</h2>
     <div class="settings section input-method">
         <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_INPUT_METHOD' | translate}}</p>
+        <div class="choices">
 
-        <!-- No IME -->
-        <div class="choice">
-            <label><input id="ime-none" name="input-method" ng-model="preferences.inputMethod" type="radio" value="none"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_NONE' | translate}}</label>
-            <p class="caption"><label for="ime-none">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
+            <!-- No IME -->
+            <div class="choice">
+                <label><input id="ime-none" name="input-method" ng-model="preferences.inputMethod" type="radio" value="none"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_NONE' | translate}}</label>
+                <p class="caption"><label for="ime-none">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
+            </div>
+
+            <!-- Text input -->
+            <div class="choice">
+                <label><input id="ime-text" name="input-method" ng-model="preferences.inputMethod" type="radio" value="text"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_TEXT' | translate}}</label>
+                <p class="caption"><label for="ime-text">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
+            </div>
+
+            <!-- Guac OSK -->
+            <div class="choice">
+                <label><input id="ime-osk" name="input-method" ng-model="preferences.inputMethod" type="radio" value="osk"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_OSK' | translate}}</label>
+                <p class="caption"><label for="ime-osk">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
+            </div>
+
         </div>
-
-        <!-- Text input -->
-        <div class="choice">
-            <label><input id="ime-text" name="input-method" ng-model="preferences.inputMethod" type="radio" value="text"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_TEXT' | translate}}</label>
-            <p class="caption"><label for="ime-text">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
-        </div>
-
-        <!-- Guac OSK -->
-        <div class="choice">
-            <label><input id="ime-osk" name="input-method" ng-model="preferences.inputMethod" type="radio" value="osk"/> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_OSK' | translate}}</label>
-            <p class="caption"><label for="ime-osk">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
-        </div>
-
     </div>
 
     <!-- Mouse mode -->
     <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_MOUSE_MODE' | translate}}</h2>
     <div class="settings section mouse-mode">
         <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_MOUSE_MODE' | translate}}</p>
+        <div class="choices">
 
-        <!-- Touchscreen -->
-        <div class="choice">
-            <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
-            <div class="figure">
-                <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"/></label>
-                <p class="caption"><label for="absolute">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
+            <!-- Touchscreen -->
+            <div class="choice">
+                <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="true" checked="checked" id="absolute"/>
+                <div class="figure">
+                    <label for="absolute"><img src="images/settings/touchscreen.png" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_ABSOLUTE' | translate}}"/></label>
+                    <p class="caption"><label for="absolute">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_ABSOLUTE' | translate}}</label></p>
+                </div>
             </div>
-        </div>
 
-        <!-- Touchpad -->
-        <div class="choice">
-            <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
-            <div class="figure">
-                <label for="relative"><img src="images/settings/touchpad.png" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_RELATIVE' | translate}}"/></label>
-                <p class="caption"><label for="relative">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
+            <!-- Touchpad -->
+            <div class="choice">
+                <input name="mouse-mode" ng-model="preferences.emulateAbsoluteMouse" type="radio" ng-value="false" id="relative"/>
+                <div class="figure">
+                    <label for="relative"><img src="images/settings/touchpad.png" alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_RELATIVE' | translate}}"/></label>
+                    <p class="caption"><label for="relative">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_RELATIVE' | translate}}</label></p>
+                </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
 </div>
