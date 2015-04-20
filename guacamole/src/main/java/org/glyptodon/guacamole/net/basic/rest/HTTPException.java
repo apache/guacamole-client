@@ -22,37 +22,64 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import java.util.Collection;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import org.glyptodon.guacamole.form.Parameter;
 
 /**
- * An exception that will result in the given HTTP Status and message or entity 
- * being returned from the API layer.
- * 
+ * An exception that will result in the given HTTP Status and error being
+ * returned from the API layer. All error messages have the same format which
+ * is defined by APIError.
+ *
  * @author James Muehlner
+ * @author Michael Jumper
  */
 public class HTTPException extends WebApplicationException {
-    
+
     /**
-     * Construct a new HTTPException with the given HTTP status and entity.
-     * 
-     * @param status The HTTP Status to use for the response.
-     * @param entity The entity to use as the body of the response.
+     * Construct a new HTTPException with the given error. All information
+     * associated with this new exception will be extracted from the given
+     * APIError.
+     *
+     * @param error
+     *     The error that occurred.
      */
-    public HTTPException(Status status, Object entity) {
-        super(Response.status(status).entity(entity).build());
+    public HTTPException(APIError error) {
+        super(Response.status(error.getType().getStatus()).entity(error).build());
     }
-    
+
     /**
-     * Construct a new HTTPException with the given HTTP status and message. The
-     * message will be wrapped in an APIError container.
-     * 
-     * @param status The HTTP Status to use for the response.
-     * @param message The message to build the response entity with.
+     * Creates a new HTTPException with the given type and message. The
+     * corresponding APIError will be created from the provided information.
+     *
+     * @param type
+     *     The type of error that occurred.
+     *
+     * @param message
+     *     A human-readable message describing the error.
      */
-    public HTTPException(Status status, String message) {
-        super(Response.status(status).entity(new APIError(message)).build());
+    public HTTPException(APIError.Type type, String message) {
+        this(new APIError(type, message));
     }
-    
+
+    /**
+     * Creates a new HTTPException with the given type, message, and
+     * parameter information. The corresponding APIError will be created from
+     * the provided information.
+     *
+     * @param type
+     *     The type of error that occurred.
+     *
+     * @param message
+     *     A human-readable message describing the error.
+     *
+     * @param expected
+     *     All parameters expected in the original request, or now required as
+     *     a result of the original request.
+     */
+    public HTTPException(APIError.Type type, String message, Collection<Parameter> expected) {
+        this(new APIError(type, message, expected));
+    }
+
 }

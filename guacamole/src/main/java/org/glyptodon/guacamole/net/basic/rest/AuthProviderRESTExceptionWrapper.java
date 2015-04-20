@@ -27,6 +27,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -61,11 +62,11 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(Response.Status.FORBIDDEN, new APICredentialError(
-                    APICredentialError.Type.INSUFFICIENT,
-                    message,
-                    e.getCredentialsInfo()
-            ));
+            throw new HTTPException(
+                APIError.Type.INSUFFICIENT_CREDENTIALS,
+                message,
+                e.getCredentialsInfo().getParameters()
+            );
         }
 
         // The provided credentials are wrong
@@ -76,11 +77,11 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(Response.Status.FORBIDDEN, new APICredentialError(
-                    APICredentialError.Type.INVALID,
-                    message,
-                    e.getCredentialsInfo()
-            ));
+            throw new HTTPException(
+                APIError.Type.INVALID_CREDENTIALS,
+                message,
+                e.getCredentialsInfo().getParameters()
+            );
         }
 
         // Generic permission denied
@@ -91,10 +92,28 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(Response.Status.FORBIDDEN, message);
+            throw new HTTPException(
+                APIError.Type.PERMISSION_DENIED,
+                message
+            );
 
         }
 
+        // Arbitrary resource not found
+        catch (GuacamoleResourceNotFoundException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Not found.";
+
+            throw new HTTPException(
+                APIError.Type.NOT_FOUND,
+                message
+            );
+
+        }
+        
         // Arbitrary bad requests
         catch (GuacamoleClientException e) {
 
@@ -103,7 +122,10 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Invalid request.";
 
-            throw new HTTPException(Response.Status.BAD_REQUEST, message);
+            throw new HTTPException(
+                APIError.Type.BAD_REQUEST,
+                message
+            );
 
         }
 
@@ -116,7 +138,10 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
                 message = "Unexpected server error.";
 
             logger.debug("Unexpected exception in REST endpoint.", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, message);
+            throw new HTTPException(
+                APIError.Type.INTERNAL_ERROR,
+                message
+            );
 
         }
 
