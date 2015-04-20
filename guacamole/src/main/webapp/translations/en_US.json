@@ -4,19 +4,20 @@
 
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
-        "ACTION_CHANGE_PASSWORD"    : "Change Password",
         "ACTION_CLONE"              : "Clone",
         "ACTION_DELETE"             : "Delete",
         "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
         "ACTION_LOGIN"              : "Login",
         "ACTION_LOGOUT"             : "Logout",
         "ACTION_MANAGE_CONNECTIONS" : "Connections",
+        "ACTION_MANAGE_PREFERENCES" : "Preferences",
         "ACTION_MANAGE_SETTINGS"    : "Settings",
         "ACTION_MANAGE_SESSIONS"    : "Active Sessions",
         "ACTION_MANAGE_USERS"       : "Users",
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
+        "ACTION_UPDATE_PASSWORD"    : "Update Password",
 
         "DIALOG_HEADER_ERROR" : "Error",
 
@@ -399,6 +400,43 @@
 
     },
 
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_PASSWORD"           : "Password:",
+        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
+        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
+        "FIELD_HEADER_USERNAME"           : "Username:",
+        
+        "HELP_DEFAULT_INPUT_METHOD" : "The default input method determines how keyboard events are received by Guacamole. Changing this setting may be necessary when using a mobile device, or when typing through an IME. This setting can be overridden on a per-connection basis within the Guacamole menu.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "The default mouse emulation mode determines how the remote mouse will behave in new connections with respect to touches. This setting can be overridden on a per-connection basis within the Guacamole menu.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "If you wish to change your password, enter your current password and the desired new password below, and click \"Update Password\". The change will take effect immediately.",
+
+        "INFO_PASSWORD_CHANGED" : "Password changed.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Default Input Method",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Default Mouse Emulation Mode"
+
+    },
+
     "SETTINGS_USERS" : {
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
@@ -442,27 +480,13 @@
 
     "USER_MENU" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_CHANGE_PASSWORD"    : "@:APP.ACTION_CHANGE_PASSWORD",
         "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
         "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
-
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
-
-        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
-        
-        "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Confirm New Password:",
-        
-        "PASSWORD_CHANGED" : "Password changed."
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
 
     }
 

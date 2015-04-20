@@ -52,31 +52,4 @@
         </div>
     </div>
 
-    <!-- Password dialog -->
-    <div class="password-dialog" ng-class="{shown: showPasswordDialog}">
-        <!-- Password editor -->
-        <div class="section">
-            <table class="fields">
-                <tr>
-                    <th>{{'USER_MENU.FIELD_HEADER_PASSWORD_OLD' | translate}}</th>
-                    <td><input ng-model="oldPassword" type="password" /></td>
-                </tr>
-                <tr>
-                    <th>{{'USER_MENU.FIELD_HEADER_PASSWORD_NEW' | translate}}</th>
-                    <td><input ng-model="newPassword" type="password" /></td>
-                </tr>
-                <tr>
-                    <th>{{'USER_MENU.FIELD_HEADER_PASSWORD_NEW_AGAIN' | translate}}</th>
-                    <td><input ng-model="newPasswordMatch" type="password" /></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- Form action buttons -->
-        <div class="action-buttons">
-            <button ng-click="updatePassword()">{{'USER_MENU.ACTION_SAVE' | translate}}</button>
-            <button ng-click="closePasswordUpdate()">{{'USER_MENU.ACTION_CANCEL' | translate}}</button>
-        </div>
-    </div>
-
 </div>

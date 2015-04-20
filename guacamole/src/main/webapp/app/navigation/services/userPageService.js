@@ -223,6 +223,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
             ));
         }
 
+        // Add link to user preferences (always accessible)
+        pages.push(new Page(
+            'USER_MENU.ACTION_MANAGE_PREFERENCES',
+            '/settings/preferences'
+        ));
+
         return pages;
     };
 

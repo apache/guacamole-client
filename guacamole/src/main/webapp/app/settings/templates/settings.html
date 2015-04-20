@@ -29,12 +29,13 @@ THE SOFTWARE.
 
     <!-- Available tabs -->
     <div class="settings-tabs">
-        <guac-page-list pages="settingsPages"></guac-page-list>
+        <guac-page-list pages="settingsPages" ng-show="showAvailableTabs()"></guac-page-list>
     </div>
 
     <!-- Selected tab -->
     <guac-settings-users       ng-if="activeTab === 'users'"></guac-settings-users>
     <guac-settings-connections ng-if="activeTab === 'connections'"></guac-settings-connections>
     <guac-settings-sessions    ng-if="activeTab === 'sessions'"></guac-settings-sessions>
+    <guac-settings-preferences ng-if="activeTab === 'preferences'"></guac-settings-preferences>
 
 </div>
