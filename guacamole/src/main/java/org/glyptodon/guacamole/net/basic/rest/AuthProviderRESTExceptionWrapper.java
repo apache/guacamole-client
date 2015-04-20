@@ -28,6 +28,9 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +52,72 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
         try {
             return invocation.proceed();
         }
-        catch(GuacamoleSecurityException e) {
-            throw new HTTPException(Response.Status.FORBIDDEN, e.getMessage() != null ? e.getMessage() : "Permission denied.");
+
+        // Additional credentials are needed
+        catch (GuacamoleInsufficientCredentialsException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Permission denied.";
+
+            throw new HTTPException(Response.Status.FORBIDDEN, new APICredentialError(
+                    APICredentialError.Type.INSUFFICIENT,
+                    message,
+                    e.getCredentialsInfo()
+            ));
         }
-        catch(GuacamoleClientException e) {
-            throw new HTTPException(Response.Status.BAD_REQUEST, e.getMessage() != null ? e.getMessage() : "Invalid Request.");
+
+        // The provided credentials are wrong
+        catch (GuacamoleInvalidCredentialsException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Permission denied.";
+
+            throw new HTTPException(Response.Status.FORBIDDEN, new APICredentialError(
+                    APICredentialError.Type.INVALID,
+                    message,
+                    e.getCredentialsInfo()
+            ));
         }
-        catch(GuacamoleException e) {
-            logger.error("Unexpected GuacamoleException caught while executing " + invocation.getMethod().getName() + ".", e);
-            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, e.getMessage() != null ? e.getMessage() : "Unexpected server error.");
+
+        // Generic permission denied
+        catch (GuacamoleSecurityException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Permission denied.";
+
+            throw new HTTPException(Response.Status.FORBIDDEN, message);
+
+        }
+
+        // Arbitrary bad requests
+        catch (GuacamoleClientException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Invalid request.";
+
+            throw new HTTPException(Response.Status.BAD_REQUEST, message);
+
+        }
+
+        // All other errors
+        catch (GuacamoleException e) {
+
+            // Generate default message
+            String message = e.getMessage();
+            if (message == null)
+                message = "Unexpected server error.";
+
+            logger.debug("Unexpected exception in REST endpoint.", e);
+            throw new HTTPException(Response.Status.INTERNAL_SERVER_ERROR, message);
+
         }
 
     }
