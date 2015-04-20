@@ -28,29 +28,29 @@ import javax.ws.rs.core.Response;
 import org.glyptodon.guacamole.form.Parameter;
 
 /**
- * An exception that will result in the given HTTP Status and error being
+ * An exception that will result in the given error error information being
  * returned from the API layer. All error messages have the same format which
  * is defined by APIError.
  *
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class HTTPException extends WebApplicationException {
+public class APIException extends WebApplicationException {
 
     /**
-     * Construct a new HTTPException with the given error. All information
+     * Construct a new APIException with the given error. All information
      * associated with this new exception will be extracted from the given
      * APIError.
      *
      * @param error
      *     The error that occurred.
      */
-    public HTTPException(APIError error) {
+    public APIException(APIError error) {
         super(Response.status(error.getType().getStatus()).entity(error).build());
     }
 
     /**
-     * Creates a new HTTPException with the given type and message. The
+     * Creates a new APIException with the given type and message. The
      * corresponding APIError will be created from the provided information.
      *
      * @param type
@@ -59,14 +59,14 @@ public class HTTPException extends WebApplicationException {
      * @param message
      *     A human-readable message describing the error.
      */
-    public HTTPException(APIError.Type type, String message) {
+    public APIException(APIError.Type type, String message) {
         this(new APIError(type, message));
     }
 
     /**
-     * Creates a new HTTPException with the given type, message, and
-     * parameter information. The corresponding APIError will be created from
-     * the provided information.
+     * Creates a new APIException with the given type, message, and parameter
+     * information. The corresponding APIError will be created from the
+     * provided information.
      *
      * @param type
      *     The type of error that occurred.
@@ -78,7 +78,7 @@ public class HTTPException extends WebApplicationException {
      *     All parameters expected in the original request, or now required as
      *     a result of the original request.
      */
-    public HTTPException(APIError.Type type, String message, Collection<Parameter> expected) {
+    public APIException(APIError.Type type, String message, Collection<Parameter> expected) {
         this(new APIError(type, message, expected));
     }
 

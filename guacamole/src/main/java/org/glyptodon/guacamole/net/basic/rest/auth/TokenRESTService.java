@@ -46,7 +46,7 @@ import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.glyptodon.guacamole.net.basic.rest.APIRequest;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.HTTPException;
+import org.glyptodon.guacamole.net.basic.rest.APIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -290,7 +290,7 @@ public class TokenRESTService {
         
         GuacamoleSession session = tokenSessionMap.remove(authToken);
         if (session == null)
-            throw new HTTPException(APIError.Type.NOT_FOUND, "No such token.");
+            throw new APIException(APIError.Type.NOT_FOUND, "No such token.");
 
         session.invalidate();
 

@@ -62,7 +62,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.INSUFFICIENT_CREDENTIALS,
                 message,
                 e.getCredentialsInfo().getParameters()
@@ -77,7 +77,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.INVALID_CREDENTIALS,
                 message,
                 e.getCredentialsInfo().getParameters()
@@ -92,7 +92,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Permission denied.";
 
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.PERMISSION_DENIED,
                 message
             );
@@ -107,7 +107,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Not found.";
 
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.NOT_FOUND,
                 message
             );
@@ -122,7 +122,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Invalid request.";
 
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.BAD_REQUEST,
                 message
             );
@@ -138,7 +138,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
                 message = "Unexpected server error.";
 
             logger.debug("Unexpected exception in REST endpoint.", e);
-            throw new HTTPException(
+            throw new APIException(
                 APIError.Type.INTERNAL_ERROR,
                 message
             );

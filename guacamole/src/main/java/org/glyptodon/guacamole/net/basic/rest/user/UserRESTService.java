@@ -56,7 +56,7 @@ import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.HTTPException;
+import org.glyptodon.guacamole.net.basic.rest.APIException;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -275,12 +275,12 @@ public class UserRESTService {
 
         // Validate data and path are sane
         if (!user.getUsername().equals(username))
-            throw new HTTPException(APIError.Type.BAD_REQUEST,
+            throw new APIException(APIError.Type.BAD_REQUEST,
                     "Username in path does not match username provided JSON data.");
         
         // A user may not use this endpoint to modify himself
         if (userContext.self().getIdentifier().equals(user.getUsername())) {
-            throw new HTTPException(APIError.Type.PERMISSION_DENIED,
+            throw new APIException(APIError.Type.PERMISSION_DENIED,
                     "Permission denied.");
         }
 
@@ -335,7 +335,7 @@ public class UserRESTService {
         
         // Verify that the old password was correct 
         if (authProvider.getUserContext(credentials) == null) {
-            throw new HTTPException(APIError.Type.PERMISSION_DENIED,
+            throw new APIException(APIError.Type.PERMISSION_DENIED,
                     "Permission denied.");
         }
         
@@ -466,7 +466,7 @@ public class UserRESTService {
 
             // Unsupported patch operation
             default:
-                throw new HTTPException(APIError.Type.BAD_REQUEST,
+                throw new APIException(APIError.Type.BAD_REQUEST,
                         "Unsupported patch operation: \"" + operation + "\"");
 
         }
@@ -585,7 +585,7 @@ public class UserRESTService {
 
             // Otherwise, the path is not supported
             else
-                throw new HTTPException(APIError.Type.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
+                throw new APIException(APIError.Type.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
 
         } // end for each patch operation
         
