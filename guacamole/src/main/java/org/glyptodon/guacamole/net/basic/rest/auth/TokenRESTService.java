@@ -41,6 +41,8 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.APIRequest;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
@@ -233,15 +235,13 @@ public class TokenRESTService {
 
             }
 
+            // Request standard username/password if no user context was produced
+            if (userContext == null)
+                throw new GuacamoleInvalidCredentialsException("Permission Denied.",
+                        CredentialsInfo.USERNAME_PASSWORD);
+
         }
-        catch(GuacamoleException e) {
-            logger.error("Exception caught while authenticating user.", e);
-            throw new HTTPException(Status.INTERNAL_SERVER_ERROR, 
-                    "Unexpected server error.");
-        }
-        
-        // Authentication failed.
-        if (userContext == null) {
+        catch (GuacamoleException e) {
 
             // Log authentication failures with associated usernames
             if (username != null) {
@@ -255,10 +255,9 @@ public class TokenRESTService {
                 logger.debug("Anonymous authentication attempt from {} failed.",
                         getLoggableAddress(request), username);
 
-            throw new HTTPException(Status.UNAUTHORIZED, "Permission Denied.");
-
+            throw e;
         }
-
+        
         // Update existing session, if it exists
         String authToken;
         if (existingSession != null) {
