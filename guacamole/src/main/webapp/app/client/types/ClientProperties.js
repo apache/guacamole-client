@@ -23,8 +23,11 @@
 /**
  * A service for generating new guacClient properties objects.
  */
-angular.module('client').factory('ClientProperties', [function defineClientProperties() {
-            
+angular.module('client').factory('ClientProperties', ['$injector', function defineClientProperties($injector) {
+
+    // Required services
+    var preferenceService = $injector.get('preferenceService');
+        
     /**
      * Object used for interacting with a guacClient directive.
      * 
@@ -81,7 +84,7 @@ angular.module('client').factory('ClientProperties', [function defineClientPrope
          * 
          * @type Boolean
          */
-        this.emulateAbsoluteMouse = template.emulateAbsoluteMouse || true;
+        this.emulateAbsoluteMouse = template.emulateAbsoluteMouse || preferenceService.preferences.emulateAbsoluteMouse;
 
         /**
          * The relative Y coordinate of the scroll offset of the display within

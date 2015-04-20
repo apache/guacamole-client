@@ -34,6 +34,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var $location         = $injector.get('$location');
     var guacClientManager = $injector.get('guacClientManager');
     var guacNotification  = $injector.get('guacNotification');
+    var preferenceService = $injector.get('preferenceService');
     var userPageService   = $injector.get('userPageService');
 
     /**
@@ -196,7 +197,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
          *
          * @type String
          */
-        inputMethod : 'none',
+        inputMethod : preferenceService.preferences.inputMethod,
 
         /**
          * The current scroll state of the menu.
