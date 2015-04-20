@@ -58,7 +58,7 @@ angular.module('settings').factory('preferenceService', ['$injector',
          *
          * @type String
          */
-        inputMethod : 'none'
+        inputMethod : null
 
     };
 
@@ -87,6 +87,17 @@ angular.module('settings').factory('preferenceService', ['$injector',
 
     }
     catch (ignore) {}
+
+    // Choose reasonable default input method based on best-guess at platform
+    if (service.preferences.inputMethod === null) {
+
+        // Use text input by default if platform likely lacks physical keyboard
+        if (/android|ipad|iphone/i.test(navigator.userAgent))
+            service.preferences.inputMethod = 'text';
+        else
+            service.preferences.inputMethod = 'none';
+
+    }
 
     // Persist settings when window is unloaded
     $window.addEventListener('unload', service.save);
