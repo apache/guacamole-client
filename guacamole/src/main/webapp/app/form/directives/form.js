@@ -114,34 +114,6 @@ angular.module('form').directive('guacForm', [function form() {
             };
 
             /**
-             * Produces the translation string for the header of the given
-             * field. The translation string will be of the form:
-             *
-             * <code>NAMESPACE.FIELD_HEADER_NAME<code>
-             *
-             * where <code>NAMESPACE</code> is the namespace provided to the
-             * directive and <code>NAME</code> is the field name transformed
-             * via translationStringService.canonicalize().
-             *
-             * @param {Field} field
-             *     The field for which to produce the translation string.
-             *
-             * @returns {String}
-             *     The translation string which produces the translated header
-             *     of the field.
-             */
-            $scope.getFieldHeader = function getFieldHeader(field) {
-
-                // If no field, or no name, then no header
-                if (!field || !field.name)
-                    return '';
-
-                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
-                        + '.FIELD_HEADER_' + translationStringService.canonicalize(field.name);
-
-            };
-
-            /**
              * Determines whether the given object is a form, under the
              * assumption that the object is either a form or a field.
              *

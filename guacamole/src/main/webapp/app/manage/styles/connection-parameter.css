@@ -39,4 +39,5 @@
 .connection-parameters .form .fields .form-field {
     display: table-cell;
     padding: 0.125em;
+    vertical-align: top;
 }

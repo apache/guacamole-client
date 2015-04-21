@@ -64,7 +64,7 @@ p.login-error {
     position: relative;
 }
 
-.login-fields .field-header {
+.login-fields .labeled-field .field-header {
 
   display: block;
   position: absolute;
@@ -79,10 +79,10 @@ p.login-error {
 
 }
 
-.login-fields .form-field.empty input {
+.login-fields .labeled-field.empty input {
     background: transparent;
 }
 
-.login-fields .form-field input:focus {
+.login-fields .labeled-field input:focus {
     background: white;
 }

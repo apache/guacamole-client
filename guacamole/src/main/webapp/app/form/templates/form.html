@@ -26,10 +26,8 @@
 
     <!-- All fields in form -->
     <div class="fields">
-        <label ng-repeat="field in form.fields" class="labeled-field">
-            <span class="field-header">{{getFieldHeader(field) | translate}}</span>
-            <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
-        </label>
+        <guac-form-field ng-repeat="field in form.fields" namespace="namespace"
+                         field="field" model="values[field.name]"></guac-form-field>
     </div>
 
 </div>
