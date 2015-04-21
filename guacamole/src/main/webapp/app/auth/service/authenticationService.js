@@ -32,9 +32,19 @@
  * If a login attempt results in an existing token being replaced, 'guacLogout'
  * will be broadcast first for the token being replaced, followed by
  * 'guacLogin' for the new token.
+ * 
+ * Failed logins may also result in guacInsufficientCredentials or
+ * guacInvalidCredentials events, if the provided credentials were rejected for
+ * being insufficient or invalid respectively. Both events will be provided
+ * the set of parameters originally given to authenticate() and the set of
+ * expected credentials returned by the REST endpoint. This set of credentials
+ * will be in the form of a Field array.
  */
 angular.module('auth').factory('authenticationService', ['$injector',
         function authenticationService($injector) {
+
+    // Required types
+    var Error = $injector.get('Error');
 
     // Required services
     var $cookieStore = $injector.get('$cookieStore');
@@ -140,7 +150,16 @@ angular.module('auth').factory('authenticationService', ['$injector',
         })
 
         // If authentication fails, propogate failure to returned promise
-        .error(function authenticationFailed() {
+        .error(function authenticationFailed(error) {
+
+            // Request credentials if provided credentials were invalid
+            if (error.type === Error.Type.INVALID_CREDENTIALS)
+                $rootScope.$broadcast('guacInvalidCredentials', parameters, error.expected);
+
+            // Request more credentials if provided credentials were not enough 
+            else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
+                $rootScope.$broadcast('guacInsufficientCredentials', parameters, error.expected);
+
             authenticationProcess.reject();
         });
 
