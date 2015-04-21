@@ -161,15 +161,6 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
-        // Login screen
-        .when('/login/', {
-            title         : 'APP.NAME',
-            bodyClassName : 'login',
-            templateUrl   : 'app/login/templates/login.html',
-            controller    : 'loginController'
-            // No need to update token here - the login screen ignores all auth
-        })
-
         // Client view
         .when('/client/:type/:id/:params?', {
             bodyClassName : 'client',

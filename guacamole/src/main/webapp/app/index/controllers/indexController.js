@@ -37,6 +37,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.guacNotification = guacNotification;
 
     /**
+     * The credentials that the authentication service is currently expecting,
+     * if any. If the user is logged in, this will be null.
+     *
+     * @type Form[]|Form|Field[]|Field
+     */
+    $scope.expectedCredentials = null;
+
+    /**
      * Basic page-level information.
      */
     $scope.page = {
@@ -91,6 +99,21 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $window.onblur = function () {
         keyboard.reset();
     };
+
+    // Display login screen if a whole new set of credentials is needed
+    $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, expected) {
+        $scope.expectedCredentials = expected;
+    });
+
+    // Prompt for remaining credentials if provided credentials were not enough
+    $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, expected) {
+        // TODO: Implement insufficient credential prompting
+    });
+
+    // Clear login screen if login was successful
+    $scope.$on('guacLogin', function loginSuccessful() {
+        $scope.expectedCredentials = null;
+    });
 
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {
