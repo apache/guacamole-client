@@ -71,6 +71,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
 
+        // Do not handle key events if not logged in
+        if ($scope.expectedCredentials)
+            return true;
+
         // Warn of pending keydown
         var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeydown', keysym, keyboard);
         if (guacBeforeKeydownEvent.defaultPrevented)
@@ -84,6 +88,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     
     // Broadcast keyup events
     keyboard.onkeyup = function onkeyup(keysym) {
+
+        // Do not handle key events if not logged in
+        if ($scope.expectedCredentials)
+            return;
 
         // Warn of pending keyup
         var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeyup', keysym, keyboard);
