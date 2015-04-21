@@ -107,7 +107,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     // Prompt for remaining credentials if provided credentials were not enough
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, expected) {
-        // TODO: Implement insufficient credential prompting
+        $scope.expectedCredentials = expected;
     });
 
     // Clear login screen if login was successful
