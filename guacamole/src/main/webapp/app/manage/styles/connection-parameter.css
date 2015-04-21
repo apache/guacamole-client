@@ -26,3 +26,17 @@
 .connection-parameters input[type=number] {
     width: auto;
 }
+
+.connection-parameters .form .fields {
+    display: table;
+}
+
+.connection-parameters .form .fields .labeled-field {
+    display: table-row;
+}
+
+.connection-parameters .form .fields .field-header,
+.connection-parameters .form .fields .form-field {
+    display: table-cell;
+    padding: 0.125em;
+}

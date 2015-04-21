@@ -25,13 +25,11 @@
     <h3 ng-show="form.name">{{getSectionHeader(form) | translate}}</h3>
 
     <!-- All fields in form -->
-    <table class="fields">
-        <tr ng-repeat="field in form.fields">
-            <th>{{getFieldHeader(field) | translate}}</th>
-            <td>
-                <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
-            </td>
-        </tr>
-    </table>
+    <div class="fields">
+        <label ng-repeat="field in form.fields" class="labeled-field">
+            <span class="field-header">{{getFieldHeader(field) | translate}}</span>
+            <guac-form-field namespace="namespace" field="field" model="values[field.name]"></guac-form-field>
+        </label>
+    </div>
 
 </div>
