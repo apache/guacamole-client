@@ -35,5 +35,6 @@ angular.module('index', [
     'notification',
     'pascalprecht.translate',
     'rest',
-    'settings'
+    'settings',
+    'templates-main'
 ]);
