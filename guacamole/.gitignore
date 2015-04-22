@@ -1,3 +1,4 @@
 src/main/webapp/META-INF/
+src/main/webapp/generated/
 target/
 *~
