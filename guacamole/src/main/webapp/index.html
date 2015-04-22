@@ -35,7 +35,7 @@ THE SOFTWARE.
     <body ng-class="page.bodyClassName">
 
         <!-- Content for logged-in users -->
-        <div ng-show="!expectedCredentials">
+        <div ng-if="!expectedCredentials">
         
             <!-- Global status/error dialog -->
             <div ng-class="{shown: guacNotification.status}" class="status-outer">
