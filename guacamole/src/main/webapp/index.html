@@ -34,22 +34,30 @@ THE SOFTWARE.
     </head>
     <body ng-class="page.bodyClassName">
 
-        <!-- Global status/error dialog -->
-        <div ng-class="{shown: guacNotification.status}" class="status-outer">
-            <div class="status-middle">
-                <guac-notification notification="guacNotification.status"></guac-notification>
+        <!-- Content for logged-in users -->
+        <div ng-if="!expectedCredentials">
+        
+            <!-- Global status/error dialog -->
+            <div ng-class="{shown: guacNotification.status}" class="status-outer">
+                <div class="status-middle">
+                    <guac-notification notification="guacNotification.status"></guac-notification>
+                </div>
             </div>
+            
+            <div id="content" ng-view>
+            </div>
+            
+            <!-- Notification area -->
+            <div id="notificationArea">
+                <div ng-repeat="wrapper in guacNotification.notifications">
+                    <guac-notification notification="wrapper.notification"></guac-notification>
+                </div>                
+            </div>
+
         </div>
-        
-        <div id="content" ng-view>
-        </div>
-        
-        <!-- Notification area -->
-        <div id="notificationArea">
-            <div ng-repeat="wrapper in guacNotification.notifications">
-                <guac-notification notification="wrapper.notification"></guac-notification>
-            </div>                
-        </div>
+
+        <!-- Login screen for logged-out users -->
+        <guac-login ng-show="expectedCredentials" form="expectedCredentials"></guac-login>
         
         <script type="text/javascript" src="guacamole.min.js"></script>
     </body>

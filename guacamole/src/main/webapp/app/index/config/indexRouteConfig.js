@@ -39,26 +39,17 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
      * 
      * @returns {Promise}
      *     A promise which resolves successfully only after an attempt to
-     *     re-authenticate has been made.
+     *     re-authenticate has been made. If the authentication attempt fails,
+     *     the promise will be rejected.
      */
     var updateCurrentToken = ['$injector', function updateCurrentToken($injector) {
 
         // Required services
         var $location             = $injector.get('$location');
-        var $q                    = $injector.get('$q');
         var authenticationService = $injector.get('authenticationService');
 
-        // Promise for authentication attempt
-        var authAttempt = $q.defer();
-
         // Re-authenticate including any parameters in URL
-        authenticationService.updateCurrentToken($location.search())
-        ['finally'](function authenticationAttemptComplete() {
-            authAttempt.resolve();
-        });
-
-        // Return promise that will resolve regardless of success/failure
-        return authAttempt.promise;
+        return authenticationService.updateCurrentToken($location.search());
 
     }];
 
@@ -159,15 +150,6 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             templateUrl   : 'app/manage/templates/manageUser.html',
             controller    : 'manageUserController',
             resolve       : { updateCurrentToken: updateCurrentToken }
-        })
-
-        // Login screen
-        .when('/login/', {
-            title         : 'APP.NAME',
-            bodyClassName : 'login',
-            templateUrl   : 'app/login/templates/login.html',
-            controller    : 'loginController'
-            // No need to update token here - the login screen ignores all auth
         })
 
         // Client view

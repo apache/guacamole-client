@@ -27,6 +27,8 @@ div.login-ui {
     left: 0;
     top: 0;
     display: table;
+    background: white;
+    z-index: 20;
 }
 
 p.login-error {
@@ -51,4 +53,36 @@ p.login-error {
     -khtml-border-radius: 0.25em;
     text-align: center;
     color: #964040;
+}
+
+.login-fields .form-field .password-field .toggle-password {
+    display: none;
+}
+
+.login-fields .labeled-field {
+    display: block;
+    position: relative;
+}
+
+.login-fields .labeled-field .field-header {
+
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+
+  z-index: -1;
+  margin: 0.5em;
+  font-size: 0.9em;
+  opacity: 0.5;
+
+}
+
+.login-fields .labeled-field.empty input {
+    background: transparent;
+}
+
+.login-fields .labeled-field input:focus {
+    background: white;
 }

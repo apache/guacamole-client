@@ -1,4 +1,4 @@
-<div class="form-field">
+<label class="labeled-field" ng-class="{empty: !model}">
     <!--
         Copyright 2014 Glyptodon LLC.
 
@@ -21,22 +21,27 @@
         THE SOFTWARE.
     -->
 
-    <!-- Generic input types -->
-    <input ng-show="field.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input ng-show="field.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input ng-show="field.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-    <input ng-show="field.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+    <!-- Field header -->
+    <span class="field-header">{{getFieldHeader() | translate}}</span>
 
-    <!-- Password field -->
-    <div ng-show="field.type === 'PASSWORD'" class="password-field">
-        <input type="{{passwordInputType}}" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
-        <div class="icon toggle-password" ng-click="togglePassword()" title="{{getTogglePasswordHelpText() | translate}}"></div>
+    <!-- Generic input types -->
+    <div class="form-field">
+        <input ng-show="field.type === 'TEXT'"     type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+        <input ng-show="field.type === 'NUMERIC'"  type="number"   ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+        <input ng-show="field.type === 'USERNAME'" type="text"     ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+        <input ng-show="field.type === 'BOOLEAN'"  type="checkbox" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+
+        <!-- Password field -->
+        <div ng-show="field.type === 'PASSWORD'" class="password-field">
+            <input type="{{passwordInputType}}" ng-model="typedValue" autocorrect="off" autocapitalize="off"/>
+            <div class="icon toggle-password" ng-click="togglePassword()" title="{{getTogglePasswordHelpText() | translate}}"></div>
+        </div>
+
+        <!-- Multiline field -->
+        <textarea ng-show="field.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
+
+        <!-- Enumerated field -->
+        <select ng-show="field.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getFieldOption(option.value) | translate for option in field.options | orderBy: value"></select>
     </div>
 
-    <!-- Multiline field -->
-    <textarea ng-show="field.type === 'MULTILINE'" ng-model="typedValue" autocorrect="off" autocapitalize="off"></textarea>
-
-    <!-- Enumerated field -->
-    <select ng-show="field.type === 'ENUM'" ng-model="typedValue" ng-options="option.value as getFieldOption(option.value) | translate for option in field.options | orderBy: value"></select>
-
-</div>
+</label>

@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.xml.protocol;
 
-import org.glyptodon.guacamole.protocols.ProtocolParameter;
+import org.glyptodon.guacamole.form.Parameter;
 import org.glyptodon.guacamole.xml.TagHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -35,9 +35,9 @@ import org.xml.sax.SAXException;
 public class ParamTagHandler implements TagHandler {
 
     /**
-     * The ProtocolParameter backing this tag handler.
+     * The Parameter backing this tag handler.
      */
-    private ProtocolParameter protocolParameter = new ProtocolParameter();
+    private Parameter protocolParameter = new Parameter();
 
     @Override
     public void init(Attributes attributes) throws SAXException {
@@ -51,31 +51,31 @@ public class ParamTagHandler implements TagHandler {
 
         // Text field
         if ("text".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.TEXT);
+            protocolParameter.setType(Parameter.Type.TEXT);
 
         // Numeric field
         else if ("numeric".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.NUMERIC);
+            protocolParameter.setType(Parameter.Type.NUMERIC);
 
         // Username field
         else if ("username".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.USERNAME);
+            protocolParameter.setType(Parameter.Type.USERNAME);
 
         // Password field
         else if ("password".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.PASSWORD);
+            protocolParameter.setType(Parameter.Type.PASSWORD);
 
         // Enumerated field
         else if ("enum".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.ENUM);
+            protocolParameter.setType(Parameter.Type.ENUM);
 
         // Multiline field
         else if ("multiline".equals(type))
-            protocolParameter.setType(ProtocolParameter.Type.MULTILINE);
+            protocolParameter.setType(Parameter.Type.MULTILINE);
 
         // Boolean field
         else if ("boolean".equals(type)) {
-            protocolParameter.setType(ProtocolParameter.Type.BOOLEAN);
+            protocolParameter.setType(Parameter.Type.BOOLEAN);
 
             if(protocolParameter.getValue() == null)
                 throw new SAXException
@@ -99,7 +99,7 @@ public class ParamTagHandler implements TagHandler {
 
             // Store stub in options collection
             protocolParameter.getOptions().add(
-                tagHandler.asProtocolParameterOption());
+                tagHandler.asParameterOption());
             return tagHandler;
 
         }
@@ -114,10 +114,10 @@ public class ParamTagHandler implements TagHandler {
     }
 
     /**
-     * Returns the ProtocolParameter backing this tag.
-     * @return The ProtocolParameter backing this tag.
+     * Returns the Parameter backing this tag.
+     * @return The Parameter backing this tag.
      */
-    public ProtocolParameter asProtocolParameter() {
+    public Parameter asParameter() {
         return protocolParameter;
     }
 

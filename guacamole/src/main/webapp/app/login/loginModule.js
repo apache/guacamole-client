@@ -23,4 +23,8 @@
 /**
  * The module for the login functionality.
  */
-angular.module('login', ['element', 'navigation']);
+angular.module('login', [
+    'element',
+    'form',
+    'navigation'
+]);

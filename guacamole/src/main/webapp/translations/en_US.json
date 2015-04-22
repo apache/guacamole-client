@@ -141,12 +141,12 @@
 
     "LOGIN": {
 
-        "ACTION_LOGIN"               : "@:APP.ACTION_LOGIN",
+        "ACTION_LOGIN" : "@:APP.ACTION_LOGIN",
 
-        "ERROR_INVALID_LOGIN"        : "Invalid Login",
+        "ERROR_INVALID_LOGIN" : "Invalid Login",
 
-        "FIELD_PLACEHOLDER_USERNAME" : "Username",
-        "FIELD_PLACEHOLDER_PASSWORD" : "Password"
+        "FIELD_HEADER_USERNAME" : "Username",
+        "FIELD_HEADER_PASSWORD" : "Password"
 
     },
 

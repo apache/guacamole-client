@@ -37,6 +37,14 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.guacNotification = guacNotification;
 
     /**
+     * The credentials that the authentication service is currently expecting,
+     * if any. If the user is logged in, this will be null.
+     *
+     * @type Form[]|Form|Field[]|Field
+     */
+    $scope.expectedCredentials = null;
+
+    /**
      * Basic page-level information.
      */
     $scope.page = {
@@ -63,6 +71,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
 
+        // Do not handle key events if not logged in
+        if ($scope.expectedCredentials)
+            return true;
+
         // Warn of pending keydown
         var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeydown', keysym, keyboard);
         if (guacBeforeKeydownEvent.defaultPrevented)
@@ -76,6 +88,10 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     
     // Broadcast keyup events
     keyboard.onkeyup = function onkeyup(keysym) {
+
+        // Do not handle key events if not logged in
+        if ($scope.expectedCredentials)
+            return;
 
         // Warn of pending keyup
         var guacBeforeKeydownEvent = $scope.$broadcast('guacBeforeKeyup', keysym, keyboard);
@@ -91,6 +107,25 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $window.onblur = function () {
         keyboard.reset();
     };
+
+    // Display login screen if a whole new set of credentials is needed
+    $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, expected) {
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+        $scope.expectedCredentials = expected;
+    });
+
+    // Prompt for remaining credentials if provided credentials were not enough
+    $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, expected) {
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+        $scope.expectedCredentials = expected;
+    });
+
+    // Clear login screen if login was successful
+    $scope.$on('guacLogin', function loginSuccessful() {
+        $scope.expectedCredentials = null;
+    });
 
     // Update title and CSS class upon navigation
     $scope.$on('$routeChangeSuccess', function(event, current, previous) {

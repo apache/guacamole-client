@@ -48,6 +48,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             // Get required services
             var $document             = $injector.get('$document');
             var $location             = $injector.get('$location');
+            var $route                = $injector.get('$route');
             var authenticationService = $injector.get('authenticationService');
             var userPageService       = $injector.get('userPageService');
 
@@ -100,12 +101,15 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             };
 
             /**
-             * Logs out the current user, redirecting them to back to the login
-             * screen after logout completes.
+             * Logs out the current user, redirecting them to back to the root
+             * after logout completes.
              */
             $scope.logout = function logout() {
                 authenticationService.logout()['finally'](function logoutComplete() {
-                    $location.path('/login/');
+                    if ($location.path() !== '/')
+                        $location.url('/');
+                    else
+                        $route.reload();
                 });
             };
 
