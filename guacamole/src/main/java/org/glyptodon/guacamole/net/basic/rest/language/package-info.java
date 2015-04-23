@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Glyptodon LLC
+ * Copyright (C) 2014 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,8 @@
  * THE SOFTWARE.
  */
 
-.preferences .update-password .form {
-    padding-left: 0.5em;
-    border-left: 3px solid rgba(0, 0, 0, 0.125);
-}
+/**
+ * Classes related to the language retrieval aspect of the Guacamole REST API.
+ */
+package org.glyptodon.guacamole.net.basic.rest.language;
+

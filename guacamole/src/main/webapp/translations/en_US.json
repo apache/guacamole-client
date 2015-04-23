@@ -1,5 +1,7 @@
 {
-
+    
+    "NAME" : "English (US)",
+    
     "APP" : {
 
         "ACTION_ACKNOWLEDGE"        : "OK",
@@ -411,6 +413,7 @@
         "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
+        "FIELD_HEADER_LANGUAGE"           : "Display language:",
         "FIELD_HEADER_PASSWORD"           : "Password:",
         "FIELD_HEADER_PASSWORD_OLD"       : "Current Password:",
         "FIELD_HEADER_PASSWORD_NEW"       : "New Password:",
@@ -422,6 +425,7 @@
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LANGUAGE"             : "Select a different language below to change the language of all text within Guacamole. Available choices will depend on which languages are installed.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "If you wish to change your password, enter your current password and the desired new password below, and click \"Update Password\". The change will take effect immediately.",

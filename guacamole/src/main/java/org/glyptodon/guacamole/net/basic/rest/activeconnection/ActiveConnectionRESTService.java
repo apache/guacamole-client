@@ -147,7 +147,6 @@ public class ActiveConnectionRESTService {
      *     If an error occurs while deleting the active connections.
      */
     @PATCH
-    @Path("/")
     @AuthProviderRESTExposure
     public void patchTunnels(@QueryParam("token") String authToken,
             List<APIPatch<String>> patches) throws GuacamoleException {

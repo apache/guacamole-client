@@ -1,4 +1,4 @@
-<div class="preferences">
+<div class="preferences" ng-class="{loading: !isLoaded()}">
     <!--
     Copyright 2015 Glyptodon LLC.
 
@@ -21,6 +21,21 @@
     THE SOFTWARE.
     -->
 
+    <!-- Language settings -->
+    <div class="settings section language">
+        <p>{{'SETTINGS_PREFERENCES.HELP_LANGUAGE' | translate}}</p>
+
+        <!-- Language selection -->
+        <div class="form">
+            <table class="fields">
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_LANGUAGE' | translate}}</th>
+                    <td><select ng-model="preferences.language" ng-change="changeLanguage()" ng-options="key as name for (key, name) in languages | orderBy: name"></select></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
     <!-- Password update -->
     <div class="settings section update-password" ng-show="canChangePassword">
         <p>{{'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | translate}}</p>

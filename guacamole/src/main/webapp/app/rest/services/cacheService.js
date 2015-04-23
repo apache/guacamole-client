@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,6 +42,13 @@ angular.module('rest').factory('cacheService', ['$injector',
     service.connections = $cacheFactory('API-CONNECTIONS');
 
     /**
+     * Cache used by languageService.
+     *
+     * @type $cacheFactory.Cache
+     */
+    service.languages = $cacheFactory('API-LANGUAGES');
+
+    /**
      * Cache used by protocolService.
      *
      * @type $cacheFactory.Cache
@@ -59,8 +66,9 @@ angular.module('rest').factory('cacheService', ['$injector',
      * Clear all caches defined in this service.
      */
     service.clearCaches = function clearCaches() {
-        service.protocols.removeAll();
         service.connections.removeAll();
+        service.languages.removeAll();
+        service.protocols.removeAll();
         service.users.removeAll();
     };
 
