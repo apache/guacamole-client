@@ -41,22 +41,6 @@ angular.module('notification').factory('guacNotification', ['$injector',
     var storedStatus = sessionStorageFactory.create(false);
 
     /**
-     * Getter/setter which retrieves or sets an array of all currently-visible
-     * notifications.
-     * 
-     * @type Function
-     */
-    var storedNotifications = sessionStorageFactory.create([]);
-
-    /**
-     * Getter/setter which retrieves or sets the ID of the most recently shown
-     * notification, or 0 if no notifications have yet been shown.
-     *
-     * @type Function
-     */
-    var storedNotificationUniqueID = sessionStorageFactory.create(0);
-
-    /**
      * Retrieves the current status notification, which may simply be false if
      * no status is currently shown.
      * 
@@ -96,69 +80,6 @@ angular.module('notification').factory('guacNotification', ['$injector',
             storedStatus(status);
     };
 
-    /**
-     * Returns an array of all currently-visible notifications.
-     *
-     * @returns {Notification[]}
-     *     An array of all currently-visible notifications.
-     */
-    service.getNotifications = function getNotifications() {
-        return storedNotifications();
-    };
-
-    /**
-     * Adds a notification to the the list of notifications shown.
-     * 
-     * @param {Notification|Object} notification
-     *     The notification to add.
-     *
-     * @returns {Number}
-     *     A unique ID for the notification that's just been added.
-     * 
-     * @example
-     * 
-     * var id = guacNotification.addNotification({
-     *     'title'      : 'Download',
-     *     'text'       : 'You have a file ready for download!',
-     *     'actions'    : {
-     *         'name'       : 'download',
-     *         'callback'   : function () {
-     *             // download the file and remove the notification here
-     *         }
-     *     }
-     * });
-     */
-    service.addNotification = function addNotification(notification) {
-        var id = storedNotificationUniqueID(storedNotificationUniqueID() + 1);
-
-        storedNotifications().push({
-            notification    : notification,
-            id              : id
-        });
-        
-        return id;
-    };
-    
-    /**
-     * Remove a notification by unique ID.
-     * 
-     * @param {Number} id
-     *     The unique ID of the notification to remove. This ID is retrieved
-     *     from the initial call to addNotification.
-     */
-    service.removeNotification = function removeNotification(id) {
-
-        var notifications = storedNotifications();
-
-        for (var i = 0; i < notifications.length; i++) {
-            if (notifications[i].id === id) {
-                notifications.splice(i, 1);
-                return;
-            }
-        }
-
-    };
-           
     // Hide status upon navigation
     $rootScope.$on('$routeChangeSuccess', function() {
         service.showStatus(false);

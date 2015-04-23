@@ -47,13 +47,6 @@ THE SOFTWARE.
             <div id="content" ng-view>
             </div>
             
-            <!-- Notification area -->
-            <div id="notificationArea">
-                <div ng-repeat="wrapper in guacNotification.getNotifications()">
-                    <guac-notification notification="wrapper.notification"></guac-notification>
-                </div>                
-            </div>
-
         </div>
 
         <!-- Login screen for logged-out users -->
