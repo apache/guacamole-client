@@ -49,7 +49,7 @@ angular.module('rest').factory('languageService', ['$injector',
             token : authenticationService.getCurrentToken()
         };
 
-        // Retrieve available protocols
+        // Retrieve available languages
         return $http({
             cache   : cacheService.languages,
             method  : 'GET',

@@ -20,7 +20,8 @@
  * THE SOFTWARE.
  */
 
-.preferences .update-password .form {
+.preferences .update-password .form, 
+.preferences .language .form {
     padding-left: 0.5em;
     border-left: 3px solid rgba(0, 0, 0, 0.125);
 }

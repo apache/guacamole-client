@@ -200,6 +200,4 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         }]
     };
     
-    
-    
 }]);

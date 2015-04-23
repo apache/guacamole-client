@@ -62,7 +62,7 @@ public class LanguageRESTService {
     /**
      * The path to the translation folder within the webapp.
      */
-    private static final String TRANSLATION_PATHS = "/translations";
+    private static final String TRANSLATION_PATH = "/translations";
     
     /**
      * The JSON property for the human readable display name.
@@ -92,8 +92,8 @@ public class LanguageRESTService {
      *     The ServletContext associated with the request.
      *
      * @return
-     *     A list of languages defined in the system, consisting of 
-     *     language display name and key.
+     *     A map of languages defined in the system, of language key to 
+     *     display name.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the available languages.
@@ -104,7 +104,7 @@ public class LanguageRESTService {
             @Context ServletContext servletContext) throws GuacamoleException {
         
         // Get the paths of all the translation files
-        Set<String> resourcePaths = servletContext.getResourcePaths(TRANSLATION_PATHS);
+        Set<String> resourcePaths = servletContext.getResourcePaths(TRANSLATION_PATH);
         
         // If no translation files found, return an empty map
         if (resourcePaths == null)
@@ -113,7 +113,7 @@ public class LanguageRESTService {
         Map<String, String> languageMap = new HashMap<String, String>();
         
         // Iterate through all the found language files and add them to the return map
-        for(String resourcePath : resourcePaths) {
+        for (String resourcePath : resourcePaths) {
             
             // Get input stream for language file
             InputStream languageFileStream = servletContext.getResourceAsStream(resourcePath); 
