@@ -44,12 +44,16 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
      *     The default value for new users, or a getter which returns a newly-
      *     created default value.
      *
+     * @param {Function} [destructor]
+     *     Function which will be called just before the stored value is
+     *     destroyed on logout, if a value is stored.
+     *
      * @returns {Function}
      *     A getter/setter which returns or sets the current value of the new
      *     session-local storage. Newly-set values will only persist of the
      *     user is actually logged in.
      */
-    service.create = function create(template) {
+    service.create = function create(template, destructor) {
 
         /**
          * Whether new values may be stored and retrieved.
@@ -88,8 +92,15 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
 
         // Reset value and disallow storage when the user is logged out
         $rootScope.$on('guacLogout', function userLoggedOut() {
+
+            // Call destructor before storage is teared down
+            if (angular.isDefined(value) && destructor)
+                destructor(value);
+
+            // Destroy storage
             enabled = false;
             value = undefined;
+
         });
 
         // Return getter/setter for value
