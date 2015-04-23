@@ -127,7 +127,7 @@ angular.module('settings').factory('preferenceService', ['$injector',
         if (localStorage) {
             var preferencesJSON = localStorage.getItem(GUAC_PREFERENCES_STORAGE_KEY);
             if (preferencesJSON)
-                service.preferences = JSON.parse(preferencesJSON);
+                angular.extend(service.preferences, JSON.parse(preferencesJSON));
         }
 
     }
