@@ -74,8 +74,8 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         var $q              = $injector.get('$q');
         var userPageService = $injector.get('userPageService');
 
-        // Promise for redirection attempt
-        var redirect = $q.defer();
+        // Promise for routing attempt
+        var route = $q.defer();
 
         // Re-authenticate including any parameters in URL
         $injector.invoke(updateCurrentToken)
@@ -84,23 +84,29 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             // Redirect to home page
             userPageService.getHomePage()
             .then(function homePageRetrieved(homePage) {
-                $location.url(homePage.url);
+
+                // If home page is the requested location, allow through
+                if ($location.path() === homePage.url)
+                    route.resolve();
+
+                // Otherwise, reject and reroute
+                else {
+                    $location.url(homePage.url);
+                    route.reject();
+                }
+
             })
 
-            // If retrieval of home page fails, assume '/'
+            // If retrieval of home page fails, assume requested page is OK
             ['catch'](function homePageFailed() {
-                $location.url('/');
-            })
-
-            // Resolve promise in either case
-            ['finally'](function retrievalAttemptComplete() {
-                redirect.resolve();
+                route.resolve();
             });
 
         });
 
-        // Return promise that will resolve regardless of success/failure
-        return redirect.promise;
+        // Return promise that will resolve only if the requested page is the
+        // home page
+        return route.promise;
 
     }];
 
