@@ -23,34 +23,49 @@
 /**
  * Service for displaying notifications and modal status dialogs.
  */
-angular.module('notification').factory('guacNotification', ['$rootScope',
-        function guacNotification($rootScope) {
+angular.module('notification').factory('guacNotification', ['$injector',
+        function guacNotification($injector) {
+
+    // Required services
+    var $rootScope            = $injector.get('$rootScope');
+    var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
 
     /**
-     * The current status notification, or false if no status is currently
-     * shown.
+     * Getter/setter which retrieves or sets the current status notification,
+     * which may simply be false if no status is currently shown.
+     * 
+     * @type Function
+     */
+    var storedStatus = sessionStorageFactory.create(false);
+
+    /**
+     * Getter/setter which retrieves or sets an array of all currently-visible
+     * notifications.
+     * 
+     * @type Function
+     */
+    var storedNotifications = sessionStorageFactory.create([]);
+
+    /**
+     * Getter/setter which retrieves or sets the ID of the most recently shown
+     * notification, or 0 if no notifications have yet been shown.
+     *
+     * @type Function
+     */
+    var storedNotificationUniqueID = sessionStorageFactory.create(0);
+
+    /**
+     * Retrieves the current status notification, which may simply be false if
+     * no status is currently shown.
      * 
      * @type Notification|Boolean
      */
-    service.status = false;
+    service.getStatus = function getStatus() {
+        return storedStatus();
+    };
 
-    /**
-     * All currently-visible notifications.
-     * 
-     * @type Notification[]
-     */
-    service.notifications = [];
-
-    /**
-     * The ID of the most recently shown notification, or 0 if no notifications
-     * have yet been shown.
-     *
-     * @type Number
-     */
-    var notificationUniqueID = 0;
-    
     /**
      * Shows or hides the given notification as a modal status. If a status
      * notification is currently shown, no further statuses will be shown
@@ -77,10 +92,20 @@ angular.module('notification').factory('guacNotification', ['$rootScope',
      * guacNotification.showStatus(false);
      */
     service.showStatus = function showStatus(status) {
-        if (!service.status || !status)
-            service.status = status;
+        if (!storedStatus() || !status)
+            storedStatus(status);
     };
-    
+
+    /**
+     * Returns an array of all currently-visible notifications.
+     *
+     * @returns {Notification[]}
+     *     An array of all currently-visible notifications.
+     */
+    service.getNotifications = function getNotifications() {
+        return storedNotifications();
+    };
+
     /**
      * Adds a notification to the the list of notifications shown.
      * 
@@ -104,9 +129,9 @@ angular.module('notification').factory('guacNotification', ['$rootScope',
      * });
      */
     service.addNotification = function addNotification(notification) {
-        var id = ++notificationUniqueID;
+        var id = storedNotificationUniqueID(storedNotificationUniqueID() + 1);
 
-        service.notifications.push({
+        storedNotifications().push({
             notification    : notification,
             id              : id
         });
@@ -122,12 +147,16 @@ angular.module('notification').factory('guacNotification', ['$rootScope',
      *     from the initial call to addNotification.
      */
     service.removeNotification = function removeNotification(id) {
-        for (var i = 0; i < service.notifications.length; i++) {
-            if (service.notifications[i].id === id) {
-                service.notifications.splice(i, 1);
+
+        var notifications = storedNotifications();
+
+        for (var i = 0; i < notifications.length; i++) {
+            if (notifications[i].id === id) {
+                notifications.splice(i, 1);
                 return;
             }
         }
+
     };
            
     // Hide status upon navigation
