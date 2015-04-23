@@ -437,7 +437,8 @@
         "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Default Input Method",
-        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Default Mouse Emulation Mode"
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Default Mouse Emulation Mode",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Change Password"
 
     },
 
