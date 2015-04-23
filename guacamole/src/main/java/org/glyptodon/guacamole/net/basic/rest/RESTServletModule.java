@@ -32,6 +32,7 @@ import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
 import org.glyptodon.guacamole.net.basic.rest.protocol.ProtocolRESTService;
 import org.glyptodon.guacamole.net.basic.rest.activeconnection.ActiveConnectionRESTService;
+import org.glyptodon.guacamole.net.basic.rest.language.LanguageRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
 
 /**
@@ -45,13 +46,14 @@ public class RESTServletModule extends ServletModule {
     protected void configureServlets() {
         
         // Set up the API endpoints
-        bind(ClipboardRESTService.class);
-        bind(ConnectionRESTService.class);
-        bind(ConnectionGroupRESTService.class);
-        bind(ProtocolRESTService.class);
-        bind(UserRESTService.class);
-        bind(TokenRESTService.class);
         bind(ActiveConnectionRESTService.class);
+        bind(ClipboardRESTService.class);
+        bind(ConnectionGroupRESTService.class);
+        bind(ConnectionRESTService.class);
+        bind(LanguageRESTService.class);
+        bind(ProtocolRESTService.class);
+        bind(TokenRESTService.class);
+        bind(UserRESTService.class);
         
         // Set up the servlet and JSON mappings
         bind(GuiceContainer.class);

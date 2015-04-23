@@ -28,8 +28,9 @@ angular.module('settings').factory('preferenceService', ['$injector',
         function preferenceService($injector) {
 
     // Required services
-    var $window    = $injector.get('$window');
     var $rootScope = $injector.get('$rootScope');
+    var $translate = $injector.get('$translate');
+    var $window    = $injector.get('$window');
 
     var service = {};
 
@@ -95,7 +96,14 @@ angular.module('settings').factory('preferenceService', ['$injector',
          *
          * @type String
          */
-        inputMethod : service.inputMethods.NONE
+        inputMethod : service.inputMethods.NONE,
+        
+        /**
+         * The selected language.
+         * 
+         * @type String
+         */
+        language : $translate.use()
 
     };
 

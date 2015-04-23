@@ -30,8 +30,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         restrict: 'E',
         replace: true,
 
-        scope: {
-        },
+        scope: {},
 
         templateUrl: 'app/settings/templates/settingsPreferences.html',
         controller: ['$scope', '$injector', function settingsPreferencesController($scope, $injector) {
@@ -40,11 +39,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             var PermissionSet = $injector.get('PermissionSet');
 
             // Required services
+            var $translate            = $injector.get('$translate');
             var authenticationService = $injector.get('authenticationService');
             var guacNotification      = $injector.get('guacNotification');
-            var userService           = $injector.get('userService');
+            var languageService       = $injector.get('languageService');
             var permissionService     = $injector.get('permissionService');
             var preferenceService     = $injector.get('preferenceService');
+            var userService           = $injector.get('userService');
 
             /**
              * An action to be provided along with the object sent to
@@ -71,6 +72,21 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
+            
+            /**
+             * A map of all available language keys to their human-readable
+             * names.
+             * 
+             * @type Object.<String, String>
+             */
+            $scope.languages = null;
+            
+            /**
+             * Switches the active display langugae to the chosen language.
+             */
+            $scope.changeLanguage = function changeLanguage() {
+                $translate.use($scope.preferences.language);
+            };
 
             /**
              * The new password for the user.
@@ -151,6 +167,12 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 
             };
 
+            // Retrieve defined languages
+            languageService.getLanguages()
+            .success(function languagesRetrieved(languages) {
+                $scope.languages = languages;
+            });
+
             // Retrieve current permissions
             permissionService.getPermissions(username)
             .success(function permissionsRetrieved(permissions) {
@@ -161,7 +183,23 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         
             });
 
+            /**
+             * Returns whether critical data has completed being loaded.
+             *
+             * @returns {Boolean}
+             *     true if enough data has been loaded for the user interface to be
+             *     useful, false otherwise.
+             */
+            $scope.isLoaded = function isLoaded() {
+
+                return $scope.canChangePassword !== null
+                    && $scope.languages         !== null;
+
+            };
+
         }]
     };
+    
+    
     
 }]);
