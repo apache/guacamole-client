@@ -29,7 +29,6 @@ angular.module('settings').factory('preferenceService', ['$injector',
 
     // Required services
     var $rootScope = $injector.get('$rootScope');
-    var $translate = $injector.get('$translate');
     var $window    = $injector.get('$window');
 
     var service = {};
@@ -75,6 +74,24 @@ angular.module('settings').factory('preferenceService', ['$injector',
     };
 
     /**
+     * Returns the key of the language currently in use within the browser.
+     * This is not necessarily the user's desired language, but is rather the
+     * language user by the browser's interface.
+     *
+     * @returns {String}
+     *     The key of the language currently in use within the browser.
+     */
+    var getDefaultLanguageKey = function getDefaultLanguageKey() {
+
+        // Pull browser language, falling back to US English
+        var language = navigator.language || navigator.browserLanguage || 'en_US';
+
+        // Convert to format used internally
+        return language.replace(/-/g, '_');
+
+    };
+
+    /**
      * All currently-set preferences, as name/value pairs. Each property name
      * corresponds to the name of a preference.
      *
@@ -99,11 +116,11 @@ angular.module('settings').factory('preferenceService', ['$injector',
         inputMethod : service.inputMethods.NONE,
         
         /**
-         * The selected language.
+         * The key of the desired display language.
          * 
          * @type String
          */
-        language : $translate.use()
+        language : getDefaultLanguageKey()
 
     };
 
