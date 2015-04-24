@@ -24,16 +24,20 @@
  * A service for setting and retrieving browser-local preferences. Preferences
  * may be any JSON-serializable type.
  */
-angular.module('settings').factory('preferenceService', ['$injector',
-        function preferenceService($injector) {
+angular.module('settings').provider('preferenceService', function preferenceServiceProvider() {
 
-    // Required services
-    var $rootScope = $injector.get('$rootScope');
-    var $window    = $injector.get('$window');
+    /**
+     * Reference to the provider itself.
+     *
+     * @type preferenceServiceProvider
+     */
+    var provider = this;
 
-    var service = {};
-
-    // The parameter name for getting the history from local storage
+    /**
+     * The storage key of Guacamole preferences within local storage.
+     *
+     * @type String
+     */
     var GUAC_PREFERENCES_STORAGE_KEY = "GUAC_PREFERENCES";
 
     /**
@@ -41,7 +45,7 @@ angular.module('settings').factory('preferenceService', ['$injector',
      *
      * @type Object.<String, String>
      */
-    service.inputMethods = {
+    var inputMethods = {
 
         /**
          * No input method is used. Keyboard events are generated from a
@@ -97,7 +101,7 @@ angular.module('settings').factory('preferenceService', ['$injector',
      *
      * @type Object.<String, Object>
      */
-    service.preferences = {
+    this.preferences = {
 
         /**
          * Whether translation of touch to mouse events should emulate an
@@ -113,7 +117,7 @@ angular.module('settings').factory('preferenceService', ['$injector',
          *
          * @type String
          */
-        inputMethod : service.inputMethods.NONE,
+        inputMethod : inputMethods.NONE,
         
         /**
          * The key of the desired display language.
@@ -124,45 +128,71 @@ angular.module('settings').factory('preferenceService', ['$injector',
 
     };
 
-    /**
-     * Persists the current values of all preferences, if possible.
-     */
-    service.save = function save() {
-
-        // Save updated preferences, ignore inability to use localStorage
-        try {
-            if (localStorage)
-                localStorage.setItem(GUAC_PREFERENCES_STORAGE_KEY, JSON.stringify(service.preferences));
-        }
-        catch (ignore) {}
-
-    };
-
     // Get stored preferences, ignore inability to use localStorage
     try {
 
         if (localStorage) {
             var preferencesJSON = localStorage.getItem(GUAC_PREFERENCES_STORAGE_KEY);
             if (preferencesJSON)
-                angular.extend(service.preferences, JSON.parse(preferencesJSON));
+                angular.extend(provider.preferences, JSON.parse(preferencesJSON));
         }
 
     }
     catch (ignore) {}
 
-    // Persist settings when window is unloaded
-    $window.addEventListener('unload', service.save);
+    // Factory method required by provider
+    this.$get = ['$injector', function preferenceServiceFactory($injector) {
 
-    // Persist settings upon navigation 
-    $rootScope.$on('$routeChangeSuccess', function handleNavigate() {
-        service.save();
-    });
+        // Required services
+        var $rootScope = $injector.get('$rootScope');
+        var $window    = $injector.get('$window');
 
-    // Persist settings upon logout
-    $rootScope.$on('guacLogout', function handleLogout() {
-        service.save();
-    });
+        var service = {};
 
-    return service;
+        /**
+         * All valid input method type names.
+         *
+         * @type Object.<String, String>
+         */
+        service.inputMethods = inputMethods;
 
-}]);
+        /**
+         * All currently-set preferences, as name/value pairs. Each property name
+         * corresponds to the name of a preference.
+         *
+         * @type Object.<String, Object>
+         */
+        service.preferences = provider.preferences;
+
+        /**
+         * Persists the current values of all preferences, if possible.
+         */
+        service.save = function save() {
+
+            // Save updated preferences, ignore inability to use localStorage
+            try {
+                if (localStorage)
+                    localStorage.setItem(GUAC_PREFERENCES_STORAGE_KEY, JSON.stringify(service.preferences));
+            }
+            catch (ignore) {}
+
+        };
+
+        // Persist settings when window is unloaded
+        $window.addEventListener('unload', service.save);
+
+        // Persist settings upon navigation 
+        $rootScope.$on('$routeChangeSuccess', function handleNavigate() {
+            service.save();
+        });
+
+        // Persist settings upon logout
+        $rootScope.$on('guacLogout', function handleLogout() {
+            service.save();
+        });
+
+        return service;
+
+    }];
+
+});
