@@ -25,8 +25,11 @@
  */
 angular.module('index').config(['$translateProvider', function($translateProvider) {
 
-    // Use US English by default
+    // TODONT: Use US English by default (this should come from preferences)
     $translateProvider.preferredLanguage('en_US');
+
+    // Use US English for any undefined strings 
+    $translateProvider.fallbackLanguage('en_US');
 
     // Load translations from static JSON files
     $translateProvider.useStaticFilesLoader({
