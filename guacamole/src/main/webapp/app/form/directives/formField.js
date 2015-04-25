@@ -183,7 +183,7 @@ angular.module('form').directive('guacFormField', [function formField() {
 
                 // Coerce numeric strings to numbers
                 if ($scope.field.type === 'NUMERIC')
-                    $scope.typedValue = (modelValue ? Number($scope.field.value) : null);
+                    $scope.typedValue = (modelValue ? Number(modelValue) : null);
 
                 // Coerce boolean strings to boolean values
                 else if ($scope.field.type === 'BOOLEAN')
