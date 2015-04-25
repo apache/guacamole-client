@@ -137,7 +137,7 @@ public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService
         super.beforeCreate(user, model);
         
         // Name must not be blank
-        if (model.getName().trim().isEmpty())
+        if (model.getName() == null || model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
         
         // Do not attempt to create duplicate connection groups
@@ -154,7 +154,7 @@ public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService
         super.beforeUpdate(user, model);
         
         // Name must not be blank
-        if (model.getName().trim().isEmpty())
+        if (model.getName() == null || model.getName().trim().isEmpty())
             throw new GuacamoleClientException("Connection group names must not be blank.");
         
         // Check whether such a connection group is already present

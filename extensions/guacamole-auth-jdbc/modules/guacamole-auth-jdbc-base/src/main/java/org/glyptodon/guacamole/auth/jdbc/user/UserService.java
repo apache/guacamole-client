@@ -144,7 +144,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         super.beforeCreate(user, model);
         
         // Username must not be blank
-        if (model.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Do not create duplicate users
@@ -161,7 +161,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         super.beforeUpdate(user, model);
         
         // Username must not be blank
-        if (model.getIdentifier().trim().isEmpty())
+        if (model.getIdentifier() == null || model.getIdentifier().trim().isEmpty())
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Check whether such a user is already present
