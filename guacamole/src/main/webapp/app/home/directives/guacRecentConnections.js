@@ -137,11 +137,13 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
                 if (rootGroup)
                     addVisibleConnectionGroup(rootGroup);
 
+                var managedClients = guacClientManager.getManagedClients();
+
                 // Add all active connections
-                for (var id in guacClientManager.managedClients) {
+                for (var id in managedClients) {
 
                     // Get corresponding managed client
-                    var client = guacClientManager.managedClients[id];
+                    var client = managedClients[id];
 
                     // Add active connections for clients with associated visible objects
                     if (id in visibleObjects) {
@@ -157,7 +159,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
                 guacHistory.recentConnections.forEach(function addRecentConnection(historyEntry) {
 
                     // Add recent connections for history entries with associated visible objects
-                    if (historyEntry.id in visibleObjects && !(historyEntry.id in guacClientManager.managedClients)) {
+                    if (historyEntry.id in visibleObjects && !(historyEntry.id in managedClients)) {
 
                         var object = visibleObjects[historyEntry.id];
                         $scope.recentConnections.push(new RecentConnection(object.name, historyEntry));

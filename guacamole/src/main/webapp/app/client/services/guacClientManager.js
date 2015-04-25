@@ -30,18 +30,34 @@ angular.module('client').factory('guacClientManager', ['$injector',
     var ManagedClient = $injector.get('ManagedClient');
 
     // Required services
-    var $window    = $injector.get('$window');
-    var $rootScope = $injector.get('$rootScope');
+    var $window               = $injector.get('$window');
+    var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
 
     /**
-     * Map of all active managed clients. Each key is the ID of the connection
-     * used by that client.
+     * Getter/setter which retrieves or sets the map of all active managed
+     * clients. Each key is the ID of the connection used by that client.
      *
-     * @type Object.<String, ManagedClient>
+     * @type Function
      */
-    service.managedClients = {};
+    var storedManagedClients = sessionStorageFactory.create({}, function destroyClientStorage() {
+
+        // Disconnect all clients when storage is destroyed
+        service.clear();
+
+    });
+
+    /**
+     * Returns a map of all active managed clients. Each key is the ID of the
+     * connection used by that client.
+     *
+     * @returns {Object.<String, ManagedClient>}
+     *     A map of all active managed clients.
+     */
+    service.getManagedClients = function getManagedClients() {
+        return storedManagedClients();
+    };
 
     /**
      * Removes the existing ManagedClient associated with the connection having
@@ -55,13 +71,15 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *     true if an existing client was removed, false otherwise.
      */
     service.removeManagedClient = function replaceManagedClient(id) {
-        
+
+        var managedClients = storedManagedClients();
+
         // Remove client if it exists
-        if (id in service.managedClients) {
+        if (id in managedClients) {
 
             // Disconnect and remove
-            service.managedClients[id].client.disconnect();
-            delete service.managedClients[id];
+            managedClients[id].client.disconnect();
+            delete managedClients[id];
 
             // A client was removed
             return true;
@@ -96,7 +114,7 @@ angular.module('client').factory('guacClientManager', ['$injector',
         service.removeManagedClient(id);
 
         // Set new client
-        return service.managedClients[id] = ManagedClient.getInstance(id, connectionParameters);
+        return storedManagedClients()[id] = ManagedClient.getInstance(id, connectionParameters);
 
     };
 
@@ -119,12 +137,14 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.getManagedClient = function getManagedClient(id, connectionParameters) {
 
+        var managedClients = storedManagedClients();
+
         // Create new managed client if it doesn't already exist
-        if (!(id in service.managedClients))
-            service.managedClients[id] = ManagedClient.getInstance(id, connectionParameters);
+        if (!(id in managedClients))
+            managedClients[id] = ManagedClient.getInstance(id, connectionParameters);
 
         // Return existing client
-        return service.managedClients[id];
+        return managedClients[id];
 
     };
 
@@ -133,22 +153,19 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.clear = function clear() {
 
+        var managedClients = storedManagedClients();
+
         // Disconnect each managed client
-        for (var id in service.managedClients)
-            service.managedClients[id].client.disconnect();
+        for (var id in managedClients)
+            managedClients[id].client.disconnect();
 
         // Clear managed clients
-        service.managedClients = {};
+        storedManagedClients({});
 
     };
 
     // Disconnect all clients when window is unloaded
     $window.addEventListener('unload', service.clear);
-
-    // Clear clients on logout
-    $rootScope.$on('guacLogout', function handleLogout() {
-        service.clear();
-    });
 
     return service;
 

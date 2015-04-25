@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +20,9 @@
  * THE SOFTWARE.
  */
 
-#notificationArea {
-    position: fixed;
-    right: 0.5em;
-    bottom: 0.5em;
-    max-width: 25%;
-    width: 2in;
-}
-
-#notificationArea .notification {
-    font-size: 0.7em;
-    text-align: center;
-    width: 100%;
-    overflow: hidden;
-}
-
-#notificationArea .notification .text {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#notificationArea .notification.error .text {
-    white-space: normal;
-    text-overflow: clip;
-    text-align: left;
-}
+/**
+ * Module which provides generic storage services.
+ */
+angular.module('storage', [
+    'auth'
+]);
