@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,22 @@
 /**
  * The configuration block for setting up everything having to do with i18n.
  */
-angular.module('index').config(['$translateProvider', function($translateProvider) {
+angular.module('index').config(['$injector', function($injector) {
 
-    // Use US English by default
-    $translateProvider.preferredLanguage('en_US');
+    // Required providers
+    var $translateProvider        = $injector.get('$translateProvider');
+    var preferenceServiceProvider = $injector.get('preferenceServiceProvider');
 
-    // Load translations from static JSON files
-    $translateProvider.useStaticFilesLoader({
-        prefix: 'translations/',
-        suffix: '.json'
+    // Fallback to US English
+    var fallbackLanguages = ['en_US'];
+
+    // Prefer chosen language, use fallback languages if necessary
+    $translateProvider.fallbackLanguage(fallbackLanguages);
+    $translateProvider.preferredLanguage(preferenceServiceProvider.preferences.language);
+
+    // Load translations via translationLoader service
+    $translateProvider.useLoader('translationLoader', {
+        fallbackLanguages : fallbackLanguages
     });
 
     // Provide pluralization, etc. via messageformat.js
