@@ -316,7 +316,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Do not query if no identifiers given
         if (identifiers.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.<InternalType>emptyList();
 
         Collection<ModelType> objects;
 

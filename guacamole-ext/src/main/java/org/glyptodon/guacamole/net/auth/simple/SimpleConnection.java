@@ -117,7 +117,7 @@ public class SimpleConnection extends AbstractConnection {
 
     @Override
     public List<ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.EMPTY_LIST;
+        return Collections.<ConnectionRecord>emptyList();
     }
 
 }

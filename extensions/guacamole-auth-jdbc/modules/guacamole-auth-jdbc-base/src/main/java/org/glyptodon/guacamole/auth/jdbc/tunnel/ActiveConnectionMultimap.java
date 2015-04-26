@@ -120,7 +120,7 @@ public class ActiveConnectionMultimap {
             if (connections != null)
                 return Collections.unmodifiableCollection(connections);
 
-            return Collections.EMPTY_LIST;
+            return Collections.<ActiveConnectionRecord>emptyList();
 
         }
     }

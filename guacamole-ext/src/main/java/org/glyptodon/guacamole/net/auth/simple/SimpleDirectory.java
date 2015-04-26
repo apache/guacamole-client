@@ -45,7 +45,7 @@ public class SimpleDirectory<ObjectType> implements Directory<ObjectType> {
     /**
      * The Map of objects to provide access to.
      */
-    private Map<String, ObjectType> objects = Collections.EMPTY_MAP;
+    private Map<String, ObjectType> objects = Collections.<String, ObjectType>emptyMap();
 
     /**
      * Creates a new empty SimpleDirectory which does not provide access to

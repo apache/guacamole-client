@@ -126,7 +126,7 @@ public class SimpleUserContext implements UserContext {
         // Add root group that contains only the given configurations
         this.rootGroup = new SimpleConnectionGroup(
             ROOT_IDENTIFIER, ROOT_IDENTIFIER,
-            connectionIdentifiers, Collections.EMPTY_LIST
+            connectionIdentifiers, Collections.<String>emptyList()
         );
 
         // Build new user from credentials

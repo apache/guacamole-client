@@ -108,7 +108,7 @@ public class LanguageRESTService {
         
         // If no translation files found, return an empty map
         if (resourcePaths == null)
-            return Collections.EMPTY_MAP;
+            return Collections.<String, String>emptyMap();
         
         Map<String, String> languageMap = new HashMap<String, String>();
         
