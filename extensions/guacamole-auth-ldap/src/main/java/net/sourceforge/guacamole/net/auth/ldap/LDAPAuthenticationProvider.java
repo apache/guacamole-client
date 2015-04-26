@@ -36,8 +36,9 @@ import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import net.sourceforge.guacamole.net.auth.ldap.properties.LDAPGuacamoleProperties;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,23 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
      * Logger for this class.
      */
     private Logger logger = LoggerFactory.getLogger(LDAPAuthenticationProvider.class);
+
+    /**
+     * Guacamole server environment.
+     */
+    private final Environment environment;
+
+    /**
+     * Creates a new LDAPAuthenticationProvider that authenticates users
+     * against an LDAP directory.
+     *
+     * @throws GuacamoleException
+     *     If a required property is missing, or an error occurs while parsing
+     *     a property.
+     */
+    public LDAPAuthenticationProvider() throws GuacamoleException {
+        environment = new LocalEnvironment();
+    }
 
     // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
     private static String escapeLDAPSearchFilter(String filter) {
@@ -146,8 +164,8 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
 
             ldapConnection = new LDAPConnection();
             ldapConnection.connect(
-                    GuacamoleProperties.getRequiredProperty(LDAPGuacamoleProperties.LDAP_HOSTNAME),
-                    GuacamoleProperties.getRequiredProperty(LDAPGuacamoleProperties.LDAP_PORT)
+                    environment.getRequiredProperty(LDAPGuacamoleProperties.LDAP_HOSTNAME),
+                    environment.getRequiredProperty(LDAPGuacamoleProperties.LDAP_PORT)
             );
 
         }
@@ -156,12 +174,12 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
         }
 
         // Get username attribute
-        String username_attribute = GuacamoleProperties.getRequiredProperty(
+        String username_attribute = environment.getRequiredProperty(
             LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE
         );
 
         // Get user base DN
-        String user_base_dn = GuacamoleProperties.getRequiredProperty(
+        String user_base_dn = environment.getRequiredProperty(
                 LDAPGuacamoleProperties.LDAP_USER_BASE_DN
         );
 
@@ -191,7 +209,7 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
         }
 
         // Get config base DN
-        String config_base_dn = GuacamoleProperties.getRequiredProperty(
+        String config_base_dn = environment.getRequiredProperty(
                 LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
         );
 

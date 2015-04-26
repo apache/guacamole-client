@@ -37,7 +37,7 @@ public class RESTModule extends AbstractModule {
 
         // Bind generic low-level services
         bind(ObjectRetrievalService.class);
-        
+
     }
     
 }

@@ -25,13 +25,14 @@ package org.glyptodon.guacamole.net.basic.rest;
 import com.google.inject.AbstractModule;
 import com.google.inject.matcher.Matchers;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,11 @@ public class RESTAuthModule extends AbstractModule {
      */
     private static final Logger logger = LoggerFactory.getLogger(RESTAuthModule.class);
 
+    /**
+     * The Guacamole server environment.
+     */
+    private Environment environment;
+    
     /**
      * The AuthenticationProvider to use to authenticate all requests.
      */
@@ -72,10 +78,16 @@ public class RESTAuthModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        // Get and bind auth provider instance
         try {
-            authProvider = GuacamoleProperties.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+
+            // Bind environment
+            environment = new LocalEnvironment();
+            bind(Environment.class).toInstance(environment);
+
+            // Get and bind auth provider instance
+            authProvider = environment.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
             bind(AuthenticationProvider.class).toInstance(authProvider);
+
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read authentication provider from guacamole.properties: {}", e.getMessage());

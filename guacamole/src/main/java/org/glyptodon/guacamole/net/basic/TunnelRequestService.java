@@ -29,6 +29,7 @@ import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -41,7 +42,6 @@ import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
 import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
 import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
 import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +59,12 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class TunnelRequestService {
 
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
+    
     /**
      * Logger for this class.
      */
@@ -309,7 +315,7 @@ public class TunnelRequestService {
 
                 // Monitor instructions which pertain to server-side events, if necessary
                 try {
-                    if (GuacamoleProperties.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
+                    if (environment.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
 
                         ClipboardState clipboard = session.getClipboardState();
                         return new MonitoringGuacamoleReader(clipboard, super.acquireReader());

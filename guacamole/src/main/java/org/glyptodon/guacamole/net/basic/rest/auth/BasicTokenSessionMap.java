@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Collections;
 import java.util.Iterator;
@@ -31,9 +32,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,12 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class BasicTokenSessionMap implements TokenSessionMap {
 
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
+    
     /**
      * Logger for this class.
      */
@@ -71,7 +78,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
 
         // Read session timeout from guacamole.properties
         try {
-            sessionTimeoutValue = GuacamoleProperties.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 60);
+            sessionTimeoutValue = environment.getProperty(BasicGuacamoleProperties.API_SESSION_TIMEOUT, 60);
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage());

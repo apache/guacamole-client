@@ -29,12 +29,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.basic.ClipboardState;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * A REST service for reading the current contents of the clipboard.
@@ -44,6 +44,12 @@ import org.glyptodon.guacamole.properties.GuacamoleProperties;
 @Path("/clipboard")
 public class ClipboardRESTService {
 
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
+    
     /**
      * A service for authenticating users from auth tokens.
      */
@@ -71,7 +77,7 @@ public class ClipboardRESTService {
     throws GuacamoleException {
 
         // Only bother if actually enabled
-        if (GuacamoleProperties.getProperty(INTEGRATION_ENABLED, false)) {
+        if (environment.getProperty(INTEGRATION_ENABLED, false)) {
         
             // Get clipboard
             GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);

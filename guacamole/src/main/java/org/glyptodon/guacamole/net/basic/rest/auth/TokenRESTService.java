@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -58,6 +59,12 @@ import org.slf4j.LoggerFactory;
 @Path("/tokens")
 @Produces(MediaType.APPLICATION_JSON)
 public class TokenRESTService {
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
     
     /**
      * The authentication provider used to authenticate this user.
@@ -269,7 +276,7 @@ public class TokenRESTService {
         // If no existing session, generate a new token/session pair
         else {
             authToken = authTokenGenerator.getToken();
-            tokenSessionMap.put(authToken, new GuacamoleSession(credentials, userContext));
+            tokenSessionMap.put(authToken, new GuacamoleSession(environment, credentials, userContext));
         }
         
         logger.debug("Login was successful for user \"{}\".", userContext.self().getIdentifier());
