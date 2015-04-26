@@ -938,6 +938,8 @@ Guacamole.Keyboard = function(element) {
                 guac_keyboard.release(keysym);
                 first.defaultPrevented = true;
             }
+            else
+                guac_keyboard.reset();
 
             return eventLog.shift();
 
