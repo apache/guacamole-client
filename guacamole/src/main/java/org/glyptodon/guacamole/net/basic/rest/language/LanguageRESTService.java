@@ -79,7 +79,7 @@ public class LanguageRESTService {
      * filename.
      */
     private static final Pattern LANGUAGE_KEY_PATTERN = Pattern.compile(".*/([a-z]+_[A-Z]+)\\.json");
-    
+
     /**
      * Returns a map of all available language keys to their corresponding
      * human-readable names.
@@ -104,7 +104,7 @@ public class LanguageRESTService {
             @Context ServletContext servletContext) throws GuacamoleException {
         
         // Get the paths of all the translation files
-        Set<String> resourcePaths = servletContext.getResourcePaths(TRANSLATION_PATH);
+        Set<?> resourcePaths = servletContext.getResourcePaths(TRANSLATION_PATH);
         
         // If no translation files found, return an empty map
         if (resourcePaths == null)
@@ -113,7 +113,10 @@ public class LanguageRESTService {
         Map<String, String> languageMap = new HashMap<String, String>();
         
         // Iterate through all the found language files and add them to the return map
-        for (String resourcePath : resourcePaths) {
+        for (Object resourcePathObject : resourcePaths) {
+
+            // Each resource path is guaranteed to be a string
+            String resourcePath = (String) resourcePathObject;
             
             // Get input stream for language file
             InputStream languageFileStream = servletContext.getResourceAsStream(resourcePath); 

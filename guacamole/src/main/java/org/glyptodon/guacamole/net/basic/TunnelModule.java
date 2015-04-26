@@ -55,11 +55,10 @@ public class TunnelModule extends ServletModule {
         try {
 
             // Attempt to find WebSocket module 
-            Class<TunnelLoader> module = (Class<TunnelLoader>)
-                    GuacamoleClassLoader.getInstance().findClass(classname);
+            Class<?> module = (Class<?>) GuacamoleClassLoader.getInstance().findClass(classname);
 
             // Create loader
-            TunnelLoader loader = module.getConstructor().newInstance();
+            TunnelLoader loader = (TunnelLoader) module.getConstructor().newInstance();
 
             // Install module, if supported
             if (loader.isSupported()) {

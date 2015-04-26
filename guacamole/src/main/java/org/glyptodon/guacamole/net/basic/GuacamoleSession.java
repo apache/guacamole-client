@@ -112,7 +112,7 @@ public class GuacamoleSession {
 
             // Add an instance of each class to the list
             if (listenerClasses != null) {
-                for (Class listenerClass : listenerClasses) {
+                for (Class<?> listenerClass : listenerClasses) {
 
                     // Instantiate listener
                     Object listener = listenerClass.getConstructor().newInstance();
