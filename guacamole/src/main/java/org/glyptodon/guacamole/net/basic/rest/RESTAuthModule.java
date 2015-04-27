@@ -20,10 +20,9 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.inject;
+package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Inject;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
@@ -41,12 +40,12 @@ import org.slf4j.LoggerFactory;
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class AuthenticationModule extends AbstractModule {
+public class RESTAuthModule extends AbstractModule {
 
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(AuthenticationModule.class);
+    private final Logger logger = LoggerFactory.getLogger(RESTAuthModule.class);
 
     /**
      * The Guacamole server environment.
@@ -69,7 +68,7 @@ public class AuthenticationModule extends AbstractModule {
      *     An instance of TokenSessionMap to inject as a singleton wherever
      *     needed.
      */
-    public AuthenticationModule(Environment environment,
+    public RESTAuthModule(Environment environment,
             TokenSessionMap tokenSessionMap) {
         this.environment = environment;
         this.tokenSessionMap = tokenSessionMap;

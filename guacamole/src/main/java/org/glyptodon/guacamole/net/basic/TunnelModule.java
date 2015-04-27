@@ -20,15 +20,11 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.inject;
+package org.glyptodon.guacamole.net.basic;
 
 import com.google.inject.servlet.ServletModule;
 import java.lang.reflect.InvocationTargetException;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.basic.BasicGuacamoleTunnelServlet;
-import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
-import org.glyptodon.guacamole.net.basic.TunnelLoader;
-import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

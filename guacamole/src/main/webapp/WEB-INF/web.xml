@@ -42,7 +42,7 @@
     </filter-mapping>
 
     <listener>
-        <listener-class>org.glyptodon.guacamole.net.basic.inject.BasicServletContextListener</listener-class>
+        <listener-class>org.glyptodon.guacamole.net.basic.BasicServletContextListener</listener-class>
     </listener>
 
     <!-- Audio file mimetype mappings -->

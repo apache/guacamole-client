@@ -20,16 +20,13 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.inject;
+package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.Scopes;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExceptionWrapper;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
@@ -44,7 +41,7 @@ import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
  *
  * @author James Muehlner
  */
-public class RESTModule extends ServletModule {
+public class RESTServletModule extends ServletModule {
 
     @Override
     protected void configureServlets() {

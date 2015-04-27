@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.inject;
+package org.glyptodon.guacamole.net.basic;
 
 import com.google.inject.AbstractModule;
 import org.glyptodon.guacamole.environment.Environment;

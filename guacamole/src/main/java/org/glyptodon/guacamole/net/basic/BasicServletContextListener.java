@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.inject;
+package org.glyptodon.guacamole.net.basic;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -30,6 +30,9 @@ import javax.servlet.ServletContextEvent;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
+import org.glyptodon.guacamole.net.basic.log.LogModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTAuthModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
 import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.slf4j.Logger;
@@ -77,12 +80,11 @@ public class BasicServletContextListener extends GuiceServletContextListener {
 
     @Override
     protected Injector getInjector() {
-        return Guice.createInjector(
-            Stage.PRODUCTION,
+        return Guice.createInjector(Stage.PRODUCTION,
             new EnvironmentModule(environment),
             new LogModule(environment),
-            new AuthenticationModule(environment, sessionMap),
-            new RESTModule(),
+            new RESTAuthModule(environment, sessionMap),
+            new RESTServletModule(),
             new TunnelModule()
         );
     }
