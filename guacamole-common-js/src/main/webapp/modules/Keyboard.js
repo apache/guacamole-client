@@ -954,6 +954,34 @@ Guacamole.Keyboard = function(element) {
 
     }
 
+    /**
+     * Returns the keyboard location of the key associated with the given
+     * keyboard event. The location differentiates key events which otherwise
+     * have the same keycode, such as left shift vs. right shift.
+     *
+     * @param {KeyboardEvent} e
+     *     A JavaScript keyboard event, as received through the DOM via a
+     *     "keydown", "keyup", or "keypress" handler.
+     *
+     * @returns {Number}
+     *     The location of the key event on the keyboard, as defined at:
+     *     http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent
+     */
+    var getEventLocation = function getEventLocation(e) {
+
+        // Use standard location, if possible
+        if ('location' in e)
+            return e.location;
+
+        // Failing that, attempt to use deprecated keyLocation
+        if ('keyLocation' in e)
+            return e.keyLocation;
+
+        // If no location is available, assume left side
+        return 0;
+
+    };
+
     // When key pressed
     element.addEventListener("keydown", function(e) {
 
@@ -973,7 +1001,7 @@ Guacamole.Keyboard = function(element) {
             return;
 
         // Log event
-        var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, e.location || e.keyLocation);
+        var keydownEvent = new KeydownEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
         eventLog.push(keydownEvent);
 
         // Interpret as many events as possible, prevent default if indicated
@@ -1021,7 +1049,7 @@ Guacamole.Keyboard = function(element) {
         update_modifier_state(e);
 
         // Log event, call for interpretation
-        var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, e.location || e.keyLocation);
+        var keyupEvent = new KeyupEvent(keyCode, e.keyIdentifier, e.key, getEventLocation(e));
         eventLog.push(keyupEvent);
         interpret_events();
 
