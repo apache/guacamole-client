@@ -252,10 +252,10 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
                 if (parameterAttribute != null) {
 
                     // For each parameter
-                    Enumeration<String> parameters = parameterAttribute.getStringValues();
+                    Enumeration<?> parameters = parameterAttribute.getStringValues();
                     while (parameters.hasMoreElements()) {
 
-                        String parameter = parameters.nextElement();
+                        String parameter = (String) parameters.nextElement();
 
                         // Parse parameter
                         int equals = parameter.indexOf('=');
