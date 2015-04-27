@@ -46,6 +46,7 @@
                 <configuration>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <tarLongFileMode>gnu</tarLongFileMode>
                     <descriptors>
                         <descriptor>project-assembly.xml</descriptor>
                     </descriptors>
