@@ -83,7 +83,7 @@ angular.module('element').directive('guacResize', ['$document', function guacRes
 
                     // Call resize callback, if defined
                     if (guacResize) {
-                        $scope.$apply(function elementSizeChanged() {
+                        $scope.$evalAsync(function elementSizeChanged() {
                             guacResize(element.offsetWidth, element.offsetHeight);
                         });
                     }
