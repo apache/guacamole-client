@@ -37,7 +37,6 @@ import org.glyptodon.guacamole.auth.jdbc.tunnel.UnrestrictedGuacamoleTunnelServi
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider

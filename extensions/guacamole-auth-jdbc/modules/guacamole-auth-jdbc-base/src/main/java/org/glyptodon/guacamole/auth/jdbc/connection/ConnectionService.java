@@ -204,7 +204,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
         Map<String, String> parameters = connection.getConfiguration().getParameters();
         
         // Convert parameters to model objects
-        Collection<ParameterModel> parameterModels = new ArrayList(parameters.size());
+        Collection<ParameterModel> parameterModels = new ArrayList<ParameterModel>(parameters.size());
         for (Map.Entry<String, String> parameterEntry : parameters.entrySet()) {
 
             // Get parameter name and value

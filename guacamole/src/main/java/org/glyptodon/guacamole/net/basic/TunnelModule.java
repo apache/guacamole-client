@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Module which loads tunnel implementations.
- * 
+ *
  * @author Michael Jumper
  */
 public class TunnelModule extends ServletModule {
@@ -54,12 +54,11 @@ public class TunnelModule extends ServletModule {
 
         try {
 
-            // Attempt to find WebSocket module 
-            Class<TunnelLoader> module = (Class<TunnelLoader>)
-                    GuacamoleClassLoader.getInstance().findClass(classname);
+            // Attempt to find WebSocket module
+            Class<?> module = (Class<?>) GuacamoleClassLoader.getInstance().findClass(classname);
 
             // Create loader
-            TunnelLoader loader = module.getConstructor().newInstance();
+            TunnelLoader loader = (TunnelLoader) module.getConstructor().newInstance();
 
             // Install module, if supported
             if (loader.isSupported()) {
@@ -119,4 +118,3 @@ public class TunnelModule extends ServletModule {
     }
 
 }
-

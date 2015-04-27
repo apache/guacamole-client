@@ -106,7 +106,7 @@ public abstract class ModeledObjectPermissionService
             return false;
 
         // Produce collection of affected identifiers
-        Collection<String> affectedIdentifiers = new HashSet(permissions.size());
+        Collection<String> affectedIdentifiers = new HashSet<String>(permissions.size());
         for (ObjectPermission permission : permissions)
             affectedIdentifiers.add(permission.getObjectIdentifier());
 

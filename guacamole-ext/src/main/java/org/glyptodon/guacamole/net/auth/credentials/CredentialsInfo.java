@@ -65,7 +65,7 @@ public class CredentialsInfo {
      * CredentialsInfo object which describes empty credentials. No parameters
      * are required.
      */
-    public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.EMPTY_LIST);
+    public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.<Parameter>emptyList());
 
     /**
      * CredentialsInfo object which describes standard username/password

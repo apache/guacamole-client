@@ -29,11 +29,11 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,12 +83,21 @@ public class GuacamoleSession {
     /**
      * Creates a new Guacamole session associated with the given user context.
      *
-     * @param credentials The credentials provided by the user during login.
-     * @param userContext The user context to associate this session with.
-     * @throws GuacamoleException If an error prevents the session from being
-     *                            created.
+     * @param environment
+     *     The environment of the Guacamole server associated with this new
+     *     session.
+     *
+     * @param credentials
+     *     The credentials provided by the user during login.
+     *
+     * @param userContext
+     *     The user context to associate this session with.
+     *
+     * @throws GuacamoleException
+     *     If an error prevents the session from being created.
      */
-    public GuacamoleSession(Credentials credentials, UserContext userContext) throws GuacamoleException {
+    public GuacamoleSession(Environment environment, Credentials credentials,
+            UserContext userContext) throws GuacamoleException {
 
         this.lastAccessedTime = System.currentTimeMillis();
         this.credentials = credentials;
@@ -99,11 +108,11 @@ public class GuacamoleSession {
 
             // Get all listener classes from properties
             Collection<Class> listenerClasses =
-                    GuacamoleProperties.getProperty(BasicGuacamoleProperties.EVENT_LISTENERS);
+                    environment.getProperty(BasicGuacamoleProperties.EVENT_LISTENERS);
 
             // Add an instance of each class to the list
             if (listenerClasses != null) {
-                for (Class listenerClass : listenerClasses) {
+                for (Class<?> listenerClass : listenerClasses) {
 
                     // Instantiate listener
                     Object listener = listenerClass.getConstructor().newInstance();

@@ -40,7 +40,7 @@ public class SimpleSystemPermissionSet implements SystemPermissionSet {
     /**
      * The set of all permissions currently granted.
      */
-    private Set<SystemPermission> permissions = Collections.EMPTY_SET;
+    private Set<SystemPermission> permissions = Collections.<SystemPermission>emptySet();
 
     /**
      * Creates a new empty SimpleSystemPermissionSet.

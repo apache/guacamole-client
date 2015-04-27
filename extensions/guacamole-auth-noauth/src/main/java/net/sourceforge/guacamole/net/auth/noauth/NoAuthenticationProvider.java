@@ -30,10 +30,11 @@ import java.io.IOException;
 import java.io.Reader;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
-import org.glyptodon.guacamole.properties.GuacamoleProperties;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -87,6 +88,11 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
     private long configTime;
 
     /**
+     * Guacamole server environment.
+     */
+    private final Environment environment;
+    
+    /**
      * The filename of the XML file to read the user mapping from.
      */
     public static final FileGuacamoleProperty NOAUTH_CONFIG = new FileGuacamoleProperty() {
@@ -99,6 +105,19 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
     };
 
     /**
+     * Creates a new NoAuthenticationProvider that does not perform any
+     * authentication at all. All attempts to access the Guacamole system are
+     * presumed to be authorized.
+     *
+     * @throws GuacamoleException
+     *     If a required property is missing, or an error occurs while parsing
+     *     a property.
+     */
+    public NoAuthenticationProvider() throws GuacamoleException {
+        environment = new LocalEnvironment();
+    }
+
+    /**
      * Retrieves the configuration file, as defined within guacamole.properties.
      *
      * @return The configuration file, as defined within guacamole.properties.
@@ -106,7 +125,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
      *                            property.
      */
     private File getConfigurationFile() throws GuacamoleException {
-        return GuacamoleProperties.getRequiredProperty(NOAUTH_CONFIG);
+        return environment.getRequiredProperty(NOAUTH_CONFIG);
     }
 
     public synchronized void init() throws GuacamoleException {

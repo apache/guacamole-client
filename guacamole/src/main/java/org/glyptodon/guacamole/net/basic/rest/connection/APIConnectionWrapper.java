@@ -122,7 +122,7 @@ public class APIConnectionWrapper implements Connection {
 
     @Override
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException {
-        return Collections.EMPTY_LIST;
+        return Collections.<ConnectionRecord>emptyList();
     }
     
 }

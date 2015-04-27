@@ -424,12 +424,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         // If not a balancing group, there are no balanced connections
         if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)
-            return Collections.EMPTY_LIST;
+            return Collections.<ModeledConnection>emptyList();
 
         // If group has no children, there are no balanced connections
         Collection<String> identifiers = connectionMapper.selectIdentifiersWithin(connectionGroup.getIdentifier());
         if (identifiers.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.<ModeledConnection>emptyList();
 
         // Retrieve all children
         Collection<ConnectionModel> models = connectionMapper.select(identifiers);
@@ -453,7 +453,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Simply return empty list if there are no active tunnels
         Collection<ActiveConnectionRecord> records = activeTunnels.values();
         if (records.isEmpty())
-            return Collections.EMPTY_LIST;
+            return Collections.<ActiveConnectionRecord>emptyList();
 
         // Build set of all connection identifiers associated with active tunnels
         Set<String> identifiers = new HashSet<String>(records.size());
@@ -521,7 +521,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         // If not a balancing group, assume no connections
         if (connectionGroup.getType() != ConnectionGroup.Type.BALANCING)
-            return Collections.EMPTY_LIST;
+            return Collections.<ActiveConnectionRecord>emptyList();
 
         return activeConnectionGroups.get(connectionGroup.getIdentifier());
 

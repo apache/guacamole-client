@@ -96,7 +96,7 @@ public abstract class ModeledGroupedDirectoryObjectService<InternalType extends 
 
             // If both parents have the same identifier, nothing has changed
             if (parentIdentifier != null && parentIdentifier.equals(oldParentIdentifier))
-                return Collections.EMPTY_LIST;
+                return Collections.<String>emptyList();
 
         }
 
