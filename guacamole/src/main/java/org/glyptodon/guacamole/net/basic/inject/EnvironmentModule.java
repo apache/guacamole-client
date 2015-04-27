@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,24 +20,41 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest;
+package org.glyptodon.guacamole.net.basic.inject;
 
 import com.google.inject.AbstractModule;
+import org.glyptodon.guacamole.environment.Environment;
 
 /**
- * A Guice Module for setting up dependency injection for the 
- * Guacamole REST API.
- * 
- * @author James Muehlner
+ * Guice module which binds the base Guacamole server environment.
+ *
+ * @author Michael Jumper
  */
-public class RESTModule extends AbstractModule {
+public class EnvironmentModule extends AbstractModule {
+
+    /**
+     * The Guacamole server environment.
+     */
+    private final Environment environment;
+
+    /**
+     * Creates a new EnvironmentModule which will bind the given environment
+     * for future injection.
+     *
+     * @param environment
+     *     The environment to bind.
+     */
+    public EnvironmentModule(Environment environment) {
+        this.environment = environment;
+    }
 
     @Override
     protected void configure() {
 
-        // Bind generic low-level services
-        bind(ObjectRetrievalService.class);
+        // Bind environment
+        bind(Environment.class).toInstance(environment);
 
     }
-    
+
 }
+

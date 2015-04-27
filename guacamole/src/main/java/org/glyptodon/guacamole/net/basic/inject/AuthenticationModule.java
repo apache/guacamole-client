@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,13 +20,12 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest;
+package org.glyptodon.guacamole.net.basic.inject;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.matcher.Matchers;
+import com.google.inject.Inject;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
@@ -38,56 +37,58 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A Guice Module for setting up authentication-specific dependency injection.
- * 
+ *
  * @author James Muehlner
  * @author Michael Jumper
  */
-public class RESTAuthModule extends AbstractModule {
+public class AuthenticationModule extends AbstractModule {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(RESTAuthModule.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationModule.class);
 
     /**
      * The Guacamole server environment.
      */
-    private Environment environment;
-    
-    /**
-     * The AuthenticationProvider to use to authenticate all requests.
-     */
-    private AuthenticationProvider authProvider;
+    private final Environment environment;
 
     /**
-     * Singleton instance of a TokenSessionMap.
+     * Singleton instance of TokenSessionMap.
      */
-    private final TokenSessionMap sessionMap;
+    private final TokenSessionMap tokenSessionMap;
 
     /**
      * Creates a module which handles binding of authentication-related
      * objects, including the singleton TokenSessionMap.
-     * 
-     * @param sessionMap An instance of TokenSessionMap to inject as a singleton
-     *                   wherever needed.
+     *
+     * @param environment
+     *     The environment to use when configuring authentication.
+     *
+     * @param tokenSessionMap
+     *     An instance of TokenSessionMap to inject as a singleton wherever
+     *     needed.
      */
-    public RESTAuthModule(TokenSessionMap sessionMap) {
-        this.sessionMap = sessionMap;
+    public AuthenticationModule(Environment environment,
+            TokenSessionMap tokenSessionMap) {
+        this.environment = environment;
+        this.tokenSessionMap = tokenSessionMap;
     }
-    
+
     @Override
     protected void configure() {
 
+        // Bind session map
+        bind(TokenSessionMap.class).toInstance(tokenSessionMap);
+
+        // Bind low-level services
+        bind(AuthenticationService.class);
+        bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
+
+        // Get and bind auth provider instance
         try {
-
-            // Bind environment
-            environment = new LocalEnvironment();
-            bind(Environment.class).toInstance(environment);
-
-            // Get and bind auth provider instance
-            authProvider = environment.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+            AuthenticationProvider authProvider = environment.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
             bind(AuthenticationProvider.class).toInstance(authProvider);
-
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read authentication provider from guacamole.properties: {}", e.getMessage());
@@ -95,15 +96,6 @@ public class RESTAuthModule extends AbstractModule {
             throw new RuntimeException(e);
         }
 
-        // Bind singleton TokenSessionMap
-        bind(TokenSessionMap.class).toInstance(sessionMap);
-
-        bind(AuthenticationService.class);
-        bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
-
-        // Bind @AuthProviderRESTExposure annotation
-        bindInterceptor(Matchers.any(), Matchers.annotatedWith(AuthProviderRESTExposure.class), new AuthProviderRESTExceptionWrapper());
-
     }
-    
+
 }

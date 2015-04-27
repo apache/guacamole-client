@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,17 +20,21 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic.inject;
 
 import com.google.inject.servlet.ServletModule;
 import java.lang.reflect.InvocationTargetException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.basic.BasicGuacamoleTunnelServlet;
+import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
+import org.glyptodon.guacamole.net.basic.TunnelLoader;
+import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Module which loads tunnel implementations.
- * 
+ *
  * @author Michael Jumper
  */
 public class TunnelModule extends ServletModule {
@@ -54,7 +58,7 @@ public class TunnelModule extends ServletModule {
 
         try {
 
-            // Attempt to find WebSocket module 
+            // Attempt to find WebSocket module
             Class<?> module = (Class<?>) GuacamoleClassLoader.getInstance().findClass(classname);
 
             // Create loader
@@ -118,4 +122,3 @@ public class TunnelModule extends ServletModule {
     }
 
 }
-

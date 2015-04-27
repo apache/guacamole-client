@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.log;
+package org.glyptodon.guacamole.net.basic.inject;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
@@ -28,7 +28,7 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.google.inject.AbstractModule;
 import java.io.File;
-import org.glyptodon.guacamole.properties.GuacamoleHome;
+import org.glyptodon.guacamole.environment.Environment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +44,27 @@ public class LogModule extends AbstractModule {
      */
     private final Logger logger = LoggerFactory.getLogger(LogModule.class);
 
+    /**
+     * The Guacamole server environment.
+     */
+    private final Environment environment;
+
+    /**
+     * Creates a new LogModule which uses the given environment to determine
+     * the logging configuration.
+     *
+     * @param environment
+     *     The environment to use when configuring logging.
+     */
+    public LogModule(Environment environment) {
+        this.environment = environment;
+    }
+    
     @Override
     protected void configure() {
 
         // Only load logback configuration if GUACAMOLE_HOME exists
-        File guacamoleHome = GuacamoleHome.getDirectory();
+        File guacamoleHome = environment.getGuacamoleHome();
         if (!guacamoleHome.isDirectory())
             return;
 
@@ -58,7 +74,7 @@ public class LogModule extends AbstractModule {
             return;
 
         logger.info("Loading logback configuration from \"{}\".", logbackConfiguration);
-        
+
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         context.reset();
 
@@ -77,8 +93,7 @@ public class LogModule extends AbstractModule {
             logger.error("Initialization of logback failed: {}", e.getMessage());
             logger.debug("Unable to load logback configuration..", e);
         }
-        
+
     }
 
 }
-

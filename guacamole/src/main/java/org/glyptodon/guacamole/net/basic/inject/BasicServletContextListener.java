@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,38 +20,68 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+package org.glyptodon.guacamole.net.basic.inject;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
 import javax.servlet.ServletContextEvent;
-import org.glyptodon.guacamole.net.basic.log.LogModule;
-import org.glyptodon.guacamole.net.basic.rest.RESTAuthModule;
-import org.glyptodon.guacamole.net.basic.rest.RESTModule;
-import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ServletContextListener to listen for initialization of the servlet context
  * in order to set up dependency injection.
- * 
+ *
  * @author James Muehlner
  */
 public class BasicServletContextListener extends GuiceServletContextListener {
 
     /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(BasicServletContextListener.class);
+
+    /**
+     * The Guacamole server environment.
+     */
+    private Environment environment;
+
+    /**
      * Singleton instance of a TokenSessionMap.
      */
-    private final TokenSessionMap sessionMap = new BasicTokenSessionMap();
- 
+    private TokenSessionMap sessionMap;
+
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+
+        try {
+            environment = new LocalEnvironment();
+            sessionMap = new BasicTokenSessionMap(environment);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
+            logger.debug("Error reading guacamole.properties.", e);
+            throw new RuntimeException(e);
+        }
+
+        super.contextInitialized(servletContextEvent);
+
+    }
+
     @Override
     protected Injector getInjector() {
         return Guice.createInjector(
-            new LogModule(),
-            new RESTServletModule(), 
-            new RESTAuthModule(sessionMap),
+            Stage.PRODUCTION,
+            new EnvironmentModule(environment),
+            new LogModule(environment),
+            new AuthenticationModule(environment, sessionMap),
             new RESTModule(),
             new TunnelModule()
         );
@@ -60,11 +90,12 @@ public class BasicServletContextListener extends GuiceServletContextListener {
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
 
-        // Shutdown TokenSessionMap
-        sessionMap.shutdown();
-
         super.contextDestroyed(servletContextEvent);
-        
+
+        // Shutdown TokenSessionMap
+        if (sessionMap != null)
+            sessionMap.shutdown();
+
     }
-    
+
 }

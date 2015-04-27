@@ -22,8 +22,6 @@
 
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -44,15 +42,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Singleton
 public class BasicTokenSessionMap implements TokenSessionMap {
 
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
-    
     /**
      * Logger for this class.
      */
@@ -70,9 +61,13 @@ public class BasicTokenSessionMap implements TokenSessionMap {
             Collections.synchronizedMap(new LinkedHashMap<String, GuacamoleSession>(16, 0.75f, true));
 
     /**
-     * Create a new BasicTokenGuacamoleSessionMap and initialize the session timeout value.
+     * Create a new BasicTokenGuacamoleSessionMap configured using the given
+     * environment.
+     *
+     * @param environment
+     *     The environment to use when configuring the token session map.
      */
-    public BasicTokenSessionMap() {
+    public BasicTokenSessionMap(Environment environment) {
         
         int sessionTimeoutValue;
 
