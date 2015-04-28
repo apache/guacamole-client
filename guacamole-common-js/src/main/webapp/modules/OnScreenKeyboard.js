@@ -263,8 +263,6 @@ Guacamole.OnScreenKeyboard = function(layout) {
     var keyboard = document.createElement("div");
     keyboard.className = "guac-keyboard";
 
-    /* TODO: Actually parse the darn thing */
-
     // Do not allow selection or mouse movement to propagate/register.
     keyboard.onselectstart =
     keyboard.onmousemove   =
@@ -331,7 +329,6 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
         // Get pixel size of a unit
         var unit = Math.floor(width * 10 / osk.layout.width) / 10;
-        console.log("OnScreenKeyboard", "resizing unit", unit);
 
         // Resize all scaled elements
         for (var i=0; i<scaledElements.length; i++) {
@@ -340,6 +337,127 @@ Guacamole.OnScreenKeyboard = function(layout) {
         }
 
     };
+
+    /**
+     * Given an arbitrary string representing the name of some component of the
+     * on-screen keyboard, returns a string formatted for use as a CSS class
+     * name. The result will be lowercase. Word boundaries previously denoted
+     * by CamelCase will be replaced by individual hyphens, as will all
+     * contiguous non-alphanumeric characters.
+     *
+     * @param {String} name
+     *     An arbitrary string representing the name of some component of the
+     *     on-screen keyboard.
+     *
+     * @returns {String}
+     *     A string formatted for use as a CSS class name.
+     */
+    var getCSSName = function getCSSName(name) {
+
+        // Convert name from possibly-CamelCase to hyphenated lowercase
+        var cssName = name
+               .replace(/([a-z])([A-Z])/g, '$1-$2')
+               .replace(/[^A-Za-z0-9]+/g, '-')
+               .toLowerCase();
+
+        return cssName;
+
+    };
+
+    /**
+     * Appends DOM elements to the given element as dictated by the layout
+     * structure object provided. If a name is provided, an additional CSS
+     * class, prepended with "guac-osk-", will be added to the top-level
+     * element.
+     * 
+     * If the layout structure object is an array, all elements within that
+     * array will be recursively appended as children of a group, and the
+     * top-level element will be given the CSS class "guac-osk-group".
+     *
+     * If the layout structure object is an object, all properties within that
+     * object will be recursively appended as children of a group, and the
+     * top-level element will be given the CSS class "guac-osk-group". The
+     * name of each property will be applied as the name of each child object
+     * for the sake of CSS. Each property will be added in sorted order.
+     *
+     * If the layout structure object is a string, the key having that name
+     * will be appended. The key will be given the CSS class "guac-osk-key" and
+     * "guac-osk-key-NAME", where NAME is the name of the key. If the name of
+     * the key is a single character, this will first be transformed into the
+     * C-style hexadecimal literal for the Unicode codepoint of that character.
+     * For example, the key "A" would become "guac-osk-key-0x41".
+     *
+     * @param {Element} element
+     *     The element to append elements to.
+     *
+     * @param {Array|Object|String} object
+     *     The layout structure object to use when constructing the elements to
+     *     append.
+     *
+     * @param {String} [name]
+     *     The name of the top-level element being appended, if any.
+     */
+    var appendElements = function appendElements(element, object, name) {
+
+        var i;
+
+        // Create div which will become the group or key
+        var div = document.createElement('div');
+
+        // Add class based on name, if name given
+        if (name)
+            addClass(div, 'guac-osk-' + getCSSName(name));
+
+        // If an array, append each element
+        if (object instanceof Array) {
+
+            // Add group class
+            addClass(div, 'guac-osk-group');
+
+            // Append all elements of array
+            for (i=0; i < object.length; i++)
+                appendElements(div, object[i]);
+
+        }
+
+        // If an object, append each property value
+        else if (object instanceof Object) {
+
+            // Add group class
+            addClass(div, 'guac-osk-group');
+
+            // Append all children, sorted by name
+            var names = Object.keys(object).sort();
+            for (i=0; i < names.length; i++) {
+                var name = names[i];
+                appendElements(div, object[name], name);
+            }
+
+        }
+
+        // If a string, create as a key
+        else if (typeof object === 'string') {
+
+            // If key name is only one character, use codepoint for name
+            var keyName = object;
+            if (keyName.length === 1)
+                keyName = '0x' + keyName.codePointAt(0).toString(16);
+
+            // Add key-specific classes
+            addClass(div, 'guac-osk-key');
+            addClass(div, 'guac-osk-key-' + getCSSName(keyName));
+
+            // TODO: Add key caps
+
+        }
+
+        // Add newly-created group/key
+        element.appendChild(div);
+
+    };
+
+    // Create keyboard layout in DOM
+    appendElements(keyboard, layout.layout);
 
 };
 
