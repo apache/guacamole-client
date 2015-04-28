@@ -40,12 +40,13 @@
             <!-- Assembly plugin - for easy distribution -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.5.3</version>
 
                 <!-- Build project archive -->
                 <configuration>
                     <finalName>${project.artifactId}-${project.version}</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
+                    <tarLongFileMode>gnu</tarLongFileMode>
                     <descriptors>
                         <descriptor>project-assembly.xml</descriptor>
                     </descriptors>

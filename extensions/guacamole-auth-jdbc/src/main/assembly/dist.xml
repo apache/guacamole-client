@@ -16,12 +16,12 @@
 
             <!-- MySQL implementation -->
             <fileSet>
-                <outputDirectory>/mysql/schema</outputDirectory>
+                <outputDirectory>mysql/schema</outputDirectory>
                 <directory>modules/guacamole-auth-jdbc-mysql/schema</directory>
             </fileSet>
             <fileSet>
-                <directory>modules/guacamole-auth-jdbc-mysql/target/extension</directory>
-                <outputDirectory>/mysql</outputDirectory>
+                <directory>modules/guacamole-auth-jdbc-mysql/target</directory>
+                <outputDirectory>mysql</outputDirectory>
                 <includes>
                     <include>*.jar</include>
                 </includes>
@@ -29,12 +29,12 @@
 
             <!-- PostgreSQL implementation -->
             <fileSet>
-                <outputDirectory>/postgresql/schema</outputDirectory>
+                <outputDirectory>postgresql/schema</outputDirectory>
                 <directory>modules/guacamole-auth-jdbc-postgresql/schema</directory>
             </fileSet>
             <fileSet>
-                <directory>modules/guacamole-auth-jdbc-postgresql/target/extension</directory>
-                <outputDirectory>/postgresql</outputDirectory>
+                <directory>modules/guacamole-auth-jdbc-postgresql/target</directory>
+                <outputDirectory>postgresql</outputDirectory>
                 <includes>
                     <include>*.jar</include>
                 </includes>

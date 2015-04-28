@@ -38,25 +38,22 @@
                 </configuration>
             </plugin>
 
-            <!-- Assembly plugin - for easy distribution -->
+            <!-- Copy dependencies prior to packaging -->
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.2-beta-5</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.10</version>
                 <executions>
                     <execution>
-                        <id>jar-with-dependencies</id>
-                        <phase>package</phase>
+                        <id>unpack-dependencies</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <finalName>extension/${project.artifactId}-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
                         </configuration>
-                    </execution>                    
+                    </execution>
                 </executions>
             </plugin>
 

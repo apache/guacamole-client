@@ -16,13 +16,12 @@
 
             <!-- Include docs -->
             <fileSet>
-                <outputDirectory>/</outputDirectory>
                 <directory>doc</directory>
             </fileSet>
 
             <!-- Include schema -->
             <fileSet>
-                <outputDirectory>/schema</outputDirectory>
+                <outputDirectory>schema</outputDirectory>
                 <directory>schema</directory>
             </fileSet>
 
@@ -33,7 +32,7 @@
     <dependencySets>
         <dependencySet>
 
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>lib</outputDirectory>
             <scope>runtime</scope>
             <unpack>false</unpack>
             <useProjectArtifact>true</useProjectArtifact>
