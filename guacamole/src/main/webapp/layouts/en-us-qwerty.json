@@ -40,22 +40,22 @@
             "modifier" : "super",
             "keysym"   : 65383
         }],
-        "LeftShift" : [{
+        "LShift" : [{
             "title"    : "Shift",
             "modifier" : "shift",
             "keysym"   : 65505
         }],
-        "RightShift" : [{
+        "RShift" : [{
             "title"    : "Shift",
             "modifier" : "shift",
             "keysym"   : 65506
         }],
-        "LeftCtrl" : [{
+        "LCtrl" : [{
             "title"    : "Ctrl",
             "modifier" : "control",
             "keysym"   : 65507
         }],
-        "RightCtrl" : [{
+        "RCtrl" : [{
             "title"    : "Ctrl",
             "modifier" : "control",
             "keysym"   : 65508
@@ -65,12 +65,12 @@
             "modifier" : "caps",
             "keysym"   : 65509
         }],
-        "LeftAlt" : [{
+        "LAlt" : [{
             "title"    : "Alt",
             "modifier" : "alt",
             "keysym"   : 65513
         }],
-        "RightAlt" : [{
+        "RAlt" : [{
             "title"    : "Alt",
             "modifier" : "alt",
             "keysym"   : 65514
@@ -339,8 +339,8 @@
                 [ "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Back" ],
                 [ "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\" ],
                 [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter" ],
-                [ "Shift",  "z", "x", "c", "v",  "b", "n",  "m", ",", ".", "/",   "Shift" ],
-                [ "Ctrl", "Super", "Alt",         "Space",          "Alt", "Menu", "Ctrl" ]
+                [ "LShift", "z", "x", "c", "v",  "b", "n",  "m", ",", ".", "/",  "RShift" ],
+                [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
             ]
         },
 
