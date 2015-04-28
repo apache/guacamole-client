@@ -441,7 +441,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
             // If key name is only one character, use codepoint for name
             var keyName = object;
             if (keyName.length === 1)
-                keyName = '0x' + keyName.codePointAt(0).toString(16);
+                keyName = '0x' + keyName.charCodeAt(0).toString(16);
 
             // Add key-specific classes
             addClass(div, 'guac-osk-key');
@@ -558,7 +558,25 @@ Guacamole.OnScreenKeyboard.Key = function(template) {
      *
      * @type Number
      */
-    this.keysym = template.keysym;
+    this.keysym = template.keysym || (function deriveKeysym(title) {
+
+        // Do not derive keysym if title is not exactly one character
+        if (!title || title.length !== 1)
+            return null;
+
+        // For characters between U+0000 and U+00FF, the keysym is the codepoint
+        var charCode = title.charCodeAt(0);
+        if (charCode >= 0x0000 && charCode <= 0x00FF)
+            return charCode;
+
+        // For characters between U+0100 and U+10FFFF, the keysym is the codepoint or'd with 0x01000000
+        if (charCode >= 0x0100 && charCode <= 0x10FFFF)
+            return 0x01000000 | charCode;
+
+        // Unable to derive keysym
+        return null;
+
+    })(this.title);
 
     /**
      * The name of the modifier set when the key is pressed and cleared when
