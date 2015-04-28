@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -70,7 +70,12 @@ Guacamole.AudioChannel = function() {
 };
 
 // Define context if available
-if (window.webkitAudioContext) {
+if (window.AudioContext) {
+    Guacamole.AudioChannel.context = new AudioContext();
+}
+
+// Fallback to Webkit-specific AudioContext implementation
+else if (window.webkitAudioContext) {
     Guacamole.AudioChannel.context = new webkitAudioContext();
 }
 
