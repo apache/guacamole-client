@@ -339,19 +339,24 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
-     * Given a key entry, which may be an array of keys objects, a number
-     * (keysym), a string (key title), or a single key object, returns an array
-     * of key objects, deriving any missing properties as needed, and ensuring
-     * the key name is defined.
+     * Given the name of a key and its corresponding definition, which may be
+     * an array of keys objects, a number (keysym), a string (key title), or a
+     * single key object, returns an array of key objects, deriving any missing
+     * properties as needed, and ensuring the key name is defined.
      *
      * @private
      * @param {String} name
-     *     The name of the key whose set of possible keys should be returned.
+     *     The name of the key being coerced into an array of Key objects.
      *
+     * @param {Number|String|Guacamole.OnScreenKeyboard.Key|Guacamole.OnScreenKeyboard.Key[]} object
+     *     The object defining the behavior of the key having the given name,
+     *     which may be the title of the key (a string), the keysym (a number),
+     *     a single Key object, or an array of Key objects.
+     *     
      * @returns {Guacamole.OnScreenKeyboard.Key[]}
-     *     The array of all keys associated with the given name.
+     *     An array of all keys associated with the given name.
      */
-    var asKeyArray = function asKeyArray(object) {
+    var asKeyArray = function asKeyArray(name, object) {
 
         // If already an array, just coerce into a true Key[] 
         if (object instanceof Array) {
@@ -405,7 +410,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
         // Coerce all keys into individual key arrays
         for (var name in layout.keys) {
-            keyArrays[name] = asKeyArray(keys[name]);
+            keyArrays[name] = asKeyArray(name, keys[name]);
         }
 
         return keyArrays;
@@ -450,25 +455,26 @@ Guacamole.OnScreenKeyboard = function(layout) {
     /**
      * Appends DOM elements to the given element as dictated by the layout
      * structure object provided. If a name is provided, an additional CSS
-     * class, prepended with "guac-osk-", will be added to the top-level
+     * class, prepended with "guac-keyboard-", will be added to the top-level
      * element.
      * 
      * If the layout structure object is an array, all elements within that
      * array will be recursively appended as children of a group, and the
-     * top-level element will be given the CSS class "guac-osk-group".
+     * top-level element will be given the CSS class "guac-keyboard-group".
      *
      * If the layout structure object is an object, all properties within that
      * object will be recursively appended as children of a group, and the
-     * top-level element will be given the CSS class "guac-osk-group". The
+     * top-level element will be given the CSS class "guac-keyboard-group". The
      * name of each property will be applied as the name of each child object
      * for the sake of CSS. Each property will be added in sorted order.
      *
      * If the layout structure object is a string, the key having that name
-     * will be appended. The key will be given the CSS class "guac-osk-key" and
-     * "guac-osk-key-NAME", where NAME is the name of the key. If the name of
-     * the key is a single character, this will first be transformed into the
-     * C-style hexadecimal literal for the Unicode codepoint of that character.
-     * For example, the key "A" would become "guac-osk-key-0x41".
+     * will be appended. The key will be given the CSS class
+     * "guac-keyboard-key" and "guac-keyboard-key-NAME", where NAME is the name
+     * of the key. If the name of the key is a single character, this will
+     * first be transformed into the C-style hexadecimal literal for the
+     * Unicode codepoint of that character. For example, the key "A" would
+     * become "guac-keyboard-key-0x41".
      *
      * @private
      * @param {Element} element
@@ -490,13 +496,13 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
         // Add class based on name, if name given
         if (name)
-            addClass(div, 'guac-osk-' + getCSSName(name));
+            addClass(div, 'guac-keyboard-' + getCSSName(name));
 
         // If an array, append each element
         if (object instanceof Array) {
 
             // Add group class
-            addClass(div, 'guac-osk-group');
+            addClass(div, 'guac-keyboard-group');
 
             // Append all elements of array
             for (i=0; i < object.length; i++)
@@ -508,7 +514,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
         else if (object instanceof Object) {
 
             // Add group class
-            addClass(div, 'guac-osk-group');
+            addClass(div, 'guac-keyboard-group');
 
             // Append all children, sorted by name
             var names = Object.keys(object).sort();
@@ -527,11 +533,15 @@ Guacamole.OnScreenKeyboard = function(layout) {
             if (keyName.length === 1)
                 keyName = '0x' + keyName.charCodeAt(0).toString(16);
 
-            // Add key-specific classes
-            addClass(div, 'guac-osk-key');
-            addClass(div, 'guac-osk-key-' + getCSSName(keyName));
+            // Add key container class
+            addClass(div, 'guac-keyboard-key-container');
 
-            // Add all associated keys to DOM
+            // Create key element which will contain all possible caps
+            var keyElement = document.createElement('div');
+            keyElement.className = 'guac-keyboard-key '
+                                 + 'guac-keyboard-key-' + getCSSName(keyName);
+
+            // Add all associated keys as caps within DOM
             var keys = osk.keys[object];
             if (keys) {
                 for (i=0; i < keys.length; i++) {
@@ -539,17 +549,27 @@ Guacamole.OnScreenKeyboard = function(layout) {
                     // Get current key
                     var key = keys[i];
 
-                    // Create element for key
-                    var keyElement = document.createElement('div');
-                    keyElement.className   = 'guac-osk-key-cap';
-                    keyElement.textContent = key.title;
+                    // Create cap element for key
+                    var capElement = document.createElement('div');
+                    capElement.className   = 'guac-keyboard-cap';
+                    capElement.textContent = key.title;
 
-                    // Add key to DOM, maintain scale
-                    div.appendChild(keyElement);
-                    scaledElements.push(new ScaledElement(keyElement, key.width, 1, true));
+                    // Add classes for any requirements
+                    for (var j=0; j < key.requires.length; j++) {
+                        var requirement = key.requires[j];
+                        addClass(capElement, 'guac-keyboard-requires-' + getCSSName(requirement));
+                        addClass(keyElement, 'guac-keyboard-uses-'     + getCSSName(requirement));
+                    }
+
+                    // Add cap to key within DOM
+                    keyElement.appendChild(capElement);
 
                 }
             }
+
+            // Add key to DOM, maintain scale
+            div.appendChild(keyElement);
+            scaledElements.push(new ScaledElement(div, 1 /* TODO: Pull from layout */, 1, true));
 
         } // end if object is key name
 
