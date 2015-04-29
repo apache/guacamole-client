@@ -40,8 +40,13 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
         },
 
         templateUrl: 'app/osk/templates/guacOsk.html',
-        controller: ['$scope', '$rootScope', '$window', '$element',
-            function guacOsk($scope, $rootScope, $window, $element) {
+        controller: ['$scope', '$injector', '$element',
+            function guacOsk($scope, $injector, $element) {
+
+            // Required services
+            var $http        = $injector.get('$http');
+            var $rootScope   = $injector.get('$rootScope');
+            var cacheService = $injector.get('cacheService');
 
             /**
              * The current on-screen keyboard, if any.
@@ -67,7 +72,7 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
             };
 
             // Set layout whenever URL changes
-            $scope.$watch("layout", function setLayout(layout) {
+            $scope.$watch("layout", function setLayout(url) {
 
                 // Remove current keyboard
                 if (keyboard) {
@@ -76,24 +81,40 @@ angular.module('osk').directive('guacOsk', [function guacOsk() {
                 }
 
                 // Load new keyboard
-                if (layout) {
+                if (url) {
 
-                    // Add OSK element
-                    keyboard = new Guacamole.OnScreenKeyboard(layout);
-                    main.appendChild(keyboard.getElement());
+                    // Retrieve layout JSON
+                    $http({
+                        cache   : cacheService.languages,
+                        method  : 'GET',
+                        url     : url
+                    })
 
-                    // Init size
-                    keyboard.resize(main.offsetWidth);
+                    // Build OSK with retrieved layout
+                    .success(function layoutRetrieved(layout) {
 
-                    // Broadcast keydown for each key pressed
-                    keyboard.onkeydown = function(keysym) {
-                        $rootScope.$broadcast('guacSyntheticKeydown', keysym);
-                    };
-                    
-                    // Broadcast keydown for each key released 
-                    keyboard.onkeyup = function(keysym) {
-                        $rootScope.$broadcast('guacSyntheticKeyup', keysym);
-                    };
+                        // Abort if the layout changed while we were waiting for a response
+                        if ($scope.layout !== url)
+                            return;
+
+                        // Add OSK element
+                        keyboard = new Guacamole.OnScreenKeyboard(layout);
+                        main.appendChild(keyboard.getElement());
+
+                        // Init size
+                        keyboard.resize(main.offsetWidth);
+
+                        // Broadcast keydown for each key pressed
+                        keyboard.onkeydown = function(keysym) {
+                            $rootScope.$broadcast('guacSyntheticKeydown', keysym);
+                        };
+                        
+                        // Broadcast keydown for each key released 
+                        keyboard.onkeyup = function(keysym) {
+                            $rootScope.$broadcast('guacSyntheticKeyup', keysym);
+                        };
+
+                    });
 
                 }
 
