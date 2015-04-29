@@ -475,12 +475,16 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * first be transformed into the C-style hexadecimal literal for the
      * Unicode codepoint of that character. For example, the key "A" would
      * become "guac-keyboard-key-0x41".
+     * 
+     * If the layout structure object is a number, a gap of that size will be
+     * inserted. The gap will be given the CSS class "guac-keyboard-gap", and
+     * will be scaled according to the same size units as each key.
      *
      * @private
      * @param {Element} element
      *     The element to append elements to.
      *
-     * @param {Array|Object|String} object
+     * @param {Array|Object|String|Number} object
      *     The layout structure object to use when constructing the elements to
      *     append.
      *
@@ -522,6 +526,17 @@ Guacamole.OnScreenKeyboard = function(layout) {
                 var name = names[i];
                 appendElements(div, object[name], name);
             }
+
+        }
+
+        // If a number, create as a gap 
+        else if (typeof object === 'number') {
+
+            // Add gap class
+            addClass(div, 'guac-keyboard-gap');
+
+            // Maintain scale
+            scaledElements.push(new ScaledElement(div, object, object));
 
         }
 
@@ -626,7 +641,9 @@ Guacamole.OnScreenKeyboard.Layout = function(template) {
      * layout will be traversed to produce an identically-nested grouping of
      * keys in the DOM tree. All strings will be transformed into their
      * corresponding sets of keys, while all objects and arrays will be
-     * transformed into named groups and anonymous groups respectively.
+     * transformed into named groups and anonymous groups respectively. Any
+     * numbers present will be transformed into gaps of that size, scaled
+     * according to the same units as each key.
      *
      * @type Object
      */
