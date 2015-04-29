@@ -11,10 +11,6 @@
         "Enter" : 65293,
         "Esc"   : 65307,
         "Home"  : 65360,
-        "Left"  : 65361,
-        "Up"    : 65362,
-        "Right" : 65363,
-        "Down"  : 65364,
         "PgUp"  : 65365,
         "PgDn"  : 65366,
         "End"   : 65367,
@@ -34,6 +30,23 @@
         "Del"   : 65535,
 
         "Space" : " ",
+
+        "Left" : [{
+            "title"  : "←",
+            "keysym" : 65361
+        }],
+        "Up" : [{
+            "title"  : "↑",
+            "keysym" : 65362
+        }],
+        "Right" : [{
+            "title"  : "→",
+            "keysym" : 65363
+        }],
+        "Down" : [{
+            "title"  : "↓",
+            "keysym" : 65364
+        }],
 
         "Menu" : [{
             "title"    : "Menu",
@@ -355,6 +368,33 @@
                 [ "Left", "Down", "Right" ]
             ]
         }
+
+    },
+
+    "keyWidth" : {
+
+        "Back"   : 2,
+        "Tab"    : 1.5,
+        "\\"     : 1.5,
+        "Caps"   : 1.85,
+        "Enter"  : 2.25,
+        "LShift" : 2.1,
+        "RShift" : 3.1,
+
+        "LCtrl" : 1.6,
+        "Super" : 1.6,
+        "LAlt"  : 1.6,
+        "Space" : 6.1,
+        "RAlt"  : 1.6,
+        "Menu"  : 1.6,
+        "RCtrl" : 1.6,
+
+        "Ins"  : 1.75,
+        "Home" : 1.75,
+        "PgUp" : 1.75,
+        "Del"  : 1.75,
+        "End"  : 1.75,
+        "PgDn" : 1.75
 
     }
 
