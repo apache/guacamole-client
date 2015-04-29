@@ -339,10 +339,10 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
-     * Given the name of a key, returns the set of key objects associated with
-     * that name. A particular key may have many associated key objects due to
-     * the various effects of modifiers. Regardless of how the key is declared
-     * in the layout, this function will ALWAYS return an array of key objects.
+     * Given a key entry, which may be an array of keys objects, a number
+     * (keysym), a string (key title), or a single key object, returns an array
+     * of key objects, deriving any missing properties as needed, and ensuring
+     * the key name is defined.
      *
      * @private
      * @param {String} name
@@ -351,12 +351,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * @returns {Guacamole.OnScreenKeyboard.Key[]}
      *     The array of all keys associated with the given name.
      */
-    var getKeys = function getKeys(name) {
-
-        // Pull associated object, which might be a key object already
-        var object = osk.layout.keys[name];
-        if (!object)
-            return null;
+    var asKeyArray = function asKeyArray(object) {
 
         // If already an array, just coerce into a true Key[] 
         if (object instanceof Array) {
@@ -387,6 +382,43 @@ Guacamole.OnScreenKeyboard = function(layout) {
         return [new Guacamole.OnScreenKeyboard.Key(object, name)];
 
     };
+
+    /**
+     * Converts the rather forgiving key mapping allowed by
+     * Guacamole.OnScreenKeyboard.Layout into a rigorous mapping of key name
+     * to key definition, where the key definition is always an array of Key
+     * objects.
+     *
+     * @private
+     * @param {Object.<String, Number|String|Guacamole.OnScreenKeyboard.Key|Guacamole.OnScreenKeyboard.Key[]>} keys
+     *     A mapping of key name to key definition, where the key definition is
+     *     the title of the key (a string), the keysym (a number), a single
+     *     Key object, or an array of Key objects.
+     *
+     * @returns {Object.<String, Guacamole.OnScreenKeyboard.Key[]>}
+     *     A more-predictable mapping of key name to key definition, where the
+     *     key definition is always simply an array of Key objects.
+     */
+    var getKeys = function getKeys(keys) {
+
+        var keyArrays = {};
+
+        // Coerce all keys into individual key arrays
+        for (var name in layout.keys) {
+            keyArrays[name] = asKeyArray(keys[name]);
+        }
+
+        return keyArrays;
+
+    };
+
+    /**
+     * Map of all key names to their corresponding set of keys. Each key name
+     * may correspond to multiple keys due to the effect of modifiers.
+     *
+     * @type Object.<String, Guacamole.OnScreenKeyboard.Key[]>
+     */
+    this.keys = getKeys(layout.keys);
 
     /**
      * Given an arbitrary string representing the name of some component of the
@@ -499,11 +531,27 @@ Guacamole.OnScreenKeyboard = function(layout) {
             addClass(div, 'guac-osk-key');
             addClass(div, 'guac-osk-key-' + getCSSName(keyName));
 
-            // Retrieve all associated keys
-            var keys = getKeys(object);
-            console.log(object, keys);
+            // Add all associated keys to DOM
+            var keys = osk.keys[object];
+            if (keys) {
+                for (i=0; i < keys.length; i++) {
 
-        }
+                    // Get current key
+                    var key = keys[i];
+
+                    // Create element for key
+                    var keyElement = document.createElement('div');
+                    keyElement.className   = 'guac-osk-key-cap';
+                    keyElement.textContent = key.title;
+
+                    // Add key to DOM, maintain scale
+                    div.appendChild(keyElement);
+                    scaledElements.push(new ScaledElement(keyElement, key.width, 1, true));
+
+                }
+            }
+
+        } // end if object is key name
 
         // Add newly-created group/key
         element.appendChild(div);
@@ -549,7 +597,7 @@ Guacamole.OnScreenKeyboard.Layout = function(template) {
      * implicitly. In all cases, the name property of the key object will be
      * taken from the name given in the mapping.
      *
-     * @type Object.<String, Number|String|Key[]>
+     * @type Object.<String, Number|String|Guacamole.OnScreenKeyboard.Key|Guacamole.OnScreenKeyboard.Key[]>
      */
     this.keys = template.keys;
 
