@@ -133,3 +133,11 @@
 .guac-keyboard .guac-keyboard-group.guac-keyboard-fine {
     text-align: center;
 }
+
+/* Keep function key groups on same line */
+.guac-keyboard .guac-keyboard-group.guac-keyboard-esc,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-f1-f4,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-f5-f8,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-f9-f12 {
+    display: inline-block;
+}
