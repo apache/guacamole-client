@@ -129,7 +129,14 @@
     
 }
 
-/* Center the arrow keys */
-.guac-keyboard .guac-keyboard-group.guac-keyboard-fine {
+
+/* Display both keyboard sections within same line */
+.guac-keyboard .guac-keyboard-group.guac-keyboard-main,
+.guac-keyboard .guac-keyboard-group.guac-keyboard-movement {
+    display: inline-block;
+}
+
+/* Center the keys within the cursor movement section */
+.guac-keyboard .guac-keyboard-group.guac-keyboard-movement {
     text-align: center;
 }

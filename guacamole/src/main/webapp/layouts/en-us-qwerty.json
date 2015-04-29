@@ -360,7 +360,7 @@
                 [ "Del", "End",  "PgDn" ]
             ],
 
-            "fine" : [
+            "small" : [
                 [          "Up"           ],
                 [ "Left", "Down", "Right" ]
             ]
