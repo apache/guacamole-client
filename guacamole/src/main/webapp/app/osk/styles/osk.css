@@ -97,16 +97,6 @@
     border-style: inset;
 }
 
-.guac-keyboard .guac-keyboard-row {
-    line-height: 0;
-}
-
-.guac-keyboard .guac-keyboard-column {
-    display: inline-block;
-    text-align: center;
-    vertical-align: top;
-}
-
 .guac-keyboard .guac-keyboard-gap {
     display: inline-block;
 }
@@ -137,4 +127,9 @@
 
     display: none;
     
+}
+
+/* Center the arrow keys */
+.guac-keyboard .guac-keyboard-group.guac-keyboard-fine {
+    text-align: center;
 }
