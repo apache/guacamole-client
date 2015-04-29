@@ -354,17 +354,13 @@
 
         ],
 
-        "movement" : {
-            "large" : [
-                [ "Ins", "Home", "PgUp" ],
-                [ "Del", "End",  "PgDn" ]
-            ],
-
-            "small" : [
-                [          "Up"           ],
-                [ "Left", "Down", "Right" ]
-            ]
-        }
+        "movement" : [
+            [ "Ins",  "Home", "PgUp"  ],
+            [ "Del",  "End",  "PgDn"  ],
+            [          0.5            ],
+            [          "Up"           ],
+            [ "Left", "Down", "Right" ]
+        ]
 
     },
 
