@@ -347,23 +347,25 @@
         [ 0.1 ],
 
         {
-            "main" : [
+            "main" : {
+                "alpha" : [
 
-                [ "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Back" ],
-                [ "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\" ],
-                [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter" ],
-                [ "LShift", "z", "x", "c", "v",  "b", "n",  "m", ",", ".", "/",  "RShift" ],
-                [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
+                    [ "`", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Back" ],
+                    [ "Tab", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]", "\\" ],
+                    [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'", "Enter" ],
+                    [ "LShift", "z", "x", "c", "v",  "b", "n",  "m", ",", ".", "/",  "RShift" ],
+                    [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
 
-            ],
+                ],
 
-            "movement" : [
-                [ "Ins",  "Home", "PgUp"  ],
-                [ "Del",  "End",  "PgDn"  ],
-                [          0.5            ],
-                [          "Up"           ],
-                [ "Left", "Down", "Right" ]
-            ]
+                "movement" : [
+                    [ "Ins",  "Home", "PgUp"  ],
+                    [ "Del",  "End",  "PgDn"  ],
+                    [           1             ],
+                    [          "Up"           ],
+                    [ "Left", "Down", "Right" ]
+                ]
+            }
         }
 
     ],
@@ -386,12 +388,12 @@
         "Menu"  : 1.6,
         "RCtrl" : 1.6,
 
-        "Ins"  : 1.75,
-        "Home" : 1.75,
-        "PgUp" : 1.75,
-        "Del"  : 1.75,
-        "End"  : 1.75,
-        "PgDn" : 1.75
+        "Ins"  : 1.6,
+        "Home" : 1.6,
+        "PgUp" : 1.6,
+        "Del"  : 1.6,
+        "End"  : 1.6,
+        "PgDn" : 1.6
 
     }
 
