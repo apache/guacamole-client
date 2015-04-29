@@ -307,7 +307,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      *
      * @type Guacamole.OnScreenKeyboard.Layout
      */
-    this.layout = layout;
+    this.layout = new Guacamole.OnScreenKeyboard.Layout(layout);
 
     /**
      * Returns the element containing the entire on-screen keyboard.
@@ -569,7 +569,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
             // Add key to DOM, maintain scale
             div.appendChild(keyElement);
-            scaledElements.push(new ScaledElement(div, 1 /* TODO: Pull from layout */, 1, true));
+            scaledElements.push(new ScaledElement(div, osk.layout.keyWidth[object] || 1, 1, true));
 
         } // end if object is key name
 
@@ -641,6 +641,16 @@ Guacamole.OnScreenKeyboard.Layout = function(template) {
      * @type Number
      */
     this.width = template.width;
+
+    /**
+     * The width of each key, in arbitrary units, relative to other keys in
+     * this layout. The true pixel size of each key will be determined by the
+     * overall size of the keyboard. If not defined here, the width of each
+     * key will default to 1.
+     *
+     * @type Object.<String, Number>
+     */
+    this.keyWidth = template.keyWidth || {};
 
 };
 
@@ -726,14 +736,5 @@ Guacamole.OnScreenKeyboard.Key = function(template, name) {
      * @type String[]
      */
     this.requires = template.requires || [];
-
-    /**
-     * The width of this key, in arbitrary units, relative to other keys in the
-     * same layout. The true pixel size of this key will be determined by the
-     * overall size of the keyboard. By default, this will be 1.
-     *
-     * @type Number
-     */
-    this.width = template.width || 1;
 
 };
