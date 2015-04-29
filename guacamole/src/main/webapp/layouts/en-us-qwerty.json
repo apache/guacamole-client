@@ -371,7 +371,7 @@
 
     },
 
-    "keyWidth" : {
+    "keyWidths" : {
 
         "Back"   : 2,
         "Tab"    : 1.5,

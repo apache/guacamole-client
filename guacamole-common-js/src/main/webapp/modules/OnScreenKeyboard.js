@@ -569,7 +569,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
             // Add key to DOM, maintain scale
             div.appendChild(keyElement);
-            scaledElements.push(new ScaledElement(div, osk.layout.keyWidth[object] || 1, 1, true));
+            scaledElements.push(new ScaledElement(div, osk.layout.keyWidths[object] || 1, 1, true));
 
         } // end if object is key name
 
@@ -650,7 +650,7 @@ Guacamole.OnScreenKeyboard.Layout = function(template) {
      *
      * @type Object.<String, Number>
      */
-    this.keyWidth = template.keyWidth || {};
+    this.keyWidths = template.keyWidths || {};
 
 };
 
