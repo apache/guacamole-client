@@ -41,15 +41,6 @@ Guacamole.OnScreenKeyboard = function(layout) {
     var osk = this;
 
     /**
-     * State of all modifiers. This is the bitwise OR of all active modifier
-     * values.
-     * 
-     * @private
-     * @type Number
-     */
-    var modifiers = 0;
-
-    /**
      * Map of currently-set modifiers to the keysym associated with their
      * original press. When the modifier is cleared, this keysym must be
      * released.
@@ -58,6 +49,15 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * @type Object.<String, Number>
      */
     var modifierKeysyms = {};
+
+    /**
+     * Map of all key names to their current pressed states. If a key is not
+     * pressed, it may not be in this map at all, but all pressed keys will
+     * have a corresponding mapping to true.
+     *
+     * @type Object.<String, Boolean>
+     */
+    var pressed = {};
 
     /**
      * All scalable elements which are part of the on-screen keyboard. Each
@@ -149,55 +149,6 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
-     * Map of modifier names to their corresponding, unique, power-of-two value
-     * bitmasks.
-     *
-     * @private
-     * @type Object.<String, Number>
-     */
-    var modifierMasks = {};
-
-    /**
-     * The bitmask to assign to the next modifier, if a new modifier is used
-     * which does not yet have a corresponding bitmask.
-     *
-     * @private
-     * @type Number
-     */
-    var nextMask = 1;
-
-    /**
-     * Returns a unique power-of-two value for the modifier with the given
-     * name. The same value will be returned consistently for the same
-     * modifier.
-     *
-     * @private
-     * @param {String} name
-     *     The name of the modifier to return a bitmask for.
-     * 
-     * @return {Number}
-     *     The unique power-of-two value associated with the modifier having
-     *     the given name, which may be newly allocated.
-     */
-    var getModifierMask = function getModifierMask(name) {
-        
-        var value = modifierMasks[name];
-        if (!value) {
-
-            // Get current modifier, advance to next
-            value = nextMask;
-            nextMask <<= 1;
-
-            // Store value of this modifier
-            modifierMasks[name] = value;
-
-        }
-
-        return value;
-            
-    };
-
-    /**
      * An element whose dimensions are maintained according to an arbitrary
      * scale. The conversion factor for these arbitrary units to pixels is
      * provided later via a call to scale().
@@ -256,6 +207,169 @@ Guacamole.OnScreenKeyboard = function(layout) {
             }
 
         };
+
+    };
+
+    /**
+     * Returns whether all modifiers having the given names are currently
+     * active.
+     *
+     * @param {String[]} names
+     *     The names of all modifiers to test.
+     *
+     * @returns {Boolean}
+     *     true if all specified modifiers are pressed, false otherwise.
+     */
+    var modifiersPressed = function modifiersPressed(names) {
+
+        // If any required modifiers are not pressed, return false
+        for (var i=0; i < names.length; i++) {
+
+            // Test whether current modifier is pressed
+            var name = names[i];
+            if (!(name in modifierKeysyms))
+                return false;
+
+        }
+
+        // Otherwise, all required modifiers are pressed
+        return true;
+
+    };
+
+    /**
+     * Returns the single matching Key object associated with the key of the
+     * given name, where that Key object's requirements (such as pressed
+     * modifiers) are all currently satisfied.
+     *
+     * @param {String} keyName
+     *     The name of the key to retrieve.
+     *
+     * @returns {Guacamole.OnScreenKeyboard.Key}
+     *     The Key object associated with the given name, where that object's
+     *     requirements are all currently satisfied, or null if no such Key
+     *     can be found.
+     */
+    var getActiveKey = function getActiveKey(keyName) {
+
+        // Get key array for given name
+        var keys = osk.keys[keyName];
+        if (!keys)
+            return null;
+
+        // Find last matching key
+        for (var i = keys.length - 1; i >= 0; i--) {
+
+            // Get candidate key
+            var candidate = keys[i];
+
+            // If all required modifiers are pressed, use that key
+            if (modifiersPressed(candidate.requires))
+                return candidate;
+
+        }
+
+        // No valid key
+        return null;
+
+    };
+
+    /**
+     * Presses the key having the given name, updating the associated key
+     * element with the "guac-keyboard-pressed" CSS class. If the key is
+     * already pressed, this function has no effect.
+     *
+     * @param {String} keyName
+     *     The name of the key to press.
+     *
+     * @param {String} keyElement
+     *     The element associated with the given key.
+     */
+    var press = function press(keyName, keyElement) {
+
+        // Press key if not yet pressed
+        if (!pressed[keyName]) {
+
+            addClass(keyElement, "guac-keyboard-pressed");
+
+            // Get current key based on modifier state
+            var key = getActiveKey(keyName);
+
+            // Update modifier state
+            if (key.modifier) {
+
+                // Construct classname for modifier
+                var modifierClass = "guac-keyboard-modifier-" + getCSSName(key.modifier);
+
+                // Retrieve originally-pressed keysym, if modifier was already pressed
+                var originalKeysym = modifierKeysyms[key.modifier];
+
+                // Activate modifier if not pressed
+                if (!originalKeysym) {
+                    
+                    addClass(keyboard, modifierClass);
+                    modifierKeysyms[key.modifier] = key.keysym;
+                    
+                    // Send key event
+                    if (osk.onkeydown)
+                        osk.onkeydown(key.keysym);
+
+                }
+
+                // Deactivate if not pressed
+                else {
+
+                    removeClass(keyboard, modifierClass);
+                    delete modifierKeysyms[key.modifier];
+                    
+                    // Send key event
+                    if (osk.onkeyup)
+                        osk.onkeyup(originalKeysym);
+
+                }
+
+            }
+
+            // If not modifier, send key event now
+            else if (osk.onkeydown)
+                osk.onkeydown(key.keysym);
+
+            // Mark key as pressed
+            pressed[keyName] = true;
+
+        }
+
+    };
+
+    /**
+     * Releases the key having the given name, removing the
+     * "guac-keyboard-pressed" CSS class from the associated element. If the
+     * key is already released, this function has no effect.
+     *
+     * @param {String} keyName
+     *     The name of the key to release.
+     *
+     * @param {String} keyElement
+     *     The element associated with the given key.
+     */
+    var release = function release(keyName, keyElement) {
+
+        // Release key if currently pressed
+        if (pressed[keyName]) {
+
+            removeClass(keyElement, "guac-keyboard-pressed");
+
+            // Get current key based on modifier state
+            var key = getActiveKey(keyName);
+
+            // Send key event if not a modifier key
+            if (!key.modifier && osk.onkeyup)
+                osk.onkeyup(key.keysym);
+
+            // Mark key as released
+            pressed[keyName] = false;
+
+        }
 
     };
 
@@ -585,6 +699,71 @@ Guacamole.OnScreenKeyboard = function(layout) {
             // Add key to DOM, maintain scale
             div.appendChild(keyElement);
             scaledElements.push(new ScaledElement(div, osk.layout.keyWidths[object] || 1, 1, true));
+
+            /**
+             * Handles a touch event which results in the pressing of an OSK
+             * key. Touch events will result in mouse events being ignored for
+             * touchMouseThreshold events.
+             *
+             * @param {TouchEvent} e
+             *     The touch event being handled.
+             */
+            var touchPress = function touchPress(e) {
+                e.preventDefault();
+                ignoreMouse = osk.touchMouseThreshold;
+                press(object, keyElement);
+            };
+
+            /**
+             * Handles a touch event which results in the release of an OSK
+             * key. Touch events will result in mouse events being ignored for
+             * touchMouseThreshold events.
+             *
+             * @param {TouchEvent} e
+             *     The touch event being handled.
+             */
+            var touchRelease = function touchRelease(e) {
+                e.preventDefault();
+                ignoreMouse = osk.touchMouseThreshold;
+                release(object, keyElement);
+            };
+
+            /**
+             * Handles a mouse event which results in the pressing of an OSK
+             * key. If mouse events are currently being ignored, this handler
+             * does nothing.
+             *
+             * @param {MouseEvent} e
+             *     The touch event being handled.
+             */
+            var mousePress = function mousePress(e) {
+                e.preventDefault();
+                if (ignoreMouse === 0)
+                    press(object, keyElement);
+            };
+
+            /**
+             * Handles a mouse event which results in the release of an OSK
+             * key. If mouse events are currently being ignored, this handler
+             * does nothing.
+             *
+             * @param {MouseEvent} e
+             *     The touch event being handled.
+             */
+            var mouseRelease = function mouseRelease(e) {
+                e.preventDefault();
+                if (ignoreMouse === 0)
+                    release(object, keyElement);
+            };
+
+            // Handle touch events on key
+            keyElement.addEventListener("touchstart", touchPress,   true);
+            keyElement.addEventListener("touchend",   touchRelease, true);
+
+            // Handle mouse events on key
+            keyElement.addEventListener("mousedown", mousePress,   true);
+            keyElement.addEventListener("mouseup",   mouseRelease, true);
+            keyElement.addEventListener("mouseout",  mouseRelease, true);
 
         } // end if object is key name
 
