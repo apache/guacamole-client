@@ -339,12 +339,63 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
+     * Given the name of a key, returns the set of key objects associated with
+     * that name. A particular key may have many associated key objects due to
+     * the various effects of modifiers. Regardless of how the key is declared
+     * in the layout, this function will ALWAYS return an array of key objects.
+     *
+     * @private
+     * @param {String} name
+     *     The name of the key whose set of possible keys should be returned.
+     *
+     * @returns {Guacamole.OnScreenKeyboard.Key[]}
+     *     The array of all keys associated with the given name.
+     */
+    var getKeys = function getKeys(name) {
+
+        // Pull associated object, which might be a key object already
+        var object = osk.layout.keys[name];
+        if (!object)
+            return null;
+
+        // If already an array, just coerce into a true Key[] 
+        if (object instanceof Array) {
+            var keys = [];
+            for (var i=0; i < object.length; i++) {
+                keys.push(new Guacamole.OnScreenKeyboard.Key(object[i], name));
+            }
+            return keys;
+        }
+
+        // Derive key object from keysym if that's all we have
+        if (typeof object === 'number') {
+            return [new Guacamole.OnScreenKeyboard.Key({
+                name   : name,
+                keysym : object
+            })];
+        }
+
+        // Derive key object from title if that's all we have
+        if (typeof object === 'string') {
+            return [new Guacamole.OnScreenKeyboard.Key({
+                name  : name,
+                title : object
+            })];
+        }
+
+        // Otherwise, assume it's already a key object, just not an array
+        return [new Guacamole.OnScreenKeyboard.Key(object, name)];
+
+    };
+
+    /**
      * Given an arbitrary string representing the name of some component of the
      * on-screen keyboard, returns a string formatted for use as a CSS class
      * name. The result will be lowercase. Word boundaries previously denoted
      * by CamelCase will be replaced by individual hyphens, as will all
      * contiguous non-alphanumeric characters.
      *
+     * @private
      * @param {String} name
      *     An arbitrary string representing the name of some component of the
      *     on-screen keyboard.
@@ -387,6 +438,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * C-style hexadecimal literal for the Unicode codepoint of that character.
      * For example, the key "A" would become "guac-osk-key-0x41".
      *
+     * @private
      * @param {Element} element
      *     The element to append elements to.
      *
@@ -447,7 +499,9 @@ Guacamole.OnScreenKeyboard = function(layout) {
             addClass(div, 'guac-osk-key');
             addClass(div, 'guac-osk-key-' + getCSSName(keyName));
 
-            // TODO: Add key caps
+            // Retrieve all associated keys
+            var keys = getKeys(object);
+            console.log(object, keys);
 
         }
 
@@ -533,15 +587,20 @@ Guacamole.OnScreenKeyboard.Layout = function(template) {
  * @param {Guacamole.OnScreenKeyboard.Key|Object} template
  *     The object whose identically-named properties will be used to initialize
  *     the properties of this key.
+ *     
+ * @param {String} [name]
+ *     The name to use instead of any name provided within the template, if
+ *     any. If omitted, the name within the template will be used, assuming the
+ *     template contains a name.
  */
-Guacamole.OnScreenKeyboard.Key = function(template) {
+Guacamole.OnScreenKeyboard.Key = function(template, name) {
 
     /**
      * The unique name identifying this key within the keyboard layout.
      *
      * @type String
      */
-    this.name = template.name;
+    this.name = name || template.name;
 
     /**
      * The human-readable title that will be displayed to the user within the
@@ -549,7 +608,7 @@ Guacamole.OnScreenKeyboard.Key = function(template) {
      *
      * @type String
      */
-    this.title = template.title || template.name;
+    this.title = template.title || this.name;
 
     /**
      * The keysym to be pressed/released when this key is pressed/released. If
