@@ -36,6 +36,12 @@
     vertical-align: middle;
 }
 
+.guac-keyboard,
+.guac-keyboard * {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .guac-keyboard .guac-keyboard-key-container {
     display: inline-block;
     margin: 0.05em;
