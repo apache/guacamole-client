@@ -97,7 +97,7 @@
 
     background: #444;
 
-    border: 2px solid #666;
+    border: 0.125em solid #666;
     -moz-border-radius:    0.25em;
     -webkit-border-radius: 0.25em;
     -khtml-border-radius:  0.25em;
