@@ -31,8 +31,12 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
         scope: {},
         transclude: true,
         templateUrl: 'app/client/templates/guacViewport.html',
-        controller: ['$scope', '$interval', '$window', '$document', '$element',
-            function guacViewportController($scope, $interval, $window, $document, $element) {
+        controller: ['$scope', '$injector', '$element',
+            function guacViewportController($scope, $injector, $element) {
+
+            // Required services
+            var $window   = $injector.get('$window');
+            var $document = $injector.get('$document');
 
             /**
              * The fullscreen container element.
@@ -94,12 +98,12 @@ angular.module('client').directive('guacViewport', [function guacViewport() {
             $window.addEventListener('scroll', fitVisibleArea);
 
             // Poll every 10ms, in case scroll event does not fire
-            var pollArea = $interval(fitVisibleArea, 10);
+            var pollArea = $window.setInterval(fitVisibleArea, 10);
 
             // Clean up on destruction
             $scope.$on('$destroy', function destroyViewport() {
                 $window.removeEventListener('scroll', fitVisibleArea);
-                $interval.cancel(pollArea);
+                $window.clearInterval(pollArea);
             });
 
         }]
