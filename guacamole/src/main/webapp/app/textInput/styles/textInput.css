@@ -22,8 +22,8 @@
 
 .text-input {
     width: 100%;
-    border-top: 1px solid rgba(0, 0, 0, 0.5);
-    background: #CDA;
+    background: #222;
+    color: white;
 }
 
 .text-input .text-input-field,
@@ -50,6 +50,7 @@
 
     display: inline-block;
     vertical-align: middle;
+    color: white;
     font-size: 12pt;
     width: 100%;
     height: auto;
@@ -59,7 +60,7 @@
     margin: 0;
     padding: 0.25em;
     padding-left: 0;
-    background: #CDA;
+    background: transparent;
     overflow: hidden;
 
 }
@@ -87,20 +88,38 @@
 }
 
 .text-input .text-input-buttons button {
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: none;
-    color: black;
+
     box-shadow: none;
-    text-shadow: none;
     padding: 0.25em;
     max-width: 20%;
     margin: 0.1em;
     min-width: 3em;
+
+    background: #444;
+
+    border: 0.125em solid #666;
+    -moz-border-radius:    0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius:  0.25em;
+    border-radius:         0.25em;
+
+    color: white;
+    font-weight: lighter;
+    text-align: center;
+
+    text-shadow:  1px  1px 0 rgba(0, 0, 0, 0.25),
+                  1px -1px 0 rgba(0, 0, 0, 0.25),
+                 -1px  1px 0 rgba(0, 0, 0, 0.25),
+                 -1px -1px 0 rgba(0, 0, 0, 0.25);
+
 }
 
-.text-input .text-input-buttons button:active,
+.text-input .text-input-buttons button:active {
+    background: #822;
+    border-color: #D44;
+}
+
 .text-input .text-input-buttons button.pressed {
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    background: rgba(0, 0, 0, 0.75);
-    color: white;
+    background: #882;
+    border-color: #DD4;
 }

@@ -45,23 +45,36 @@
 .guac-keyboard .guac-keyboard-key-container {
     display: inline-block;
     margin: 0.05em;
+    position: relative;
 }
 
 .guac-keyboard .guac-keyboard-key {
-    background: #444;
-    border: 1px outset #888;
-    -moz-border-radius: 0.1em;
-    -webkit-border-radius: 0.1em;
-    -khtml-border-radius: 0.1em;
-    border-radius: 0.1em;
-}
 
-.guac-keyboard .guac-keyboard-cap {
+    position: absolute;
+    left:   0;
+    right:  0;
+    top:    0;
+    bottom: 0;
+
+    background: #444;
+
+    border: 0.125em solid #666;
+    -moz-border-radius:    0.25em;
+    -webkit-border-radius: 0.25em;
+    -khtml-border-radius:  0.25em;
+    border-radius:         0.25em;
+
     color: white;
-    font-size: 50%;
+    font-size: 40%;
     font-weight: lighter;
     text-align: center;
     white-space: pre;
+
+    text-shadow:  1px  1px 0 rgba(0, 0, 0, 0.25),
+                  1px -1px 0 rgba(0, 0, 0, 0.25),
+                 -1px  1px 0 rgba(0, 0, 0, 0.25),
+                 -1px -1px 0 rgba(0, 0, 0, 0.25);
+
 }
 
 .guac-keyboard .guac-keyboard-key:hover {
@@ -71,6 +84,20 @@
 .guac-keyboard .guac-keyboard-key.highlight {
     background: #666;
     border-color: #666;
+}
+
+/* Align some keys to the left */
+.guac-keyboard .guac-keyboard-key-caps,
+.guac-keyboard .guac-keyboard-key-enter,
+.guac-keyboard .guac-keyboard-key-tab,
+.guac-keyboard .guac-keyboard-key-lalt,
+.guac-keyboard .guac-keyboard-key-ralt,
+.guac-keyboard .guac-keyboard-key-lctrl,
+.guac-keyboard .guac-keyboard-key-rctrl,
+.guac-keyboard .guac-keyboard-key-lshift,
+.guac-keyboard .guac-keyboard-key-rshift {
+    text-align: left;
+    padding-left: 0.75em;
 }
 
 /* Active shift */
@@ -86,11 +113,9 @@
 .guac-keyboard.guac-keyboard-modifier-alt .guac-keyboard-key-lalt,
 
 /* Active caps */
-.guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps {
-    background: #882;
-    border-color: #DD4;
-}
+.guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
 
+/* Active super */
 .guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super,
 .guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-menu {
     background: #882;
@@ -100,7 +125,6 @@
 .guac-keyboard .guac-keyboard-key.guac-keyboard-pressed {
     background: #822;
     border-color: #D44;
-    border-style: inset;
 }
 
 .guac-keyboard .guac-keyboard-group {
