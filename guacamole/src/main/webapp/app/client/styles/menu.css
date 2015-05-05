@@ -127,12 +127,6 @@
     flex: 0 0 auto;
 }
 
-#menu h3 {
-    margin: 0;
-    padding: 0;
-    padding-bottom: 1em;
-}
-
 #menu .content {
 
     padding: 0;
@@ -165,7 +159,13 @@
 
 }
 
-#menu .content + h3 {
+.menu-section h3 {
+    margin: 0;
+    padding: 0;
+    padding-bottom: 1em;
+}
+
+.menu-section ~ .menu-section h3 {
     padding-top: 1em;
 }
 
