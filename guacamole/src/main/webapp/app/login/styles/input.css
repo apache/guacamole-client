@@ -35,7 +35,7 @@
     max-width: none;
 }
 
-.login-ui .login-dialog .login-fields input[type="submit"] {
+.login-ui .login-dialog .buttons input[type="submit"] {
     width: 100%;
     margin: 0;
 }
