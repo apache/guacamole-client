@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-.error .login-dialog {
+.login-ui.error .login-dialog {
     animation-name: shake-head;
     animation-duration: 0.25s;
     animation-timing-function: linear;
@@ -29,14 +29,14 @@
     -webkit-animation-timing-function: linear;
 }
 
-div.login-dialog-middle {
+.login-ui div.login-dialog-middle {
     width: 100%;
     display: table-cell;
     vertical-align: middle;
     text-align: center;
 }
 
-div.login-dialog {
+.login-ui div.login-dialog {
 
     animation: fadein 0.125s linear;
     -moz-animation: fadein 0.125s linear;
@@ -53,27 +53,27 @@ div.login-dialog {
     display: inline-block;
 }
 
-div.login-dialog h1 {
+.login-ui .login-dialog h1 {
     margin-top: 0;
     margin-bottom: 0em;
     text-align: center;
 }
 
-div.login-dialog .buttons {
+.login-ui .login-dialog .buttons {
     text-align: right;
     margin: 0;
     margin-top: 1em;
 }
 
-div.login-dialog .login-fields {
+.login-ui .login-dialog .login-fields {
     vertical-align: middle;
 }
 
-div.login-dialog th {
+.login-ui .login-dialog th {
     text-shadow: 1px 1px white;
 }
 
-.login-dialog .version {
+.login-ui .login-dialog .version {
     font-size: 1.25em;
     font-weight: bold;
     padding: 0.5em 0;
@@ -81,7 +81,7 @@ div.login-dialog th {
     text-align: center;
 }
 
-.login-dialog .logo {
+.login-ui .login-dialog .logo {
     display: block;
     max-width: 3em;
     margin: 0.5em auto;

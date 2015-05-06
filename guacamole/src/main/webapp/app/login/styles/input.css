@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-.login-fields input {
+.login-ui .login-dialog .login-fields input {
     display: block;
     border: 1px solid rgba(0, 0, 0, 0.25);
     -moz-border-radius: 0.2em;
@@ -35,7 +35,7 @@
     max-width: none;
 }
 
-input[type="submit"].login {
+.login-ui .login-dialog .login-fields input[type="submit"] {
     width: 100%;
     margin: 0;
 }

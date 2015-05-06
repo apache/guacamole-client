@@ -31,11 +31,11 @@ div.login-ui {
     z-index: 20;
 }
 
-p.login-error {
+.login-ui p.login-error {
     display: none;
 }
 
-.error p.login-error {
+.login-ui.error p.login-error {
     display: block;
 
     position: fixed;
@@ -55,16 +55,16 @@ p.login-error {
     color: #964040;
 }
 
-.login-fields .form-field .password-field .toggle-password {
+.login-ui .login-fields .form-field .password-field .toggle-password {
     display: none;
 }
 
-.login-fields .labeled-field {
+.login-ui .login-fields .labeled-field {
     display: block;
     position: relative;
 }
 
-.login-fields .labeled-field .field-header {
+.login-ui .login-fields .labeled-field .field-header {
 
   display: block;
   position: absolute;
@@ -79,10 +79,10 @@ p.login-error {
 
 }
 
-.login-fields .labeled-field.empty input {
+.login-ui .login-fields .labeled-field.empty input {
     background: transparent;
 }
 
-.login-fields .labeled-field input:focus {
+.login-ui .login-fields .labeled-field input:focus {
     background: white;
 }
