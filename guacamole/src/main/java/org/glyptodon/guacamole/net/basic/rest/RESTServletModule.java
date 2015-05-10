@@ -27,6 +27,8 @@ import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
+import org.glyptodon.guacamole.net.basic.resource.ResourceServlet;
+import org.glyptodon.guacamole.net.basic.resource.WebApplicationResource;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
@@ -70,6 +72,10 @@ public class RESTServletModule extends ServletModule {
         bind(GuiceContainer.class);
         bind(JacksonJsonProvider.class).in(Scopes.SINGLETON);
         serve("/api/*").with(GuiceContainer.class);
+
+        // TODO: Pull these from extensions, dynamically concatenated
+        serve("/app.js").with(new ResourceServlet(new WebApplicationResource(getServletContext(), "/guacamole.min.js")));
+        serve("/app.css").with(new ResourceServlet(new WebApplicationResource(getServletContext(), "/guacamole.min.css")));
 
     }
 
