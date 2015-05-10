@@ -30,6 +30,7 @@ import javax.servlet.ServletContextEvent;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
+import org.glyptodon.guacamole.net.basic.extension.ExtensionModule;
 import org.glyptodon.guacamole.net.basic.log.LogModule;
 import org.glyptodon.guacamole.net.basic.rest.RESTAuthModule;
 import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
@@ -83,6 +84,7 @@ public class BasicServletContextListener extends GuiceServletContextListener {
         return Guice.createInjector(Stage.PRODUCTION,
             new EnvironmentModule(environment),
             new LogModule(environment),
+            new ExtensionModule(environment),
             new RESTAuthModule(environment, sessionMap),
             new RESTServletModule(),
             new TunnelModule()
