@@ -1,0 +1,11 @@
+{
+
+    "name"      : "PostgreSQL Authentication",
+    "namespace" : "guac-postgresql",
+
+    "authProviders" : [
+        "org.glyptodon.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider"
+    ]
+
+}
+

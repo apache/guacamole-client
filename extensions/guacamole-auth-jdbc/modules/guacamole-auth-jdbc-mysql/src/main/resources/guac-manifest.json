@@ -1,0 +1,11 @@
+{
+
+    "name"      : "MySQL Authentication",
+    "namespace" : "guac-mysql",
+
+    "authProviders" : [
+        "net.sourceforge.guacamole.net.auth.mysql.MySQLAuthenticationProvider"
+    ]
+
+}
+
