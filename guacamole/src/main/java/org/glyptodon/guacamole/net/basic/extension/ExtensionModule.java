@@ -25,8 +25,13 @@ package org.glyptodon.guacamole.net.basic.extension;
 import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Collection;
+import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.net.basic.resource.Resource;
 import org.glyptodon.guacamole.net.basic.resource.ResourceServlet;
+import org.glyptodon.guacamole.net.basic.resource.SequenceResource;
 import org.glyptodon.guacamole.net.basic.resource.WebApplicationResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +60,7 @@ public class ExtensionModule extends ServletModule {
      * recognized as extensions.
      */
     private static final String EXTENSION_SUFFIX = ".jar";
-    
+
     /**
      * The Guacamole server environment.
      */
@@ -81,7 +86,7 @@ public class ExtensionModule extends ServletModule {
             return;
 
         // Retrieve list of all extension files within extensions directory
-        File[] extensions = extensionsDir.listFiles(new FileFilter() {
+        File[] extensionFiles = extensionsDir.listFiles(new FileFilter() {
 
             @Override
             public boolean accept(File file) {
@@ -90,15 +95,43 @@ public class ExtensionModule extends ServletModule {
 
         });
 
-        // Load each extension
-        for (File extension : extensions) {
-            // TODO: Actually load extension
-            logger.info("Loading extension: \"{}\"", extension.getName());
+        // Init JavaScript resources with base guacamole.min.js
+        Collection<Resource> javaScriptResources = new ArrayList<Resource>();
+        javaScriptResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.js"));
+
+        // Init CSS resources with base guacamole.min.css
+        Collection<Resource> cssResources = new ArrayList<Resource>();
+        cssResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.css"));
+
+        // Load each extension within the extension directory
+        for (File extensionFile : extensionFiles) {
+
+            logger.debug("Loading extension: \"{}\"", extensionFile.getName());
+
+            try {
+
+                // FIXME: Use class loader which reads from the lib directory
+                // Load extension from file
+                Extension extension = new Extension(ExtensionModule.class.getClassLoader(), extensionFile);
+
+                // Add any JavaScript / CSS resources
+                javaScriptResources.addAll(extension.getJavaScriptResources());
+                cssResources.addAll(extension.getCSSResources());
+
+                // Log successful loading of extension by name
+                logger.info("Extension \"{}\" loaded.", extension.getName());
+
+            }
+            catch (GuacamoleException e) {
+                logger.error("Extension \"{}\" could not be loaded: {}", extensionFile.getName(), e.getMessage());
+                logger.debug("Unable to load extension.", e);
+            }
+
         }
-        
-        // TODO: Pull these from extensions, dynamically concatenated
-        serve("/app.js").with(new ResourceServlet(new WebApplicationResource(getServletContext(), "/guacamole.min.js")));
-        serve("/app.css").with(new ResourceServlet(new WebApplicationResource(getServletContext(), "/guacamole.min.css")));
+
+        // Dynamically generate app.js and app.css from extensions
+        serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));
+        serve("/app.css").with(new ResourceServlet(new SequenceResource(cssResources)));
 
     }
 
