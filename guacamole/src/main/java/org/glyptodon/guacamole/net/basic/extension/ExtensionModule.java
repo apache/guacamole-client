@@ -168,7 +168,7 @@ public class ExtensionModule extends ServletModule {
     private void bindAuthenticationProvider(Class<? extends AuthenticationProvider> authenticationProvider) {
 
         // Choose auth provider for binding if not already chosen
-        if (boundAuthenticationProvider != null)
+        if (boundAuthenticationProvider == null)
             boundAuthenticationProvider = authenticationProvider;
 
         // If an auth provider is already chosen, skip and warn
