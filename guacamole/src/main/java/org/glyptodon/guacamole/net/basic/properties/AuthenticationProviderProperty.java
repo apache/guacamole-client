@@ -24,7 +24,6 @@ package org.glyptodon.guacamole.net.basic.properties;
 
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
 import org.glyptodon.guacamole.properties.GuacamoleProperty;
 
 /**
@@ -50,7 +49,7 @@ public abstract class AuthenticationProviderProperty implements GuacamolePropert
         try {
 
             // Get authentication provider class
-            Class<?> authProviderClass = GuacamoleClassLoader.getInstance().loadClass(authProviderClassName);
+            Class<?> authProviderClass = org.glyptodon.guacamole.net.basic.GuacamoleClassLoader.getInstance().loadClass(authProviderClassName);
 
             // Verify the located class is actually a subclass of AuthenticationProvider
             if (!AuthenticationProvider.class.isAssignableFrom(authProviderClass))
