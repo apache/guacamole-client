@@ -40,6 +40,7 @@ import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.resource.ClassPathResource;
 import org.glyptodon.guacamole.net.basic.resource.Resource;
 
@@ -73,6 +74,125 @@ public class Extension {
      * including classes and static files.
      */
     private final ClassLoader classLoader;
+
+    /**
+     * The collection of all JavaScript resources defined within the extension.
+     */
+    private final Collection<Resource> javaScriptResources;
+
+    /**
+     * The collection of all CSS resources defined within the extension.
+     */
+    private final Collection<Resource> cssResources;
+
+    /**
+     * The collection of all AuthenticationProvider classes defined within the
+     * extension.
+     */
+    private final Collection<Class<AuthenticationProvider>> authenticationProviderClasses;
+
+    /**
+     * Returns a new collection of resources corresponding to the collection of
+     * paths provided. Each resource will be associated with the given
+     * mimetype.
+     *
+     * @param mimetype
+     *     The mimetype to associate with each resource.
+     *
+     * @param paths
+     *     The paths corresponding to the resources desired.
+     *
+     * @return
+     *     A new, unmodifiable collection of resources corresponding to the
+     *     collection of paths provided.
+     */
+    private Collection<Resource> getClassPathResources(String mimetype, Collection<String> paths) {
+
+        // If no paths are provided, just return an empty list
+        if (paths == null)
+            return Collections.<Resource>emptyList();
+
+        // Add classpath resource for each path provided
+        Collection<Resource> resources = new ArrayList<Resource>(paths.size());
+        for (String path : paths)
+            resources.add(new ClassPathResource(classLoader, mimetype, path));
+
+        // Callers should not rely on modifying the result
+        return Collections.unmodifiableCollection(resources);
+
+    }
+
+    /**
+     * Retrieve the AuthenticationProvider subclass having the given name. If
+     * the class having the given name does not exist or isn't actually a
+     * subclass of AuthenticationProvider, an exception will be thrown.
+     *
+     * @param name
+     *     The name of the AuthenticationProvider class to retrieve.
+     *
+     * @return
+     *     The subclass of AuthenticationProvider having the given name.
+     *
+     * @throws GuacamoleException
+     *     If no such class exists, or if the class with the given name is not
+     *     a subclass of AuthenticationProvider.
+     */
+    @SuppressWarnings("unchecked") // We check this ourselves with isAssignableFrom()
+    private Class<AuthenticationProvider> getAuthenticationProviderClass(String name)
+            throws GuacamoleException {
+
+        try {
+
+            // Get authentication provider class
+            Class<?> authenticationProviderClass = classLoader.loadClass(name);
+
+            // Verify the located class is actually a subclass of AuthenticationProvider
+            if (!AuthenticationProvider.class.isAssignableFrom(authenticationProviderClass))
+                throw new GuacamoleServerException("Authentication providers MUST extend the AuthenticationProvider class.");
+
+            // Return located class
+            return (Class<AuthenticationProvider>) authenticationProviderClass;
+
+        }
+        catch (ClassNotFoundException e) {
+            throw new GuacamoleException("Authentication provider class not found.", e);
+        }
+
+    }
+
+    /**
+     * Returns a new collection of all AuthenticationProvider subclasses having
+     * the given names. If any class does not exist or isn't actually a
+     * subclass of AuthenticationProvider, an exception will be thrown, and
+     * no further AuthenticationProvider classes will be loaded.
+     *
+     * @param names
+     *     The names of the AuthenticationProvider classes to retrieve.
+     *
+     * @return
+     *     A new collection of all AuthenticationProvider subclasses having the
+     *     given names.
+     *
+     * @throws GuacamoleException
+     *     If any given class does not exist, or if any given class is not a
+     *     subclass of AuthenticationProvider.
+     */
+    private Collection<Class<AuthenticationProvider>> getAuthenticationProviderClasses(Collection<String> names)
+            throws GuacamoleException {
+
+        // If no classnames are provided, just return an empty list
+        if (names == null)
+            return Collections.<Class<AuthenticationProvider>>emptyList();
+
+        // Define all auth provider classes
+        Collection<Class<AuthenticationProvider>> classes = new ArrayList<Class<AuthenticationProvider>>(names.size());
+        for (String name : names)
+            classes.add(getAuthenticationProviderClass(name));
+
+        // Callers should not rely on modifying the result
+        return Collections.unmodifiableCollection(classes);
+
+    }
 
     /**
      * Loads the given file as an extension, which must be a .jar containing
@@ -160,6 +280,13 @@ public class Extension {
             throw new GuacamoleServerException("Unable to read extension: " + file.getName(), e);
         }
 
+        // Define static resources
+        cssResources = getClassPathResources("text/css", manifest.getCSSPaths());
+        javaScriptResources = getClassPathResources("text/javascript", manifest.getJavaScriptPaths());
+
+        // Define authentication providers
+        authenticationProviderClasses = getAuthenticationProviderClasses(manifest.getAuthProviders());
+
     }
 
     /**
@@ -185,37 +312,6 @@ public class Extension {
     }
 
     /**
-     * Returns a new collection of resources corresponding to the collection of
-     * paths provided. Each resource will be associated with the given
-     * mimetype.
-     *
-     * @param mimetype
-     *     The mimetype to associate with each resource.
-     *
-     * @param paths
-     *     The paths corresponding to the resources desired.
-     *
-     * @return
-     *     A new, unmodifiable collection of resources corresponding to the
-     *     collection of paths provided.
-     */
-    private Collection<Resource> getClassPathResources(String mimetype, Collection<String> paths) {
-
-        // If no paths are provided, just return an empty list
-        if (paths == null)
-            return Collections.<Resource>emptyList();
-
-        // Add classpath resource for each path provided
-        Collection<Resource> resources = new ArrayList<Resource>(paths.size());
-        for (String path : paths)
-            resources.add(new ClassPathResource(classLoader, mimetype, path));
-
-        // Callers should not rely on modifying the result
-        return Collections.unmodifiableCollection(resources);
-
-    }
-
-    /**
      * Returns all declared JavaScript resources associated with this
      * extension. JavaScript resources are declared within the extension
      * manifest.
@@ -224,7 +320,7 @@ public class Extension {
      *     All declared JavaScript resources associated with this extension.
      */
     public Collection<Resource> getJavaScriptResources() {
-        return getClassPathResources("text/javascript", manifest.getJavaScriptPaths());
+        return javaScriptResources;
     }
 
     /**
@@ -235,7 +331,19 @@ public class Extension {
      *     All declared CSS resources associated with this extension.
      */
     public Collection<Resource> getCSSResources() {
-        return getClassPathResources("text/css", manifest.getCSSPaths());
+        return cssResources;
+    }
+
+    /**
+     * Returns all declared authentication providers classes associated with
+     * this extension. Authentication providers are declared within the
+     * extension manifest.
+     *
+     * @return
+     *     All declared authentication provider classes with this extension.
+     */
+    public Collection<Class<AuthenticationProvider>> getAuthenticationProviderClasses() {
+        return authenticationProviderClasses;
     }
 
 }

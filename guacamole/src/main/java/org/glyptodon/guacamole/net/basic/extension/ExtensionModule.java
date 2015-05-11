@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.extension;
 
+import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.resource.Resource;
 import org.glyptodon.guacamole.net.basic.resource.ResourceServlet;
 import org.glyptodon.guacamole.net.basic.resource.SequenceResource;
@@ -117,6 +119,13 @@ public class ExtensionModule extends ServletModule {
                 // Add any JavaScript / CSS resources
                 javaScriptResources.addAll(extension.getJavaScriptResources());
                 cssResources.addAll(extension.getCSSResources());
+
+                // Load all authentication providers as singletons
+                Collection<Class<AuthenticationProvider>> authenticationProviders = extension.getAuthenticationProviderClasses();
+                for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders) {
+                    logger.debug("Binding AuthenticationProvider \"{}\".", authenticationProvider);
+                    bind(AuthenticationProvider.class).to(authenticationProvider).in(Singleton.class);
+                }
 
                 // Log successful loading of extension by name
                 logger.info("Extension \"{}\" loaded.", extension.getName());

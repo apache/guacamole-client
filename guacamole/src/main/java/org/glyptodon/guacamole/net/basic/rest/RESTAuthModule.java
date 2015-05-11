@@ -84,15 +84,20 @@ public class RESTAuthModule extends AbstractModule {
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
 
-        // Get and bind auth provider instance
+        // Get and bind auth provider instance, if defined via property
         try {
-            AuthenticationProvider authProvider = environment.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-            bind(AuthenticationProvider.class).toInstance(authProvider);
+
+            // Use "auth-provider" property if present, but warn about deprecation
+            AuthenticationProvider authProvider = environment.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+            if (authProvider != null) {
+                logger.warn("The \"auth-provider\" is now deprecated. Please use the \"extensions\" directory within GUACAMOLE_HOME instead.");
+                bind(AuthenticationProvider.class).toInstance(authProvider);
+            }
+
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to read authentication provider from guacamole.properties: {}", e.getMessage());
+            logger.warn("Value of deprecated \"auth-provider\" property within guacamole.properties is not valid: {}", e.getMessage());
             logger.debug("Error reading authentication provider from guacamole.properties.", e);
-            throw new RuntimeException(e);
         }
 
     }

@@ -60,6 +60,12 @@ public class ExtensionManifest {
     private Collection<String> cssPaths;
 
     /**
+     * The names of all authentication provider classes within this extension,
+     * if any.
+     */
+    private Collection<String> authProviders;
+
+    /**
      * Returns the name of the extension associated with this manifest. The
      * name is human-readable, for display purposes only, and is defined within
      * the manifest by the "name" property.
@@ -167,6 +173,34 @@ public class ExtensionManifest {
     @JsonProperty("css")
     public void setCSSPaths(Collection<String> cssPaths) {
         this.cssPaths = cssPaths;
+    }
+
+    /**
+     * Returns the classnames of all authentication provider classes within the
+     * extension. These classnames are defined within the manifest by the
+     * "authProviders" property as an array of strings, where each string is an
+     * authentication provider classname.
+     *
+     * @return
+     *     A collection of classnames of all authentication providers within
+     *     the extension.
+     */
+    public Collection<String> getAuthProviders() {
+        return authProviders;
+    }
+
+    /**
+     * Sets the classnames of all authentication provider classes within the
+     * extension. These classnames are defined within the manifest by the
+     * "authProviders" property as an array of strings, where each string is an
+     * authentication provider classname.
+     *
+     * @param authProviders
+     *     A collection of classnames of all authentication providers within
+     *     the extension.
+     */
+    public void setAuthProviders(Collection<String> authProviders) {
+        this.authProviders = authProviders;
     }
 
 }
