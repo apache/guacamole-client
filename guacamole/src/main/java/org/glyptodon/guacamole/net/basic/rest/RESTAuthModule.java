@@ -90,7 +90,7 @@ public class RESTAuthModule extends AbstractModule {
             // Use "auth-provider" property if present, but warn about deprecation
             AuthenticationProvider authProvider = environment.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
             if (authProvider != null) {
-                logger.warn("The \"auth-provider\" is now deprecated. Please use the \"extensions\" directory within GUACAMOLE_HOME instead.");
+                logger.warn("The \"auth-provider\" and \"lib-directory\" properties are now deprecated. Please use the \"extensions\" and \"lib\" directories within GUACAMOLE_HOME instead.");
                 bind(AuthenticationProvider.class).toInstance(authProvider);
             }
 
