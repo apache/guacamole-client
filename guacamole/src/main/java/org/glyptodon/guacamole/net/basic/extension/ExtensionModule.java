@@ -52,6 +52,12 @@ public class ExtensionModule extends ServletModule {
     private final Logger logger = LoggerFactory.getLogger(ExtensionModule.class);
 
     /**
+     * The name of the directory within GUACAMOLE_HOME containing any .jars
+     * which should be included in the classpath of all extensions.
+     */
+    private static final String LIB_DIRECTORY = "lib";
+
+    /**
      * The name of the directory within GUACAMOLE_HOME containing all
      * extensions.
      */
@@ -67,6 +73,34 @@ public class ExtensionModule extends ServletModule {
      * The Guacamole server environment.
      */
     private final Environment environment;
+
+    /**
+     * Returns the classloader that should be used as the parent classloader
+     * for all extensions. If the GUACAMOLE_HOME/lib directory exists, this
+     * will be a classloader that loads classes from within the .jar files in
+     * that directory. Lacking the GUACAMOLE_HOME/lib directory, this will
+     * simply be the classloader associated with the ExtensionModule class.
+     *
+     * @return
+     *     The classloader that should be used as the parent classloader for
+     *     all extensions.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the classloader.
+     */
+    private ClassLoader getParentClassLoader() throws GuacamoleException {
+
+        // Retrieve lib directory
+        File libDir = new File(environment.getGuacamoleHome(), LIB_DIRECTORY);
+
+        // If lib directory does not exist, use default class loader
+        if (!libDir.isDirectory())
+            return ExtensionModule.class.getClassLoader();
+
+        // Return classloader which loads classes from all .jars within the lib directory
+        return DirectoryClassLoader.getInstance(libDir);
+
+    }
 
     /**
      * Creates a module which loads all extensions within the
@@ -112,9 +146,8 @@ public class ExtensionModule extends ServletModule {
 
             try {
 
-                // FIXME: Use class loader which reads from the lib directory
                 // Load extension from file
-                Extension extension = new Extension(ExtensionModule.class.getClassLoader(), extensionFile);
+                Extension extension = new Extension(getParentClassLoader(), extensionFile);
 
                 // Add any JavaScript / CSS resources
                 javaScriptResources.addAll(extension.getJavaScriptResources());
