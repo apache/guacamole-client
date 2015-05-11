@@ -64,18 +64,6 @@ public class BasicGuacamoleProperties {
     };
 
     /**
-     * The comma-separated list of all classes to use as event listeners. This
-     * property is currently supported, but deprecated in favor of declared
-     * event listeners within extension manifests.
-     */
-    public static final EventListenersProperty EVENT_LISTENERS = new EventListenersProperty() {
-
-        @Override
-        public String getName() { return "event-listeners"; }
-
-    };
-
-    /**
      * The session timeout for the API, in minutes.
      */
     public static final IntegerGuacamoleProperty API_SESSION_TIMEOUT = new IntegerGuacamoleProperty() {

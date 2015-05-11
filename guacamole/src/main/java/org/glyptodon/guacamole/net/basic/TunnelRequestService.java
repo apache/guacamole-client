@@ -38,10 +38,6 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
-import org.glyptodon.guacamole.net.event.TunnelCloseEvent;
-import org.glyptodon.guacamole.net.event.TunnelConnectEvent;
-import org.glyptodon.guacamole.net.event.listener.TunnelCloseListener;
-import org.glyptodon.guacamole.net.event.listener.TunnelConnectListener;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,84 +71,6 @@ public class TunnelRequestService {
      */
     @Inject
     private AuthenticationService authenticationService;
-
-    /**
-     * Notifies all listeners in the given session that a tunnel has been
-     * connected.
-     *
-     * @param session The session associated with the listeners to be notified.
-     * @param tunnel The tunnel being connected.
-     * @return true if all listeners are allowing the tunnel to connect,
-     *         or if there are no listeners, and false if any listener is
-     *         canceling the connection. Note that once one listener cancels,
-     *         no other listeners will run.
-     * @throws GuacamoleException If any listener throws an error while being
-     *                            notified. Note that if any listener throws an
-     *                            error, the connect is canceled, and no other
-     *                            listeners will run.
-     */
-    private boolean notifyConnect(GuacamoleSession session, GuacamoleTunnel tunnel)
-            throws GuacamoleException {
-
-        // Build event for auth success
-        TunnelConnectEvent event = new TunnelConnectEvent(
-                session.getUserContext(),
-                session.getCredentials(),
-                tunnel);
-
-        // Notify all listeners
-        for (Object listener : session.getListeners()) {
-            if (listener instanceof TunnelConnectListener) {
-
-                // Cancel immediately if hook returns false
-                if (!((TunnelConnectListener) listener).tunnelConnected(event))
-                    return false;
-
-            }
-        }
-
-        return true;
-
-    }
-
-    /**
-     * Notifies all listeners in the given session that a tunnel has been
-     * closed.
-     *
-     * @param session The session associated with the listeners to be notified.
-     * @param tunnel The tunnel being closed.
-     * @return true if all listeners are allowing the tunnel to close,
-     *         or if there are no listeners, and false if any listener is
-     *         canceling the close. Note that once one listener cancels,
-     *         no other listeners will run.
-     * @throws GuacamoleException If any listener throws an error while being
-     *                            notified. Note that if any listener throws an
-     *                            error, the close is canceled, and no other
-     *                            listeners will run.
-     */
-    private boolean notifyClose(GuacamoleSession session, GuacamoleTunnel tunnel)
-            throws GuacamoleException {
-
-        // Build event for auth success
-        TunnelCloseEvent event = new TunnelCloseEvent(
-                session.getUserContext(),
-                session.getCredentials(),
-                tunnel);
-
-        // Notify all listeners
-        for (Object listener : session.getListeners()) {
-            if (listener instanceof TunnelCloseListener) {
-
-                // Cancel immediately if hook returns false
-                if (!((TunnelCloseListener) listener).tunnelClosed(event))
-                    return false;
-
-            }
-        }
-
-        return true;
-
-    }
 
     /**
      * Reads and returns the client information provided within the given
@@ -335,10 +253,6 @@ public class TunnelRequestService {
             @Override
             public void close() throws GuacamoleException {
 
-                // Signal listeners
-                if (!notifyClose(session, this))
-                    throw new GuacamoleException("Tunnel close canceled by listener.");
-
                 session.removeTunnel(getUUID().toString());
 
                 // Close if no exception due to listener
@@ -347,12 +261,6 @@ public class TunnelRequestService {
             }
 
         };
-
-        // Notify listeners about connection
-        if (!notifyConnect(session, monitoredTunnel)) {
-            logger.info("Successful connection canceled by hook.");
-            return null;
-        }
 
         // Associate tunnel with session
         session.addTunnel(monitoredTunnel);
