@@ -85,7 +85,7 @@ public class BasicServletContextListener extends GuiceServletContextListener {
             new EnvironmentModule(environment),
             new LogModule(environment),
             new ExtensionModule(environment),
-            new RESTAuthModule(environment, sessionMap),
+            new RESTAuthModule(sessionMap),
             new RESTServletModule(),
             new TunnelModule()
         );

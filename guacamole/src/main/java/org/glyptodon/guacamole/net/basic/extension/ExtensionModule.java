@@ -28,9 +28,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collection;
+import net.sourceforge.guacamole.net.basic.BasicFileAuthenticationProvider;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
+import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.resource.Resource;
 import org.glyptodon.guacamole.net.basic.resource.ResourceServlet;
 import org.glyptodon.guacamole.net.basic.resource.SequenceResource;
@@ -75,6 +77,12 @@ public class ExtensionModule extends ServletModule {
     private final Environment environment;
 
     /**
+     * The currently-bound authentication provider, if any. At the moment, we
+     * only support one authentication provider loaded at any one time.
+     */
+    private Class<? extends AuthenticationProvider> boundAuthenticationProvider = null;
+
+    /**
      * Returns the classloader that should be used as the parent classloader
      * for all extensions. If the GUACAMOLE_HOME/lib directory exists, this
      * will be a classloader that loads classes from within the .jar files in
@@ -113,8 +121,80 @@ public class ExtensionModule extends ServletModule {
         this.environment = environment;
     }
 
+    /**
+     * Reads the value of the now-deprecated "auth-provider" property from
+     * guacamole.properties, returning the corresponding AuthenticationProvider
+     * class. If no authentication provider could be read, or the property is
+     * not present, null is returned.
+     *
+     * As this property is deprecated, this function will also log warning
+     * messages if the property is actually specified.
+     *
+     * @return
+     *     The value of the deprecated "auth-provider" property, or null if the
+     *     property is not present.
+     */
+    @SuppressWarnings("deprecation") // We must continue to use this property until it is truly no longer supported
+    private Class<AuthenticationProvider> getAuthProviderProperty() {
+
+        // Get and bind auth provider instance, if defined via property
+        try {
+
+            // Use "auth-provider" property if present, but warn about deprecation
+            Class<AuthenticationProvider> authenticationProvider = environment.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
+            if (authenticationProvider != null)
+                logger.warn("The \"auth-provider\" and \"lib-directory\" properties are now deprecated. Please use the \"extensions\" and \"lib\" directories within GUACAMOLE_HOME instead.");
+
+            return authenticationProvider;
+
+        }
+        catch (GuacamoleException e) {
+            logger.warn("Value of deprecated \"auth-provider\" property within guacamole.properties is not valid: {}", e.getMessage());
+            logger.debug("Error reading authentication provider from guacamole.properties.", e);
+        }
+
+        return null;
+
+    }
+
+    /**
+     * Binds the given AuthenticationProvider class such that any service
+     * requiring access to the AuthenticationProvider can obtain it via
+     * injection.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider class to bind.
+     */
+    private void bindAuthenticationProvider(Class<? extends AuthenticationProvider> authenticationProvider) {
+
+        // Choose auth provider for binding if not already chosen
+        if (boundAuthenticationProvider != null)
+            boundAuthenticationProvider = authenticationProvider;
+
+        // If an auth provider is already chosen, skip and warn
+        else {
+            logger.debug("Ignoring AuthenticationProvider \"{}\".", authenticationProvider);
+            logger.warn("Only one authentication extension may be used at a time. Please "
+                      + "make sure that only one authentication extension is present "
+                      + "within the GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " "
+                      + "directory, and that you are not also specifying the deprecated "
+                      + "\"auth-provider\" property within guacamole.properties.");
+            return;
+        }
+
+        // Bind authentication provider
+        logger.debug("Binding AuthenticationProvider \"{}\".", authenticationProvider);
+        bind(AuthenticationProvider.class).to(authenticationProvider).in(Singleton.class);
+
+    }
+
     @Override
     protected void configureServlets() {
+
+        // Load authentication provider from guacamole.properties for sake of backwards compatibility
+        Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
+        if (authProviderProperty != null)
+            bindAuthenticationProvider(authProviderProperty);
 
         // Retrieve and validate extensions directory
         File extensionsDir = new File(environment.getGuacamoleHome(), EXTENSIONS_DIRECTORY);
@@ -153,12 +233,10 @@ public class ExtensionModule extends ServletModule {
                 javaScriptResources.addAll(extension.getJavaScriptResources());
                 cssResources.addAll(extension.getCSSResources());
 
-                // Load all authentication providers as singletons
+                // Attempt to load all authentication providers
                 Collection<Class<AuthenticationProvider>> authenticationProviders = extension.getAuthenticationProviderClasses();
-                for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders) {
-                    logger.debug("Binding AuthenticationProvider \"{}\".", authenticationProvider);
-                    bind(AuthenticationProvider.class).to(authenticationProvider).in(Singleton.class);
-                }
+                for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders)
+                    bindAuthenticationProvider(authenticationProvider);
 
                 // Log successful loading of extension by name
                 logger.info("Extension \"{}\" loaded.", extension.getName());
@@ -169,6 +247,12 @@ public class ExtensionModule extends ServletModule {
                 logger.debug("Unable to load extension.", e);
             }
 
+        }
+
+        // Default to basic auth if nothing else chosen/provided
+        if (boundAuthenticationProvider == null) {
+            logger.info("Using default, \"basic\", XML-driven authentication.");
+            bindAuthenticationProvider(BasicFileAuthenticationProvider.class);
         }
 
         // Dynamically generate app.js and app.css from extensions

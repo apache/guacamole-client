@@ -23,10 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.AbstractModule;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
@@ -48,11 +44,6 @@ public class RESTAuthModule extends AbstractModule {
     private final Logger logger = LoggerFactory.getLogger(RESTAuthModule.class);
 
     /**
-     * The Guacamole server environment.
-     */
-    private final Environment environment;
-
-    /**
      * Singleton instance of TokenSessionMap.
      */
     private final TokenSessionMap tokenSessionMap;
@@ -61,16 +52,11 @@ public class RESTAuthModule extends AbstractModule {
      * Creates a module which handles binding of authentication-related
      * objects, including the singleton TokenSessionMap.
      *
-     * @param environment
-     *     The environment to use when configuring authentication.
-     *
      * @param tokenSessionMap
      *     An instance of TokenSessionMap to inject as a singleton wherever
      *     needed.
      */
-    public RESTAuthModule(Environment environment,
-            TokenSessionMap tokenSessionMap) {
-        this.environment = environment;
+    public RESTAuthModule(TokenSessionMap tokenSessionMap) {
         this.tokenSessionMap = tokenSessionMap;
     }
 
@@ -83,22 +69,6 @@ public class RESTAuthModule extends AbstractModule {
         // Bind low-level services
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
-
-        // Get and bind auth provider instance, if defined via property
-        try {
-
-            // Use "auth-provider" property if present, but warn about deprecation
-            AuthenticationProvider authProvider = environment.getProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-            if (authProvider != null) {
-                logger.warn("The \"auth-provider\" and \"lib-directory\" properties are now deprecated. Please use the \"extensions\" and \"lib\" directories within GUACAMOLE_HOME instead.");
-                bind(AuthenticationProvider.class).toInstance(authProvider);
-            }
-
-        }
-        catch (GuacamoleException e) {
-            logger.warn("Value of deprecated \"auth-provider\" property within guacamole.properties is not valid: {}", e.getMessage());
-            logger.debug("Error reading authentication provider from guacamole.properties.", e);
-        }
 
     }
 

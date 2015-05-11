@@ -30,10 +30,13 @@ import org.glyptodon.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is a comma-separated list of class names,
- * where each class will be used as a listener for events.
+ * where each class will be used as a listener for events. This type of
+ * property is deprecated in favor of declaring event listeners within
+ * extension manifests.
  *
  * @author Michael Jumper
  */
+@SuppressWarnings("deprecation")
 public abstract class EventListenersProperty implements GuacamoleProperty<Collection<Class>> {
 
     @Override

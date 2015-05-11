@@ -39,10 +39,13 @@ import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 
 /**
  * A ClassLoader implementation which finds classes within a configurable
- * directory. This directory is set within guacamole.properties.
+ * directory. This directory is set within guacamole.properties. This class
+ * is deprecated in favor of DirectoryClassLoader, which is automatically
+ * configured based on the presence/absence of GUACAMOLE_HOME/lib.
  *
  * @author Michael Jumper
  */
+@Deprecated
 public class GuacamoleClassLoader extends ClassLoader {
 
     /**
