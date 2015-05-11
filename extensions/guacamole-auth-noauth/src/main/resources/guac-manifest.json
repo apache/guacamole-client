@@ -1,0 +1,10 @@
+{
+
+    "name"      : "Disabled Authentication",
+    "namespace" : "guac-noauth",
+
+    "authProviders" : [
+        "net.sourceforge.guacamole.net.auth.noauth.NoAuthenticationProvider"
+    ]
+
+}

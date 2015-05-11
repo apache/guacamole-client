@@ -54,7 +54,6 @@ import org.xml.sax.helpers.XMLReaderFactory;
  *
  * Example `guacamole.properties`:
  *
- *  auth-provider: net.sourceforge.guacamole.net.auth.noauth.NoAuthenticationProvider
  *  noauth-config: /etc/guacamole/noauth-config.xml
  *
  *
