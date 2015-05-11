@@ -1,0 +1,10 @@
+{
+
+    "name"      : "LDAP Authentication",
+    "namespace" : "guac-ldap",
+
+    "authProviders" : [
+        "net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider"
+    ]
+
+}
