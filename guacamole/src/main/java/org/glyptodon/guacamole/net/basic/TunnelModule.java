@@ -24,7 +24,6 @@ package org.glyptodon.guacamole.net.basic;
 
 import com.google.inject.servlet.ServletModule;
 import java.lang.reflect.InvocationTargetException;
-import org.glyptodon.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +54,7 @@ public class TunnelModule extends ServletModule {
         try {
 
             // Attempt to find WebSocket module
-            Class<?> module = (Class<?>) GuacamoleClassLoader.getInstance().findClass(classname);
+            Class<?> module = Class.forName(classname);
 
             // Create loader
             TunnelLoader loader = (TunnelLoader) module.getConstructor().newInstance();
@@ -83,12 +82,6 @@ public class TunnelModule extends ServletModule {
         }
         catch (InvocationTargetException e) {
             logger.debug("Error instantiating WebSocket module.", e);
-        }
-
-        // Log all GuacamoleExceptions
-        catch (GuacamoleException e) {
-            logger.error("Unable to load/detect WebSocket support: {}", e.getMessage());
-            logger.debug("Error loading/detecting WebSocket support.", e);
         }
 
         // Load attempt failed
