@@ -27,9 +27,13 @@ import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import net.sourceforge.guacamole.net.basic.BasicFileAuthenticationProvider;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
@@ -52,6 +56,15 @@ public class ExtensionModule extends ServletModule {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(ExtensionModule.class);
+
+    /**
+     * The version strings of all Guacamole versions whose extensions are
+     * compatible with this release.
+     */
+    private static final List<String> ALLOWED_GUACAMOLE_VERSIONS =
+        Collections.unmodifiableList(Arrays.asList(
+            "0.9.6"
+        ));
 
     /**
      * The name of the directory within GUACAMOLE_HOME containing any .jars
@@ -188,6 +201,21 @@ public class ExtensionModule extends ServletModule {
 
     }
 
+    /**
+     * Returns whether the given version of Guacamole is compatible with this
+     * version of Guacamole as far as extensions are concerned.
+     *
+     * @param guacamoleVersion
+     *     The version of Guacamole the extension was built for.
+     *
+     * @return
+     *     true if the given version of Guacamole is compatible with this
+     *     version of Guacamole, false otherwise.
+     */
+    private boolean isCompatible(String guacamoleVersion) {
+        return ALLOWED_GUACAMOLE_VERSIONS.contains(guacamoleVersion);
+    }
+
     @Override
     protected void configureServlets() {
 
@@ -228,6 +256,14 @@ public class ExtensionModule extends ServletModule {
 
                 // Load extension from file
                 Extension extension = new Extension(getParentClassLoader(), extensionFile);
+
+                // Validate Guacamole version of extension
+                if (!isCompatible(extension.getGuacamoleVersion())) {
+                    logger.debug("Declared Guacamole version \"{}\" of extension \"{}\" is not compatible with this version of Guacamole.",
+                            extension.getGuacamoleVersion(), extensionFile.getName());
+                    throw new GuacamoleServerException("Extension \"" + extension.getName() + "\" is not "
+                            + "compatible with this version of Guacamole.");
+                }
 
                 // Add any JavaScript / CSS resources
                 javaScriptResources.addAll(extension.getJavaScriptResources());

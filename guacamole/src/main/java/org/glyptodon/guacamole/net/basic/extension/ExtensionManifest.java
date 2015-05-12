@@ -34,6 +34,13 @@ import org.codehaus.jackson.annotate.JsonProperty;
 public class ExtensionManifest {
 
     /**
+     * The version of Guacamole for which this extension was built.
+     * Compatibility rules built into the web application will guard against
+     * incompatible extensions being loaded.
+     */
+    private String guacamoleVersion;
+
+    /**
      * The name of the extension associated with this manifest. The extension
      * name is human-readable, and used for display purposes only.
      */
@@ -64,6 +71,30 @@ public class ExtensionManifest {
      * if any.
      */
     private Collection<String> authProviders;
+
+    /**
+     * Returns the version of the Guacamole web application for which the
+     * extension was built, such as "0.9.6".
+     *
+     * @return
+     *     The version of the Guacamole web application for which the extension
+     *     was built.
+     */
+    public String getGuacamoleVersion() {
+        return guacamoleVersion;
+    }
+
+    /**
+     * Sets the version of the Guacamole web application for which the
+     * extension was built, such as "0.9.6".
+     *
+     * @param guacamoleVersion
+     *     The version of the Guacamole web application for which the extension
+     *     was built.
+     */
+    public void setGuacamoleVersion(String guacamoleVersion) {
+        this.guacamoleVersion = guacamoleVersion;
+    }
 
     /**
      * Returns the name of the extension associated with this manifest. The

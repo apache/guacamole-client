@@ -290,6 +290,18 @@ public class Extension {
     }
 
     /**
+     * Returns the version of the Guacamole web application for which this
+     * extension was built.
+     *
+     * @return
+     *     The version of the Guacamole web application for which this
+     *     extension was built.
+     */
+    public String getGuacamoleVersion() {
+        return manifest.getGuacamoleVersion();
+    }
+
+    /**
      * Returns the name of this extension, as declared in the extension's
      * manifest.
      *
