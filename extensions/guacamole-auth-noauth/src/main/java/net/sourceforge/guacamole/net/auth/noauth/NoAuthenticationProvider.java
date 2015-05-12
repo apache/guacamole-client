@@ -92,7 +92,7 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
     private final Environment environment;
     
     /**
-     * The filename of the XML file to read the user mapping from.
+     * The XML file to read the configuration from.
      */
     public static final FileGuacamoleProperty NOAUTH_CONFIG = new FileGuacamoleProperty() {
 
@@ -102,6 +102,12 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
         }
 
     };
+
+    /**
+     * The default filename to use for the configuration, if not defined within
+     * guacamole.properties.
+     */
+    public static final String DEFAULT_NOAUTH_CONFIG = "noauth-config.xml";
 
     /**
      * Creates a new NoAuthenticationProvider that does not perform any
@@ -124,7 +130,14 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
      *                            property.
      */
     private File getConfigurationFile() throws GuacamoleException {
-        return environment.getRequiredProperty(NOAUTH_CONFIG);
+
+        // Get config file, defaulting to GUACAMOLE_HOME/noauth-config.xml
+        File configFile = environment.getProperty(NOAUTH_CONFIG);
+        if (configFile == null)
+            configFile = new File(environment.getGuacamoleHome(), DEFAULT_NOAUTH_CONFIG);
+
+        return configFile;
+
     }
 
     public synchronized void init() throws GuacamoleException {
