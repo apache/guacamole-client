@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,22 +22,24 @@
 
 package org.glyptodon.guacamole.net.basic.properties;
 
-import java.lang.reflect.InvocationTargetException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
 import org.glyptodon.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is the name of a class to use to
- * authenticate users. This class must implement AuthenticationProvider.
+ * authenticate users. This class must implement AuthenticationProvider. Use
+ * of this property type is deprecated in favor of the
+ * GUACAMOLE_HOME/extensions directory.
  *
  * @author Michael Jumper
  */
-public abstract class AuthenticationProviderProperty implements GuacamoleProperty<AuthenticationProvider> {
+@Deprecated
+public abstract class AuthenticationProviderProperty implements GuacamoleProperty<Class<AuthenticationProvider>> {
 
     @Override
-    public AuthenticationProvider parseValue(String authProviderClassName) throws GuacamoleException {
+    @SuppressWarnings("unchecked") // Explicitly checked within by isAssignableFrom()
+    public Class<AuthenticationProvider> parseValue(String authProviderClassName) throws GuacamoleException {
 
         // If no property provided, return null.
         if (authProviderClassName == null)
@@ -46,35 +48,21 @@ public abstract class AuthenticationProviderProperty implements GuacamolePropert
         // Get auth provider instance
         try {
 
-            Object obj = GuacamoleClassLoader.getInstance().loadClass(authProviderClassName)
-                            .getConstructor().newInstance();
+            // Get authentication provider class
+            Class<?> authProviderClass = org.glyptodon.guacamole.net.basic.GuacamoleClassLoader.getInstance().loadClass(authProviderClassName);
 
-            if (!(obj instanceof AuthenticationProvider))
+            // Verify the located class is actually a subclass of AuthenticationProvider
+            if (!AuthenticationProvider.class.isAssignableFrom(authProviderClass))
                 throw new GuacamoleException("Specified authentication provider class is not a AuthenticationProvider.");
 
-            return (AuthenticationProvider) obj;
+            // Return located class
+            return (Class<AuthenticationProvider>) authProviderClass;
 
         }
         catch (ClassNotFoundException e) {
             throw new GuacamoleException("Authentication provider class not found", e);
         }
-        catch (NoSuchMethodException e) {
-            throw new GuacamoleException("Default constructor for authentication provider not present", e);
-        }
-        catch (SecurityException e) {
-            throw new GuacamoleException("Creation of authentication provider disallowed; check your security settings", e);
-        }
-        catch (InstantiationException e) {
-            throw new GuacamoleException("Unable to instantiate authentication provider", e);
-        }
-        catch (IllegalAccessException e) {
-            throw new GuacamoleException("Unable to access default constructor of authentication provider", e);
-        }
-        catch (InvocationTargetException e) {
-            throw new GuacamoleException("Internal error in constructor of authentication provider", e.getTargetException());
-        }
 
     }
 
 }
-

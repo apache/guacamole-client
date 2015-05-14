@@ -23,10 +23,6 @@
 package org.glyptodon.guacamole.net.basic.rest;
 
 import com.google.inject.AbstractModule;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
-import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
@@ -48,11 +44,6 @@ public class RESTAuthModule extends AbstractModule {
     private final Logger logger = LoggerFactory.getLogger(RESTAuthModule.class);
 
     /**
-     * The Guacamole server environment.
-     */
-    private final Environment environment;
-
-    /**
      * Singleton instance of TokenSessionMap.
      */
     private final TokenSessionMap tokenSessionMap;
@@ -61,16 +52,11 @@ public class RESTAuthModule extends AbstractModule {
      * Creates a module which handles binding of authentication-related
      * objects, including the singleton TokenSessionMap.
      *
-     * @param environment
-     *     The environment to use when configuring authentication.
-     *
      * @param tokenSessionMap
      *     An instance of TokenSessionMap to inject as a singleton wherever
      *     needed.
      */
-    public RESTAuthModule(Environment environment,
-            TokenSessionMap tokenSessionMap) {
-        this.environment = environment;
+    public RESTAuthModule(TokenSessionMap tokenSessionMap) {
         this.tokenSessionMap = tokenSessionMap;
     }
 
@@ -83,17 +69,6 @@ public class RESTAuthModule extends AbstractModule {
         // Bind low-level services
         bind(AuthenticationService.class);
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
-
-        // Get and bind auth provider instance
-        try {
-            AuthenticationProvider authProvider = environment.getRequiredProperty(BasicGuacamoleProperties.AUTH_PROVIDER);
-            bind(AuthenticationProvider.class).toInstance(authProvider);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Unable to read authentication provider from guacamole.properties: {}", e.getMessage());
-            logger.debug("Error reading authentication provider from guacamole.properties.", e);
-            throw new RuntimeException(e);
-        }
 
     }
 

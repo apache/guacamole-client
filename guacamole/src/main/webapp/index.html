@@ -8,7 +8,7 @@
         <link rel="icon" type="image/png" href="images/guacamole-logo-64.png"/>
         <link rel="icon" type="image/png" sizes="144x144" href="images/guacamole-logo-144.png"/>
         <link rel="apple-touch-icon" type="image/png" href="images/guacamole-logo-144.png"/>
-        <link rel="stylesheet" type="text/css" href="guacamole.min.css">
+        <link rel="stylesheet" type="text/css" href="app.css">
         <title ng-bind="page.title | translate"></title>
     </head>
     <!--
@@ -52,6 +52,6 @@
         <!-- Login screen for logged-out users -->
         <guac-login ng-show="expectedCredentials" form="expectedCredentials"></guac-login>
         
-        <script type="text/javascript" src="guacamole.min.js"></script>
+        <script type="text/javascript" src="app.js"></script>
     </body>
 </html>

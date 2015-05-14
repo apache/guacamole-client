@@ -22,7 +22,6 @@
 
 package org.glyptodon.guacamole.net.basic.properties;
 
-import org.glyptodon.guacamole.properties.BooleanGuacamoleProperty;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
 
@@ -40,8 +39,10 @@ public class BasicGuacamoleProperties {
 
     /**
      * The authentication provider to user when retrieving the authorized
-     * configurations of a user.
+     * configurations of a user. This property is currently supported, but
+     * deprecated in favor of the GUACAMOLE_HOME/extensions directory.
      */
+    @Deprecated
     public static final AuthenticationProviderProperty AUTH_PROVIDER = new AuthenticationProviderProperty() {
 
         @Override
@@ -50,22 +51,15 @@ public class BasicGuacamoleProperties {
     };
 
     /**
-     * The directory to search for authentication provider classes.
+     * The directory to search for authentication provider classes. This
+     * property is currently supported, but deprecated in favor of the
+     * GUACAMOLE_HOME/lib directory.
      */
+    @Deprecated
     public static final FileGuacamoleProperty LIB_DIRECTORY = new FileGuacamoleProperty() {
 
         @Override
         public String getName() { return "lib-directory"; }
-
-    };
-
-    /**
-     * The comma-separated list of all classes to use as event listeners.
-     */
-    public static final EventListenersProperty EVENT_LISTENERS = new EventListenersProperty() {
-
-        @Override
-        public String getName() { return "event-listeners"; }
 
     };
 

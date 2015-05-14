@@ -23,8 +23,6 @@
 package org.glyptodon.guacamole.net.basic.websocket.jetty9;
 
 import com.google.inject.servlet.ServletModule;
-import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.net.basic.GuacamoleClassLoader;
 import org.glyptodon.guacamole.net.basic.TunnelLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +45,7 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
         try {
 
             // Attempt to find WebSocket servlet
-            GuacamoleClassLoader.getInstance().findClass("org.glyptodon.guacamole.net.basic.websocket.jetty9.BasicGuacamoleWebSocketTunnelServlet");
+            Class.forName("org.glyptodon.guacamole.net.basic.websocket.jetty9.BasicGuacamoleWebSocketTunnelServlet");
 
             // Support found
             return true;
@@ -59,12 +57,6 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
         catch (ClassNotFoundException e) {}
         catch (NoClassDefFoundError e) {}
 
-        // Log all GuacamoleExceptions
-        catch (GuacamoleException e) {
-            logger.error("Unable to load/detect WebSocket support: {}", e.getMessage());
-            logger.debug("Error loading/detecting WebSocket support.", e);
-        }
-        
         // Support not found
         return false;
         

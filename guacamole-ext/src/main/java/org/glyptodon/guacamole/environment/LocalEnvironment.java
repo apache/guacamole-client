@@ -95,28 +95,28 @@ public class LocalEnvironment implements Environment {
         properties = new Properties();
         try {
 
-            InputStream stream;
+            InputStream stream = null;
 
             // If not a directory, load from classpath
-            if (!guacHome.isDirectory()) {
-
-                // Read from classpath
+            if (!guacHome.isDirectory())
                 stream = LocalEnvironment.class.getResourceAsStream("/guacamole.properties");
-                if (stream == null)
-                    throw new GuacamoleServerException(
-                        "guacamole.properties not loaded from " + guacHome
-                      + " (not a directory), and guacamole.properties could"
-                      + " not be found as a resource in the classpath.");
-
-            }
 
             // Otherwise, try to load from file
-            else
-                stream = new FileInputStream(new File(guacHome, "guacamole.properties"));
+            else {
+                File propertiesFile = new File(guacHome, "guacamole.properties");
+                if (propertiesFile.exists())
+                    stream = new FileInputStream(propertiesFile);
+            }
 
-            // Load properties, always close stream
-            try { properties.load(stream); }
-            finally { stream.close(); }
+            // Load properties from stream, if any, always closing stream when done
+            if (stream != null) {
+                try { properties.load(stream); }
+                finally { stream.close(); }
+            }
+
+            // Notify if we're proceeding without guacamole.properties
+            else
+                logger.info("No guacamole.properties file found within GUACAMOLE_HOME or the classpath. Using defaults.");
 
         }
         catch (IOException e) {

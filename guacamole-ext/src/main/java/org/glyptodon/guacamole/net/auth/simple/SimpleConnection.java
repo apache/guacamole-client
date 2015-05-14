@@ -46,6 +46,18 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 public class SimpleConnection extends AbstractConnection {
 
     /**
+     * The hostname to use when connecting to guacd if no hostname is provided
+     * within guacamole.properties.
+     */
+    private static final String DEFAULT_GUACD_HOSTNAME = "localhost";
+
+    /**
+     * The port to use when connecting to guacd if no port is provided within
+     * guacamole.properties.
+     */
+    private static final int DEFAULT_GUACD_PORT = 4822;
+
+    /**
      * Backing configuration, containing all sensitive information.
      */
     private GuacamoleConfiguration config;
@@ -92,8 +104,8 @@ public class SimpleConnection extends AbstractConnection {
         Environment env = new LocalEnvironment();
         
         // Get guacd connection parameters
-        String hostname = env.getProperty(Environment.GUACD_HOSTNAME);
-        int port = env.getProperty(Environment.GUACD_PORT);
+        String hostname = env.getProperty(Environment.GUACD_HOSTNAME, DEFAULT_GUACD_HOSTNAME);
+        int port = env.getProperty(Environment.GUACD_PORT, DEFAULT_GUACD_PORT);
 
         GuacamoleSocket socket;
         
