@@ -22,7 +22,6 @@
 
 package org.glyptodon.guacamole.net.basic.extension;
 
-import com.google.inject.Singleton;
 import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
@@ -197,7 +196,7 @@ public class ExtensionModule extends ServletModule {
 
         // Bind authentication provider
         logger.debug("Binding AuthenticationProvider \"{}\".", authenticationProvider);
-        bind(AuthenticationProvider.class).to(authenticationProvider).in(Singleton.class);
+        bind(AuthenticationProvider.class).toInstance(new AuthenticationProviderFacade(authenticationProvider));
 
     }
 
