@@ -226,6 +226,8 @@ public class Extension {
 
                 // Parse manifest
                 manifest = mapper.readValue(extension.getInputStream(manifestEntry), ExtensionManifest.class);
+                if (manifest == null)
+                    throw new GuacamoleServerException("Contents of " + MANIFEST_NAME + " must be a valid JSON object.");
 
             }
 
