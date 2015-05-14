@@ -151,9 +151,8 @@ public class SystemPermissionService
     public SystemPermission retrievePermission(AuthenticatedUser user,
             ModeledUser targetUser, SystemPermission.Type type) throws GuacamoleException {
 
-        // Only an admin can read permissions that aren't his own
-        if (user.getUser().getIdentifier().equals(targetUser.getIdentifier())
-                || user.getUser().isAdministrator()) {
+        // Retrieve permissions only if allowed
+        if (canReadPermissions(user, targetUser)) {
 
             // Read permission from database, return null if not found
             SystemPermissionModel model = getPermissionMapper().selectOne(targetUser.getModel(), type);
