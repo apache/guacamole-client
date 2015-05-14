@@ -84,7 +84,7 @@ public class DirectoryClassLoader extends URLClassLoader {
      * Returns all .jar files within the given directory as an array of URLs.
      *
      * @param dir
-     *     The directory to retrieve all .jar files from
+     *     The directory to retrieve all .jar files from.
      *
      * @return
      *     An array of the URLs of all .jar files within the given directory.
@@ -129,9 +129,7 @@ public class DirectoryClassLoader extends URLClassLoader {
 
         }
 
-        // Set delegate classloader to new URLClassLoader which loads from the
-        // .jars found above.
-
+        // Set delegate classloader to new URLClassLoader which loads from the .jars found above.
         URL[] urls = new URL[jarURLs.size()];
         return jarURLs.toArray(urls);
 
