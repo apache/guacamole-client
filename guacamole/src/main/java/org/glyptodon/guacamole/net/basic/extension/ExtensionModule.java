@@ -216,13 +216,20 @@ public class ExtensionModule extends ServletModule {
         return ALLOWED_GUACAMOLE_VERSIONS.contains(guacamoleVersion);
     }
 
-    @Override
-    protected void configureServlets() {
-
-        // Load authentication provider from guacamole.properties for sake of backwards compatibility
-        Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
-        if (authProviderProperty != null)
-            bindAuthenticationProvider(authProviderProperty);
+    /**
+     * Loads all extensions within the GUACAMOLE_HOME/extensions directory, if
+     * any, adding their static resource to the given resoure collections.
+     *
+     * @param javaScriptResources
+     *     A modifiable collection of static JavaScript resources which may
+     *     receive new JavaScript resources from extensions.
+     *
+     * @param cssResources 
+     *     A modifiable collection of static CSS resources which may receive
+     *     new CSS resources from extensions.
+     */
+    private void loadExtensions(Collection<Resource> javaScriptResources,
+            Collection<Resource> cssResources) {
 
         // Retrieve and validate extensions directory
         File extensionsDir = new File(environment.getGuacamoleHome(), EXTENSIONS_DIRECTORY);
@@ -239,14 +246,10 @@ public class ExtensionModule extends ServletModule {
 
         });
 
-        // Init JavaScript resources with base guacamole.min.js
-        Collection<Resource> javaScriptResources = new ArrayList<Resource>();
-        javaScriptResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.js"));
-
-        // Init CSS resources with base guacamole.min.css
-        Collection<Resource> cssResources = new ArrayList<Resource>();
-        cssResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.css"));
-
+        // Verify contents are accessible
+        if (extensionFiles == null)
+            logger.warn("Although GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " exists, its contents cannot be read.");
+        
         // Load each extension within the extension directory
         for (File extensionFile : extensionFiles) {
 
@@ -285,7 +288,28 @@ public class ExtensionModule extends ServletModule {
 
         }
 
-        // Default to basic auth if nothing else chosen/provided
+    }
+    
+    @Override
+    protected void configureServlets() {
+
+        // Load authentication provider from guacamole.properties for sake of backwards compatibility
+        Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
+        if (authProviderProperty != null)
+            bindAuthenticationProvider(authProviderProperty);
+
+        // Init JavaScript resources with base guacamole.min.js
+        Collection<Resource> javaScriptResources = new ArrayList<Resource>();
+        javaScriptResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.js"));
+
+        // Init CSS resources with base guacamole.min.css
+        Collection<Resource> cssResources = new ArrayList<Resource>();
+        cssResources.add(new WebApplicationResource(getServletContext(), "/guacamole.min.css"));
+
+        // Load all extensions
+        loadExtensions(javaScriptResources, cssResources);
+
+        // Bind basic auth if nothing else chosen/provided
         if (boundAuthenticationProvider == null) {
             logger.info("Using default, \"basic\", XML-driven authentication.");
             bindAuthenticationProvider(BasicFileAuthenticationProvider.class);
