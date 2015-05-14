@@ -28,7 +28,7 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
-import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,7 +124,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
             logger.warn("Authentication attempt denied because the authentication system could not be loaded. Please for errors earlier in the logs.");
-            throw new GuacamoleInsufficientCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
         // Delegate to underlying auth provider
@@ -139,7 +139,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
             logger.warn("Reauthentication attempt denied because the authentication system could not be loaded. Please for errors earlier in the logs.");
-            throw new GuacamoleInsufficientCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
         }
 
         // Delegate to underlying auth provider
