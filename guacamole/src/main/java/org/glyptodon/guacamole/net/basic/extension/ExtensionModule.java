@@ -246,8 +246,10 @@ public class ExtensionModule extends ServletModule {
         });
 
         // Verify contents are accessible
-        if (extensionFiles == null)
+        if (extensionFiles == null) {
             logger.warn("Although GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " exists, its contents cannot be read.");
+            return;
+        }
         
         // Load each extension within the extension directory
         for (File extensionFile : extensionFiles) {
