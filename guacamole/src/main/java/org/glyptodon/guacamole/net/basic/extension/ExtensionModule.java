@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import net.sourceforge.guacamole.net.basic.BasicFileAuthenticationProvider;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
@@ -277,6 +278,19 @@ public class ExtensionModule extends ServletModule {
                 Collection<Class<AuthenticationProvider>> authenticationProviders = extension.getAuthenticationProviderClasses();
                 for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders)
                     bindAuthenticationProvider(authenticationProvider);
+
+                // Add all static resources under namespace-derived prefix
+                String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
+                for (Map.Entry<String, Resource> staticResource : extension.getStaticResources().entrySet()) {
+
+                    // Get path and resource from path/resource pair
+                    String path = staticResource.getKey();
+                    Resource resource = staticResource.getValue();
+
+                    // Serve within namespace-derived path
+                    serve(staticResourcePrefix + path).with(new ResourceServlet(resource));
+
+                }
 
                 // Log successful loading of extension by name
                 logger.info("Extension \"{}\" loaded.", extension.getName());
