@@ -33,6 +33,8 @@ import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -76,14 +78,16 @@ public class Extension {
     private final ClassLoader classLoader;
 
     /**
-     * The collection of all JavaScript resources defined within the extension.
+     * Map of all JavaScript resources defined within the extension, where each
+     * key is the path to that resource within the extension.
      */
-    private final Collection<Resource> javaScriptResources;
+    private final Map<String, Resource> javaScriptResources;
 
     /**
-     * The collection of all CSS resources defined within the extension.
+     * Map of all CSS resources defined within the extension, where each key is
+     * the path to that resource within the extension.
      */
-    private final Collection<Resource> cssResources;
+    private final Map<String, Resource> cssResources;
 
     /**
      * The collection of all AuthenticationProvider classes defined within the
@@ -92,9 +96,9 @@ public class Extension {
     private final Collection<Class<AuthenticationProvider>> authenticationProviderClasses;
 
     /**
-     * Returns a new collection of resources corresponding to the collection of
+     * Returns a new map of all resources corresponding to the collection of
      * paths provided. Each resource will be associated with the given
-     * mimetype.
+     * mimetype, and stored in the map using its path as the key.
      *
      * @param mimetype
      *     The mimetype to associate with each resource.
@@ -103,22 +107,23 @@ public class Extension {
      *     The paths corresponding to the resources desired.
      *
      * @return
-     *     A new, unmodifiable collection of resources corresponding to the
-     *     collection of paths provided.
+     *     A new, unmodifiable map of resources corresponding to the
+     *     collection of paths provided, where the key of each entry in the
+     *     map is the path for the resource stored in that entry.
      */
-    private Collection<Resource> getClassPathResources(String mimetype, Collection<String> paths) {
+    private Map<String, Resource> getClassPathResources(String mimetype, Collection<String> paths) {
 
-        // If no paths are provided, just return an empty list
+        // If no paths are provided, just return an empty map 
         if (paths == null)
-            return Collections.<Resource>emptyList();
+            return Collections.<String, Resource>emptyMap();
 
         // Add classpath resource for each path provided
-        Collection<Resource> resources = new ArrayList<Resource>(paths.size());
+        Map<String, Resource> resources = new HashMap<String, Resource>(paths.size());
         for (String path : paths)
-            resources.add(new ClassPathResource(classLoader, mimetype, path));
+            resources.put(path, new ClassPathResource(classLoader, mimetype, path));
 
         // Callers should not rely on modifying the result
-        return Collections.unmodifiableCollection(resources);
+        return Collections.unmodifiableMap(resources);
 
     }
 
@@ -326,25 +331,28 @@ public class Extension {
     }
 
     /**
-     * Returns all declared JavaScript resources associated with this
-     * extension. JavaScript resources are declared within the extension
-     * manifest.
+     * Returns a map of all declared JavaScript resources associated with this
+     * extension, where the key of each entry in the map is the path to that
+     * resource within the extension .jar. JavaScript resources are declared
+     * within the extension manifest.
      *
      * @return
      *     All declared JavaScript resources associated with this extension.
      */
-    public Collection<Resource> getJavaScriptResources() {
+    public Map<String, Resource> getJavaScriptResources() {
         return javaScriptResources;
     }
 
     /**
-     * Returns all declared CSS resources associated with this extension. CSS
-     * resources are declared within the extension manifest.
+     * Returns a map of all declared CSS resources associated with this
+     * extension, where the key of each entry in the map is the path to that
+     * resource within the extension .jar. CSS resources are declared within
+     * the extension manifest.
      *
      * @return
      *     All declared CSS resources associated with this extension.
      */
-    public Collection<Resource> getCSSResources() {
+    public Map<String, Resource> getCSSResources() {
         return cssResources;
     }
 

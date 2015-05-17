@@ -270,8 +270,8 @@ public class ExtensionModule extends ServletModule {
                 }
 
                 // Add any JavaScript / CSS resources
-                javaScriptResources.addAll(extension.getJavaScriptResources());
-                cssResources.addAll(extension.getCSSResources());
+                javaScriptResources.addAll(extension.getJavaScriptResources().values());
+                cssResources.addAll(extension.getCSSResources().values());
 
                 // Attempt to load all authentication providers
                 Collection<Class<AuthenticationProvider>> authenticationProviders = extension.getAuthenticationProviderClasses();
