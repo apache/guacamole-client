@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.extension;
 
 import java.util.Collection;
+import java.util.Map;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
@@ -65,6 +66,19 @@ public class ExtensionManifest {
      * associated with this manifest.
      */
     private Collection<String> cssPaths;
+
+    /**
+     * The paths of all translation JSON files within this extension, if any.
+     */
+    private Collection<String> translationPaths;
+
+    /**
+     * The mimetypes of all resources within this extension which are not
+     * already declared as JavaScript, CSS, or translation resources, if any.
+     * The key of each entry is the resource path, while the value is the
+     * corresponding mimetype.
+     */
+    private Map<String, String> resourceTypes;
 
     /**
      * The names of all authentication provider classes within this extension,
@@ -204,6 +218,70 @@ public class ExtensionManifest {
     @JsonProperty("css")
     public void setCSSPaths(Collection<String> cssPaths) {
         this.cssPaths = cssPaths;
+    }
+
+    /**
+     * Returns the paths to all translation resources within the extension.
+     * These paths are defined within the manifest by the "translations"
+     * property as an array of strings, where each string is a path relative to
+     * the root of the extension .jar.
+     *
+     * @return
+     *     A collection of paths to all translation resources within the
+     *     extension.
+     */
+    @JsonProperty("translations")
+    public Collection<String> getTranslationPaths() {
+        return translationPaths;
+    }
+
+    /**
+     * Sets the paths to all translation resources within the extension. These
+     * paths are defined within the manifest by the "translations" property as
+     * an array of strings, where each string is a path relative to the root of
+     * the extension .jar.
+     *
+     * @param translationPaths
+     *     A collection of paths to all translation resources within the
+     *     extension.
+     */
+    @JsonProperty("translations")
+    public void setTranslationPaths(Collection<String> translationPaths) {
+        this.translationPaths = translationPaths;
+    }
+
+    /**
+     * Returns a map of all resources to their corresponding mimetypes, for all
+     * resources not already declared as JavaScript, CSS, or translation
+     * resources. These paths and corresponding types are defined within the
+     * manifest by the "resources" property as an object, where each property
+     * name is a path relative to the root of the extension .jar, and each
+     * value is a mimetype.
+     *
+     * @return
+     *     A map of all resources within the extension to their corresponding
+     *     mimetypes.
+     */
+    @JsonProperty("resources")
+    public Map<String, String> getResourceTypes() {
+        return resourceTypes;
+    }
+
+    /**
+     * Sets the map of all resources to their corresponding mimetypes, for all
+     * resources not already declared as JavaScript, CSS, or translation
+     * resources. These paths and corresponding types are defined within the
+     * manifest by the "resources" property as an object, where each property
+     * name is a path relative to the root of the extension .jar, and each
+     * value is a mimetype.
+     *
+     * @param resourceTypes
+     *     A map of all resources within the extension to their corresponding
+     *     mimetypes.
+     */
+    @JsonProperty("resources")
+    public void setResourceTypes(Map<String, String> resourceTypes) {
+        this.resourceTypes = resourceTypes;
     }
 
     /**

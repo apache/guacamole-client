@@ -90,6 +90,19 @@ public class Extension {
     private final Map<String, Resource> cssResources;
 
     /**
+     * Map of all translation resources defined within the extension, where
+     * each key is the path to that resource within the extension.
+     */
+    private final Map<String, Resource> translationResources;
+
+    /**
+     * Map of all resources defined within the extension which are not already
+     * associated as JavaScript, CSS, or translation resources, where each key
+     * is the path to that resource within the extension.
+     */
+    private final Map<String, Resource> staticResources;
+
+    /**
      * The collection of all AuthenticationProvider classes defined within the
      * extension.
      */
@@ -121,6 +134,43 @@ public class Extension {
         Map<String, Resource> resources = new HashMap<String, Resource>(paths.size());
         for (String path : paths)
             resources.put(path, new ClassPathResource(classLoader, mimetype, path));
+
+        // Callers should not rely on modifying the result
+        return Collections.unmodifiableMap(resources);
+
+    }
+
+    /**
+     * Returns a new map of all resources corresponding to the map of resource
+     * paths provided. Each resource will be associated with the mimetype 
+     * stored in the given map using its path as the key.
+     *
+     * @param resourceTypes 
+     *     A map of all paths to their corresponding mimetypes.
+     *
+     * @return
+     *     A new, unmodifiable map of resources corresponding to the
+     *     collection of paths provided, where the key of each entry in the
+     *     map is the path for the resource stored in that entry.
+     */
+    private Map<String, Resource> getClassPathResources(Map<String, String> resourceTypes) {
+
+        // If no paths are provided, just return an empty map 
+        if (resourceTypes == null)
+            return Collections.<String, Resource>emptyMap();
+
+        // Add classpath resource for each path/mimetype pair provided
+        Map<String, Resource> resources = new HashMap<String, Resource>(resourceTypes.size());
+        for (Map.Entry<String, String> resource : resourceTypes.entrySet()) {
+
+            // Get path and mimetype from entry
+            String path = resource.getKey();
+            String mimetype = resource.getValue();
+
+            // Store as path/resource pair
+            resources.put(path, new ClassPathResource(classLoader, mimetype, path));
+
+        }
 
         // Callers should not rely on modifying the result
         return Collections.unmodifiableMap(resources);
@@ -290,6 +340,8 @@ public class Extension {
         // Define static resources
         cssResources = getClassPathResources("text/css", manifest.getCSSPaths());
         javaScriptResources = getClassPathResources("text/javascript", manifest.getJavaScriptPaths());
+        translationResources = getClassPathResources("application/json", manifest.getTranslationPaths());
+        staticResources = getClassPathResources(manifest.getResourceTypes());
 
         // Define authentication providers
         authenticationProviderClasses = getAuthenticationProviderClasses(manifest.getAuthProviders());
@@ -354,6 +406,33 @@ public class Extension {
      */
     public Map<String, Resource> getCSSResources() {
         return cssResources;
+    }
+
+    /**
+     * Returns a map of all declared translation resources associated with this
+     * extension, where the key of each entry in the map is the path to that
+     * resource within the extension .jar. Translation resources are declared
+     * within the extension manifest.
+     *
+     * @return
+     *     All declared translation resources associated with this extension.
+     */
+    public Map<String, Resource> getTranslationResources() {
+        return translationResources;
+    }
+
+    /**
+     * Returns a map of all declared resources associated with this extension,
+     * where these resources are not already associated as JavaScript, CSS, or
+     * translation resources. The key of each entry in the map is the path to
+     * that resource within the extension .jar. Static resources are declared
+     * within the extension manifest.
+     *
+     * @return
+     *     All declared static resources associated with this extension.
+     */
+    public Map<String, Resource> getStaticResources() {
+        return staticResources;
     }
 
     /**
