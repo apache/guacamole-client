@@ -96,6 +96,11 @@ public class ExtensionModule extends ServletModule {
     private Class<? extends AuthenticationProvider> boundAuthenticationProvider = null;
 
     /**
+     * Service for adding and retrieving language resources.
+     */
+    private final LanguageResourceService languageResourceService = new LanguageResourceService();
+    
+    /**
      * Returns the classloader that should be used as the parent classloader
      * for all extensions. If the GUACAMOLE_HOME/lib directory exists, this
      * will be a classloader that loads classes from within the .jar files in
@@ -308,6 +313,12 @@ public class ExtensionModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
+        // Bind language resource service
+        bind(LanguageResourceService.class).toInstance(languageResourceService);
+
+        // Load initial language resources from servlet context
+        languageResourceService.addLanguageResources(getServletContext());
+        
         // Load authentication provider from guacamole.properties for sake of backwards compatibility
         Class<AuthenticationProvider> authProviderProperty = getAuthProviderProperty();
         if (authProviderProperty != null)
