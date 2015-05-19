@@ -119,8 +119,20 @@ public class LanguageResourceService {
      *     "application/json".
      */
     public void addLanguageResource(String key, Resource resource) {
-        resources.put(key, resource);
-        logger.debug("Added language: \"{}\"", key);
+
+        // Merge language resources if already defined
+        Resource existing = resources.get(key);
+        if (existing != null) {
+            // TODO: Merge
+            logger.debug("Merged strings with existing language: \"{}\"", key);
+        }
+
+        // Otherwise, add new language resource
+        else {
+            resources.put(key, resource);
+            logger.debug("Added language: \"{}\"", key);
+        }
+
     }
 
     /**
