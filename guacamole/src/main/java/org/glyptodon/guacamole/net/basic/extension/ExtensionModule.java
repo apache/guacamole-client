@@ -284,6 +284,26 @@ public class ExtensionModule extends ServletModule {
                 for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders)
                     bindAuthenticationProvider(authenticationProvider);
 
+                // Add any translation resources
+                for (Map.Entry<String, Resource> translationResource :
+                        extension.getTranslationResources().entrySet()) {
+
+                    // Get path and resource from path/resource pair
+                    String path = translationResource.getKey();
+                    Resource resource = translationResource.getValue();
+
+                    // Derive key from path
+                    String languageKey = languageResourceService.getLanguageKey(path);
+                    if (languageKey == null) {
+                        logger.warn("Invalid language file name: \"{}\"", path);
+                        continue;
+                    }
+                    
+                    // Add language resource
+                    languageResourceService.addLanguageResource(languageKey, resource);
+                    
+                }
+                
                 // Add all static resources under namespace-derived prefix
                 String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
                 for (Map.Entry<String, Resource> staticResource : extension.getStaticResources().entrySet()) {
@@ -345,6 +365,18 @@ public class ExtensionModule extends ServletModule {
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));
         serve("/app.css").with(new ResourceServlet(new SequenceResource(cssResources)));
 
+        // Dynamically serve all language resources
+        for (Map.Entry<String, Resource> entry : languageResourceService.getLanguageResources().entrySet()) {
+
+            // Get language key/resource pair
+            String languageKey = entry.getKey();
+            Resource resource = entry.getValue();
+
+            // Serve resource within /translations
+            serve("/translations/" + languageKey + ".json").with(new ResourceServlet(resource));
+            
+        }
+        
     }
 
 }
