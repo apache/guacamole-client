@@ -207,6 +207,85 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
+     * Binds each of the the given AuthenticationProvider classes such that any
+     * service requiring access to the AuthenticationProvider can obtain it via
+     * injection. Note that, as multiple simultaneous authentication providers
+     * are not currently supported, attempting to bind more than one
+     * authentication provider will result in warnings being logged.
+     *
+     * @param authProviders
+     *     The AuthenticationProvider classes to bind.
+     */
+    private void bindAuthenticationProviders(Collection<Class<AuthenticationProvider>> authProviders) {
+
+        // Bind each authentication provider within extension
+        for (Class<AuthenticationProvider> authenticationProvider : authProviders)
+            bindAuthenticationProvider(authenticationProvider);
+
+    }
+
+    /**
+     * Serves each of the given resources as a language resource. Language
+     * resources are served from within the "/translations" directory as JSON
+     * files, where the name of each JSON file is the language key.
+     *
+     * @param resources
+     *     A map of all language resources to serve, where the key of each
+     *     entry in the language key from which the name of the JSON file will
+     *     be derived.
+     */
+    private void serveLanguageResources(Map<String, Resource> resources) {
+
+        // Add all resources to language resource service
+        for (Map.Entry<String, Resource> translationResource : resources.entrySet()) {
+
+            // Get path and resource from path/resource pair
+            String path = translationResource.getKey();
+            Resource resource = translationResource.getValue();
+
+            // Derive key from path
+            String languageKey = languageResourceService.getLanguageKey(path);
+            if (languageKey == null) {
+                logger.warn("Invalid language file name: \"{}\"", path);
+                continue;
+            }
+
+            // Add language resource
+            languageResourceService.addLanguageResource(languageKey, resource);
+
+        }
+
+    }
+
+    /**
+     * Serves each of the given resources under the given prefix. The path of
+     * each resource relative to the prefix is the key of its entry within the
+     * map.
+     *
+     * @param prefix
+     *     The prefix under which each resource should be served.
+     *
+     * @param resources
+     *     A map of all resources to serve, where the key of each entry in the
+     *     map is the desired path of that resource relative to the prefix.
+     */
+    private void serveStaticResources(String prefix, Map<String, Resource> resources) {
+
+        // Add all resources under given prefix
+        for (Map.Entry<String, Resource> staticResource : resources.entrySet()) {
+
+            // Get path and resource from path/resource pair
+            String path = staticResource.getKey();
+            Resource resource = staticResource.getValue();
+
+            // Serve within namespace-derived path
+            serve(prefix + path).with(new ResourceServlet(resource));
+
+        }
+
+    }
+
+    /**
      * Returns whether the given version of Guacamole is compatible with this
      * version of Guacamole as far as extensions are concerned.
      *
@@ -280,42 +359,14 @@ public class ExtensionModule extends ServletModule {
                 cssResources.addAll(extension.getCSSResources().values());
 
                 // Attempt to load all authentication providers
-                Collection<Class<AuthenticationProvider>> authenticationProviders = extension.getAuthenticationProviderClasses();
-                for (Class<AuthenticationProvider> authenticationProvider : authenticationProviders)
-                    bindAuthenticationProvider(authenticationProvider);
+                bindAuthenticationProviders(extension.getAuthenticationProviderClasses());
 
                 // Add any translation resources
-                for (Map.Entry<String, Resource> translationResource :
-                        extension.getTranslationResources().entrySet()) {
+                serveLanguageResources(extension.getTranslationResources());
 
-                    // Get path and resource from path/resource pair
-                    String path = translationResource.getKey();
-                    Resource resource = translationResource.getValue();
-
-                    // Derive key from path
-                    String languageKey = languageResourceService.getLanguageKey(path);
-                    if (languageKey == null) {
-                        logger.warn("Invalid language file name: \"{}\"", path);
-                        continue;
-                    }
-                    
-                    // Add language resource
-                    languageResourceService.addLanguageResource(languageKey, resource);
-                    
-                }
-                
                 // Add all static resources under namespace-derived prefix
                 String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
-                for (Map.Entry<String, Resource> staticResource : extension.getStaticResources().entrySet()) {
-
-                    // Get path and resource from path/resource pair
-                    String path = staticResource.getKey();
-                    Resource resource = staticResource.getValue();
-
-                    // Serve within namespace-derived path
-                    serve(staticResourcePrefix + path).with(new ResourceServlet(resource));
-
-                }
+                serveStaticResources(staticResourcePrefix, extension.getStaticResources());
 
                 // Log successful loading of extension by name
                 logger.info("Extension \"{}\" loaded.", extension.getName());
