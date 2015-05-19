@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -33,6 +34,9 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletContext;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.JsonNodeFactory;
+import org.codehaus.jackson.node.ObjectNode;
+import org.glyptodon.guacamole.net.basic.resource.ByteArrayResource;
 import org.glyptodon.guacamole.net.basic.resource.Resource;
 import org.glyptodon.guacamole.net.basic.resource.WebApplicationResource;
 import org.slf4j.Logger;
@@ -103,6 +107,45 @@ public class LanguageResourceService {
     }
 
     /**
+     * Merges the given JSON objects. Any leaf node in overlay will overwrite
+     * the corresponding path in original.
+     *
+     * @param original
+     *     The original JSON object to which changes should be applied.
+     *
+     * @param overlay
+     *     The JSON object containing changes that should be applied.
+     *
+     * @return
+     *     The newly constructed JSON object that is the result of merging
+     *     original and overlay.
+     */
+    private JsonNode mergeTranslations(JsonNode original, JsonNode overlay) {
+
+        // If we are at a leaf node, the result of merging is simply the overlay
+        if (!overlay.isObject() || original == null)
+            return overlay;
+
+        // Create mutable copy of original
+        ObjectNode newNode = JsonNodeFactory.instance.objectNode();
+        Iterator<String> fieldNames = original.getFieldNames();
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            newNode.put(fieldName, original.get(fieldName));
+        }
+
+        // Merge each field
+        fieldNames = overlay.getFieldNames();
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            newNode.put(fieldName, mergeTranslations(original.get(fieldName), overlay.get(fieldName)));
+        }
+
+        return newNode;
+
+    }
+
+    /**
      * Adds or overlays the given language resource, which need not exist in
      * the ServletContext. If a language resource is already defined for the
      * given language key, the strings from the given resource will be overlaid
@@ -123,8 +166,33 @@ public class LanguageResourceService {
         // Merge language resources if already defined
         Resource existing = resources.get(key);
         if (existing != null) {
-            // TODO: Merge
-            logger.debug("Merged strings with existing language: \"{}\"", key);
+
+            try {
+
+                // Get resource stream
+                InputStream existingStream = existing.asStream();
+                InputStream resourceStream = resource.asStream();
+                if (existingStream == null || resourceStream == null) {
+                    logger.warn("Language resource \"{}\" does not exist.", key);
+                    return;
+                }
+
+                // Read the original and new language resources
+                JsonNode existingTree = mapper.readTree(existingStream);
+                JsonNode resourceTree = mapper.readTree(resourceStream);
+
+                // Merge the language resources
+                JsonNode mergedTree = mergeTranslations(existingTree, resourceTree);
+                resources.put(key, new ByteArrayResource("application/json", mapper.writeValueAsBytes(mergedTree)));
+
+                logger.debug("Merged strings with existing language: \"{}\"", key);
+
+            }
+            catch (IOException e) {
+                logger.error("Unable to merge language resource \"{}\": {}", key, e.getMessage());
+                logger.debug("Error merging language resource.", e);
+            }
+
         }
 
         // Otherwise, add new language resource
