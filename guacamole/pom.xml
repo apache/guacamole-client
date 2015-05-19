@@ -168,6 +168,7 @@
                                 <jsSourceFile>lib/blob/blob.js</jsSourceFile>
                                 <jsSourceFile>lib/filesaver/filesaver.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
+                                <jsSourceFile>lib/messageformat/ru.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
                                 <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
                             </jsSourceFiles>
