@@ -146,6 +146,42 @@ public class LanguageResourceService {
     }
 
     /**
+     * Parses the given language resource, returning the resulting JsonNode.
+     * If the resource cannot be read because it does not exist, null is
+     * returned.
+     *
+     * @param resource
+     *     The language resource to parse. Language resources must have the
+     *     mimetype "application/json".
+     *
+     * @return
+     *     A JsonNode representing the root of the parsed JSON tree, or null if
+     *     the given resource does not exist.
+     *
+     * @throws IOException
+     *     If an error occurs while parsing the resource as JSON.
+     */
+    private JsonNode parseLanguageResource(Resource resource) throws IOException {
+
+        // Get resource stream
+        InputStream stream = resource.asStream();
+        if (stream == null)
+            return null;
+
+        // Parse JSON tree
+        try {
+            JsonNode tree = mapper.readTree(stream);
+            return tree;
+        }
+
+        // Ensure stream is always closed
+        finally {
+            stream.close();
+        }
+
+    }
+
+    /**
      * Adds or overlays the given language resource, which need not exist in
      * the ServletContext. If a language resource is already defined for the
      * given language key, the strings from the given resource will be overlaid
@@ -169,17 +205,19 @@ public class LanguageResourceService {
 
             try {
 
-                // Get resource stream
-                InputStream existingStream = existing.asStream();
-                InputStream resourceStream = resource.asStream();
-                if (existingStream == null || resourceStream == null) {
-                    logger.warn("Language resource \"{}\" does not exist.", key);
+                // Read the original language resource
+                JsonNode existingTree = parseLanguageResource(existing);
+                if (existingTree == null) {
+                    logger.warn("Base language resource \"{}\" does not exist.", key);
                     return;
                 }
 
-                // Read the original and new language resources
-                JsonNode existingTree = mapper.readTree(existingStream);
-                JsonNode resourceTree = mapper.readTree(resourceStream);
+                // Read new language resource
+                JsonNode resourceTree = parseLanguageResource(resource);
+                if (resourceTree == null) {
+                    logger.warn("Overlay language resource \"{}\" does not exist.", key);
+                    return;
+                }
 
                 // Merge the language resources
                 JsonNode mergedTree = mergeTranslations(existingTree, resourceTree);
