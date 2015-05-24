@@ -23,7 +23,9 @@
 package org.glyptodon.guacamole.net.auth.simple;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
@@ -99,6 +101,16 @@ public class SimpleConnectionGroup extends AbstractConnectionGroup {
     @Override
     public Set<String> getConnectionGroupIdentifiers() {
         return connectionGroupIdentifiers;
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        // Do nothing - there are no attributes
     }
 
     @Override

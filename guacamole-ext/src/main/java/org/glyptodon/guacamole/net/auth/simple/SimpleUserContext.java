@@ -34,6 +34,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.attribute.Attribute;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -172,6 +173,21 @@ public class SimpleUserContext implements UserContext {
     public Directory<ActiveConnection> getActiveConnectionDirectory()
             throws GuacamoleException {
         return new SimpleDirectory<ActiveConnection>();
+    }
+
+    @Override
+    public Collection<Attribute> getUserAttributes() {
+        return Collections.<Attribute>emptyList();
+    }
+
+    @Override
+    public Collection<Attribute> getConnectionAttributes() {
+        return Collections.<Attribute>emptyList();
+    }
+
+    @Override
+    public Collection<Attribute> getConnectionGroupAttributes() {
+        return Collections.<Attribute>emptyList();
     }
 
 }

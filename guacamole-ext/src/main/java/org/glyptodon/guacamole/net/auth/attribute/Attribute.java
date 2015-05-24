@@ -26,12 +26,22 @@ import org.glyptodon.guacamole.net.auth.Identifiable;
 
 /**
  * An arbitrary attribute. Each attribute associates an identifier with a
- * value, essentially a key/value pair, where the type dictates the semantics
- * and legal values of the attribute.
+ * type, where the type dictates the semantics and legal values of the
+ * attribute.
  *
  * @author Michael Jumper
  */
-public interface Attribute extends Identifiable {
+public class Attribute implements Identifiable {
+
+    /**
+     * The string which uniquely identifies this attribute.
+     */
+    private String identifier;
+
+    /**
+     * The type of this attribute.
+     */
+    private Type type;
 
     /**
      * Specific types of attributes. Each attribute type describes the kind of
@@ -80,6 +90,16 @@ public interface Attribute extends Identifiable {
 
     }
 
+    @Override
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
     /**
      * Returns the type of this attribute. The attribute type dictates the kind
      * of values the attribute can contain, and the semantics of the attribute
@@ -88,7 +108,9 @@ public interface Attribute extends Identifiable {
      * @return
      *     The type of this attribute.
      */
-    Type getType();
+    public Type getType() {
+        return type;
+    }
 
     /**
      * Sets the type of this attribute. Attribute type dictates the kind of
@@ -98,25 +120,8 @@ public interface Attribute extends Identifiable {
      * @param type
      *     The type to associate with this attribute.
      */
-    void setType(Type type);
-
-    /**
-     * Returns the value currently associated with this attribute, if any. The
-     * values acceptable by this attribute are dictated by the type.
-     *
-     * @return
-     *     The value currently associated with this attribute, or null if no
-     *     value is present.
-     */
-    String getValue();
-
-    /**
-     * Sets the value currently associated with this attribute, if any. The
-     * values acceptable by this attribute are dictated by the type.
-     *
-     * @param value
-     *     The value to associate with this attribute.
-     */
-    void setValue(String value);
+    void setType(Type type) {
+        this.type = type;
+    }
 
 }
