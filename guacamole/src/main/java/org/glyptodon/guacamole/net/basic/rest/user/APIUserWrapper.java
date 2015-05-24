@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.user;
 
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.glyptodon.guacamole.net.auth.User;
@@ -69,6 +70,16 @@ public class APIUserWrapper implements User {
     @Override
     public void setPassword(String password) {
         apiUser.setPassword(password);
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return apiUser.getAttributes();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        apiUser.setAttributes(attributes);
     }
 
     @Override

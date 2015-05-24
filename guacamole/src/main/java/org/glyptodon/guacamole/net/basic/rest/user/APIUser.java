@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.user;
 
+import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glyptodon.guacamole.net.auth.User;
@@ -46,6 +47,11 @@ public class APIUser {
     private String password;
     
     /**
+     * Map of all associated attributes by attribute identifier.
+     */
+    private Map<String, String> attributes;
+
+    /**
      * Construct a new empty APIUser.
      */
     public APIUser() {}
@@ -55,8 +61,14 @@ public class APIUser {
      * @param user The User to construct the APIUser from.
      */
     public APIUser(User user) {
+
+        // Set user information
         this.username = user.getIdentifier();
         this.password = user.getPassword();
+
+        // Associate any attributes
+        this.attributes = user.getAttributes();
+
     }
 
     /**
@@ -89,6 +101,30 @@ public class APIUser {
      */
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    /**
+     * Returns a map of all attributes associated with this user. Each entry
+     * key is the attribute identifier, while each value is the attribute
+     * value itself.
+     *
+     * @return
+     *     The attribute map for this user.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * Sets the map of all attributes associated with this user. Each entry key
+     * is the attribute identifier, while each value is the attribute value
+     * itself.
+     *
+     * @param attributes
+     *     The attribute map for this user.
+     */
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
     }
 
 }

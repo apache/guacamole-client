@@ -116,6 +116,16 @@ public class APIConnectionWrapper implements Connection {
     }
 
     @Override
+    public Map<String, String> getAttributes() {
+        return apiConnection.getAttributes();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        apiConnection.setAttributes(attributes);
+    }
+
+    @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info) throws GuacamoleException {
         throw new UnsupportedOperationException("Operation not supported.");
     }

@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest.connection;
 
 import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -34,6 +35,7 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  * @author James Muehlner
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class APIConnection {
 
     /**
@@ -61,6 +63,11 @@ public class APIConnection {
      */
     private Map<String, String> parameters;
     
+    /**
+     * Map of all associated attributes by attribute identifier.
+     */
+    private Map<String, String> attributes;
+
     /**
      * The count of currently active connections using this connection.
      */
@@ -91,6 +98,9 @@ public class APIConnection {
         // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
         this.protocol = configuration.getProtocol();
+
+        // Associate any attributes
+        this.attributes = connection.getAttributes();
 
     }
 
@@ -195,5 +205,29 @@ public class APIConnection {
     public void setActiveUsers(int activeConnections) {
         this.activeConnections = activeConnections;
     }
-    
+
+    /**
+     * Returns a map of all attributes associated with this connection. Each
+     * entry key is the attribute identifier, while each value is the attribute
+     * value itself.
+     *
+     * @return
+     *     The attribute map for this connection.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * Sets the map of all attributes associated with this connection. Each
+     * entry key is the attribute identifier, while each value is the attribute
+     * value itself.
+     *
+     * @param attributes
+     *     The attribute map for this connection.
+     */
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
 }
