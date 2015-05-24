@@ -24,7 +24,9 @@ package org.glyptodon.guacamole.auth.jdbc.connection;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
@@ -121,6 +123,18 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
     @Override
     public int getActiveConnections() {
         return tunnelService.getActiveConnections(this).size();
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        // FIXME: STUB
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        // FIXME: STUB
+        throw new UnsupportedOperationException("STUB");
     }
 
 }

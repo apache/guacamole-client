@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -133,6 +135,16 @@ public class RootConnectionGroup extends RestrictedObject
     @Override
     public int getActiveConnections() {
         return 0;
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        throw new UnsupportedOperationException("The root connection group cannot be modified.");
     }
 
 }
