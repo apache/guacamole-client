@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.AbstractUser;
+import org.glyptodon.guacamole.net.auth.attribute.ObjectAttributeSet;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
@@ -134,6 +135,11 @@ public class SimpleUser extends AbstractUser {
     public ObjectPermissionSet getActiveConnectionPermissions()
             throws GuacamoleException {
         return new SimpleObjectPermissionSet();
+    }
+
+    @Override
+    public ObjectAttributeSet getAttributes() throws GuacamoleException {
+        return new SimpleObjectAttributeSet();
     }
 
 }

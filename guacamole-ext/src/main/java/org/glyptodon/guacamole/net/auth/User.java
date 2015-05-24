@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.attribute.ObjectAttributeSet;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 
@@ -118,5 +119,17 @@ public interface User extends Identifiable {
      *     permissions is not allowed.
      */
     ObjectPermissionSet getUserPermissions() throws GuacamoleException;
+
+    /**
+     * Returns all attributes associated with this user.
+     *
+     * @return
+     *     An ObjectAttributeSet of all attributes associated with this user.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the attributes, or if reading
+     *     attributes is not allowed.
+     */
+    ObjectAttributeSet getAttributes() throws GuacamoleException;
 
 }

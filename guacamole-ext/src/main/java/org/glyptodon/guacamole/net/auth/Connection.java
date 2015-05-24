@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.auth;
 
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.attribute.ObjectAttributeSet;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -99,5 +100,18 @@ public interface Connection extends Identifiable, Connectable {
      *                            denied.
      */
     public List<? extends ConnectionRecord> getHistory() throws GuacamoleException;
+
+    /**
+     * Returns all attributes associated with this connection.
+     *
+     * @return
+     *     An ObjectAttributeSet of all attributes associated with this
+     *     connection
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the attributes, or if reading
+     *     attributes is not allowed.
+     */
+    ObjectAttributeSet getAttributes() throws GuacamoleException;
 
 }

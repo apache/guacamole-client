@@ -34,6 +34,7 @@ import org.glyptodon.guacamole.net.SSLGuacamoleSocket;
 import org.glyptodon.guacamole.net.SimpleGuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.AbstractConnection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
+import org.glyptodon.guacamole.net.auth.attribute.ObjectAttributeSet;
 import org.glyptodon.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
@@ -130,6 +131,11 @@ public class SimpleConnection extends AbstractConnection {
     @Override
     public List<ConnectionRecord> getHistory() throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
+    }
+
+    @Override
+    public ObjectAttributeSet getAttributes() throws GuacamoleException {
+        return new SimpleObjectAttributeSet();
     }
 
 }
