@@ -28,13 +28,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.form.Parameter;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.auth.attribute.Attribute;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
 /**
@@ -176,18 +176,18 @@ public class SimpleUserContext implements UserContext {
     }
 
     @Override
-    public Collection<Attribute> getUserAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getUserAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
     @Override
-    public Collection<Attribute> getConnectionAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getConnectionAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
     @Override
-    public Collection<Attribute> getConnectionGroupAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getConnectionGroupAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
 }

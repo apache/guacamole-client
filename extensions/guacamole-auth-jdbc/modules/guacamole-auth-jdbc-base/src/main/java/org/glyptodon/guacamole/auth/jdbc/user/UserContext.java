@@ -33,12 +33,12 @@ import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.form.Parameter;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.attribute.Attribute;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -134,18 +134,18 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
-    public Collection<Attribute> getUserAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getUserAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
     @Override
-    public Collection<Attribute> getConnectionAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getConnectionAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
     @Override
-    public Collection<Attribute> getConnectionGroupAttributes() {
-        return Collections.<Attribute>emptyList();
+    public Collection<Parameter> getConnectionGroupAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
 }
