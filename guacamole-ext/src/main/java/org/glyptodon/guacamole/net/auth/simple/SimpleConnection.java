@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.auth.simple;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
@@ -95,6 +96,16 @@ public class SimpleConnection extends AbstractConnection {
     @Override
     public int getActiveConnections() {
         return 0;
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        // Do nothing - there are no attributes
     }
 
     @Override

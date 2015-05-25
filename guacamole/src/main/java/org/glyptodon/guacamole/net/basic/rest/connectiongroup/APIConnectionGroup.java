@@ -23,7 +23,9 @@
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
 import java.util.Collection;
+import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup.Type;
 import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
@@ -34,6 +36,7 @@ import org.glyptodon.guacamole.net.basic.rest.connection.APIConnection;
  * @author James Muehlner
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class APIConnectionGroup {
 
     /**
@@ -79,6 +82,11 @@ public class APIConnectionGroup {
     private Collection<APIConnection> childConnections;
     
     /**
+     * Map of all associated attributes by attribute identifier.
+     */
+    private Map<String, String> attributes;
+
+    /**
      * Create an empty APIConnectionGroup.
      */
     public APIConnectionGroup() {}
@@ -91,12 +99,15 @@ public class APIConnectionGroup {
      */
     public APIConnectionGroup(ConnectionGroup connectionGroup) {
 
+        // Set connection group information
         this.identifier = connectionGroup.getIdentifier();
         this.parentIdentifier = connectionGroup.getParentIdentifier();
-
         this.name = connectionGroup.getName();
         this.type = connectionGroup.getType();
         this.activeConnections = connectionGroup.getActiveConnections();
+
+        // Associate any attributes
+        this.attributes = connectionGroup.getAttributes();
 
     }
 
@@ -233,5 +244,29 @@ public class APIConnectionGroup {
     public void setActiveUsers(int activeConnections) {
         this.activeConnections = activeConnections;
     }
-    
+
+    /**
+     * Returns a map of all attributes associated with this connection group.
+     * Each entry key is the attribute identifier, while each value is the
+     * attribute value itself.
+     *
+     * @return
+     *     The attribute map for this connection group.
+     */
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * Sets the map of all attributes associated with this connection group.
+     * Each entry key is the attribute identifier, while each value is the
+     * attribute value itself.
+     *
+     * @param attributes
+     *     The attribute map for this connection group.
+     */
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+
 }

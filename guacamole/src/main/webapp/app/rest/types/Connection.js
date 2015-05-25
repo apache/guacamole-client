@@ -79,7 +79,16 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          * @type Object.<String, String>
          */
         this.parameters = template.parameters;
-        
+
+        /**
+         * Arbitrary name/value pairs which further describe this connection.
+         * The semantics and validity of these attributes are dictated by the
+         * extension which defines them.
+         *
+         * @type Object.<String, String>
+         */
+        this.attributes = {};
+
         /**
          * The count of currently active connections using this connection.
          * This field will be returned from the REST API during a get

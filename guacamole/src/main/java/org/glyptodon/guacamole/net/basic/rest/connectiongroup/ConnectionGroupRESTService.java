@@ -253,6 +253,7 @@ public class ConnectionGroupRESTService {
         existingConnectionGroup.setName(connectionGroup.getName());
         existingConnectionGroup.setParentIdentifier(connectionGroup.getParentIdentifier());
         existingConnectionGroup.setType(connectionGroup.getType());
+        existingConnectionGroup.setAttributes(connectionGroup.getAttributes());
         connectionGroupDirectory.update(existingConnectionGroup);
 
     }

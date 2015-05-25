@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.jdbc.connectiongroup;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
@@ -106,6 +108,16 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException {
         return connectionGroupService.getIdentifiersWithin(getCurrentUser(), getIdentifier());
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        // Drop all attributes - none currently supported
     }
 
 }

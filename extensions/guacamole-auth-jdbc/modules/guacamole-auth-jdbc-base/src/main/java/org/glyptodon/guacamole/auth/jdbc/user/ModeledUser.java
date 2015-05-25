@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObject;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
@@ -177,6 +179,16 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
         return userPermissionService.getPermissionSet(getCurrentUser(), this);
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return Collections.<String, String>emptyMap();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        // Drop all attributes - none currently supported
     }
 
 }

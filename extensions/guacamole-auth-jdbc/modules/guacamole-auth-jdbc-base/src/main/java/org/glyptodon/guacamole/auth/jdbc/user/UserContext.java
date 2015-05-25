@@ -28,9 +28,12 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirector
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Collection;
+import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.form.Parameter;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
@@ -128,6 +131,21 @@ public class UserContext extends RestrictedObject
         rootGroup.init(getCurrentUser());
         return rootGroup;
 
+    }
+
+    @Override
+    public Collection<Parameter> getUserAttributes() {
+        return Collections.<Parameter>emptyList();
+    }
+
+    @Override
+    public Collection<Parameter> getConnectionAttributes() {
+        return Collections.<Parameter>emptyList();
+    }
+
+    @Override
+    public Collection<Parameter> getConnectionGroupAttributes() {
+        return Collections.<Parameter>emptyList();
     }
 
 }

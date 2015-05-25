@@ -41,7 +41,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var permissionService        = $injector.get('permissionService');
-    var protocolService          = $injector.get('protocolService');
+    var schemaService            = $injector.get('schemaService');
     var translationStringService = $injector.get('translationStringService');
 
     /**
@@ -205,7 +205,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     });
    
     // Get protocol metadata
-    protocolService.getProtocols().success(function protocolsReceived(protocols) {
+    schemaService.getProtocols().success(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
 

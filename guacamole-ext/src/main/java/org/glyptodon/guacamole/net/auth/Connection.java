@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.auth;
 
 import java.util.List;
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 
@@ -83,6 +84,25 @@ public interface Connection extends Identifiable, Connectable {
      *               Connection.
      */
     public void setConfiguration(GuacamoleConfiguration config);
+
+    /**
+     * Returns all attributes associated with this connection.
+     *
+     * @return
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this connection.
+     */
+    Map<String, String> getAttributes();
+
+    /**
+     * Replaces all attributes associated with this connection with the
+     * attributes in the given map.
+     *
+     * @param attributes
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this connection.
+     */
+    void setAttributes(Map<String, String> attributes);
 
     /**
      * Returns a list of ConnectionRecords representing the usage history

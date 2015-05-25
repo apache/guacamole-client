@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Map;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
@@ -50,6 +51,25 @@ public interface User extends Identifiable {
      * @param password The password to set.
      */
     public void setPassword(String password);
+
+    /**
+     * Returns all attributes associated with this user.
+     *
+     * @return
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this user.
+     */
+    Map<String, String> getAttributes();
+
+    /**
+     * Replaces all attributes associated with this user with the attributes in
+     * the given map.
+     *
+     * @param attributes
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this user.
+     */
+    void setAttributes(Map<String, String> attributes);
 
     /**
      * Returns all system-level permissions given to this user.

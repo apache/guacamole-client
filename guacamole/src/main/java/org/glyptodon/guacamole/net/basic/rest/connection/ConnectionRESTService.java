@@ -305,6 +305,7 @@ public class ConnectionRESTService {
         existingConnection.setConfiguration(config);
         existingConnection.setParentIdentifier(connection.getParentIdentifier());
         existingConnection.setName(connection.getName());
+        existingConnection.setAttributes(connection.getAttributes());
         connectionDirectory.update(existingConnection);
 
     }

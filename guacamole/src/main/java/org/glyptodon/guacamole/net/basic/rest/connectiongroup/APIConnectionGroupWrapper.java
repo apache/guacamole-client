@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest.connectiongroup;
 
+import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
@@ -103,6 +104,16 @@ public class APIConnectionGroupWrapper implements ConnectionGroup {
     @Override
     public Set<String> getConnectionGroupIdentifiers() {
         throw new UnsupportedOperationException("Operation not supported.");
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+        return apiConnectionGroup.getAttributes();
+    }
+
+    @Override
+    public void setAttributes(Map<String, String> attributes) {
+        apiConnectionGroup.setAttributes(attributes);
     }
 
     @Override

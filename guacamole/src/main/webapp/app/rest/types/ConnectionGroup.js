@@ -92,6 +92,15 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
         this.childConnectionGroups = template.childConnectionGroups;
 
         /**
+         * Arbitrary name/value pairs which further describe this connection
+         * group. The semantics and validity of these attributes are dictated
+         * by the extension which defines them.
+         *
+         * @type Object.<String, String>
+         */
+        this.attributes = {};
+
+        /**
          * The count of currently active connections using this connection
          * group. This field will be returned from the REST API during a get
          * operation, but manually setting this field will have no effect.

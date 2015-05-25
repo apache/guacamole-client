@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 
@@ -127,5 +128,24 @@ public interface ConnectionGroup extends Identifiable, Connectable {
 
     public Set<String> getConnectionGroupIdentifiers()
             throws GuacamoleException;
-    
+
+    /**
+     * Returns all attributes associated with this connection group.
+     *
+     * @return
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this connection group.
+     */
+    Map<String, String> getAttributes();
+
+    /**
+     * Replaces all attributes associated with this connection group with the
+     * attributes in the given map.
+     *
+     * @param attributes
+     *     A map of all attribute identifiers to their corresponding values,
+     *     for all attributes associated with this connection group.
+     */
+    void setAttributes(Map<String, String> attributes);
+
 }

@@ -56,6 +56,15 @@ angular.module('rest').factory('User', [function defineUser() {
          */
         this.password = template.password;
 
+        /**
+         * Arbitrary name/value pairs which further describe this user. The
+         * semantics and validity of these attributes are dictated by the
+         * extension which defines them.
+         *
+         * @type Object.<String, String>
+         */
+        this.attributes = {};
+
     };
 
     return User;

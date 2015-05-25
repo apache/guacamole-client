@@ -291,6 +291,9 @@ public class UserRESTService {
         if (user.getPassword() != null)
             existingUser.setPassword(user.getPassword());
 
+        // Update user attributes
+        existingUser.setAttributes(user.getAttributes());
+
         // Update the user
         userDirectory.update(existingUser);
 

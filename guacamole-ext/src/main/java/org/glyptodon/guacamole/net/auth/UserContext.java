@@ -22,7 +22,9 @@
 
 package org.glyptodon.guacamole.net.auth;
 
+import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.form.Parameter;
 
 /**
  * The context of an active user. The functions of this class enforce all
@@ -109,5 +111,38 @@ public interface UserContext {
      *                            Directory.
      */
     ConnectionGroup getRootConnectionGroup() throws GuacamoleException;
+
+    /**
+     * Retrieves a collection of all attributes applicable to users. This
+     * collection will contain only those attributes which the current user has
+     * general permission to view or modify. If there are no such attributes,
+     * this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to users.
+     */
+    Collection<Parameter> getUserAttributes();
+
+    /**
+     * Retrieves a collection of all attributes applicable to connections. This
+     * collection will contain only those attributes which the current user has
+     * general permission to view or modify. If there are no such attributes,
+     * this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to connections.
+     */
+    Collection<Parameter> getConnectionAttributes();
+
+    /**
+     * Retrieves a collection of all attributes applicable to connection
+     * groups. This collection will contain only those attributes which the
+     * current user has general permission to view or modify. If there are no
+     * such attributes, this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to connection groups.
+     */
+    Collection<Parameter> getConnectionGroupAttributes();
 
 }
