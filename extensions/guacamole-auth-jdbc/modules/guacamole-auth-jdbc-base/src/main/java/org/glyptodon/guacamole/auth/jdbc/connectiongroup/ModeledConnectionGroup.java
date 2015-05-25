@@ -112,14 +112,12 @@ public class ModeledConnectionGroup extends ModeledGroupedDirectoryObject<Connec
 
     @Override
     public Map<String, String> getAttributes() {
-        // FIXME: STUB
         return Collections.<String, String>emptyMap();
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        // FIXME: STUB
-        throw new UnsupportedOperationException("STUB");
+        // Drop all attributes - none currently supported
     }
 
 }
