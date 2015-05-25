@@ -49,11 +49,11 @@ angular.module('rest').factory('cacheService', ['$injector',
     service.languages = $cacheFactory('API-LANGUAGES');
 
     /**
-     * Cache used by protocolService.
+     * Cache used by schemaService.
      *
      * @type $cacheFactory.Cache
      */
-    service.protocols = $cacheFactory('API-PROTOCOLS');
+    service.schema = $cacheFactory('API-SCHEMA');
 
     /**
      * Shared cache used by both userService and permissionService.
@@ -68,7 +68,7 @@ angular.module('rest').factory('cacheService', ['$injector',
     service.clearCaches = function clearCaches() {
         service.connections.removeAll();
         service.languages.removeAll();
-        service.protocols.removeAll();
+        service.schema.removeAll();
         service.users.removeAll();
     };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,7 @@
  */
 
 /**
- * Classes related to the protocol retrieval aspect of the Guacamole REST API.
+ * Classes related to the self-description of the Guacamole REST API, such as
+ * the attributes or parameters applicable to specific objects.
  */
-package org.glyptodon.guacamole.net.basic.rest.protocol;
-
+package org.glyptodon.guacamole.net.basic.rest.schema;
