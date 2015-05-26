@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.net.auth;
 
 import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.form.Parameter;
+import org.glyptodon.guacamole.form.Field;
 
 /**
  * The context of an active user. The functions of this class enforce all
@@ -121,7 +121,7 @@ public interface UserContext {
      * @return
      *     A collection of all attributes applicable to users.
      */
-    Collection<Parameter> getUserAttributes();
+    Collection<Field> getUserAttributes();
 
     /**
      * Retrieves a collection of all attributes applicable to connections. This
@@ -132,7 +132,7 @@ public interface UserContext {
      * @return
      *     A collection of all attributes applicable to connections.
      */
-    Collection<Parameter> getConnectionAttributes();
+    Collection<Field> getConnectionAttributes();
 
     /**
      * Retrieves a collection of all attributes applicable to connection
@@ -143,6 +143,6 @@ public interface UserContext {
      * @return
      *     A collection of all attributes applicable to connection groups.
      */
-    Collection<Parameter> getConnectionGroupAttributes();
+    Collection<Field> getConnectionGroupAttributes();
 
 }

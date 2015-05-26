@@ -24,7 +24,7 @@ package org.glyptodon.guacamole.net.basic.rest;
 
 import java.util.Collection;
 import javax.ws.rs.core.Response;
-import org.glyptodon.guacamole.form.Parameter;
+import org.glyptodon.guacamole.form.Field;
 
 /**
  * Describes an error that occurred within a REST endpoint.
@@ -40,9 +40,9 @@ public class APIError {
     private final String message;
 
     /**
-     * All expected request parameters, if any.
+     * All expected request parameters, if any, as a collection of fields.
      */
-    private final Collection<Parameter> expected;
+    private final Collection<Field> expected;
 
     /**
      * The type of error that occurred.
@@ -140,9 +140,9 @@ public class APIError {
      *
      * @param expected
      *     All parameters expected in the original request, or now required as
-     *     a result of the original request.
+     *     a result of the original request, as a collection of fields.
      */
-    public APIError(Type type, String message, Collection<Parameter> expected) {
+    public APIError(Type type, String message, Collection<Field> expected) {
         this.type     = type;
         this.message  = message;
         this.expected = expected;
@@ -159,12 +159,13 @@ public class APIError {
     }
 
     /**
-     * Returns an object which describes the required credentials.
+     * Returns a collection of all required parameters, where each parameter is
+     * represented by a field.
      *
      * @return
-     *     An object which describes the required credentials.
+     *     A collection of all required parameters.
      */
-    public Collection<Parameter> getExpected() {
+    public Collection<Field> getExpected() {
         return expected;
     }
 

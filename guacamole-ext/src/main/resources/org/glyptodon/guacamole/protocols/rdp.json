@@ -1,0 +1,253 @@
+{
+    "title" : "RDP",
+    "name"  : "rdp",
+    "forms" : [
+
+        {
+            "title" : "Network",
+            "name"  : "network",
+            "fields" : [
+                {
+                    "name"  : "hostname",
+                    "title" : "Hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "port",
+                    "title" : "Port",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "title" : "Authentication",
+            "name"  : "authentication",
+            "fields" : [
+                {
+                    "name"  : "username",
+                    "title" : "Username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "password",
+                    "title" : "Password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "domain",
+                    "title" : "Domain",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "security",
+                    "title"   : "Security mode",
+                    "type"    : "ENUM",
+                    "options" : [
+                        {
+                            "value" : "",
+                            "title" : ""
+                        },
+                        {
+                            "value" : "rdp",
+                            "title" : "RDP encryption"
+                        },
+                        {
+                            "value" : "tls",
+                            "title" : "TLS encryption"
+                        },
+                        {
+                            "value" : "nla",
+                            "title" : "NLA (Network Level Authentication)"
+                        },
+                        {
+                            "value" : "any",
+                            "title" : "Any"
+                        }
+                    ]
+                },
+                {
+                    "name"  : "disable-auth",
+                    "title" : "Disable authentication",
+                    "type"  : "BOOLEAN"
+                },
+                {
+                    "name"  : "ignore-cert",
+                    "title" : "Ignore server certificate",
+                    "type"  : "BOOLEAN"
+                }
+            ]
+        },
+
+        {
+            "title" : "Basic Parameters",
+            "name"  : "basic-parameters",
+            "fields" : [
+                {
+                    "name"  : "initial-program",
+                    "title" : "Initial program",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "client-name",
+                    "title" : "Client name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"    : "server-layout",
+                    "title"   : "Keyboard layout",
+                    "type"    : "ENUM",
+                    "options" : [
+                        {
+                            "value" : "",
+                            "title" : ""
+                        },
+                        {
+                            "value" : "en-us-qwerty",
+                            "title" : "US English (Qwerty)"
+                        },
+                        {
+                            "value" : "fr-fr-azerty",
+                            "title" : "French (Azerty)"
+                        },
+                        {
+                            "value" : "de-de-qwertz",
+                            "title" : "German (Qwertz)"
+                        },
+                        {
+                            "value" : "it-it-qwerty",
+                            "title" : "Italian (Qwerty)"
+                        },
+                        {
+                            "value" : "sv-se-qwerty",
+                            "title" : "Swedish (Qwerty)"
+                        },
+                        {
+                            "value" : "failsafe",
+                            "title" : "Unicode"
+                        }
+                    ]
+                },
+                {
+                    "name"  : "console",
+                    "title" : "Administrator console",
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
+                }
+            ]
+        },
+
+        {
+            "title" : "Display",
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"  : "width",
+                    "title" : "Display width",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "height",
+                    "title" : "Display height",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "dpi",
+                    "title" : "Display resolution (DPI)",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "color-depth",
+                    "title"   : "Color depth",
+                    "type"    : "ENUM",
+                    "options" : [
+                        {
+                            "value" : "",
+                            "title" : ""
+                        },
+                        {
+                            "value" : "8",
+                            "title" : "256 color"
+                        },
+                        {
+                            "value" : "16",
+                            "title" : "Low color (16-bit)"
+                        },
+                        {
+                            "value" : "24",
+                            "title" : "True color (24-bit)"
+                        },
+                        {
+                            "value" : "32",
+                            "title" : "True color (32-bit)"
+                        }
+                    ]
+                }
+            ]
+        },
+
+        {
+            "title" : "Device Redirection",
+            "name"  : "device-redirection",
+            "fields" : [
+                {
+                    "name"  : "console-audio",
+                    "title" : "Support audio in console",
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
+                },
+                {
+                    "name"  : "disable-audio",
+                    "title" : "Disable audio",
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
+                },
+                {
+                    "name"  : "enable-printing",
+                    "title" : "Enable printing",
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
+                },
+                {
+                    "name"  : "enable-drive",
+                    "title" : "Enable drive",
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
+                },
+                {
+                    "name"  : "drive-path",
+                    "title" : "Drive path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "static-channels",
+                    "title" : "Static channel names",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "title" : "RemoteApp",
+            "name"  : "remoteapp",
+            "fields" : [
+                {
+                    "name"  : "remote-app",
+                    "title" : "RemoteApp program",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "remote-app-dir",
+                    "title" : "RemoteApp working directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "remote-app-args",
+                    "title" : "RemoteApp parameters",
+                    "type"  : "TEXT"
+                }
+            ]
+        }
+
+    ]
+}

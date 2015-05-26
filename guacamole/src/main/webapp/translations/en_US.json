@@ -247,7 +247,7 @@
         "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
         "FIELD_HEADER_DOMAIN"          : "Domain:",
-        "FIELD_HEADER_DPI"             : "Display resolution (DPI):",
+        "FIELD_HEADER_DPI"             : "Resolution (DPI):",
         "FIELD_HEADER_DRIVE_PATH"      : "Drive path:",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Enable drive:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Enable printing:",
@@ -257,9 +257,9 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
         "FIELD_HEADER_PASSWORD"        : "Password:",
         "FIELD_HEADER_PORT"            : "Port:",
-        "FIELD_HEADER_REMOTE_APP_ARGS" : "RemoteApp parameters:",
-        "FIELD_HEADER_REMOTE_APP_DIR"  : "RemoteApp working directory:",
-        "FIELD_HEADER_REMOTE_APP"      : "RemoteApp program:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Working directory:",
+        "FIELD_HEADER_REMOTE_APP"      : "Program:",
         "FIELD_HEADER_SECURITY"        : "Security mode:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Keyboard layout:",
         "FIELD_HEADER_USERNAME"        : "Username:",
@@ -286,7 +286,14 @@
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
 
-        "NAME" : "RDP"
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Authentication",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Basic Settings",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Device Redirection",
+        "SECTION_HEADER_DISPLAY"            : "Display",
+        "SECTION_HEADER_NETWORK"            : "Network",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp"
 
     },
 
@@ -318,7 +325,12 @@
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
 
-        "NAME" : "SSH"
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 
@@ -348,7 +360,11 @@
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
 
-        "NAME" : "Telnet"
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network"
 
     },
 
@@ -357,8 +373,8 @@
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
-        "FIELD_HEADER_DEST_HOST"        : "Repeater destination host:",
-        "FIELD_HEADER_DEST_PORT"        : "Repeater destination port:",
+        "FIELD_HEADER_DEST_HOST"        : "Destination host:",
+        "FIELD_HEADER_DEST_PORT"        : "Destination port:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Enable audio:",
         "FIELD_HEADER_HOSTNAME"         : "Hostname:",
         "FIELD_HEADER_PASSWORD"         : "Password:",
@@ -376,7 +392,13 @@
         "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
         "FIELD_OPTION_CURSOR_REMOTE" : "Remote",
 
-        "NAME" : "VNC"
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Audio",
+        "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_NETWORK"        : "Network",
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater"
 
     },
 

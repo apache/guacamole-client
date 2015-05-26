@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,7 @@
  */
 
 /**
- * Classes related to parsing XML files which describe the parameters of a
- * protocol.
+ * Provides classes which describe the contents and semantics of forms which
+ * may be presented to the user.
  */
-package org.glyptodon.guacamole.xml.protocol;
-
+package org.glyptodon.guacamole.form;

@@ -25,7 +25,7 @@ package org.glyptodon.guacamole.net.basic.rest;
 import java.util.Collection;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import org.glyptodon.guacamole.form.Parameter;
+import org.glyptodon.guacamole.form.Field;
 
 /**
  * An exception that will result in the given error error information being
@@ -76,9 +76,9 @@ public class APIException extends WebApplicationException {
      *
      * @param expected
      *     All parameters expected in the original request, or now required as
-     *     a result of the original request.
+     *     a result of the original request, as a collection of fields.
      */
-    public APIException(APIError.Type type, String message, Collection<Parameter> expected) {
+    public APIException(APIError.Type type, String message, Collection<Field> expected) {
         this(new APIError(type, message, expected));
     }
 
