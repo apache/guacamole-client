@@ -130,21 +130,23 @@ public interface ConnectionGroup extends Identifiable, Connectable {
             throws GuacamoleException;
 
     /**
-     * Returns all attributes associated with this connection group.
+     * Returns all attributes associated with this connection group. The
+     * returned map may not be modifiable.
      *
      * @return
      *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection group.
+     *     for all attributes associated with this connection group, which may
+     *     not be modifiable.
      */
     Map<String, String> getAttributes();
 
     /**
-     * Replaces all attributes associated with this connection group with the
-     * attributes in the given map.
+     * Sets the given attributes. If an attribute within the map is not
+     * supported, it will simply be dropped. Any attributes not within the
+     * given map will be left untouched.
      *
      * @param attributes
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection group.
+     *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
 

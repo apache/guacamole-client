@@ -53,21 +53,23 @@ public interface User extends Identifiable {
     public void setPassword(String password);
 
     /**
-     * Returns all attributes associated with this user.
+     * Returns all attributes associated with this user. The returned map may
+     * not be modifiable.
      *
      * @return
      *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this user.
+     *     for all attributes associated with this user, which may not be
+     *     modifiable.
      */
     Map<String, String> getAttributes();
 
     /**
-     * Replaces all attributes associated with this user with the attributes in
-     * the given map.
+     * Sets the given attributes. If an attribute within the map is not
+     * supported, it will simply be dropped. Any attributes not within the
+     * given map will be left untouched.
      *
      * @param attributes
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this user.
+     *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
 
