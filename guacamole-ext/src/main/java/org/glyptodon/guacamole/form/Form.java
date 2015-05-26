@@ -73,6 +73,8 @@ public class Form {
      *     The fields to provided within the new Form.
      */
     public Form(String name, String title, Collection<Field> fields) {
+        this.name = name;
+        this.title = title;
         this.fields = fields;
     }
 
