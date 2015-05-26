@@ -37,8 +37,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var guacNotification       = $injector.get('guacNotification');
-    var userService            = $injector.get('userService');
     var permissionService      = $injector.get('permissionService');
+    var schemaService          = $injector.get('schemaService');
+    var userService            = $injector.get('userService');
 
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -103,6 +104,15 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissions = null;
 
     /**
+     * All available user attributes. This is only the set of attribute
+     * definitions, organized as logical groupings of attributes, not attribute
+     * values.
+     *
+     * @type Form[]
+     */
+    $scope.attributes = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -115,10 +125,16 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             && $scope.permissionFlags     !== null
             && $scope.rootGroup           !== null
             && $scope.permissions         !== null
+            && $scope.attributes          !== null
             && $scope.canSaveUser         !== null
             && $scope.canDeleteUser       !== null;
 
     };
+
+    // Pull user attribute schema
+    schemaService.getUserAttributes().success(function attributesReceived(attributes) {
+        $scope.attributes = attributes;
+    });
 
     // Pull user data
     userService.getUser(username).success(function userReceived(user) {

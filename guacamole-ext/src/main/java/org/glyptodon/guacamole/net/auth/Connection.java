@@ -86,21 +86,23 @@ public interface Connection extends Identifiable, Connectable {
     public void setConfiguration(GuacamoleConfiguration config);
 
     /**
-     * Returns all attributes associated with this connection.
+     * Returns all attributes associated with this connection. The returned map
+     * may not be modifiable.
      *
      * @return
      *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection.
+     *     for all attributes associated with this connection, which may not be
+     *     modifiable.
      */
     Map<String, String> getAttributes();
 
     /**
-     * Replaces all attributes associated with this connection with the
-     * attributes in the given map.
+     * Sets the given attributes. If an attribute within the map is not
+     * supported, it will simply be dropped. Any attributes not within the
+     * given map will be left untouched.
      *
      * @param attributes
-     *     A map of all attribute identifiers to their corresponding values,
-     *     for all attributes associated with this connection.
+     *     A map of all attribute identifiers to their corresponding values.
      */
     void setAttributes(Map<String, String> attributes);
 

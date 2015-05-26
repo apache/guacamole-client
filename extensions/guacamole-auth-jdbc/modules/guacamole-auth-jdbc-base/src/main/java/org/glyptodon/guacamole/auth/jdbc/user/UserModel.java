@@ -43,6 +43,12 @@ public class UserModel extends ObjectModel {
     private byte[] passwordSalt;
 
     /**
+     * Whether the user account is disabled. Disabled accounts exist and can
+     * be modified, but cannot be used.
+     */
+    private boolean disabled;
+
+    /**
      * Creates a new, empty user.
      */
     public UserModel() {
@@ -95,6 +101,30 @@ public class UserModel extends ObjectModel {
      */
     public void setPasswordSalt(byte[] passwordSalt) {
         this.passwordSalt = passwordSalt;
+    }
+
+    /**
+     * Returns whether the user has been disabled. Disabled users are not
+     * allowed to login. Although their account data exists, all login attempts
+     * will fail as if the account does not exist.
+     *
+     * @return
+     *     true if the account is disabled, false otherwise.
+     */
+    public boolean isDisabled() {
+        return disabled;
+    }
+
+    /**
+     * Sets whether the user is disabled. Disabled users are not allowed to
+     * login. Although their account data exists, all login attempts will fail
+     * as if the account does not exist.
+     *
+     * @param disabled
+     *     true if the account should be disabled, false otherwise.
+     */
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
 }

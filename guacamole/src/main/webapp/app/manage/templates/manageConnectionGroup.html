@@ -57,6 +57,11 @@ THE SOFTWARE.
         </table>
     </div>
 
+    <!-- Connection group attributes section -->
+    <div class="attributes">
+        <guac-form namespace="'CONNECTION_GROUP_ATTRIBUTES'" content="attributes" model="connectionGroup.attributes"></guac-form>
+    </div>
+
     <!-- Form action buttons -->
     <div class="action-buttons">
         <button ng-show="canSaveConnectionGroup" ng-click="saveConnectionGroup()">{{'MANAGE_CONNECTION_GROUP.ACTION_SAVE' | translate}}</button>

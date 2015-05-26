@@ -37,6 +37,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     var connectionGroupService = $injector.get('connectionGroupService');
     var guacNotification       = $injector.get('guacNotification');
     var permissionService      = $injector.get('permissionService');
+    var schemaService          = $injector.get('schemaService');
     
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -95,6 +96,15 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.permissions = null;
 
     /**
+     * All available connection group attributes. This is only the set of
+     * attribute definitions, organized as logical groupings of attributes, not
+     * attribute values.
+     *
+     * @type Form[]
+     */
+    $scope.attributes = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -106,11 +116,17 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
         return $scope.rootGroup                !== null
             && $scope.connectionGroup          !== null
             && $scope.permissions              !== null
+            && $scope.attributes               !== null
             && $scope.canSaveConnectionGroup   !== null
             && $scope.canDeleteConnectionGroup !== null;
 
     };
     
+    // Pull connection group attribute schema
+    schemaService.getConnectionGroupAttributes().success(function attributesReceived(attributes) {
+        $scope.attributes = attributes;
+    });
+
     // Query the user's permissions for the current connection group
     permissionService.getPermissions(authenticationService.getCurrentUserID())
             .success(function permissionsReceived(permissions) {

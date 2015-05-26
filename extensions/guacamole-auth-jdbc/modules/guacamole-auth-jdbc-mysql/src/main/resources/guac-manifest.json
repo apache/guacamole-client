@@ -7,6 +7,10 @@
 
     "authProviders" : [
         "net.sourceforge.guacamole.net.auth.mysql.MySQLAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en_US.json"
     ]
 
 }
