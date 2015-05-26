@@ -117,6 +117,7 @@ CREATE TABLE guacamole_user (
   username      varchar(128) NOT NULL,
   password_hash bytea        NOT NULL,
   password_salt bytea,
+  disabled      boolean      NOT NULL DEFAULT FALSE,
 
   PRIMARY KEY (user_id),
 

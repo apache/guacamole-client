@@ -32,6 +32,7 @@
         <result column="username"      property="identifier"   jdbcType="VARCHAR"/>
         <result column="password_hash" property="passwordHash" jdbcType="BINARY"/>
         <result column="password_salt" property="passwordSalt" jdbcType="BINARY"/>
+        <result column="disabled"      property="disabled"     jdbcType="BOOLEAN"/>
     </resultMap>
 
     <!-- Select all usernames -->
@@ -57,7 +58,8 @@
             user_id,
             username,
             password_hash,
-            password_salt
+            password_salt,
+            disabled
         FROM guacamole_user
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
@@ -74,7 +76,8 @@
             guacamole_user.user_id,
             username,
             password_hash,
-            password_salt
+            password_salt,
+            disabled
         FROM guacamole_user
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE username IN
@@ -94,7 +97,8 @@
             user_id,
             username,
             password_hash,
-            password_salt
+            password_salt,
+            disabled
         FROM guacamole_user
         WHERE
             username = #{username,jdbcType=VARCHAR}
@@ -114,12 +118,14 @@
         INSERT INTO guacamole_user (
             username,
             password_hash,
-            password_salt
+            password_salt,
+            disabled
         )
         VALUES (
             #{object.identifier,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
-            #{object.passwordSalt,jdbcType=BINARY}
+            #{object.passwordSalt,jdbcType=BINARY},
+            #{object.disabled,jdbcType=BOOLEAN}
         )
 
     </insert>
@@ -128,7 +134,8 @@
     <update id="update" parameterType="org.glyptodon.guacamole.auth.jdbc.user.UserModel">
         UPDATE guacamole_user
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
-            password_salt = #{object.passwordSalt,jdbcType=BINARY}
+            password_salt = #{object.passwordSalt,jdbcType=BINARY},
+            disabled = #{object.disabled,jdbcType=BOOLEAN}
         WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
 

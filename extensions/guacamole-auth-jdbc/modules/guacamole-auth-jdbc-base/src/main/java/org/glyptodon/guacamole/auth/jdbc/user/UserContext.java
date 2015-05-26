@@ -135,7 +135,7 @@ public class UserContext extends RestrictedObject
 
     @Override
     public Collection<Field> getUserAttributes() {
-        return Collections.<Field>emptyList();
+        return ModeledUser.ATTRIBUTES;
     }
 
     @Override

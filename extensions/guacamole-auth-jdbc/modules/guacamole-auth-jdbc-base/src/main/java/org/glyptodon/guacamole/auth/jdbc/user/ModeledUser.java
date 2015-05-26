@@ -23,7 +23,10 @@
 package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObject;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
@@ -34,6 +37,7 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
+import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -46,6 +50,24 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  * @author Michael Jumper
  */
 public class ModeledUser extends ModeledDirectoryObject<UserModel> implements User {
+
+    /**
+     * The name of the attribute which controls whether a user account is
+     * disabled.
+     */
+    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
+
+    /**
+     * A typed field corresponding to the disabled attribute of a user.
+     */
+    public static final Field DISABLED_ATTRIBUTE = new Field(DISABLED_ATTRIBUTE_NAME, "Disabled", "true");
+
+    /**
+     * All possible attributes of user objects.
+     */
+    public static final Collection<Field> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
+        DISABLED_ATTRIBUTE
+    ));
 
     /**
      * Service for hashing passwords.
@@ -183,12 +205,21 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
     @Override
     public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
+
+        Map<String, String> attributes = new HashMap<String, String>();
+
+        // Set disabled attribute
+        attributes.put("disabled", getModel().isDisabled() ? "true" : null);
+
+        return attributes;
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        // Drop all attributes - none currently supported
+
+        // Translate disabled attribute
+        getModel().setDisabled("true".equals(attributes.get("disabled")));
+
     }
 
 }

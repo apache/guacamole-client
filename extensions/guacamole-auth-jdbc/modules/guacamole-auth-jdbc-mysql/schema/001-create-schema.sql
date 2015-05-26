@@ -76,6 +76,7 @@ CREATE TABLE `guacamole_user` (
   `username`      varchar(128) NOT NULL,
   `password_hash` binary(32)   NOT NULL,
   `password_salt` binary(32),
+  `disabled`      boolean      NOT NULL DEFAULT 0,
 
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)

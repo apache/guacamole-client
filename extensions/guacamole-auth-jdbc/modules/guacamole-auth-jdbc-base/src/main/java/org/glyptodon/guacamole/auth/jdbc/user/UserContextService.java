@@ -67,7 +67,7 @@ public class UserContextService  {
 
         // Authenticate user
         ModeledUser user = userService.retrieveUser(credentials);
-        if (user != null) {
+        if (user != null && !user.getModel().isDisabled()) {
 
             // Upon successful authentication, return new user context
             UserContext context = userContextProvider.get();

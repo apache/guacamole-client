@@ -7,6 +7,10 @@
 
     "authProviders" : [
         "org.glyptodon.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en_US.json"
     ]
 
 }
