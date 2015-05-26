@@ -47,6 +47,11 @@ THE SOFTWARE.
         </table>
     </div>
 
+    <!-- User attributes section -->
+    <div class="attributes">
+        <guac-form namespace="'USER_ATTRIBUTES'" content="attributes" model="user.attributes"></guac-form>
+    </div>
+
     <!-- System permissions section -->
     <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | translate}}</h2>
     <div class="section">
@@ -63,8 +68,7 @@ THE SOFTWARE.
             </tr>
         </table>
     </div>
-        
-    <!-- Connection and connection group permission section -->
+    
     <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
     <div class="section" ng-class="{loading: !rootGroup}">
         <guac-group-list
