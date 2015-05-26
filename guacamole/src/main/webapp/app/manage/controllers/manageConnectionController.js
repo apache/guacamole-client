@@ -146,6 +146,15 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     $scope.permissions = null;
 
     /**
+     * All available connection attributes. This is only the set of attribute
+     * definitions, organized as logical groupings of attributes, not attribute
+     * values.
+     *
+     * @type Form[]
+     */
+    $scope.attributes = null;
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
@@ -161,11 +170,17 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             && $scope.historyDateFormat    !== null
             && $scope.historyEntryWrappers !== null
             && $scope.permissions          !== null
+            && $scope.attributes           !== null
             && $scope.canSaveConnection    !== null
             && $scope.canDeleteConnection  !== null
             && $scope.canCloneConnection   !== null;
 
     };
+
+    // Pull connection attribute schema
+    schemaService.getConnectionAttributes().success(function attributesReceived(attributes) {
+        $scope.attributes = attributes;
+    });
 
     // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, 

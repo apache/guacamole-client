@@ -37,9 +37,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var guacNotification       = $injector.get('guacNotification');
-    var userService            = $injector.get('userService');
     var permissionService      = $injector.get('permissionService');
     var schemaService          = $injector.get('schemaService');
+    var userService            = $injector.get('userService');
 
     /**
      * An action to be provided along with the object sent to showStatus which
