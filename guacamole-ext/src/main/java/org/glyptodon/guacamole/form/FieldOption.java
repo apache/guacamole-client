@@ -22,12 +22,15 @@
 
 package org.glyptodon.guacamole.form;
 
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 /**
- * Describes an available legal value for an enumerated parameter.
+ * Describes an available legal value for an enumerated field.
  *
  * @author Michael Jumper
  */
-public class ParameterOption {
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
+public class FieldOption {
 
     /**
      * The value that will be assigned if this option is chosen.
@@ -40,13 +43,13 @@ public class ParameterOption {
     private String title;
 
     /**
-     * Creates a new ParameterOption with no associated value or title.
+     * Creates a new FieldOption with no associated value or title.
      */
-    public ParameterOption() {
+    public FieldOption() {
     }
 
     /**
-     * Creates a new ParameterOption having the given value and title.
+     * Creates a new FieldOption having the given value and title.
      *
      * @param value
      *     The value to assign if this option is chosen.
@@ -54,11 +57,11 @@ public class ParameterOption {
      * @param title
      *     The human-readable title to associate with this option.
      */
-    public ParameterOption(String value, String title) {
+    public FieldOption(String value, String title) {
         this.value = value;
         this.title = title;
     }
-    
+
     /**
      * Returns the value that will be assigned if this option is chosen.
      *

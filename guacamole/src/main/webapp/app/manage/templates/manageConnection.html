@@ -61,7 +61,7 @@ THE SOFTWARE.
     <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | translate}}</h2>
     <div class="section connection-parameters" ng-class="{loading: !parameters}">
         <guac-form namespace="getNamespace(connection.protocol)"
-                   content="protocols[connection.protocol].parameters"
+                   content="protocols[connection.protocol].forms"
                    model="parameters"></guac-form>
     </div>
 

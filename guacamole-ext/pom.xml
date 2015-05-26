@@ -128,6 +128,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Jackson for JSON support -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
     </dependencies>
 
 </project>

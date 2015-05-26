@@ -54,13 +54,13 @@ angular.module('rest').factory('Protocol', [function defineProtocol() {
         this.title = template.title;
 
         /**
-         * An array of all known parameters for this protocol, their types,
-         * and other information.
+         * An array of forms containing all known parameters for this protocol,
+         * their types, and other information.
          *
-         * @type Field[]
+         * @type Form[]
          * @default []
          */
-        this.parameters = template.parameters || [];
+        this.forms = template.forms || [];
 
     };
 

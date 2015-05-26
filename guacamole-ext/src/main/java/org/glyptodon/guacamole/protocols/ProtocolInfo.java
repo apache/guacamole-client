@@ -24,11 +24,11 @@ package org.glyptodon.guacamole.protocols;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import org.glyptodon.guacamole.form.Parameter;
+import org.glyptodon.guacamole.form.Form;
 
 /**
- * Describes a protocol and all parameters associated with it, as required by
- * a protocol plugin for guacd. This class allows known parameters for a
+ * Describes a protocol and all forms associated with it, as required by
+ * a protocol plugin for guacd. This class allows known forms for a
  * protocol to be exposed to the user as friendly fields.
  *
  * @author Michael Jumper
@@ -46,21 +46,21 @@ public class ProtocolInfo {
     private String name;
 
     /**
-     * A collection of all associated protocol parameters.
+     * A collection of all associated protocol forms.
      */
-    private Collection<Parameter> parameters;
+    private Collection<Form> forms;
 
     /**
      * Creates a new ProtocolInfo with no associated name, title, or
-     * parameters.
+     * forms.
      */
     public ProtocolInfo() {
-        this.parameters = new ArrayList<Parameter>();
+        this.forms = new ArrayList<Form>();
     }
 
     /**
      * Creates a new ProtocolInfo having the given name and title, but without
-     * any parameters.
+     * any forms.
      *
      * @param name
      *     The unique name associated with the protocol.
@@ -69,13 +69,13 @@ public class ProtocolInfo {
      *     The human-readable title to associate with the protocol.
      */
     public ProtocolInfo(String name, String title) {
-        this.name       = name;
-        this.title      = title;
-        this.parameters = new ArrayList<Parameter>();
+        this.name  = name;
+        this.title = title;
+        this.forms = new ArrayList<Form>();
     }
 
     /**
-     * Creates a new ProtocolInfo having the given name, title, and parameters.
+     * Creates a new ProtocolInfo having the given name, title, and forms.
      *
      * @param name
      *     The unique name associated with the protocol.
@@ -83,13 +83,13 @@ public class ProtocolInfo {
      * @param title
      *     The human-readable title to associate with the protocol.
      * 
-     * @param parameters
-     *     The parameters to associate with the protocol.
+     * @param forms
+     *     The forms to associate with the protocol.
      */
-    public ProtocolInfo(String name, String title, Collection<Parameter> parameters) {
-        this.name       = name;
-        this.title      = title;
-        this.parameters = parameters;
+    public ProtocolInfo(String name, String title, Collection<Form> forms) {
+        this.name  = name;
+        this.title = title;
+        this.forms = forms;
     }
 
     /**
@@ -131,25 +131,25 @@ public class ProtocolInfo {
     }
 
     /**
-     * Returns a mutable collection of the protocol parameters associated with
-     * this protocol. Changes to this collection affect the parameters exposed
+     * Returns a mutable collection of the protocol forms associated with
+     * this protocol. Changes to this collection affect the forms exposed
      * to the user.
      *
-     * @return A mutable collection of protocol parameters.
+     * @return A mutable collection of protocol forms.
      */
-    public Collection<Parameter> getParameters() {
-        return parameters;
+    public Collection<Form> getForms() {
+        return forms;
     }
 
     /**
-     * Sets the collection of protocol parameters associated with this
+     * Sets the collection of protocol forms associated with this
      * protocol.
      *
-     * @param parameters
-     *     The collection of parameters to associate with this protocol.
+     * @param forms
+     *     The collection of forms to associate with this protocol.
      */
-    public void setParameters(Collection<Parameter> parameters) {
-        this.parameters = parameters;
+    public void setForms(Collection<Form> forms) {
+        this.forms = forms;
     }
     
 }

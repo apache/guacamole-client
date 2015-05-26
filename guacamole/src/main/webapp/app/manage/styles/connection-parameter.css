@@ -29,6 +29,8 @@
 
 .connection-parameters .form .fields {
     display: table;
+    padding-left: .5em;
+    border-left: 3px solid rgba(0,0,0,0.125);
 }
 
 .connection-parameters .form .fields .labeled-field {
@@ -40,4 +42,8 @@
     display: table-cell;
     padding: 0.125em;
     vertical-align: top;
+}
+
+.connection-parameters .form .fields .field-header {
+    padding-right: 1em;
 }

@@ -22,7 +22,6 @@
 
 package org.glyptodon.guacamole.environment;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
@@ -31,18 +30,13 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.properties.GuacamoleProperty;
 import org.glyptodon.guacamole.protocols.ProtocolInfo;
-import org.glyptodon.guacamole.xml.DocumentHandler;
-import org.glyptodon.guacamole.xml.protocol.ProtocolTagHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * The environment of the locally-running Guacamole instance, describing
@@ -78,6 +72,11 @@ public class LocalEnvironment implements Environment {
      * The map of all available protocols.
      */
     private final Map<String, ProtocolInfo> availableProtocols;
+
+    /**
+     * The Jackson parser for parsing JSON files.
+     */
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Creates a new Environment, initializing that environment based on the
@@ -162,48 +161,25 @@ public class LocalEnvironment implements Environment {
     }
 
     /**
-     * Parses the given XML file, returning the parsed ProtocolInfo.
+     * Parses the given JSON file, returning the parsed ProtocolInfo. The JSON
+     * format is conveniently and intentionally identical to a serialized
+     * ProtocolInfo object, which is identical to the JSON format used by the
+     * protocol REST service built into the Guacamole web application.
      *
-     * @param input An input stream containing XML describing the parameters
-     *              associated with a protocol supported by Guacamole.
-     * @return A new ProtocolInfo object which contains the parameters described
-     *         by the XML file parsed.
-     * @throws GuacamoleException If an error occurs while parsing the XML file.
+     * @param input
+     *     An input stream containing JSON describing the forms and parameters
+     *     associated with a protocol supported by Guacamole.
+     *
+     * @return
+     *     A new ProtocolInfo object which contains the forms and parameters
+     *     described by the JSON file parsed.
+     *
+     * @throws IOException
+     *     If an error occurs while parsing the JSON file.
      */
     private ProtocolInfo readProtocol(InputStream input)
-            throws GuacamoleException {
-
-        // Parse document
-        try {
-
-            // Get handler for root element
-            ProtocolTagHandler protocolTagHandler =
-                    new ProtocolTagHandler();
-
-            // Set up document handler
-            DocumentHandler contentHandler = new DocumentHandler(
-                    "protocol", protocolTagHandler);
-
-            // Set up XML parser
-            XMLReader parser = XMLReaderFactory.createXMLReader();
-            parser.setContentHandler(contentHandler);
-
-            // Read and parse file
-            InputStream xml = new BufferedInputStream(input);
-            parser.parse(new InputSource(xml));
-            xml.close();
-
-            // Return parsed protocol
-            return protocolTagHandler.asProtocolInfo();
-
-        }
-        catch (IOException e) {
-            throw new GuacamoleException("Error reading basic user mapping file.", e);
-        }
-        catch (SAXException e) {
-            throw new GuacamoleException("Error parsing basic user mapping XML.", e);
-        }
-
+            throws IOException {
+        return mapper.readValue(input, ProtocolInfo.class);
     }
 
     /**
@@ -212,9 +188,11 @@ public class LocalEnvironment implements Environment {
      * each of these protocols. The key of each entry will be the name of that
      * protocol, as would be passed to guacd during connection.
      *
-     * @return A map of all available protocols.
-     * @throws GuacamoleException If an error occurs while reading the various
-     *                            protocol XML files.
+     * @return
+     *     A map of all available protocols.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while reading the various protocol JSON files.
      */
     private Map<String, ProtocolInfo> readProtocols() throws GuacamoleException {
 
@@ -227,13 +205,13 @@ public class LocalEnvironment implements Environment {
         // Read protocols from directory if it exists
         if (protocol_directory.isDirectory()) {
 
-            // Get all XML files
+            // Get all JSON files
             File[] files = protocol_directory.listFiles(
                 new FilenameFilter() {
 
                     @Override
                     public boolean accept(File file, String string) {
-                        return string.endsWith(".xml");
+                        return string.endsWith(".json");
                     }
 
                 }
@@ -261,7 +239,7 @@ public class LocalEnvironment implements Environment {
                 }
                 catch (IOException e) {
                     logger.error("Unable to read connection parameter information from \"{}\": {}", file.getAbsolutePath(), e.getMessage());
-                    logger.debug("Error reading protocol XML.", e);
+                    logger.debug("Error reading protocol JSON.", e);
                 }
 
             }
@@ -276,11 +254,18 @@ public class LocalEnvironment implements Environment {
 
                 InputStream stream = LocalEnvironment.class.getResourceAsStream(
                         "/org/glyptodon/guacamole/protocols/"
-                        + protocol + ".xml");
+                        + protocol + ".json");
 
-                // Parse XML if available
-                if (stream != null)
-                    protocols.put(protocol, readProtocol(stream));
+                // Parse JSON if available
+                if (stream != null) {
+                    try {
+                        protocols.put(protocol, readProtocol(stream));
+                    }
+                    catch (IOException e) {
+                        logger.error("Unable to read pre-defined connection parameter information for protocol \"{}\": {}", protocol, e.getMessage());
+                        logger.debug("Error reading pre-defined protocol JSON.", e);
+                    }
+                }
 
             }
 

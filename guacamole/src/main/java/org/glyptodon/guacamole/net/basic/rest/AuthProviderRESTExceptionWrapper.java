@@ -22,14 +22,12 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
-import javax.ws.rs.core.Response;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
-import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
@@ -65,7 +63,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             throw new APIException(
                 APIError.Type.INSUFFICIENT_CREDENTIALS,
                 message,
-                e.getCredentialsInfo().getParameters()
+                e.getCredentialsInfo().getFields()
             );
         }
 
@@ -80,7 +78,7 @@ public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
             throw new APIException(
                 APIError.Type.INVALID_CREDENTIALS,
                 message,
-                e.getCredentialsInfo().getParameters()
+                e.getCredentialsInfo().getFields()
             );
         }
 
