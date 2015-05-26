@@ -36,12 +36,13 @@ angular.module('rest').factory('schemaService', ['$injector',
     /**
      * Makes a request to the REST API to get the list of available attributes
      * for user objects, returning a promise that provides an array of
-     * @link{Field} objects if successful. Each element of the array describes
-     * a possible attribute.
+     * @link{Form} objects if successful. Each element of the array describes
+     * a logical grouping of possible attributes.
      *
-     * @returns {Promise.<Field[]>}
-     *     A promise which will resolve with an array of @link{Field}
-     *     objects, where each @link{Field} describes a possible attribute.
+     * @returns {Promise.<Form[]>}
+     *     A promise which will resolve with an array of @link{Form}
+     *     objects, where each @link{Form} describes a logical grouping of
+     *     possible attributes.
      */
     service.getUserAttributes = function getUserAttributes() {
 
@@ -63,12 +64,13 @@ angular.module('rest').factory('schemaService', ['$injector',
     /**
      * Makes a request to the REST API to get the list of available attributes
      * for connection objects, returning a promise that provides an array of
-     * @link{Field} objects if successful. Each element of the array describes
-     * a possible attribute.
+     * @link{Form} objects if successful. Each element of the array describes
+     * a logical grouping of possible attributes.
      *
-     * @returns {Promise.<Field[]>}
-     *     A promise which will resolve with an array of @link{Field}
-     *     objects, where each @link{Field} describes a possible attribute.
+     * @returns {Promise.<Form[]>}
+     *     A promise which will resolve with an array of @link{Form}
+     *     objects, where each @link{Form} describes a logical grouping of
+     *     possible attributes.
      */
     service.getConnectionAttributes = function getConnectionAttributes() {
 
@@ -90,12 +92,13 @@ angular.module('rest').factory('schemaService', ['$injector',
     /**
      * Makes a request to the REST API to get the list of available attributes
      * for connection group objects, returning a promise that provides an array
-     * of @link{Field} objects if successful. Each element of the array
-     * describes a possible attribute.
+     * of @link{Form} objects if successful. Each element of the array
+     * a logical grouping of possible attributes.
      *
-     * @returns {Promise.<Field[]>}
-     *     A promise which will resolve with an array of @link{Field}
-     *     objects, where each @link{Field} describes a possible attribute.
+     * @returns {Promise.<Form[]>}
+     *     A promise which will resolve with an array of @link{Form}
+     *     objects, where each @link{Form} describes a logical grouping of
+     *     possible attributes.
      */
     service.getConnectionGroupAttributes = function getConnectionGroupAttributes() {
 

@@ -38,6 +38,7 @@ import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionSer
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -58,15 +59,19 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
 
     /**
-     * A typed field corresponding to the disabled attribute of a user.
+     * All attributes related to restricting user accounts, within a logical
+     * form.
      */
-    public static final Field DISABLED_ATTRIBUTE = new Field(DISABLED_ATTRIBUTE_NAME, "Disabled", "true");
+    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", "Account Restrictions", Arrays.asList(
+        new Field(DISABLED_ATTRIBUTE_NAME, "Disabled", "true")
+    ));
 
     /**
-     * All possible attributes of user objects.
+     * All possible attributes of user objects organized as individual,
+     * logical forms.
      */
-    public static final Collection<Field> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        DISABLED_ATTRIBUTE
+    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
+        ACCOUNT_RESTRICTIONS
     ));
 
     /**

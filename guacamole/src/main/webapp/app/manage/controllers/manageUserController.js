@@ -105,9 +105,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
     /**
      * All available user attributes. This is only the set of attribute
-     * definitions, not attribute values.
+     * definitions, organized as logical groupings of attributes, not attribute
+     * values.
      *
-     * @type Field[]
+     * @type Form[]
      */
     $scope.attributes = null;
 

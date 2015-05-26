@@ -33,7 +33,7 @@ import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
-import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
@@ -134,18 +134,18 @@ public class UserContext extends RestrictedObject
     }
 
     @Override
-    public Collection<Field> getUserAttributes() {
+    public Collection<Form> getUserAttributes() {
         return ModeledUser.ATTRIBUTES;
     }
 
     @Override
-    public Collection<Field> getConnectionAttributes() {
-        return Collections.<Field>emptyList();
+    public Collection<Form> getConnectionAttributes() {
+        return Collections.<Form>emptyList();
     }
 
     @Override
-    public Collection<Field> getConnectionGroupAttributes() {
-        return Collections.<Field>emptyList();
+    public Collection<Form> getConnectionGroupAttributes() {
+        return Collections.<Form>emptyList();
     }
 
 }

@@ -34,7 +34,7 @@ import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
-import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -65,8 +65,8 @@ public class SchemaRESTService {
      *     performing the operation.
      *
      * @return
-     *     A collection of form fields which describe the possible attributes
-     *     of a user object.
+     *     A collection of forms which describe the possible attributes of a
+     *     user object.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the possible attributes.
@@ -74,7 +74,7 @@ public class SchemaRESTService {
     @GET
     @Path("/users/attributes")
     @AuthProviderRESTExposure
-    public Collection<Field> getUserAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getUserAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
 
         // Retrieve all possible user attributes
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -90,8 +90,8 @@ public class SchemaRESTService {
      *     performing the operation.
      *
      * @return
-     *     A collection of form fields which describe the possible attributes
-     *     of a connection object.
+     *     A collection of forms which describe the possible attributes of a
+     *     connection object.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the possible attributes.
@@ -99,7 +99,7 @@ public class SchemaRESTService {
     @GET
     @Path("/connections/attributes")
     @AuthProviderRESTExposure
-    public Collection<Field> getConnectionAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getConnectionAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
 
         // Retrieve all possible connection attributes
         UserContext userContext = authenticationService.getUserContext(authToken);
@@ -115,8 +115,8 @@ public class SchemaRESTService {
      *     performing the operation.
      *
      * @return
-     *     A collection of form fields which describe the possible attributes
-     *     of a connection group object.
+     *     A collection of forms which describe the possible attributes of a
+     *     connection group object.
      *
      * @throws GuacamoleException
      *     If an error occurs while retrieving the possible attributes.
@@ -124,7 +124,7 @@ public class SchemaRESTService {
     @GET
     @Path("/connectionGroups/attributes")
     @AuthProviderRESTExposure
-    public Collection<Field> getConnectionGroupAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getConnectionGroupAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
 
         // Retrieve all possible connection group attributes
         UserContext userContext = authenticationService.getUserContext(authToken);
