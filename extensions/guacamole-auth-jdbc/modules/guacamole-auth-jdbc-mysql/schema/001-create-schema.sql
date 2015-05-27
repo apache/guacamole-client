@@ -77,6 +77,7 @@ CREATE TABLE `guacamole_user` (
   `password_hash` binary(32)   NOT NULL,
   `password_salt` binary(32),
   `disabled`      boolean      NOT NULL DEFAULT 0,
+  `expired`       boolean      NOT NULL DEFAULT 0,
 
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)

@@ -2,6 +2,7 @@
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED" : "Login disabled:",
+        "FIELD_HEADER_EXPIRED"  : "Password expired:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Account Restrictions"
 

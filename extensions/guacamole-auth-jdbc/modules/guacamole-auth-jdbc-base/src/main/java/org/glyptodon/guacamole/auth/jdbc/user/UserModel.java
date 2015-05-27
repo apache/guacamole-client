@@ -49,6 +49,13 @@ public class UserModel extends ObjectModel {
     private boolean disabled;
 
     /**
+     * Whether the user's password is expired. If a user's password is expired,
+     * it must be changed immediately upon login, and the account cannot be
+     * used until this occurs.
+     */
+    private boolean expired;
+
+    /**
      * Creates a new, empty user.
      */
     public UserModel() {
@@ -125,6 +132,30 @@ public class UserModel extends ObjectModel {
      */
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
+    }
+
+    /**
+     * Returns whether the user's password has expired. If a user's password is
+     * expired, it must be immediately changed upon login. A user account with
+     * an expired password cannot be used until the password has been changed.
+     *
+     * @return
+     *     true if the user's password has expired, false otherwise.
+     */
+    public boolean isExpired() {
+        return expired;
+    }
+
+    /**
+     * Sets whether the user's password is expired. If a user's password is
+     * expired, it must be immediately changed upon login. A user account with
+     * an expired password cannot be used until the password has been changed.
+     *
+     * @param expired
+     *     true to expire the user's password, false otherwise.
+     */
+    public void setExpired(boolean expired) {
+        this.expired = expired;
     }
 
 }

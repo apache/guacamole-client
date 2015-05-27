@@ -26,3 +26,9 @@
 
 ALTER TABLE guacamole_user ADD COLUMN disabled BOOLEAN NOT NULL DEFAULT 0;
 
+--
+-- Add per-user password expiration flag
+--
+
+ALTER TABLE guacamole_user ADD COLUMN expired BOOLEAN NOT NULL DEFAULT 0;
+
