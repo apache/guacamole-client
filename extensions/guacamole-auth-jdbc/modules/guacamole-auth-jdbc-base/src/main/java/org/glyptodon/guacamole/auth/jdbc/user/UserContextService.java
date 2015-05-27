@@ -24,8 +24,16 @@ package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service which creates new UserContext instances for valid users based on
@@ -34,6 +42,11 @@ import org.glyptodon.guacamole.net.auth.Credentials;
  * @author Michael Jumper
  */
 public class UserContextService  {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     /**
      * Service for accessing users.
@@ -48,18 +61,44 @@ public class UserContextService  {
     private Provider<UserContext> userContextProvider;
 
     /**
+     * The name of the HTTP parameter to expect if the user is changing their
+     * expired password upon login.
+     */
+    private static final String NEW_PASSWORD_PARAMETER = "new-password";
+
+    /**
+     * The field to provide the user when their password is expired and must
+     * be changed.
+     */
+    private static final Field NEW_PASSWORD = new Field(NEW_PASSWORD_PARAMETER, "New password", Field.Type.PASSWORD);
+
+    /**
+     * Information describing the expected credentials if a user's password is
+     * expired. If a user's password is expired, it must be changed during the
+     * login process.
+     */
+    private static final CredentialsInfo EXPIRED_PASSWORD = new CredentialsInfo(Arrays.asList(
+        CredentialsInfo.USERNAME,
+        CredentialsInfo.PASSWORD,
+        NEW_PASSWORD
+    ));
+
+    /**
      * Authenticates the user having the given credentials, returning a new
-     * UserContext instance if the credentials are valid.
+     * UserContext instance only if the credentials are valid. If the
+     * credentials are invalid or expired, an appropriate GuacamoleException
+     * will be thrown.
      *
      * @param credentials
      *     The credentials to use to produce the UserContext.
      *
      * @return
      *     A new UserContext instance for the user identified by the given
-     *     credentials, or null if the credentials are not valid.
+     *     credentials.
      *
      * @throws GuacamoleException
-     *     If an error occurs during authentication.
+     *     If an error occurs during authentication, or if the given
+     *     credentials are invalid or expired.
      */
     public org.glyptodon.guacamole.net.auth.UserContext
         getUserContext(Credentials credentials)
@@ -69,6 +108,24 @@ public class UserContextService  {
         ModeledUser user = userService.retrieveUser(credentials);
         if (user != null && !user.getModel().isDisabled()) {
 
+            // Update password if password is expired
+            if (user.getModel().isExpired()) {
+
+                // Pull new password from HTTP request
+                HttpServletRequest request = credentials.getRequest();
+                String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
+
+                // Require new password if account is expired
+                if (newPassword == null) {
+                    logger.info("The password of user \"{}\" has expired and must be reset.", user.getIdentifier());
+                    throw new GuacamoleInsufficientCredentialsException("Password expired", EXPIRED_PASSWORD);
+                }
+
+                // STUB: Change password if new password given
+                logger.info("Resetting expired password of user \"{}\".", user.getIdentifier());
+
+            }
+
             // Upon successful authentication, return new user context
             UserContext context = userContextProvider.get();
             context.init(user.getCurrentUser());
@@ -77,7 +134,7 @@ public class UserContextService  {
         }
 
         // Otherwise, unauthorized
-        return null;
+        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
 
     }
 
