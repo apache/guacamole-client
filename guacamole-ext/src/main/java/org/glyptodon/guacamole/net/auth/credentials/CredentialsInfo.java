@@ -68,12 +68,24 @@ public class CredentialsInfo {
     public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.<Field>emptyList());
 
     /**
+     * A field describing the username HTTP parameter expected by Guacamole
+     * during login, if usernames are being used.
+     */
+    public static final Field USERNAME = new Field("username", "username", Field.Type.USERNAME);
+
+    /**
+     * A field describing the password HTTP parameter expected by Guacamole
+     * during login, if passwords are being used.
+     */
+    public static final Field PASSWORD = new Field("password", "password", Field.Type.PASSWORD);
+
+    /**
      * CredentialsInfo object which describes standard username/password
      * credentials.
      */
     public static final CredentialsInfo USERNAME_PASSWORD = new CredentialsInfo(Arrays.asList(
-        new Field("username", "username", Field.Type.USERNAME),
-        new Field("password", "password", Field.Type.PASSWORD)
+        USERNAME,
+        PASSWORD
     ));
     
 }
