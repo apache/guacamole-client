@@ -166,8 +166,8 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
                     angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
 
                         // Remove entered value only if field is a password field
-                        if (field.type === Field.Type.PASSWORD)
-                            delete $scope.enteredValues[field.name];
+                        if (field.type === Field.Type.PASSWORD && field.name in $scope.enteredValues)
+                            $scope.enteredValues[field.name] = '';
 
                     });
                 }
