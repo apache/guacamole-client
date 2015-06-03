@@ -49,4 +49,12 @@
         </div>
 
     </div>
+
+    <!-- Login-specific status/error dialog -->
+    <div ng-class="{shown: loginStatus}" class="status-outer">
+        <div class="status-middle">
+            <guac-notification notification="loginStatus"></guac-notification>
+        </div>
+    </div>
+
 </div>

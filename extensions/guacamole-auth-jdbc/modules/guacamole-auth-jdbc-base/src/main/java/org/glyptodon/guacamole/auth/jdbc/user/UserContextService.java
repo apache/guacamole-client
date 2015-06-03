@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
+import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.net.auth.Credentials;
@@ -120,6 +121,14 @@ public class UserContextService  {
                     logger.info("The password of user \"{}\" has expired and must be reset.", user.getIdentifier());
                     throw new GuacamoleInsufficientCredentialsException("Password expired", EXPIRED_PASSWORD);
                 }
+
+                // New password must be different from old password
+                if (newPassword.equals(credentials.getPassword()))
+                    throw new GuacamoleClientException("The new password must be different from the expired password.");
+
+                // New password must not be blank
+                if (newPassword.isEmpty())
+                    throw new GuacamoleClientException("The new password may not be blank.");
 
                 // STUB: Change password if new password given
                 logger.info("Resetting expired password of user \"{}\".", user.getIdentifier());

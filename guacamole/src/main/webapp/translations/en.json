@@ -143,7 +143,10 @@
 
     "LOGIN": {
 
-        "ACTION_LOGIN" : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "ERROR_INVALID_LOGIN" : "Invalid Login",
 
@@ -161,7 +164,7 @@
         "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection",
-        "DIALOG_HEADER_ERROR"          : "Error",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
@@ -194,7 +197,7 @@
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete Connection Group",
-        "DIALOG_HEADER_ERROR"          : "Error",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
@@ -216,8 +219,8 @@
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
-        "DIALOG_HEADER_CONFIRM_DELETE"  : "Delete User",
-        "DIALOG_HEADER_ERROR"           : "Error",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Delete User",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
@@ -414,7 +417,7 @@
         "ACTION_NEW_CONNECTION"       : "New Connection",
         "ACTION_NEW_CONNECTION_GROUP" : "New Group",
 
-        "DIALOG_HEADER_ERROR"          : "Error",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "HELP_CONNECTIONS"   : "Click or tap on a connection below to manage that connection. Depending on your access level, connections can be added and deleted, and their properties (protocol, hostname, port, etc.) can be changed.",
         
@@ -469,7 +472,7 @@
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_USER"      : "New User",
 
-        "DIALOG_HEADER_ERROR"           : "Error",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
@@ -484,7 +487,7 @@
         "ACTION_DELETE"      : "Kill Sessions",
         
         "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
-        "DIALOG_HEADER_ERROR"          : "Error",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
         "FIELD_PLACEHOLDER_FILTER" : "Filter",
         
