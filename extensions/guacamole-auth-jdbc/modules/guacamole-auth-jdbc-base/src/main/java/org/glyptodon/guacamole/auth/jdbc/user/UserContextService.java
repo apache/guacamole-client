@@ -62,16 +62,28 @@ public class UserContextService  {
     private Provider<UserContext> userContextProvider;
 
     /**
-     * The name of the HTTP parameter to expect if the user is changing their
-     * expired password upon login.
+     * The name of the HTTP password parameter to expect if the user is
+     * changing their expired password upon login.
      */
     private static final String NEW_PASSWORD_PARAMETER = "new-password";
 
     /**
-     * The field to provide the user when their password is expired and must
-     * be changed.
+     * The password field to provide the user when their password is expired
+     * and must be changed.
      */
     private static final Field NEW_PASSWORD = new Field(NEW_PASSWORD_PARAMETER, "New password", Field.Type.PASSWORD);
+
+    /**
+     * The name of the HTTP password confirmation parameter to expect if the
+     * user is changing their expired password upon login.
+     */
+    private static final String CONFIRM_NEW_PASSWORD_PARAMETER = "confirm-new-password";
+
+    /**
+     * The password confirmation field to provide the user when their password
+     * is expired and must be changed.
+     */
+    private static final Field CONFIRM_NEW_PASSWORD = new Field(CONFIRM_NEW_PASSWORD_PARAMETER, "Confirm new password", Field.Type.PASSWORD);
 
     /**
      * Information describing the expected credentials if a user's password is
@@ -81,7 +93,8 @@ public class UserContextService  {
     private static final CredentialsInfo EXPIRED_PASSWORD = new CredentialsInfo(Arrays.asList(
         CredentialsInfo.USERNAME,
         CredentialsInfo.PASSWORD,
-        NEW_PASSWORD
+        NEW_PASSWORD,
+        CONFIRM_NEW_PASSWORD
     ));
 
     /**
@@ -115,9 +128,10 @@ public class UserContextService  {
                 // Pull new password from HTTP request
                 HttpServletRequest request = credentials.getRequest();
                 String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
+                String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
 
                 // Require new password if account is expired
-                if (newPassword == null) {
+                if (newPassword == null || confirmNewPassword == null) {
                     logger.info("The password of user \"{}\" has expired and must be reset.", user.getIdentifier());
                     throw new GuacamoleInsufficientCredentialsException("Password expired", EXPIRED_PASSWORD);
                 }
@@ -129,6 +143,10 @@ public class UserContextService  {
                 // New password must not be blank
                 if (newPassword.isEmpty())
                     throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
+
+                // Confirm that the password was entered correctly twice
+                if (!newPassword.equals(confirmNewPassword))
+                    throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
 
                 // STUB: Change password if new password given
                 logger.info("Resetting expired password of user \"{}\".", user.getIdentifier());
