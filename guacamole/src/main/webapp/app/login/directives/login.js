@@ -123,9 +123,12 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             // Reset upon failure
             ['catch'](function loginFailed(error) {
 
-                // Clear out passwords and flag error if credentials are invalid
-                if (error.type === Error.Type.INVALID_CREDENTIALS) {
+                // Flag generic error for invalid login
+                if (error.type === Error.Type.INVALID_CREDENTIALS)
                     $scope.loginError = true;
+
+                // Clear out passwords if the credentials were rejected for any reason
+                if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
                     angular.forEach($scope.form, function clearEnteredValueIfPassword(field) {
 
                         // Remove entered value only if field is a password field
