@@ -23,6 +23,7 @@
 
         "DIALOG_HEADER_ERROR" : "Ошибка",
 
+        "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
         "ERROR_PASSWORD_MISMATCH" : "Указанные пароли не совпадают.",
 
         "FIELD_HEADER_PASSWORD"       : "Пароль:",
@@ -414,7 +415,7 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_LANGUAGE"           : "Язык:",

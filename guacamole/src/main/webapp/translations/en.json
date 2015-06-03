@@ -23,6 +23,7 @@
 
         "DIALOG_HEADER_ERROR" : "Error",
 
+        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
         "ERROR_PASSWORD_MISMATCH" : "The provided passwords do not match.",
         
         "FIELD_HEADER_PASSWORD"       : "Password:",
@@ -435,7 +436,7 @@
 
         "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_PASSWORD_BLANK"    : "Your password cannot be blank.",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_LANGUAGE"           : "Display language:",

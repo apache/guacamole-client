@@ -1,4 +1,10 @@
 {
+
+    "LOGIN" : {
+        "ERROR_PASSWORD_BLANK" : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"  : "The new password must be different from the expired password."
+    },
+
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED" : "Login disabled:",
@@ -7,4 +13,5 @@
         "SECTION_HEADER_RESTRICTIONS" : "Account Restrictions"
 
     }
+
 }

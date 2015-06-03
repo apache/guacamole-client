@@ -1,0 +1,7 @@
+{
+
+    "LOGIN" : {
+        "ERROR_PASSWORD_BLANK" : "@:APP.ERROR_PASSWORD_BLANK"
+    }
+
+}

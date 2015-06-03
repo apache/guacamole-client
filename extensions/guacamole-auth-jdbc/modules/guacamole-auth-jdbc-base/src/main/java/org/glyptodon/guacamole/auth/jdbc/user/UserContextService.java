@@ -124,11 +124,11 @@ public class UserContextService  {
 
                 // New password must be different from old password
                 if (newPassword.equals(credentials.getPassword()))
-                    throw new GuacamoleClientException("The new password must be different from the expired password.");
+                    throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
 
                 // New password must not be blank
                 if (newPassword.isEmpty())
-                    throw new GuacamoleClientException("The new password may not be blank.");
+                    throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
 
                 // STUB: Change password if new password given
                 logger.info("Resetting expired password of user \"{}\".", user.getIdentifier());
