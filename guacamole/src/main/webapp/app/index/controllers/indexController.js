@@ -37,10 +37,21 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.guacNotification = guacNotification;
 
     /**
+     * The credentials that the authentication service is has already accepted,
+     * pending additional credentials, if any. If the user is logged in, or no
+     * credentials have been accepted, this will be null. If credentials have
+     * been accepted, this will be a map of name/value pairs corresponding to
+     * the parameters submitted in a previous authentication attempt.
+     *
+     * @type Object.<String, String>
+     */
+    $scope.acceptedCredentials = null;
+
+    /**
      * The credentials that the authentication service is currently expecting,
      * if any. If the user is logged in, this will be null.
      *
-     * @type Form[]|Form|Field[]|Field
+     * @type Field[]
      */
     $scope.expectedCredentials = null;
 
@@ -112,6 +123,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, expected) {
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
+        $scope.acceptedCredentials = {};
         $scope.expectedCredentials = expected;
     });
 
@@ -119,11 +131,13 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, expected) {
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
+        $scope.acceptedCredentials = parameters;
         $scope.expectedCredentials = expected;
     });
 
     // Clear login screen if login was successful
     $scope.$on('guacLogin', function loginSuccessful() {
+        $scope.acceptedCredentials = null;
         $scope.expectedCredentials = null;
     });
 

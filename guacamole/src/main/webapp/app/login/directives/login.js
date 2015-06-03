@@ -39,9 +39,16 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
          * The login form or set of fields. This will be displayed to the user
          * to capture their credentials.
          *
-         * @type Form[]|Form|Field[]|Field 
+         * @type Field[]
          */
-        form : '='
+        form : '=',
+
+        /**
+         * A map of all field name/value pairs that have already been provided.
+         * If not null, the user will be prompted to continue their login
+         * attempt using only the fields which remain.
+         */
+        values : '='
 
     };
 
@@ -49,6 +56,10 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
     directive.controller = ['$scope', '$injector',
         function loginController($scope, $injector) {
         
+        // Required types
+        var Error = $injector.get('Error');
+        var Field = $injector.get('Field');
+
         // Required services
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
@@ -61,9 +72,37 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         $scope.loginError = false;
 
         /**
-         * All form values entered by the user.
+         * All form values entered by the user, as parameter name/value pairs.
+         *
+         * @type Object.<String, String>
          */
-        $scope.values = {};
+        $scope.enteredValues = {};
+
+        /**
+         * All form fields which have not yet been filled by the user.
+         *
+         * @type Field[]
+         */
+        $scope.remainingFields = [];
+
+        $scope.$watch('values', function resetEnteredValues(values) {
+            angular.extend($scope.enteredValues, values || {});
+        });
+
+        $scope.$watch('form', function resetRemainingFields(fields) {
+
+            // If no fields are provided, then no fields remain
+            if (!fields) {
+                $scope.remainingFields = [];
+                return;
+            }
+
+            // Filter provided fields against provided values
+            $scope.remainingFields = fields.filter(function isRemaining(field) {
+                return !(field.name in $scope.values);
+            });
+
+        });
 
         /**
          * Submits the currently-specified username and password to the
@@ -72,19 +111,30 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         $scope.login = function login() {
 
             // Attempt login once existing session is destroyed
-            authenticationService.authenticate($scope.values)
+            authenticationService.authenticate($scope.enteredValues)
 
             // Clear and reload upon success
             .then(function loginSuccessful() {
                 $scope.loginError = false;
-                $scope.values = {};
+                $scope.enteredValues = {};
                 $route.reload();
             })
 
             // Reset upon failure
-            ['catch'](function loginFailed() {
-                $scope.loginError = true;
-                $scope.values.password = '';
+            ['catch'](function loginFailed(error) {
+
+                // Clear out passwords and flag error if credentials are invalid
+                if (error.type === Error.Type.INVALID_CREDENTIALS) {
+                    $scope.loginError = true;
+                    angular.forEach($scope.form, function clearEnteredValueIfPassword(field) {
+
+                        // Remove entered value only if field is a password field
+                        if (field.type === Field.Type.PASSWORD)
+                            delete $scope.enteredValues[field.name];
+
+                    });
+                }
+
             });
 
         };

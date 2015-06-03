@@ -160,7 +160,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
                 $rootScope.$broadcast('guacInsufficientCredentials', parameters, error.expected);
 
-            authenticationProcess.reject();
+            authenticationProcess.reject(error);
         });
 
         return authenticationProcess.promise;
