@@ -22,7 +22,6 @@
 
 package org.glyptodon.guacamole.form;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
@@ -38,44 +37,44 @@ public class Field {
     /**
      * All possible types of field.
      */
-    public enum Type {
+    public static class Type {
 
         /**
          * A text field, accepting arbitrary values.
          */
-        TEXT,
+        public static String TEXT = "TEXT";
 
         /**
          * A username field. This field type generally behaves identically to
          * arbitrary text fields, but has semantic differences.
          */
-        USERNAME,
+        public static String USERNAME = "USERNAME";
 
         /**
          * A password field, whose value is sensitive and must be hidden.
          */
-        PASSWORD,
+        public static String PASSWORD = "PASSWORD";
 
         /**
          * A numeric field, whose value must contain only digits.
          */
-        NUMERIC,
+        public static String NUMERIC = "NUMERIC";
 
         /**
          * A boolean field, whose value is either blank or "true".
          */
-        BOOLEAN,
+        public static String BOOLEAN = "BOOLEAN";
 
         /**
          * An enumerated field, whose legal values are fully enumerated by a
          * provided, finite list.
          */
-        ENUM,
+        public static String ENUM = "ENUM";
 
         /**
          * A text field that can span more than one line.
          */
-        MULTILINE
+        public static String MULTILINE = "MULTILINE";
 
     }
 
@@ -92,7 +91,7 @@ public class Field {
     /**
      * The type of this field.
      */
-    private Type type;
+    private String type;
 
     /**
      * The value of this field, when checked. This is only applicable to
@@ -123,29 +122,10 @@ public class Field {
      * @param type
      *     The type of this field.
      */
-    public Field(String name, String title, Type type) {
+    public Field(String name, String title, String type) {
         this.name    = name;
         this.title   = title;
         this.type    = type;
-    }
-
-    /**
-     * Creates a new BOOLEAN Parameter with the given name, title, and value.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
-     *
-     * @param value
-     *     The value that should be assigned to this field if enabled.
-     */
-    public Field(String name, String title, String value) {
-        this.name    = name;
-        this.title   = title;
-        this.type    = Type.BOOLEAN;
-        this.value   = value;
     }
 
     /**
@@ -236,7 +216,7 @@ public class Field {
      * @return
      *     The type of this field.
      */
-    public Type getType() {
+    public String getType() {
         return type;
     }
 
@@ -246,7 +226,7 @@ public class Field {
      * @param type
      *     The type of this field.
      */
-    public void setType(Type type) {
+    public void setType(String type) {
         this.type = type;
     }
 
