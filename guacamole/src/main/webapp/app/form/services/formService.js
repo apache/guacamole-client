@@ -85,7 +85,90 @@ angular.module('form').factory('formService', ['$injector',
      *
      * @type Object.<String, FieldType>
      */
-    service.fieldTypes = {};
+    service.fieldTypes = {
+
+        /**
+         * Text field type.
+         *
+         * @see {@link Field.Type.TEXT}
+         * @type FieldType
+         */
+        'TEXT' : {
+            templateUrl : 'app/form/templates/textField.html'
+        },
+
+        /**
+         * Numeric field type.
+         *
+         * @see {@link Field.Type.NUMERIC}
+         * @type FieldType
+         */
+        'NUMERIC' : {
+            module      : 'form',
+            controller  : 'numberFieldController',
+            templateUrl : 'app/form/templates/numberField.html'
+        },
+
+        /**
+         * Boolean field type.
+         *
+         * @see {@link Field.Type.BOOLEAN}
+         * @type FieldType
+         */
+        'BOOLEAN' : {
+            module      : 'form',
+            controller  : 'checkboxFieldController',
+            templateUrl : 'app/form/templates/checkboxField.html'
+        },
+
+        /**
+         * Username field type. Identical in principle to a text field, but may
+         * have different semantics.
+         *
+         * @see {@link Field.Type.USERNAME}
+         * @type FieldType
+         */
+        'USERNAME' : {
+            templateUrl : 'app/form/templates/textField.html'
+        },
+
+        /**
+         * Password field type. Similar to a text field, but the contents of
+         * the field are masked.
+         *
+         * @see {@link Field.Type.PASSWORD}
+         * @type FieldType
+         */
+        'PASSWORD' : {
+            module      : 'form',
+            controller  : 'passwordFieldController',
+            templateUrl : 'app/form/templates/passwordField.html'
+        },
+
+        /**
+         * Enumerated field type. The user is presented a finite list of values
+         * to choose from.
+         *
+         * @see {@link Field.Type.ENUM}
+         * @type FieldType
+         */
+        'ENUM' : {
+            module      : 'form',
+            controller  : 'selectFieldController',
+            templateUrl : 'app/form/templates/selectField.html'
+        },
+
+        /**
+         * Multiline field type. The user may enter multiple lines of text.
+         *
+         * @see {@link Field.Type.MULTILINE}
+         * @type FieldType
+         */
+        'MULTILINE' : {
+            templateUrl : 'app/form/templates/textAreaField.html'
+        }
+
+    };
 
     /**
      * Registers a new field type under the given name.
