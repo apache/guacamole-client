@@ -88,7 +88,10 @@ angular.module('settings').provider('preferenceService', function preferenceServ
     var getDefaultLanguageKey = function getDefaultLanguageKey() {
 
         // Pull browser language, falling back to US English
-        var language = navigator.language || navigator.browserLanguage || 'en_US';
+        var language = (navigator.languages && navigator.languages[0])
+                     || navigator.language
+                     || navigator.browserLanguage
+                     || 'en';
 
         // Convert to format used internally
         return language.replace(/-/g, '_');
