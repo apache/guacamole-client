@@ -30,7 +30,7 @@ angular.module('index').config(['$injector', function($injector) {
     var preferenceServiceProvider = $injector.get('preferenceServiceProvider');
 
     // Fallback to US English
-    var fallbackLanguages = ['en_US'];
+    var fallbackLanguages = ['en'];
 
     // Prefer chosen language, use fallback languages if necessary
     $translateProvider.fallbackLanguage(fallbackLanguages);

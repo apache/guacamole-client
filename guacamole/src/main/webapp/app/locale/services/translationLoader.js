@@ -82,6 +82,31 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
     };
 
     /**
+     * Given a valid language key, returns all possible legal variations of
+     * that key. Currently, this will be the given key and the given key
+     * without the country code. If the key has no country code, only the
+     * given key will be included in the returned array.
+     *
+     * @param {String} key
+     *     The language key to generate variations of.
+     *
+     * @returns {String[]}
+     *     All possible variations of the given language key.
+     */
+    var getKeyVariations = function getKeyVariations(key) {
+
+        var underscore = key.indexOf('_');
+
+        // If no underscore, only one possibility
+        if (underscore === -1)
+            return [key];
+
+        // Otherwise, include the lack of country code as an option
+        return [key, key.substr(0, underscore)];
+
+    };
+
+    /**
      * Custom loader function for angular-translate which loads the desired
      * language file dynamically via HTTP. If the language file cannot be
      * found, the fallback language is used instead.
@@ -101,7 +126,7 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
         var requestedKey = options.key;
 
         // Append fallback languages to requested language
-        var keys = [requestedKey].concat(options.fallbackLanguages);
+        var keys = getKeyVariations(requestedKey).concat(options.fallbackLanguages);
 
         // Satisfy the translation request
         satisfyTranslation(translation, requestedKey, keys);
