@@ -74,12 +74,15 @@ public class LanguageResourceService {
      * The regular expression to use for parsing the language key from the
      * filename.
      */
-    private static final Pattern LANGUAGE_KEY_PATTERN = Pattern.compile(".*/([a-z]+_[A-Z]+)\\.json");
+    private static final Pattern LANGUAGE_KEY_PATTERN = Pattern.compile(".*/([a-z]+(_[A-Z]+)?)\\.json");
 
     /**
      * Map of all language resources by language key. Language keys are
      * language and country code pairs, separated by an underscore, like
-     * "en_US".
+     * "en_US". The country code and underscore SHOULD be omitted in the case
+     * that only one dialect of that language is defined, or in the case of the
+     * most universal or well-supported of all supported dialects of that
+     * language.
      */
     private final Map<String, Resource> resources = new HashMap<String, Resource>();
 
