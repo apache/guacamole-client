@@ -10,8 +10,9 @@
     ],
 
     "translations" : [
-        "translations/en_US.json",
-        "translations/ru_RU.json"
+        "translations/en.json",
+        "translations/fr.json",
+        "translations/ru.json"
     ]
 
 }
