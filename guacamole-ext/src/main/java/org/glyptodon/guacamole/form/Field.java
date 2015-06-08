@@ -39,7 +39,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class Field {
 
     /**
-     * All possible types of field.
+     * All types of fields which are available by default. Additional field
+     * types may be defined by extensions by using a unique field type name and
+     * registering that name with the form service within JavaScript.
+     *
+     * See FormService.js.
      */
     public static class Type {
 
