@@ -37,16 +37,22 @@
             "name"  : "display",
             "fields" : [
                 {
-                    "name"  : "read-only",
-                    "title" : "Read-only",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "read-only",
+                    "title"   : "Read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
-                    "name"  : "swap-red-blue",
-                    "title" : "Swap red/blue components",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "swap-red-blue",
+                    "title"   : "Swap red/blue components",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
                     "name"  : "cursor",
@@ -119,10 +125,13 @@
             "name"  : "audio",
             "fields" : [
                 {
-                    "name"  : "enable-audio",
-                    "title" : "Enable audio",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "enable-audio",
+                    "title"   : "Enable audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
                     "name"  : "audio-servername",

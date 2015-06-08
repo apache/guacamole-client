@@ -131,10 +131,13 @@
             "name"  : "sftp",
             "fields" : [
                 {
-                    "name"  : "enable-sftp",
-                    "title" : "Enable SFTP",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "enable-sftp",
+                    "title"   : "Enable SFTP",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 }
             ]
         }

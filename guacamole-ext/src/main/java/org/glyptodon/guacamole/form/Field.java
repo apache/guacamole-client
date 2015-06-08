@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,11 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Represents an arbitrary field, such as an HTTP parameter, the parameter of a
- * remote desktop protocol, or an input field within a form.
+ * remote desktop protocol, or an input field within a form. Fields are generic
+ * and typed dynamically through a type string, with the semantics of the field
+ * defined by the type string. The behavior of each field type is defined
+ * either through the web application itself (see FormService.js) or through
+ * extensions.
  *
  * @author Michael Jumper
  */
@@ -94,13 +98,7 @@ public class Field {
     private String type;
 
     /**
-     * The value of this field, when checked. This is only applicable to
-     * BOOLEAN fields.
-     */
-    private String value;
-
-    /**
-     * A collection of all associated field options.
+     * A collection of all legal values of this field.
      */
     private Collection<FieldOption> options;
 
@@ -111,7 +109,7 @@ public class Field {
     }
 
     /**
-     * Creates a new Parameter with the given name, title, and type.
+     * Creates a new Field with the given name, title, and type.
      *
      * @param name
      *     The unique name to associate with this field.
@@ -123,13 +121,14 @@ public class Field {
      *     The type of this field.
      */
     public Field(String name, String title, String type) {
-        this.name    = name;
-        this.title   = title;
-        this.type    = type;
+        this.name  = name;
+        this.title = title;
+        this.type  = type;
     }
 
     /**
-     * Creates a new ENUM Parameter with the given name, title, and options.
+     * Creates a new Field with the given name, title, type, and possible
+     * values.
      *
      * @param name
      *     The unique name to associate with this field.
@@ -137,13 +136,17 @@ public class Field {
      * @param title
      *     The human-readable title to associate with this field.
      *
+     * @param type
+     *     The type of this field.
+     *
      * @param options
      *     A collection of all possible valid options for this field.
      */
-    public Field(String name, String title, Collection<FieldOption> options) {
+    public Field(String name, String title, String type,
+            Collection<FieldOption> options) {
         this.name    = name;
         this.title   = title;
-        this.type    = Type.ENUM;
+        this.type    = type;
         this.options = options;
     }
 
@@ -189,28 +192,6 @@ public class Field {
     }
 
     /**
-     * Returns the value that should be assigned to this field if enabled. This
-     * is only applicable to BOOLEAN fields.
-     *
-     * @return
-     *     The value that should be assigned to this field if enabled.
-     */
-    public String getValue() {
-        return value;
-    }
-
-    /**
-     * Sets the value that should be assigned to this field if enabled. This is
-     * only applicable to BOOLEAN fields.
-     *
-     * @param value
-     *     The value that should be assigned to this field if enabled.
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    /**
      * Returns the type of this field.
      *
      * @return
@@ -232,8 +213,7 @@ public class Field {
 
     /**
      * Returns a mutable collection of field options. Changes to this
-     * collection directly affect the available options. This is only
-     * applicable to ENUM fields.
+     * collection directly affect the available options.
      *
      * @return
      *     A mutable collection of field options, or null if the field has no
@@ -244,8 +224,7 @@ public class Field {
     }
 
     /**
-     * Sets the options available as possible values of this field. This is
-     * only applicable to ENUM fields.
+     * Sets the options available as possible values of this field.
      *
      * @param options
      *     The options to associate with this field.

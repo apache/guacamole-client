@@ -67,16 +67,22 @@
                     ]
                 },
                 {
-                    "name"  : "disable-auth",
-                    "title" : "Disable authentication",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "disable-auth",
+                    "title"   : "Disable authentication",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
-                    "name"  : "ignore-cert",
-                    "title" : "Ignore server certificate",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "ignore-cert",
+                    "title"   : "Ignore server certificate",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 }
             ]
         },
@@ -131,10 +137,13 @@
                     ]
                 },
                 {
-                    "name"  : "console",
-                    "title" : "Administrator console",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "console",
+                    "title"   : "Administrator console",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 }
             ]
         },
@@ -193,28 +202,40 @@
             "name"  : "device-redirection",
             "fields" : [
                 {
-                    "name"  : "console-audio",
-                    "title" : "Support audio in console",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "console-audio",
+                    "title"   : "Support audio in console",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
-                    "name"  : "disable-audio",
-                    "title" : "Disable audio",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "disable-audio",
+                    "title"   : "Disable audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
-                    "name"  : "enable-printing",
-                    "title" : "Enable printing",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "enable-printing",
+                    "title"   : "Enable printing",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
-                    "name"  : "enable-drive",
-                    "title" : "Enable drive",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "enable-drive",
+                    "title"   : "Enable drive",
+                    "type"    : "BOOLEAN",
+                    "options" : [{
+                        "value" : "true",
+                        "title" : "true"
+                    }]
                 },
                 {
                     "name"  : "drive-path",

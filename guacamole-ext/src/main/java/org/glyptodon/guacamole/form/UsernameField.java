@@ -20,21 +20,27 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
 
 /**
- * Controller for checkbox fields.
+ * Represents a text field which will contain the uniquely-identifying name of
+ * a user.
+ *
+ * @author Michael Jumper
  */
-angular.module('form').controller('checkboxFieldController', ['$scope',
-    function checkboxFieldController($scope) {
+public class UsernameField extends Field {
 
-    // Update typed value when model is changed
-    $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0].value);
-    });
+    /**
+     * Creates a new UsernameField with the given name and title.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param title
+     *     The human-readable title to associate with this field.
+     */
+    public UsernameField(String name, String title) {
+        super(name, title, Field.Type.USERNAME);
+    }
 
-    // Update string value in model when typed value is changed
-    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0].value : '');
-    });
-
-}]);
+}

@@ -39,6 +39,7 @@ import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.PasswordField;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -81,7 +82,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * The password field to provide the user when their password is expired
      * and must be changed.
      */
-    private static final Field NEW_PASSWORD = new Field(NEW_PASSWORD_PARAMETER, "New password", Field.Type.PASSWORD);
+    private static final Field NEW_PASSWORD = new PasswordField(NEW_PASSWORD_PARAMETER, "New password");
 
     /**
      * The name of the HTTP password confirmation parameter to expect if the
@@ -93,7 +94,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * The password confirmation field to provide the user when their password
      * is expired and must be changed.
      */
-    private static final Field CONFIRM_NEW_PASSWORD = new Field(CONFIRM_NEW_PASSWORD_PARAMETER, "Confirm new password", Field.Type.PASSWORD);
+    private static final Field CONFIRM_NEW_PASSWORD = new PasswordField(CONFIRM_NEW_PASSWORD_PARAMETER, "Confirm new password");
 
     /**
      * Information describing the expected credentials if a user's password is

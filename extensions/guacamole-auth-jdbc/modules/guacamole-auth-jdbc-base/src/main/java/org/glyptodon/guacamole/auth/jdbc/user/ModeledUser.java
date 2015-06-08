@@ -37,6 +37,7 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
+import org.glyptodon.guacamole.form.BooleanField;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.User;
@@ -68,9 +69,9 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", "Account Restrictions", Arrays.asList(
-        new Field(DISABLED_ATTRIBUTE_NAME, "Disabled", "true"),
-        new Field(EXPIRED_ATTRIBUTE_NAME, "Password expired", "true")
+    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", "Account Restrictions", Arrays.<Field>asList(
+        new BooleanField(DISABLED_ATTRIBUTE_NAME, "Disabled", "true"),
+        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "Password expired", "true")
     ));
 
     /**

@@ -20,21 +20,27 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
 
 /**
- * Controller for checkbox fields.
+ * Represents a basic text field. The field may generally contain any data, but
+ * may not contain multiple lines.
+ *
+ * @author Michael Jumper
  */
-angular.module('form').controller('checkboxFieldController', ['$scope',
-    function checkboxFieldController($scope) {
+public class TextField extends Field {
 
-    // Update typed value when model is changed
-    $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0].value);
-    });
+    /**
+     * Creates a new TextField with the given name and title.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param title
+     *     The human-readable title to associate with this field.
+     */
+    public TextField(String name, String title) {
+        super(name, title, Field.Type.TEXT);
+    }
 
-    // Update string value in model when typed value is changed
-    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0].value : '');
-    });
-
-}]);
+}
