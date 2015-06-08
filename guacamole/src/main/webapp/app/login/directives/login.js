@@ -109,10 +109,13 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
         };
 
+        // Ensure provided values are included within entered values, even if
+        // they have no corresponding input fields
         $scope.$watch('values', function resetEnteredValues(values) {
             angular.extend($scope.enteredValues, values || {});
         });
 
+        // Update field information when form is changed
         $scope.$watch('form', function resetRemainingFields(fields) {
 
             // If no fields are provided, then no fields remain
@@ -124,6 +127,12 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             // Filter provided fields against provided values
             $scope.remainingFields = fields.filter(function isRemaining(field) {
                 return !(field.name in $scope.values);
+            });
+
+            // Set default values for all unset fields
+            angular.forEach($scope.remainingFields, function setDefault(field) {
+                if (!$scope.enteredValues[field.name])
+                    $scope.enteredValues[field.name] = '';
             });
 
         });
