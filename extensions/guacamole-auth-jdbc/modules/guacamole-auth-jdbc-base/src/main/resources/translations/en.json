@@ -6,6 +6,8 @@
         "ERROR_PASSWORD_SAME"     : "The new password must be different from the expired password.",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
+        "INFO_PASSWORD_EXPIRED" : "Your password has expired and must be reset. Please enter a new password to continue.",
+
         "FIELD_HEADER_NEW_PASSWORD"         : "New password",
         "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Confirm new password"
 
