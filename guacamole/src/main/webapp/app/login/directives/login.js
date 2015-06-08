@@ -86,7 +86,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
         /**
          * Whether an error occurred during login.
-         * 
+         *
          * @type Boolean
          */
         $scope.loginError = false;
@@ -104,6 +104,22 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
          * @type Field[]
          */
         $scope.remainingFields = [];
+
+        /**
+         * Returns whether a previous login attempt is continuing.
+         *
+         * @return {Boolean}
+         *     true if a previous login attempt is continuing, false otherwise.
+         */
+        $scope.isContinuation = function isContinuation() {
+
+            // The login is continuing if any parameter values are provided
+            for (var name in $scope.values)
+                return true;
+
+            return false;
+
+        };
 
         $scope.$watch('values', function resetEnteredValues(values) {
             angular.extend($scope.enteredValues, values || {});
