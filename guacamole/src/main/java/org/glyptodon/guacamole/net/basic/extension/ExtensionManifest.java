@@ -88,7 +88,7 @@ public class ExtensionManifest {
 
     /**
      * Returns the version of the Guacamole web application for which the
-     * extension was built, such as "0.9.6".
+     * extension was built, such as "0.9.7".
      *
      * @return
      *     The version of the Guacamole web application for which the extension
@@ -100,7 +100,7 @@ public class ExtensionManifest {
 
     /**
      * Sets the version of the Guacamole web application for which the
-     * extension was built, such as "0.9.6".
+     * extension was built, such as "0.9.7".
      *
      * @param guacamoleVersion
      *     The version of the Guacamole web application for which the extension
