@@ -39,8 +39,18 @@ angular.module('form').factory('FieldType', [function defineFieldType() {
         template = template || {};
 
         /**
+         * The raw HTML of the template that should be injected into the DOM of
+         * a form using this field type. If provided, this will be used instead
+         * of templateUrl.
+         *
+         * @type String
+         */
+        this.template = template.template;
+
+        /**
          * The URL of the template that should be injected into the DOM of a
-         * form using this field type.
+         * form using this field type. This property will be ignored if a raw
+         * HTML template is supplied via the template property.
          *
          * @type String
          */

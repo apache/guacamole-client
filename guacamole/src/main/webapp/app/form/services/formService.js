@@ -241,18 +241,27 @@ angular.module('form').provider('formService', function formServiceProvider() {
             // Defer compilation of template pending successful retrieval
             var compiledTemplate = $q.defer();
 
-            // Attempt to retrieve template HTML
-            templateRequest(fieldType.templateUrl)
+            // Use raw HTML template if provided
+            if (fieldType.template)
+                compiledTemplate.resolve($compile(fieldType.template)(scope));
 
-            // Resolve with compiled HTML upon success
-            .then(function templateRetrieved(html) {
-                compiledTemplate.resolve($compile(html)(scope));
-            })
+            // If no raw HTML template is provided, retrieve template from URL
+            else {
 
-            // Reject on failure
-            ['catch'](function templateError() {
-                compiledTemplate.reject();
-            });
+                // Attempt to retrieve template HTML
+                templateRequest(fieldType.templateUrl)
+
+                // Resolve with compiled HTML upon success
+                .then(function templateRetrieved(html) {
+                    compiledTemplate.resolve($compile(html)(scope));
+                })
+
+                // Reject on failure
+                ['catch'](function templateError() {
+                    compiledTemplate.reject();
+                });
+
+            }
 
             // Return promise which resolves to the compiled template
             return compiledTemplate.promise;
