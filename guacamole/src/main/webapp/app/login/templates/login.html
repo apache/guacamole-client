@@ -22,7 +22,7 @@
     -->
 
     <!-- Login error message -->
-    <p class="login-error">{{'LOGIN.ERROR_INVALID_LOGIN' | translate}}</p>
+    <p class="login-error">{{loginError | translate}}</p>
 
     <div class="login-dialog-middle">
 
@@ -52,13 +52,6 @@
 
         </div>
 
-    </div>
-
-    <!-- Login-specific status/error dialog -->
-    <div ng-class="{shown: loginStatus}" class="status-outer">
-        <div class="status-middle">
-            <guac-notification notification="loginStatus"></guac-notification>
-        </div>
     </div>
 
 </div>

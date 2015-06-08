@@ -73,29 +73,9 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var authenticationService = $injector.get('authenticationService');
 
         /**
-         * An action to be provided along with the object assigned to
-         * $scope.loginStatus which closes the currently-shown status dialog.
-         */
-        var ACKNOWLEDGE_ACTION = {
-            name        : "LOGIN.ACTION_ACKNOWLEDGE",
-            // Handle action
-            callback    : function acknowledgeCallback() {
-                $scope.loginStatus = false;
-            }
-        };
-
-        /**
-         * The currently-visible notification describing login status, or false
-         * if no notification should be shown.
+         * A description of the error that occurred during login, if any.
          *
-         * @type Notification|Boolean|Object
-         */
-        $scope.loginStatus = false;
-
-        /**
-         * Whether an error occurred during login.
-         *
-         * @type Boolean
+         * @type String
          */
         $scope.loginError = false;
 
@@ -155,8 +135,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         $scope.login = function login() {
 
             // Start with cleared status
-            $scope.loginError  = false;
-            $scope.loginStatus = false;
+            $scope.loginError  = null;
 
             // Attempt login once existing session is destroyed
             authenticationService.authenticate($scope.enteredValues)
@@ -175,16 +154,11 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
                     // Flag generic error for invalid login
                     if (error.type === Error.Type.INVALID_CREDENTIALS)
-                        $scope.loginError = true;
+                        $scope.loginError = 'LOGIN.ERROR_INVALID_LOGIN';
 
                     // Display error if anything else goes wrong
                     else
-                        $scope.loginStatus = {
-                            'className' : 'error',
-                            'title'     : 'LOGIN.DIALOG_HEADER_ERROR',
-                            'text'      : error.message,
-                            'actions'   : [ ACKNOWLEDGE_ACTION ]
-                        };
+                        $scope.loginError = error.message;
 
                     // Clear all visible password fields
                     angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
