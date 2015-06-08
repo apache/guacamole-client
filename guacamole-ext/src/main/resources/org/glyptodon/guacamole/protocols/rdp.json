@@ -69,12 +69,14 @@
                 {
                     "name"  : "disable-auth",
                     "title" : "Disable authentication",
-                    "type"  : "BOOLEAN"
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
                 },
                 {
                     "name"  : "ignore-cert",
                     "title" : "Ignore server certificate",
-                    "type"  : "BOOLEAN"
+                    "type"  : "BOOLEAN",
+                    "value" : "true"
                 }
             ]
         },
