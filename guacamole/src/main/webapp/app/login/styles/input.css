@@ -39,3 +39,12 @@
     width: 100%;
     margin: 0;
 }
+
+.login-ui.continuation .login-dialog .buttons input[type="submit"] {
+    width: auto;
+}
+
+.login-ui.initial .login-dialog input.continue-login,
+.login-ui.continuation .login-dialog input.login {
+    display: none;
+}

@@ -36,11 +36,6 @@ import org.glyptodon.guacamole.form.Form;
 public class ProtocolInfo {
 
     /**
-     * The human-readable title associated with this protocol.
-     */
-    private String title;
-
-    /**
      * The unique name associated with this protocol.
      */
     private String name;
@@ -51,63 +46,35 @@ public class ProtocolInfo {
     private Collection<Form> forms;
 
     /**
-     * Creates a new ProtocolInfo with no associated name, title, or
-     * forms.
+     * Creates a new ProtocolInfo with no associated name or forms.
      */
     public ProtocolInfo() {
         this.forms = new ArrayList<Form>();
     }
 
     /**
-     * Creates a new ProtocolInfo having the given name and title, but without
-     * any forms.
+     * Creates a new ProtocolInfo having the given name, but without any forms.
      *
      * @param name
      *     The unique name associated with the protocol.
-     *
-     * @param title
-     *     The human-readable title to associate with the protocol.
      */
-    public ProtocolInfo(String name, String title) {
+    public ProtocolInfo(String name) {
         this.name  = name;
-        this.title = title;
         this.forms = new ArrayList<Form>();
     }
 
     /**
-     * Creates a new ProtocolInfo having the given name, title, and forms.
+     * Creates a new ProtocolInfo having the given name and forms.
      *
      * @param name
      *     The unique name associated with the protocol.
      *
-     * @param title
-     *     The human-readable title to associate with the protocol.
-     * 
      * @param forms
      *     The forms to associate with the protocol.
      */
-    public ProtocolInfo(String name, String title, Collection<Form> forms) {
+    public ProtocolInfo(String name, Collection<Form> forms) {
         this.name  = name;
-        this.title = title;
         this.forms = forms;
-    }
-
-    /**
-     * Returns the human-readable title associated with this protocol.
-     *
-     * @return The human-readable title associated with this protocol.
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets the human-readable title associated with this protocol.
-     *
-     * @param title The human-readable title to associate with this protocol.
-     */
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     /**

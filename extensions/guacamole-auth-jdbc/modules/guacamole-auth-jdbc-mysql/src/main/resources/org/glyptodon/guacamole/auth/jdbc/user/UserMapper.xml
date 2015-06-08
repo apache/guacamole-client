@@ -33,6 +33,7 @@
         <result column="password_hash" property="passwordHash" jdbcType="BINARY"/>
         <result column="password_salt" property="passwordSalt" jdbcType="BINARY"/>
         <result column="disabled"      property="disabled"     jdbcType="BOOLEAN"/>
+        <result column="expired"       property="expired"      jdbcType="BOOLEAN"/>
     </resultMap>
 
     <!-- Select all usernames -->
@@ -59,7 +60,8 @@
             username,
             password_hash,
             password_salt,
-            disabled
+            disabled,
+            expired
         FROM guacamole_user
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
@@ -77,7 +79,8 @@
             username,
             password_hash,
             password_salt,
-            disabled
+            disabled,
+            expired
         FROM guacamole_user
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE username IN
@@ -98,7 +101,8 @@
             username,
             password_hash,
             password_salt,
-            disabled
+            disabled,
+            expired
         FROM guacamole_user
         WHERE
             username = #{username,jdbcType=VARCHAR}
@@ -119,13 +123,15 @@
             username,
             password_hash,
             password_salt,
-            disabled
+            disabled,
+            expired
         )
         VALUES (
             #{object.identifier,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY},
-            #{object.disabled,jdbcType=BOOLEAN}
+            #{object.disabled,jdbcType=BOOLEAN},
+            #{object.expired,jdbcType=BOOLEAN}
         )
 
     </insert>
@@ -135,7 +141,8 @@
         UPDATE guacamole_user
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
             password_salt = #{object.passwordSalt,jdbcType=BINARY},
-            disabled = #{object.disabled,jdbcType=BOOLEAN}
+            disabled = #{object.disabled,jdbcType=BOOLEAN},
+            expired = #{object.expired,jdbcType=BOOLEAN}
         WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
 

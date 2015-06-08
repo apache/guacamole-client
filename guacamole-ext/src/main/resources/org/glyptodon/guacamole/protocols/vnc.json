@@ -1,132 +1,81 @@
 {
-    "title" : "VNC",
     "name"  : "vnc",
     "forms" : [
 
         {
-            "title" : "Network",
             "name"  : "network",
             "fields" : [
                 {
                     "name"  : "hostname",
-                    "title" : "Hostname",
                     "type"  : "TEXT"
                 },
                 {
                     "name"  : "port",
-                    "title" : "Port",
                     "type"  : "NUMERIC"
                 }
             ]
         },
 
         {
-            "title" : "Authentication",
             "name"  : "authentication",
             "fields" : [
                 {
                     "name"  : "password",
-                    "title" : "Password",
                     "type"  : "PASSWORD"
                 }
             ]
         },
 
         {
-            "title" : "Display",
             "name"  : "display",
             "fields" : [
                 {
-                    "name"  : "read-only",
-                    "title" : "Read-only",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 },
                 {
-                    "name"  : "swap-red-blue",
-                    "title" : "Swap red/blue components",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "swap-red-blue",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 },
                 {
                     "name"  : "cursor",
-                    "title" : "Cursor",
                     "type"  : "ENUM",
-                    "options" : [
-                        {
-                            "value" : "",
-                            "title" : ""
-                        },
-                        {
-                            "value" : "local",
-                            "title" : "Local"
-                        },
-                        {
-                            "value" : "remote",
-                            "title" : "Remote"
-                        }
-                    ]
+                    "options" : [ "", "local", "remote" ]
                 },
                 {
                     "name"  : "color-depth",
-                    "title" : "Color depth",
                     "type"  : "ENUM",
-                    "options" : [
-                        {
-                            "value" : "",
-                            "title" : ""
-                        },
-                        {
-                            "value" : "8",
-                            "title" : "256 color"
-                        },
-                        {
-                            "value" : "16",
-                            "title" : "Low color (16-bit)"
-                        },
-                        {
-                            "value" : "24",
-                            "title" : "True color (24-bit)"
-                        },
-                        {
-                            "value" : "32",
-                            "title" : "True color (32-bit)"
-                        }
-                    ]
+                    "options" : [ "", "8", "16", "24", "32" ]
                 }
             ]
         },
 
         {
-            "title" : "Repeater",
             "name"  : "repeater",
             "fields" : [
                 {
                     "name"  : "dest-host",
-                    "title" : "Repeater destination host",
                     "type"  : "TEXT"
                 },
                 {
                     "name"  : "dest-port",
-                    "title" : "Repeater destination port",
                     "type"  : "NUMERIC"
                 }
             ]
         },
 
         {
-            "title" : "Audio",
             "name"  : "audio",
             "fields" : [
                 {
-                    "name"  : "enable-audio",
-                    "title" : "Enable audio",
-                    "type"  : "BOOLEAN",
-                    "value" : "true"
+                    "name"    : "enable-audio",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 },
                 {
                     "name"  : "audio-servername",
-                    "title" : "Audio server name",
                     "type"  : "TEXT"
                 }
             ]

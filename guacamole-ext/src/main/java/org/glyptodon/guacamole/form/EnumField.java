@@ -20,21 +20,29 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
+
+import java.util.Collection;
 
 /**
- * Controller for checkbox fields.
+ * Represents an arbitrary field with a finite, enumerated set of possible
+ * values.
+ *
+ * @author Michael Jumper
  */
-angular.module('form').controller('checkboxFieldController', ['$scope',
-    function checkboxFieldController($scope) {
+public class EnumField extends Field {
 
-    // Update typed value when model is changed
-    $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0]);
-    });
+    /**
+     * Creates a new EnumField with the given name and possible values.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param options
+     *     All possible legal options for this field.
+     */
+    public EnumField(String name, Collection<String> options) {
+        super(name, Field.Type.ENUM, options);
+    }
 
-    // Update string value in model when typed value is changed
-    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0] : '');
-    });
-
-}]);
+}

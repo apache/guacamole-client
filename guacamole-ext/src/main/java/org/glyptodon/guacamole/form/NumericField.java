@@ -20,21 +20,23 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
 
 /**
- * Controller for checkbox fields.
+ * Represents a field which may contain only integer values.
+ *
+ * @author Michael Jumper
  */
-angular.module('form').controller('checkboxFieldController', ['$scope',
-    function checkboxFieldController($scope) {
+public class NumericField extends Field {
 
-    // Update typed value when model is changed
-    $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0]);
-    });
+    /**
+     * Creates a new NumericField with the given name.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     */
+    public NumericField(String name) {
+        super(name, Field.Type.NUMERIC);
+    }
 
-    // Update string value in model when typed value is changed
-    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0] : '');
-    });
-
-}]);
+}

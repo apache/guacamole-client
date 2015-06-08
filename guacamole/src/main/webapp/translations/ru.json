@@ -23,6 +23,7 @@
 
         "DIALOG_HEADER_ERROR" : "Ошибка",
 
+        "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
         "ERROR_PASSWORD_MISMATCH" : "Указанные пароли не совпадают.",
 
         "FIELD_HEADER_PASSWORD"       : "Пароль:",
@@ -143,7 +144,10 @@
 
     "LOGIN": {
 
-        "ACTION_LOGIN" : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "ERROR_INVALID_LOGIN" : "Неверные данные для входа",
 
@@ -161,7 +165,7 @@
         "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить подключение",
-        "DIALOG_HEADER_ERROR"          : "Ошибка",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Размещение:",
         "FIELD_HEADER_NAME"     : "Название:",
@@ -194,7 +198,7 @@
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить группу подключений",
-        "DIALOG_HEADER_ERROR"          : "Ошибка",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Размещение:",
         "FIELD_HEADER_NAME"     : "Название:",
@@ -216,8 +220,8 @@
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
-        "DIALOG_HEADER_CONFIRM_DELETE"  : "Удалить пользователя",
-        "DIALOG_HEADER_ERROR"           : "Ошибка",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Удалить пользователя",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
@@ -393,7 +397,7 @@
         "ACTION_NEW_CONNECTION"       : "Новое подключение",
         "ACTION_NEW_CONNECTION_GROUP" : "Новая группа",
 
-        "DIALOG_HEADER_ERROR"          : "Ошибка",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "HELP_CONNECTIONS"   : "Нажмите на подключение, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление подключений, а также изменение их свойств (протокол, название сервера, порт и пр.).",
 
@@ -409,9 +413,9 @@
         "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
         "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_LANGUAGE"           : "Язык:",
@@ -448,7 +452,7 @@
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_USER"      : "Новый пользователь",
 
-        "DIALOG_HEADER_ERROR"           : "Ошибка",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "HELP_USERS" : "Нажмите на пользователя, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление пользователей, а также изменение паролей.",
 
@@ -463,7 +467,7 @@
         "ACTION_DELETE"      : "Завершить сессии",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Завершение сессий",
-        "DIALOG_HEADER_ERROR"          : "Ошибка",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_PLACEHOLDER_FILTER" : "Фильтр",
 

@@ -20,21 +20,34 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
+
+import java.util.Collections;
 
 /**
- * Controller for checkbox fields.
+ * Represents a field with strictly one possible value. It is assumed that the
+ * field may be blank, but that its sole non-blank value is the value provided.
+ * The provided value represents "true" while all other values, including
+ * having no associated value, represent "false".
+ *
+ * @author Michael Jumper
  */
-angular.module('form').controller('checkboxFieldController', ['$scope',
-    function checkboxFieldController($scope) {
+public class BooleanField extends Field {
 
-    // Update typed value when model is changed
-    $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0]);
-    });
+    /**
+     * Creates a new BooleanField with the given name and truth value. The
+     * truth value is the value that, when assigned to this field, means that
+     * this field is "true".
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param truthValue
+     *     The value to consider "true" for this field. All other values will
+     *     be considered "false".
+     */
+    public BooleanField(String name, String truthValue) {
+        super(name, Field.Type.BOOLEAN, Collections.singletonList(truthValue));
+    }
 
-    // Update string value in model when typed value is changed
-    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0] : '');
-    });
-
-}]);
+}

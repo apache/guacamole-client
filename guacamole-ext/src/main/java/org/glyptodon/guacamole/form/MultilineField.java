@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,42 +20,23 @@
  * THE SOFTWARE.
  */
 
+package org.glyptodon.guacamole.form;
+
 /**
- * Service which defines the FieldOption class.
+ * Represents a field which can contain multiple lines of text.
+ *
+ * @author Michael Jumper
  */
-angular.module('rest').factory('FieldOption', [function defineFieldOption() {
-            
+public class MultilineField extends Field {
+
     /**
-     * The object returned by REST API calls when representing a single possible
-     * legal value of a field.
-     * 
-     * @constructor
-     * @param {FieldOption|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     FieldOption.
+     * Creates a new MultilineField with the given name.
+     *
+     * @param name
+     *     The unique name to associate with this field.
      */
-    var FieldOption = function FieldOption(template) {
+    public MultilineField(String name) {
+        super(name, Field.Type.MULTILINE);
+    }
 
-        // Use empty object by default
-        template = template || {};
-
-        /**
-         * A human-readable name for this parameter value.
-         *
-         * @type String
-         */
-        this.title = template.title;
-
-        /**
-         * The actual value to set the parameter to, if this option is
-         * selected.
-         *
-         * @type String
-         */
-        this.value = template.value;
-
-    };
-
-    return FieldOption;
-
-}]);
+}

@@ -26,6 +26,8 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
  * Service which creates new UserContext instances for valid users based on
@@ -49,17 +51,20 @@ public class UserContextService  {
 
     /**
      * Authenticates the user having the given credentials, returning a new
-     * UserContext instance if the credentials are valid.
+     * UserContext instance only if the credentials are valid. If the
+     * credentials are invalid or expired, an appropriate GuacamoleException
+     * will be thrown.
      *
      * @param credentials
      *     The credentials to use to produce the UserContext.
      *
      * @return
      *     A new UserContext instance for the user identified by the given
-     *     credentials, or null if the credentials are not valid.
+     *     credentials.
      *
      * @throws GuacamoleException
-     *     If an error occurs during authentication.
+     *     If an error occurs during authentication, or if the given
+     *     credentials are invalid or expired.
      */
     public org.glyptodon.guacamole.net.auth.UserContext
         getUserContext(Credentials credentials)
@@ -67,7 +72,7 @@ public class UserContextService  {
 
         // Authenticate user
         ModeledUser user = userService.retrieveUser(credentials);
-        if (user != null && !user.getModel().isDisabled()) {
+        if (user != null) {
 
             // Upon successful authentication, return new user context
             UserContext context = userContextProvider.get();
@@ -77,7 +82,7 @@ public class UserContextService  {
         }
 
         // Otherwise, unauthorized
-        return null;
+        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
 
     }
 

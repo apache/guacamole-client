@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.PasswordField;
+import org.glyptodon.guacamole.form.UsernameField;
 
 /**
  * Information which describes a set of valid credentials.
@@ -68,12 +70,24 @@ public class CredentialsInfo {
     public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.<Field>emptyList());
 
     /**
+     * A field describing the username HTTP parameter expected by Guacamole
+     * during login, if usernames are being used.
+     */
+    public static final Field USERNAME = new UsernameField("username");
+
+    /**
+     * A field describing the password HTTP parameter expected by Guacamole
+     * during login, if passwords are being used.
+     */
+    public static final Field PASSWORD = new PasswordField("password");
+
+    /**
      * CredentialsInfo object which describes standard username/password
      * credentials.
      */
     public static final CredentialsInfo USERNAME_PASSWORD = new CredentialsInfo(Arrays.asList(
-        new Field("username", "username", Field.Type.USERNAME),
-        new Field("password", "password", Field.Type.PASSWORD)
+        USERNAME,
+        PASSWORD
     ));
     
 }

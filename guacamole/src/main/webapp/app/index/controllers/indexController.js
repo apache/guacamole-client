@@ -37,10 +37,29 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.guacNotification = guacNotification;
 
     /**
+     * The message to display to the user as instructions for the login
+     * process.
+     *
+     * @type String
+     */
+    $scope.loginHelpText = null;
+
+    /**
+     * The credentials that the authentication service is has already accepted,
+     * pending additional credentials, if any. If the user is logged in, or no
+     * credentials have been accepted, this will be null. If credentials have
+     * been accepted, this will be a map of name/value pairs corresponding to
+     * the parameters submitted in a previous authentication attempt.
+     *
+     * @type Object.<String, String>
+     */
+    $scope.acceptedCredentials = null;
+
+    /**
      * The credentials that the authentication service is currently expecting,
      * if any. If the user is logged in, this will be null.
      *
-     * @type Form[]|Form|Field[]|Field
+     * @type Field[]
      */
     $scope.expectedCredentials = null;
 
@@ -109,21 +128,27 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     };
 
     // Display login screen if a whole new set of credentials is needed
-    $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, expected) {
+    $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
-        $scope.expectedCredentials = expected;
+        $scope.loginHelpText = null;
+        $scope.acceptedCredentials = {};
+        $scope.expectedCredentials = error.expected;
     });
 
     // Prompt for remaining credentials if provided credentials were not enough
-    $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, expected) {
+    $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
         $scope.page.title = 'APP.NAME';
         $scope.page.bodyClassName = '';
-        $scope.expectedCredentials = expected;
+        $scope.loginHelpText = error.message;
+        $scope.acceptedCredentials = parameters;
+        $scope.expectedCredentials = error.expected;
     });
 
     // Clear login screen if login was successful
     $scope.$on('guacLogin', function loginSuccessful() {
+        $scope.loginHelpText = null;
+        $scope.acceptedCredentials = null;
         $scope.expectedCredentials = null;
     });
 

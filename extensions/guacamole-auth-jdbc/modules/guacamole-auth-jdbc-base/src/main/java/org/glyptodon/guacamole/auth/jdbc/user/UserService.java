@@ -27,6 +27,7 @@ import com.google.inject.Provider;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
@@ -37,11 +38,17 @@ import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
+import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.PasswordField;
 import org.glyptodon.guacamole.net.auth.User;
+import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -52,6 +59,11 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 public class UserService extends ModeledDirectoryObjectService<ModeledUser, User, UserModel> {
     
     /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    /**
      * All user permissions which are implicitly granted to the new user upon
      * creation.
      */
@@ -59,7 +71,43 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         ObjectPermission.Type.READ,
         ObjectPermission.Type.UPDATE
     };
-    
+
+    /**
+     * The name of the HTTP password parameter to expect if the user is
+     * changing their expired password upon login.
+     */
+    private static final String NEW_PASSWORD_PARAMETER = "new-password";
+
+    /**
+     * The password field to provide the user when their password is expired
+     * and must be changed.
+     */
+    private static final Field NEW_PASSWORD = new PasswordField(NEW_PASSWORD_PARAMETER);
+
+    /**
+     * The name of the HTTP password confirmation parameter to expect if the
+     * user is changing their expired password upon login.
+     */
+    private static final String CONFIRM_NEW_PASSWORD_PARAMETER = "confirm-new-password";
+
+    /**
+     * The password confirmation field to provide the user when their password
+     * is expired and must be changed.
+     */
+    private static final Field CONFIRM_NEW_PASSWORD = new PasswordField(CONFIRM_NEW_PASSWORD_PARAMETER);
+
+    /**
+     * Information describing the expected credentials if a user's password is
+     * expired. If a user's password is expired, it must be changed during the
+     * login process.
+     */
+    private static final CredentialsInfo EXPIRED_PASSWORD = new CredentialsInfo(Arrays.asList(
+        CredentialsInfo.USERNAME,
+        CredentialsInfo.PASSWORD,
+        NEW_PASSWORD,
+        CONFIRM_NEW_PASSWORD
+    ));
+
     /**
      * Mapper for accessing users.
      */
@@ -213,7 +261,9 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     /**
      * Retrieves the user corresponding to the given credentials from the
-     * database.
+     * database. If the user account is expired, and the credentials contain
+     * the necessary additional parameters to reset the user's password, the
+     * password is reset.
      *
      * @param credentials
      *     The credentials to use when locating the user.
@@ -221,8 +271,12 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * @return
      *     The existing ModeledUser object if the credentials given are valid,
      *     null otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the provided credentials to not conform to expectations.
      */
-    public ModeledUser retrieveUser(Credentials credentials) {
+    public ModeledUser retrieveUser(Credentials credentials)
+            throws GuacamoleException {
 
         // Get username and password
         String username = credentials.getUsername();
@@ -233,19 +287,55 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (userModel == null)
             return null;
 
-        // If password hash matches, return the retrieved user
-        byte[] hash = encryptionService.createPasswordHash(password, userModel.getPasswordSalt());
-        if (Arrays.equals(hash, userModel.getPasswordHash())) {
+        // If user is disabled, pretend user does not exist
+        if (userModel.isDisabled())
+            return null;
 
-            // Return corresponding user, set up cyclic reference
-            ModeledUser user = getObjectInstance(null, userModel);
-            user.setCurrentUser(new AuthenticatedUser(user, credentials));
-            return user;
+        // Verify provided password is correct
+        byte[] hash = encryptionService.createPasswordHash(password, userModel.getPasswordSalt());
+        if (!Arrays.equals(hash, userModel.getPasswordHash()))
+            return null;
+
+        // Create corresponding user object, set up cyclic reference
+        ModeledUser user = getObjectInstance(null, userModel);
+        user.setCurrentUser(new AuthenticatedUser(user, credentials));
+
+        // Update password if password is expired
+        if (userModel.isExpired()) {
+
+            // Pull new password from HTTP request
+            HttpServletRequest request = credentials.getRequest();
+            String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
+            String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
+
+            // Require new password if account is expired
+            if (newPassword == null || confirmNewPassword == null) {
+                logger.info("The password of user \"{}\" has expired and must be reset.", username);
+                throw new GuacamoleInsufficientCredentialsException("LOGIN.INFO_PASSWORD_EXPIRED", EXPIRED_PASSWORD);
+            }
+
+            // New password must be different from old password
+            if (newPassword.equals(credentials.getPassword()))
+                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_SAME");
+
+            // New password must not be blank
+            if (newPassword.isEmpty())
+                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_BLANK");
+
+            // Confirm that the password was entered correctly twice
+            if (!newPassword.equals(confirmNewPassword))
+                throw new GuacamoleClientException("LOGIN.ERROR_PASSWORD_MISMATCH");
+
+            // Change password and reset expiration flag
+            userModel.setExpired(false);
+            user.setPassword(newPassword);
+            userMapper.update(userModel);
+            logger.info("Expired password of user \"{}\" has been reset.", username);
 
         }
 
-        // Otherwise, the credentials do not match
-        return null;
+        // Return now-authenticated user
+        return user;
 
     }
 

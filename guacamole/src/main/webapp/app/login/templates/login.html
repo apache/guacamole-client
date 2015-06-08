@@ -1,4 +1,4 @@
-<div class="login-ui" ng-class="{error: loginError}" >
+<div class="login-ui" ng-class="{error: loginError, continuation: isContinuation(), initial: !isContinuation()}" >
     <!--
     Copyright 2014 Glyptodon LLC.
 
@@ -22,7 +22,7 @@
     -->
 
     <!-- Login error message -->
-    <p class="login-error">{{'LOGIN.ERROR_INVALID_LOGIN' | translate}}</p>
+    <p class="login-error">{{loginError | translate}}</p>
 
     <div class="login-dialog-middle">
 
@@ -34,14 +34,18 @@
                 <img class="logo" src="images/guac-tricolor.png" alt=""/>
                 <div class="version">{{'APP.NAME' | translate}}</div>
 
+                <!-- Login message/instructions -->
+                <p ng-show="helpText">{{helpText | translate}}</p>
+
                 <!-- Login fields -->
                 <div class="login-fields">
-                    <guac-form namespace="'LOGIN'" content="form" model="values"></guac-form>
+                    <guac-form namespace="'LOGIN'" content="remainingFields" model="enteredValues"></guac-form>
                 </div>
 
                 <!-- Submit button -->
                 <div class="buttons">
                     <input type="submit" name="login" class="login" value="{{'LOGIN.ACTION_LOGIN' | translate}}"/>
+                    <input type="submit" name="login" class="continue-login" value="{{'LOGIN.ACTION_CONTINUE' | translate}}"/>
                 </div>
 
             </form>
@@ -49,4 +53,5 @@
         </div>
 
     </div>
+
 </div>

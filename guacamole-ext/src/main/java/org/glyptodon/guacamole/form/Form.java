@@ -41,40 +41,31 @@ public class Form {
     private String name;
 
     /**
-     * The a human-readable title describing this form.
-     */
-    private String title;
-
-    /**
      * All fields associated with this form.
      */
     private Collection<Field> fields;
 
     /**
-     * Creates a new Form object with no associated fields. The name and title
-     * of the form are left unset as null. If no form name is provided, this
-     * form must not be used in the same context as another unnamed form.
+     * Creates a new Form object with no associated fields. The name is left
+     * unset as null. If no form name is provided, this form must not be used
+     * in the same context as another unnamed form.
      */
     public Form() {
         fields = new ArrayList<Field>();
     }
 
     /**
-     * Creates a new Form object having the given name and title, and
-     * containing the given fields.
+     * Creates a new Form object having the given name and containing the given
+     * fields.
      *
      * @param name
      *     A name which uniquely identifies this form.
      *
-     * @param title
-     *     A human-readable title describing this form.
-     *
      * @param fields
      *     The fields to provided within the new Form.
      */
-    public Form(String name, String title, Collection<Field> fields) {
+    public Form(String name, Collection<Field> fields) {
         this.name = name;
-        this.title = title;
         this.fields = fields;
     }
 
@@ -118,28 +109,6 @@ public class Form {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns the human-readable title associated with this form. A form's
-     * title describes the form, but need not be unique.
-     *
-     * @return
-     *     A human-readable title describing this form.
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets the human-readable title associated with this form. A form's title
-     * describes the form, but need not be unique.
-     *
-     * @param title
-     *     A human-readable title describing this form.
-     */
-    public void setTitle(String title) {
-        this.title = title;
     }
 
 }

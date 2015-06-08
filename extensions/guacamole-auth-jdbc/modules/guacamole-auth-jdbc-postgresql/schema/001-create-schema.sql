@@ -118,6 +118,7 @@ CREATE TABLE guacamole_user (
   password_hash bytea        NOT NULL,
   password_salt bytea,
   disabled      boolean      NOT NULL DEFAULT FALSE,
+  expired       boolean      NOT NULL DEFAULT FALSE,
 
   PRIMARY KEY (user_id),
 

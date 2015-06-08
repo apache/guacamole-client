@@ -40,20 +40,12 @@ angular.module('rest').factory('Form', [function defineForm() {
         template = template || {};
 
         /**
-         * The name which uniquely identifies this parameter, or null if this
-         * field has no name.
+         * The name which uniquely identifies this form, or null if this form
+         * has no name.
          *
          * @type String
          */
         this.name = template.name;
-
-        /**
-         * A human-readable name for this form, or null if this form has no
-         * name.
-         *
-         * @type String
-         */
-        this.title = template.title;
 
         /**
          * All fields contained within this form.

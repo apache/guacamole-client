@@ -86,3 +86,15 @@
     max-width: 3em;
     margin: 0.5em auto;
 }
+
+.login-ui.continuation div.login-dialog {
+    border-right: none;
+    border-left: none;
+    box-shadow: none;
+    max-width: 6in;
+}
+
+.login-ui.continuation .login-dialog .logo,
+.login-ui.continuation .login-dialog .version {
+    display: none;
+}

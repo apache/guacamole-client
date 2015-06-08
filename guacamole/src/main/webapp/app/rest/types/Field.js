@@ -47,13 +47,6 @@ angular.module('rest').factory('Field', [function defineField() {
         this.name = template.name;
 
         /**
-         * A human-readable name for this parameter.
-         *
-         * @type String
-         */
-        this.title = template.title;
-
-        /**
          * The type string defining which values this parameter may contain,
          * as well as what properties are applicable. Valid types are listed
          * within Field.Type.
@@ -64,18 +57,9 @@ angular.module('rest').factory('Field', [function defineField() {
         this.type = template.type || Field.Type.TEXT;
 
         /**
-         * The value to set the parameter to, in the case of a BOOLEAN
-         * parameter, to enable that parameter's effect.
+         * All possible legal values for this parameter.
          *
-         * @type String
-         */
-        this.value = template.value;
-
-        /**
-         * All possible legal values for this parameter. This property is only
-         * applicable to ENUM type parameters.
-         *
-         * @type FieldOption[]
+         * @type String[]
          */
         this.options = template.options;
 
@@ -123,7 +107,9 @@ angular.module('rest').factory('Field', [function defineField() {
         /**
          * The type string associated with parameters that may contain only a
          * single possible value, where that value enables the parameter's
-         * effect.
+         * effect. It is assumed that each BOOLEAN field will provide exactly
+         * one possible value (option), which will be the value if that field
+         * is true.
          * 
          * @type String
          */

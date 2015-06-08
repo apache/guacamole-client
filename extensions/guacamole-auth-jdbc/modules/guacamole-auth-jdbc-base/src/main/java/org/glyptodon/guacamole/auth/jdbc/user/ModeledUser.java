@@ -37,6 +37,7 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
+import org.glyptodon.guacamole.form.BooleanField;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.User;
@@ -59,11 +60,18 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
 
     /**
+     * The name of the attribute which controls whether a user's password is
+     * expired and must be reset upon login.
+     */
+    public static final String EXPIRED_ATTRIBUTE_NAME = "expired";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", "Account Restrictions", Arrays.asList(
-        new Field(DISABLED_ATTRIBUTE_NAME, "Disabled", "true")
+    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
+        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
+        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true")
     ));
 
     /**
@@ -214,7 +222,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         Map<String, String> attributes = new HashMap<String, String>();
 
         // Set disabled attribute
-        attributes.put("disabled", getModel().isDisabled() ? "true" : null);
+        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
+
+        // Set password expired attribute
+        attributes.put(EXPIRED_ATTRIBUTE_NAME, getModel().isExpired() ? "true" : null);
 
         return attributes;
     }
@@ -223,7 +234,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public void setAttributes(Map<String, String> attributes) {
 
         // Translate disabled attribute
-        getModel().setDisabled("true".equals(attributes.get("disabled")));
+        getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
+
+        // Translate password expired attribute
+        getModel().setExpired("true".equals(attributes.get(EXPIRED_ATTRIBUTE_NAME)));
 
     }
 
