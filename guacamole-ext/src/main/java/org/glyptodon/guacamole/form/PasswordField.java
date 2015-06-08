@@ -31,16 +31,13 @@ package org.glyptodon.guacamole.form;
 public class PasswordField extends Field {
 
     /**
-     * Creates a new PasswordField with the given name and title.
+     * Creates a new PasswordField with the given name.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      */
-    public PasswordField(String name, String title) {
-        super(name, title, Field.Type.PASSWORD);
+    public PasswordField(String name) {
+        super(name, Field.Type.PASSWORD);
     }
 
 }

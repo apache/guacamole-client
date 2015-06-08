@@ -35,24 +35,19 @@ import java.util.Collections;
 public class BooleanField extends Field {
 
     /**
-     * Creates a new BooleanField with the given name, title, and truth value.
-     * The truth value is the value that, when assigned to this field, means
-     * that this field is "true".
+     * Creates a new BooleanField with the given name and truth value. The
+     * truth value is the value that, when assigned to this field, means that
+     * this field is "true".
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      *
      * @param truthValue
      *     The value to consider "true" for this field. All other values will
      *     be considered "false".
      */
-    public BooleanField(String name, String title, String truthValue) {
-        super(name, title, Field.Type.BOOLEAN, Collections.singletonList(
-            new FieldOption(truthValue, truthValue)
-        ));
+    public BooleanField(String name, String truthValue) {
+        super(name, Field.Type.BOOLEAN, Collections.singletonList(truthValue));
     }
 
 }

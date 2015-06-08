@@ -29,12 +29,12 @@ angular.module('form').controller('checkboxFieldController', ['$scope',
 
     // Update typed value when model is changed
     $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model === $scope.field.options[0].value);
+        $scope.typedValue = (model === $scope.field.options[0]);
     });
 
     // Update string value in model when typed value is changed
     $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $scope.field.options[0].value : '');
+        $scope.model = (typedValue ? $scope.field.options[0] : '');
     });
 
 }]);

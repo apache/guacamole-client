@@ -47,13 +47,6 @@ angular.module('rest').factory('Field', [function defineField() {
         this.name = template.name;
 
         /**
-         * A human-readable name for this parameter.
-         *
-         * @type String
-         */
-        this.title = template.title;
-
-        /**
          * The type string defining which values this parameter may contain,
          * as well as what properties are applicable. Valid types are listed
          * within Field.Type.
@@ -66,7 +59,7 @@ angular.module('rest').factory('Field', [function defineField() {
         /**
          * All possible legal values for this parameter.
          *
-         * @type FieldOption[]
+         * @type String[]
          */
         this.options = template.options;
 

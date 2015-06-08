@@ -1,122 +1,50 @@
 {
-    "title" : "Telnet",
     "name"  : "telnet",
     "forms" : [
 
         {
-            "title" : "Network",
             "name"  : "network",
             "fields" : [
                 {
                     "name"  : "hostname",
-                    "title" : "Hostname",
                     "type"  : "TEXT"
                 },
                 {
                     "name"  : "port",
-                    "title" : "Port",
                     "type"  : "NUMERIC"
                 }
             ]
         },
 
         {
-            "title" : "Authentication",
             "name"  : "authentication",
             "fields" : [
                 {
                     "name"  : "username",
-                    "title" : "Username",
                     "type"  : "USERNAME"
                 },
                 {
                     "name"  : "password",
-                    "title" : "Password",
                     "type"  : "PASSWORD"
                 },
                 {
                     "name"  : "password-regex",
-                    "title" : "Password regular expression",
                     "type"  : "TEXT"
                 }
             ]
         },
 
         {
-            "title" : "Display",
             "name"  : "display",
             "fields" : [
                 {
                     "name"  : "font-name",
-                    "title" : "Font name",
                     "type"  : "TEXT"
                 },
                 {
                     "name"  : "font-size",
-                    "title" : "Font size",
                     "type"  : "ENUM",
-                    "options" : [
-                        {
-                            "value" : "",
-                            "title" : ""
-                        },
-                        {
-                            "value" : "8",
-                            "title" : "8"
-                        },
-                        {
-                            "value" : "9",
-                            "title" : "9"
-                        },
-                        {
-                            "value" : "10",
-                            "title" : "10"
-                        },
-                        {
-                            "value" : "11",
-                            "title" : "11"
-                        },
-                        {
-                            "value" : "12",
-                            "title" : "12"
-                        },
-                        {
-                            "value" : "14",
-                            "title" : "14"
-                        },
-                        {
-                            "value" : "18",
-                            "title" : "18"
-                        },
-                        {
-                            "value" : "24",
-                            "title" : "24"
-                        },
-                        {
-                            "value" : "30",
-                            "title" : "30"
-                        },
-                        {
-                            "value" : "36",
-                            "title" : "36"
-                        },
-                        {
-                            "value" : "48",
-                            "title" : "48"
-                        },
-                        {
-                            "value" : "60",
-                            "title" : "60"
-                        },
-                        {
-                            "value" : "72",
-                            "title" : "72"
-                        },
-                        {
-                            "value" : "96",
-                            "title" : "96"
-                        }
-                    ]
+                    "options" : [ "", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96" ]
                 }
             ]
         }

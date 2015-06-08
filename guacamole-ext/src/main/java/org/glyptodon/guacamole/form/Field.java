@@ -92,11 +92,6 @@ public class Field {
     private String name;
 
     /**
-     * A human-readable name to be presented to the user.
-     */
-    private String title;
-
-    /**
      * The type of this field.
      */
     private String type;
@@ -104,41 +99,33 @@ public class Field {
     /**
      * A collection of all legal values of this field.
      */
-    private Collection<FieldOption> options;
+    private Collection<String> options;
 
     /**
-     * Creates a new Parameter with no associated name, title, or type.
+     * Creates a new Parameter with no associated name or type.
      */
     public Field() {
     }
 
     /**
-     * Creates a new Field with the given name, title, and type.
+     * Creates a new Field with the given name  and type.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      *
      * @param type
      *     The type of this field.
      */
-    public Field(String name, String title, String type) {
+    public Field(String name, String type) {
         this.name  = name;
-        this.title = title;
         this.type  = type;
     }
 
     /**
-     * Creates a new Field with the given name, title, type, and possible
-     * values.
+     * Creates a new Field with the given name, type, and possible values.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      *
      * @param type
      *     The type of this field.
@@ -146,10 +133,8 @@ public class Field {
      * @param options
      *     A collection of all possible valid options for this field.
      */
-    public Field(String name, String title, String type,
-            Collection<FieldOption> options) {
+    public Field(String name, String type, Collection<String> options) {
         this.name    = name;
-        this.title   = title;
         this.type    = type;
         this.options = options;
     }
@@ -172,27 +157,6 @@ public class Field {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * Returns the human-readable title associated with this field.
-     *
-     * @return
-     *     The human-readable title associated with this field.
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * Sets the title associated with this field. The title must be a human-
-     * readable string which describes accurately this field.
-     *
-     * @param title
-     *     A human-readable string describing this field.
-     */
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     /**
@@ -223,7 +187,7 @@ public class Field {
      *     A mutable collection of field options, or null if the field has no
      *     options.
      */
-    public Collection<FieldOption> getOptions() {
+    public Collection<String> getOptions() {
         return options;
     }
 
@@ -233,7 +197,7 @@ public class Field {
      * @param options
      *     The options to associate with this field.
      */
-    public void setOptions(Collection<FieldOption> options) {
+    public void setOptions(Collection<String> options) {
         this.options = options;
     }
 

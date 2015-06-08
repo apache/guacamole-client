@@ -30,16 +30,13 @@ package org.glyptodon.guacamole.form;
 public class MultilineField extends Field {
 
     /**
-     * Creates a new MultilineField with the given name and title.
+     * Creates a new MultilineField with the given name.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      */
-    public MultilineField(String name, String title) {
-        super(name, title, Field.Type.MULTILINE);
+    public MultilineField(String name) {
+        super(name, Field.Type.MULTILINE);
     }
 
 }

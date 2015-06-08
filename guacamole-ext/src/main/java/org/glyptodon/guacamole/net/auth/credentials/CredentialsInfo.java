@@ -73,13 +73,13 @@ public class CredentialsInfo {
      * A field describing the username HTTP parameter expected by Guacamole
      * during login, if usernames are being used.
      */
-    public static final Field USERNAME = new UsernameField("username", "username");
+    public static final Field USERNAME = new UsernameField("username");
 
     /**
      * A field describing the password HTTP parameter expected by Guacamole
      * during login, if passwords are being used.
      */
-    public static final Field PASSWORD = new PasswordField("password", "password");
+    public static final Field PASSWORD = new PasswordField("password");
 
     /**
      * CredentialsInfo object which describes standard username/password

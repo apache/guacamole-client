@@ -30,16 +30,13 @@ package org.glyptodon.guacamole.form;
 public class NumericField extends Field {
 
     /**
-     * Creates a new NumericField with the given name and title.
+     * Creates a new NumericField with the given name.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      */
-    public NumericField(String name, String title) {
-        super(name, title, Field.Type.NUMERIC);
+    public NumericField(String name) {
+        super(name, Field.Type.NUMERIC);
     }
 
 }

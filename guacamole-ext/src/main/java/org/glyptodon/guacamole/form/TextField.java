@@ -31,16 +31,13 @@ package org.glyptodon.guacamole.form;
 public class TextField extends Field {
 
     /**
-     * Creates a new TextField with the given name and title.
+     * Creates a new TextField with the given name.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      */
-    public TextField(String name, String title) {
-        super(name, title, Field.Type.TEXT);
+    public TextField(String name) {
+        super(name, Field.Type.TEXT);
     }
 
 }

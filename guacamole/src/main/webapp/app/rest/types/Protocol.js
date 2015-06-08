@@ -47,13 +47,6 @@ angular.module('rest').factory('Protocol', [function defineProtocol() {
         this.name = template.name;
 
         /**
-         * A human-readable name for this protocol.
-         *
-         * @type String
-         */
-        this.title = template.title;
-
-        /**
          * An array of forms containing all known parameters for this protocol,
          * their types, and other information.
          *

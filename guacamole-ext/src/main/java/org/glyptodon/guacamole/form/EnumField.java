@@ -33,19 +33,16 @@ import java.util.Collection;
 public class EnumField extends Field {
 
     /**
-     * Creates a new EnumField with the given name, title, and possible values.
+     * Creates a new EnumField with the given name and possible values.
      *
      * @param name
      *     The unique name to associate with this field.
      *
-     * @param title
-     *     The human-readable title to associate with this field.
-     *
      * @param options
      *     All possible legal options for this field.
      */
-    public EnumField(String name, String title, Collection<FieldOption> options) {
-        super(name, title, Field.Type.ENUM, options);
+    public EnumField(String name, Collection<String> options) {
+        super(name, Field.Type.ENUM, options);
     }
 
 }

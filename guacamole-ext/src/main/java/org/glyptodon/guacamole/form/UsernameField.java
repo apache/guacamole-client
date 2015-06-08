@@ -31,16 +31,13 @@ package org.glyptodon.guacamole.form;
 public class UsernameField extends Field {
 
     /**
-     * Creates a new UsernameField with the given name and title.
+     * Creates a new UsernameField with the given name.
      *
      * @param name
      *     The unique name to associate with this field.
-     *
-     * @param title
-     *     The human-readable title to associate with this field.
      */
-    public UsernameField(String name, String title) {
-        super(name, title, Field.Type.USERNAME);
+    public UsernameField(String name) {
+        super(name, Field.Type.USERNAME);
     }
 
 }

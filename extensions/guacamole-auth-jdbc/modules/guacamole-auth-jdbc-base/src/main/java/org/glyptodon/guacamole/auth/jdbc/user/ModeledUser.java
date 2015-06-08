@@ -69,9 +69,9 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", "Account Restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "Disabled", "true"),
-        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "Password expired", "true")
+    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
+        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
+        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true")
     ));
 
     /**
