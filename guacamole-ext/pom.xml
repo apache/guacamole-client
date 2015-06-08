@@ -5,7 +5,7 @@
     <groupId>org.glyptodon.guacamole</groupId>
     <artifactId>guacamole-ext</artifactId>
     <packaging>jar</packaging>
-    <version>0.9.6</version>
+    <version>0.9.7</version>
     <name>guacamole-ext</name>
     <url>http://guac-dev.org/</url>
 
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>0.9.6</version>
+            <version>0.9.7</version>
             <scope>compile</scope>
         </dependency>
 
