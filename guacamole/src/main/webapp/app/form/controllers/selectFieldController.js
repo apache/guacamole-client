@@ -30,6 +30,12 @@ angular.module('form').controller('selectFieldController', ['$scope', '$injector
     // Required services
     var translationStringService = $injector.get('translationStringService');
 
+    // Interpret undefined/null as empty string
+    $scope.$watch('model', function setModel(model) {
+        if (!model && model !== '')
+            $scope.model = '';
+    });
+
     /**
      * Produces the translation string for the given field option
      * value. The translation string will be of the form:
