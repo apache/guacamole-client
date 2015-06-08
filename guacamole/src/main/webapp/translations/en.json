@@ -7,6 +7,7 @@
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
         "ACTION_CLONE"              : "Clone",
+        "ACTION_CONTINUE"           : "Continue",
         "ACTION_DELETE"             : "Delete",
         "ACTION_DELETE_SESSIONS"    : "Kill Sessions",
         "ACTION_LOGIN"              : "Login",
@@ -145,6 +146,7 @@
     "LOGIN": {
 
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
         "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",

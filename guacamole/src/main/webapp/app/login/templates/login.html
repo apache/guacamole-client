@@ -34,6 +34,9 @@
                 <img class="logo" src="images/guac-tricolor.png" alt=""/>
                 <div class="version">{{'APP.NAME' | translate}}</div>
 
+                <!-- Login message/instructions -->
+                <p ng-show="helpText">{{helpText | translate}}</p>
+
                 <!-- Login fields -->
                 <div class="login-fields">
                     <guac-form namespace="'LOGIN'" content="remainingFields" model="enteredValues"></guac-form>
@@ -42,6 +45,7 @@
                 <!-- Submit button -->
                 <div class="buttons">
                     <input type="submit" name="login" class="login" value="{{'LOGIN.ACTION_LOGIN' | translate}}"/>
+                    <input type="submit" name="login" class="continue-login" value="{{'LOGIN.ACTION_CONTINUE' | translate}}"/>
                 </div>
 
             </form>

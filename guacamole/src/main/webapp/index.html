@@ -50,7 +50,9 @@
         </div>
 
         <!-- Login screen for logged-out users -->
-        <guac-login ng-show="expectedCredentials" form="expectedCredentials"
+        <guac-login ng-show="expectedCredentials"
+                    help-text="loginHelpText"
+                    form="expectedCredentials"
                     values="acceptedCredentials"></guac-login>
         
         <script type="text/javascript" src="app.js"></script>

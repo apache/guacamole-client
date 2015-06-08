@@ -36,6 +36,14 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
     directive.scope = {
 
         /**
+         * An optional instructional message to display within the login
+         * dialog.
+         *
+         * @type String
+         */
+        helpText : '=',
+
+        /**
          * The login form or set of fields. This will be displayed to the user
          * to capture their credentials.
          *

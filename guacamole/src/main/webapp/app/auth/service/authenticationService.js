@@ -36,7 +36,8 @@
  * Failed logins may also result in guacInsufficientCredentials or
  * guacInvalidCredentials events, if the provided credentials were rejected for
  * being insufficient or invalid respectively. Both events will be provided
- * the set of parameters originally given to authenticate() and the set of
+ * the set of parameters originally given to authenticate() and the error that
+ * rejected the credentials. The Error object provided will contain set of
  * expected credentials returned by the REST endpoint. This set of credentials
  * will be in the form of a Field array.
  */
@@ -154,11 +155,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS)
-                $rootScope.$broadcast('guacInvalidCredentials', parameters, error.expected);
+                $rootScope.$broadcast('guacInvalidCredentials', parameters, error);
 
             // Request more credentials if provided credentials were not enough 
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
-                $rootScope.$broadcast('guacInsufficientCredentials', parameters, error.expected);
+                $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
 
             authenticationProcess.reject(error);
         });
