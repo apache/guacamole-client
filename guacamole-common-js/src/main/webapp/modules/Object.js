@@ -203,3 +203,13 @@ Guacamole.Object = function(client, index) {
  * @type String
  */
 Guacamole.Object.ROOT_STREAM = '/';
+
+/**
+ * The mimetype of a stream containing JSON which maps available stream names
+ * to their corresponding mimetype. The root stream of a Guacamole.Object MUST
+ * have this mimetype.
+ *
+ * @constant
+ * @type String
+ */
+Guacamole.Object.STREAM_INDEX_MIMETYPE = 'application/vnd.glyptodon.guacamole.stream-index+json';
