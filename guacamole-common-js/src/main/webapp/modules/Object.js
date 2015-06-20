@@ -167,7 +167,7 @@ Guacamole.Object = function(client, index) {
 
         // Queue body callback if provided
         if (bodyCallback)
-            queueBodyCallback(name, bodyCallback);
+            enqueueBodyCallback(name, bodyCallback);
 
         // Send request for input stream
         client.requestObjectInputStream(guacObject.index, name);
