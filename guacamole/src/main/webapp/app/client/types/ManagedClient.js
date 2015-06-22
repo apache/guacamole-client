@@ -31,6 +31,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedClientState   = $injector.get('ManagedClientState');
     var ManagedDisplay       = $injector.get('ManagedDisplay');
     var ManagedFileDownload  = $injector.get('ManagedFileDownload');
+    var ManagedFilesystem    = $injector.get('ManagedFilesystem');
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
     // Required services
@@ -118,6 +119,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFileUpload[]
          */
         this.uploads = template.uploads || [];
+
+        /**
+         * All currently-exposed filesystems. When the Guacamole server exposes
+         * a filesystem object, that object will be made available as a
+         * ManagedFilesystem within this array.
+         *
+         * @type ManagedFilesystem[]
+         */
+        this.filesystems = template.filesystems || [];
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -379,6 +389,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         client.onfile = function clientFileReceived(stream, mimetype, filename) {
             $rootScope.$apply(function startDownload() {
                 managedClient.downloads.push(ManagedFileDownload.getInstance(stream, mimetype, filename));
+            });
+        };
+
+        // Handle any received filesystem objects
+        client.onfilesystem = function fileSystemReceived(object, name) {
+            $rootScope.$apply(function exposeFilesystem() {
+                managedClient.filesystems.push(ManagedFilesystem.getInstance(object, name));
             });
         };
 
