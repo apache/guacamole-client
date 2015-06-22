@@ -32,7 +32,7 @@ var Guacamole = Guacamole || {};
  * @param {Guacamole.InputStream} stream
  *     The stream that JSON will be read from.
  */
-Guacamole.JSONReader = function(stream) {
+Guacamole.JSONReader = function guacamoleJSONReader(stream) {
 
     /**
      * Reference to this Guacamole.JSONReader.
@@ -64,7 +64,7 @@ Guacamole.JSONReader = function(stream) {
      * @return {Number}
      *     The current length of this Guacamole.JSONReader.
      */
-    this.getLength = function() {
+    this.getLength = function getLength() {
         return json.length;
     };
 
@@ -76,7 +76,7 @@ Guacamole.JSONReader = function(stream) {
      *     The contents of this Guacamole.JSONReader, as parsed from the JSON
      *     contents of the input stream.
      */
-    this.getJSON = function() {
+    this.getJSON = function getJSON() {
         return JSON.parse(json);
     };
 
@@ -93,7 +93,7 @@ Guacamole.JSONReader = function(stream) {
     };
 
     // Simply call onend when end received
-    stringReader.onend = function() {
+    stringReader.onend = function onend() {
         if (guacReader.onend)
             guacReader.onend();
     };

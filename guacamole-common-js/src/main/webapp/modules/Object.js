@@ -33,7 +33,7 @@ var Guacamole = Guacamole || {};
  * @param {Number} index
  *     The index of this object.
  */
-Guacamole.Object = function(client, index) {
+Guacamole.Object = function guacamoleObject(client, index) {
 
     /**
      * Reference to this Guacamole.Object.
@@ -163,7 +163,7 @@ Guacamole.Object = function(client, index) {
      *     and its mimetype as its two only arguments. If the onbody handler of
      *     this object is overridden, this callback will not be invoked.
      */
-    this.requestInputStream = function(name, bodyCallback) {
+    this.requestInputStream = function requestInputStream(name, bodyCallback) {
 
         // Queue body callback if provided
         if (bodyCallback)
@@ -189,7 +189,7 @@ Guacamole.Object = function(client, index) {
      *     An output stream which will write blobs to the named output stream
      *     of this object.
      */
-    this.createOutputStream = function(mimetype, name) {
+    this.createOutputStream = function createOutputStream(mimetype, name) {
         return client.createObjectOutputStream(guacObject.index, mimetype, name);
     };
 

@@ -320,7 +320,7 @@ Guacamole.Client = function(tunnel) {
      *     An output stream which will write blobs to the named output stream
      *     of the given object.
      */
-    this.createObjectOutputStream = function(index, mimetype, name) {
+    this.createObjectOutputStream = function createObjectOutputStream(index, mimetype, name) {
 
         // Allocate index
         var streamIndex = stream_indices.next();
@@ -331,7 +331,7 @@ Guacamole.Client = function(tunnel) {
 
         // Override sendEnd() of stream to automatically free index
         var oldEnd = stream.sendEnd;
-        stream.sendEnd = function() {
+        stream.sendEnd = function freeStreamIndex() {
             oldEnd();
             stream_indices.free(streamIndex);
             delete output_streams[streamIndex];
@@ -353,7 +353,7 @@ Guacamole.Client = function(tunnel) {
      * @param {String} name
      *     The name of the input stream to request.
      */
-    this.requestObjectInputStream = function(index, name) {
+    this.requestObjectInputStream = function requestObjectInputStream(index, name) {
 
         // Do not send requests if not connected
         if (!isConnected())
@@ -645,7 +645,7 @@ Guacamole.Client = function(tunnel) {
 
         },
 
-        "body": function(parameters) {
+        "body" : function handleBody(parameters) {
 
             // Get object
             var objectIndex = parseInt(parameters[0]);
@@ -863,7 +863,7 @@ Guacamole.Client = function(tunnel) {
 
         },
 
-        "filesystem": function(parameters) {
+        "filesystem" : function handleFilesystem(parameters) {
 
             var objectIndex = parseInt(parameters[0]);
             var name = parameters[1];
@@ -1118,7 +1118,7 @@ Guacamole.Client = function(tunnel) {
 
         },
 
-        "undefine": function(parameters) {
+        "undefine" : function handleUndefine(parameters) {
 
             // Get object
             var objectIndex = parseInt(parameters[0]);
