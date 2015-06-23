@@ -231,6 +231,14 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
          */
         this.files = template.files || {};
 
+        /**
+         * Whether this file is currently expanded, exposing any children
+         * within. This is only applicable to directories.
+         *
+         * @type Boolean
+         */
+        this.expanded = template.expanded || false;
+
     };
 
     /**
