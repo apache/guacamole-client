@@ -558,6 +558,43 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Set client-specific menu actions
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
 
+    /**
+     * The currently-visible filesystem within the filesystem menu, if the
+     * filesystem menu is open. If no filesystem is currently visible, this
+     * will be null.
+     *
+     * @type ManagedFilesystem
+     */
+    $scope.filesystemMenuContents = null;
+
+    /**
+     * Hides the filesystem menu.
+     */
+    $scope.hideFilesystemMenu = function hideFilesystemMenu() {
+        $scope.filesystemMenuContents = null;
+    };
+
+    /**
+     * Shows the filesystem menu, displaying the contents of the given
+     * filesystem within it.
+     *
+     * @param {ManagedFilesystem} filesystem
+     *     The filesystem to show within the filesystem menu.
+     */
+    $scope.showFilesystemMenu = function showFilesystemMenu(filesystem) {
+        $scope.filesystemMenuContents = filesystem;
+    };
+
+    /**
+     * Returns whether the filesystem menu should be visible.
+     *
+     * @returns {Boolean}
+     *     true if the filesystem menu is shown, false otherwise.
+     */
+    $scope.isFilesystemMenuShown = function isFilesystemMenuShown() {
+        return !!$scope.filesystemMenuContents && $scope.menu.shown;
+    };
+
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
 

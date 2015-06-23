@@ -160,3 +160,29 @@
 #guac-menu #zoom-state {
     font-size: 2em;
 }
+
+#guac-menu #devices .device {
+
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    padding-left: 3.5em;
+    background-size:         1.5em 1.5em;
+    -moz-background-size:    1.5em 1.5em;
+    -webkit-background-size: 1.5em 1.5em;
+    -khtml-background-size:  1.5em 1.5em;
+
+    background-repeat: no-repeat;
+    background-position: 1em center;
+
+}
+
+#guac-menu #devices .device:hover {
+    cursor: pointer;
+    border-color: black;
+}
+
+#guac-menu #devices .device.filesystem {
+    background-image: url('images/drive.png');
+}

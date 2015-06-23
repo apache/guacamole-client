@@ -74,6 +74,16 @@
                     </div>
                 </div>
 
+                <!-- Devices -->
+                <div class="menu-section" id="devices" ng-show="client.filesystems.length">
+                    <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
+                    <div class="content">
+                        <div class="device filesystem" ng-repeat="filesystem in client.filesystems" ng-click="showFilesystemMenu(filesystem)">
+                            {{filesystem.name}}
+                        </div>
+                    </div>
+                </div>
+
                 <!-- File transfers -->
                 <div class="menu-section" id="file-transfers">
                     <h3 guac-marker="menu.fileTransferMarker">{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h3>
@@ -149,6 +159,24 @@
                     </div>
                 </div>
 
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Filesystem menu -->
+    <div id="filesystem-menu" class="menu" ng-class="{open: isFilesystemMenuShown()}">
+        <div class="menu-content">
+
+            <!-- Stationary header -->
+            <div class="header">
+                <h2>{{filesystemMenuContents.name}}</h2>
+                <button class="back" ng-click="hideFilesystemMenu()">Back</button>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="menu-body">
+                <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>
             </div>
 
         </div>

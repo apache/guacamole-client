@@ -106,6 +106,7 @@
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
         "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
+        "SECTION_HEADER_DEVICES"        : "Devices",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_FILE_TRANSFERS" : "File Transfers",
         "SECTION_HEADER_INPUT_METHOD"   : "Input method",
