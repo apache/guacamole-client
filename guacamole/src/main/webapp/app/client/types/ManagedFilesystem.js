@@ -68,6 +68,14 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
          */
         this.root = template.root;
 
+        /**
+         * The current directory being viewed or manipulated within the
+         * filesystem.
+         *
+         * @type ManagedFilesystem.File
+         */
+        this.currentDirectory = template.currentDirectory || template.root;
+
     };
 
     /**
@@ -140,6 +148,7 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
                             mimetype   : mimetypes[name],
                             streamName : name,
                             type       : type,
+                            parent     : file,
                             name       : filename
                         });
 
@@ -217,6 +226,26 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
     };
 
     /**
+     * Changes the current directory of the given filesystem, automatically
+     * refreshing the contents of that directory.
+     *
+     * @param {ManagedFilesystem} filesystem
+     *     The filesystem whose current directory should be changed.
+     *
+     * @param {ManagedFilesystem.File} file
+     *     The directory to change to.
+     */
+    ManagedFilesystem.changeDirectory = function changeDirectory(filesystem, file) {
+
+        // Refresh contents
+        ManagedFilesystem.refresh(filesystem, file);
+
+        // Set current directory
+        filesystem.currentDirectory = file;
+
+    };
+
+    /**
      * A file within a ManagedFilesystem. Each ManagedFilesystem.File provides
      * sufficient information for retrieval or replacement of the file's
      * contents, as well as the file's name and type.
@@ -258,20 +287,20 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
         this.name = template.name;
 
         /**
+         * The parent directory of this file. In the case of the root
+         * directory, this will be null.
+         *
+         * @type ManagedFilesystem.File
+         */
+        this.parent = template.parent;
+
+        /**
          * Map of all known files containined within this file by name. This is
          * only applicable to directories.
          *
          * @type Object.<String, ManagedFilesystem.File>
          */
         this.files = template.files || {};
-
-        /**
-         * Whether this file is currently expanded, exposing any children
-         * within. This is only applicable to directories.
-         *
-         * @type Boolean
-         */
-        this.expanded = template.expanded || false;
 
     };
 

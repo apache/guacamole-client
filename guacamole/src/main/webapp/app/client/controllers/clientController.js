@@ -28,6 +28,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required types
     var ManagedClientState = $injector.get('ManagedClientState');
+    var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
@@ -593,6 +594,45 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.isFilesystemMenuShown = function isFilesystemMenuShown() {
         return !!$scope.filesystemMenuContents && $scope.menu.shown;
+    };
+
+    /**
+     * Returns the full path to the given file as an ordered array of parent
+     * directories.
+     *
+     * @param {ManagedFilesystem.File} file
+     *     The file whose full path should be retrieved.
+     *
+     * @returns {ManagedFilesystem.File[]}
+     *     An array of directories which make up the hierarchy containing the
+     *     given file, in order of increasing depth.
+     */
+    $scope.getPath = function getPath(file) {
+
+        var path = [];
+
+        // Add all files to path in ascending order of depth
+        while (file && file.parent) {
+            path.unshift(file);
+            file = file.parent;
+        }
+
+        return path;
+
+    };
+
+    /**
+     * Changes the current directory of the given filesystem to the given
+     * directory.
+     *
+     * @param {ManagedFilesystem} filesystem
+     *     The filesystem whose current directory should be changed.
+     *
+     * @param {ManagedFilesystem.File} file
+     *     The directory to change to.
+     */
+    $scope.changeDirectory = function changeDirectory(filesystem, file) {
+        ManagedFilesystem.changeDirectory(filesystem, file);
     };
 
     // Clean up when view destroyed

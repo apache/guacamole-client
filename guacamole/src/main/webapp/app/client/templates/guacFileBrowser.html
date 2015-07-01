@@ -32,27 +32,32 @@
         </div>
 
         <!-- Directory -->
-        <div class="directory" ng-show="isDirectory(file)" ng-class="{expanded: file.expanded}">
-            <div class="caption" ng-click="toggleExpanded(file)">
+        <div class="directory" ng-show="isDirectory(file)">
+            <div class="caption" ng-click="changeDirectory(file)">
                 <div class="icon"></div>
                 {{file.name}}
-            </div>
-
-            <!-- Children of this directory -->
-            <div class="children">
-                <div class="list-item"
-                     ng-repeat="file in file.files | orderBy : 'name'"
-                     ng-include="'file.html'">
             </div>
         </div>
 
     </script>
 
-    <!-- Root directory contents -->
+    <!-- Current directory contents -->
     <div class="filesystem-root">
+
+        <!-- Parent directory -->
+        <div class="list-item" ng-show="filesystem.currentDirectory.parent">
+            <div class="directory previous">
+                <div class="caption" ng-click="changeDirectory(filesystem.currentDirectory.parent)">
+                    <div class="icon"></div> ..
+                </div>
+            </div>
+        </div>
+
+        <!-- All other files -->
         <div class="list-item"
-             ng-repeat="file in filesystem.root.files | orderBy : 'name'"
+             ng-repeat="file in filesystem.currentDirectory.files | orderBy : 'name'"
              ng-include="'file.html'"></div>
+
     </div>
 
 </div>

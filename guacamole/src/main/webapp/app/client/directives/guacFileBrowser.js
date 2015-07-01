@@ -79,22 +79,14 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             };
 
             /**
-             * Toggles the expanded state of the given file between expanded
-             * and collapsed, showing or hiding the file's children. This is
-             * only applicable to directories.
+             * Changes the currently-displayed directory to the given
+             * directory.
              *
              * @param {ManagedFilesystem.File} file
-             *     The file to expand or collapse.
+             *     The directory to change to.
              */
-            $scope.toggleExpanded = function toggleExpanded(file) {
-
-                // Toggle expanded state
-                file.expanded = !file.expanded;
-
-                // If now expanded, refresh contents
-                if (file.expanded)
-                    ManagedFilesystem.refresh($scope.filesystem, file);
-
+            $scope.changeDirectory = function changeDirectory(file) {
+                ManagedFilesystem.changeDirectory($scope.filesystem, file);
             };
 
             /**

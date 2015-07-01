@@ -27,10 +27,8 @@
     display: none;
 }
 
-/* Show directory contents if expanded */
-
-.file-browser .directory.expanded > .children {
-    display: block;
+.file-browser .list-item .caption {
+    white-space: nowrap;
 }
 
 /* Directory / file icons */
@@ -43,6 +41,6 @@
     background-image: url('images/folder-closed.png');
 }
 
-.file-browser .directory.expanded > .caption .icon {
-    background-image: url('images/folder-open.png');
+.file-browser .directory.previous > .caption .icon {
+    background-image: url('images/folder-up.png');
 }

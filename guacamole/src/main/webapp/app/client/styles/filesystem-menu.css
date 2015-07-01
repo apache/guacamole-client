@@ -46,3 +46,26 @@
     -webkit-align-items: center;
     align-items:         center;
 }
+
+#filesystem-menu .menu-body {
+    padding: 0.25em;
+}
+
+#filesystem-menu .header.breadcrumbs {
+    background: rgba(0,0,0,0.0125);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: none;
+    margin-top: 0;
+    border-top: none;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb {
+    padding: 0.5em;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb:hover {
+    background-color: #CDA;
+    cursor: pointer;
+}
