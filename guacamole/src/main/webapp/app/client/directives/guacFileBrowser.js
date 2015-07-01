@@ -97,6 +97,17 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
 
             };
 
+            /**
+             * Initiates a download of the given file. The progress of the
+             * download can be observed through guacFileTransferManager.
+             *
+             * @param {ManagedFilesystem.File} file
+             *     The file to download.
+             */
+            $scope.downloadFile = function downloadFile(file) {
+                ManagedFilesystem.downloadFile($scope.client, $scope.filesystem, file.streamName);
+            };
+
         }]
 
     };

@@ -27,6 +27,10 @@
 angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector',
     function defineManagedFilesystem($rootScope, $injector) {
 
+    // Required types
+    var ManagedFileDownload = $injector.get('ManagedFileDownload');
+    var ManagedFileUpload   = $injector.get('ManagedFileUpload');
+
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
      * filesystem object while it is active, allowing it to be detached and
@@ -179,6 +183,36 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
         ManagedFilesystem.refresh(managedFilesystem, managedFilesystem.root);
 
         return managedFilesystem;
+
+    };
+
+    /**
+     * Downloads the given file from the server using the given Guacamole
+     * client and filesystem. The file transfer can be monitored through the
+     * corresponding entry in the downloads array of the given ManagedClient.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient from which the file is to be downloaded.
+     *
+     * @param {ManagedFilesystem} managedFilesystem
+     *     The ManagedFilesystem from which the file is to be downloaded. Any
+     *     path information provided must be relative to this filesystem.
+     *
+     * @param {String} path
+     *     The full, absolute path of the file to download.
+     */
+    ManagedFilesystem.downloadFile = function downloadFile(managedClient, managedFilesystem, path) {
+
+        // Request download
+        managedFilesystem.object.requestInputStream(path, function downloadStreamReceived(stream, mimetype) {
+
+            // Parse filename from string
+            var filename = path.match(/(.*[\\/])?(.*)/)[2];
+
+            // Start and track download
+            managedClient.downloads.push(ManagedFileDownload.getInstance(stream, mimetype, filename));
+
+        });
 
     };
 
