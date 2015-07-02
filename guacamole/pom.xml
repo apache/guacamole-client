@@ -157,10 +157,10 @@
                             <jsSourceFiles>
                                 <jsSourceFile>lib/jquery.js</jsSourceFile>
                                 <jsSourceFile>lib/lodash.js</jsSourceFile>
-                                <jsSourceFile>lib/angular.js</jsSourceFile>
+                                <jsSourceFile>lib/angular.min.js</jsSourceFile>
                                 <jsSourceFile>lib/angular-module-shim.js</jsSourceFile>
                                 <jsSourceFile>lib/angular-touch.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-cookies.min.js</jsSourceFile>
+                                <jsSourceFile>lib/plugins/angular-cookies.js</jsSourceFile>
                                 <jsSourceFile>lib/plugins/angular-route.js</jsSourceFile>
                                 <jsSourceFile>lib/plugins/angular-translate.js</jsSourceFile>
                                 <jsSourceFile>lib/plugins/angular-translate-loader-static-files.js</jsSourceFile>
