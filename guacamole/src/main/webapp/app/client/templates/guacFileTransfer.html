@@ -25,7 +25,9 @@
     <div class="filename">{{transfer.filename}}</div>
 
     <!-- Progress/status text -->
-    <div class="text">{{'CLIENT.TEXT_FILE_TRANSFER_PROGRESS' | translate:'{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}'}}</div>
+    <div class="text"
+         translate="CLIENT.TEXT_FILE_TRANSFER_PROGRESS"
+         translate-values="{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}"></div>
 
     <!-- Progress bar -->
     <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>

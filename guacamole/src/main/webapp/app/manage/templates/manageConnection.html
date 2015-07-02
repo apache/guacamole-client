@@ -96,7 +96,9 @@ THE SOFTWARE.
                 <tr ng-repeat="wrapper in wrapperPage">
                     <td class="username">{{wrapper.entry.username}}</td>
                     <td class="start">{{wrapper.entry.startDate | date:historyDateFormat}}</td>
-                    <td class="duration">{{wrapper.durationText | translate:"{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"}}</td>
+                    <td class="duration"
+                        translate="{{wrapper.durationText}}"
+                        translate-values="{VALUE: wrapper.duration.value, UNIT: wrapper.duration.unit}"></td>
                 </tr>
             </tbody>
         </table>

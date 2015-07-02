@@ -32,10 +32,16 @@
         <p ng-show="notification.text" class="text">{{notification.text | translate}}</p>
 
         <!-- Current progress -->
-        <div ng-show="notification.progress" class="progress"><div ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}" class="bar"></div><div ng-show="notification.progress.text" class="text">{{notification.progress.text | translate:"{ PROGRESS: notification.progress.value, UNIT: notification.progress.unit}"}}</div></div>
+        <div class="progress" ng-show="notification.progress"><div class="bar" ng-show="progressPercent" ng-style="{'width': progressPercent + '%'}"></div><div
+                ng-show="notification.progress.text"
+                translate="{{notification.progress.text}}"
+                translate-values="{PROGRESS: notification.progress.value, UNIT: notification.progress.unit}"></div></div>
 
         <!-- Default action countdown text -->
-        <p ng-show="notification.countdown.text" class="countdown-text">{{notification.countdown.text | translate:"{ REMAINING: timeRemaining}"}}</p>
+        <p class="countdown-text"
+           ng-show="notification.countdown.text"
+           translate="{{notification.countdown.text}}"
+           translate-values="{REMAINING: timeRemaining}"></p>
 
     </div>
 
