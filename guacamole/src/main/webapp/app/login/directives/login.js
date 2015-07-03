@@ -77,7 +77,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
          *
          * @type String
          */
-        $scope.loginError = false;
+        $scope.loginError = null;
 
         /**
          * All form values entered by the user, as parameter name/value pairs.

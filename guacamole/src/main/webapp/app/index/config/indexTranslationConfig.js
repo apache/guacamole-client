@@ -36,6 +36,9 @@ angular.module('index').config(['$injector', function($injector) {
     $translateProvider.fallbackLanguage(fallbackLanguages);
     $translateProvider.preferredLanguage(preferenceServiceProvider.preferences.language);
 
+    // Escape any HTML in translation strings
+    $translateProvider.useSanitizeValueStrategy('escape');
+
     // Load translations via translationLoader service
     $translateProvider.useLoader('translationLoader', {
         fallbackLanguages : fallbackLanguages

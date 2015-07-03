@@ -32,9 +32,9 @@
         <span class="name">{{item.name}}</span>
         
         <!-- Active user count -->
-        <span class="activeUserCount" ng-show="item.getActiveConnections()">
-            {{'HOME.INFO_ACTIVE_USER_COUNT' | translate:'{USERS: item.getActiveConnections()}'}}
-        </span>
+        <span class="activeUserCount" ng-show="item.getActiveConnections()"
+            translate="HOME.INFO_ACTIVE_USER_COUNT"
+            translate-values="{USERS: item.getActiveConnections()}"></span>
 
     </div>
 </a>
