@@ -27,6 +27,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
+    var ManagedClient      = $injector.get('ManagedClient');
     var ManagedClientState = $injector.get('ManagedClientState');
     var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
@@ -633,6 +634,25 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.changeDirectory = function changeDirectory(filesystem, file) {
         ManagedFilesystem.changeDirectory(filesystem, file);
+    };
+
+    /**
+     * Begins a file upload through the attached Guacamole client for
+     * each file in the given FileList.
+     *
+     * @param {FileList} files
+     *     The files to upload.
+     */
+    $scope.uploadFiles = function uploadFiles(files) {
+
+        // Ignore file uploads if no attached client
+        if (!$scope.client)
+            return;
+
+        // Upload each file
+        for (var i = 0; i < files.length; i++)
+            ManagedClient.uploadFile($scope.client, files[i], $scope.filesystemMenuContents);
+
     };
 
     // Clean up when view destroyed

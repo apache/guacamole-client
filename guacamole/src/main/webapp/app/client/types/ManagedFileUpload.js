@@ -124,11 +124,19 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
      * @param {File} file
      *     The file to upload.
      *     
+     * @param {Object} [object]
+     *     The object to upload the file to, if any, such as a filesystem
+     *     object.
+     *
+     * @param {String} [streamName]
+     *     The name of the stream to upload the file to. If an object is given,
+     *     this must be specified.
+     *
      * @return {ManagedFileUpload}
      *     A new ManagedFileUpload object which can be used to track the
      *     progress of the upload.
      */
-    ManagedFileUpload.getInstance = function getInstance(client, file) {
+    ManagedFileUpload.getInstance = function getInstance(client, file, object, streamName) {
 
         var managedFileUpload = new ManagedFileUpload();
 
@@ -137,7 +145,14 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
         reader.onloadend = function fileContentsLoaded() {
 
             // Open file for writing
-            var stream = client.createFileStream(file.type, file.name);
+            var stream;
+            if (!object)
+                stream = client.createFileStream(file.type, file.name);
+
+            // If object/streamName specified, upload to that instead of a file
+            // stream
+            else
+                stream = object.createOutputStream(file.type, streamName);
 
             var valid = true;
             var bytes = new Uint8Array(reader.result);

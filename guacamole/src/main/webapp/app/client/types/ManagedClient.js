@@ -438,9 +438,31 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * 
      * @param {File} file
      *     The file to upload.
+     *
+     * @param {ManagedFilesystem} [filesystem]
+     *     The filesystem to upload the file to, if any. If not specified, the
+     *     file will be sent as a generic Guacamole file stream.
+     *
+     * @param {ManagedFilesystem.File} [directory=filesystem.currentDirectory]
+     *     The directory within the given filesystem to upload the file to. If
+     *     not specified, but a filesystem is given, the current directory of
+     *     that filesystem will be used.
      */
-    ManagedClient.uploadFile = function uploadFile(managedClient, file) {
-        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file));
+    ManagedClient.uploadFile = function uploadFile(managedClient, file, filesystem, directory) {
+
+        // Use generic Guacamole file streams by default
+        var object = null;
+        var streamName = null;
+
+        // If a filesystem is given, determine the destination object and stream
+        if (filesystem) {
+            object = filesystem.object;
+            streamName = (directory || filesystem.currentDirectory).streamName + '/' + file.name;
+        }
+
+        // Start and manage file upload
+        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file, object, streamName));
+
     };
 
     return ManagedClient;
