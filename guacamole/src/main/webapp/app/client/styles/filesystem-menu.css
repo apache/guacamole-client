@@ -52,6 +52,7 @@
 }
 
 #filesystem-menu .header.breadcrumbs {
+    display: block;
     background: rgba(0,0,0,0.0125);
     border-bottom: 1px solid rgba(0,0,0,0.05);
     box-shadow: none;
@@ -60,6 +61,7 @@
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb {
+    display: inline-block;
     padding: 0.5em;
     font-size: 0.8em;
     font-weight: bold;
