@@ -21,43 +21,14 @@
        THE SOFTWARE.
     -->
 
-    <script type="text/ng-template" id="file.html">
-
-        <!-- Normal file -->
-        <div class="normal-file" ng-show="isNormalFile(file)">
-            <div class="caption" ng-click="downloadFile(file)">
-                <div class="icon"></div>
-                {{file.name}}
-            </div>
+    <!-- Parent directory -->
+    <div class="list-item directory previous" ng-show="filesystem.currentDirectory.parent">
+        <div class="caption" ng-click="changeDirectory(filesystem.currentDirectory.parent)">
+            <div class="icon"></div> ..
         </div>
-
-        <!-- Directory -->
-        <div class="directory" ng-show="isDirectory(file)">
-            <div class="caption" ng-click="changeDirectory(file)">
-                <div class="icon"></div>
-                {{file.name}}
-            </div>
-        </div>
-
-    </script>
+    </div>
 
     <!-- Current directory contents -->
-    <div class="filesystem-root">
-
-        <!-- Parent directory -->
-        <div class="list-item" ng-show="filesystem.currentDirectory.parent">
-            <div class="directory previous">
-                <div class="caption" ng-click="changeDirectory(filesystem.currentDirectory.parent)">
-                    <div class="icon"></div> ..
-                </div>
-            </div>
-        </div>
-
-        <!-- All other files -->
-        <div class="list-item"
-             ng-repeat="file in filesystem.currentDirectory.files | orderBy : 'name'"
-             ng-include="'file.html'"></div>
-
-    </div>
+    <div class="current-directory-contents"></div>
 
 </div>

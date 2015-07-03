@@ -47,10 +47,21 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
         },
 
         templateUrl: 'app/client/templates/guacFileBrowser.html',
-        controller: ['$scope', '$injector', function guacFileBrowserController($scope, $injector) {
+        controller: ['$scope', '$element', '$injector', function guacFileBrowserController($scope, $element, $injector) {
 
             // Required types
             var ManagedFilesystem = $injector.get('ManagedFilesystem');
+
+            // Required services
+            var $interpolate = $injector.get('$interpolate');
+
+            /**
+             * The jQuery-wrapped element representing the contents of the
+             * current directory within the file browser.
+             *
+             * @type Element[]
+             */
+            var currentDirectoryContents = $element.find('.current-directory-contents');
 
             /**
              * Returns whether the given file is a normal file.
@@ -99,6 +110,65 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             $scope.downloadFile = function downloadFile(file) {
                 ManagedFilesystem.downloadFile($scope.client, $scope.filesystem, file.streamName);
             };
+
+            /**
+             * Creates a new element representing the given file and properly
+             * handling user events, bypassing the overhead incurred through
+             * use of ngRepeat and related techniques.
+             *
+             * @param {ManagedFilesystem.File} file
+             *     The file to generate an element for.
+             *
+             * @returns {Element[]}
+             *     A jQuery-wrapped array containing a single DOM element
+             *     representing the given file.
+             */
+            var createFileElement = function createFileElement(file) {
+
+                // Create from internal template
+                var element = angular.element($interpolate(
+
+                      '<div class="list-item">'
+                    +     '<div class="caption">'
+                    +         '<div class="icon"></div>'
+                    +         '{{::name}}'
+                    +     '</div>'
+                    + '</div>'
+
+                )(file));
+
+                // Change current directory when directories are clicked
+                if ($scope.isDirectory(file)) {
+                    element.addClass('directory');
+                    element.on('click', function changeDirectory() {
+                        $scope.changeDirectory(file);
+                    });
+                }
+
+                // Initiate downloads when normal files are clicked
+                else if ($scope.isNormalFile(file)) {
+                    element.addClass('normal-file');
+                    element.on('click', function downloadFile() {
+                        $scope.downloadFile(file);
+                    });
+                }
+
+                return element;
+
+            };
+
+            // Update the contents of the file browser whenever the current directory (or its contents) changes
+            $scope.$watch('filesystem.currentDirectory.files', function currentDirectoryChanged(files) {
+
+                // Clear current content
+                currentDirectoryContents.html('');
+
+                // Display all files within current directory
+                for (var name in files) {
+                    currentDirectoryContents.append(createFileElement(files[name]));
+                }
+
+            });
 
         }]
 
