@@ -52,6 +52,11 @@
         </div>
     </div>
 
+    <!-- File transfers -->
+    <div id="file-transfer-dialog" ng-show="hasTransfers()">
+        <guac-file-transfer-manager client="client"></guac-file-transfer-manager>
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content">
@@ -81,14 +86,6 @@
                         <div class="device filesystem" ng-repeat="filesystem in client.filesystems" ng-click="showFilesystemMenu(filesystem)">
                             {{filesystem.name}}
                         </div>
-                    </div>
-                </div>
-
-                <!-- File transfers -->
-                <div class="menu-section" id="file-transfers">
-                    <h3 guac-marker="menu.fileTransferMarker">{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h3>
-                    <div class="content">
-                        <guac-file-transfer-manager client="client"></guac-file-transfer-manager>
                     </div>
                 </div>
 

@@ -21,18 +21,23 @@
        THE SOFTWARE.
     -->
 
-    <!-- Filename -->
-    <div class="filename">{{transfer.filename}}</div>
+    <!-- Overall status of transfer -->
+    <div class="transfer-status">
+
+        <!-- Filename and progress bar -->
+        <div class="filename">
+            <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>
+            {{transfer.filename}}
+        </div>
+
+        <!-- Error text -->
+        <p class="error-text">{{getErrorText() | translate}}</p>
+
+    </div>
 
     <!-- Progress/status text -->
     <div class="text"
          translate="CLIENT.TEXT_FILE_TRANSFER_PROGRESS"
          translate-values="{PROGRESS: getProgressValue(), UNIT: getProgressUnit()}"></div>
 
-    <!-- Progress bar -->
-    <div class="progress"><div ng-style="{'width': getPercentDone() + '%'}" class="bar"></div></div>
-
-    <!-- Error text -->
-    <p class="error-text" ng-show="hasError()">{{getErrorText() | translate}}</p>
-    
 </div>

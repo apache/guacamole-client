@@ -41,7 +41,7 @@
     "CLIENT" : {
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Wis lijst Voltooide Overdrachten",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Wis lijst",
         "ACTION_DISCONNECT"                : "Verbreek Verbinding",
         "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",

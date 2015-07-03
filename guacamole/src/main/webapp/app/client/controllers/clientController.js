@@ -409,17 +409,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.page.title = name;
     });
 
-    // Show file transfer section of menu if new file transfers have started
-    $scope.$watch('client.uploads.length + client.downloads.length', function transfersChanged(count, oldCount) {
-
-        // Show menu and scroll file transfer into view
-        if (count > oldCount) {
-            $scope.menu.shown = true;
-            $scope.menu.fileTransferMarker.scrollIntoView();
-        }
-
-    });
-
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
@@ -652,6 +641,24 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Upload each file
         for (var i = 0; i < files.length; i++)
             ManagedClient.uploadFile($scope.client, files[i], $scope.filesystemMenuContents);
+
+    };
+
+    /**
+     * Determines whether the attached client has associated file transfers,
+     * regardless of those file transfers' state.
+     *
+     * @returns {Boolean}
+     *     true if there are any file transfers associated with the
+     *     attached client, false otherise.
+     */
+    $scope.hasTransfers = function hasTransfers() {
+
+        // There are no file transfers if there is no client
+        if (!$scope.client)
+            return false;
+
+        return !!($scope.client.uploads.length || $scope.client.downloads.length);
 
     };
 

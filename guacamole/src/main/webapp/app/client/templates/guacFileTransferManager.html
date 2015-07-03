@@ -21,23 +21,21 @@
        THE SOFTWARE.
     -->
 
-    <!-- No transfers currently present -->
-    <p class="no-transfers" ng-hide="hasTransfers()">{{'CLIENT.INFO_NO_FILE_TRANSFERS' | translate}}</p>
-
-    <!-- Sent files -->
-    <div ng-repeat="upload in client.uploads">
-        <guac-file-transfer transfer="upload"></guac-file-transfer>
+    <!-- File transfer manager header -->
+    <div class="header">
+        <h2>{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h2>
+        <button ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</button>
     </div>
 
-    <!-- Received files -->
-    <div ng-repeat="download in client.downloads">
-        <guac-file-transfer transfer="download"></guac-file-transfer>
-    </div>
-
-    <!-- Form buttons -->
-    <div class="action-buttons">
-        <a class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</a>
-        <a class="button" ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</a>
+    <!-- Sent/received files files -->
+    <div class="transfers">
+        <guac-file-transfer
+            transfer="upload"
+            ng-repeat="upload in client.uploads">
+        </guac-file-transfer><guac-file-transfer
+            transfer="download"
+            ng-repeat="download in client.downloads">
+        </guac-file-transfer>
     </div>
 
 </div>
