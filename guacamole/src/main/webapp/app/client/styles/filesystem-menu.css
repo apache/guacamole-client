@@ -21,22 +21,10 @@
  */
 
 #filesystem-menu .header h2 {
-
     font-size: 1em;
     font-weight: normal;
-
     padding-top: 0;
     padding-bottom: 0;
-    padding-left: 3.5em;
-
-    background-size:         1.5em 1.5em;
-    -moz-background-size:    1.5em 1.5em;
-    -webkit-background-size: 1.5em 1.5em;
-    -khtml-background-size:  1.5em 1.5em;
-    background-repeat: no-repeat;
-    background-position: 1em center;
-    background-image: url('images/drive.png');
-
 }
 
 #filesystem-menu .header {
@@ -70,4 +58,18 @@
 #filesystem-menu .header.breadcrumbs .breadcrumb:hover {
     background-color: #CDA;
     cursor: pointer;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb.root {
+    background-size:         1.5em 1.5em;
+    -moz-background-size:    1.5em 1.5em;
+    -webkit-background-size: 1.5em 1.5em;
+    -khtml-background-size:  1.5em 1.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url('images/drive.png');
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    vertical-align: middle;
 }

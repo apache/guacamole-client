@@ -175,8 +175,11 @@
             </div>
 
             <!-- Breadcrumbs -->
-            <div class="header breadcrumbs" ng-show="getPath(filesystemMenuContents.currentDirectory).length">
-                <div class="breadcrumb" ng-repeat="file in getPath(filesystemMenuContents.currentDirectory)"
+            <div class="header breadcrumbs"><div
+                    class="breadcrumb root"
+                    ng-click="changeDirectory(filesystemMenuContents, filesystemMenuContents.root)"></div><div
+                        class="breadcrumb"
+                        ng-repeat="file in getPath(filesystemMenuContents.currentDirectory)"
                         ng-click="changeDirectory(filesystemMenuContents, file)">{{file.name}}</div>
             </div>
 
