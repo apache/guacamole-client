@@ -157,16 +157,55 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
 
             };
 
+            /**
+             * Sorts the given map of files, returning an array of those files
+             * grouped by file type (directories first, followed by non-
+             * directories) and sorted lexicographically.
+             *
+             * @param {Object.<String, ManagedFilesystem.File>} files
+             *     The map of files to sort.
+             *
+             * @returns {ManagedFilesystem.File[]}
+             *     An array of all files in the given map, sorted
+             *     lexicographically with directories first, followed by non-
+             *     directories.
+             */
+            var sortFiles = function sortFiles(files) {
+
+                // Get all given files as an array
+                var unsortedFiles = [];
+                for (var name in files)
+                    unsortedFiles.push(files[name]);
+
+                // Sort files - directories first, followed by all other files
+                // sorted by name
+                return unsortedFiles.sort(function fileComparator(a, b) {
+
+                    // Directories come before non-directories
+                    if ($scope.isDirectory(a) && !$scope.isDirectory(b))
+                        return -1;
+
+                    // Non-directories come after directories
+                    if (!$scope.isDirectory(a) && $scope.isDirectory(b))
+                        return 1;
+
+                    // All other combinations are sorted by name
+                    return a.name.localeCompare(b.name);
+
+                });
+
+            };
+
             // Update the contents of the file browser whenever the current directory (or its contents) changes
             $scope.$watch('filesystem.currentDirectory.files', function currentDirectoryChanged(files) {
 
                 // Clear current content
                 currentDirectoryContents.html('');
 
-                // Display all files within current directory
-                for (var name in files) {
-                    currentDirectoryContents.append(createFileElement(files[name]));
-                }
+                // Display all files within current directory, sorted
+                angular.forEach(sortFiles(files), function displayFile(file) {
+                    currentDirectoryContents.append(createFileElement(file));
+                });
 
             });
 
