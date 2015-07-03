@@ -42,6 +42,7 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Очистить завершенные загрузки",
         "ACTION_DISCONNECT"                : "Отключиться",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Переподключиться",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",

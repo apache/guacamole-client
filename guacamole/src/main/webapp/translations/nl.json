@@ -43,6 +43,7 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Wis lijst Voltooide Overdrachten",
         "ACTION_DISCONNECT"                : "Verbreek Verbinding",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Verbind Opnieuw",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",

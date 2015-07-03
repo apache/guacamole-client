@@ -41,6 +41,7 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Vider transferts terminés",
         "ACTION_DISCONNECT"                : "Déconnecter",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Reconnecter",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
