@@ -53,7 +53,8 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             var ManagedFilesystem = $injector.get('ManagedFilesystem');
 
             // Required services
-            var $interpolate = $injector.get('$interpolate');
+            var $interpolate     = $injector.get('$interpolate');
+            var $templateRequest = $injector.get('$templateRequest');
 
             /**
              * The jQuery-wrapped element representing the contents of the
@@ -62,6 +63,16 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              * @type Element[]
              */
             var currentDirectoryContents = $element.find('.current-directory-contents');
+
+            /**
+             * Statically-cached template HTML used to render each file within
+             * a directory. Once available, this will be used through
+             * createFileElement() to generate the DOM elements which make up
+             * a directory listing.
+             *
+             * @type String
+             */
+            var fileTemplate = null;
 
             /**
              * Returns whether the given file is a normal file.
@@ -116,6 +127,9 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              * handling user events, bypassing the overhead incurred through
              * use of ngRepeat and related techniques.
              *
+             * Note that this function depends on the availability of the
+             * statically-cached fileTemplate.
+             *
              * @param {ManagedFilesystem.File} file
              *     The file to generate an element for.
              *
@@ -126,16 +140,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             var createFileElement = function createFileElement(file) {
 
                 // Create from internal template
-                var element = angular.element($interpolate(
-
-                      '<div class="list-item">'
-                    +     '<div class="caption">'
-                    +         '<div class="icon"></div>'
-                    +         '{{::name}}'
-                    +     '</div>'
-                    + '</div>'
-
-                )(file));
+                var element = angular.element($interpolate(fileTemplate)(file));
 
                 // Change current directory when directories are clicked
                 if ($scope.isDirectory(file)) {
@@ -196,18 +201,26 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
 
             };
 
-            // Update the contents of the file browser whenever the current directory (or its contents) changes
-            $scope.$watch('filesystem.currentDirectory.files', function currentDirectoryChanged(files) {
+            // Watch directory contents once file template is available
+            $templateRequest('app/client/templates/file.html').then(function fileTemplateRetrieved(html) {
 
-                // Clear current content
-                currentDirectoryContents.html('');
+                // Store file template statically
+                fileTemplate = html;
 
-                // Display all files within current directory, sorted
-                angular.forEach(sortFiles(files), function displayFile(file) {
-                    currentDirectoryContents.append(createFileElement(file));
+                // Update the contents of the file browser whenever the current directory (or its contents) changes
+                $scope.$watch('filesystem.currentDirectory.files', function currentDirectoryChanged(files) {
+
+                    // Clear current content
+                    currentDirectoryContents.html('');
+
+                    // Display all files within current directory, sorted
+                    angular.forEach(sortFiles(files), function displayFile(file) {
+                        currentDirectoryContents.append(createFileElement(file));
+                    });
+
                 });
 
-            });
+            }); // end retrieve file template
 
         }]
 
