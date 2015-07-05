@@ -143,59 +143,13 @@ angular.module('form').provider('formService', function formServiceProvider() {
     this.$get = ['$injector', function formServiceFactory($injector) {
 
         // Required services
-        var $compile       = $injector.get('$compile');
-        var $http          = $injector.get('$http');
-        var $q             = $injector.get('$q');
-        var $templateCache = $injector.get('$templateCache');
+        var $compile         = $injector.get('$compile');
+        var $q               = $injector.get('$q');
+        var $templateRequest = $injector.get('$templateRequest');
 
         var service = {};
 
         service.fieldTypes = provider.fieldTypes;
-
-        /**
-         * Returns a Promise which resolves with the HTML contents of the
-         * template at the given URL. The template contents will be retrieved from
-         * the $templateCache if possible.
-         *
-         * @param {String} url
-         *     The URL of the template to retrieve.
-         *
-         * @returns {Promise.<String>}
-         *     A Promise which resolves with the HTML contents of the template at
-         *     the given URL.
-         */
-        var templateRequest = function templateRequest(url) {
-
-            // Pull template from cache if present
-            var template = $templateCache.get(url);
-            if (template)
-                return $q.when(template);
-
-            // Defer retrieval of template
-            var templateContent = $q.defer();
-
-            // Retrieve template manually
-            $http({
-                method : 'GET',
-                url    : url,
-                cache  : true
-            })
-
-            // Upon success, resolve promise and update template cache
-            .success(function templateRetrieved(html) {
-                $templateCache.put(url, html);
-                templateContent.resolve(html);
-            })
-
-            // Fail if template cannot be retrieved
-            .error(function templateError() {
-                templateContent.reject();
-            });
-
-            // Return promise which will resolve with the retrieved template
-            return templateContent.promise;
-
-        };
 
         /**
          * Compiles and links the field associated with the given name to the given
@@ -249,7 +203,7 @@ angular.module('form').provider('formService', function formServiceProvider() {
             else {
 
                 // Attempt to retrieve template HTML
-                templateRequest(fieldType.templateUrl)
+                $templateRequest(fieldType.templateUrl)
 
                 // Resolve with compiled HTML upon success
                 .then(function templateRetrieved(html) {
