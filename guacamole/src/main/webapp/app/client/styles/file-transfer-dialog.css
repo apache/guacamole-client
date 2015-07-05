@@ -20,27 +20,21 @@
  * THE SOFTWARE.
  */
 
-.transfer-manager {
-    background: white;
+#file-transfer-dialog {
+
+    position: absolute;
+    right: 0;
+    bottom: 0;
+
+    font-size: 0.8em;
+    padding: 0.5em;
+
+    width: 4in;
+    max-width: 100%;
+
 }
 
-.transfer-manager .header h2 {
-    font-size: 1em;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
-.transfer-manager .header {
-    margin: 0;
-    -ms-flex-align:      center;
-    -moz-box-align:      center;
-    -webkit-box-align:   center;
-    -webkit-align-items: center;
-    align-items:         center;
-}
-
-.transfer-manager .transfers {
-    display: table;
-    padding: 0.25em;
-    width: 100%;
+#file-transfer-dialog .transfer-manager {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.125);
 }

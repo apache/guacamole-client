@@ -41,8 +41,9 @@
     "CLIENT" : {
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Clear Completed Transfers",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Clear",
         "ACTION_DISCONNECT"                : "Disconnect",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Reconnect",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
@@ -106,6 +107,7 @@
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
         "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
+        "SECTION_HEADER_DEVICES"        : "Devices",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_FILE_TRANSFERS" : "File Transfers",
         "SECTION_HEADER_INPUT_METHOD"   : "Input method",

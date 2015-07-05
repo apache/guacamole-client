@@ -27,7 +27,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         function clientController($scope, $routeParams, $injector) {
 
     // Required types
+    var ManagedClient      = $injector.get('ManagedClient');
     var ManagedClientState = $injector.get('ManagedClientState');
+    var ManagedFilesystem  = $injector.get('ManagedFilesystem');
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
@@ -407,17 +409,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.page.title = name;
     });
 
-    // Show file transfer section of menu if new file transfers have started
-    $scope.$watch('client.uploads.length + client.downloads.length', function transfersChanged(count, oldCount) {
-
-        // Show menu and scroll file transfer into view
-        if (count > oldCount) {
-            $scope.menu.shown = true;
-            $scope.menu.fileTransferMarker.scrollIntoView();
-        }
-
-    });
-
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
@@ -557,6 +548,119 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Set client-specific menu actions
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+
+    /**
+     * The currently-visible filesystem within the filesystem menu, if the
+     * filesystem menu is open. If no filesystem is currently visible, this
+     * will be null.
+     *
+     * @type ManagedFilesystem
+     */
+    $scope.filesystemMenuContents = null;
+
+    /**
+     * Hides the filesystem menu.
+     */
+    $scope.hideFilesystemMenu = function hideFilesystemMenu() {
+        $scope.filesystemMenuContents = null;
+    };
+
+    /**
+     * Shows the filesystem menu, displaying the contents of the given
+     * filesystem within it.
+     *
+     * @param {ManagedFilesystem} filesystem
+     *     The filesystem to show within the filesystem menu.
+     */
+    $scope.showFilesystemMenu = function showFilesystemMenu(filesystem) {
+        $scope.filesystemMenuContents = filesystem;
+    };
+
+    /**
+     * Returns whether the filesystem menu should be visible.
+     *
+     * @returns {Boolean}
+     *     true if the filesystem menu is shown, false otherwise.
+     */
+    $scope.isFilesystemMenuShown = function isFilesystemMenuShown() {
+        return !!$scope.filesystemMenuContents && $scope.menu.shown;
+    };
+
+    /**
+     * Returns the full path to the given file as an ordered array of parent
+     * directories.
+     *
+     * @param {ManagedFilesystem.File} file
+     *     The file whose full path should be retrieved.
+     *
+     * @returns {ManagedFilesystem.File[]}
+     *     An array of directories which make up the hierarchy containing the
+     *     given file, in order of increasing depth.
+     */
+    $scope.getPath = function getPath(file) {
+
+        var path = [];
+
+        // Add all files to path in ascending order of depth
+        while (file && file.parent) {
+            path.unshift(file);
+            file = file.parent;
+        }
+
+        return path;
+
+    };
+
+    /**
+     * Changes the current directory of the given filesystem to the given
+     * directory.
+     *
+     * @param {ManagedFilesystem} filesystem
+     *     The filesystem whose current directory should be changed.
+     *
+     * @param {ManagedFilesystem.File} file
+     *     The directory to change to.
+     */
+    $scope.changeDirectory = function changeDirectory(filesystem, file) {
+        ManagedFilesystem.changeDirectory(filesystem, file);
+    };
+
+    /**
+     * Begins a file upload through the attached Guacamole client for
+     * each file in the given FileList.
+     *
+     * @param {FileList} files
+     *     The files to upload.
+     */
+    $scope.uploadFiles = function uploadFiles(files) {
+
+        // Ignore file uploads if no attached client
+        if (!$scope.client)
+            return;
+
+        // Upload each file
+        for (var i = 0; i < files.length; i++)
+            ManagedClient.uploadFile($scope.client, files[i], $scope.filesystemMenuContents);
+
+    };
+
+    /**
+     * Determines whether the attached client has associated file transfers,
+     * regardless of those file transfers' state.
+     *
+     * @returns {Boolean}
+     *     true if there are any file transfers associated with the
+     *     attached client, false otherise.
+     */
+    $scope.hasTransfers = function hasTransfers() {
+
+        // There are no file transfers if there is no client
+        if (!$scope.client)
+            return false;
+
+        return !!($scope.client.uploads.length || $scope.client.downloads.length);
+
+    };
 
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {

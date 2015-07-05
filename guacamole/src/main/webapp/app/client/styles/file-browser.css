@@ -20,27 +20,27 @@
  * THE SOFTWARE.
  */
 
-.transfer-manager {
-    background: white;
+/* Hide directory contents by default */
+
+.file-browser .directory > .children {
+    padding-left: 1em;
+    display: none;
 }
 
-.transfer-manager .header h2 {
-    font-size: 1em;
-    padding-top: 0;
-    padding-bottom: 0;
+.file-browser .list-item .caption {
+    white-space: nowrap;
 }
 
-.transfer-manager .header {
-    margin: 0;
-    -ms-flex-align:      center;
-    -moz-box-align:      center;
-    -webkit-box-align:   center;
-    -webkit-align-items: center;
-    align-items:         center;
+/* Directory / file icons */
+
+.file-browser .normal-file > .caption .icon {
+    background-image: url('images/file.png');
 }
 
-.transfer-manager .transfers {
-    display: table;
-    padding: 0.25em;
-    width: 100%;
+.file-browser .directory > .caption .icon {
+    background-image: url('images/folder-closed.png');
+}
+
+.file-browser .directory.previous > .caption .icon {
+    background-image: url('images/folder-up.png');
 }

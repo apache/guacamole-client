@@ -20,18 +20,14 @@
  * THE SOFTWARE.
  */
 
-.transfer-manager {
-    background: white;
-}
-
-.transfer-manager .header h2 {
+#filesystem-menu .header h2 {
     font-size: 1em;
+    font-weight: normal;
     padding-top: 0;
     padding-bottom: 0;
 }
 
-.transfer-manager .header {
-    margin: 0;
+#filesystem-menu .header {
     -ms-flex-align:      center;
     -moz-box-align:      center;
     -webkit-box-align:   center;
@@ -39,8 +35,41 @@
     align-items:         center;
 }
 
-.transfer-manager .transfers {
-    display: table;
+#filesystem-menu .menu-body {
     padding: 0.25em;
-    width: 100%;
+}
+
+#filesystem-menu .header.breadcrumbs {
+    display: block;
+    background: rgba(0,0,0,0.0125);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    box-shadow: none;
+    margin-top: 0;
+    border-top: none;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb {
+    display: inline-block;
+    padding: 0.5em;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb:hover {
+    background-color: #CDA;
+    cursor: pointer;
+}
+
+#filesystem-menu .header.breadcrumbs .breadcrumb.root {
+    background-size:         1.5em 1.5em;
+    -moz-background-size:    1.5em 1.5em;
+    -webkit-background-size: 1.5em 1.5em;
+    -khtml-background-size:  1.5em 1.5em;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url('images/drive.png');
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    vertical-align: middle;
 }

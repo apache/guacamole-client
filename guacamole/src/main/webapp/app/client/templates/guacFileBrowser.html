@@ -1,6 +1,6 @@
-<div class="transfer-manager">
+<div class="file-browser">
     <!--
-       Copyright (C) 2014 Glyptodon LLC
+       Copyright (C) 2015 Glyptodon LLC
 
        Permission is hereby granted, free of charge, to any person obtaining a copy
        of this software and associated documentation files (the "Software"), to deal
@@ -21,21 +21,14 @@
        THE SOFTWARE.
     -->
 
-    <!-- File transfer manager header -->
-    <div class="header">
-        <h2>{{'CLIENT.SECTION_HEADER_FILE_TRANSFERS' | translate}}</h2>
-        <button ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</button>
+    <!-- Parent directory -->
+    <div class="list-item directory previous" ng-show="filesystem.currentDirectory.parent">
+        <div class="caption" ng-click="changeDirectory(filesystem.currentDirectory.parent)">
+            <div class="icon"></div>..
+        </div>
     </div>
 
-    <!-- Sent/received files files -->
-    <div class="transfers">
-        <guac-file-transfer
-            transfer="upload"
-            ng-repeat="upload in client.uploads">
-        </guac-file-transfer><guac-file-transfer
-            transfer="download"
-            ng-repeat="download in client.downloads">
-        </guac-file-transfer>
-    </div>
+    <!-- Current directory contents -->
+    <div class="current-directory-contents"></div>
 
 </div>

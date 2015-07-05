@@ -31,6 +31,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedClientState   = $injector.get('ManagedClientState');
     var ManagedDisplay       = $injector.get('ManagedDisplay');
     var ManagedFileDownload  = $injector.get('ManagedFileDownload');
+    var ManagedFilesystem    = $injector.get('ManagedFilesystem');
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
     // Required services
@@ -118,6 +119,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFileUpload[]
          */
         this.uploads = template.uploads || [];
+
+        /**
+         * All currently-exposed filesystems. When the Guacamole server exposes
+         * a filesystem object, that object will be made available as a
+         * ManagedFilesystem within this array.
+         *
+         * @type ManagedFilesystem[]
+         */
+        this.filesystems = template.filesystems || [];
 
         /**
          * The current state of the Guacamole client (idle, connecting,
@@ -382,6 +392,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             });
         };
 
+        // Handle any received filesystem objects
+        client.onfilesystem = function fileSystemReceived(object, name) {
+            $rootScope.$apply(function exposeFilesystem() {
+                managedClient.filesystems.push(ManagedFilesystem.getInstance(object, name));
+            });
+        };
+
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
 
@@ -421,9 +438,31 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * 
      * @param {File} file
      *     The file to upload.
+     *
+     * @param {ManagedFilesystem} [filesystem]
+     *     The filesystem to upload the file to, if any. If not specified, the
+     *     file will be sent as a generic Guacamole file stream.
+     *
+     * @param {ManagedFilesystem.File} [directory=filesystem.currentDirectory]
+     *     The directory within the given filesystem to upload the file to. If
+     *     not specified, but a filesystem is given, the current directory of
+     *     that filesystem will be used.
      */
-    ManagedClient.uploadFile = function uploadFile(managedClient, file) {
-        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file));
+    ManagedClient.uploadFile = function uploadFile(managedClient, file, filesystem, directory) {
+
+        // Use generic Guacamole file streams by default
+        var object = null;
+        var streamName = null;
+
+        // If a filesystem is given, determine the destination object and stream
+        if (filesystem) {
+            object = filesystem.object;
+            streamName = (directory || filesystem.currentDirectory).streamName + '/' + file.name;
+        }
+
+        // Start and manage file upload
+        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient.client, file, object, streamName));
+
     };
 
     return ManagedClient;

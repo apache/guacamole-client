@@ -44,26 +44,7 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
         controller: ['$scope', '$injector', function guacFileTransferManagerController($scope, $injector) {
 
             // Required types
-            var ManagedClient            = $injector.get('ManagedClient');
             var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
-
-            /**
-             * Determines whether the attached client has associated file
-             * transfers, regardless of those file transfers' state.
-             *
-             * @returns {Boolean}
-             *     true if there are any file transfers associated with the
-             *     attached client, false otherise.
-             */
-            $scope.hasTransfers = function hasTransfers() {
-
-                // There are no file transfers if there is no client
-                if (!$scope.client)
-                    return false;
-
-                return !!($scope.client.uploads.length || $scope.client.downloads.length);
-
-            };
 
             /**
              * Determines whether the given file transfer state indicates an
@@ -109,25 +90,6 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
                 $scope.client.downloads = $scope.client.downloads.filter(function isDownloadInProgress(download) {
                     return isInProgress(download.transferState);
                 });
-
-            };
-
-            /**
-             * Begins a file upload through the attached Guacamole client for
-             * each file in the given FileList.
-             *
-             * @param {FileList} files
-             *     The files to upload.
-             */
-            $scope.uploadFiles = function uploadFiles(files) {
-
-                // Ignore file uploads if no attached client
-                if (!$scope.client)
-                    return;
-
-                // Upload each file 
-                for (var i = 0; i < files.length; i++)
-                    ManagedClient.uploadFile($scope.client, files[i]);
 
             };
 

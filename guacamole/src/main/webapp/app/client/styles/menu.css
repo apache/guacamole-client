@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-#menu {
+.menu {
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -127,38 +127,6 @@
     flex: 0 0 auto;
 }
 
-#menu .content {
-
-    padding: 0;
-    margin: 0;
-
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
-    -ms-flex-direction: column;
-
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: stretch;
-    -moz-box-orient: vertical;
-    
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: stretch;
-    -webkit-box-orient: vertical;
-
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: stretch;
-    -webkit-flex-direction: column;
-
-    /* W3C */
-    display: flex;
-    align-items: stretch;
-    flex-direction: column;
-
-}
-
 .menu-section h3 {
     margin: 0;
     padding: 0;
@@ -169,122 +137,13 @@
     padding-top: 1em;
 }
 
-#menu .content > * {
-
-    margin: 0;
-
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
-
-}
-
-#menu .content > * + * {
-    margin-top: 1em;
-}
-
-#menu,
-#menu.closed {
+.menu,
+.menu.closed {
     left: -480px;
     opacity: 0;
 }
 
-#menu.open {
+.menu.open {
     left: 0px;
     opacity: 1;
-}
-
-#menu #clipboard-settings textarea {
-    width: 100%;
-    border: 1px solid #AAA;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    border-radius: 0.25em;
-    white-space: pre;
-    display: block;
-    font-size: 1em;
-}
-
-#menu #mouse-settings .choice {
-    text-align: center;
-}
-
-#menu #mouse-settings .choice .figure {
-    display: inline-block;
-    vertical-align: middle;
-    width: 75%;
-    max-width: 320px;
-}
-
-#menu #keyboard-settings .caption {
-    font-size: 0.9em;
-    margin-left: 2em;
-    margin-right: 2em;
-}
-
-#menu #mouse-settings .figure .caption {
-    text-align: center;
-    font-size: 0.9em;
-}
-
-#menu #mouse-settings .figure img {
-    display: block;
-    width: 100%;
-    max-width: 320px;
-    margin: 1em auto;
-}
-
-#menu #keyboard-settings .figure {
-    float: right;
-    max-width: 30%;
-    margin: 1em;
-}
-
-#menu #keyboard-settings .figure img {
-    max-width: 100%;
-}
-
-#menu #zoom-settings {
-    text-align: center;
-}
-
-#menu #zoom-out,
-#menu #zoom-in,
-#menu #zoom-state {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-#menu #zoom-out,
-#menu #zoom-in {
-    max-width: 3em;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 2em;
-    margin: 0.5em;
-    cursor: pointer;
-}
-
-#menu #zoom-out img,
-#menu #zoom-in img {
-    max-width: 100%;
-    opacity: 0.5;
-}
-
-#menu #zoom-out:hover,
-#menu #zoom-in:hover {
-    border: 1px solid rgba(0, 0, 0, 1);
-    background: #CDA;
-}
-
-#menu #zoom-out:hover img,
-#menu #zoom-in:hover img {
-    opacity: 1;
-}
-
-#menu #zoom-state {
-    font-size: 2em;
 }
