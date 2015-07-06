@@ -40,6 +40,12 @@ Guacamole.Mouse = function(element) {
     var guac_mouse = this;
 
     /**
+     * Timeout before a single mouse scroll happens.
+     * @type Number
+     */
+    var mouse_scroll_timeout = null;
+
+    /**
      * The number of mousemove events to require before re-enabling mouse
      * event handling after receiving a touch event.
      */
@@ -273,38 +279,46 @@ Guacamole.Mouse = function(element) {
         // Update overall delta
         scroll_delta += delta;
 
-        // Up
-        while (scroll_delta <= -guac_mouse.scrollThreshold) {
+        if (mouse_scroll_timeout == null) {
+            // send actual mouse scroll event after a threshold
+            mouse_scroll_timeout = window.setTimeout(function () {
 
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.up = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
+                // Up
+                if (scroll_delta < 0) {
+                    do {
+                        if (guac_mouse.onmousedown) {
+                            guac_mouse.currentState.up = true;
+                            guac_mouse.onmousedown(guac_mouse.currentState);
+                        }
 
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.up = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
+                        if (guac_mouse.onmouseup) {
+                            guac_mouse.currentState.up = false;
+                            guac_mouse.onmouseup(guac_mouse.currentState);
+                        }
 
-            scroll_delta += guac_mouse.scrollThreshold;
+                        scroll_delta += guac_mouse.scrollThreshold;
+                    } while (scroll_delta < 0);
+                }
+                // Down
+                else if (scroll_delta > 0) {
+                    do {
+                        if (guac_mouse.onmousedown) {
+                            guac_mouse.currentState.down = true;
+                            guac_mouse.onmousedown(guac_mouse.currentState);
+                        }
 
-        }
+                        if (guac_mouse.onmouseup) {
+                            guac_mouse.currentState.down = false;
+                            guac_mouse.onmouseup(guac_mouse.currentState);
+                        }
 
-        // Down
-        while (scroll_delta >= guac_mouse.scrollThreshold) {
-
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.down = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
-
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.down = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
-
-            scroll_delta -= guac_mouse.scrollThreshold;
-
+                        scroll_delta -= guac_mouse.scrollThreshold;
+                    } while (scroll_delta > 0);
+                }
+                scroll_delta = 0;
+                window.clearTimeout(mouse_scroll_timeout);
+                mouse_scroll_timeout = null;
+            }, 100);
         }
 
         cancelEvent(e);
