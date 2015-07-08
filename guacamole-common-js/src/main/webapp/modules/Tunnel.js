@@ -137,10 +137,16 @@ Guacamole.Tunnel.State = {
  * 
  * @constructor
  * @augments Guacamole.Tunnel
- * @param {String} tunnelURL The URL of the HTTP tunneling service.
- * @param {Boolean} withCredentials HTTP requests 'withCredentials' header value.
+ *
+ * @param {String} tunnelURL
+ *     The URL of the HTTP tunneling service.
+ *
+ * @param {Boolean} [crossDomain=false]
+ *     Whether tunnel requests will be cross-domain, and thus must use CORS
+ *     mechanisms and headers. By default, it is assumed that tunnel requests
+ *     will be made to the same domain.
  */
-Guacamole.HTTPTunnel = function(tunnelURL, withCredentials) {
+Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
 
     /**
      * Reference to this HTTP tunnel.
@@ -163,7 +169,9 @@ Guacamole.HTTPTunnel = function(tunnelURL, withCredentials) {
     var sendingMessages = false;
     var outputMessageBuffer = "";
 
-    withCredentials = !!withCredentials;
+    // If requests are expected to be cross-domain, the cookie that the HTTP
+    // tunnel depends on will only be sent if withCredentials is true
+    var withCredentials = !!crossDomain;
 
     /**
      * The current receive timeout ID, if any.
