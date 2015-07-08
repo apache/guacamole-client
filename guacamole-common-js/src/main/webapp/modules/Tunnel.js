@@ -137,9 +137,16 @@ Guacamole.Tunnel.State = {
  * 
  * @constructor
  * @augments Guacamole.Tunnel
- * @param {String} tunnelURL The URL of the HTTP tunneling service.
+ *
+ * @param {String} tunnelURL
+ *     The URL of the HTTP tunneling service.
+ *
+ * @param {Boolean} [crossDomain=false]
+ *     Whether tunnel requests will be cross-domain, and thus must use CORS
+ *     mechanisms and headers. By default, it is assumed that tunnel requests
+ *     will be made to the same domain.
  */
-Guacamole.HTTPTunnel = function(tunnelURL) {
+Guacamole.HTTPTunnel = function(tunnelURL, crossDomain) {
 
     /**
      * Reference to this HTTP tunnel.
@@ -161,6 +168,10 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
     var sendingMessages = false;
     var outputMessageBuffer = "";
+
+    // If requests are expected to be cross-domain, the cookie that the HTTP
+    // tunnel depends on will only be sent if withCredentials is true
+    var withCredentials = !!crossDomain;
 
     /**
      * The current receive timeout ID, if any.
@@ -278,6 +289,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
 
             var message_xmlhttprequest = new XMLHttpRequest();
             message_xmlhttprequest.open("POST", TUNNEL_WRITE + tunnel_uuid);
+            message_xmlhttprequest.withCredentials = withCredentials;
             message_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
 
             // Once response received, send next queued event.
@@ -508,6 +520,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         // Make request, increment request ID
         var xmlhttprequest = new XMLHttpRequest();
         xmlhttprequest.open("GET", TUNNEL_READ + tunnel_uuid + ":" + (request_id++));
+        xmlhttprequest.withCredentials = withCredentials;
         xmlhttprequest.send(null);
 
         return xmlhttprequest;
@@ -547,6 +560,7 @@ Guacamole.HTTPTunnel = function(tunnelURL) {
         };
 
         connect_xmlhttprequest.open("POST", TUNNEL_CONNECT, true);
+        connect_xmlhttprequest.withCredentials = withCredentials;
         connect_xmlhttprequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8");
         connect_xmlhttprequest.send(data);
 
