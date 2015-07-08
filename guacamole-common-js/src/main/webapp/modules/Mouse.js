@@ -279,13 +279,15 @@ Guacamole.Mouse = function(element) {
         // Update overall delta
         scroll_delta += delta;
 
-        if (mouse_scroll_timeout == null) {
-            // send actual mouse scroll event after a threshold
+        if (mouse_scroll_timeout === null) {
+
+            // Send actual mouse scroll event after a threshold
             mouse_scroll_timeout = window.setTimeout(function () {
 
                 // Up
                 if (scroll_delta < 0) {
                     do {
+
                         if (guac_mouse.onmousedown) {
                             guac_mouse.currentState.up = true;
                             guac_mouse.onmousedown(guac_mouse.currentState);
@@ -297,11 +299,14 @@ Guacamole.Mouse = function(element) {
                         }
 
                         scroll_delta += guac_mouse.scrollThreshold;
+
                     } while (scroll_delta < 0);
                 }
+
                 // Down
                 else if (scroll_delta > 0) {
                     do {
+
                         if (guac_mouse.onmousedown) {
                             guac_mouse.currentState.down = true;
                             guac_mouse.onmousedown(guac_mouse.currentState);
@@ -313,11 +318,14 @@ Guacamole.Mouse = function(element) {
                         }
 
                         scroll_delta -= guac_mouse.scrollThreshold;
+
                     } while (scroll_delta > 0);
                 }
+
                 scroll_delta = 0;
                 window.clearTimeout(mouse_scroll_timeout);
                 mouse_scroll_timeout = null;
+
             }, 100);
         }
 
