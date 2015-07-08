@@ -843,10 +843,13 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
     var tunnels = [];
 
     /**
-     * Stores a single committed tunnel once committed
+     * The tunnel committed via commit_tunnel(), if any, or null if no tunnel
+     * has yet been committed.
+     *
      * @private
+     * @type Guacamole.Tunnel
      */
-    var committedTunnel;
+    var committedTunnel = null;
 
     // Load all tunnels into array
     for (var i=0; i<arguments.length; i++)
