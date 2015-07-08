@@ -71,12 +71,14 @@ Guacamole.AudioChannel = function() {
 
 // Define context if available
 if (window.AudioContext) {
-    Guacamole.AudioChannel.context = new AudioContext();
+    try {Guacamole.AudioChannel.context = new AudioContext();}
+    catch (e){}
 }
 
 // Fallback to Webkit-specific AudioContext implementation
 else if (window.webkitAudioContext) {
-    Guacamole.AudioChannel.context = new webkitAudioContext();
+    try {Guacamole.AudioChannel.context = new webkitAudioContext();}
+    catch (e){}
 }
 
 /**
