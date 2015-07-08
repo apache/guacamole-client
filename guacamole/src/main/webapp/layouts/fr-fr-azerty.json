@@ -50,7 +50,6 @@
 
         "Menu" : [{
             "title"    : "Menu",
-            "modifier" : "super",
             "keysym"   : 65383
         }],
         "LShift" : [{

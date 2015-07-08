@@ -116,8 +116,7 @@
 .guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
 
 /* Active super */
-.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super,
-.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-menu {
+.guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super {
     background: #882;
     border-color: #DD4;
 }
