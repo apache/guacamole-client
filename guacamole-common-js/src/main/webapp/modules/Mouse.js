@@ -49,17 +49,17 @@ Guacamole.Mouse = function(element) {
      * The minimum amount of pixels scrolled required for a single scroll button
      * click.
      */
-    this.scrollThreshold = 120;
+    this.scrollThreshold = 53;
 
     /**
      * The number of pixels to scroll per line.
      */
-    this.PIXELS_PER_LINE = 40;
+    this.PIXELS_PER_LINE = 18;
 
     /**
      * The number of pixels to scroll per page.
      */
-    this.PIXELS_PER_PAGE = 640;
+    this.PIXELS_PER_PAGE = this.PIXELS_PER_LINE * 16;
 
     /**
      * The current mouse state. The properties of this state are updated when
@@ -274,36 +274,52 @@ Guacamole.Mouse = function(element) {
         scroll_delta += delta;
 
         // Up
-        while (scroll_delta <= -guac_mouse.scrollThreshold) {
+        if (scroll_delta <= -guac_mouse.scrollThreshold) {
 
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.up = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
+            // Repeatedly click the up button until insufficient delta remains
+            do {
 
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.up = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
+                if (guac_mouse.onmousedown) {
+                    guac_mouse.currentState.up = true;
+                    guac_mouse.onmousedown(guac_mouse.currentState);
+                }
 
-            scroll_delta += guac_mouse.scrollThreshold;
+                if (guac_mouse.onmouseup) {
+                    guac_mouse.currentState.up = false;
+                    guac_mouse.onmouseup(guac_mouse.currentState);
+                }
+
+                scroll_delta += guac_mouse.scrollThreshold;
+
+            } while (scroll_delta <= -guac_mouse.scrollThreshold);
+
+            // Reset delta
+            scroll_delta = 0;
 
         }
 
         // Down
-        while (scroll_delta >= guac_mouse.scrollThreshold) {
+        if (scroll_delta >= guac_mouse.scrollThreshold) {
 
-            if (guac_mouse.onmousedown) {
-                guac_mouse.currentState.down = true;
-                guac_mouse.onmousedown(guac_mouse.currentState);
-            }
+            // Repeatedly click the down button until insufficient delta remains
+            do {
 
-            if (guac_mouse.onmouseup) {
-                guac_mouse.currentState.down = false;
-                guac_mouse.onmouseup(guac_mouse.currentState);
-            }
+                if (guac_mouse.onmousedown) {
+                    guac_mouse.currentState.down = true;
+                    guac_mouse.onmousedown(guac_mouse.currentState);
+                }
 
-            scroll_delta -= guac_mouse.scrollThreshold;
+                if (guac_mouse.onmouseup) {
+                    guac_mouse.currentState.down = false;
+                    guac_mouse.onmouseup(guac_mouse.currentState);
+                }
+
+                scroll_delta -= guac_mouse.scrollThreshold;
+
+            } while (scroll_delta >= guac_mouse.scrollThreshold);
+
+            // Reset delta
+            scroll_delta = 0;
 
         }
 
