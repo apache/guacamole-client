@@ -32,7 +32,7 @@
 
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
-        "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} {USERS, plural, one{user} other{users}}.",
+        "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} Benutzer.",
 
         "NAME" : "Guacamole ${project.version}"
 
@@ -116,7 +116,7 @@
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Verbindungsaufbau zu Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Verbindung wurde getrennt.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Verbindungsaufbau zu Guacamole. Bitte warten...",
-        "TEXT_RECONNECT_COUNTDOWN"        : "Neuverbindung in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Neuverbindung in {REMAINING} {REMAINING, plural, one{Sekunde} other{Sekunden}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
@@ -188,7 +188,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Dauer",
 
         "TEXT_CONFIRM_DELETE"   : "Dieser Löschvorgang ist unumkehrbar. Soll diese Verbindung wirklich gelöscht werden?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}"
 
     },
 
