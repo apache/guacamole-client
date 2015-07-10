@@ -168,6 +168,7 @@
                                 <jsSourceFile>lib/blob/blob.js</jsSourceFile>
                                 <jsSourceFile>lib/filesaver/filesaver.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
+                                <jsSourceFile>lib/messageformat/de.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/fr.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/nl.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/ru.js</jsSourceFile>
