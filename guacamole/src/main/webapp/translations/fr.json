@@ -243,10 +243,10 @@
     
     "PROTOCOL_RDP" : {
 
-        "FIELD_HEADER_COLOR_DEPTH"     : "Qualité couleur:",
-        "FIELD_HEADER_CONSOLE"         : "Console Administrateur:",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
         "FIELD_HEADER_CLIENT_NAME"     : "Nom du Client:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Qualité couleur:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
+        "FIELD_HEADER_CONSOLE"         : "Console Administrateur:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Désactiver son:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Désactiver authentification:",
         "FIELD_HEADER_DOMAIN"          : "Nom du domaine:",
@@ -254,6 +254,7 @@
         "FIELD_HEADER_DRIVE_PATH"      : "Chemin du lecteur:",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Activer lecteur réseau:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Activer imprimante:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Activer SFTP:",
         "FIELD_HEADER_HEIGHT"          : "Hauteur:",
         "FIELD_HEADER_HOSTNAME"        : "Nom d'hôte:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignorer le certificat du serveur:",
@@ -265,9 +266,16 @@
         "FIELD_HEADER_REMOTE_APP"      : "Programme:",
         "FIELD_HEADER_SECURITY"        : "Mode de Sécurité:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Agencement clavier:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Nom d'hôte:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Phrase secrète:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Mot de passe:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Clé privée:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Identifiant:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
         "FIELD_HEADER_USERNAME"        : "Identifiant:",
         "FIELD_HEADER_WIDTH"           : "Largeur:",
-        "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
+
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Faibles couleurs (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Vraies couleurs (24-bit)",
@@ -296,7 +304,8 @@
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Redirection Périphérique",
         "SECTION_HEADER_DISPLAY"            : "Affichage",
         "SECTION_HEADER_NETWORK"            : "Réseau",
-        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp"
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
 
@@ -379,10 +388,17 @@
         "FIELD_HEADER_DEST_HOST"        : "Hôte distant:",
         "FIELD_HEADER_DEST_PORT"        : "Port distant:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Activer son:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Activer SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Nom d'hôte:",
         "FIELD_HEADER_PASSWORD"         : "Mot de passe:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Lecture seule:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Nom d'hôte:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Phrase secrète:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Mot de passe:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Clé privée:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Identifiant:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Swap red/blue components:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 couleurs",
@@ -401,7 +417,8 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authentification",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_NETWORK"        : "Réseau",
-        "SECTION_HEADER_REPEATER"       : "Répéteur VNC"
+        "SECTION_HEADER_REPEATER"       : "Répéteur VNC",
+        "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 
