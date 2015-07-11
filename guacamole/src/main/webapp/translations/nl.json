@@ -247,10 +247,10 @@
     
     "PROTOCOL_RDP" : {
 
+        "FIELD_HEADER_CLIENT_NAME"     : "Client naam:",
         "FIELD_HEADER_COLOR_DEPTH"     : "Kleurdiepte:",
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
-        "FIELD_HEADER_CLIENT_NAME"     : "Client naam:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Uitschakelen geluid:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Uitschakelen authenticatie:",
         "FIELD_HEADER_DOMAIN"          : "Domein:",
@@ -258,6 +258,7 @@
         "FIELD_HEADER_DRIVE_PATH"      : "Station map:",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Inschakelen station:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Printen mogelijk maken:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "SFTP mogelijk maken:",
         "FIELD_HEADER_HEIGHT"          : "Hoogte:",
         "FIELD_HEADER_HOSTNAME"        : "Servernaam:",
         "FIELD_HEADER_IGNORE_CERT"     : "Negeer server certificaat:",
@@ -269,9 +270,15 @@
         "FIELD_HEADER_REMOTE_APP"      : "Programma:",
         "FIELD_HEADER_SECURITY"        : "Beveiligings modus:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Toetsenbord lay-out:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Poort:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Gebruikersnaam:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Vaste kanaalnamen:",
         "FIELD_HEADER_USERNAME"        : "Gebruikersnaam:",
         "FIELD_HEADER_WIDTH"           : "Breedte:",
-        "FIELD_HEADER_STATIC_CHANNELS" : "Vaste kanaalnamen:",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Minder Kleuren (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Echte Kleuren (24-bit)",
@@ -300,7 +307,8 @@
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Device Redirection",
         "SECTION_HEADER_DISPLAY"            : "Scherm",
         "SECTION_HEADER_NETWORK"            : "Netwerk",
-        "SECTION_HEADER_REMOTEAPP"          : "ExterneApp"
+        "SECTION_HEADER_REMOTEAPP"          : "ExterneApp",
+        "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
 
@@ -383,10 +391,17 @@
         "FIELD_HEADER_DEST_HOST"        : "Externe server:",
         "FIELD_HEADER_DEST_PORT"        : "Externe poort:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Inschakelen geluid:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "SFTP mogelijk maken:",
         "FIELD_HEADER_HOSTNAME"         : "Servernaam:",
         "FIELD_HEADER_PASSWORD"         : "Wachtwoord:",
         "FIELD_HEADER_PORT"             : "Poort:",
         "FIELD_HEADER_READ_ONLY"        : "Alleen lezen:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
+        "FIELD_HEADER_SFTP_PORT"        : "Poort:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Persoonlijke sleutel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Gebruikersnaam:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Verwissel rood/blauw componenten:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 kleuren",
@@ -405,7 +420,8 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_NETWORK"        : "Netwerk",
-        "SECTION_HEADER_REPEATER"       : "VNC Repeater"
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 

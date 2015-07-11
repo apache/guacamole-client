@@ -246,10 +246,10 @@
     
     "PROTOCOL_RDP" : {
 
-        "FIELD_HEADER_COLOR_DEPTH"     : "Farbtiefe:",
-        "FIELD_HEADER_CONSOLE"         : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
         "FIELD_HEADER_CLIENT_NAME"     : "Client-Name:",
+        "FIELD_HEADER_COLOR_DEPTH"     : "Farbtiefe:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
+        "FIELD_HEADER_CONSOLE"         : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Deaktivere Audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Deaktivere Authentifizierung:",
         "FIELD_HEADER_DOMAIN"          : "Domäne:",
@@ -261,6 +261,7 @@
         "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Aktiviere Fensterziehen:",
         "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Aktiviere Menüanimationen:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Aktiviere Drucken:",
+        "FIELD_HEADER_ENABLE_SFTP" : "Aktiviere SFTP:",
         "FIELD_HEADER_ENABLE_THEMING"             : "Aktiviere Thema:",
         "FIELD_HEADER_ENABLE_WALLPAPER"           : "Aktiviere Desktophintergrund:",
         "FIELD_HEADER_HEIGHT"          : "Höhe:",
@@ -274,9 +275,15 @@
         "FIELD_HEADER_REMOTE_APP"      : "Programm:",
         "FIELD_HEADER_SECURITY"        : "Sicherheitsverfahren:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Tastatur Layout:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Hostname:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Passwort:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Privater Schlüssel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Benutzername:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Statischer Kanalname:",
         "FIELD_HEADER_USERNAME"        : "Benutzername:",
         "FIELD_HEADER_WIDTH"           : "Breite:",
-        "FIELD_HEADER_STATIC_CHANNELS" : "Statischer Kanalname:",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Hohe Farbtiefe (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Echtfarben (24-bit)",
@@ -306,7 +313,8 @@
         "SECTION_HEADER_DISPLAY"            : "Bildschirm",
         "SECTION_HEADER_NETWORK"            : "Netzwerk",
         "SECTION_HEADER_PERFORMANCE"        : "Geschwindigkeit",
-        "SECTION_HEADER_REMOTEAPP"          : "Entferntes Programm"
+        "SECTION_HEADER_REMOTEAPP"          : "Entferntes Programm",
+        "SECTION_HEADER_SFTP"               : "SFTP"
 
     },
 
@@ -389,10 +397,17 @@
         "FIELD_HEADER_DEST_HOST"        : "Ziel Host:",
         "FIELD_HEADER_DEST_PORT"        : "Ziel Port:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Aktiviere Audio:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Aktiviere SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Hostname:",
         "FIELD_HEADER_PASSWORD"         : "Passwort:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Nur-Lesen:",
+        "FIELD_HEADER_SFTP_HOSTNAME"    : "Hostname:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"    : "Passwort:",
+        "FIELD_HEADER_SFTP_PORT"        : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Privater Schlüssel:",
+        "FIELD_HEADER_SFTP_USERNAME"    : "Benutzername:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Vertausche rot/blau Komponenten:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 Farben",
@@ -411,7 +426,8 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_NETWORK"        : "Netzwerk",
-        "SECTION_HEADER_REPEATER"       : "VNC Repeater"
+        "SECTION_HEADER_REPEATER"       : "VNC Repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 
