@@ -158,6 +158,7 @@
                                 <jsSourceFile>lib/jquery.js</jsSourceFile>
                                 <jsSourceFile>lib/angular.min.js</jsSourceFile>
                                 <jsSourceFile>lib/angular-module-shim.js</jsSourceFile>
+                                <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
                                 <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
                             </jsSourceFiles>
