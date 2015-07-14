@@ -30,19 +30,16 @@ angular.module('index').config(['$injector', function($injector) {
     var preferenceServiceProvider = $injector.get('preferenceServiceProvider');
 
     // Fallback to US English
-    var fallbackLanguages = ['en'];
+    $translateProvider.fallbackLanguage('en');
 
-    // Prefer chosen language, use fallback languages if necessary
-    $translateProvider.fallbackLanguage(fallbackLanguages);
+    // Prefer chosen language
     $translateProvider.preferredLanguage(preferenceServiceProvider.preferences.language);
 
     // Escape any HTML in translation strings
     $translateProvider.useSanitizeValueStrategy('escape');
 
     // Load translations via translationLoader service
-    $translateProvider.useLoader('translationLoader', {
-        fallbackLanguages : fallbackLanguages
-    });
+    $translateProvider.useLoader('translationLoader');
 
     // Provide pluralization, etc. via messageformat.js
     $translateProvider.useMessageFormatInterpolation();

@@ -56,9 +56,9 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
         // Get current language key
         var currentKey = remainingKeys.shift();
 
-        // If no languages to try, just fail
+        // If no languages to try, "succeed" with an empty translation (force fallback)
         if (!currentKey) {
-            deferred.reject(requestedKey);
+            deferred.resolve('{}');
             return;
         }
 
@@ -122,14 +122,8 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
 
         var translation = $q.defer();
 
-        // Get requested language from options
-        var requestedKey = options.key;
-
-        // Append fallback languages to requested language
-        var keys = getKeyVariations(requestedKey).concat(options.fallbackLanguages);
-
-        // Satisfy the translation request
-        satisfyTranslation(translation, requestedKey, keys);
+        // Satisfy the translation request using possible variations of the given key
+        satisfyTranslation(translation, options.key, getKeyVariations(options.key));
 
         // Return promise which is resolved only after the translation file is loaded
         return translation.promise;
