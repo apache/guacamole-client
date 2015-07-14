@@ -127,7 +127,7 @@ angular.module('settings').provider('preferenceService', function preferenceServ
          * 
          * @type String
          */
-        language : 'en'
+        language : getDefaultLanguageKey()
 
     };
 
