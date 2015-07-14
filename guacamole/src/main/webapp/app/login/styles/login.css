@@ -62,6 +62,7 @@ div.login-ui {
 .login-ui .login-fields .labeled-field {
     display: block;
     position: relative;
+    z-index: 1;
 }
 
 .login-ui .login-fields .labeled-field .field-header {
