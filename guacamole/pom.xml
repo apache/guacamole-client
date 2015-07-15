@@ -155,28 +155,16 @@
                             <jsFinalFile>guacamole.js</jsFinalFile>
                             
                             <jsSourceFiles>
-                                <jsSourceFile>lib/jquery.js</jsSourceFile>
-                                <jsSourceFile>lib/lodash.js</jsSourceFile>
-                                <jsSourceFile>lib/angular.min.js</jsSourceFile>
-                                <jsSourceFile>lib/angular-module-shim.js</jsSourceFile>
-                                <jsSourceFile>lib/angular-touch.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-cookies.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-route.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-translate.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-translate-loader-static-files.js</jsSourceFile>
-                                <jsSourceFile>lib/plugins/angular-translate-interpolation-messageformat.js</jsSourceFile>
-                                <jsSourceFile>lib/blob/blob.js</jsSourceFile>
-                                <jsSourceFile>lib/filesaver/filesaver.js</jsSourceFile>
+                                <jsSourceFile>lib/jquery/jquery.js</jsSourceFile>
+                                <jsSourceFile>lib/angular/angular.min.js</jsSourceFile>
+                                <jsSourceFile>lib/angular-module-shim/angular-module-shim.js</jsSourceFile>
                                 <jsSourceFile>lib/messageformat/messageformat.js</jsSourceFile>
-                                <jsSourceFile>lib/messageformat/de.js</jsSourceFile>
-                                <jsSourceFile>lib/messageformat/fr.js</jsSourceFile>
-                                <jsSourceFile>lib/messageformat/nl.js</jsSourceFile>
-                                <jsSourceFile>lib/messageformat/ru.js</jsSourceFile>
                                 <jsSourceFile>license.txt</jsSourceFile>
                                 <jsSourceFile>guacamole-common-js/all.js</jsSourceFile>
                             </jsSourceFiles>
 
                             <jsSourceIncludes>
+                                <jsSourceInclude>lib/**/*.js</jsSourceInclude>
                                 <jsSourceInclude>app/**/*.js</jsSourceInclude>
                                 <jsSourceInclude>generated/**/*.js</jsSourceInclude>
                             </jsSourceIncludes>
