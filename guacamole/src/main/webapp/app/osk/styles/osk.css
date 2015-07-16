@@ -209,3 +209,9 @@
     display: none;
     
 }
+
+/* Fade out keys which do not use AltGr if AltGr is active */
+.guac-keyboard.guac-keyboard-modifier-alt-gr
+.guac-keyboard-key:not(.guac-keyboard-uses-alt-gr):not(.guac-keyboard-key-alt-gr) {
+    opacity: 0.5;
+}
