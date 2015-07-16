@@ -92,6 +92,7 @@
 .guac-keyboard .guac-keyboard-key-tab,
 .guac-keyboard .guac-keyboard-key-lalt,
 .guac-keyboard .guac-keyboard-key-ralt,
+.guac-keyboard .guac-keyboard-key-alt-gr,
 .guac-keyboard .guac-keyboard-key-lctrl,
 .guac-keyboard .guac-keyboard-key-rctrl,
 .guac-keyboard .guac-keyboard-key-lshift,
@@ -111,6 +112,9 @@
 /* Active alt */
 .guac-keyboard.guac-keyboard-modifier-alt .guac-keyboard-key-ralt,
 .guac-keyboard.guac-keyboard-modifier-alt .guac-keyboard-key-lalt,
+
+/* Active alt-gr */
+.guac-keyboard.guac-keyboard-modifier-alt-gr .guac-keyboard-key-alt-gr,
 
 /* Active caps */
 .guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
@@ -185,6 +189,9 @@
 .guac-keyboard:not(.guac-keyboard-modifier-shift)
 .guac-keyboard-cap.guac-keyboard-requires-shift,
 
+.guac-keyboard:not(.guac-keyboard-modifier-alt-gr)
+.guac-keyboard-cap.guac-keyboard-requires-alt-gr,
+
 /* Hide keycaps NOT requiring modifiers which ARE currently active, where that
    modifier is used to determine which cap is displayed for the current key. */
 .guac-keyboard.guac-keyboard-modifier-shift
@@ -193,7 +200,11 @@
 
 .guac-keyboard.guac-keyboard-modifier-caps
 .guac-keyboard-key.guac-keyboard-uses-caps
-.guac-keyboard-cap:not(.guac-keyboard-requires-caps) {
+.guac-keyboard-cap:not(.guac-keyboard-requires-caps),
+
+.guac-keyboard.guac-keyboard-modifier-alt-gr
+.guac-keyboard-key.guac-keyboard-uses-alt-gr
+.guac-keyboard-cap:not(.guac-keyboard-requires-alt-gr) {
 
     display: none;
     
