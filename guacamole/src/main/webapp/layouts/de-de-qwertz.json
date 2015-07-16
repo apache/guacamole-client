@@ -1,14 +1,13 @@
 {
 
     "language" : "de_DE",
-    "type"     : "qwerty",
+    "type"     : "qwertz",
     "width"    : 23,
 
     "keys" : {
 
         "Back"  : 65288,
         "Tab"   : 65289,
-        "Enter" : 65293,
         "Esc"   : 65307,
         "Home"  : 65360,
         "PgUp"  : 65365,
@@ -30,6 +29,11 @@
         "Del"   : 65535,
 
         "Space" : " ",
+
+        "Enter" : [{
+            "title"  : "↵",
+            "keysym" : 65293
+        }],
 
         "Left" : [{
             "title"  : "←",
@@ -64,12 +68,12 @@
             "keysym"   : 65506
         }],
         "LCtrl" : [{
-            "title"    : "Ctrl",
+            "title"    : "Strg",
             "modifier" : "control",
             "keysym"   : 65507
         }],
         "RCtrl" : [{
-            "title"    : "Ctrl",
+            "title"    : "Strg",
             "modifier" : "control",
             "keysym"   : 65508
         }],
@@ -373,11 +377,11 @@
             "main" : {
                 "alpha" : [
 
-                  [ "^", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "ß", "´", "Back" ],
-                  [ "Tab", "q", "w", "e", "r", "t", "z", "u", "i", "o", "p", "ü", "+" ],
-                  [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", "ö", "ä", "#", "Enter" ],
-                  [ "LShift", "<", "y", "x", "c", "v",  "b", "n",  "m", ",", ".", "-",  "RShift" ],
-                  [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
+                    [ "^", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "ß", "´", "Back" ],
+                    [ "Tab", "q", "w", "e", "r", "t", "z", "u", "i", "o", "p", "ü", "+", 1, 0.6 ],
+                    [ "Caps",  "a", "s", "d", "f", "g", "h", "j", "k", "l", "ö", "ä", "#", "Enter" ],
+                    [ "LShift", "<", "y", "x", "c", "v",  "b", "n",  "m", ",", ".", "-",  "RShift" ],
+                    [ "LCtrl", "Super", "LAlt",       "Space",        "RAlt", "Menu", "RCtrl" ]
 
                 ],
 
@@ -398,10 +402,10 @@
         "Back"   : 2,
         "Tab"    : 1.5,
         "\\"     : 1.5,
-        "Caps"   : 1.85,
-        "Enter"  : 2.25,
-        "LShift" : 2.1,
-        "RShift" : 3.1,
+        "Caps"   : 1.75,
+        "Enter"  : 1.25,
+        "LShift" : 2,
+        "RShift" : 2.1,
 
         "LCtrl" : 1.6,
         "Super" : 1.6,
