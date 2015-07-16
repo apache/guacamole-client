@@ -157,11 +157,6 @@
             { "title" : "´", "requires" : [         ] },
             { "title" : "`", "requires" : [ "shift" ] }
         ],
-        "^" : [
-            { "title" : "^", "requires" : [          ] },
-            { "title" : "¨", "requires" : [ "shift"  ] },
-            { "title" : "",  "requires" : [ "alt-gr" ] }
-        ],
         "+" : [
             { "title" : "+", "requires" : [          ] },
             { "title" : "*", "requires" : [ "shift"  ] },
