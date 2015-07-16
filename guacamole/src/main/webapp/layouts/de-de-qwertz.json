@@ -6,14 +6,7 @@
 
     "keys" : {
 
-        "Back"  : 65288,
-        "Tab"   : 65289,
         "Esc"   : 65307,
-        "Home"  : 65360,
-        "PgUp"  : 65365,
-        "PgDn"  : 65366,
-        "End"   : 65367,
-        "Ins"   : 65379,
         "F1"    : 65470,
         "F2"    : 65471,
         "F3"    : 65472,
@@ -26,13 +19,44 @@
         "F10"   : 65479,
         "F11"   : 65480,
         "F12"   : 65481,
-        "Del"   : 65535,
 
         "Space" : " ",
 
+        "Back" : [{
+            "title"  : "⟵",
+            "keysym" : 65288
+        }],
+        "Tab" : [{
+            "title"  : "Tab ↹",
+            "keysym" : 65289
+        }],
         "Enter" : [{
             "title"  : "↵",
             "keysym" : 65293
+        }],
+        "Home" : [{
+            "title"  : "Pos 1",
+            "keysym" : 65360
+        }],
+        "PgUp" : [{
+            "title"  : "Bild ↑",
+            "keysym" : 65365
+        }],
+        "PgDn" : [{
+            "title"  : "Bild ↓",
+            "keysym" : 65366
+        }],
+        "End" : [{
+            "title"  : "Ende",
+            "keysym" : 65367
+        }],
+        "Ins" : [{
+            "title"  : "Einfg",
+            "keysym" : 65379
+        }],
+        "Del" : [{
+            "title"  : "Entf",
+            "keysym" : 65535
         }],
 
         "Left" : [{
