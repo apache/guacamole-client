@@ -87,7 +87,7 @@
 
         "HELP_CLIPBOARD"           : "Kopierter oder ausgeschnittener Text aus Guacamole wird hier angezeigt. Änderungen am Text werden direkt auf die entfernte Zwischenablage angewandt.",
         "HELP_INPUT_METHOD_NONE"   : "Keine Eingabemethode in Verwendung. Tastatureingaben werden von der Hardwaretastatur akzeptiert.",
-        "HELP_INPUT_METHOD_OSK"    : "Bildschirmeingaben und die eingebettete Guacamole Bildschrimtastatur werden akzeptiert. Die Bildschirmtastatur gestattet Tastenkombinationen die ansonsten unmöglich sind (z.B.: Strl-Alt-Del).",
+        "HELP_INPUT_METHOD_OSK"    : "Bildschirmeingaben und die eingebettete Guacamole Bildschrimtastatur werden akzeptiert. Die Bildschirmtastatur gestattet Tastenkombinationen die ansonsten unmöglich sind (z.B.: Strg-Alt-Del).",
         "HELP_INPUT_METHOD_TEXT"   : "Gestattet Eingaben von Text und emuliert Tastaturkombinationen basierend auf den eingegebenen Text. Dies wird benötigt für Geräte ohne Hardwaretastatur.",
         "HELP_MOUSE_MODE"          : "Beeinflusst, wie sich die entfernte Maus bei Touchpadberührungen verhält.",
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tippen Sie auf die Zielposition, der Klick erfolgt am Ort der Berührung des Touchscreen's.",
@@ -119,7 +119,7 @@
         "TEXT_RECONNECT_COUNTDOWN"        : "Neuverbindung in {REMAINING} {REMAINING, plural, one{Sekunde} other{Sekunden}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
-        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+        "URL_OSK_LAYOUT" : "layouts/de-de-qwertz.json"
 
     },
 
