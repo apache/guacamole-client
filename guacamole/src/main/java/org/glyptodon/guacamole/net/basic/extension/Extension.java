@@ -110,13 +110,13 @@ public class Extension {
 
     /**
      * The resource for the small favicon for the extension. If provided, this
-     * will replace the default guacamole icon.
+     * will replace the default Guacamole icon.
      */
     private final Resource smallIcon;
 
     /**
      * The resource foe the large favicon for the extension. If provided, this 
-     * will replace the default guacamole icon.
+     * will replace the default Guacamole icon.
      */
     private final Resource largeIcon;
 
@@ -472,7 +472,7 @@ public class Extension {
 
     /**
      * Returns the resource for the small favicon for the extension. If
-     * provided, this will replace the default guacamole icon.
+     * provided, this will replace the default Guacamole icon.
      * 
      * @return 
      *     The resource for the large favicon.
@@ -483,7 +483,7 @@ public class Extension {
 
     /**
      * Returns the resource for the large favicon for the extension. If
-     * provided, this will replace the default guacamole icon.
+     * provided, this will replace the default Guacamole icon.
      * 
      * @return 
      *     The resource for the large favicon.

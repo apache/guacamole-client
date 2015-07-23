@@ -328,7 +328,8 @@ public class ExtensionManifest {
      * Returns the path to the small favicon, relative to the root of the
      * extension.
      *
-     * @return The path to the small favicon.
+     * @return 
+     *     The path to the small favicon.
      */
     public String getSmallIcon() {
         return smallIcon;
@@ -338,7 +339,8 @@ public class ExtensionManifest {
      * Sets the path to the small favicon. This will replace the default
      * guacamole icon.
      *
-     * @param smallIcon The path to the small favicon.
+     * @param smallIcon 
+     *     The path to the small favicon.
      */
     public void setSmallIcon(String smallIcon) {
         this.smallIcon = smallIcon;
