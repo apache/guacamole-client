@@ -475,7 +475,7 @@ public class Extension {
      * provided, this will replace the default Guacamole icon.
      * 
      * @return 
-     *     The resource for the large favicon.
+     *     The resource for the small favicon.
      */
     public Resource getSmallIcon() {
         return smallIcon;

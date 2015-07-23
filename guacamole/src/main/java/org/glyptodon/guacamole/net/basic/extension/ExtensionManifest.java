@@ -88,13 +88,13 @@ public class ExtensionManifest {
 
     /**
      * The path to the small favicon. If provided, this will replace the default
-     * guacamole icon.
+     * Guacamole icon.
      */
     private String smallIcon;
 
     /**
      * The path to the large favicon. If provided, this will replace the default
-     * guacamole icon.
+     * Guacamole icon.
      */
     private String largeIcon;
 
@@ -337,7 +337,7 @@ public class ExtensionManifest {
 
     /**
      * Sets the path to the small favicon. This will replace the default
-     * guacamole icon.
+     * Guacamole icon.
      *
      * @param smallIcon 
      *     The path to the small favicon.
@@ -359,7 +359,7 @@ public class ExtensionManifest {
 
     /**
      * Sets the path to the large favicon. This will replace the default
-     * guacamole icon.
+     * Guacamole icon.
      *
      * @param largeIcon
      *     The path to the large favicon.
