@@ -83,8 +83,14 @@
 
 .login-ui .login-dialog .logo {
     display: block;
-    max-width: 3em;
     margin: 0.5em auto;
+    width: 3em;
+    height: 3em;
+    background-size:         3em 3em;
+    -moz-background-size:    3em 3em;
+    -webkit-background-size: 3em 3em;
+    -khtml-background-size:  3em 3em;
+    background-image: url("images/guac-tricolor.png");
 }
 
 .login-ui.continuation div.login-dialog {

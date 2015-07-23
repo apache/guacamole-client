@@ -87,6 +87,18 @@ public class ExtensionManifest {
     private Collection<String> authProviders;
 
     /**
+     * The path to the small favicon. If provided, this will replace the default
+     * Guacamole icon.
+     */
+    private String smallIcon;
+
+    /**
+     * The path to the large favicon. If provided, this will replace the default
+     * Guacamole icon.
+     */
+    private String largeIcon;
+
+    /**
      * Returns the version of the Guacamole web application for which the
      * extension was built, such as "0.9.7".
      *
@@ -310,6 +322,50 @@ public class ExtensionManifest {
      */
     public void setAuthProviders(Collection<String> authProviders) {
         this.authProviders = authProviders;
+    }
+
+    /**
+     * Returns the path to the small favicon, relative to the root of the
+     * extension.
+     *
+     * @return 
+     *     The path to the small favicon.
+     */
+    public String getSmallIcon() {
+        return smallIcon;
+    }
+
+    /**
+     * Sets the path to the small favicon. This will replace the default
+     * Guacamole icon.
+     *
+     * @param smallIcon 
+     *     The path to the small favicon.
+     */
+    public void setSmallIcon(String smallIcon) {
+        this.smallIcon = smallIcon;
+    }
+
+    /**
+     * Returns the path to the large favicon, relative to the root of the
+     * extension.
+     *
+     * @return
+     *     The path to the large favicon.
+     */
+    public String getLargeIcon() {
+        return largeIcon;
+    }
+
+    /**
+     * Sets the path to the large favicon. This will replace the default
+     * Guacamole icon.
+     *
+     * @param largeIcon
+     *     The path to the large favicon.
+     */
+    public void setLargeIcon(String largeIcon) {
+        this.largeIcon = largeIcon;
     }
 
 }

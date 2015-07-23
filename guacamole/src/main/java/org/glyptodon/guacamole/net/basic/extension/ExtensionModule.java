@@ -369,6 +369,14 @@ public class ExtensionModule extends ServletModule {
                 String staticResourcePrefix = "/app/ext/" + extension.getNamespace() + "/";
                 serveStaticResources(staticResourcePrefix, extension.getStaticResources());
 
+                // Serve up the small favicon if provided
+                if(extension.getSmallIcon() != null)
+                    serve("/images/logo-64.png").with(new ResourceServlet(extension.getSmallIcon()));
+
+                // Serve up the large favicon if provided
+                if(extension.getLargeIcon()!= null)
+                    serve("/images/logo-144.png").with(new ResourceServlet(extension.getLargeIcon()));
+
                 // Log successful loading of extension by name
                 logger.info("Extension \"{}\" loaded.", extension.getName());
 

@@ -109,6 +109,18 @@ public class Extension {
     private final Collection<Class<AuthenticationProvider>> authenticationProviderClasses;
 
     /**
+     * The resource for the small favicon for the extension. If provided, this
+     * will replace the default Guacamole icon.
+     */
+    private final Resource smallIcon;
+
+    /**
+     * The resource foe the large favicon for the extension. If provided, this 
+     * will replace the default Guacamole icon.
+     */
+    private final Resource largeIcon;
+
+    /**
      * Returns a new map of all resources corresponding to the collection of
      * paths provided. Each resource will be associated with the given
      * mimetype, and stored in the map using its path as the key.
@@ -346,6 +358,17 @@ public class Extension {
         // Define authentication providers
         authenticationProviderClasses = getAuthenticationProviderClasses(manifest.getAuthProviders());
 
+        // Get small icon resource if provided
+        if (manifest.getSmallIcon() != null)
+            smallIcon = new ClassPathResource(classLoader, "image/png", manifest.getSmallIcon());
+        else
+            smallIcon = null;
+
+        // Get large icon resource if provided
+        if (manifest.getLargeIcon() != null)
+            largeIcon = new ClassPathResource(classLoader, "image/png", manifest.getLargeIcon());
+        else
+            largeIcon = null;
     }
 
     /**
@@ -445,6 +468,28 @@ public class Extension {
      */
     public Collection<Class<AuthenticationProvider>> getAuthenticationProviderClasses() {
         return authenticationProviderClasses;
+    }
+
+    /**
+     * Returns the resource for the small favicon for the extension. If
+     * provided, this will replace the default Guacamole icon.
+     * 
+     * @return 
+     *     The resource for the small favicon.
+     */
+    public Resource getSmallIcon() {
+        return smallIcon;
+    }
+
+    /**
+     * Returns the resource for the large favicon for the extension. If
+     * provided, this will replace the default Guacamole icon.
+     * 
+     * @return 
+     *     The resource for the large favicon.
+     */
+    public Resource getLargeIcon() {
+        return largeIcon;
     }
 
 }
