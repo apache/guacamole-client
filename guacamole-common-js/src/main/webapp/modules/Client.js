@@ -886,6 +886,19 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "jpeg": function(parameters) {
+
+            var channelMask = parseInt(parameters[0]);
+            var layer = getLayer(parseInt(parameters[1]));
+            var x = parseInt(parameters[2]);
+            var y = parseInt(parameters[3]);
+            var data = parameters[4];
+
+            display.setChannelMask(layer, channelMask);
+            display.draw(layer, x, y, "data:image/jpeg;base64," + data);
+
+        },
+
         "lfill": function(parameters) {
 
             var channelMask = parseInt(parameters[0]);
