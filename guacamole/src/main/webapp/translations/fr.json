@@ -7,6 +7,7 @@
         "ACTION_ACKNOWLEDGE"        : "Confirmer",
         "ACTION_CANCEL"             : "Annuler",
         "ACTION_CLONE"              : "Cloner",
+        "ACTION_CONTINUE"           : "Continuer",
         "ACTION_DELETE"             : "Supprimer",
         "ACTION_DELETE_SESSIONS"    : "Fermer les Sessions",
         "ACTION_LOGIN"              : "Se connecter",
@@ -23,6 +24,7 @@
 
         "DIALOG_HEADER_ERROR" : "Erreur",
 
+        "ERROR_PASSWORD_BLANK"    : "Votre mot de passe ne peut pas être vide.",
         "ERROR_PASSWORD_MISMATCH" : "Le mot de passe ne correspond pas.",
         
         "FIELD_HEADER_PASSWORD"       : "Mot de passe:",
@@ -60,6 +62,7 @@
         "ERROR_CLIENT_308"     : "Le serveur Guacamole a fermé la connexion car il n'y avait pas de réponse de votre navigateur Internet et qu'il l'a considéré comme déconnecté. Cela se produit à cause de problèmes réseaux (mauvais signal Wi-Fi ou réseau très lent). Merci de vérifier votre réseau et de réessayer.", 
         "ERROR_CLIENT_31D"     : "Le serveur Guacamole interdit les connexions car vous avez dépassé la limite de connexion simultanée par utilisateur. Merci de fermer une ou plusieurs connexions et de reéssayer.", 
         "ERROR_CLIENT_DEFAULT" : "Une erreur interne est apparue dans le serveur Guacamole et la connexion a été fermée. Si le problème persiste, merci de notifier l'administrateur ou de regarder les journaux système.", 
+
         "ERROR_TUNNEL_201"     : "Le serveur Guacamole a rejeté cette tentative de connexion car il y a trop de connexions ouvertes. Merci d'attendre quelques minutes et de réessayer.", 
         "ERROR_TUNNEL_202"     : "La connexion a été fermée car le serveur met trop de temps à répondre. En général, il s'agit de problème réseau comme un réseau Wi-Fi trop lent ou un réseau très lent. Merci de vérifier votre réseau ou de contacter l'administrateur.", 
         "ERROR_TUNNEL_203"     : "Le serveur a rencontré une erreur et a fermé la connexion. Merci de réessayer ou de contacter l'administrateur.", 
@@ -86,9 +89,7 @@
         "HELP_CLIPBOARD"           : "Texte copié/coupé dans Guacamole apparaîtra ici. Changer le texte ci dessous affectera le presse-papiers distant.",
         "HELP_INPUT_METHOD_NONE"   : "Aucune méthode de saisie utilisée. Clavier accepté depuis un clavier physique connecté.",
         "HELP_INPUT_METHOD_OSK"    : "Affiche et utilise la saisie du clavier virtuel intégré dans Guacamole. Le clavier virtuel permet d'utiliser des combinaisons de touches autrement impossibles (comme Ctrl-Alt-Supp).",
-        
         "HELP_INPUT_METHOD_TEXT"   : "Affiche et utilise la saisie du clavier virtuel intégré dans Guacamole. Ceci est nécessaire pou les périphériques mobiles ne disposant pas de clavier physique.",
-        
         "HELP_MOUSE_MODE"          : "Détermine comment la souris distante se comporte selon les événements.", 
         "HELP_MOUSE_MODE_ABSOLUTE" : "Appuyer pour cliquer. Le clique s'effectue à l'endroit de l'appui.",
         "HELP_MOUSE_MODE_RELATIVE" : "Glisser pour déplacer le pointeur de la souris et appuyer opur cliquer. Le clique s'effectue à l'endroit du pointeur.", 
@@ -106,6 +107,7 @@
         "NAME_MOUSE_MODE_RELATIVE" : "Pavé tactile",
 
         "SECTION_HEADER_CLIPBOARD"      : "Presse-papiers",
+        "SECTION_HEADER_DEVICES"        : "Appareils",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_FILE_TRANSFERS" : "Transfers de fichiers",
         "SECTION_HEADER_INPUT_METHOD"   : "Méthode de saisie",
@@ -145,7 +147,11 @@
 
     "LOGIN": {
 
-        "ACTION_LOGIN" : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "ERROR_INVALID_LOGIN" : "Identifiant Incorrect",
 
@@ -184,7 +190,6 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Durée",
 
         "TEXT_CONFIRM_DELETE"   : "Les connexions ne pourront être restaurées une fois supprimées. Êtes-vous certains de vouloir supprimer cette connexion ?",
-        
         "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{secondes}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{heure} other{heures}}} day{{VALUE, plural, one{jour} other{jours}}} other{}}"
 
     },
@@ -245,16 +250,22 @@
 
         "FIELD_HEADER_CLIENT_NAME"     : "Nom du Client:",
         "FIELD_HEADER_COLOR_DEPTH"     : "Qualité couleur:",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
         "FIELD_HEADER_CONSOLE"         : "Console Administrateur:",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Support son en console:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Désactiver son:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Désactiver authentification:",
         "FIELD_HEADER_DOMAIN"          : "Nom du domaine:",
         "FIELD_HEADER_DPI"             : "Résolution (ppp):",
         "FIELD_HEADER_DRIVE_PATH"      : "Chemin du lecteur:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Activer la composition du bureau (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Activer lecteur réseau:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING" : "Enable font smoothing (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG" : "Activer pleine fenêtre de glisser:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS" : "Activer les animations de menu:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Activer imprimante:",
         "FIELD_HEADER_ENABLE_SFTP"     : "Activer SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"  : "Activer thématisation:",
+        "FIELD_HEADER_ENABLE_WALLPAPER" : "Activer fond d'écran:",
         "FIELD_HEADER_HEIGHT"          : "Hauteur:",
         "FIELD_HEADER_HOSTNAME"        : "Nom d'hôte:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignorer le certificat du serveur:",
@@ -275,7 +286,6 @@
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
         "FIELD_HEADER_USERNAME"        : "Identifiant:",
         "FIELD_HEADER_WIDTH"           : "Largeur:",
-
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Faibles couleurs (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Vraies couleurs (24-bit)",
@@ -304,6 +314,7 @@
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Redirection Périphérique",
         "SECTION_HEADER_DISPLAY"            : "Affichage",
         "SECTION_HEADER_NETWORK"            : "Réseau",
+        "SECTION_HEADER_PERFORMANCE"        : "Performance",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
@@ -471,7 +482,6 @@
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "Si vous souhaitez changer votre mot de passe, entrer vos mot de passe actuel et le nouveau mot de passe en dessous puis cliquer sur \"Mettre à jour Mot de passe\". Le changement prendra effet immédiatement.",
-
 
         "INFO_PASSWORD_CHANGED" : "Mot de passe changé.",
 
