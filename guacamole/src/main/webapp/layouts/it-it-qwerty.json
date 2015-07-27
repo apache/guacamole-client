@@ -168,12 +168,14 @@
             { "title" : "=", "requires" : [ "shift"  ] }
         ],
         "'" : [
-            { "title" : "'",  "requires" : [          ] },
-            { "title" : "?",  "requires" : [ "shift"  ] }
+            { "title" : "'", "requires" : [          ] },
+            { "title" : "?", "requires" : [ "shift"  ] },
+            { "title" : "`", "requires" : [ "alt-gr", "shift" ] }
         ],
         "ì" : [
             { "title" : "ì", "requires" : [         ] },
-            { "title" : "^", "requires" : [ "shift" ] }
+            { "title" : "^", "requires" : [ "shift" ] },
+            { "title" : "~", "requires" : [ "alt-gr", "shift" ] }
         ],
 
         "q" : [
@@ -242,14 +244,16 @@
             { "title" : "è", "requires" : [ "caps"   ] },
             { "title" : "é", "requires" : [ "shift"  ] },
             { "title" : "é", "requires" : [ "caps", "shift" ] },
-            { "title" : "[", "requires" : [ "alt-gr" ] }
+            { "title" : "[", "requires" : [ "alt-gr" ] },
+            { "title" : "{", "requires" : [ "alt-gr", "shift" ] }
         ],
         "+" : [
             { "title" : "+", "requires" : [          ] },
             { "title" : "+", "requires" : [ "caps"   ] },
             { "title" : "*", "requires" : [ "shift"  ] },
             { "title" : "*", "requires" : [ "caps", "shift" ] },
-            { "title" : "]", "requires" : [ "alt-gr" ] }
+            { "title" : "]", "requires" : [ "alt-gr" ] },
+            { "title" : "}", "requires" : [ "alt-gr", "shift" ] }
         ],
         "a" : [
             { "title" : "a", "requires" : [                 ] },
