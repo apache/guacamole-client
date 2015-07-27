@@ -92,12 +92,12 @@
             "keysym"   : 65506
         }],
         "LCtrl" : [{
-            "title"    : "Strg",
+            "title"    : "Ctrl",
             "modifier" : "control",
             "keysym"   : 65507
         }],
         "RCtrl" : [{
-            "title"    : "Strg",
+            "title"    : "Ctrl",
             "modifier" : "control",
             "keysym"   : 65508
         }],
