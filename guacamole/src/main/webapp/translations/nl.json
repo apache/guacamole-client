@@ -418,6 +418,7 @@
 
         "SECTION_HEADER_AUDIO"          : "Geluid",
         "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
+        "SECTION_HEADER_CLIPBOARD"      : "Klembord",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_NETWORK"        : "Netwerk",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
