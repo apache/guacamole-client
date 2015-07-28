@@ -39,7 +39,7 @@
             "keysym" : 65360
         }],
         "PgUp" : [{
-            "title"  : "PgDn ↑",
+            "title"  : "PgUp ↑",
             "keysym" : 65365
         }],
         "PgDn" : [{
