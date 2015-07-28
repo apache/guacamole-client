@@ -252,6 +252,7 @@
         "FIELD_HEADER_COLOR_DEPTH"     : "Color depth:",
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatically create drive:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Disable authentication:",
         "FIELD_HEADER_DOMAIN"          : "Domain:",
