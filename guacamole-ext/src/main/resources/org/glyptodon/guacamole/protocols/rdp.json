@@ -132,6 +132,11 @@
                     "type"  : "TEXT"
                 },
                 {
+                    "name"    : "create-drive-path",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"  : "static-channels",
                     "type"  : "TEXT"
                 }
