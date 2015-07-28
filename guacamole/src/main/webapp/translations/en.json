@@ -394,6 +394,7 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encoding:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Destination host:",
@@ -422,10 +423,17 @@
         "FIELD_OPTION_CURSOR_LOCAL"  : "Local",
         "FIELD_OPTION_CURSOR_REMOTE" : "Remote",
 
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
         "NAME" : "VNC",
 
         "SECTION_HEADER_AUDIO"          : "Audio",
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
