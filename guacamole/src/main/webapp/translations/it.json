@@ -426,6 +426,7 @@
 
         "SECTION_HEADER_AUDIO"          : "Audio",
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
+        "SECTION_HEADER_CLIPBOARD"      : "Appunti",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_NETWORK"        : "Network",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",

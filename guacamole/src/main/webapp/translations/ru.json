@@ -396,7 +396,9 @@
         "FIELD_OPTION_CURSOR_LOCAL"  : "Локальный",
         "FIELD_OPTION_CURSOR_REMOTE" : "Удаленный",
 
-        "NAME" : "VNC"
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_CLIPBOARD" : "Буфер обмена"
 
     },
 

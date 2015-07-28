@@ -426,6 +426,7 @@
 
         "SECTION_HEADER_AUDIO"          : "Son",
         "SECTION_HEADER_AUTHENTICATION" : "Authentification",
+        "SECTION_HEADER_CLIPBOARD"      : "Presse-papiers",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_NETWORK"        : "Réseau",
         "SECTION_HEADER_REPEATER"       : "Répéteur VNC",
