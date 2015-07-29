@@ -124,12 +124,11 @@ public class TunnelRequestService {
      *     The UserContext associated with the user for whom the tunnel is
      *     being created.
      *
+     * @param idType
+     *     The type of object being connected to (connection or group).
+     *
      * @param id
-     *     The ID of the connection or connection group being connected to. For
-     *     connections, this will be of the form "c/IDENTIFIER", where
-     *     IDENTIFIER is the connection identifier. For connection groups, this
-     *     will be of the form "g/IDENTIFIER", where IDENTIFIER is the
-     *     connection group identifier.
+     *     The id of the connection or group being connected to.
      *
      * @param info
      *     Information describing the connected Guacamole client.
@@ -140,20 +139,14 @@ public class TunnelRequestService {
      * @throws GuacamoleException
      *     If an error occurs while creating the tunnel.
      */
-    protected GuacamoleTunnel createConnectedTunnel(UserContext context, String id,
-                                                    GuacamoleClientInformation info) throws GuacamoleException {
-
-        // Determine ID type
-        TunnelRequest.IdentifierType id_type = TunnelRequest.IdentifierType.getType(id);
-        if (id_type == null)
-            throw new GuacamoleClientException("Illegal identifier - unknown type.");
-
-        // Remove prefix
-        id = id.substring(id_type.PREFIX.length());
+    protected GuacamoleTunnel createConnectedTunnel(UserContext context,
+            final TunnelRequest.IdentifierType idType, String id,
+            GuacamoleClientInformation info)
+            throws GuacamoleException {
 
         // Create connected tunnel from identifier
-        GuacamoleTunnel tunnel;
-        switch (id_type) {
+        GuacamoleTunnel tunnel = null;
+        switch (idType) {
 
             // Connection identifiers
             case CONNECTION: {
@@ -170,7 +163,7 @@ public class TunnelRequestService {
 
                 // Connect tunnel
                 tunnel = connection.connect(info);
-                logger.info("User \"{}\" successfully connected to \"{}\".", context.self().getIdentifier(), id);
+                logger.info("User \"{}\" connected to connection \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
 
@@ -189,13 +182,13 @@ public class TunnelRequestService {
 
                 // Connect tunnel
                 tunnel = group.connect(info);
-                logger.info("User \"{}\" successfully connected to group \"{}\".", context.self().getIdentifier(), id);
+                logger.info("User \"{}\" connected to group \"{}\".", context.self().getIdentifier(), id);
                 break;
             }
 
-            // Fail if unsupported type
+            // Type is guaranteed to be one of the above
             default:
-                throw new GuacamoleClientException("Connection not supported for provided identifier type.");
+                assert(false);
 
         }
 
@@ -214,6 +207,12 @@ public class TunnelRequestService {
      * @param session
      *     The Guacamole session to associate the tunnel with.
      *
+     * @param idType
+     *     The type of object being connected to (connection or group).
+     *
+     * @param id
+     *     The id of the connection or group being connected to.
+     *
      * @return
      *     A new tunnel, associated with the given session, which delegates all
      *     functionality to the given tunnel while monitoring and automatically
@@ -223,10 +222,17 @@ public class TunnelRequestService {
      *     If an error occurs while obtaining the tunnel.
      */
     protected GuacamoleTunnel createAssociatedTunnel(final GuacamoleSession session,
-            GuacamoleTunnel tunnel) throws GuacamoleException {
+            GuacamoleTunnel tunnel, final TunnelRequest.IdentifierType idType,
+            final String id) throws GuacamoleException {
 
         // Monitor tunnel closure and data
         GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
+
+            /**
+             * The time the connection began, measured in milliseconds since
+             * midnight, January 1, 1970 UTC.
+             */
+            private final long connectionStartTime = System.currentTimeMillis();
 
             @Override
             public GuacamoleReader acquireReader() {
@@ -253,9 +259,32 @@ public class TunnelRequestService {
             @Override
             public void close() throws GuacamoleException {
 
-                session.removeTunnel(getUUID().toString());
+                long connectionEndTime = System.currentTimeMillis();
+                long duration = connectionEndTime - connectionStartTime;
 
-                // Close if no exception due to listener
+                // Log closure
+                switch (idType) {
+
+                    // Connection identifiers
+                    case CONNECTION:
+                        logger.info("User \"{}\" disconnected from connection \"{}\". Duration: {} milliseconds",
+                                session.getUserContext().self().getIdentifier(), id, duration);
+                        break;
+
+                    // Connection group identifiers
+                    case CONNECTION_GROUP:
+                        logger.info("User \"{}\" disconnected from connection group \"{}\". Duration: {} milliseconds",
+                                session.getUserContext().self().getIdentifier(), id, duration);
+                        break;
+
+                    // Type is guaranteed to be one of the above
+                    default:
+                        assert(false);
+
+                }
+
+                // Close and clean up tunnel
+                session.removeTunnel(getUUID().toString());
                 super.close();
 
             }
@@ -289,14 +318,22 @@ public class TunnelRequestService {
         final GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
         // Get client information and connection ID from request
-        final String id = request.getParameter("id");
+        String id = request.getParameter("id");
         final GuacamoleClientInformation info = getClientInformation(request);
 
+        // Determine ID type
+        TunnelRequest.IdentifierType idType = TunnelRequest.IdentifierType.getType(id);
+        if (idType == null)
+            throw new GuacamoleClientException("Illegal identifier - unknown type.");
+
+        // Remove prefix
+        id = id.substring(idType.PREFIX.length());
+
         // Create connected tunnel using provided connection ID and client information
-        final GuacamoleTunnel tunnel = createConnectedTunnel(session.getUserContext(), id, info);
+        final GuacamoleTunnel tunnel = createConnectedTunnel(session.getUserContext(), idType, id, info);
 
         // Associate tunnel with session
-        return createAssociatedTunnel(session, tunnel);
+        return createAssociatedTunnel(session, tunnel, idType, id);
 
     }
 
