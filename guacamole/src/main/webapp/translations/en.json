@@ -323,6 +323,7 @@
 
     "PROTOCOL_SSH" : {
 
+        "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
         "FIELD_HEADER_FONT_NAME"   : "Font name:",
         "FIELD_HEADER_FONT_SIZE"   : "Font size:",
         "FIELD_HEADER_ENABLE_SFTP" : "Enable SFTP:",
@@ -332,6 +333,12 @@
         "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Private key:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "White on black",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -360,6 +367,7 @@
 
     "PROTOCOL_TELNET" : {
 
+        "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
         "FIELD_HEADER_FONT_SIZE"      : "Font size:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
@@ -367,6 +375,12 @@
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
         "FIELD_HEADER_PORT"           : "Port:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Green on black",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "White on black",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",

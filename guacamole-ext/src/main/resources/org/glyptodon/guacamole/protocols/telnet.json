@@ -38,6 +38,11 @@
             "name"  : "display",
             "fields" : [
                 {
+                    "name"  : "color-scheme",
+                    "type"  : "ENUM",
+                    "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
+                },
+                {
                     "name"  : "font-name",
                     "type"  : "TEXT"
                 },
