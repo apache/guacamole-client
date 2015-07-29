@@ -114,11 +114,24 @@ CREATE INDEX ON guacamole_connection(parent_id);
 CREATE TABLE guacamole_user (
 
   user_id       serial       NOT NULL,
+
+  -- Username and optionally-salted password
   username      varchar(128) NOT NULL,
   password_hash bytea        NOT NULL,
   password_salt bytea,
+
+  -- Account disabled/expired status
   disabled      boolean      NOT NULL DEFAULT FALSE,
   expired       boolean      NOT NULL DEFAULT FALSE,
+
+  -- Time-based access restriction
+  access_window_start    time,
+  access_window_end      time,
+  access_window_timezone varchar(64),
+
+  -- Date-based access restriction
+  valid_from  date,
+  valid_until date,
 
   PRIMARY KEY (user_id),
 

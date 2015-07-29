@@ -73,11 +73,24 @@ CREATE TABLE `guacamole_connection` (
 CREATE TABLE `guacamole_user` (
 
   `user_id`       int(11)      NOT NULL AUTO_INCREMENT,
+
+  -- Username and optionally-salted password
   `username`      varchar(128) NOT NULL,
   `password_hash` binary(32)   NOT NULL,
   `password_salt` binary(32),
+
+  -- Account disabled/expired status
   `disabled`      boolean      NOT NULL DEFAULT 0,
   `expired`       boolean      NOT NULL DEFAULT 0,
+
+  -- Time-based access restriction
+  `access_window_start`    TIME,
+  `access_window_end`      TIME,
+  `access_window_timezone` VARCHAR(64),
+
+  -- Date-based access restriction
+  `valid_from`  DATE,
+  `valid_until` DATE,
 
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
