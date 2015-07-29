@@ -26,7 +26,6 @@
 
 ALTER TABLE guacamole_user ADD COLUMN access_window_start    time;
 ALTER TABLE guacamole_user ADD COLUMN access_window_end      time;
-ALTER TABLE guacamole_user ADD COLUMN access_window_timezone varchar(64);
 
 --
 -- Add per-user date-based account validity restrictions.
@@ -34,3 +33,9 @@ ALTER TABLE guacamole_user ADD COLUMN access_window_timezone varchar(64);
 
 ALTER TABLE guacamole_user ADD COLUMN valid_from  date;
 ALTER TABLE guacamole_user ADD COLUMN valid_until date;
+
+--
+-- Add per-user timezone for sake of time comparisons/interpretation.
+--
+
+ALTER TABLE guacamole_user ADD COLUMN timezone varchar(64);

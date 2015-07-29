@@ -127,11 +127,13 @@ CREATE TABLE guacamole_user (
   -- Time-based access restriction
   access_window_start    time,
   access_window_end      time,
-  access_window_timezone varchar(64),
 
   -- Date-based access restriction
   valid_from  date,
   valid_until date,
+
+  -- Timezone used for all date/time comparisons and interpretation
+  timezone varchar(64),
 
   PRIMARY KEY (user_id),
 

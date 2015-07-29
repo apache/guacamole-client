@@ -86,11 +86,13 @@ CREATE TABLE `guacamole_user` (
   -- Time-based access restriction
   `access_window_start`    TIME,
   `access_window_end`      TIME,
-  `access_window_timezone` VARCHAR(64),
 
   -- Date-based access restriction
   `valid_from`  DATE,
   `valid_until` DATE,
+
+  -- Timezone used for all date/time comparisons and interpretation
+  `timezone` VARCHAR(64),
 
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `username` (`username`)
