@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,11 @@
 package org.glyptodon.guacamole.auth.jdbc.user;
 
 import com.google.inject.Inject;
+import java.sql.Date;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,10 +45,13 @@ import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.form.BooleanField;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
+import org.glyptodon.guacamole.form.TextField;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the User object which is backed by a database model.
@@ -52,6 +60,21 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  * @author Michael Jumper
  */
 public class ModeledUser extends ModeledDirectoryObject<UserModel> implements User {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
+
+    /**
+     * The format to use for all date attributes associated with users.
+     */
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+
+    /**
+     * The format to use for all time attributes associated with users.
+     */
+    private static final String TIME_FORMAT = "HH:mm:ss";
 
     /**
      * The name of the attribute which controls whether a user account is
@@ -66,12 +89,47 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public static final String EXPIRED_ATTRIBUTE_NAME = "expired";
 
     /**
+     * The name of the attribute which controls the time of day after which a
+     * user may login.
+     */
+    public static final String ACCESS_WINDOW_START_ATTRIBUTE_NAME = "access-window-start";
+
+    /**
+     * The name of the attribute which controls the time of day after which a
+     * user may NOT login.
+     */
+    public static final String ACCESS_WINDOW_END_ATTRIBUTE_NAME = "access-window-end";
+
+    /**
+     * The name of the attribute which controls the date after which a user's
+     * account is valid.
+     */
+    public static final String VALID_FROM_ATTRIBUTE_NAME = "valid-from";
+
+    /**
+     * The name of the attribute which controls the date after which a user's
+     * account is no longer valid.
+     */
+    public static final String VALID_UNTIL_ATTRIBUTE_NAME = "valid-until";
+
+    /**
+     * The name of the attribute which defines the time zone used for all
+     * time and date attributes related to this user.
+     */
+    public static final String TIMEZONE_ATTRIBUTE_NAME = "timezone";
+
+    /**
      * All attributes related to restricting user accounts, within a logical
      * form.
      */
     public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
         new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
-        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true")
+        new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
+        new TextField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
+        new TextField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
+        new TextField(VALID_FROM_ATTRIBUTE_NAME),
+        new TextField(VALID_UNTIL_ATTRIBUTE_NAME),
+        new TextField(TIMEZONE_ATTRIBUTE_NAME)
     ));
 
     /**
@@ -216,6 +274,117 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         return userPermissionService.getPermissionSet(getCurrentUser(), this);
     }
 
+    /**
+     * Converts the given date into a string which follows the format used by
+     * date attributes.
+     *
+     * @param date
+     *     The date value to format, which may be null.
+     *
+     * @return
+     *     The formatted date, or null if the provided time was null.
+     */
+    private String formatDate(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        return date == null ? null : dateFormat.format(date);
+    }
+
+    /**
+     * Converts the given time into a string which follows the format used by
+     * time attributes.
+     *
+     * @param time
+     *     The time value to format, which may be null.
+     *
+     * @return
+     *     The formatted time, or null if the provided time was null.
+     */
+    private String formatTime(Time time) {
+        DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+        return time == null ? null : timeFormat.format(time);
+    }
+
+    /**
+     * Parses the given string into a corresponding date. The string must
+     * follow the standard format used by date attributes, as defined by
+     * DATE_FORMAT and as would be produced by formatDate().
+     *
+     * @param dateString
+     *     The date string to parse, which may be null.
+     *
+     * @return
+     *     The date corresponding to the given date string, or null if the
+     *     provided date string was null or blank.
+     *
+     * @throws ParseException
+     *     If the given date string does not conform to the standard format
+     *     used by date attributes.
+     */
+    private Date parseDate(String dateString)
+    throws ParseException {
+
+        // Return null if no date provided
+        if (dateString == null || dateString.isEmpty())
+            return null;
+
+        // Parse date according to format
+        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        return new Date(dateFormat.parse(dateString).getTime());
+
+    }
+
+    /**
+     * Parses the given string into a corresponding time. The string must
+     * follow the standard format used by time attributes, as defined by
+     * TIME_FORMAT and as would be produced by formatTime().
+     *
+     * @param timeString
+     *     The time string to parse, which may be null.
+     *
+     * @return
+     *     The time corresponding to the given time string, or null if the
+     *     provided time string was null or blank.
+     *
+     * @throws ParseException
+     *     If the given time string does not conform to the standard format
+     *     used by time attributes.
+     */
+    private Time parseTime(String timeString)
+    throws ParseException {
+
+        // Return null if no time provided
+        if (timeString == null || timeString.isEmpty())
+            return null;
+
+        // Parse time according to format
+        DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+        return new Time(timeFormat.parse(timeString).getTime());
+
+    }
+
+    /**
+     * Parses the given string into a time zone ID string. As these strings are
+     * equivalent, the only transformation currently performed by this function
+     * is to ensure that a blank time zone string is parsed into null.
+     *
+     * @param timeZone
+     *     The time zone string to parse, which may be null.
+     *
+     * @return
+     *     The ID of the time zone corresponding to the given string, or null
+     *     if the given time zone string was null or blank.
+     */
+    private String parseTimeZone(String timeZone) {
+
+        // Return null if no time zone provided
+        if (timeZone == null || timeZone.isEmpty())
+            return null;
+
+        // Otherwise, assume time zone is valid
+        return timeZone;
+
+    }
+
     @Override
     public Map<String, String> getAttributes() {
 
@@ -226,6 +395,21 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
         // Set password expired attribute
         attributes.put(EXPIRED_ATTRIBUTE_NAME, getModel().isExpired() ? "true" : null);
+
+        // Set access window start time
+        attributes.put(ACCESS_WINDOW_START_ATTRIBUTE_NAME, formatTime(getModel().getAccessWindowStart()));
+
+        // Set access window end time
+        attributes.put(ACCESS_WINDOW_END_ATTRIBUTE_NAME, formatTime(getModel().getAccessWindowEnd()));
+
+        // Set account validity start date
+        attributes.put(VALID_FROM_ATTRIBUTE_NAME, formatDate(getModel().getValidFrom()));
+
+        // Set account validity end date
+        attributes.put(VALID_UNTIL_ATTRIBUTE_NAME, formatDate(getModel().getValidUntil()));
+
+        // Set timezone attribute
+        attributes.put(TIMEZONE_ATTRIBUTE_NAME, getModel().getTimeZone());
 
         return attributes;
     }
@@ -238,6 +422,37 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
 
         // Translate password expired attribute
         getModel().setExpired("true".equals(attributes.get(EXPIRED_ATTRIBUTE_NAME)));
+
+        // Translate access window start time
+        try { getModel().setAccessWindowStart(parseTime(attributes.get(ACCESS_WINDOW_START_ATTRIBUTE_NAME))); }
+        catch (ParseException e) {
+            logger.warn("Not setting start time of user access window - invalid time format.");
+            logger.debug("Unable to parse time attribute.", e);
+        }
+
+        // Translate access window end time
+        try { getModel().setAccessWindowEnd(parseTime(attributes.get(ACCESS_WINDOW_END_ATTRIBUTE_NAME))); }
+        catch (ParseException e) {
+            logger.warn("Not setting end time of user access window - invalid time format.");
+            logger.debug("Unable to parse time attribute.", e);
+        }
+
+        // Translate account validity start date
+        try { getModel().setValidFrom(parseDate(attributes.get(VALID_FROM_ATTRIBUTE_NAME))); }
+        catch (ParseException e) {
+            logger.warn("Not setting user validity start date - invalid date format.");
+            logger.debug("Unable to parse date attribute.", e);
+        }
+
+        // Translate account validity end date
+        try { getModel().setValidUntil(parseDate(attributes.get(VALID_UNTIL_ATTRIBUTE_NAME))); }
+        catch (ParseException e) {
+            logger.warn("Not setting user validity end date - invalid date format.");
+            logger.debug("Unable to parse date attribute.", e);
+        }
+
+        // Translate timezone attribute
+        getModel().setTimeZone(parseTimeZone(attributes.get(TIMEZONE_ATTRIBUTE_NAME)));
 
     }
 
