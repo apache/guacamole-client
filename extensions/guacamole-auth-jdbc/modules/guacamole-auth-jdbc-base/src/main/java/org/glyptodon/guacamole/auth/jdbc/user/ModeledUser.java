@@ -426,28 +426,28 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         // Translate access window start time
         try { getModel().setAccessWindowStart(parseTime(attributes.get(ACCESS_WINDOW_START_ATTRIBUTE_NAME))); }
         catch (ParseException e) {
-            logger.warn("Not setting start time of user access window - invalid time format.");
+            logger.warn("Not setting start time of user access window: {}", e.getMessage());
             logger.debug("Unable to parse time attribute.", e);
         }
 
         // Translate access window end time
         try { getModel().setAccessWindowEnd(parseTime(attributes.get(ACCESS_WINDOW_END_ATTRIBUTE_NAME))); }
         catch (ParseException e) {
-            logger.warn("Not setting end time of user access window - invalid time format.");
+            logger.warn("Not setting end time of user access window: {}", e.getMessage());
             logger.debug("Unable to parse time attribute.", e);
         }
 
         // Translate account validity start date
         try { getModel().setValidFrom(parseDate(attributes.get(VALID_FROM_ATTRIBUTE_NAME))); }
         catch (ParseException e) {
-            logger.warn("Not setting user validity start date - invalid date format.");
+            logger.warn("Not setting user validity start date: {}", e.getMessage());
             logger.debug("Unable to parse date attribute.", e);
         }
 
         // Translate account validity end date
         try { getModel().setValidUntil(parseDate(attributes.get(VALID_UNTIL_ATTRIBUTE_NAME))); }
         catch (ParseException e) {
-            logger.warn("Not setting user validity end date - invalid date format.");
+            logger.warn("Not setting user validity end date: {}", e.getMessage());
             logger.debug("Unable to parse date attribute.", e);
         }
 
