@@ -29,10 +29,12 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledDirectoryObject;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.auth.jdbc.security.SaltService;
@@ -454,6 +456,206 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         // Translate timezone attribute
         getModel().setTimeZone(parseTimeZone(attributes.get(TIMEZONE_ATTRIBUTE_NAME)));
 
+    }
+
+    /**
+     * Returns the time zone associated with this user. This time zone must be
+     * used when interpreting all date/time restrictions related to this user.
+     *
+     * @return
+     *     The time zone associated with this user.
+     */
+    private TimeZone getTimeZone() {
+
+        // If no time zone is set, use the default
+        String timeZone = getModel().getTimeZone();
+        if (timeZone == null)
+            return TimeZone.getDefault();
+
+        // Otherwise parse and return time zone
+        return TimeZone.getTimeZone(timeZone);
+
+    }
+
+    /**
+     * Converts a SQL Time to a Calendar, independently of time zone, using the
+     * given Calendar as a base. The time components will be copied to the
+     * given Calendar verbatim, leaving the date and time zone components of
+     * the given Calendar otherwise intact.
+     *
+     * @param base
+     *     The Calendar object to use as a base for the conversion.
+     *
+     * @param time
+     *     The SQL Time object containing the time components to be applied to
+     *     the given Calendar.
+     *
+     * @return
+     *     The given Calendar, now modified to represent the given time.
+     */
+    private Calendar asCalendar(Calendar base, Time time) {
+
+        // Get calendar from given SQL time
+        Calendar timeCalendar = Calendar.getInstance();
+        timeCalendar.setTime(time);
+
+        // Apply given time to base calendar
+        base.set(Calendar.HOUR_OF_DAY, timeCalendar.get(Calendar.HOUR_OF_DAY));
+        base.set(Calendar.MINUTE,      timeCalendar.get(Calendar.MINUTE));
+        base.set(Calendar.SECOND,      timeCalendar.get(Calendar.SECOND));
+        base.set(Calendar.MILLISECOND, timeCalendar.get(Calendar.MILLISECOND));
+
+        return base;
+        
+    }
+
+    /**
+     * Returns the time during the current day when this user account can start
+     * being used.
+     *
+     * @return
+     *     The time during the current day when this user account can start
+     *     being used.
+     */
+    private Calendar getAccessWindowStart() {
+
+        // Get window start time
+        Time start = getModel().getAccessWindowStart();
+        if (start == null)
+            return null;
+
+        // Return within defined time zone, current day
+        return asCalendar(Calendar.getInstance(getTimeZone()), start);
+
+    }
+
+    /**
+     * Returns the time during the current day when this user account can no
+     * longer be used.
+     *
+     * @return
+     *     The time during the current day when this user account can no longer
+     *     be used.
+     */
+    private Calendar getAccessWindowEnd() {
+
+        // Get window end time
+        Time end = getModel().getAccessWindowEnd();
+        if (end == null)
+            return null;
+
+        // Return within defined time zone, current day
+        return asCalendar(Calendar.getInstance(getTimeZone()), end);
+
+    }
+
+    /**
+     * Returns the date after which this account becomes valid. The time
+     * components of the resulting Calendar object will be set to midnight of
+     * the date in question.
+     *
+     * @return
+     *     The date after which this account becomes valid.
+     */
+    private Calendar getValidFrom() {
+
+        // Get valid from date
+        Date validFrom = getModel().getValidFrom();
+        if (validFrom == null)
+            return null;
+
+        // Convert to midnight within defined time zone
+        Calendar validFromCalendar = Calendar.getInstance(getTimeZone());
+        validFromCalendar.setTime(validFrom);
+        validFromCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        validFromCalendar.set(Calendar.MINUTE,      0);
+        validFromCalendar.set(Calendar.SECOND,      0);
+        validFromCalendar.set(Calendar.MILLISECOND, 0);
+        return validFromCalendar;
+
+    }
+
+    /**
+     * Returns the date after which this account becomes invalid. The time
+     * components of the resulting Calendar object will be set to the last
+     * millisecond of the day in question (23:59:59.999).
+     *
+     * @return
+     *     The date after which this account becomes invalid.
+     */
+    private Calendar getValidUntil() {
+
+        // Get valid until date
+        Date validUntil = getModel().getValidUntil();
+        if (validUntil == null)
+            return null;
+
+        // Convert to end-of-day within defined time zone
+        Calendar validUntilCalendar = Calendar.getInstance(getTimeZone());
+        validUntilCalendar.setTime(validUntil);
+        validUntilCalendar.set(Calendar.HOUR_OF_DAY,  23);
+        validUntilCalendar.set(Calendar.MINUTE,       59);
+        validUntilCalendar.set(Calendar.SECOND,       59);
+        validUntilCalendar.set(Calendar.MILLISECOND, 999);
+        return validUntilCalendar;
+
+    }
+
+    /**
+     * Given a time when a particular state changes from inactive to active,
+     * and a time when a particular state changes from active to inactive,
+     * determines whether that state is currently active.
+     *
+     * @param activeStart
+     *     The time at which the state changes from inactive to active.
+     *
+     * @param inactiveStart
+     *     The time at which the state changes from active to inactive.
+     *
+     * @return
+     *     true if the state is currently active, false otherwise.
+     */
+    private boolean isActive(Calendar activeStart, Calendar inactiveStart) {
+
+        // If end occurs before start, convert to equivalent case where start
+        // start is before end
+        if (inactiveStart != null && activeStart != null && inactiveStart.before(activeStart))
+            return !isActive(inactiveStart, activeStart);
+
+        // Get current time
+        Calendar current = Calendar.getInstance();
+
+        // State is active iff the current time is between the start and end
+        return !(activeStart != null && current.before(activeStart))
+            && !(inactiveStart != null && current.after(inactiveStart));
+
+    }
+
+    /**
+     * Returns whether this user account is currently valid as of today.
+     * Account validity depends on optional date-driven restrictions which
+     * define when an account becomes valid, and when an account ceases being
+     * valid.
+     *
+     * @return
+     *     true if the account is valid as of today, false otherwise.
+     */
+    public boolean isAccountValid() {
+        return isActive(getValidFrom(), getValidUntil());
+    }
+
+    /**
+     * Returns whether the current time is within this user's allowed access
+     * window. If the login times for this user are not limited, this will
+     * return true.
+     *
+     * @return
+     *     true if the current time is within this user's allowed access
+     *     window, or if this user has no restrictions on login time, false
+     *     otherwise.
+     */
+    public boolean isAccountAccessible() {
+        return isActive(getAccessWindowStart(), getAccessWindowEnd());
     }
 
 }
