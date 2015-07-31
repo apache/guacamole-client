@@ -17,8 +17,13 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED" : "Login disabled:",
-        "FIELD_HEADER_EXPIRED"  : "Password expired:",
+        "FIELD_HEADER_DISABLED"            : "Login disabled:",
+        "FIELD_HEADER_EXPIRED"             : "Password expired:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Do not allow access after:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Allow access after:",
+        "FIELD_HEADER_TIMEZONE"            : "User time zone:",
+        "FIELD_HEADER_VALID_FROM"          : "Enable account after:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Disable account after:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Account Restrictions"
 
