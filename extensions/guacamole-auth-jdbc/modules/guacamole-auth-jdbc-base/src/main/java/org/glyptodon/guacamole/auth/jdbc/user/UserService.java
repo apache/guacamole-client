@@ -302,11 +302,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Verify user account is still valid as of today
         if (!user.isAccountValid())
-            throw new GuacamoleClientException("LOGIN.ERROR_NO_LONGER_VALID");
+            throw new GuacamoleClientException("LOGIN.ERROR_NOT_VALID");
 
         // Verify user account is allowed to be used at the current time
         if (!user.isAccountAccessible())
-            throw new GuacamoleClientException("LOGIN.ERROR_NOT_WITHIN_ACCESS_WINDOW");
+            throw new GuacamoleClientException("LOGIN.ERROR_NOT_ACCESSIBLE");
 
         // Update password if password is expired
         if (userModel.isExpired()) {

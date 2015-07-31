@@ -5,6 +5,8 @@
         "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_SAME"     : "The new password must be different from the expired password.",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "This user account is not currently valid.",
+        "ERROR_NOT_ACCESSIBLE"    : "Access to this account is not currently allowed. Please try again later.",
 
         "INFO_PASSWORD_EXPIRED" : "Your password has expired and must be reset. Please enter a new password to continue.",
 
