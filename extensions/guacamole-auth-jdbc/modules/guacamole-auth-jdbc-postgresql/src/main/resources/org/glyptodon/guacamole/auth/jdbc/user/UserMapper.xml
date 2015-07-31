@@ -28,12 +28,17 @@
 
     <!-- Result mapper for user objects -->
     <resultMap id="UserResultMap" type="org.glyptodon.guacamole.auth.jdbc.user.UserModel" >
-        <id     column="user_id"       property="objectID"     jdbcType="INTEGER"/>
-        <result column="username"      property="identifier"   jdbcType="VARCHAR"/>
-        <result column="password_hash" property="passwordHash" jdbcType="BINARY"/>
-        <result column="password_salt" property="passwordSalt" jdbcType="BINARY"/>
-        <result column="disabled"      property="disabled"     jdbcType="BOOLEAN"/>
-        <result column="expired"       property="expired"      jdbcType="BOOLEAN"/>
+        <id     column="user_id"             property="objectID"          jdbcType="INTEGER"/>
+        <result column="username"            property="identifier"        jdbcType="VARCHAR"/>
+        <result column="password_hash"       property="passwordHash"      jdbcType="BINARY"/>
+        <result column="password_salt"       property="passwordSalt"      jdbcType="BINARY"/>
+        <result column="disabled"            property="disabled"          jdbcType="BOOLEAN"/>
+        <result column="expired"             property="expired"           jdbcType="BOOLEAN"/>
+        <result column="access_window_start" property="accessWindowStart" jdbcType="TIME"/>
+        <result column="access_window_end"   property="accessWindowEnd"   jdbcType="TIME"/>
+        <result column="valid_from"          property="validFrom"         jdbcType="DATE"/>
+        <result column="valid_until"         property="validUntil"        jdbcType="DATE"/>
+        <result column="timezone"            property="timeZone"          jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- Select all usernames -->
@@ -61,7 +66,12 @@
             password_hash,
             password_salt,
             disabled,
-            expired
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone
         FROM guacamole_user
         WHERE username IN
             <foreach collection="identifiers" item="identifier"
@@ -80,7 +90,12 @@
             password_hash,
             password_salt,
             disabled,
-            expired
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone
         FROM guacamole_user
         JOIN guacamole_user_permission ON affected_user_id = guacamole_user.user_id
         WHERE username IN
@@ -102,7 +117,12 @@
             password_hash,
             password_salt,
             disabled,
-            expired
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone
         FROM guacamole_user
         WHERE
             username = #{username,jdbcType=VARCHAR}
@@ -124,14 +144,24 @@
             password_hash,
             password_salt,
             disabled,
-            expired
+            expired,
+            access_window_start,
+            access_window_end,
+            valid_from,
+            valid_until,
+            timezone
         )
         VALUES (
             #{object.identifier,jdbcType=VARCHAR},
             #{object.passwordHash,jdbcType=BINARY},
             #{object.passwordSalt,jdbcType=BINARY},
             #{object.disabled,jdbcType=BOOLEAN},
-            #{object.expired,jdbcType=BOOLEAN}
+            #{object.expired,jdbcType=BOOLEAN},
+            #{object.accessWindowStart,jdbcType=TIME},
+            #{object.accessWindowEnd,jdbcType=TIME},
+            #{object.validFrom,jdbcType=DATE},
+            #{object.validUntil,jdbcType=DATE},
+            #{object.timeZone,jdbcType=VARCHAR}
         )
 
     </insert>
@@ -142,7 +172,12 @@
         SET password_hash = #{object.passwordHash,jdbcType=BINARY},
             password_salt = #{object.passwordSalt,jdbcType=BINARY},
             disabled = #{object.disabled,jdbcType=BOOLEAN},
-            expired = #{object.expired,jdbcType=BOOLEAN}
+            expired = #{object.expired,jdbcType=BOOLEAN},
+            access_window_start = #{object.accessWindowStart,jdbcType=TIME},
+            access_window_end = #{object.accessWindowEnd,jdbcType=TIME},
+            valid_from = #{object.validFrom,jdbcType=DATE},
+            valid_until = #{object.validUntil,jdbcType=DATE},
+            timezone = #{object.timeZone,jdbcType=VARCHAR}
         WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
     </update>
 

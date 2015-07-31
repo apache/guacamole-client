@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole.auth.jdbc.user;
 
+import java.sql.Date;
+import java.sql.Time;
 import org.glyptodon.guacamole.auth.jdbc.base.ObjectModel;
 
 /**
@@ -54,6 +56,40 @@ public class UserModel extends ObjectModel {
      * used until this occurs.
      */
     private boolean expired;
+
+    /**
+     * The time each day after which this user account may be used, stored in
+     * local time according to the value of timeZone.
+     */
+    private Time accessWindowStart;
+
+    /**
+     * The time each day after which this user account may NOT be used, stored
+     * in local time according to the value of timeZone.
+     */
+    private Time accessWindowEnd;
+
+    /**
+     * The day after which this account becomes valid and usable. Account
+     * validity begins at midnight of this day. Time information within the
+     * Date object is ignored.
+     */
+    private Date validFrom;
+
+    /**
+     * The day after which this account can no longer be used. Account validity
+     * ends at midnight of the day following this day. Time information within
+     * the Date object is ignored.
+     */
+    private Date validUntil;
+
+    /**
+     * The ID of the time zone used for all time comparisons for this user.
+     * Both accessWindowStart and accessWindowEnd values will use this time
+     * zone, as will checks for whether account validity dates have passed. If
+     * unset, the server's local time zone is used.
+     */
+    private String timeZone;
 
     /**
      * Creates a new, empty user.
@@ -156,6 +192,138 @@ public class UserModel extends ObjectModel {
      */
     public void setExpired(boolean expired) {
         this.expired = expired;
+    }
+
+    /**
+     * Returns the time each day after which this user account may be used. The
+     * time returned will be local time according to the time zone set with
+     * setTimeZone().
+     *
+     * @return
+     *     The time each day after which this user account may be used, or null
+     *     if this restriction does not apply.
+     */
+    public Time getAccessWindowStart() {
+        return accessWindowStart;
+    }
+
+    /**
+     * Sets the time each day after which this user account may be used. The
+     * time given must be in local time according to the time zone set with
+     * setTimeZone().
+     *
+     * @param accessWindowStart
+     *     The time each day after which this user account may be used, or null
+     *     if this restriction does not apply.
+     */
+    public void setAccessWindowStart(Time accessWindowStart) {
+        this.accessWindowStart = accessWindowStart;
+    }
+
+    /**
+     * Returns the time each day after which this user account may NOT be used.
+     * The time returned will be local time according to the time zone set with
+     * setTimeZone().
+     *
+     * @return
+     *     The time each day after which this user account may NOT be used, or
+     *     null if this restriction does not apply.
+     */
+    public Time getAccessWindowEnd() {
+        return accessWindowEnd;
+    }
+
+    /**
+     * Sets the time each day after which this user account may NOT be used.
+     * The time given must be in local time according to the time zone set with
+     * setTimeZone().
+     *
+     * @param accessWindowEnd
+     *     The time each day after which this user account may NOT be used, or
+     *     null if this restriction does not apply.
+     */
+    public void setAccessWindowEnd(Time accessWindowEnd) {
+        this.accessWindowEnd = accessWindowEnd;
+    }
+
+    /**
+     * Returns the day after which this account becomes valid and usable.
+     * Account validity begins at midnight of this day. Any time information
+     * within the returned Date object must be ignored.
+     *
+     * @return
+     *     The day after which this account becomes valid and usable, or null
+     *     if this restriction does not apply.
+     */
+    public Date getValidFrom() {
+        return validFrom;
+    }
+
+    /**
+     * Sets the day after which this account becomes valid and usable. Account
+     * validity begins at midnight of this day. Any time information within
+     * the provided Date object will be ignored.
+     *
+     * @param validFrom
+     *     The day after which this account becomes valid and usable, or null
+     *     if this restriction does not apply.
+     */
+    public void setValidFrom(Date validFrom) {
+        this.validFrom = validFrom;
+    }
+
+    /**
+     * Returns the day after which this account can no longer be used. Account
+     * validity ends at midnight of the day following this day. Any time
+     * information within the returned Date object must be ignored.
+     *
+     * @return
+     *     The day after which this account can no longer be used, or null if
+     *     this restriction does not apply.
+     */
+    public Date getValidUntil() {
+        return validUntil;
+    }
+
+    /**
+     * Sets the day after which this account can no longer be used. Account
+     * validity ends at midnight of the day following this day. Any time
+     * information within the provided Date object will be ignored.
+     *
+     * @param validUntil
+     *     The day after which this account can no longer be used, or null if
+     *     this restriction does not apply.
+     */
+    public void setValidUntil(Date validUntil) {
+        this.validUntil = validUntil;
+    }
+
+    /**
+     * Returns the Java ID of the time zone to be used for all time comparisons
+     * for this user. This ID should correspond to a value returned by
+     * TimeZone.getAvailableIDs(). If unset or invalid, the server's local time
+     * zone must be used.
+     *
+     * @return
+     *     The ID of the time zone to be used for all time comparisons, which
+     *     should correspond to a value returned by TimeZone.getAvailableIDs().
+     */
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Sets the Java ID of the time zone to be used for all time comparisons
+     * for this user. This ID should correspond to a value returned by
+     * TimeZone.getAvailableIDs(). If unset or invalid, the server's local time
+     * zone will be used.
+     *
+     * @param timeZone
+     *     The ID of the time zone to be used for all time comparisons, which
+     *     should correspond to a value returned by TimeZone.getAvailableIDs().
+     */
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
     }
 
 }
