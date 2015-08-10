@@ -1,0 +1,14 @@
+<div class="time-zone-field">
+
+    <!-- Available time zone regions -->
+    <select class="time-zone-region"
+            ng-model="region"
+            ng-options="name for name in regions | orderBy: name"></select>
+
+    <!-- Time zones within selected region -->
+    <select class="time-zone"
+            ng-disabled="!region"
+            ng-model="model"
+            ng-options="name for (name, value) in timeZones[region] | orderBy: name"></select>
+
+</div>

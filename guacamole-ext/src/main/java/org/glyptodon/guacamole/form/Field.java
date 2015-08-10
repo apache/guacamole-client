@@ -84,6 +84,12 @@ public class Field {
          */
         public static String MULTILINE = "MULTILINE";
 
+        /**
+         * A time zone field whose legal values are only valid time zone IDs,
+         * as dictated by Java within TimeZone.getAvailableIDs().
+         */
+        public static String TIMEZONE = "TIMEZONE";
+
     }
 
     /**

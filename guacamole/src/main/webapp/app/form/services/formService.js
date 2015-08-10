@@ -119,6 +119,18 @@ angular.module('form').provider('formService', function formServiceProvider() {
          */
         'MULTILINE' : {
             templateUrl : 'app/form/templates/textAreaField.html'
+        },
+
+        /**
+         * Field type which allows selection of time zones.
+         *
+         * @see {@link Field.Type.TIMEZONE}
+         * @type FieldType
+         */
+        'TIMEZONE' : {
+            module      : 'form',
+            controller  : 'timeZoneFieldController',
+            templateUrl : 'app/form/templates/timeZoneField.html'
         }
 
     };

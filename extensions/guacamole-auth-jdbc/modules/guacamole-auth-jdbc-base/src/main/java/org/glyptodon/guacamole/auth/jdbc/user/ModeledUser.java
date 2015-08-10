@@ -48,6 +48,7 @@ import org.glyptodon.guacamole.form.BooleanField;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.form.TextField;
+import org.glyptodon.guacamole.form.TimeZoneField;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
@@ -131,7 +132,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
         new TextField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
         new TextField(VALID_FROM_ATTRIBUTE_NAME),
         new TextField(VALID_UNTIL_ATTRIBUTE_NAME),
-        new TextField(TIMEZONE_ATTRIBUTE_NAME)
+        new TimeZoneField(TIMEZONE_ATTRIBUTE_NAME)
     ));
 
     /**
