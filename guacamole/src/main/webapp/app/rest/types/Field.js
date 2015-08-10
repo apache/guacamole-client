@@ -129,7 +129,16 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        MULTILINE : "MULTILINE"
+        MULTILINE : "MULTILINE",
+
+        /**
+         * The type string associated with parameters that may contain timezone
+         * IDs. Valid timezone IDs are dictated by Java:
+         * http://docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html#getAvailableIDs%28%29
+         *
+         * @type String
+         */
+        TIMEZONE : "TIMEZONE"
 
     };
 
