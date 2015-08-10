@@ -131,6 +131,30 @@ angular.module('form').provider('formService', function formServiceProvider() {
             module      : 'form',
             controller  : 'timeZoneFieldController',
             templateUrl : 'app/form/templates/timeZoneField.html'
+        },
+
+        /**
+         * Field type which allows selection of individual dates.
+         *
+         * @see {@link Field.Type.DATE}
+         * @type FieldType
+         */
+        'DATE' : {
+            module      : 'form',
+            controller  : 'dateFieldController',
+            templateUrl : 'app/form/templates/dateField.html'
+        },
+
+        /**
+         * Field type which allows selection of times of day.
+         *
+         * @see {@link Field.Type.TIME}
+         * @type FieldType
+         */
+        'TIME' : {
+            module      : 'form',
+            controller  : 'timeFieldController',
+            templateUrl : 'app/form/templates/timeField.html'
         }
 
     };

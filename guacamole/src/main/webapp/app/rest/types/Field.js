@@ -138,7 +138,24 @@ angular.module('rest').factory('Field', [function defineField() {
          *
          * @type String
          */
-        TIMEZONE : "TIMEZONE"
+        TIMEZONE : "TIMEZONE",
+
+        /**
+         * The type string associated with parameters that may contain dates.
+         * The format of the date is standardized as YYYY-MM-DD, zero-padded.
+         *
+         * @type String
+         */
+        DATE : "DATE",
+
+        /**
+         * The type string associated with parameters that may contain times.
+         * The format of the time is stnadardized as HH:MM:DD, zero-padded,
+         * 24-hour.
+         *
+         * @type String
+         */
+        TIME : "TIME"
 
     };
 
