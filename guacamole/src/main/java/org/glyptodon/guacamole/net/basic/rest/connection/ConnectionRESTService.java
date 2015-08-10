@@ -241,6 +241,7 @@ public class ConnectionRESTService {
      *     If an error occurs while creating the connection.
      */
     @POST
+    @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
     public String createConnection(@QueryParam("token") String authToken,
             APIConnection connection) throws GuacamoleException {
