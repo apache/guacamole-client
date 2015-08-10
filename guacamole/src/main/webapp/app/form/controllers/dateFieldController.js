@@ -24,9 +24,38 @@
 /**
  * Controller for date fields.
  */
-angular.module('form').controller('dateFieldController', ['$scope',
-    function dateFieldController($scope) {
+angular.module('form').controller('dateFieldController', ['$scope', '$injector',
+    function dateFieldController($scope, $injector) {
 
-    /* STUB */
+    // Required services
+    var $filter = $injector.get('$filter');
+
+    /**
+     * Options which dictate the behavior of the input field model, as defined
+     * by https://docs.angularjs.org/api/ng/directive/ngModelOptions
+     *
+     * @type Object.<String, String>
+     */
+    $scope.modelOptions = {
+
+        /**
+         * The time zone to use when reading/writing the Date object of the
+         * model.
+         *
+         * @type String
+         */
+        timezone : 'UTC'
+
+    };
+
+    // Update typed value when model is changed
+    $scope.$watch('model', function modelChanged(model) {
+        $scope.typedValue = (model ? new Date(model + 'T00:00Z') : null);
+    });
+
+    // Update string value in model when typed value is changed
+    $scope.$watch('typedValue', function typedValueChanged(typedValue) {
+        $scope.model = (typedValue ? $filter('date')(typedValue, 'yyyy-MM-dd', 'UTC') : '');
+    });
 
 }]);
