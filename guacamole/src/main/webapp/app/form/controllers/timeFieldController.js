@@ -48,9 +48,26 @@ angular.module('form').controller('timeFieldController', ['$scope', '$injector',
 
     };
 
+    /**
+     * Parses the time components of the given string into a Date with only the
+     * time components set. The resulting Date will be in the UTC timezone,
+     * with the date left as 1970-01-01. The input string must be in the format
+     * HH:MM:SS (zero-padded, 24-hour).
+     *
+     * @param {String} str
+     *     The time string to parse.
+     *
+     * @returns {Date}
+     *     A Date object, in the UTC timezone, with only the time components
+     *     set.
+     */
+    var parseTime = function parseTime(str) {
+        return new Date('1970-01-01T' + str + 'Z');
+    };
+
     // Update typed value when model is changed
     $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model ? new Date('1970-01-01T' + model + 'Z') : null);
+        $scope.typedValue = (model ? parseTime(model) : null);
     });
 
     // Update string value in model when typed value is changed

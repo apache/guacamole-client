@@ -48,9 +48,26 @@ angular.module('form').controller('dateFieldController', ['$scope', '$injector',
 
     };
 
+    /**
+     * Parses the date components of the given string into a Date with only the
+     * date components set. The resulting Date will be in the UTC timezone,
+     * with the time left as midnight. The input string must be in the format
+     * YYYY-MM-DD (zero-padded).
+     *
+     * @param {String} str
+     *     The date string to parse.
+     *
+     * @returns {Date}
+     *     A Date object, in the UTC timezone, with only the date components
+     *     set.
+     */
+    var parseDate = function parseDate(str) {
+        return new Date(str + 'T00:00Z');
+    };
+
     // Update typed value when model is changed
     $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model ? new Date(model + 'T00:00Z') : null);
+        $scope.typedValue = (model ? parseDate(model) : null);
     });
 
     // Update string value in model when typed value is changed
