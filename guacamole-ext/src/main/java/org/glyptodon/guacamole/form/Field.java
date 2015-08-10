@@ -90,6 +90,18 @@ public class Field {
          */
         public static String TIMEZONE = "TIMEZONE";
 
+        /**
+         * A date field whose legal values conform to the pattern "YYYY-MM-DD",
+         * zero-padded.
+         */
+        public static String DATE = "DATE";
+
+        /**
+         * A time field whose legal values conform to the pattern "HH:MM:SS",
+         * zero-padded, 24-hour.
+         */
+        public static String TIME = "TIME";
+
     }
 
     /**

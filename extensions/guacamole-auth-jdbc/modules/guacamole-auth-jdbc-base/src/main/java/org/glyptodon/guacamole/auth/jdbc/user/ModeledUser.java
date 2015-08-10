@@ -45,9 +45,10 @@ import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionGroupPermissionSer
 import org.glyptodon.guacamole.auth.jdbc.permission.ConnectionPermissionService;
 import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionService;
 import org.glyptodon.guacamole.form.BooleanField;
+import org.glyptodon.guacamole.form.DateField;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
-import org.glyptodon.guacamole.form.TextField;
+import org.glyptodon.guacamole.form.TimeField;
 import org.glyptodon.guacamole.form.TimeZoneField;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -68,16 +69,6 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
-
-    /**
-     * The format to use for all date attributes associated with users.
-     */
-    private static final String DATE_FORMAT = "yyyy-MM-dd";
-
-    /**
-     * The format to use for all time attributes associated with users.
-     */
-    private static final String TIME_FORMAT = "HH:mm:ss";
 
     /**
      * The name of the attribute which controls whether a user account is
@@ -128,10 +119,10 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
     public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
         new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
         new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
-        new TextField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
-        new TextField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
-        new TextField(VALID_FROM_ATTRIBUTE_NAME),
-        new TextField(VALID_UNTIL_ATTRIBUTE_NAME),
+        new TimeField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
+        new TimeField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
+        new DateField(VALID_FROM_ATTRIBUTE_NAME),
+        new DateField(VALID_UNTIL_ATTRIBUTE_NAME),
         new TimeZoneField(TIMEZONE_ATTRIBUTE_NAME)
     ));
 
@@ -288,7 +279,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      *     The formatted date, or null if the provided time was null.
      */
     private String formatDate(Date date) {
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        DateFormat dateFormat = new SimpleDateFormat(DateField.FORMAT);
         return date == null ? null : dateFormat.format(date);
     }
 
@@ -303,7 +294,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
      *     The formatted time, or null if the provided time was null.
      */
     private String formatTime(Time time) {
-        DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+        DateFormat timeFormat = new SimpleDateFormat(TimeField.FORMAT);
         return time == null ? null : timeFormat.format(time);
     }
 
@@ -331,7 +322,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
             return null;
 
         // Parse date according to format
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+        DateFormat dateFormat = new SimpleDateFormat(DateField.FORMAT);
         return new Date(dateFormat.parse(dateString).getTime());
 
     }
@@ -360,7 +351,7 @@ public class ModeledUser extends ModeledDirectoryObject<UserModel> implements Us
             return null;
 
         // Parse time according to format
-        DateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+        DateFormat timeFormat = new SimpleDateFormat(TimeField.FORMAT);
         return new Time(timeFormat.parse(timeString).getTime());
 
     }
