@@ -127,6 +127,9 @@
 
     "FORM" : {
 
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
         "HELP_SHOW_PASSWORD" : "Click to show password",
         "HELP_HIDE_PASSWORD" : "Click to hide password"
 
