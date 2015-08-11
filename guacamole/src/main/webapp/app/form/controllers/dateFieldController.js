@@ -39,6 +39,13 @@ angular.module('form').controller('dateFieldController', ['$scope', '$injector',
     $scope.modelOptions = {
 
         /**
+         * Space-delimited list of events on which the model will be updated.
+         *
+         * @type String
+         */
+        updateOn : 'blur',
+
+        /**
          * The time zone to use when reading/writing the Date object of the
          * model.
          *
@@ -62,7 +69,14 @@ angular.module('form').controller('dateFieldController', ['$scope', '$injector',
      *     set.
      */
     var parseDate = function parseDate(str) {
-        return new Date(str + 'T00:00Z');
+
+        // Parse date, return blank if invalid
+        var parsedDate = new Date(str + 'T00:00Z');
+        if (isNaN(parsedDate.getTime()))
+            return null;
+
+        return parsedDate;
+
     };
 
     // Update typed value when model is changed
