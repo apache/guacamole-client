@@ -193,6 +193,7 @@ public class ConnectionGroupRESTService {
      *     If an error occurs while creating the connection group.
      */
     @POST
+    @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
     public String createConnectionGroup(@QueryParam("token") String authToken,
             APIConnectionGroup connectionGroup) throws GuacamoleException {

@@ -225,6 +225,7 @@ public class UserRESTService {
      * @return The username of the newly created user.
      */
     @POST
+    @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
     public String createUser(@QueryParam("token") String authToken, APIUser user) 
             throws GuacamoleException {
