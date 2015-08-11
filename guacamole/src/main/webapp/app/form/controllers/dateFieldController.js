@@ -39,6 +39,13 @@ angular.module('form').controller('dateFieldController', ['$scope', '$injector',
     $scope.modelOptions = {
 
         /**
+         * Space-delimited list of events on which the model will be updated.
+         *
+         * @type String
+         */
+        updateOn : 'blur',
+
+        /**
          * The time zone to use when reading/writing the Date object of the
          * model.
          *
