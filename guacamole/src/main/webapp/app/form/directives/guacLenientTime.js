@@ -91,7 +91,7 @@ angular.module('form').directive('guacLenientTime', ['$injector',
 
         }];
 
-        // Format time strings as "yyyy-MM-dd"
+        // Format time strings as "HH:mm:ss"
         ngModel.$formatters = [function format(modelValue) {
             return modelValue ? $filter('date')(modelValue, 'HH:mm:ss', 'UTC') : '';
         }];
