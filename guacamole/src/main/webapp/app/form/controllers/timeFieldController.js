@@ -69,7 +69,14 @@ angular.module('form').controller('timeFieldController', ['$scope', '$injector',
      *     set.
      */
     var parseTime = function parseTime(str) {
-        return new Date('1970-01-01T' + str + 'Z');
+
+        // Parse time, return blank if invalid
+        var parsedDate = new Date('1970-01-01T' + str + 'Z');
+        if (isNaN(parsedDate.getTime()))
+            return null;
+        
+        return parsedDate;
+
     };
 
     // Update typed value when model is changed

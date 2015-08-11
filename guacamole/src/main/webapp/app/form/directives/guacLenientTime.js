@@ -83,7 +83,11 @@ angular.module('form').directive('guacLenientTime', ['$injector',
             hour %= 24;
 
             // Convert to Date object
-            return new Date(Date.UTC(1970, 0, 1, hour, minute, second));
+            var parsedDate = new Date(Date.UTC(1970, 0, 1, hour, minute, second));
+            if (isNaN(parsedDate.getTime()))
+                return null;
+
+            return parsedDate;
 
         }];
 

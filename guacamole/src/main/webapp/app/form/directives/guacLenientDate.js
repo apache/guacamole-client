@@ -63,7 +63,11 @@ angular.module('form').directive('guacLenientDate', ['$injector',
             var day   = parseInt(match[3] || '0') || 1;
 
             // Convert to Date object
-            return new Date(Date.UTC(year, month - 1, day));
+            var parsedDate = new Date(Date.UTC(year, month - 1, day));
+            if (isNaN(parsedDate.getTime()))
+                return null;
+
+            return parsedDate;
 
         }];
 
