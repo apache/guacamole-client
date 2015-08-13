@@ -142,26 +142,42 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                 // Create from internal template
                 var element = angular.element($interpolate(fileTemplate)(file));
 
+                // Double-clicking on unknown file types will do nothing
+                var fileAction = function doNothing() {};
+
                 // Change current directory when directories are clicked
                 if ($scope.isDirectory(file)) {
                     element.addClass('directory');
-                    element.on('dblclick', function changeDirectory() {
+                    fileAction = function changeDirectory() {
                         $scope.changeDirectory(file);
-                    });
+                    };
                 }
 
                 // Initiate downloads when normal files are clicked
                 else if ($scope.isNormalFile(file)) {
                     element.addClass('normal-file');
-                    element.on('dblclick', function downloadFile() {
+                    fileAction = function downloadFile() {
                         $scope.downloadFile(file);
-                    });
+                    };
                 }
 
                 // Mark file as focused upon click
-                element.on('click', function focusFile() {
-                    element.parent().children().removeClass('focused');
-                    element.addClass('focused');
+                element.on('click', function focusFile(e) {
+
+                    // Fire file-specific action if already focused
+                    if (element.hasClass('focused'))
+                        fileAction();
+
+                    // Otherwise mark as focused
+                    else {
+                        element.parent().children().removeClass('focused');
+                        element.addClass('focused');
+                    }
+
+                    // Do not allow default action
+                    e.preventDefault();
+                    e.stopPropagation();
+
                 });
 
                 // Prevent text selection during navigation
