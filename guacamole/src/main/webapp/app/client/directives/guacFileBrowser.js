@@ -123,6 +123,13 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
             };
 
             /**
+             * Refreshes the contents of the current directory.
+             */
+            $scope.refresh = function refresh() {
+                ManagedFilesystem.refresh($scope.filesystem, $scope.filesystem.currentDirectory);
+            };
+
+            /**
              * Creates a new element representing the given file and properly
              * handling user events, bypassing the overhead incurred through
              * use of ngRepeat and related techniques.
@@ -247,6 +254,11 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                 });
 
             }); // end retrieve file template
+
+            // Refresh file browser when any upload completes
+            $scope.$on('guacUploadComplete', function uploadComplete(event, filename) {
+                $scope.refresh();
+            });
 
         }]
 
