@@ -29,6 +29,12 @@
 
 .file-browser .list-item .caption {
     white-space: nowrap;
+    border: 1px solid transparent;
+}
+
+.file-browser .list-item.focused .caption {
+    border: 1px dotted rgba(0, 0, 0, 0.5);
+    background: rgba(204, 221, 170, 0.5);
 }
 
 /* Directory / file icons */

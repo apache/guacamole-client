@@ -211,6 +211,9 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
                         ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                             ManagedFileTransferState.StreamState.CLOSED);
 
+                        // Notify of upload completion
+                        $rootScope.$broadcast('guacUploadComplete', file.name);
+
                     }
 
                     // Otherwise, update progress
