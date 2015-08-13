@@ -164,6 +164,12 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                     element.addClass('focused');
                 });
 
+                // Prevent text selection during navigation
+                element.on('selectstart', function avoidSelect(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+
                 return element;
 
             };
