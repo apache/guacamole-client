@@ -250,7 +250,11 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
 
             // Refresh file browser when any upload completes
             $scope.$on('guacUploadComplete', function uploadComplete(event, filename) {
-                ManagedFilesystem.refresh($scope.filesystem, $scope.filesystem.currentDirectory);
+
+                // Refresh filesystem, if it exists
+                if ($scope.filesystem)
+                    ManagedFilesystem.refresh($scope.filesystem, $scope.filesystem.currentDirectory);
+
             });
 
         }]
