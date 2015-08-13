@@ -97,6 +97,10 @@
                 {
                     "name"  : "sftp-passphrase",
                     "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-directory",
+                    "type"  : "TEXT"
                 }
             ]
         },
