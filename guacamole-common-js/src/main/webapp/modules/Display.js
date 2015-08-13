@@ -528,6 +528,41 @@ Guacamole.Display = function() {
     };
 
     /**
+     * Draws the image contained within the specified Blob at the given
+     * coordinates. The Blob specified must already be populated with image
+     * data.
+     *
+     * @param {Guacamole.Layer} layer
+     *     The layer to draw upon.
+     *
+     * @param {Number} x
+     *     The destination X coordinate.
+     *
+     * @param {Number} y
+     *     The destination Y coordinate.
+     *
+     * @param {Blob} blob
+     *     The Blob containing the image data to draw.
+     */
+    this.drawBlob = function(layer, x, y, blob) {
+
+        // Create URL for blob
+        var url = URL.createObjectURL(blob);
+
+        // Draw and free blob URL when ready
+        var task = scheduleTask(function __display_drawBlob() {
+            layer.drawImage(x, y, image);
+            URL.revokeObjectURL(url);
+        }, true);
+
+        // Load image from URL
+        var image = new Image();
+        image.onload = task.unblock;
+        image.src = url;
+
+    };
+
+    /**
      * Draws the image at the specified URL at the given coordinates. The image
      * will be loaded automatically, and this and any future operations will
      * wait for the image to finish loading.

@@ -886,6 +886,27 @@ Guacamole.Client = function(tunnel) {
 
         },
 
+        "img": function(parameters) {
+
+            var stream_index = parseInt(parameters[0]);
+            var channelMask = parseInt(parameters[1]);
+            var layer = getLayer(parseInt(parameters[2]));
+            var mimetype = parameters[3];
+            var x = parseInt(parameters[4]);
+            var y = parseInt(parameters[5]);
+
+            // Create stream
+            var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
+            var reader = new Guacamole.DataURIReader(stream, mimetype);
+
+            // Draw image when stream is complete
+            reader.onend = function drawImageBlob() {
+                display.setChannelMask(layer, channelMask);
+                display.draw(layer, x, y, reader.getURI());
+            };
+
+        },
+
         "jpeg": function(parameters) {
 
             var channelMask = parseInt(parameters[0]);
