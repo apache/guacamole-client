@@ -165,8 +165,10 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                 element.on('click', function focusFile(e) {
 
                     // Fire file-specific action if already focused
-                    if (element.hasClass('focused'))
+                    if (element.hasClass('focused')) {
                         fileAction();
+                        element.removeClass('focused');
+                    }
 
                     // Otherwise mark as focused
                     else {
