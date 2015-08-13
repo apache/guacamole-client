@@ -586,6 +586,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         return !!$scope.filesystemMenuContents && $scope.menu.shown;
     };
 
+    // Automatically refresh display when filesystem menu is shown
+    $scope.$watch('isFilesystemMenuShown()', function refreshFilesystem() {
+
+        // Refresh filesystem, if defined
+        var filesystem = $scope.filesystemMenuContents;
+        if (filesystem)
+            ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
+
+    });
+
     /**
      * Returns the full path to the given file as an ordered array of parent
      * directories.
