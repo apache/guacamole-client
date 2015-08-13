@@ -145,7 +145,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                 // Change current directory when directories are clicked
                 if ($scope.isDirectory(file)) {
                     element.addClass('directory');
-                    element.on('click', function changeDirectory() {
+                    element.on('dblclick', function changeDirectory() {
                         $scope.changeDirectory(file);
                     });
                 }
@@ -153,10 +153,16 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
                 // Initiate downloads when normal files are clicked
                 else if ($scope.isNormalFile(file)) {
                     element.addClass('normal-file');
-                    element.on('click', function downloadFile() {
+                    element.on('dblclick', function downloadFile() {
                         $scope.downloadFile(file);
                     });
                 }
+
+                // Mark file as focused upon click
+                element.on('click', function focusFile() {
+                    element.parent().children().removeClass('focused');
+                    element.addClass('focused');
+                });
 
                 return element;
 
