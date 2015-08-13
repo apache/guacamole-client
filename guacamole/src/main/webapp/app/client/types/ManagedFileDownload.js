@@ -138,6 +138,9 @@ angular.module('client').factory('ManagedFileDownload', ['$rootScope', '$injecto
                 ManagedFileTransferState.setStreamState(managedFileDownload.transferState,
                     ManagedFileTransferState.StreamState.CLOSED);
 
+                // Notify of upload completion
+                $rootScope.$broadcast('guacDownloadComplete', filename);
+
             });
         };
 
