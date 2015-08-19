@@ -22,10 +22,6 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -33,7 +29,6 @@ import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,11 +54,6 @@ public class GuacamoleSession {
      * The user context associated with this session.
      */
     private UserContext userContext;
-
-    /**
-     * The current clipboard state.
-     */
-    private final ClipboardState clipboardState = new ClipboardState();
 
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
@@ -141,15 +131,6 @@ public class GuacamoleSession {
         this.userContext = userContext;
     }
     
-    /**
-     * Returns the ClipboardState associated with this session.
-     *
-     * @return The ClipboardState associated with this session.
-     */
-    public ClipboardState getClipboardState() {
-        return clipboardState;
-    }
-
     /**
      * Returns whether this session has any associated active tunnels.
      *
