@@ -31,6 +31,9 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var $window          = $injector.get('$window');
     var guacNotification = $injector.get('guacNotification');
     
+    // Request guacImage service early as it needs time to load images
+    var guacImage        = $injector.get('guacImage');
+
     /**
      * The notification service.
      */

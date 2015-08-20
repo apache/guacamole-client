@@ -183,6 +183,13 @@ public class ConfiguredGuacamoleSocket implements GuacamoleSocket {
                     info.getVideoMimetypes().toArray(new String[0])
                 ));
 
+        // Send supported image formats
+        writer.writeInstruction(
+                new GuacamoleInstruction(
+                    "image",
+                    info.getImageMimetypes().toArray(new String[0])
+                ));
+
         // Send args
         writer.writeInstruction(new GuacamoleInstruction("connect", arg_values));
 

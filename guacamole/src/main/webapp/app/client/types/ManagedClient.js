@@ -42,6 +42,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var connectionService      = $injector.get('connectionService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
+    var guacImage              = $injector.get('guacImage');
     var guacVideo              = $injector.get('guacVideo');
         
     /**
@@ -188,6 +189,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Add video mimetypes to connect_string
         guacVideo.supported.forEach(function(mimetype) {
             connectString += "&video=" + encodeURIComponent(mimetype);
+        });
+
+        // Add non-standard image mimetypes to connect_string
+        guacImage.supported.forEach(function(mimetype) {
+            connectString += "&image=" + encodeURIComponent(mimetype);
         });
 
         return connectString;
