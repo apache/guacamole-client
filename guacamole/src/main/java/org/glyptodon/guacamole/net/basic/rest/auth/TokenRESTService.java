@@ -38,6 +38,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -222,28 +223,28 @@ public class TokenRESTService {
         credentials.setPassword(password);
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
-        
-        UserContext userContext;
+
+        AuthenticatedUser authenticatedUser;
         try {
 
-            // Update existing user context if session already exists
+            // Re-authenticate user if session exists
             if (existingSession != null)
-                userContext = authProvider.updateUserContext(existingSession.getUserContext(), credentials);
+                authenticatedUser = authProvider.updateAuthenticatedUser(existingSession.getAuthenticatedUser(), credentials);
 
-            /// Otherwise, generate a new user context
+            /// Otherwise, authenticate as a new user
             else {
 
-                userContext = authProvider.getUserContext(credentials);
+                authenticatedUser = authProvider.authenticateUser(credentials);
 
                 // Log successful authentication
-                if (userContext != null && logger.isInfoEnabled())
+                if (authenticatedUser != null && logger.isInfoEnabled())
                     logger.info("User \"{}\" successfully authenticated from {}.",
-                            userContext.self().getIdentifier(), getLoggableAddress(request));
+                            authenticatedUser.getIdentifier(), getLoggableAddress(request));
 
             }
 
-            // Request standard username/password if no user context was produced
-            if (userContext == null)
+            // Request standard username/password if no user was produced
+            if (authenticatedUser == null)
                 throw new GuacamoleInvalidCredentialsException("Permission Denied.",
                         CredentialsInfo.USERNAME_PASSWORD);
 
@@ -264,23 +265,35 @@ public class TokenRESTService {
 
             throw e;
         }
-        
+
+        // Generate or update user context
+        UserContext userContext;
+        if (existingSession != null)
+            userContext = authProvider.updateUserContext(existingSession.getUserContext(), authenticatedUser);
+        else
+            userContext = authProvider.getUserContext(authenticatedUser);
+
+        // STUB: Request standard username/password if no user context was produced
+        if (userContext == null)
+            throw new GuacamoleInvalidCredentialsException("Permission Denied.",
+                    CredentialsInfo.USERNAME_PASSWORD);
+
         // Update existing session, if it exists
         String authToken;
         if (existingSession != null) {
             authToken = token;
-            existingSession.setCredentials(credentials);
+            existingSession.setAuthenticatedUser(authenticatedUser);
             existingSession.setUserContext(userContext);
         }
 
         // If no existing session, generate a new token/session pair
         else {
             authToken = authTokenGenerator.getToken();
-            tokenSessionMap.put(authToken, new GuacamoleSession(environment, credentials, userContext));
+            tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContext));
         }
         
-        logger.debug("Login was successful for user \"{}\".", userContext.self().getIdentifier());
-        return new APIAuthToken(authToken, userContext.self().getIdentifier());
+        logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
+        return new APIAuthToken(authToken, authenticatedUser.getIdentifier());
 
     }
 

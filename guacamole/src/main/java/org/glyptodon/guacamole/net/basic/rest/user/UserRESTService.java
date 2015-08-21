@@ -46,6 +46,7 @@ import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
@@ -337,8 +338,16 @@ public class UserRESTService {
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
         
-        // Verify that the old password was correct 
-        if (authProvider.getUserContext(credentials) == null) {
+        // Verify that the old password was correct
+        try {
+            if (authProvider.authenticateUser(credentials) == null) {
+                throw new APIException(APIError.Type.PERMISSION_DENIED,
+                        "Permission denied.");
+            }
+        }
+
+        // Pass through any credentials exceptions as simple permission denied
+        catch (GuacamoleCredentialsException e) {
             throw new APIException(APIError.Type.PERMISSION_DENIED,
                     "Permission denied.");
         }

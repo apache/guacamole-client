@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +46,9 @@ public class GuacamoleSession {
     private static final Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
     /**
-     * The credentials provided when the user authenticated.
+     * The user associated with this session.
      */
-    private Credentials credentials;
+    private AuthenticatedUser authenticatedUser;
     
     /**
      * The user context associated with this session.
@@ -72,8 +72,8 @@ public class GuacamoleSession {
      *     The environment of the Guacamole server associated with this new
      *     session.
      *
-     * @param credentials
-     *     The credentials provided by the user during login.
+     * @param authenticatedUser
+     *     The authenticated user to associate this session with.
      *
      * @param userContext
      *     The user context to associate this session with.
@@ -81,36 +81,35 @@ public class GuacamoleSession {
      * @throws GuacamoleException
      *     If an error prevents the session from being created.
      */
-    public GuacamoleSession(Environment environment, Credentials credentials,
-            UserContext userContext) throws GuacamoleException {
+    public GuacamoleSession(Environment environment,
+            AuthenticatedUser authenticatedUser, UserContext userContext)
+            throws GuacamoleException {
         this.lastAccessedTime = System.currentTimeMillis();
-        this.credentials = credentials;
+        this.authenticatedUser = authenticatedUser;
         this.userContext = userContext;
     }
 
     /**
-     * Returns the credentials used when the user associated with this session
-     * authenticated.
+     * Returns the authenticated user associated with this session.
      *
      * @return
-     *     The credentials used when the user associated with this session
-     *     authenticated.
+     *     The authenticated user associated with this session.
      */
-    public Credentials getCredentials() {
-        return credentials;
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
     /**
-     * Replaces the credentials associated with this session with the given
-     * credentials.
+     * Replaces the authenticated user associated with this session with the
+     * given authenticated user.
      *
-     * @param credentials
-     *     The credentials to associate with this session.
+     * @param authenticatedUser
+     *     The authenticated user to associated with this session.
      */
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
+    public void setAuthenticatedUser(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
     }
-    
+
     /**
      * Returns the UserContext associated with this session.
      *

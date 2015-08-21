@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,46 +25,112 @@ package org.glyptodon.guacamole.net.auth;
 import org.glyptodon.guacamole.GuacamoleException;
 
 /**
- * Provides means of accessing and managing the available
- * GuacamoleConfiguration objects and User objects. Access to each configuration
- * and each user is limited by a given Credentials object.
+ * Provides means of authorizing users and for accessing and managing data
+ * associated with those users. Access to such data is limited according to the
+ * AuthenticationProvider implementation.
  *
  * @author Michael Jumper
  */
 public interface AuthenticationProvider {
 
     /**
-     * Returns the UserContext of the user authorized by the given credentials.
+     * Returns an AuthenticatedUser representing the user authenticated by the
+     * given credentials, if any.
      *
-     * @param credentials The credentials to use to retrieve the environment.
-     * @return The UserContext of the user authorized by the given credentials,
-     *         or null if the credentials are not authorized.
+     * @param credentials
+     *     The credentials to use for authentication.
      *
-     * @throws GuacamoleException If an error occurs while creating the
-     *                            UserContext.
+     * @return
+     *     An AuthenticatedUser representing the user authenticated by the
+     *     given credentials, if any, or null if the credentials are invalid.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while authenticating the user, or if access is
+     *     temporarily, permanently, or conditionally denied, such as if the
+     *     supplied credentials are insufficient or invalid.
      */
-    UserContext getUserContext(Credentials credentials)
+    AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException;
 
     /**
-     * Returns a new or updated UserContext for the user authorized by the
-     * give credentials and having the given existing UserContext. Note that
-     * because this function will be called for all future requests after
-     * initial authentication, including tunnel requests, care must be taken
-     * to avoid using functions of HttpServletRequest which invalidate the
-     * entire request body, such as getParameter().
-     * 
-     * @param context The existing UserContext belonging to the user in
-     *                question.
-     * @param credentials The credentials to use to retrieve or update the
-     *                    environment.
-     * @return The updated UserContext, which need not be the same as the
-     *         UserContext given, or null if the user is no longer authorized.
-     *         
-     * @throws GuacamoleException If an error occurs while updating the
-     *                            UserContext.
+     * Returns a new or updated AuthenticatedUser for the given credentials
+     * already having produced the given AuthenticatedUser. Note that because
+     * this function will be called for all future requests after initial
+     * authentication, including tunnel requests, care must be taken to avoid
+     * using functions of HttpServletRequest which invalidate the entire request
+     * body, such as getParameter(). Doing otherwise may cause the
+     * GuacamoleHTTPTunnelServlet to fail.
+      *
+     * @param credentials
+     *     The credentials to use for authentication.
+     *
+     * @param authenticatedUser
+     *     An AuthenticatedUser object representing the user authenticated by
+     *     an arbitrary set of credentials. The AuthenticatedUser may come from
+     *     this AuthenticationProvider or any other installed
+     *     AuthenticationProvider.
+     *
+     * @return
+     *     An updated AuthenticatedUser representing the user authenticated by
+     *     the given credentials, if any, or null if the credentials are
+     *     invalid.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the AuthenticatedUser.
      */
-    UserContext updateUserContext(UserContext context, Credentials credentials)
+    AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException;
+
+    /**
+     * Returns the UserContext of the user authenticated by the given
+     * credentials.
+     *
+     * @param authenticatedUser
+     *     An AuthenticatedUser object representing the user authenticated by
+     *     an arbitrary set of credentials. The AuthenticatedUser may come from
+     *     this AuthenticationProvider or any other installed
+     *     AuthenticationProvider.
+     *
+     * @return
+     *     A UserContext describing the permissions, connection, connection
+     *     groups, etc. accessible or associated with the given authenticated
+     *     user, or null if this AuthenticationProvider refuses to provide any
+     *     such data.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while creating the UserContext.
+     */
+    UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException;
+
+    /**
+     * Returns a new or updated UserContext for the given AuthenticatedUser
+     * already having the given UserContext. Note that because this function
+     * will be called for all future requests after initial authentication,
+     * including tunnel requests, care must be taken to avoid using functions
+     * of HttpServletRequest which invalidate the entire request body, such as
+     * getParameter(). Doing otherwise may cause the GuacamoleHTTPTunnelServlet
+     * to fail.
+      *
+     * @param context
+     *     The existing UserContext belonging to the user in question.
+     *
+     * @param authenticatedUser
+     *     An AuthenticatedUser object representing the user authenticated by
+     *     an arbitrary set of credentials. The AuthenticatedUser may come from
+     *     this AuthenticationProvider or any other installed
+     *     AuthenticationProvider.
+     *
+     * @return
+     *     An updated UserContext describing the permissions, connection,
+     *     connection groups, etc. accessible or associated with the given
+     *     authenticated user, or null if this AuthenticationProvider refuses
+     *     to provide any such data.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the UserContext.
+     */
+    UserContext updateUserContext(UserContext context,
+            AuthenticatedUser authenticatedUser) throws GuacamoleException;
     
 }

@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.extension;
 
 import java.lang.reflect.InvocationTargetException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -118,7 +119,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     }
 
     @Override
-    public UserContext getUserContext(Credentials credentials)
+    public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         // Ignore auth attempts if no auth provider could be loaded
@@ -128,13 +129,13 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.getUserContext(credentials);
-        
+        return authProvider.authenticateUser(credentials);
+
     }
 
     @Override
-    public UserContext updateUserContext(UserContext context, Credentials credentials)
-            throws GuacamoleException {
+    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
 
         // Ignore auth attempts if no auth provider could be loaded
         if (authProvider == null) {
@@ -143,7 +144,38 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.updateUserContext(context, credentials);
+        return authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
+
+    }
+
+    @Override
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+            throws GuacamoleException {
+
+        // Ignore auth attempts if no auth provider could be loaded
+        if (authProvider == null) {
+            logger.warn("User data retrieval attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            return null;
+        }
+
+        // Delegate to underlying auth provider
+        return authProvider.getUserContext(authenticatedUser);
+        
+    }
+
+    @Override
+    public UserContext updateUserContext(UserContext context,
+            AuthenticatedUser authenticatedUser)
+            throws GuacamoleException {
+
+        // Ignore auth attempts if no auth provider could be loaded
+        if (authProvider == null) {
+            logger.warn("User data refresh attempt denied because the authentication system could not be loaded. Please check for errors earlier in the logs.");
+            return null;
+        }
+
+        // Delegate to underlying auth provider
+        return authProvider.updateUserContext(context, authenticatedUser);
         
     }
 
