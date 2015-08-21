@@ -32,6 +32,10 @@ CREATE TABLE `guacamole_connection_group` (
   `type`                  enum('ORGANIZATIONAL',
                                'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
 
+  -- Concurrency limits
+  `max_connections`          int(11),
+  `max_connections_per_user` int(11),
+
   PRIMARY KEY (`connection_group_id`),
   UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
 
@@ -54,6 +58,10 @@ CREATE TABLE `guacamole_connection` (
   `parent_id`           int(11),
   `protocol`            varchar(32)  NOT NULL,
   
+  -- Concurrency limits
+  `max_connections`          int(11),
+  `max_connections_per_user` int(11),
+
   PRIMARY KEY (`connection_id`),
   UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
 

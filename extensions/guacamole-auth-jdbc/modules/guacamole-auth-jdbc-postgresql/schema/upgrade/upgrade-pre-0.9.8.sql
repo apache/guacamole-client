@@ -39,3 +39,17 @@ ALTER TABLE guacamole_user ADD COLUMN valid_until date;
 --
 
 ALTER TABLE guacamole_user ADD COLUMN timezone varchar(64);
+
+--
+-- Add connection concurrency limits
+--
+
+ALTER TABLE guacamole_connection ADD COLUMN max_connections          integer;
+ALTER TABLE guacamole_connection ADD COLUMN max_connections_per_user integer;
+
+--
+-- Add connection group concurrency limits
+--
+
+ALTER TABLE guacamole_connection_group ADD COLUMN max_connections          integer;
+ALTER TABLE guacamole_connection_group ADD COLUMN max_connections_per_user integer;

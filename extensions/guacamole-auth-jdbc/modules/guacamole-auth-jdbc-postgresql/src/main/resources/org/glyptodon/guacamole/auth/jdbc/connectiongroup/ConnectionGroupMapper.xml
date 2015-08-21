@@ -28,11 +28,13 @@
 
     <!-- Result mapper for connection objects -->
     <resultMap id="ConnectionGroupResultMap" type="org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel" >
-        <id     column="connection_group_id"   property="objectID"         jdbcType="INTEGER"/>
-        <result column="connection_group_name" property="name"             jdbcType="VARCHAR"/>
-        <result column="parent_id"             property="parentIdentifier" jdbcType="INTEGER"/>
-        <result column="type"                  property="type"             jdbcType="VARCHAR"
+        <id     column="connection_group_id"      property="objectID"              jdbcType="INTEGER"/>
+        <result column="connection_group_name"    property="name"                  jdbcType="VARCHAR"/>
+        <result column="parent_id"                property="parentIdentifier"      jdbcType="INTEGER"/>
+        <result column="type"                     property="type"                  jdbcType="VARCHAR"
                 javaType="org.glyptodon.guacamole.net.auth.ConnectionGroup$Type"/>
+        <result column="max_connections"          property="maxConnections"        jdbcType="INTEGER"/>
+        <result column="max_connections_per_user" property="maxConnectionsPerUser" jdbcType="INTEGER"/>
     </resultMap>
 
     <!-- Select all connection group identifiers -->
@@ -78,7 +80,9 @@
             connection_group_id,
             connection_group_name,
             parent_id,
-            type
+            type,
+            max_connections,
+            max_connections_per_user
         FROM guacamole_connection_group
         WHERE connection_group_id IN
             <foreach collection="identifiers" item="identifier"
@@ -95,7 +99,9 @@
             guacamole_connection_group.connection_group_id,
             connection_group_name,
             parent_id,
-            type 
+            type,
+            max_connections,
+            max_connections_per_user
         FROM guacamole_connection_group
         JOIN guacamole_connection_group_permission ON guacamole_connection_group_permission.connection_group_id = guacamole_connection_group.connection_group_id
         WHERE guacamole_connection_group.connection_group_id IN
@@ -115,7 +121,9 @@
             connection_group_id,
             connection_group_name,
             parent_id,
-            type
+            type,
+            max_connections,
+            max_connections_per_user
         FROM guacamole_connection_group
         WHERE 
             <if test="parentIdentifier != null">parent_id = #{parentIdentifier,jdbcType=INTEGER}::integer</if>
@@ -137,12 +145,16 @@
         INSERT INTO guacamole_connection_group (
             connection_group_name,
             parent_id,
-            type
+            type,
+            max_connections,
+            max_connections_per_user
         )
         VALUES (
             #{object.name,jdbcType=VARCHAR},
             #{object.parentIdentifier,jdbcType=INTEGER}::integer,
-            #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type
+            #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type,
+            #{object.maxConnections,jdbcType=INTEGER},
+            #{object.maxConnectionsPerUser,jdbcType=INTEGER}
         )
 
     </insert>
@@ -150,9 +162,11 @@
     <!-- Update single connection group -->
     <update id="update" parameterType="org.glyptodon.guacamole.auth.jdbc.connectiongroup.ConnectionGroupModel">
         UPDATE guacamole_connection_group
-        SET connection_group_name = #{object.name,jdbcType=VARCHAR},
-            parent_id             = #{object.parentIdentifier,jdbcType=INTEGER}::integer,
-            type                  = #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type
+        SET connection_group_name    = #{object.name,jdbcType=VARCHAR},
+            parent_id                = #{object.parentIdentifier,jdbcType=INTEGER}::integer,
+            type                     = #{object.type,jdbcType=VARCHAR}::guacamole_connection_group_type,
+            max_connections          = #{object.maxConnections,jdbcType=INTEGER},
+            max_connections_per_user = #{object.maxConnectionsPerUser,jdbcType=INTEGER}
         WHERE connection_group_id = #{object.objectID,jdbcType=INTEGER}::integer
     </update>
 
