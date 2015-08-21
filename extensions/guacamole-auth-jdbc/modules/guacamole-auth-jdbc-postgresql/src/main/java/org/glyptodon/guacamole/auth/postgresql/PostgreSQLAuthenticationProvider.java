@@ -29,11 +29,8 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.BalancedGuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.ConfigurableGuacamoleTunnelService;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.MultiseatGuacamoleTunnelService;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.SingleSeatGuacamoleTunnelService;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.UnrestrictedGuacamoleTunnelService;
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
@@ -54,52 +51,62 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
     private final Injector injector;
 
     /**
-     * Returns the appropriate socket service class given the Guacamole
-     * environment. The class is chosen based on configuration options that
-     * dictate concurrent usage policy.
+     * Returns the appropriate tunnel service given the Guacamole environment.
+     * The service is configured based on configuration options that dictate
+     * the default concurrent usage policy.
      *
      * @param environment
      *     The environment of the Guacamole server.
      *
      * @return
-     *     The socket service class that matches the concurrent usage policy
-     *     options set in the Guacamole environment.
+     *     A tunnel service implementation configured according to the
+     *     concurrent usage policy options set in the Guacamole environment.
      *
      * @throws GuacamoleException
      *     If an error occurs while reading the configuration options.
      */
-    private Class<? extends GuacamoleTunnelService>
-        getSocketServiceClass(Environment environment)
+    private GuacamoleTunnelService getTunnelService(Environment environment)
                 throws GuacamoleException {
 
-        // Read concurrency-related properties
+        // Tunnel service default configuration
+        int connectionDefaultMaxConnections;
+        int connectionDefaultMaxConnectionsPerUser;
+        int connectionGroupDefaultMaxConnections;
+        int connectionGroupDefaultMaxConnectionsPerUser;
+
+        // Read legacy concurrency-related properties
         boolean disallowSimultaneous = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false);
         boolean disallowDuplicate    = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS, true);
 
-        if (disallowSimultaneous) {
+        // Legacy properties to not affect max connections per group
+        connectionGroupDefaultMaxConnections = 0;
 
-            // Connections may not be used concurrently
-            if (disallowDuplicate)
-                return SingleSeatGuacamoleTunnelService.class;
+        // Legacy "simultaneous" property dictates only the maximum number of
+        // connections per connection
+        if (disallowSimultaneous)
+            connectionDefaultMaxConnections = 1;
+        else
+            connectionDefaultMaxConnections = 0;
 
-            // Connections are reserved for a single user when in use
-            else
-                return BalancedGuacamoleTunnelService.class;
-
+        // Legacy "duplicate" property dictates whether connections and groups
+        // may be used concurrently only by different users
+        if (disallowDuplicate) {
+            connectionDefaultMaxConnectionsPerUser      = 1;
+            connectionGroupDefaultMaxConnectionsPerUser = 1;
         }
-
         else {
-
-            // Connections may be used concurrently, but only once per user
-            if (disallowDuplicate)
-                return MultiseatGuacamoleTunnelService.class;
-
-            // Connection use is not restricted
-            else
-                return UnrestrictedGuacamoleTunnelService.class;
-
+            connectionDefaultMaxConnectionsPerUser      = 0;
+            connectionGroupDefaultMaxConnectionsPerUser = 0;
         }
-         
+
+        // Return service configured for specified default limits
+        return new ConfigurableGuacamoleTunnelService(
+            connectionDefaultMaxConnections,
+            connectionDefaultMaxConnectionsPerUser,
+            connectionGroupDefaultMaxConnections,
+            connectionGroupDefaultMaxConnectionsPerUser
+        );
+
     }
     
     /**
@@ -123,7 +130,7 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
             new PostgreSQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(environment, getSocketServiceClass(environment))
+            new JDBCAuthenticationProviderModule(environment, getTunnelService(environment))
 
         );
 
