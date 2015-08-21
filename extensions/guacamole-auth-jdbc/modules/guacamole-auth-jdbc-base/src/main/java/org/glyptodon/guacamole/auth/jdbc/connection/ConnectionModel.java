@@ -41,7 +41,21 @@ public class ConnectionModel extends GroupedObjectModel {
      * The name of the protocol to use when connecting to this connection.
      */
     private String protocol;
-    
+
+    /**
+     * The maximum number of connections that can be established to this
+     * connection concurrently, zero if no restriction applies, or null if the
+     * default restrictions should be applied.
+     */
+    private Integer maxConnections;
+
+    /**
+     * The maximum number of connections that can be established to this
+     * connection concurrently by any one user, zero if no restriction applies,
+     * or null if the default restrictions should be applied.
+     */
+    private Integer maxConnectionsPerUser;
+
     /**
      * Creates a new, empty connection.
      */
@@ -87,6 +101,58 @@ public class ConnectionModel extends GroupedObjectModel {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    /**
+     * Returns the maximum number of connections that can be established to
+     * this connection concurrently.
+     *
+     * @return
+     *     The maximum number of connections that can be established to this
+     *     connection concurrently, zero if no restriction applies, or null if
+     *     the default restrictions should be applied.
+     */
+    public Integer getMaxConnections() {
+        return maxConnections;
+    }
+
+    /**
+     * Sets the maximum number of connections that can be established to this
+     * connection concurrently.
+     *
+     * @param maxConnections
+     *     The maximum number of connections that can be established to this
+     *     connection concurrently, zero if no restriction applies, or null if
+     *     the default restrictions should be applied.
+     */
+    public void setMaxConnections(Integer maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+    /**
+     * Returns the maximum number of connections that can be established to
+     * this connection concurrently by any one user.
+     *
+     * @return
+     *     The maximum number of connections that can be established to this
+     *     connection concurrently by any one user, zero if no restriction
+     *     applies, or null if the default restrictions should be applied.
+     */
+    public Integer getMaxConnectionsPerUser() {
+        return maxConnectionsPerUser;
+    }
+
+    /**
+     * Sets the maximum number of connections that can be established to this
+     * connection concurrently by any one user.
+     *
+     * @param maxConnectionsPerUser
+     *     The maximum number of connections that can be established to this
+     *     connection concurrently by any one user, zero if no restriction
+     *     applies, or null if the default restrictions should be applied.
+     */
+    public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
+        this.maxConnectionsPerUser = maxConnectionsPerUser;
     }
 
     @Override

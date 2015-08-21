@@ -200,14 +200,23 @@ public class ConfigurableGuacamoleTunnelService
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
+            // Determine per-user limits on this connection
+            Integer connectionMaxConnectionsPerUser = connection.getModel().getMaxConnectionsPerUser();
+            if (connectionMaxConnectionsPerUser == null)
+                connectionMaxConnectionsPerUser = connectionDefaultMaxConnectionsPerUser;
+
+            // Determine overall limits on this connection
+            Integer connectionMaxConnections = connection.getModel().getMaxConnections();
+            if (connectionMaxConnections == null)
+                connectionMaxConnections = connectionDefaultMaxConnections;
+
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
-            if (tryAdd(activeSeats, seat,
-                    connectionDefaultMaxConnectionsPerUser)) {
+            if (tryAdd(activeSeats, seat, connectionMaxConnectionsPerUser)) {
 
                 // Attempt to aquire connection according to overall limits
                 if (tryAdd(activeConnections, connection.getIdentifier(),
-                        connectionDefaultMaxConnections))
+                        connectionMaxConnections))
                     return connection;
 
                 // Acquire failed - retry with next connection
@@ -243,14 +252,24 @@ public class ConfigurableGuacamoleTunnelService
         // Get username
         String username = user.getUser().getIdentifier();
 
+        // Determine per-user limits on this connection group
+        Integer connectionGroupMaxConnectionsPerUser = connectionGroup.getModel().getMaxConnectionsPerUser();
+        if (connectionGroupMaxConnectionsPerUser == null)
+            connectionGroupMaxConnectionsPerUser = connectionGroupDefaultMaxConnectionsPerUser;
+
+        // Determine overall limits on this connection group
+        Integer connectionGroupMaxConnections = connectionGroup.getModel().getMaxConnections();
+        if (connectionGroupMaxConnections == null)
+            connectionGroupMaxConnections = connectionGroupDefaultMaxConnections;
+
         // Attempt to aquire connection group according to per-user limits
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
         if (tryAdd(activeGroupSeats, seat,
-                connectionGroupDefaultMaxConnectionsPerUser)) {
+                connectionGroupMaxConnectionsPerUser)) {
 
             // Attempt to aquire connection group according to overall limits
             if (tryAdd(activeGroups, connectionGroup.getIdentifier(),
-                    connectionGroupDefaultMaxConnections))
+                    connectionGroupMaxConnections))
                 return;
 
             // Acquire failed
