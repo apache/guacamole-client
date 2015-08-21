@@ -82,10 +82,9 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     private final Environment environment;
 
     /**
-     * The service class to use to provide GuacamoleSockets for each
-     * connection.
+     * The service to use to provide GuacamoleTunnels for each connection.
      */
-    private final Class<? extends GuacamoleTunnelService> tunnelServiceClass;
+    private final GuacamoleTunnelService tunnelService;
 
     /**
      * Creates a new JDBC authentication provider module that configures the
@@ -95,13 +94,13 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      * @param environment
      *     The environment to use to configure injected classes.
      * 
-     * @param tunnelServiceClass
-     *     The socket service to use to provide sockets for connections.
+     * @param tunnelService
+     *     The tunnel service to use to provide tunnels sockets for connections.
      */
     public JDBCAuthenticationProviderModule(Environment environment,
-            Class<? extends GuacamoleTunnelService> tunnelServiceClass) {
+            GuacamoleTunnelService tunnelService) {
         this.environment = environment;
-        this.tunnelServiceClass = tunnelServiceClass;
+        this.tunnelService = tunnelService;
     }
 
     @Override
@@ -156,8 +155,8 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(UserPermissionService.class);
         bind(UserService.class);
         
-        // Bind provided socket service
-        bind(GuacamoleTunnelService.class).to(tunnelServiceClass);
+        // Bind provided tunnel service
+        bind(GuacamoleTunnelService.class).toInstance(tunnelService);
         
     }
 
