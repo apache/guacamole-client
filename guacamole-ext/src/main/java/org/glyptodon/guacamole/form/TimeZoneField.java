@@ -40,4 +40,27 @@ public class TimeZoneField extends Field {
         super(name, Field.Type.TIMEZONE);
     }
 
+    /**
+     * Parses the given string into a time zone ID string. As these strings are
+     * equivalent, the only transformation currently performed by this function
+     * is to ensure that a blank time zone string is parsed into null.
+     *
+     * @param timeZone
+     *     The time zone string to parse, which may be null.
+     *
+     * @return
+     *     The ID of the time zone corresponding to the given string, or null
+     *     if the given time zone string was null or blank.
+     */
+    public static String parse(String timeZone) {
+
+        // Return null if no time zone provided
+        if (timeZone == null || timeZone.isEmpty())
+            return null;
+
+        // Otherwise, assume time zone is valid
+        return timeZone;
+
+    }
+
 }
