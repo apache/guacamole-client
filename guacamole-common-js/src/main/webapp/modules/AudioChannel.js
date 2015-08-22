@@ -58,8 +58,10 @@ Guacamole.AudioChannel = function() {
         var now = Guacamole.AudioChannel.getTimestamp();
 
         // If underflow is detected, reschedule new packets relative to now.
-        if (next_packet_time < now)
+        if (next_packet_time < now) {
+            duration += next_packet_time - now;
             next_packet_time = now;
+        }
 
         // Schedule next packet
         packet.play(next_packet_time);
