@@ -51,9 +51,11 @@ public class NumericField extends Field {
      */
     public static String format(Integer i) {
 
+        // Return null if no value provided
         if (i == null)
             return null;
 
+        // Convert to string
         return i.toString();
 
     }
@@ -74,9 +76,11 @@ public class NumericField extends Field {
      */
     public static Integer parse(String str) throws NumberFormatException {
 
+        // Return null if no value provided
         if (str == null || str.isEmpty())
             return null;
 
+        // Parse as integer
         return new Integer(str);
 
     }
