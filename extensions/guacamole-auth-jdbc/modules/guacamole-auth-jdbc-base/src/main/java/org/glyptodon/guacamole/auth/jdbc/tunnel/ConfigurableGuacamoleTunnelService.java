@@ -160,7 +160,7 @@ public class ConfigurableGuacamoleTunnelService
             int count = multiset.count(value);
 
             // Bail out if the maximum has already been reached
-            if (count >= max || max == 0)
+            if (count >= max && max != 0)
                 return false;
 
             // Attempt to add one more value
