@@ -231,7 +231,7 @@ public class ConfigurableGuacamoleTunnelService
 
         // Too many connections by this user
         if (userSpecificFailure)
-            throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
+            throw new GuacamoleClientTooManyException("Cannot connect. Connection already in use by this user.");
 
         // Too many connections, but not necessarily due purely to this user
         else
