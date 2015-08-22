@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,17 +24,25 @@ package org.glyptodon.guacamole.auth.jdbc.connection;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
+import org.glyptodon.guacamole.form.Field;
+import org.glyptodon.guacamole.form.Form;
+import org.glyptodon.guacamole.form.NumericField;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleClientInformation;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the Connection object which is backed by a database
@@ -45,6 +53,40 @@ import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
  */
 public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionModel>
     implements Connection {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ModeledConnection.class);
+
+    /**
+     * The name of the attribute which controls the maximum number of
+     * concurrent connections.
+     */
+    public static final String MAX_CONNECTIONS_NAME = "max-connections";
+
+    /**
+     * The name of the attribute which controls the maximum number of
+     * concurrent connections per user.
+     */
+    public static final String MAX_CONNECTIONS_PER_USER_NAME = "max-connections-per-user";
+
+    /**
+     * All attributes related to restricting user accounts, within a logical
+     * form.
+     */
+    public static final Form CONCURRENCY_LIMITS = new Form("concurrency", Arrays.<Field>asList(
+        new NumericField(MAX_CONNECTIONS_NAME),
+        new NumericField(MAX_CONNECTIONS_PER_USER_NAME)
+    ));
+
+    /**
+     * All possible attributes of connection objects organized as individual,
+     * logical forms.
+     */
+    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
+        CONCURRENCY_LIMITS
+    ));
 
     /**
      * Service for managing connections.
@@ -127,12 +169,35 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
 
     @Override
     public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
+
+        Map<String, String> attributes = new HashMap<String, String>();
+
+        // Set connection limit attribute
+        attributes.put(MAX_CONNECTIONS_NAME, NumericField.format(getModel().getMaxConnections()));
+
+        // Set per-user connection limit attribute
+        attributes.put(MAX_CONNECTIONS_PER_USER_NAME, NumericField.format(getModel().getMaxConnectionsPerUser()));
+
+        return attributes;
     }
 
     @Override
     public void setAttributes(Map<String, String> attributes) {
-        // Drop all attributes - none currently supported
+
+        // Translate connection limit attribute
+        try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }
+        catch (NumberFormatException e) {
+            logger.warn("Not setting maximum connections: {}", e.getMessage());
+            logger.debug("Unable to parse numeric attribute.", e);
+        }
+
+        // Translate per-user connection limit attribute
+        try { getModel().setMaxConnectionsPerUser(NumericField.parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME))); }
+        catch (NumberFormatException e) {
+            logger.warn("Not setting maximum connections per user: {}", e.getMessage());
+            logger.debug("Unable to parse numeric attribute.", e);
+        }
+
     }
 
 }

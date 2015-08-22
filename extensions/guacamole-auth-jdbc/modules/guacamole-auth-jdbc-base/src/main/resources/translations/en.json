@@ -15,6 +15,24 @@
 
     },
 
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximum number of connections:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximum number of connections per user:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Concurrency Limits (Balancing Groups)"
+
+    },
+
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED"            : "Login disabled:",

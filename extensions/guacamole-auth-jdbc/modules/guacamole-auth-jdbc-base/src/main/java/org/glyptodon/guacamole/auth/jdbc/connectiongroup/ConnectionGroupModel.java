@@ -42,7 +42,21 @@ public class ConnectionGroupModel extends GroupedObjectModel {
      * The type of this connection group, such as organizational or balancing.
      */
     private ConnectionGroup.Type type;
-    
+
+    /**
+     * The maximum number of connections that can be established to this
+     * connection group concurrently, zero if no restriction applies, or
+     * null if the default restrictions should be applied.
+     */
+    private Integer maxConnections;
+
+    /**
+     * The maximum number of connections that can be established to this
+     * connection group concurrently by any one user, zero if no restriction
+     * applies, or null if the default restrictions should be applied.
+     */
+    private Integer maxConnectionsPerUser;
+
     /**
      * Creates a new, empty connection group.
      */
@@ -89,6 +103,60 @@ public class ConnectionGroupModel extends GroupedObjectModel {
      */
     public void setType(ConnectionGroup.Type type) {
         this.type = type;
+    }
+
+    /**
+     * Returns the maximum number of connections that can be established to
+     * this connection group concurrently.
+     *
+     * @return
+     *     The maximum number of connections that can be established to this
+     *     connection group concurrently, zero if no restriction applies, or
+     *     null if the default restrictions should be applied.
+     */
+    public Integer getMaxConnections() {
+        return maxConnections;
+    }
+
+    /**
+     * Sets the maximum number of connections that can be established to this
+     * connection group concurrently.
+     *
+     * @param maxConnections
+     *     The maximum number of connections that can be established to this
+     *     connection group concurrently, zero if no restriction applies, or
+     *     null if the default restrictions should be applied.
+     */
+    public void setMaxConnections(Integer maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
+    /**
+     * Returns the maximum number of connections that can be established to
+     * this connection group concurrently by any one user.
+     *
+     * @return
+     *     The maximum number of connections that can be established to this
+     *     connection group concurrently by any one user, zero if no
+     *     restriction applies, or null if the default restrictions should be
+     *     applied.
+     */
+    public Integer getMaxConnectionsPerUser() {
+        return maxConnectionsPerUser;
+    }
+
+    /**
+     * Sets the maximum number of connections that can be established to this
+     * connection group concurrently by any one user.
+     *
+     * @param maxConnectionsPerUser
+     *     The maximum number of connections that can be established to this
+     *     connection group concurrently by any one user, zero if no
+     *     restriction applies, or null if the default restrictions should be
+     *     applied.
+     */
+    public void setMaxConnectionsPerUser(Integer maxConnectionsPerUser) {
+        this.maxConnectionsPerUser = maxConnectionsPerUser;
     }
 
     @Override

@@ -63,6 +63,10 @@ CREATE TABLE guacamole_connection_group (
   type                  guacamole_connection_group_type
                         NOT NULL DEFAULT 'ORGANIZATIONAL',
 
+  -- Concurrency limits
+  max_connections          integer,
+  max_connections_per_user integer,
+
   PRIMARY KEY (connection_group_id),
 
   CONSTRAINT connection_group_name_parent
@@ -90,6 +94,10 @@ CREATE TABLE guacamole_connection (
   parent_id           integer,
   protocol            varchar(32)  NOT NULL,
   
+  -- Concurrency limits
+  max_connections          integer,
+  max_connections_per_user integer,
+
   PRIMARY KEY (connection_id),
 
   CONSTRAINT connection_name_parent

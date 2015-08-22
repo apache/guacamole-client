@@ -39,4 +39,50 @@ public class NumericField extends Field {
         super(name, Field.Type.NUMERIC);
     }
 
+    /**
+     * Formats the given integer in the format required by a numeric field.
+     *
+     * @param i
+     *     The integer to format, which may be null.
+     *
+     * @return
+     *     A string representation of the given integer, or null if the given
+     *     integer was null.
+     */
+    public static String format(Integer i) {
+
+        // Return null if no value provided
+        if (i == null)
+            return null;
+
+        // Convert to string
+        return i.toString();
+
+    }
+
+    /**
+     * Parses the given string as an integer, where the given string is in the
+     * format required by a numeric field.
+     *
+     * @param str
+     *     The string to parse as an integer, which may be null.
+     *
+     * @return
+     *     The integer representation of the given string, or null if the given
+     *     string was null.
+     *
+     * @throws NumberFormatException
+     *     If the given string is not in a parseable format.
+     */
+    public static Integer parse(String str) throws NumberFormatException {
+
+        // Return null if no value provided
+        if (str == null || str.isEmpty())
+            return null;
+
+        // Parse as integer
+        return new Integer(str);
+
+    }
+
 }
