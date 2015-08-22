@@ -34,7 +34,7 @@ angular.module('form').controller('numberFieldController', ['$scope',
 
     // Update string value in model when typed value is changed
     $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? typedValue.toString() : '');
+        $scope.model = ((typedValue || typedValue === 0) ? typedValue.toString() : '');
     });
 
 }]);
