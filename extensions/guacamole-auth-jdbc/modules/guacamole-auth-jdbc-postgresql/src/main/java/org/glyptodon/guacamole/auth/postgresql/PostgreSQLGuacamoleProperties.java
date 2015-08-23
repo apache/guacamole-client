@@ -123,5 +123,58 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-disallow-duplicate-connections"; }
 
     };
-    
+
+    /**
+     * The maximum number of concurrent connections to allow to any one
+     * connection. Zero denotes unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_MAX_CONNECTIONS =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-default-max-connections"; }
+
+    };
+
+    /**
+     * The maximum number of concurrent connections to allow to any one
+     * connection group. Zero denotes unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-default-max-group-connections"; }
+
+    };
+
+    /**
+     * The maximum number of concurrent connections to allow to any one
+     * connection by an individual user. Zero denotes unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-default-max-connections-per-user"; }
+
+    };
+
+    /**
+     * The maximum number of concurrent connections to allow to any one
+     * connection group by an individual user. Zero denotes
+     * unlimited.
+     */
+    public static final IntegerGuacamoleProperty
+            POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-default-max-group-connections-per-user"; }
+
+    };
+
 }
