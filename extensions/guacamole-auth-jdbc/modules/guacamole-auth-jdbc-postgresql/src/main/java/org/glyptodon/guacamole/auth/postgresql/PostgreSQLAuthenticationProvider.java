@@ -91,11 +91,11 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
 
             // Translate legacy property
             if (disallowSimultaneous) {
-                connectionDefaultMaxConnections = 1;
+                connectionDefaultMaxConnections      = 1;
                 connectionGroupDefaultMaxConnections = 0;
             }
             else {
-                connectionDefaultMaxConnections = 0;
+                connectionDefaultMaxConnections      = 0;
                 connectionGroupDefaultMaxConnections = 0;
             }
 
