@@ -25,17 +25,19 @@ package org.glyptodon.guacamole.auth.jdbc.user;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
- * Service which creates new UserContext instances for valid users based on
- * credentials.
+ * Service which authenticates users based on credentials and provides for
+ * the creation of corresponding, new UserContext objects for authenticated
+ * users.
  *
  * @author Michael Jumper
  */
-public class UserContextService  {
+public class AuthenticationProviderService  {
 
     /**
      * Service for accessing users.
@@ -51,11 +53,44 @@ public class UserContextService  {
 
     /**
      * Authenticates the user having the given credentials, returning a new
-     * UserContext instance only if the credentials are valid. If the
+     * AuthenticatedUser instance only if the credentials are valid. If the
      * credentials are invalid or expired, an appropriate GuacamoleException
      * will be thrown.
      *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     authenticated.
+     *
      * @param credentials
+     *     The credentials to use to produce the AuthenticatedUser.
+     *
+     * @return
+     *     A new AuthenticatedUser instance for the user identified by the
+     *     given credentials.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs during authentication, or if the given
+     *     credentials are invalid or expired.
+     */
+    public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
+            Credentials credentials) throws GuacamoleException {
+
+        // Authenticate user
+        AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);
+        if (user != null)
+            return user;
+
+        // Otherwise, unauthorized
+        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
+
+    }
+
+    /**
+     * Returning a new UserContext instance for the given already-authenticated
+     * user. A new placeholder account will be created for any user that does
+     * not already exist within the database.
+     *
+     * @param authenticatedUser
      *     The credentials to use to produce the UserContext.
      *
      * @return
@@ -66,23 +101,18 @@ public class UserContextService  {
      *     If an error occurs during authentication, or if the given
      *     credentials are invalid or expired.
      */
-    public org.glyptodon.guacamole.net.auth.UserContext
-        getUserContext(Credentials credentials)
+    public UserContext getUserContext(org.glyptodon.guacamole.net.auth.AuthenticatedUser authenticatedUser)
                 throws GuacamoleException {
 
-        // Authenticate user
-        ModeledUser user = userService.retrieveUser(credentials);
-        if (user != null) {
+        // Retrieve user account for already-authenticated user
+        ModeledUser user = userService.retrieveUser(authenticatedUser);
+        if (user == null)
+            return null;
 
-            // Upon successful authentication, return new user context
-            UserContext context = userContextProvider.get();
-            context.init(user.getCurrentUser());
-            return context;
-
-        }
-
-        // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
+        // Link to user context
+        UserContext context = userContextProvider.get();
+        context.init(user.getCurrentUser());
+        return context;
 
     }
 

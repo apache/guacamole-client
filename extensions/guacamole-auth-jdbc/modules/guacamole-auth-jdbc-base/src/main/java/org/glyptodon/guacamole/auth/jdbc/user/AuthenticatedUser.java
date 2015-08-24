@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.auth.jdbc.user;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 
 /**
@@ -32,7 +33,7 @@ import org.glyptodon.guacamole.net.auth.Credentials;
  *
  * @author Michael Jumper 
  */
-public class AuthenticatedUser {
+public class AuthenticatedUser implements org.glyptodon.guacamole.net.auth.AuthenticatedUser {
 
     /**
      * The user that authenticated.
@@ -43,6 +44,11 @@ public class AuthenticatedUser {
      * The credentials given when this user authenticated.
      */
     private final Credentials credentials;
+
+    /**
+     * The AuthenticationProvider that authenticated this user.
+     */
+    private final AuthenticationProvider authenticationProvider;
 
     /**
      * The host from which this user authenticated.
@@ -106,13 +112,18 @@ public class AuthenticatedUser {
      * Creates a new AuthenticatedUser associating the given user with their
      * corresponding credentials.
      *
+     * @param authenticationProvider
+     *     The AuthenticationProvider that has authenticated the given user.
+     *
      * @param user
      *     The user this object should represent.
      *
      * @param credentials 
      *     The credentials given by the user when they authenticated.
      */
-    public AuthenticatedUser(ModeledUser user, Credentials credentials) {
+    public AuthenticatedUser(AuthenticationProvider authenticationProvider,
+            ModeledUser user, Credentials credentials) {
+        this.authenticationProvider = authenticationProvider;
         this.user = user;
         this.credentials = credentials;
         this.remoteHost = getRemoteHost(credentials);
@@ -134,6 +145,7 @@ public class AuthenticatedUser {
      * @return 
      *     The credentials given during authentication by this user.
      */
+    @Override
     public Credentials getCredentials() {
         return credentials;
     }
@@ -146,6 +158,21 @@ public class AuthenticatedUser {
      */
     public String getRemoteHost() {
         return remoteHost;
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authenticationProvider;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return user.getIdentifier();
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        user.setIdentifier(identifier);
     }
 
 }
