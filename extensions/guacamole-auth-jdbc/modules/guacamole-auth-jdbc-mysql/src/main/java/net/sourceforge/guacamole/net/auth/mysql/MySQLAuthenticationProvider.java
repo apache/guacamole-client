@@ -34,6 +34,8 @@ import org.glyptodon.guacamole.auth.jdbc.tunnel.ConfigurableGuacamoleTunnelServi
 import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides a MySQL based implementation of the AuthenticationProvider
@@ -43,6 +45,11 @@ import org.glyptodon.guacamole.environment.LocalEnvironment;
  * @author Michael Jumper
  */
 public class MySQLAuthenticationProvider implements AuthenticationProvider {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(MySQLAuthenticationProvider.class);
 
     /**
      * Injector which will manage the object graph of this authentication
@@ -75,28 +82,75 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
         int connectionGroupDefaultMaxConnectionsPerUser;
 
         // Read legacy concurrency-related properties
-        boolean disallowSimultaneous = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS, false);
-        boolean disallowDuplicate    = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS, true);
-
-        // Legacy properties to not affect max connections per group
-        connectionGroupDefaultMaxConnections = 0;
+        Boolean disallowSimultaneous = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS);
+        Boolean disallowDuplicate    = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS);
 
         // Legacy "simultaneous" property dictates only the maximum number of
         // connections per connection
-        if (disallowSimultaneous)
-            connectionDefaultMaxConnections = 1;
-        else
-            connectionDefaultMaxConnections = 0;
+        if (disallowSimultaneous != null) {
+
+            // Translate legacy property
+            if (disallowSimultaneous) {
+                connectionDefaultMaxConnections      = 1;
+                connectionGroupDefaultMaxConnections = 0;
+            }
+            else {
+                connectionDefaultMaxConnections      = 0;
+                connectionGroupDefaultMaxConnections = 0;
+            }
+
+            // Warn of deprecation
+            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(),
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS.getName(),
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
+
+            // Inform of new equivalent
+            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(), disallowSimultaneous,
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS.getName(),           connectionDefaultMaxConnections,
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName(),     connectionGroupDefaultMaxConnections);
+
+        }
+
+        // If legacy property is not specified, use new property
+        else {
+            connectionDefaultMaxConnections      = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS, 0);
+            connectionGroupDefaultMaxConnections = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS, 0);
+        }
 
         // Legacy "duplicate" property dictates whether connections and groups
         // may be used concurrently only by different users
-        if (disallowDuplicate) {
-            connectionDefaultMaxConnectionsPerUser      = 1;
-            connectionGroupDefaultMaxConnectionsPerUser = 1;
+        if (disallowDuplicate != null) {
+
+            // Translate legacy property
+            if (disallowDuplicate) {
+                connectionDefaultMaxConnectionsPerUser      = 1;
+                connectionGroupDefaultMaxConnectionsPerUser = 1;
+            }
+            else {
+                connectionDefaultMaxConnectionsPerUser      = 0;
+                connectionGroupDefaultMaxConnectionsPerUser = 0;
+            }
+
+            // Warn of deprecation
+            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
+
+            // Inform of new equivalent
+            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
+                    MySQLGuacamoleProperties.MYSQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),         disallowDuplicate,
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),       connectionDefaultMaxConnectionsPerUser,
+                    MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), connectionGroupDefaultMaxConnectionsPerUser);
+
         }
+
+        // If legacy property is not specified, use new property
         else {
-            connectionDefaultMaxConnectionsPerUser      = 0;
-            connectionGroupDefaultMaxConnectionsPerUser = 0;
+            connectionDefaultMaxConnectionsPerUser      = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_CONNECTIONS_PER_USER, 1);
+            connectionGroupDefaultMaxConnectionsPerUser = environment.getProperty(MySQLGuacamoleProperties.MYSQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER, 1);
         }
 
         // Return service configured for specified default limits
