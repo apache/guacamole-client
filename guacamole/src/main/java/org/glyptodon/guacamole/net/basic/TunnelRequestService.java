@@ -244,13 +244,13 @@ public class TunnelRequestService {
                     // Connection identifiers
                     case CONNECTION:
                         logger.info("User \"{}\" disconnected from connection \"{}\". Duration: {} milliseconds",
-                                session.getUserContext().self().getIdentifier(), id, duration);
+                                session.getAuthenticatedUser().getIdentifier(), id, duration);
                         break;
 
                     // Connection group identifiers
                     case CONNECTION_GROUP:
                         logger.info("User \"{}\" disconnected from connection group \"{}\". Duration: {} milliseconds",
-                                session.getUserContext().self().getIdentifier(), id, duration);
+                                session.getAuthenticatedUser().getIdentifier(), id, duration);
                         break;
 
                     // Type is guaranteed to be one of the above

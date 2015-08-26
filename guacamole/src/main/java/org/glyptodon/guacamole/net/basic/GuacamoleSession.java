@@ -22,6 +22,8 @@
 
 package org.glyptodon.guacamole.net.basic;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -51,9 +53,10 @@ public class GuacamoleSession {
     private AuthenticatedUser authenticatedUser;
     
     /**
-     * The user context associated with this session.
+     * All UserContexts associated with this session. Each
+     * AuthenticationProvider may provide its own UserContext.
      */
-    private UserContext userContext;
+    private List<UserContext> userContexts;
 
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
@@ -66,7 +69,8 @@ public class GuacamoleSession {
     private long lastAccessedTime;
     
     /**
-     * Creates a new Guacamole session associated with the given user context.
+     * Creates a new Guacamole session associated with the given
+     * AuthenticatedUser and UserContexts.
      *
      * @param environment
      *     The environment of the Guacamole server associated with this new
@@ -75,18 +79,19 @@ public class GuacamoleSession {
      * @param authenticatedUser
      *     The authenticated user to associate this session with.
      *
-     * @param userContext
-     *     The user context to associate this session with.
+     * @param userContexts
+     *     The List of UserContexts to associate with this session.
      *
      * @throws GuacamoleException
      *     If an error prevents the session from being created.
      */
     public GuacamoleSession(Environment environment,
-            AuthenticatedUser authenticatedUser, UserContext userContext)
+            AuthenticatedUser authenticatedUser,
+            List<UserContext> userContexts)
             throws GuacamoleException {
         this.lastAccessedTime = System.currentTimeMillis();
         this.authenticatedUser = authenticatedUser;
-        this.userContext = userContext;
+        this.userContexts = userContexts;
     }
 
     /**
@@ -116,18 +121,56 @@ public class GuacamoleSession {
      * @return The UserContext associated with this session.
      */
     public UserContext getUserContext() {
-        return userContext;
+
+        // Warn of deprecation
+        logger.debug(
+            "\n****************************************************************"
+          + "\n"
+          + "\n       !!!!  PLEASE DO NOT USE getUserContext() !!!!"
+          + "\n"
+          + "\n getUserContext() has been replaced by getUserContexts(), which"
+          + "\n properly handles multiple authentication providers. All use of"
+          + "\n the old getUserContext() must be removed before GUAC-586 can"
+          + "\n be considered complete."
+          + "\n"
+          + "\n****************************************************************"
+        );
+
+        // Return the UserContext associated with the AuthenticationProvider
+        // that authenticated the current user.
+        String authProviderIdentifier = authenticatedUser.getAuthenticationProvider().getIdentifier();
+        for (UserContext userContext : userContexts) {
+            if (userContext.getAuthenticationProvider().getIdentifier().equals(authProviderIdentifier))
+                return userContext;
+        }
+
+        // If not found, return null
+        return null;
+
     }
 
     /**
-     * Replaces the user context associated with this session with the given
-     * user context.
+     * Returns a list of all UserContexts associated with this session. Each
+     * AuthenticationProvider currently loaded by Guacamole may provide its own
+     * UserContext for any successfully-authenticated user.
      *
-     * @param userContext
-     *     The user context to associate with this session.
+     * @return
+     *     An unmodifiable list of all UserContexts associated with this
+     *     session.
      */
-    public void setUserContext(UserContext userContext) {
-        this.userContext = userContext;
+    public List<UserContext> getUserContexts() {
+        return Collections.unmodifiableList(userContexts);
+    }
+
+    /**
+     * Replaces all UserContexts associated with this session with the given
+     * List of UserContexts.
+     *
+     * @param userContexts
+     *     The List of UserContexts to associate with this session.
+     */
+    public void setUserContexts(List<UserContext> userContexts) {
+        this.userContexts = userContexts;
     }
     
     /**

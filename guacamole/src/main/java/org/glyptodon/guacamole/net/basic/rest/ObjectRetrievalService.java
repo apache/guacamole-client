@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -29,6 +30,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 
 /**
@@ -38,6 +40,39 @@ import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup
  * automatically.
  */
 public class ObjectRetrievalService {
+
+    /**
+     * Retrieves a single UserContext from the given GuacamoleSession, which
+     * may contain multiple UserContexts.
+     *
+     * @param session
+     *     The GuacamoleSession to retrieve the UserContext from.
+     *
+     * @param id
+     *     The numeric ID of the UserContext to retrieve. This ID is the index
+     *     of the UserContext within the overall list of UserContexts
+     *     associated with the user's session.
+     *
+     * @return
+     *     The user having the given identifier.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the user, or if the
+     *     user does not exist.
+     */
+    public UserContext retrieveUserContext(GuacamoleSession session,
+            int id) throws GuacamoleException {
+
+        // Get list of UserContexts
+        List<UserContext> userContexts = session.getUserContexts();
+
+        // Verify context exists
+        if (id < 0 || id >= userContexts.size())
+            throw new GuacamoleResourceNotFoundException("No such user context: \"" + id + "\"");
+
+        return userContexts.get(id);
+
+    }
 
     /**
      * Retrieves a single user from the given user context.

@@ -41,7 +41,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
@@ -121,12 +120,6 @@ public class UserRESTService {
      */
     @Inject
     private ObjectRetrievalService retrievalService;
-    
-    /**
-     * The authentication provider used to authenticating a user.
-     */
-    @Inject
-    private AuthenticationProvider authProvider;
     
     /**
      * Gets a list of users in the system, filtering the returned list by the
@@ -340,7 +333,7 @@ public class UserRESTService {
         
         // Verify that the old password was correct
         try {
-            if (authProvider.authenticateUser(credentials) == null) {
+            if (userContext.getAuthenticationProvider().authenticateUser(credentials) == null) {
                 throw new APIException(APIError.Type.PERMISSION_DENIED,
                         "Permission denied.");
             }

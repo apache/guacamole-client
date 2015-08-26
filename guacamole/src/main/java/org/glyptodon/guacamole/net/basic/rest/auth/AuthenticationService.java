@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.UserContext;
@@ -77,5 +78,24 @@ public class AuthenticationService {
     public UserContext getUserContext(String authToken)  throws GuacamoleException {
         return getGuacamoleSession(authToken).getUserContext();
     }
-    
+
+    /**
+     * Returns all UserContexts associated with a given auth token, if the auth
+     * token represents a currently logged in user. Throws an unauthorized
+     * error otherwise.
+     *
+     * @param authToken
+     *     The auth token to check against the map of logged in users.
+     *
+     * @return
+     *     A List of all UserContexts associated with the provided auth token.
+     *
+     * @throws GuacamoleException
+     *     If the auth token does not correspond to any logged in user.
+     */
+    public List<UserContext> getUserContexts(String authToken)
+            throws GuacamoleException {
+        return getGuacamoleSession(authToken).getUserContexts();
+    }
+
 }

@@ -24,6 +24,8 @@ package org.glyptodon.guacamole.net.basic.rest.auth;
 
 import com.google.inject.Inject;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -68,10 +70,11 @@ public class TokenRESTService {
     private Environment environment;
     
     /**
-     * The authentication provider used to authenticate this user.
+     * All configured authentication providers which can be used to
+     * authenticate users or retrieve data associated with authenticated users.
      */
     @Inject
-    private AuthenticationProvider authProvider;
+    private List<AuthenticationProvider> authProviders;
     
     /**
      * The map of auth tokens to sessions for the REST endpoints.
@@ -224,23 +227,31 @@ public class TokenRESTService {
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
 
-        AuthenticatedUser authenticatedUser;
+        AuthenticatedUser authenticatedUser = null;
         try {
 
             // Re-authenticate user if session exists
-            if (existingSession != null)
-                authenticatedUser = authProvider.updateAuthenticatedUser(existingSession.getAuthenticatedUser(), credentials);
+            if (existingSession != null) {
+                authenticatedUser = existingSession.getAuthenticatedUser();
+                authenticatedUser = authenticatedUser.getAuthenticationProvider().updateAuthenticatedUser(authenticatedUser, credentials);
+            }
 
-            /// Otherwise, authenticate as a new user
+            // Otherwise, attempt authentication as a new user against each
+            // AuthenticationProvider, in deterministic order
             else {
+                for (AuthenticationProvider authProvider : authProviders) {
 
-                authenticatedUser = authProvider.authenticateUser(credentials);
+                    // Attempt authentication
+                    authenticatedUser = authProvider.authenticateUser(credentials);
 
-                // Log successful authentication
-                if (authenticatedUser != null && logger.isInfoEnabled())
-                    logger.info("User \"{}\" successfully authenticated from {}.",
-                            authenticatedUser.getIdentifier(), getLoggableAddress(request));
+                    // Stop after successful authentication
+                    if (authenticatedUser != null && logger.isInfoEnabled()) {
+                        logger.info("User \"{}\" successfully authenticated from {}.",
+                                authenticatedUser.getIdentifier(), getLoggableAddress(request));
+                        break;
+                    }
 
+                }
             }
 
             // Request standard username/password if no user was produced
@@ -266,30 +277,35 @@ public class TokenRESTService {
             throw e;
         }
 
-        // Generate or update user context
-        UserContext userContext;
-        if (existingSession != null)
-            userContext = authProvider.updateUserContext(existingSession.getUserContext(), authenticatedUser);
-        else
-            userContext = authProvider.getUserContext(authenticatedUser);
+        // Get UserContexts from each available AuthenticationProvider
+        List<UserContext> userContexts = new ArrayList<UserContext>(authProviders.size());
+        for (AuthenticationProvider authProvider : authProviders) {
 
-        // STUB: Request standard username/password if no user context was produced
-        if (userContext == null)
-            throw new GuacamoleInvalidCredentialsException("Permission Denied.",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            // Generate or update user context
+            UserContext userContext;
+            if (existingSession != null)
+                userContext = authProvider.updateUserContext(existingSession.getUserContext(), authenticatedUser);
+            else
+                userContext = authProvider.getUserContext(authenticatedUser);
+
+            // Add to available data, if successful
+            if (userContext != null)
+                userContexts.add(userContext);
+
+        }
 
         // Update existing session, if it exists
         String authToken;
         if (existingSession != null) {
             authToken = token;
             existingSession.setAuthenticatedUser(authenticatedUser);
-            existingSession.setUserContext(userContext);
+            existingSession.setUserContexts(userContexts);
         }
 
         // If no existing session, generate a new token/session pair
         else {
             authToken = authTokenGenerator.getToken();
-            tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContext));
+            tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContexts));
         }
         
         logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
