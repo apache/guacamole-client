@@ -63,6 +63,7 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
 import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
 
@@ -87,9 +88,19 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     private final GuacamoleTunnelService tunnelService;
 
     /**
+     * The AuthenticationProvider which is using this module to configure
+     * injection.
+     */
+    private final AuthenticationProvider authProvider;
+
+    /**
      * Creates a new JDBC authentication provider module that configures the
      * various injected base classes using the given environment, and provides
      * connections using the given socket service.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider which is using this module to configure
+     *     injection.
      *
      * @param environment
      *     The environment to use to configure injected classes.
@@ -97,8 +108,10 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      * @param tunnelService
      *     The tunnel service to use to provide tunnels sockets for connections.
      */
-    public JDBCAuthenticationProviderModule(Environment environment,
+    public JDBCAuthenticationProviderModule(AuthenticationProvider authProvider,
+            Environment environment,
             GuacamoleTunnelService tunnelService) {
+        this.authProvider = authProvider;
         this.environment = environment;
         this.tunnelService = tunnelService;
     }
@@ -126,6 +139,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
         bind(ActiveConnectionPermissionSet.class);
+        bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);

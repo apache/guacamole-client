@@ -185,7 +185,8 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
             new PostgreSQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(environment, getTunnelService(environment))
+            new JDBCAuthenticationProviderModule(this, environment,
+                    getTunnelService(environment))
 
         );
 

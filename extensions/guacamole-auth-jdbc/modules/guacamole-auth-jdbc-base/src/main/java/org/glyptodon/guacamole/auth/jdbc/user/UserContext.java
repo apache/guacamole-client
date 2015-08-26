@@ -36,6 +36,7 @@ import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -50,6 +51,12 @@ import org.glyptodon.guacamole.net.auth.User;
  */
 public class UserContext extends RestrictedObject
     implements org.glyptodon.guacamole.net.auth.UserContext {
+
+    /**
+     * The AuthenticationProvider that created this UserContext.
+     */
+    @Inject
+    private AuthenticationProvider authProvider;
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -101,6 +108,11 @@ public class UserContext extends RestrictedObject
     @Override
     public User self() {
         return getCurrentUser().getUser();
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authProvider;
     }
 
     @Override

@@ -185,7 +185,8 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
             new MySQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(environment, getTunnelService(environment))
+            new JDBCAuthenticationProviderModule(this, environment,
+                    getTunnelService(environment))
 
         );
 
