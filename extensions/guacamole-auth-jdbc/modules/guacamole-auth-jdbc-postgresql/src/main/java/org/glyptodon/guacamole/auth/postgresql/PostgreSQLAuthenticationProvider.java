@@ -193,6 +193,11 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
     }
 
     @Override
+    public String getIdentifier() {
+        return "postgresql";
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 

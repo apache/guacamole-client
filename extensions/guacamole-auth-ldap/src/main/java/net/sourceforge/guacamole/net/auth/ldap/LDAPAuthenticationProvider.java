@@ -74,6 +74,11 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
         environment = new LocalEnvironment();
     }
 
+    @Override
+    public String getIdentifier() {
+        return "ldap";
+    }
+
     // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
     private static String escapeLDAPSearchFilter(String filter) {
         StringBuilder sb = new StringBuilder();

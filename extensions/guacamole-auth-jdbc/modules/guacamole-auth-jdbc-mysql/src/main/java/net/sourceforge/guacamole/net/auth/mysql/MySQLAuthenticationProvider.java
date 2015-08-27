@@ -193,6 +193,11 @@ public class MySQLAuthenticationProvider implements AuthenticationProvider {
     }
 
     @Override
+    public String getIdentifier() {
+        return "mysql";
+    }
+
+    @Override
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 

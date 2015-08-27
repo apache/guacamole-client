@@ -34,6 +34,18 @@ import org.glyptodon.guacamole.GuacamoleException;
 public interface AuthenticationProvider {
 
     /**
+     * Returns the identifier which uniquely and consistently identifies this
+     * AuthenticationProvider implementation. This identifier may not be null
+     * and must be unique across all AuthenticationProviders loaded by the
+     * Guacamole web application.
+     *
+     * @return
+     *     The unique identifier assigned to this AuthenticationProvider, which
+     *     may not be null.
+     */
+    String getIdentifier();
+
+    /**
      * Returns an AuthenticatedUser representing the user authenticated by the
      * given credentials, if any.
      *

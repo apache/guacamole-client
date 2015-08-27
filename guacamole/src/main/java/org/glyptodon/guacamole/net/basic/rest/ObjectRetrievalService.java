@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,29 +48,33 @@ public class ObjectRetrievalService {
      * @param session
      *     The GuacamoleSession to retrieve the UserContext from.
      *
-     * @param id
-     *     The numeric ID of the UserContext to retrieve. This ID is the index
-     *     of the UserContext within the overall list of UserContexts
-     *     associated with the user's session.
+     * @param identifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext being retrieved. Only one UserContext per
+     *     AuthenticationProvider can exist.
      *
      * @return
-     *     The user having the given identifier.
+     *     The UserContext that was created by the AuthenticationProvider
+     *     having the given identifier.
      *
      * @throws GuacamoleException
-     *     If an error occurs while retrieving the user, or if the
-     *     user does not exist.
+     *     If an error occurs while retrieving the UserContext, or if the
+     *     UserContext does not exist.
      */
     public UserContext retrieveUserContext(GuacamoleSession session,
-            int id) throws GuacamoleException {
+            String identifier) throws GuacamoleException {
 
         // Get list of UserContexts
         List<UserContext> userContexts = session.getUserContexts();
 
-        // Verify context exists
-        if (id < 0 || id >= userContexts.size())
-            throw new GuacamoleResourceNotFoundException("No such user context: \"" + id + "\"");
+        // Locate and return the UserContext associated with the
+        // AuthenticationProvider having the given identifier, if any
+        for (UserContext userContext : userContexts) {
+            if (userContext.getAuthenticationProvider().getIdentifier().equals(identifier))
+                return userContext;
+        }
 
-        return userContexts.get(id);
+        throw new GuacamoleResourceNotFoundException("Session not associated with authentication provider \"" + identifier + "\".");
 
     }
 

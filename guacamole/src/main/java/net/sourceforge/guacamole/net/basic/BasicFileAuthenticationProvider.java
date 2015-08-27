@@ -105,6 +105,11 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
         environment = new LocalEnvironment();
     }
 
+    @Override
+    public String getIdentifier() {
+        return "default";
+    }
+
     /**
      * Returns a UserMapping containing all authorization data given within
      * the XML file specified by the "basic-user-mapping" property in
