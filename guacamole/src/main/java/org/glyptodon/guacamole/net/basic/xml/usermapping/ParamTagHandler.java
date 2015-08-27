@@ -20,7 +20,7 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.xml.user_mapping;
+package org.glyptodon.guacamole.net.basic.xml.usermapping;
 
 import org.glyptodon.guacamole.xml.TagHandler;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;

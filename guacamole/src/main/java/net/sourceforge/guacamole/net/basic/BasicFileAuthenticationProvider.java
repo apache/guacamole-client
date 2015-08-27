@@ -36,7 +36,7 @@ import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
 import org.glyptodon.guacamole.net.basic.auth.Authorization;
 import org.glyptodon.guacamole.net.basic.auth.UserMapping;
 import org.glyptodon.guacamole.xml.DocumentHandler;
-import org.glyptodon.guacamole.net.basic.xml.user_mapping.UserMappingTagHandler;
+import org.glyptodon.guacamole.net.basic.xml.usermapping.UserMappingTagHandler;
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
@@ -58,17 +58,19 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(BasicFileAuthenticationProvider.class);
 
     /**
-     * The time the user mapping file was last modified.
+     * The time the user mapping file was last modified. If the file has never
+     * been read, and thus no modification time exists, this will be
+     * Long.MIN_VALUE.
      */
-    private long mod_time;
+    private long lastModified = Long.MIN_VALUE;
 
     /**
      * The parsed UserMapping read when the user mapping file was last parsed.
      */
-    private UserMapping user_mapping;
+    private UserMapping cachedUserMapping;
 
     /**
      * Guacamole server environment.
@@ -109,24 +111,37 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
      * guacamole.properties. If the XML file has been modified or has not yet
      * been read, this function may reread the file.
      *
-     * @return A UserMapping containing all authorization data within the
-     *         user mapping XML file.
-     * @throws GuacamoleException If the user mapping property is missing or
-     *                            an error occurs while parsing the XML file.
+     * @return
+     *     A UserMapping containing all authorization data within the user
+     *     mapping XML file, or null if the file cannot be found/parsed.
      */
-    private UserMapping getUserMapping() throws GuacamoleException {
+    private UserMapping getUserMapping() {
 
         // Get user mapping file, defaulting to GUACAMOLE_HOME/user-mapping.xml
-        File user_mapping_file = environment.getProperty(BASIC_USER_MAPPING);
-        if (user_mapping_file == null)
-            user_mapping_file = new File(environment.getGuacamoleHome(), DEFAULT_USER_MAPPING);
+        File userMappingFile;
+        try {
+            userMappingFile = environment.getProperty(BASIC_USER_MAPPING);
+            if (userMappingFile == null)
+                userMappingFile = new File(environment.getGuacamoleHome(), DEFAULT_USER_MAPPING);
+        }
 
-        // If user_mapping not yet read, or user_mapping has been modified, reread
-        if (user_mapping == null ||
-                (user_mapping_file.exists()
-                 && mod_time < user_mapping_file.lastModified())) {
+        // Abort if property cannot be parsed
+        catch (GuacamoleException e) {
+            logger.warn("Unable to read user mapping filename from properties: {}", e.getMessage());
+            logger.debug("Error parsing user mapping property.", e);
+            return null;
+        }
 
-            logger.debug("Reading user mapping file: \"{}\"", user_mapping_file);
+        // Abort if user mapping does not exist
+        if (!userMappingFile.exists()) {
+            logger.debug("User mapping file \"{}\" does not exist and will not be read.", userMappingFile);
+            return null;
+        }
+
+        // Refresh user mapping if file has changed
+        if (lastModified < userMappingFile.lastModified()) {
+
+            logger.debug("Reading user mapping file: \"{}\"", userMappingFile);
 
             // Parse document
             try {
@@ -144,26 +159,34 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
                 parser.setContentHandler(contentHandler);
 
                 // Read and parse file
-                InputStream input = new BufferedInputStream(new FileInputStream(user_mapping_file));
+                InputStream input = new BufferedInputStream(new FileInputStream(userMappingFile));
                 parser.parse(new InputSource(input));
                 input.close();
 
                 // Store mod time and user mapping
-                mod_time = user_mapping_file.lastModified();
-                user_mapping = userMappingHandler.asUserMapping();
+                lastModified = userMappingFile.lastModified();
+                cachedUserMapping = userMappingHandler.asUserMapping();
 
             }
+
+            // If the file is unreadable, return no mapping
             catch (IOException e) {
-                throw new GuacamoleException("Error reading basic user mapping file.", e);
+                logger.warn("Unable to read user mapping file \"{}\": {}", userMappingFile, e.getMessage());
+                logger.debug("Error reading user mapping file.", e);
+                return null;
             }
+
+            // If the file cannot be parsed, return no mapping
             catch (SAXException e) {
-                throw new GuacamoleException("Error parsing basic user mapping XML.", e);
+                logger.warn("User mapping file \"{}\" is not valid: {}", userMappingFile, e.getMessage());
+                logger.debug("Error parsing user mapping file.", e);
+                return null;
             }
 
         }
 
         // Return (possibly cached) user mapping
-        return user_mapping;
+        return cachedUserMapping;
 
     }
 
@@ -171,6 +194,11 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
     public Map<String, GuacamoleConfiguration>
             getAuthorizedConfigurations(Credentials credentials)
             throws GuacamoleException {
+
+        // Abort authorization if no user mapping exists
+        UserMapping userMapping = getUserMapping();
+        if (userMapping == null)
+            return null;
 
         // Validate and return info for given user and pass
         Authorization auth = getUserMapping().getAuthorization(credentials.getUsername());
