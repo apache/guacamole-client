@@ -41,6 +41,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
@@ -51,6 +52,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
@@ -68,8 +70,9 @@ import org.slf4j.LoggerFactory;
  * A REST Service for handling user CRUD operations.
  * 
  * @author James Muehlner
+ * @author Michael Jumper
  */
-@Path("/users")
+@Path("/data/{dataSource}/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserRESTService {
@@ -120,42 +123,44 @@ public class UserRESTService {
      */
     @Inject
     private ObjectRetrievalService retrievalService;
-    
+
     /**
-     * Gets a list of users in the system, filtering the returned list by the
-     * given permission, if specified.
-     * 
+     * Gets a list of users in the given data source (UserContext), filtering
+     * the returned list by the given permission, if specified.
+     *
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be created.
+     *
      * @param permissions
      *     The set of permissions to filter with. A user must have one or more
-     *     of these permissions for a user to appear in the result. 
+     *     of these permissions for a user to appear in the result.
      *     If null, no filtering will be performed.
-     * 
+     *
      * @return
      *     A list of all visible users. If a permission was specified, this
      *     list will contain only those users for whom the current user has
      *     that permission.
-     * 
+     *
      * @throws GuacamoleException
      *     If an error is encountered while retrieving users.
      */
     @GET
     @AuthProviderRESTExposure
     public List<APIUser> getUsers(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @QueryParam("permission") List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        User self = userContext.self();
-        
-        // Do not filter on permissions if no permissions are specified
-        if (permissions != null && permissions.isEmpty())
-            permissions = null;
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // An admin user has access to any user
+        User self = userContext.self();
         SystemPermissionSet systemPermissions = self.getSystemPermissions();
         boolean isAdmin = systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER);
 
@@ -174,7 +179,6 @@ public class UserRESTService {
         for (User user : userDirectory.getAll(userIdentifiers))
             apiUsers.add(new APIUser(user));
 
-        // Return the converted user list
         return apiUsers;
 
     }
@@ -185,6 +189,10 @@ public class UserRESTService {
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be created.
      *
      * @param username
      *     The username of the user to retrieve.
@@ -198,34 +206,49 @@ public class UserRESTService {
     @GET
     @Path("/{username}")
     @AuthProviderRESTExposure
-    public APIUser getUser(@QueryParam("token") String authToken, @PathParam("username") String username) 
+    public APIUser getUser(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("username") String username)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
         // Retrieve the requested user
-        User user = retrievalService.retrieveUser(userContext, username);
+        User user = retrievalService.retrieveUser(session, authProviderIdentifier, username);
         return new APIUser(user);
 
     }
     
     /**
      * Creates a new user and returns the username.
-     * @param authToken The authentication token that is used to authenticate
-     *                  the user performing the operation.
-     * @param user The new user to create.
-     * @throws GuacamoleException If a problem is encountered while creating the user.
-     * 
-     * @return The username of the newly created user.
+     *
+     * @param authToken
+     *     The authentication token that is used to authenticate the user
+     *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be created.
+     *
+     * @param user
+     *     The new user to create.
+     *
+     * @throws GuacamoleException
+     *     If a problem is encountered while creating the user.
+     *
+     * @return
+     *     The username of the newly created user.
      */
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
-    public String createUser(@QueryParam("token") String authToken, APIUser user) 
+    public String createUser(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier, APIUser user)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+
         // Get the directory
         Directory<User> userDirectory = userContext.getUserDirectory();
         
@@ -247,6 +270,10 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be found.
+     *
      * @param username
      *     The username of the user to update.
      *
@@ -260,11 +287,13 @@ public class UserRESTService {
     @Path("/{username}")
     @AuthProviderRESTExposure
     public void updateUser(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username, APIUser user) 
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+
         // Get the directory
         Directory<User> userDirectory = userContext.getUserDirectory();
 
@@ -301,6 +330,10 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be found.
+     *
      * @param username
      *     The username of the user to update.
      *
@@ -318,12 +351,14 @@ public class UserRESTService {
     @Path("/{username}/password")
     @AuthProviderRESTExposure
     public void updatePassword(@QueryParam("token") String authToken,
-            @PathParam("username") String username, 
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("username") String username,
             APIUserPasswordUpdate userPasswordUpdate,
             @Context HttpServletRequest request) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+
         // Build credentials
         Credentials credentials = new Credentials();
         credentials.setUsername(username);
@@ -333,7 +368,8 @@ public class UserRESTService {
         
         // Verify that the old password was correct
         try {
-            if (userContext.getAuthenticationProvider().authenticateUser(credentials) == null) {
+            AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
+            if (authProvider.authenticateUser(credentials) == null) {
                 throw new APIException(APIError.Type.PERMISSION_DENIED,
                         "Permission denied.");
             }
@@ -366,6 +402,10 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be found.
+     *
      * @param username
      *     The username of the user to delete.
      *
@@ -376,11 +416,13 @@ public class UserRESTService {
     @Path("/{username}")
     @AuthProviderRESTExposure
     public void deleteUser(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username) 
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+
         // Get the directory
         Directory<User> userDirectory = userContext.getUserDirectory();
 
@@ -401,6 +443,10 @@ public class UserRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be found.
+     *
      * @param username
      *     The username of the user to retrieve permissions for.
      *
@@ -414,10 +460,12 @@ public class UserRESTService {
     @Path("/{username}/permissions")
     @AuthProviderRESTExposure
     public APIPermissionSet getPermissions(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username) 
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         User user;
 
@@ -489,7 +537,11 @@ public class UserRESTService {
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
-     * 
+     *
+     * @param authProviderIdentifier
+     *     The index of the UserContext within the overall List of available
+     *     UserContexts in which the requested user is to be found.
+     *
      * @param username
      *     The username of the user to modify the permissions of.
      *
@@ -503,11 +555,13 @@ public class UserRESTService {
     @Path("/{username}/permissions")
     @AuthProviderRESTExposure
     public void patchPermissions(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username,
             List<APIPatch<String>> patches) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
+
         // Get the user
         User user = userContext.getUserDirectory().get(username);
         if (user == null)

@@ -33,7 +33,7 @@
     <!-- List of users this user has access to -->
     <div class="user-list">
         <div ng-repeat="user in userPage" class="user list-item">
-            <a ng-href="#/manage/users/{{user.username}}">
+            <a ng-href="#/manage/{{dataSource}}/users/{{user.username}}">
                 <div class="caption">
                     <div class="icon user"></div>
                     <span class="name">{{user.username}}</span>

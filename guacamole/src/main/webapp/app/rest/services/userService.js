@@ -41,6 +41,11 @@ angular.module('rest').factory('userService', ['$injector',
      * returning a promise that provides an array of @link{User} objects if
      * successful.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the users to be
+     *     retrieved. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {String[]} [permissionTypes]
      *     The set of permissions to filter with. A user must have one or more
      *     of these permissions for a user to appear in the result. 
@@ -51,7 +56,7 @@ angular.module('rest').factory('userService', ['$injector',
      *     A promise which will resolve with an array of @link{User} objects
      *     upon success.
      */
-    service.getUsers = function getUsers(permissionTypes) {
+    service.getUsers = function getUsers(dataSource, permissionTypes) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -66,7 +71,7 @@ angular.module('rest').factory('userService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/users',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users',
             params  : httpParameters
         });
 
@@ -76,14 +81,19 @@ angular.module('rest').factory('userService', ['$injector',
      * Makes a request to the REST API to get the user having the given
      * username, returning a promise that provides the corresponding
      * @link{User} if successful.
-     * 
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to be
+     *     retrieved. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {String} username
      *     The username of the user to retrieve.
      * 
      * @returns {Promise.<User>}
      *     A promise which will resolve with a @link{User} upon success.
      */
-    service.getUser = function getUser(username) {
+    service.getUser = function getUser(dataSource, username) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -94,7 +104,7 @@ angular.module('rest').factory('userService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/users/' + encodeURIComponent(username),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
             params  : httpParameters
         });
 
@@ -104,6 +114,11 @@ angular.module('rest').factory('userService', ['$injector',
      * Makes a request to the REST API to delete a user, returning a promise
      * that can be used for processing the results of the call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to be
+     *     deleted. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {User} user
      *     The user to delete.
      *                          
@@ -111,7 +126,7 @@ angular.module('rest').factory('userService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteUser = function deleteUser(user) {
+    service.deleteUser = function deleteUser(dataSource, user) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -121,7 +136,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Delete user
         return $http({
             method  : 'DELETE',
-            url     : 'api/users/' + encodeURIComponent(user.username),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
             params  : httpParameters
         })
 
@@ -137,6 +152,11 @@ angular.module('rest').factory('userService', ['$injector',
      * Makes a request to the REST API to create a user, returning a promise
      * that can be used for processing the results of the call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source in which the user should be
+     *     created. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {User} user
      *     The user to create.
      *                          
@@ -144,7 +164,7 @@ angular.module('rest').factory('userService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     create operation is successful.
      */
-    service.createUser = function createUser(user) {
+    service.createUser = function createUser(dataSource, user) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -154,7 +174,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Create user
         return $http({
             method  : 'POST',
-            url     : 'api/users',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users',
             params  : httpParameters,
             data    : user
         })
@@ -170,6 +190,11 @@ angular.module('rest').factory('userService', ['$injector',
      * Makes a request to the REST API to save a user, returning a promise that
      * can be used for processing the results of the call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to be
+     *     updated. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {User} user
      *     The user to update.
      *                          
@@ -177,7 +202,7 @@ angular.module('rest').factory('userService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
-    service.saveUser = function saveUser(user) {
+    service.saveUser = function saveUser(dataSource, user) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -187,7 +212,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Update user
         return $http({
             method  : 'PUT',
-            url     : 'api/users/' + encodeURIComponent(user.username),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username),
             params  : httpParameters,
             data    : user
         })
@@ -203,6 +228,11 @@ angular.module('rest').factory('userService', ['$injector',
      * Makes a request to the REST API to update the password for a user, 
      * returning a promise that can be used for processing the results of the call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user to be
+     *     updated. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @param {String} username
      *     The username of the user to update.
      *     
@@ -216,7 +246,7 @@ angular.module('rest').factory('userService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     password update operation is successful.
      */
-    service.updateUserPassword = function updateUserPassword(username, 
+    service.updateUserPassword = function updateUserPassword(dataSource, username,
             oldPassword, newPassword) {
 
         // Build HTTP parameters set
@@ -227,7 +257,7 @@ angular.module('rest').factory('userService', ['$injector',
         // Update user password
         return $http({
             method  : 'PUT',
-            url     : 'api/users/' + encodeURIComponent(username) + '/password',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username) + '/password',
             params  : httpParameters,
             data    : new UserPasswordUpdate({
                 oldPassword : oldPassword,

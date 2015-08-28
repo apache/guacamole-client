@@ -54,6 +54,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
+     * The unique identifier of the data source containing the user being
+     * edited.
+     *
+     * @type String
+     */
+    var dataSource = $routeParams.dataSource;
+
+    /**
      * The username of the user being edited.
      *
      * @type String
@@ -137,12 +145,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
 
     // Pull user data
-    userService.getUser(username).success(function userReceived(user) {
+    userService.getUser(dataSource, username).success(function userReceived(user) {
         $scope.user = user;
     });
 
     // Pull user permissions
-    permissionService.getPermissions(username).success(function gotPermissions(permissions) {
+    permissionService.getPermissions(dataSource, username).success(function gotPermissions(permissions) {
         $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
     });
 
@@ -152,8 +160,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.rootGroup = rootGroup;
     });
     
-    // Query the user's permissions for the current connection
-    permissionService.getPermissions(authenticationService.getCurrentUsername())
+    // Query the user's permissions for the current user
+    permissionService.getPermissions(dataSource, authenticationService.getCurrentUsername())
             .success(function permissionsReceived(permissions) {
 
         $scope.permissions = permissions;
@@ -508,11 +516,11 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         }
 
         // Save the user
-        userService.saveUser($scope.user)
+        userService.saveUser(dataSource, $scope.user)
         .success(function savedUser() {
 
             // Upon success, save any changed permissions
-            permissionService.patchPermissions($scope.user.username, permissionsAdded, permissionsRemoved)
+            permissionService.patchPermissions(dataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
             .success(function patchedUserPermissions() {
                 $location.path('/settings/users');
             })
@@ -574,7 +582,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var deleteUserImmediately = function deleteUserImmediately() {
 
         // Delete the user 
-        userService.deleteUser($scope.user)
+        userService.deleteUser(dataSource, $scope.user)
         .success(function deletedUser() {
             $location.path('/settings/users');
         })

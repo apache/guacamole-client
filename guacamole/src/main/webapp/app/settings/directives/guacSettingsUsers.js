@@ -63,6 +63,15 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             /**
+             * The data source from which the list of users should be pulled.
+             * For the time being, this is just the data source which
+             * authenticated the current user.
+             *
+             * @type String
+             */
+            $scope.dataSource = authenticationService.getDataSource();
+
+            /**
              * All visible users.
              *
              * @type User[]
@@ -118,7 +127,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             // Retrieve current permissions
-            permissionService.getPermissions(currentUsername)
+            permissionService.getPermissions($scope.dataSource, currentUsername)
             .success(function permissionsRetrieved(permissions) {
 
                 $scope.permissions = permissions;
@@ -141,8 +150,10 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             });
 
             // Retrieve all users for whom we have UPDATE or DELETE permission
-            userService.getUsers([PermissionSet.ObjectPermissionType.UPDATE, 
-                PermissionSet.ObjectPermissionType.DELETE])
+            userService.getUsers($scope.dataSource, [
+                PermissionSet.ObjectPermissionType.UPDATE,
+                PermissionSet.ObjectPermissionType.DELETE
+            ])
             .success(function usersReceived(users) {
 
                 // Display only other users, not self
@@ -164,7 +175,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                 });
 
                 // Create specified user
-                userService.createUser(user)
+                userService.createUser($scope.dataSource, user)
 
                 // Add user to visible list upon success
                 .success(function userCreated() {

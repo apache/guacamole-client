@@ -41,6 +41,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      * given user, returning a promise that provides an array of
      * @link{Permission} objects if successful.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user whose
+     *     permissions should be retrieved. This identifier corresponds to an
+     *     AuthenticationProvider within the Guacamole web application.
+     *
      * @param {String} userID
      *     The ID of the user to retrieve the permissions for.
      *                          
@@ -48,7 +53,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise which will resolve with a @link{PermissionSet} upon
      *     success.
      */
-    service.getPermissions = function getPermissions(userID) {
+    service.getPermissions = function getPermissions(dataSource, userID) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -59,7 +64,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         return $http({
             cache   : cacheService.users,
             method  : 'GET',
-            url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters
         });
 
@@ -70,6 +75,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      * returning a promise that can be used for processing the results of the
      * call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user whose
+     *     permissions should be modified. This identifier corresponds to an
+     *     AuthenticationProvider within the Guacamole web application.
+     *
      * @param {String} userID
      *     The ID of the user to modify the permissions of.
      *                          
@@ -80,8 +90,8 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     add operation is successful.
      */
-    service.addPermissions = function addPermissions(userID, permissions) {
-        return service.patchPermissions(userID, permissions, null);
+    service.addPermissions = function addPermissions(dataSource, userID, permissions) {
+        return service.patchPermissions(dataSource, userID, permissions, null);
     };
     
     /**
@@ -89,6 +99,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      * returning a promise that can be used for processing the results of the
      * call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user whose
+     *     permissions should be modified. This identifier corresponds to an
+     *     AuthenticationProvider within the Guacamole web application.
+     *
      * @param {String} userID
      *     The ID of the user to modify the permissions of.
      *                          
@@ -99,8 +114,8 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     remove operation is successful.
      */
-    service.removePermissions = function removePermissions(userID, permissions) {
-        return service.patchPermissions(userID, null, permissions);
+    service.removePermissions = function removePermissions(dataSource, userID, permissions) {
+        return service.patchPermissions(dataSource, userID, null, permissions);
     };
 
     /**
@@ -186,6 +201,11 @@ angular.module('rest').factory('permissionService', ['$injector',
      * user, returning a promise that can be used for processing the results of
      * the call.
      * 
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the user whose
+     *     permissions should be modified. This identifier corresponds to an
+     *     AuthenticationProvider within the Guacamole web application.
+     *
      * @param {String} userID
      *     The ID of the user to modify the permissions of.
      *                          
@@ -199,7 +219,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     patch operation is successful.
      */
-    service.patchPermissions = function patchPermissions(userID, permissionsToAdd, permissionsToRemove) {
+    service.patchPermissions = function patchPermissions(dataSource, userID, permissionsToAdd, permissionsToRemove) {
 
         var permissionPatch = [];
         
@@ -217,7 +237,7 @@ angular.module('rest').factory('permissionService', ['$injector',
         // Patch user permissions
         return $http({
             method  : 'PATCH', 
-            url     : 'api/users/' + encodeURIComponent(userID) + '/permissions',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(userID) + '/permissions',
             params  : httpParameters,
             data    : permissionPatch
         })
