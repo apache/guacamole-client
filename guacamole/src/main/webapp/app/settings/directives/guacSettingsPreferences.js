@@ -67,6 +67,14 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             var username = authenticationService.getCurrentUsername();
 
             /**
+             * The identifier of the data source which authenticated the
+             * current user.
+             *
+             * @type String
+             */
+            var dataSource = authenticationService.getDataSource();
+
+            /**
              * All currently-set preferences, or their defaults if not yet set.
              *
              * @type Object.<String, Object>
@@ -140,7 +148,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 }
                 
                 // Save the user with the new password
-                userService.updateUserPassword(username, $scope.oldPassword, $scope.newPassword)
+                userService.updateUserPassword(dataSource, username, $scope.oldPassword, $scope.newPassword)
                 .success(function passwordUpdated() {
                 
                     // Clear the password fields
@@ -174,7 +182,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             });
 
             // Retrieve current permissions
-            permissionService.getPermissions(username)
+            permissionService.getPermissions(dataSource, username)
             .success(function permissionsRetrieved(permissions) {
 
                 // Add action for changing password if permission is granted
