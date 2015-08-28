@@ -99,9 +99,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             // Store auth data
             $cookieStore.put(AUTH_COOKIE_ID, {
-                authToken  : data.authToken,
-                username   : data.username,
-                dataSource : data.dataSource
+                'authToken'            : data.authToken,
+                'username'             : data.username,
+                'dataSource'           : data.dataSource,
+                'availableDataSources' : data.availableDataSources
             });
 
             // Process is complete
