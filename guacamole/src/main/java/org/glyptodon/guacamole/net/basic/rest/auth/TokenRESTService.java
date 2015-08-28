@@ -456,12 +456,16 @@ public class TokenRESTService {
      *     map, even if those parameters are no longer accessible within the
      *     now-fully-consumed HTTP request.
      *
-     * @return The auth token for the newly logged-in user.
-     * @throws GuacamoleException If an error prevents successful login.
+     * @return
+     *     An authentication response object containing the possible-new auth
+     *     token, as well as other related data.
+     *
+     * @throws GuacamoleException
+     *     If an error prevents successful authentication.
      */
     @POST
     @AuthProviderRESTExposure
-    public APIAuthToken createToken(@FormParam("username") String username,
+    public APIAuthenticationResult createToken(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("token") String token,
             @Context HttpServletRequest consumedRequest,
@@ -500,8 +504,18 @@ public class TokenRESTService {
             logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
         }
 
+        // Build list of all available auth providers
+        List<String> authProviderIdentifiers = new ArrayList<String>(userContexts.size());
+        for (UserContext userContext : userContexts)
+            authProviderIdentifiers.add(userContext.getAuthenticationProvider().getIdentifier());
+
         // Return possibly-new auth token
-        return new APIAuthToken(authToken, authenticatedUser.getIdentifier());
+        return new APIAuthenticationResult(
+            authToken,
+            authenticatedUser.getIdentifier(),
+            authenticatedUser.getAuthenticationProvider().getIdentifier(),
+            authProviderIdentifiers
+        );
 
     }
 

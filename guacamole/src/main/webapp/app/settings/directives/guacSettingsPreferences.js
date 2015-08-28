@@ -64,7 +64,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              *
              * @type String
              */
-            var username = authenticationService.getCurrentUserID();
+            var username = authenticationService.getCurrentUsername();
 
             /**
              * All currently-set preferences, or their defaults if not yet set.

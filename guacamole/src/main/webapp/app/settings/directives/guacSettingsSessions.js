@@ -187,7 +187,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             };
 
             // Query the user's permissions
-            permissionService.getPermissions(authenticationService.getCurrentUserID())
+            permissionService.getPermissions(authenticationService.getCurrentUsername())
                     .success(function permissionsReceived(retrievedPermissions) {
                 $scope.permissions = retrievedPermissions;
             });

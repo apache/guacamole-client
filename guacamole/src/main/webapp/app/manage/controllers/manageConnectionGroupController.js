@@ -128,7 +128,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     });
 
     // Query the user's permissions for the current connection group
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    permissionService.getPermissions(authenticationService.getCurrentUsername())
             .success(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;

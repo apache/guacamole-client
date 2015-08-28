@@ -156,7 +156,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
 
         // Ignore permission to update self
-        PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, authenticationService.getCurrentUserID());
+        PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, authenticationService.getCurrentUsername());
 
         // Determine whether the current user needs access to the user management UI
         var canManageUsers =
@@ -247,7 +247,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Retrieve current permissions, resolving main pages if possible
         // Resolve promise using settings pages derived from permissions
-        permissionService.getPermissions(authenticationService.getCurrentUserID())
+        permissionService.getPermissions(authenticationService.getCurrentUsername())
         .success(function permissionsRetrieved(permissions) {
             deferred.resolve(generateSettingsPages(permissions));
         });
@@ -328,7 +328,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         });
 
         // Retrieve current permissions, resolving main pages if possible
-        permissionService.getPermissions(authenticationService.getCurrentUserID())
+        permissionService.getPermissions(authenticationService.getCurrentUsername())
         .success(function permissionsRetrieved(retrievedPermissions) {
             permissions = retrievedPermissions;
             resolveMainPages();
