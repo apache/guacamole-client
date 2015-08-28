@@ -45,18 +45,8 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             var $filter                 = $injector.get('$filter');
             var $translate              = $injector.get('$translate');
             var activeConnectionService = $injector.get('activeConnectionService');
-            var authenticationService   = $injector.get('authenticationService');
             var connectionGroupService  = $injector.get('connectionGroupService');
             var guacNotification        = $injector.get('guacNotification');
-            var permissionService       = $injector.get('permissionService');
-
-            /**
-             * All permissions associated with the current user, or null if the
-             * user's permissions have not yet been loaded.
-             *
-             * @type PermissionSet
-             */
-            $scope.permissions = null;
 
             /**
              * The ActiveConnectionWrappers of all active sessions accessible
@@ -186,12 +176,6 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
 
             };
 
-            // Query the user's permissions
-            permissionService.getPermissions(authenticationService.getCurrentUsername())
-                    .success(function permissionsReceived(retrievedPermissions) {
-                $scope.permissions = retrievedPermissions;
-            });
-
             // Retrieve all connections 
             connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
             .success(function connectionGroupReceived(retrievedRootGroup) {
@@ -237,8 +221,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             $scope.isLoaded = function isLoaded() {
 
                 return $scope.wrappers          !== null
-                    && $scope.sessionDateFormat !== null
-                    && $scope.permissions       !== null;
+                    && $scope.sessionDateFormat !== null;
 
             };
 
