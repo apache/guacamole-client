@@ -140,64 +140,79 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * Returns all settings pages that the current user can visit. This can
      * include any of the various manage pages.
      * 
-     * @param {PermissionSet} permissions
-     *     The permissions for the current user.
+     * @param {Object.<String, PermissionSet>} permissionSets
+     *     A map of all permissions granted to the current user, where each
+     *     key is the identifier of the corresponding data source.
      * 
      * @returns {Page[]} 
      *     An array of all settings pages that the current user can visit.
      */
-    var generateSettingsPages = function generateSettingsPages(permissions) {
+    var generateSettingsPages = function generateSettingsPages(permissionSets) {
         
         var pages = [];
         
-        permissions = angular.copy(permissions);
+        var canManageUsers = false;
+        var canManageConnections = false;
+        var canManageSessions = false;
 
-        // Ignore permission to update root group
-        PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+        // Inspect the contents of each provided permission set
+        angular.forEach(permissionSets, function inspectPermissions(permissions) {
 
-        // Ignore permission to update self
-        PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, authenticationService.getCurrentUsername());
+            permissions = angular.copy(permissions);
 
-        // Determine whether the current user needs access to the user management UI
-        var canManageUsers =
+            // Ignore permission to update root group
+            PermissionSet.removeConnectionGroupPermission(permissions,
+                PermissionSet.ObjectPermissionType.UPDATE,
+                ConnectionGroup.ROOT_IDENTIFIER);
 
-                // System permissions
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
+            // Ignore permission to update self
+            PermissionSet.removeUserPermission(permissions,
+                PermissionSet.ObjectPermissionType.UPDATE,
+                authenticationService.getCurrentUsername());
 
-                // Permission to update users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.UPDATE)
+            // Determine whether the current user needs access to the user management UI
+            canManageUsers = canManageUsers ||
 
-                // Permission to delete users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.DELETE)
+                    // System permissions
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
 
-                // Permission to administer users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
+                    // Permission to update users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
 
-        // Determine whether the current user needs access to the connection management UI
-        var canManageConnections =
+                    // Permission to delete users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
 
-                // System permissions
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
+                    // Permission to administer users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
 
-                // Permission to update connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+            // Determine whether the current user needs access to the connection management UI
+            canManageConnections = canManageConnections ||
 
-                // Permission to delete connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+                    // System permissions
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
 
-                // Permission to administer connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+                    // Permission to update connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
 
-        var canManageSessions = 
+                    // Permission to delete connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
 
-                // A user must be a system administrator to manage sessions
-                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+                    // Permission to administer connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+
+            // Determine whether the current user needs access to the session management UI
+            canManageSessions = canManageSessions ||
+
+                    // A user must be a system administrator to manage sessions
+                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+
+        });
 
         // If user can manage sessions, add link to sessions management page
         if (canManageSessions) {
@@ -245,10 +260,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        // Retrieve current permissions, resolving main pages if possible
+        // Retrieve current permissions
+        permissionService.getAllPermissions(
+            authenticationService.getAvailableDataSources(),
+            authenticationService.getCurrentUsername() 
+        )
+
         // Resolve promise using settings pages derived from permissions
-        permissionService.getPermissions(authenticationService.getCurrentUsername())
-        .success(function permissionsRetrieved(permissions) {
+        .then(function permissionsRetrieved(permissions) {
             deferred.resolve(generateSettingsPages(permissions));
         });
         
@@ -264,8 +283,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @param {ConnectionGroup} rootGroup
      *     The root of the connection group tree for the current user.
      *     
-     * @param {PermissionSet} permissions
-     *     The permissions for the current user.
+     * @param {Object.<String, PermissionSet>} permissions
+     *     A map of all permissions granted to the current user, where each
+     *     key is the identifier of the corresponding data source.
      * 
      * @returns {Page[]} 
      *     An array of all main pages that the current user can visit.
@@ -327,9 +347,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
             resolveMainPages();
         });
 
-        // Retrieve current permissions, resolving main pages if possible
-        permissionService.getPermissions(authenticationService.getCurrentUsername())
-        .success(function permissionsRetrieved(retrievedPermissions) {
+        // Retrieve current permissions
+        permissionService.getAllPermissions(
+            authenticationService.getAvailableDataSources(),
+            authenticationService.getCurrentUsername()
+        )
+
+        // Resolving main pages if possible
+        .then(function permissionsRetrieved(retrievedPermissions) {
             permissions = retrievedPermissions;
             resolveMainPages();
         });

@@ -28,6 +28,7 @@ angular.module('rest').factory('permissionService', ['$injector',
 
     // Required services
     var $http                 = $injector.get('$http');
+    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
     
@@ -69,7 +70,64 @@ angular.module('rest').factory('permissionService', ['$injector',
         });
 
     };
-    
+
+    /**
+     * Returns a promise which resolves with all permissions available to the
+     * given user, as a map of all PermissionSet objects by the identifier of
+     * their corresponding data source. All given data sources are queried. If
+     * an error occurs while retrieving any PermissionSet, the promise will be
+     * rejected.
+     *
+     * @param {String[]} dataSources
+     *     The unique identifier of the data sources containing the user whose
+     *     permissions should be retrieved. These identifiers corresponds to
+     *     AuthenticationProviders within the Guacamole web application.
+     *
+     * @param {String} username
+     *     The username of the user to retrieve the permissions for.
+     *
+     * @returns {Promise.<Object.<String, PermissionSet>>}
+     *     A promise which resolves with all permissions available to the
+     *     current user, as a map of app PermissionSet objects by the
+     *     identifier of their corresponding data source.
+     */
+    service.getAllPermissions = function getAllPermissions(dataSources, username) {
+
+        var deferred = $q.defer();
+
+        var permissionSetRequests = [];
+        var permissionSets = {};
+
+        // Retrieve all permissions from all data sources
+        angular.forEach(dataSources, function retrievePermissions(dataSource) {
+            permissionSetRequests.push(
+                service.getPermissions(dataSource, username)
+                .success(function permissionsRetrieved(permissions) {
+                    permissionSets[dataSource] = permissions;
+                })
+            );
+        });
+
+        // Resolve when all requests are completed
+        $q.all(permissionSetRequests)
+        .then(
+
+            // All requests completed successfully
+            function allPermissionsRetrieved() {
+                deferred.resolve(permissionSets);
+            },
+
+            // At least one request failed
+            function permissionRetrievalFailed(e) {
+                deferred.reject(e);
+            }
+
+        );
+
+        return deferred.promise;
+
+    };
+
     /**
      * Makes a request to the REST API to add permissions for a given user,
      * returning a promise that can be used for processing the results of the
