@@ -28,6 +28,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
     // Get required types
     var ConnectionGroup = $injector.get('ConnectionGroup');
+    var PageDefinition  = $injector.get('PageDefinition');
     var PermissionSet   = $injector.get('PermissionSet');
 
     // Get required services
@@ -39,19 +40,16 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var service = {};
     
     /**
-     * Construct a new Page object with the given name and url.
+     * Construct a new PageDefinition object with the given name and url.
+     *
      * @constructor
-     * 
      * @param {String} name
      *     The i18n key for the name of the page.
      * 
      * @param {String} url
-     *     The url to the page.
-     *     
-     * @returns {PageDefinition} 
-     *     The newly created PageDefinition object.
+     *     The URL of the page.
      */
-    var Page = function Page(name, url) {
+    var PageDefinition = function PageDefinition(name, url) {
         this.name = name;
         this.url  = url;
     };
@@ -60,9 +58,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * The home page to assign to a user if they can navigate to more than one
      * page.
      * 
-     * @type Page
+     * @type PageDefinition
      */
-    var SYSTEM_HOME_PAGE = new Page(
+    var SYSTEM_HOME_PAGE = new PageDefinition(
         'USER_MENU.ACTION_NAVIGATE_HOME',
         '/'
     );
@@ -73,7 +71,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @param {ConnectionGroup} rootGroup
      *     The root of the connection group tree for the current user.
      *
-     * @returns {Page}
+     * @returns {PageDefinition}
      *     The user's home page.
      */
     var generateHomePage = function generateHomePage(rootGroup) {
@@ -91,7 +89,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
             // Only one connection present, use as home page
             if (connection) {
-                return new Page(
+                return new PageDefinition(
                     connection.name,
                     '/client/c/' + connection.identifier
                 );
@@ -102,7 +100,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     && connectionGroup.type === ConnectionGroup.Type.BALANCING
                     && _.isEmpty(connectionGroup.childConnections)
                     && _.isEmpty(connectionGroup.childConnectionGroups)) {
-                return new Page(
+                return new PageDefinition(
                     connectionGroup.name,
                     '/client/g/' + connectionGroup.identifier
                 );
@@ -216,7 +214,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // If user can manage sessions, add link to sessions management page
         if (canManageSessions) {
-            pages.push(new Page(
+            pages.push(new PageDefinition(
                 'USER_MENU.ACTION_MANAGE_SESSIONS',
                 '/settings/sessions'
             ));
@@ -224,7 +222,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
         
         // If user can manage users, add link to user management page
         if (canManageUsers) {
-            pages.push(new Page(
+            pages.push(new PageDefinition(
                 'USER_MENU.ACTION_MANAGE_USERS',
                 '/settings/users'
             ));
@@ -232,14 +230,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // If user can manage connections, add link to connections management page
         if (canManageConnections) {
-            pages.push(new Page(
+            pages.push(new PageDefinition(
                 'USER_MENU.ACTION_MANAGE_CONNECTIONS',
                 '/settings/connections'
             ));
         }
 
         // Add link to user preferences (always accessible)
-        pages.push(new Page(
+        pages.push(new PageDefinition(
             'USER_MENU.ACTION_MANAGE_PREFERENCES',
             '/settings/preferences'
         ));
@@ -305,7 +303,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Add generic link to the first-available settings page
         if (settingsPages.length) {
-            pages.push(new Page(
+            pages.push(new PageDefinition(
                 'USER_MENU.ACTION_MANAGE_SETTINGS',
                 settingsPages[0].url
             ));
