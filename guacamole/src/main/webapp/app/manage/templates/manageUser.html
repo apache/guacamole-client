@@ -1,5 +1,5 @@
 <!--
-Copyright 2014 Glyptodon LLC.
+Copyright 2015 Glyptodon LLC.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,28 +20,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -->
 
-<div class="view" ng-class="{loading: !isLoaded()}">
+<div class="manage-user view" ng-class="{loading: !isLoaded()}">
 
     <!-- Main property editor -->
-    <div class="header">
-        <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
+    <div class="username header">
+        <h2>{{user.username}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
+    <div class="settings-tabs">
+        <guac-page-list pages="accountPages"></guac-page-list>
+    </div>
+
     <div class="section">
         <table class="properties">
             <tr>
-                <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
-                          
-                <td>{{user.username}}</td>
-            </tr>
-            <tr>
                 <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
-                            
                 <td><input ng-model="user.password" type="password" /></td>
             </tr>
             <tr>
                 <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | translate}}</th>
-                            
                 <td><input ng-model="passwordMatch" type="password" /></td>
             </tr>
         </table>

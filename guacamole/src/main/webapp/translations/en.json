@@ -125,6 +125,10 @@
 
     },
 
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Default (XML)"
+    },
+
     "FORM" : {
 
         "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",

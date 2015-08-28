@@ -7,6 +7,10 @@
 
     "authProviders" : [
         "net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
     ]
 
 }

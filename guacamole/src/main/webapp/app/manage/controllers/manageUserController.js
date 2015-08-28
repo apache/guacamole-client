@@ -28,18 +28,20 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             
     // Required types
     var ConnectionGroup   = $injector.get('ConnectionGroup');
+    var PageDefinition    = $injector.get('PageDefinition');
     var PermissionFlagSet = $injector.get('PermissionFlagSet');
     var PermissionSet     = $injector.get('PermissionSet');
 
     // Required services
-    var $location              = $injector.get('$location');
-    var $routeParams           = $injector.get('$routeParams');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var guacNotification       = $injector.get('guacNotification');
-    var permissionService      = $injector.get('permissionService');
-    var schemaService          = $injector.get('schemaService');
-    var userService            = $injector.get('userService');
+    var $location                = $injector.get('$location');
+    var $routeParams             = $injector.get('$routeParams');
+    var authenticationService    = $injector.get('authenticationService');
+    var connectionGroupService   = $injector.get('connectionGroupService');
+    var guacNotification         = $injector.get('guacNotification');
+    var permissionService        = $injector.get('permissionService');
+    var schemaService            = $injector.get('schemaService');
+    var translationStringService = $injector.get('translationStringService');
+    var userService              = $injector.get('userService');
 
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -119,6 +121,28 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type Form[]
      */
     $scope.attributes = null;
+
+    /**
+     * The pages associated with each user account having the given username.
+     * Each user account will be associated with a particular data source.
+     *
+     * @type PageDefinition[]
+     */
+    $scope.accountPages = (function getAccountPages(dataSources) {
+
+        var accountPages = [];
+
+        // Add an account page for each applicable data source
+        angular.forEach(dataSources, function addAccountPage(dataSource) {
+            accountPages.push(new PageDefinition(
+                translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username)
+            ));
+        });
+
+        return accountPages;
+
+    })(authenticationService.getAvailableDataSources());
 
     /**
      * Returns whether critical data has completed being loaded.
