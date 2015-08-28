@@ -91,7 +91,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
             if (connection) {
                 return new PageDefinition(
                     connection.name,
-                    '/client/c/' + connection.identifier
+                    '/client/c/' + encodeURIComponent(connection.identifier)
                 );
             }
 
@@ -102,7 +102,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     && _.isEmpty(connectionGroup.childConnectionGroups)) {
                 return new PageDefinition(
                     connectionGroup.name,
-                    '/client/g/' + connectionGroup.identifier
+                    '/client/g/' + encodeURIComponent(connectionGroup.identifier)
                 );
             }
 
