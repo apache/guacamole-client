@@ -697,15 +697,15 @@ angular.module('form').controller('timeZoneFieldController', ['$scope', '$inject
      */
     $scope.region = '';
 
-    // Restore time zone selection when region changes
-    $scope.$watch('region', function restoreSelection(region) {
-        $scope.model = selectedTimeZone[region] || null;
-    });
-
     // Ensure corresponding region is selected
     $scope.$watch('model', function setModel(model) {
         $scope.region = timeZoneRegions[model] || '';
         selectedTimeZone[$scope.region] = model;
+    });
+
+    // Restore time zone selection when region changes
+    $scope.$watch('region', function restoreSelection(region) {
+        $scope.model = selectedTimeZone[region] || null;
     });
 
 }]);
