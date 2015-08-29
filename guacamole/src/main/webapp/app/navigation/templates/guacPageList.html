@@ -22,7 +22,7 @@
     -->
 
     <!-- Navigation links -->
-    <li ng-repeat="page in pages">
+    <li ng-repeat="page in pages" class="{{page.className}}">
         <a class="home" ng-click="navigateToPage(page)"
            ng-class="{current: isCurrentPage(page)}" href="#{{page.url}}">
             {{page.name | translate}}

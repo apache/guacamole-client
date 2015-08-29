@@ -35,8 +35,11 @@ angular.module('navigation').factory('PageDefinition', [function definePageDefin
      *
      * @param {String} url
      *     The URL of the page.
+     * 
+     * @param {String} [className='']
+     *     The CSS class name to associate with this page, if any.
      */
-    var PageDefinition = function PageDefinition(name, url) {
+    var PageDefinition = function PageDefinition(name, url, className) {
 
         /**
          * The the name of the page, which should be a translation table key.
@@ -51,6 +54,13 @@ angular.module('navigation').factory('PageDefinition', [function definePageDefin
          * @type String
          */
         this.url = url;
+
+        /**
+         * The CSS class name to associate with this page, if any.
+         *
+         * @type String
+         */
+        this.className = className || '';
 
     };
 
