@@ -23,3 +23,7 @@
 .manage-user .username.header {
     margin-bottom: 0;
 }
+
+.manage-user .username.header h2 {
+    text-transform: none;
+}
