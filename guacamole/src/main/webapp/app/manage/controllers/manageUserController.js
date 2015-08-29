@@ -145,6 +145,17 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     })(authenticationService.getAvailableDataSources());
 
     /**
+     * Returns whether the list of all available account tabs should be shown.
+     *
+     * @returns {Boolean}
+     *     true if the list of available account tabs should be shown, false
+     *     otherwise.
+     */
+    $scope.showAccountTabs = function showAccountTabs() {
+        return !!$scope.accountPages && $scope.accountPages.length > 1;
+    };
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}
