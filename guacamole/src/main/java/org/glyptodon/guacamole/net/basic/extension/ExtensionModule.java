@@ -333,7 +333,10 @@ public class ExtensionModule extends ServletModule {
             logger.warn("Although GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " exists, its contents cannot be read.");
             return;
         }
-        
+
+        // Sort files lexicographically
+        Arrays.sort(extensionFiles);
+
         // Load each extension within the extension directory
         for (File extensionFile : extensionFiles) {
 
