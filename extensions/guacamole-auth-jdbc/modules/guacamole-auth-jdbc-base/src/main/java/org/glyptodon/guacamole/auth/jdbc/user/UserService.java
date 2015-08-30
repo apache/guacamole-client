@@ -162,6 +162,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Set model contents through ModeledUser, copying the provided user
         user.setIdentifier(object.getIdentifier());
         user.setPassword(object.getPassword());
+        user.setAttributes(object.getAttributes());
 
         return model;
         

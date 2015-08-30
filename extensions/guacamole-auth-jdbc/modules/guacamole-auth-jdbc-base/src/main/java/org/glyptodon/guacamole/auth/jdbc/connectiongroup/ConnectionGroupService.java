@@ -106,6 +106,7 @@ public class ConnectionGroupService extends ModeledGroupedDirectoryObjectService
         connectionGroup.setParentIdentifier(object.getParentIdentifier());
         connectionGroup.setName(object.getName());
         connectionGroup.setType(object.getType());
+        connectionGroup.setAttributes(object.getAttributes());
 
         return model;
         

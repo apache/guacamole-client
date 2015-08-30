@@ -123,6 +123,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
         connection.setParentIdentifier(object.getParentIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
+        connection.setAttributes(object.getAttributes());
 
         return model;
         
