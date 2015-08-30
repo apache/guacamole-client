@@ -202,7 +202,7 @@ public abstract class SimpleAuthenticationProvider
             throws GuacamoleException {
 
         // Pull cached configurations, if any
-        if (authenticatedUser instanceof SimpleAuthenticatedUser)
+        if (authenticatedUser instanceof SimpleAuthenticatedUser && authenticatedUser.getAuthenticationProvider() == this)
             return ((SimpleAuthenticatedUser) authenticatedUser).getAuthorizedConfigurations();
 
         // Otherwise, pull using credentials
