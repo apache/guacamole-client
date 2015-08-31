@@ -113,12 +113,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionFlags = null;
 
     /**
-     * The root connection group of the connection group hierarchy within the
-     * data source containing the user being edited/created.
+     * A map of data source identifiers to the root connection groups within
+     * thost data sources. As only one data source is applicable to any one
+     * user being edited/created, this will only contain a single key.
      *
-     * @type ConnectionGroup
+     * @type Object.<String, ConnectionGroup>
      */
-    $scope.rootGroup = null;
+    $scope.rootGroups = null;
     
     /**
      * All permissions associated with the current user, or null if the user's
@@ -167,7 +168,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         return $scope.user                !== null
             && $scope.permissionFlags     !== null
-            && $scope.rootGroup           !== null
+            && $scope.rootGroups          !== null
             && $scope.permissions         !== null
             && $scope.attributes          !== null;
 
@@ -373,9 +374,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
 
     // Retrieve all connections for which we have ADMINISTER permission
-    connectionGroupService.getConnectionGroupTree(dataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
-    .success(function connectionGroupReceived(rootGroup) {
-        $scope.rootGroup = rootGroup;
+    dataSourceService.apply(
+        connectionGroupService.getConnectionGroupTree,
+        [dataSource],
+        ConnectionGroup.ROOT_IDENTIFIER,
+        [PermissionSet.ObjectPermissionType.ADMINISTER]
+    )
+    .then(function connectionGroupReceived(rootGroups) {
+        $scope.rootGroups = rootGroups;
     });
     
     // Query the user's permissions for the current user
