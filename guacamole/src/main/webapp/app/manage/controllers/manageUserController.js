@@ -39,6 +39,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var connectionGroupService   = $injector.get('connectionGroupService');
+    var dataSourceService        = $injector.get('dataSourceService');
     var guacNotification         = $injector.get('guacNotification');
     var permissionService        = $injector.get('permissionService');
     var schemaService            = $injector.get('schemaService');
@@ -326,63 +327,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.attributes = attributes;
     });
 
-    /**
-     * Retrieves all user objects having the given username from each of the
-     * given data sources, returning a promise which resolves to a map of those
-     * users by data source identifier. If any data source returns an error,
-     * that data source is omitted from the results.
-     *
-     * @param {String[]} dataSources
-     *     The identifiers of the data sources to query.
-     *
-     * @param {String} username
-     *     The username of the user to retrieve from each of the given data
-     *     sources.
-     *
-     * @returns {Promise.<Object.<String, User>>}
-     *     A promise which resolves to a map of user objects by data source
-     *     identifier.
-     */
-    var getUserAccounts = function getUserAccounts(dataSources, username) {
-
-        var deferred = $q.defer();
-
-        var userRequests = [];
-        var accounts = {};
-
-        // Retrieve the requested user account from all data sources
-        angular.forEach(dataSources, function retrieveUser(dataSource) {
-
-            // Add promise to list of pending requests
-            var deferredUserRequest = $q.defer();
-            userRequests.push(deferredUserRequest.promise);
-
-            // Retrieve user from data source
-            userService.getUser(dataSource, username)
-            .success(function userRetrieved(user) {
-                accounts[dataSource] = user;
-                deferredUserRequest.resolve();
-            })
-
-            // Ignore any errors
-            .error(function userRetrievalFailed() {
-                deferredUserRequest.resolve();
-            });
-
-        });
-
-        // Resolve when all requests are completed
-        $q.all(userRequests)
-        .then(function accountsRetrieved() {
-            deferred.resolve(accounts);
-        });
-
-        return deferred.promise;
-
-    };
-
     // Pull user data
-    getUserAccounts(dataSources, username)
+    dataSourceService.apply(userService.getUser, dataSources, username)
     .then(function usersReceived(users) {
 
         // Get user for currently-selected data source
@@ -427,7 +373,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
 
     // Retrieve all connections for which we have ADMINISTER permission
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
+    connectionGroupService.getConnectionGroupTree(dataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });

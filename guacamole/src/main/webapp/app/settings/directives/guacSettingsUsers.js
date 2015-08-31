@@ -43,6 +43,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             // Required services
             var $location              = $injector.get('$location');
             var authenticationService  = $injector.get('authenticationService');
+            var dataSourceService      = $injector.get('dataSourceService');
             var guacNotification       = $injector.get('guacNotification');
             var permissionService      = $injector.get('permissionService');
             var userService            = $injector.get('userService');
@@ -193,7 +194,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             // Retrieve current permissions
-            permissionService.getAllPermissions(dataSources, currentUsername)
+            dataSourceService.apply(permissionService.getPermissions, dataSources, currentUsername)
             .then(function permissionsRetrieved(permissions) {
 
                 // Store retrieved permissions
@@ -206,7 +207,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             });
 
             // Retrieve all users for whom we have UPDATE or DELETE permission
-            userService.getAllUsers(dataSources, [
+            dataSourceService.apply(userService.getUsers, dataSources, [
                 PermissionSet.ObjectPermissionType.UPDATE,
                 PermissionSet.ObjectPermissionType.DELETE
             ])

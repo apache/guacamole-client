@@ -34,8 +34,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
     // Get required services
     var $q                     = $injector.get('$q');
     var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get("connectionGroupService");
-    var permissionService      = $injector.get("permissionService");
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var dataSourceService      = $injector.get('dataSourceService');
+    var permissionService      = $injector.get('permissionService');
     
     var service = {};
     
@@ -259,7 +260,8 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var deferred = $q.defer();
 
         // Retrieve current permissions
-        permissionService.getAllPermissions(
+        dataSourceService.apply(
+            permissionService.getPermissions,
             authenticationService.getAvailableDataSources(),
             authenticationService.getCurrentUsername() 
         )
@@ -346,7 +348,8 @@ angular.module('navigation').factory('userPageService', ['$injector',
         });
 
         // Retrieve current permissions
-        permissionService.getAllPermissions(
+        dataSourceService.apply(
+            permissionService.getPermissions,
             authenticationService.getAvailableDataSources(),
             authenticationService.getCurrentUsername()
         )
