@@ -322,7 +322,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     // Pull user attribute schema
-    schemaService.getUserAttributes().success(function attributesReceived(attributes) {
+    schemaService.getUserAttributes(dataSource).success(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
