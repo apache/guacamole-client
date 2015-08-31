@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -44,8 +45,10 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -56,7 +59,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Michael Jumper
  */
-@Path("/activeConnections")
+@Path("/data/{dataSource}/activeConnections")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ActiveConnectionRESTService {
@@ -73,12 +76,22 @@ public class ActiveConnectionRESTService {
     private AuthenticationService authenticationService;
 
     /**
+     * Service for convenient retrieval of objects.
+     */
+    @Inject
+    private ObjectRetrievalService retrievalService;
+
+    /**
      * Gets a list of active connections in the system, filtering the returned
      * list by the given permissions, if specified.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the active connections to be retrieved.
      *
      * @param permissions
      *     The set of permissions to filter with. A user must have one or more
@@ -96,10 +109,12 @@ public class ActiveConnectionRESTService {
     @GET
     @AuthProviderRESTExposure
     public Map<String, APIActiveConnection> getActiveConnections(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             @QueryParam("permission") List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         User self = userContext.self();
         
         // Do not filter on permissions if no permissions are specified
@@ -140,6 +155,10 @@ public class ActiveConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the active connections to be deleted.
+     *
      * @param patches
      *     The active connection patches to apply for this request.
      *
@@ -149,9 +168,11 @@ public class ActiveConnectionRESTService {
     @PATCH
     @AuthProviderRESTExposure
     public void patchTunnels(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             List<APIPatch<String>> patches) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Get the directory
         Directory<ActiveConnection> activeConnectionDirectory = userContext.getActiveConnectionDirectory();
