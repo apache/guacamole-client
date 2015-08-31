@@ -321,7 +321,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *
      * @returns {String[]}
      *     The identifiers of all data sources availble to the current user,
-     *     or null if no authentication data is present.
+     *     or an empty array if no authentication data is present.
      */
     service.getAvailableDataSources = function getAvailableDataSources() {
 
@@ -331,7 +331,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             return authData.availableDataSources;
 
         // No auth data present
-        return null;
+        return [];
 
     };
 
