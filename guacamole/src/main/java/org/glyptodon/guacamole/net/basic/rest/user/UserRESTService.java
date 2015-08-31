@@ -133,8 +133,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be created.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext from which the users are to be retrieved.
      *
      * @param permissions
      *     The set of permissions to filter with. A user must have one or more
@@ -191,8 +191,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be created.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext from which the requested user is to be retrieved.
      *
      * @param username
      *     The username of the user to retrieve.
@@ -227,8 +227,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be created.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the requested user is to be created.
      *
      * @param user
      *     The new user to create.
@@ -271,8 +271,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be found.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the requested user is to be updated.
      *
      * @param username
      *     The username of the user to update.
@@ -331,8 +331,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be found.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the requested user is to be updated.
      *
      * @param username
      *     The username of the user to update.
@@ -403,8 +403,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be found.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext from which the requested user is to be deleted.
      *
      * @param username
      *     The username of the user to delete.
@@ -444,8 +444,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be found.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the requested user is to be found.
      *
      * @param username
      *     The username of the user to retrieve permissions for.
@@ -539,8 +539,8 @@ public class UserRESTService {
      *     performing the operation.
      *
      * @param authProviderIdentifier
-     *     The index of the UserContext within the overall List of available
-     *     UserContexts in which the requested user is to be found.
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the requested user is to be found.
      *
      * @param username
      *     The username of the user to modify the permissions of.
