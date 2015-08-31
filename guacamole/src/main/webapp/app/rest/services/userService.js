@@ -80,10 +80,9 @@ angular.module('rest').factory('userService', ['$injector',
 
     /**
      * Returns a promise which resolves with all users accessible by the
-     * given user, as a map of @link{User} arrays by the identifier of their
+     * current user, as a map of @link{User} arrays by the identifier of their
      * corresponding data source. All given data sources are queried. If an
-     * error occurs while retrieving any PermissionSet, the promise will be
-     * rejected.
+     * error occurs while retrieving any user, the promise will be rejected.
      *
      * @param {String[]} dataSources
      *     The unique identifier of the data sources containing the user to be
@@ -128,7 +127,7 @@ angular.module('rest').factory('userService', ['$injector',
             },
 
             // At least one request failed
-            function UserRetrievalFailed(e) {
+            function userRetrievalFailed(e) {
                 deferred.reject(e);
             }
 
