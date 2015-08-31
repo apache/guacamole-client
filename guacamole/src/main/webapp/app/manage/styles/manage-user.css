@@ -27,3 +27,39 @@
 .manage-user .username.header h2 {
     text-transform: none;
 }
+
+.manage-user .settings-tabs .page-list li.unlinked a[href],
+.manage-user .settings-tabs .page-list li.linked   a[href] {
+    padding-right: 2.5em;
+    position: relative;
+}
+
+.manage-user .settings-tabs .page-list li.unlinked a[href]:before,
+.manage-user .settings-tabs .page-list li.linked   a[href]:before {
+    content: ' ';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    width: 2.5em;
+    background-size: 1.25em;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.manage-user .settings-tabs .page-list li.unlinked a[href]:before {
+    background-image: url('images/plus.png');
+}
+
+.manage-user .settings-tabs .page-list li.unlinked a[href] {
+    opacity: 0.5;
+}
+
+.manage-user .settings-tabs .page-list li.unlinked a[href]:hover,
+.manage-user .settings-tabs .page-list li.unlinked a[href].current {
+    opacity: 1;
+}
+
+.manage-user .settings-tabs .page-list li.linked a[href]:before {
+    background-image: url('images/checkmark.png');
+}

@@ -244,7 +244,9 @@
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Username:",
-        
+
+        "INFO_READ_ONLY" : "Sorry, but this user account cannot be edited.",
+
         "SECTION_HEADER_CONNECTIONS" : "Connections",
         "SECTION_HEADER_EDIT_USER"   : "Edit User",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",

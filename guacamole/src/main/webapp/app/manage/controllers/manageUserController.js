@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,10 +31,12 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var PageDefinition    = $injector.get('PageDefinition');
     var PermissionFlagSet = $injector.get('PermissionFlagSet');
     var PermissionSet     = $injector.get('PermissionSet');
+    var User              = $injector.get('User');
 
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
+    var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var guacNotification         = $injector.get('guacNotification');
@@ -56,6 +58,21 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
+     * The identifiers of all data sources currently available to the
+     * authenticated user.
+     *
+     * @type String[]
+     */
+    var dataSources = authenticationService.getAvailableDataSources();
+
+    /**
+     * The username of the current, authenticated user.
+     *
+     * @type String
+     */
+    var currentUsername = authenticationService.getCurrentUsername();
+
+    /**
      * The unique identifier of the data source containing the user being
      * edited.
      *
@@ -69,6 +86,16 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type String
      */
     var username = $routeParams.id;
+
+    /**
+     * Whether the user being modified actually exists. If the user does not
+     * yet exist, a different REST service call must be made to create that
+     * user rather than update an existing user. If the user has not yet been
+     * loaded, this will be null.
+     *
+     * @type Boolean
+     */
+    var userExists = null;
 
     /**
      * The user being modified.
@@ -85,26 +112,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     $scope.permissionFlags = null;
 
     /**
-     * The root connection group of the connection group hierarchy.
+     * The root connection group of the connection group hierarchy within the
+     * data source containing the user being edited/created.
      *
      * @type ConnectionGroup
      */
     $scope.rootGroup = null;
     
-    /**
-     * Whether the authenticated user has UPDATE permission for the user being edited.
-     * 
-     * @type Boolean
-     */
-    $scope.hasUpdatePermission = null;
-    
-    /**
-     * Whether the authenticated user has DELETE permission for the user being edited.
-     * 
-     * @type Boolean
-     */
-    $scope.hasDeletePermission = null;
-
     /**
      * All permissions associated with the current user, or null if the user's
      * permissions have not yet been loaded.
@@ -128,21 +142,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      *
      * @type PageDefinition[]
      */
-    $scope.accountPages = (function getAccountPages(dataSources) {
-
-        var accountPages = [];
-
-        // Add an account page for each applicable data source
-        angular.forEach(dataSources, function addAccountPage(dataSource) {
-            accountPages.push(new PageDefinition(
-                translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username)
-            ));
-        });
-
-        return accountPages;
-
-    })(authenticationService.getAvailableDataSources());
+    $scope.accountPages = [];
 
     /**
      * Returns whether the list of all available account tabs should be shown.
@@ -168,10 +168,157 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             && $scope.permissionFlags     !== null
             && $scope.rootGroup           !== null
             && $scope.permissions         !== null
-            && $scope.attributes          !== null
-            && $scope.canSaveUser         !== null
-            && $scope.canDeleteUser       !== null;
+            && $scope.attributes          !== null;
 
+    };
+
+    /**
+     * Returns whether the current user can change attributes associated with
+     * the user being edited.
+     *
+     * @returns {Boolean}
+     *     true if the current user can change attributes associated with the
+     *     user being edited, false otherwise.
+     */
+    $scope.canChangeAttributes = function canChangeAttributes() {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Attributes can always be set if we are creating the user
+        if (!userExists)
+            return true;
+
+        // The administrator can always change attributes
+        if (PermissionSet.hasSystemPermission($scope.permissions,
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // Otherwise, can change attributes if we have permission to update this user
+        return PermissionSet.hasUserPermission($scope.permissions,
+            PermissionSet.ObjectPermissionType.UPDATE, username);
+
+    };
+
+    /**
+     * Returns whether the current user can change permissions of any kind
+     * which are associated with the user being edited.
+     *
+     * @returns {Boolean}
+     *     true if the current user can grant or revoke permissions of any kind
+     *     which are associated with the user being edited, false otherwise.
+     */
+    $scope.canChangePermissions = function canChangePermissions() {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Permissions can always be set if we are creating the user
+        if (!userExists)
+            return true;
+
+        // The administrator can always modify permissions
+        if (PermissionSet.hasSystemPermission($scope.permissions,
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // Otherwise, can only modify permissions if we have explicit ADMINSTER permission
+        return PermissionSet.hasUserPermission($scope.permissions,
+            PermissionSet.ObjectPermissionType.ADMINISTER, username);
+
+    };
+
+    /**
+     * Returns whether the current user can change the system permissions
+     * granted to the user being edited.
+     *
+     * @returns {Boolean}
+     *     true if the current user can grant or revoke system permissions to
+     *     the user being edited, false otherwise.
+     */
+    $scope.canChangeSystemPermissions = function canChangeSystemPermissions() {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Only the administrator can modify system permissions
+        return PermissionSet.hasSystemPermission($scope.permissions,
+            PermissionSet.SystemPermissionType.ADMINISTER);
+
+    };
+
+    /**
+     * Returns whether the current user can save the user being edited,
+     * creating or updating that user, depending on whether the user already
+     * exists.
+     *
+     * @returns {Boolean}
+     *     true if the current user can save changes to the user being edited,
+     *     false otherwise.
+     */
+    $scope.canSaveUser = function canSaveUser() {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // The administrator can always save users
+        if (PermissionSet.hasSystemPermission($scope.permissions,
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // If user does not exist, can only save if we have permission to create users
+        if (!userExists)
+           return PermissionSet.hasSystemPermission($scope.permissions,
+               PermissionSet.SystemPermissionType.CREATE_USER);
+
+        // Otherwise, can only save if we have permission to update this user
+        return PermissionSet.hasUserPermission($scope.permissions,
+            PermissionSet.ObjectPermissionType.UPDATE, username);
+
+    };
+
+    /**
+     * Returns whether the current user can delete the user being edited.
+     *
+     * @returns {Boolean}
+     *     true if the current user can delete the user being edited, false
+     *     otherwise.
+     */
+    $scope.canDeleteUser = function canDeleteUser() {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Can't delete what doesn't exist
+        if (!userExists)
+            return false;
+
+        // The administrator can always delete users
+        if (PermissionSet.hasSystemPermission($scope.permissions,
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // Otherwise, require explicit DELETE permission on the user
+        return PermissionSet.hasUserPermission($scope.permissions,
+            PermissionSet.ObjectPermissionType.DELETE, username);
+
+    };
+
+    /**
+     * Returns whether the user being edited is read-only, and thus cannot be
+     * modified by the current user.
+     *
+     * @returns {Boolean}
+     *     true if the user being edited is actually read-only and cannot be
+     *     edited at all, false otherwise.
+     */
+    $scope.isReadOnly = function isReadOnly() {
+        return !$scope.canSaveUser();
     };
 
     // Pull user attribute schema
@@ -179,14 +326,104 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.attributes = attributes;
     });
 
+    /**
+     * Retrieves all user objects having the given username from each of the
+     * given data sources, returning a promise which resolves to a map of those
+     * users by data source identifier. If any data source returns an error,
+     * that data source is omitted from the results.
+     *
+     * @param {String[]} dataSources
+     *     The identifiers of the data sources to query.
+     *
+     * @param {String} username
+     *     The username of the user to retrieve from each of the given data
+     *     sources.
+     *
+     * @returns {Promise.<Object.<String, User>>}
+     *     A promise which resolves to a map of user objects by data source
+     *     identifier.
+     */
+    var getUserAccounts = function getUserAccounts(dataSources, username) {
+
+        var deferred = $q.defer();
+
+        var userRequests = [];
+        var accounts = {};
+
+        // Retrieve the requested user account from all data sources
+        angular.forEach(dataSources, function retrieveUser(dataSource) {
+
+            // Add promise to list of pending requests
+            var deferredUserRequest = $q.defer();
+            userRequests.push(deferredUserRequest.promise);
+
+            // Retrieve user from data source
+            userService.getUser(dataSource, username)
+            .success(function userRetrieved(user) {
+                accounts[dataSource] = user;
+                deferredUserRequest.resolve();
+            })
+
+            // Ignore any errors
+            .error(function userRetrievalFailed() {
+                deferredUserRequest.resolve();
+            });
+
+        });
+
+        // Resolve when all requests are completed
+        $q.all(userRequests)
+        .then(function accountsRetrieved() {
+            deferred.resolve(accounts);
+        });
+
+        return deferred.promise;
+
+    };
+
     // Pull user data
-    userService.getUser(dataSource, username).success(function userReceived(user) {
-        $scope.user = user;
+    getUserAccounts(dataSources, username)
+    .then(function usersReceived(users) {
+
+        // Get user for currently-selected data source
+        $scope.user = users[dataSource];
+
+        // Create skeleton user if user does not exist
+        if (!$scope.user) {
+            userExists = false;
+            $scope.user = new User({
+                'username' : username
+            });
+        }
+        else
+            userExists = true;
+
+        // Generate pages for each applicable data source
+        $scope.accountPages = [];
+        angular.forEach(dataSources, function addAccountPage(dataSource) {
+
+            // Determine whether data source contains this user
+            var linked = dataSource in users;
+
+            // Add page entry
+            $scope.accountPages.push(new PageDefinition(
+                translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
+                linked ? 'linked' : 'unlinked'
+            ));
+
+        });
+
     });
 
     // Pull user permissions
     permissionService.getPermissions(dataSource, username).success(function gotPermissions(permissions) {
         $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+    })
+
+    // If permissions cannot be retrieved, use empty permissions
+    .error(function permissionRetrievalFailed() {
+        $scope.permissionFlags = new PermissionFlagSet();
     });
 
     // Retrieve all connections for which we have ADMINISTER permission
@@ -196,24 +433,9 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     });
     
     // Query the user's permissions for the current user
-    permissionService.getPermissions(dataSource, authenticationService.getCurrentUsername())
-            .success(function permissionsReceived(permissions) {
-
+    permissionService.getPermissions(dataSource, currentUsername)
+    .success(function permissionsReceived(permissions) {
         $scope.permissions = permissions;
-                        
-        // Check if the user is new or if the user has UPDATE permission
-        $scope.canSaveUser =
-              !username
-           || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-           || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, username);
-
-        // Check if user is not new and the user has DELETE permission
-        $scope.canDeleteUser =
-           !!username && (
-                  PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-              ||  PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE, username)
-           );
-
     });
 
     /**
@@ -550,9 +772,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             return;
         }
 
-        // Save the user
-        userService.saveUser(dataSource, $scope.user)
-        .success(function savedUser() {
+        // Save or create the user, depending on whether the user exists
+        var saveUserPromise;
+        if (userExists)
+            saveUserPromise = userService.saveUser(dataSource, $scope.user);
+        else
+            saveUserPromise = userService.createUser(dataSource, $scope.user);
+
+        saveUserPromise.success(function savedUser() {
 
             // Upon success, save any changed permissions
             permissionService.patchPermissions(dataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
