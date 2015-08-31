@@ -69,48 +69,67 @@ angular.module('navigation').factory('userPageService', ['$injector',
     /**
      * Returns an appropriate home page for the current user.
      *
-     * @param {ConnectionGroup} rootGroup
-     *     The root of the connection group tree for the current user.
+     * @param {Object.<String, ConnectionGroup>} rootGroups
+     *     A map of all root connection groups visible to the current user,
+     *     where each key is the identifier of the corresponding data source.
      *
      * @returns {PageDefinition}
      *     The user's home page.
      */
-    var generateHomePage = function generateHomePage(rootGroup) {
+    var generateHomePage = function generateHomePage(rootGroups) {
 
-        // Get children
-        var connections      = rootGroup.childConnections      || [];
-        var connectionGroups = rootGroup.childConnectionGroups || [];
+        var homePage = null;
 
-        // Use main connection list screen as home if multiple connections
-        // are available
-        if (connections.length + connectionGroups.length === 1) {
+        // Determine whether a connection or balancing group should serve as
+        // the home page
+        for (var dataSource in rootGroups) {
 
-            var connection      = connections[0];
-            var connectionGroup = connectionGroups[0];
+            // Get corresponding root group
+            var rootGroup = rootGroups[dataSource];
 
-            // Only one connection present, use as home page
-            if (connection) {
-                return new PageDefinition(
-                    connection.name,
-                    '/client/c/' + encodeURIComponent(connection.identifier)
-                );
+            // Get children
+            var connections      = rootGroup.childConnections      || [];
+            var connectionGroups = rootGroup.childConnectionGroups || [];
+
+            // If exactly one connection or balancing group is available, use
+            // that as the home page
+            if (homePage === null && connections.length + connectionGroups.length === 1) {
+
+                var connection      = connections[0];
+                var connectionGroup = connectionGroups[0];
+
+                // Only one connection present, use as home page
+                if (connection) {
+                    homePage = new PageDefinition(
+                        connection.name,
+                        '/client/c/' + encodeURIComponent(connection.identifier)
+                    );
+                }
+
+                // Only one balancing group present, use as home page
+                if (connectionGroup
+                        && connectionGroup.type === ConnectionGroup.Type.BALANCING
+                        && _.isEmpty(connectionGroup.childConnections)
+                        && _.isEmpty(connectionGroup.childConnectionGroups)) {
+                    homePage = new PageDefinition(
+                        connectionGroup.name,
+                        '/client/g/' + encodeURIComponent(connectionGroup.identifier)
+                    );
+                }
+
             }
 
-            // Only one connection present, use as home page
-            if (connectionGroup
-                    && connectionGroup.type === ConnectionGroup.Type.BALANCING
-                    && _.isEmpty(connectionGroup.childConnections)
-                    && _.isEmpty(connectionGroup.childConnectionGroups)) {
-                return new PageDefinition(
-                    connectionGroup.name,
-                    '/client/g/' + encodeURIComponent(connectionGroup.identifier)
-                );
+            // Otherwise, a connection or balancing group cannot serve as the
+            // home page
+            else {
+                homePage = null;
+                break;
             }
 
-        }
+        } // end for each data source
 
-        // Resolve promise with default home page
-        return SYSTEM_HOME_PAGE;
+        // Use default home page if no other is available
+        return homePage || SYSTEM_HOME_PAGE;
 
     };
 
@@ -125,10 +144,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        // Resolve promise using home page derived from root connection group
-        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-        .success(function rootConnectionGroupRetrieved(rootGroup) {
-            deferred.resolve(generateHomePage(rootGroup));
+        // Resolve promise using home page derived from root connection groups
+        dataSourceService.apply(
+            connectionGroupService.getConnectionGroupTree,
+            authenticationService.getAvailableDataSources(),
+            ConnectionGroup.ROOT_IDENTIFIER
+        )
+        .then(function rootConnectionGroupsRetrieved(rootGroups) {
+            deferred.resolve(generateHomePage(rootGroups));
         });
 
         return deferred.promise;
@@ -280,8 +303,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * include the home page, manage pages, etc. In the case that there are no 
      * applicable pages of this sort, it may return a client page.
      * 
-     * @param {ConnectionGroup} rootGroup
-     *     The root of the connection group tree for the current user.
+     * @param {Object.<String, ConnectionGroup>} rootGroups
+     *     A map of all root connection groups visible to the current user,
+     *     where each key is the identifier of the corresponding data source.
      *     
      * @param {Object.<String, PermissionSet>} permissions
      *     A map of all permissions granted to the current user, where each
@@ -290,12 +314,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @returns {Page[]} 
      *     An array of all main pages that the current user can visit.
      */
-    var generateMainPages = function generateMainPages(rootGroup, permissions) {
+    var generateMainPages = function generateMainPages(rootGroups, permissions) {
         
         var pages = [];
 
         // Get home page and settings pages
-        var homePage = generateHomePage(rootGroup);
+        var homePage = generateHomePage(rootGroups);
         var settingsPages = generateSettingsPages(permissions);
 
         // Only include the home page in the list of main pages if the user
@@ -328,7 +352,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        var rootGroup   = null;
+        var rootGroups  = null;
         var permissions = null;
 
         /**
@@ -336,14 +360,18 @@ angular.module('navigation').factory('userPageService', ['$injector',
          * insufficient data is available, this function does nothing.
          */
         var resolveMainPages = function resolveMainPages() {
-            if (rootGroup && permissions)
-                deferred.resolve(generateMainPages(rootGroup, permissions));
+            if (rootGroups && permissions)
+                deferred.resolve(generateMainPages(rootGroups, permissions));
         };
 
         // Retrieve root group, resolving main pages if possible
-        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-        .success(function rootConnectionGroupRetrieved(retrievedRootGroup) {
-            rootGroup = retrievedRootGroup;
+        dataSourceService.apply(
+            connectionGroupService.getConnectionGroupTree,
+            authenticationService.getAvailableDataSources(),
+            ConnectionGroup.ROOT_IDENTIFIER
+        )
+        .then(function rootConnectionGroupsRetrieved(retrievedRootGroups) {
+            rootGroups = retrievedRootGroups;
             resolveMainPages();
         });
 
