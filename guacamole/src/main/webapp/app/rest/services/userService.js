@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ angular.module('rest').factory('userService', ['$injector',
 
     // Required services
     var $http                 = $injector.get('$http');
+    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
 
@@ -74,6 +75,66 @@ angular.module('rest').factory('userService', ['$injector',
             url     : 'api/data/' + encodeURIComponent(dataSource) + '/users',
             params  : httpParameters
         });
+
+    };
+
+    /**
+     * Returns a promise which resolves with all users accessible by the
+     * given user, as a map of @link{User} arrays by the identifier of their
+     * corresponding data source. All given data sources are queried. If an
+     * error occurs while retrieving any PermissionSet, the promise will be
+     * rejected.
+     *
+     * @param {String[]} dataSources
+     *     The unique identifier of the data sources containing the user to be
+     *     retrieved. These identifiers correspond to AuthenticationProviders
+     *     within the Guacamole web application.
+     *
+     * @param {String[]} [permissionTypes]
+     *     The set of permissions to filter with. A user must have one or more
+     *     of these permissions for a user to appear in the result.
+     *     If null, no filtering will be performed. Valid values are listed
+     *     within PermissionSet.ObjectType.
+     *
+     * @returns {Promise.<Object.<String, User[]>>}
+     *     A promise which resolves with all user objects available to the
+     *     current user, as a map of @link{User} arrays grouped by the
+     *     identifier of their corresponding data source.
+     */
+    service.getAllUsers = function getAllUsers(dataSources, permissionTypes) {
+
+        var deferred = $q.defer();
+
+        var userRequests = [];
+        var userArrays = {};
+
+        // Retrieve all users from all data sources
+        angular.forEach(dataSources, function retrieveUsers(dataSource) {
+            userRequests.push(
+                service.getUsers(dataSource, permissionTypes)
+                .success(function usersRetrieved(users) {
+                    userArrays[dataSource] = users;
+                })
+            );
+        });
+
+        // Resolve when all requests are completed
+        $q.all(userRequests)
+        .then(
+
+            // All requests completed successfully
+            function allUsersRetrieved() {
+                deferred.resolve(userArrays);
+            },
+
+            // At least one request failed
+            function UserRetrievalFailed(e) {
+                deferred.reject(e);
+            }
+
+        );
+
+        return deferred.promise;
 
     };
 
