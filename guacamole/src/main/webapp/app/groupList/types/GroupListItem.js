@@ -40,6 +40,14 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
         template = template || {};
 
         /**
+         * The identifier of the data source associated with the connection or
+         * connection group this item represents.
+         *
+         * @type String
+         */
+        this.dataSource = template.dataSource;
+
+        /**
          * The unique identifier associated with the connection or connection
          * group this item represents.
          *
@@ -124,6 +132,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
     /**
      * Creates a new GroupListItem using the contents of the given connection.
      *
+     * @param {String} dataSource
+     *     The identifier of the data source containing the given connection
+     *     group.
+     *
      * @param {ConnectionGroup} connection
      *     The connection whose contents should be represented by the new
      *     GroupListItem.
@@ -136,7 +148,8 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection.
      */
-    GroupListItem.fromConnection = function fromConnection(connection, countActiveConnections) {
+    GroupListItem.fromConnection = function fromConnection(dataSource,
+        connection, countActiveConnections) {
 
         // Return item representing the given connection
         return new GroupListItem({
@@ -145,6 +158,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             name       : connection.name,
             identifier : connection.identifier,
             protocol   : connection.protocol,
+            dataSource : dataSource,
 
             // Type information
             isConnection      : true,
@@ -172,6 +186,10 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      * Creates a new GroupListItem using the contents and descendants of the
      * given connection group.
      *
+     * @param {String} dataSource
+     *     The identifier of the data source containing the given connection
+     *     group.
+     *
      * @param {ConnectionGroup} connectionGroup
      *     The connection group whose contents and descendants should be
      *     represented by the new GroupListItem and its descendants.
@@ -195,22 +213,26 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      *     A new GroupListItem which represents the given connection group,
      *     including all descendants.
      */
-    GroupListItem.fromConnectionGroup = function fromConnectionGroup(connectionGroup,
-        includeConnections, countActiveConnections, countActiveConnectionGroups) {
+    GroupListItem.fromConnectionGroup = function fromConnectionGroup(dataSource,
+        connectionGroup, includeConnections, countActiveConnections,
+        countActiveConnectionGroups) {
 
         var children = [];
 
         // Add any child connections
         if (connectionGroup.childConnections && includeConnections !== false) {
             connectionGroup.childConnections.forEach(function addChildConnection(child) {
-                children.push(GroupListItem.fromConnection(child, countActiveConnections));
+                children.push(GroupListItem.fromConnection(dataSource, child,
+                    countActiveConnections));
             });
         }
 
         // Add any child groups 
         if (connectionGroup.childConnectionGroups) {
             connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
-                children.push(GroupListItem.fromConnectionGroup(child, includeConnections, countActiveConnections, countActiveConnectionGroups));
+                children.push(GroupListItem.fromConnectionGroup(dataSource,
+                    child, includeConnections, countActiveConnections,
+                    countActiveConnectionGroups));
             });
         }
 
@@ -220,6 +242,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
             // Identifying information
             name       : connectionGroup.name,
             identifier : connectionGroup.identifier,
+            dataSource : dataSource,
 
             // Type information
             isConnection      : false,

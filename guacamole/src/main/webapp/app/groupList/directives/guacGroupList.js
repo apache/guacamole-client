@@ -32,11 +32,12 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
         scope: {
 
             /**
-             * The connection group to display.
+             * The connection groups to display as a map of data source
+             * identifier to corresponding root group.
              *
-             * @type ConnectionGroup|Object 
+             * @type Object.<String, ConnectionGroup>
              */
-            connectionGroup : '=',
+            connectionGroups : '=',
 
             /**
              * Arbitrary object which shall be made available to the connection
@@ -106,6 +107,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              */
             var connectionCount = {};
 
+            $scope.rootItems = [];
+
             // Count active connections by connection identifier
             activeConnectionService.getActiveConnections()
             .success(function activeConnectionsRetrieved(activeConnections) {
@@ -173,29 +176,30 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             };
 
             // Set contents whenever the connection group is assigned or changed
-            $scope.$watch("connectionGroup", function setContents(connectionGroup) {
+            $scope.$watch('connectionGroups', function setContents(connectionGroups) {
 
-                if (connectionGroup) {
+                $scope.rootItems = [];
 
-                    // Create item hierarchy, including connections only if they will be visible
-                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup,
-                        !!$scope.connectionTemplate, countActiveConnections);
+                // If connection groups are given, add them to the interface
+                if (connectionGroups) {
+                    angular.forEach(connectionGroups, function addConnectionGroup(connectionGroup, dataSource) {
 
-                    // If root group is to be shown, wrap that group as the child of a fake root group
-                    if ($scope.showRootGroup)
-                        $scope.rootItem = new GroupListItem({
-                            isConnectionGroup : true,
-                            isBalancing       : false,
-                            children          : [ rootItem ]
-                        });
+                        var rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
+                            !!$scope.connectionTemplate, countActiveConnections);
 
-                    // If not wrapped, only the descendants of the root will be shown
-                    else
-                        $scope.rootItem = rootItem;
+                        // If root group is to be shown, add it as a root item
+                        if ($scope.showRootGroup)
+                            $scope.rootItems.push(rootItem);
 
+                        // Otherwise, add its children as root items
+                        else {
+                            angular.forEach(rootItem.children, function addRootItem(child) {
+                                $scope.rootItems.push(child);
+                            });
+                        }
+
+                    });
                 }
-                else
-                    $scope.rootItem = null;
 
             });
 
