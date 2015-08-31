@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
 
     // Required services
     var $http                 = $injector.get('$http');
+    var $q                    = $injector.get('$q');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
     
@@ -57,7 +58,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      *     A promise which will resolve with a @link{ConnectionGroup} upon
      *     success.
      */
-    service.getConnectionGroupTree = function getConnectionGroupTree(connectionGroupID, permissionTypes) {
+    service.getConnectionGroupTree = function getConnectionGroupTree(dataSource, connectionGroupID, permissionTypes) {
         
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
@@ -75,12 +76,12 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             params  : httpParameters
         });
        
     };
-    
+
     /**
      * Makes a request to the REST API to get an individual connection group,
      * returning a promise that provides the corresponding
@@ -94,7 +95,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      *     A promise which will resolve with a @link{ConnectionGroup} upon
      *     success.
      */
-    service.getConnectionGroup = function getConnectionGroup(connectionGroupID) {
+    service.getConnectionGroup = function getConnectionGroup(dataSource, connectionGroupID) {
         
         // Use the root connection group ID if no ID is passed in
         connectionGroupID = connectionGroupID || ConnectionGroup.ROOT_IDENTIFIER;
@@ -108,7 +109,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroupID),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
             params  : httpParameters
         });
 
@@ -127,7 +128,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
-    service.saveConnectionGroup = function saveConnectionGroup(connectionGroup) {
+    service.saveConnectionGroup = function saveConnectionGroup(dataSource, connectionGroup) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -138,7 +139,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         if (!connectionGroup.identifier) {
             return $http({
                 method  : 'POST',
-                url     : 'api/connectionGroups',
+                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups',
                 params  : httpParameters,
                 data    : connectionGroup
             })
@@ -154,7 +155,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         else {
             return $http({
                 method  : 'PUT',
-                url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 params  : httpParameters,
                 data    : connectionGroup
             })
@@ -177,7 +178,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteConnectionGroup = function deleteConnectionGroup(connectionGroup) {
+    service.deleteConnectionGroup = function deleteConnectionGroup(dataSource, connectionGroup) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -187,7 +188,7 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
         // Delete connection group
         return $http({
             method  : 'DELETE',
-            url     : 'api/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
             params  : httpParameters
         })
 
