@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.AbstractUser;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
@@ -40,6 +39,12 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
  * @author Michael Jumper
  */
 public class SimpleUser extends AbstractUser {
+
+    /**
+     * All connection permissions granted to this user.
+     */
+    private final Set<ObjectPermission> userPermissions =
+            new HashSet<ObjectPermission>();
 
     /**
      * All connection permissions granted to this user.
@@ -57,6 +62,19 @@ public class SimpleUser extends AbstractUser {
      * Creates a completely uninitialized SimpleUser.
      */
     public SimpleUser() {
+    }
+
+    /**
+     * Creates a new SimpleUser having the given username and no permissions.
+     *
+     * @param username
+     *     The username to assign to this SimpleUser.
+     */
+    public SimpleUser(String username) {
+
+        // Set username
+        setIdentifier(username);
+
     }
 
     /**
@@ -89,6 +107,7 @@ public class SimpleUser extends AbstractUser {
      *
      * @param username
      *     The username to assign to this SimpleUser.
+     *
      * @param connectionIdentifiers
      *     The identifiers of all connections this user has READ access to.
      *
@@ -100,10 +119,40 @@ public class SimpleUser extends AbstractUser {
             Collection<String> connectionIdentifiers,
             Collection<String> connectionGroupIdentifiers) {
 
-        // Set username
-        setIdentifier(username);
+        this(username);
 
         // Add permissions
+        addReadPermissions(connectionPermissions,      connectionIdentifiers);
+        addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
+
+    }
+
+    /**
+     * Creates a new SimpleUser having the given username and READ access to
+     * the users, connections, and groups having the given identifiers.
+     *
+     * @param username
+     *     The username to assign to this SimpleUser.
+     *
+     * @param userIdentifiers
+     *     The identifiers of all users this user has READ access to.
+     *
+     * @param connectionIdentifiers
+     *     The identifiers of all connections this user has READ access to.
+     *
+     * @param connectionGroupIdentifiers
+     *     The identifiers of all connection groups this user has READ access
+     *     to.
+     */
+    public SimpleUser(String username,
+            Collection<String> userIdentifiers,
+            Collection<String> connectionIdentifiers,
+            Collection<String> connectionGroupIdentifiers) {
+
+        this(username);
+
+        // Add permissions
+        addReadPermissions(userPermissions,            userIdentifiers);
         addReadPermissions(connectionPermissions,      connectionIdentifiers);
         addReadPermissions(connectionGroupPermissions, connectionGroupIdentifiers);
 
@@ -140,7 +189,7 @@ public class SimpleUser extends AbstractUser {
     @Override
     public ObjectPermissionSet getUserPermissions()
             throws GuacamoleException {
-        return new SimpleObjectPermissionSet();
+        return new SimpleObjectPermissionSet(userPermissions);
     }
 
     @Override

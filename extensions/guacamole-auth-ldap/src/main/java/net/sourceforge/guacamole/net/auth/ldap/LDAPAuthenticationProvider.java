@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,15 @@
 package net.sourceforge.guacamole.net.auth.ldap;
 
 
-import com.novell.ldap.LDAPAttribute;
-import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPEntry;
-import com.novell.ldap.LDAPException;
-import com.novell.ldap.LDAPSearchResults;
-import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.TreeMap;
+import org.glyptodon.guacamole.auth.ldap.AuthenticationProviderService;
+import org.glyptodon.guacamole.auth.ldap.LDAPAuthenticationProviderModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
-import net.sourceforge.guacamole.net.auth.ldap.properties.LDAPGuacamoleProperties;
-import org.glyptodon.guacamole.GuacamoleServerException;
-import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.environment.LocalEnvironment;
-import org.glyptodon.guacamole.net.auth.simple.SimpleAuthenticationProvider;
-import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.glyptodon.guacamole.net.auth.UserContext;
 
 /**
  * Allows users to be authenticated against an LDAP server. Each user may have
@@ -50,17 +40,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Jumper
  */
-public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
+public class LDAPAuthenticationProvider implements AuthenticationProvider {
 
     /**
-     * Logger for this class.
+     * Injector which will manage the object graph of this authentication
+     * provider.
      */
-    private Logger logger = LoggerFactory.getLogger(LDAPAuthenticationProvider.class);
-
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
+    private final Injector injector;
 
     /**
      * Creates a new LDAPAuthenticationProvider that authenticates users
@@ -71,7 +57,12 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
      *     a property.
      */
     public LDAPAuthenticationProvider() throws GuacamoleException {
-        environment = new LocalEnvironment();
+
+        // Set up Guice injector.
+        injector = Guice.createInjector(
+            new LDAPAuthenticationProviderModule(this)
+        );
+
     }
 
     @Override
@@ -79,219 +70,33 @@ public class LDAPAuthenticationProvider extends SimpleAuthenticationProvider {
         return "ldap";
     }
 
-    // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
-    private static String escapeLDAPSearchFilter(String filter) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < filter.length(); i++) {
-            char curChar = filter.charAt(i);
-            switch (curChar) {
-                case '\\':
-                    sb.append("\\5c");
-                    break;
-                case '*':
-                    sb.append("\\2a");
-                    break;
-                case '(':
-                    sb.append("\\28");
-                    break;
-                case ')':
-                    sb.append("\\29");
-                    break;
-                case '\u0000':
-                    sb.append("\\00");
-                    break;
-                default:
-                    sb.append(curChar);
-            }
-        }
-        return sb.toString();
+    @Override
+    public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
+
+        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
+        return authProviderService.authenticateUser(credentials);
+
     }
 
-    // Courtesy of OWASP: https://www.owasp.org/index.php/Preventing_LDAP_Injection_in_Java
-    private static String escapeDN(String name) {
-       StringBuilder sb = new StringBuilder();
-       if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
-           sb.append('\\'); // add the leading backslash if needed
-       }
-       for (int i = 0; i < name.length(); i++) {
-           char curChar = name.charAt(i);
-           switch (curChar) {
-               case '\\':
-                   sb.append("\\\\");
-                   break;
-               case ',':
-                   sb.append("\\,");
-                   break;
-               case '+':
-                   sb.append("\\+");
-                   break;
-               case '"':
-                   sb.append("\\\"");
-                   break;
-               case '<':
-                   sb.append("\\<");
-                   break;
-               case '>':
-                   sb.append("\\>");
-                   break;
-               case ';':
-                   sb.append("\\;");
-                   break;
-               default:
-                   sb.append(curChar);
-           }
-       }
-       if ((name.length() > 1) && (name.charAt(name.length() - 1) == ' ')) {
-           sb.insert(sb.length() - 1, '\\'); // add the trailing backslash if needed
-       }
-       return sb.toString();
-   }
+    @Override
+    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+        return authenticatedUser;
+    }
 
     @Override
-    public Map<String, GuacamoleConfiguration> getAuthorizedConfigurations(Credentials credentials) throws GuacamoleException {
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+            throws GuacamoleException {
 
-        // Require username
-        if (credentials.getUsername() == null) {
-            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-            return null;
-        }
+        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
+        return authProviderService.getUserContext(authenticatedUser);
 
-        // Require password, and do not allow anonymous binding
-        if (credentials.getPassword() == null
-                || credentials.getPassword().length() == 0) {
-            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-            return null;
-        }
+    }
 
-        // Connect to LDAP server
-        LDAPConnection ldapConnection;
-        try {
-
-            ldapConnection = new LDAPConnection();
-            ldapConnection.connect(
-                    environment.getRequiredProperty(LDAPGuacamoleProperties.LDAP_HOSTNAME),
-                    environment.getRequiredProperty(LDAPGuacamoleProperties.LDAP_PORT)
-            );
-
-        }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Unable to connect to LDAP server.", e);
-        }
-
-        // Get username attribute
-        String username_attribute = environment.getRequiredProperty(
-            LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE
-        );
-
-        // Get user base DN
-        String user_base_dn = environment.getRequiredProperty(
-                LDAPGuacamoleProperties.LDAP_USER_BASE_DN
-        );
-
-        // Construct user DN
-        String user_dn =
-            escapeDN(username_attribute) + "=" + escapeDN(credentials.getUsername())
-            + "," + user_base_dn;
-
-        try {
-
-            // Bind as user
-            try {
-                ldapConnection.bind(
-                        LDAPConnection.LDAP_V3,
-                        user_dn,
-                        credentials.getPassword().getBytes("UTF-8")
-                );
-            }
-            catch (UnsupportedEncodingException e) {
-                throw new GuacamoleException(e);
-            }
-
-        }
-        catch (LDAPException e) {
-            logger.debug("LDAP bind failed.", e);
-            return null;
-        }
-
-        // Get config base DN
-        String config_base_dn = environment.getRequiredProperty(
-                LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
-        );
-
-        // Pull all connections
-        try {
-
-            // Find all guac configs for this user
-            LDAPSearchResults results = ldapConnection.search(
-                    config_base_dn,
-                    LDAPConnection.SCOPE_SUB,
-                    "(&(objectClass=guacConfigGroup)(member=" + escapeLDAPSearchFilter(user_dn) + "))",
-                    null,
-                    false
-            );
-
-            // Add all configs
-            Map<String, GuacamoleConfiguration> configs = new TreeMap<String, GuacamoleConfiguration>();
-            while (results.hasMore()) {
-
-                LDAPEntry entry = results.next();
-
-                // New empty configuration
-                GuacamoleConfiguration config = new GuacamoleConfiguration();
-
-                // Get CN
-                LDAPAttribute cn = entry.getAttribute("cn");
-                if (cn == null)
-                    throw new GuacamoleException("guacConfigGroup without cn");
-
-                // Get protocol
-                LDAPAttribute protocol = entry.getAttribute("guacConfigProtocol");
-                if (protocol == null)
-                    throw new GuacamoleException("guacConfigGroup without guacConfigProtocol");
-
-                // Set protocol
-                config.setProtocol(protocol.getStringValue());
-
-                // Get parameters, if any
-                LDAPAttribute parameterAttribute = entry.getAttribute("guacConfigParameter");
-                if (parameterAttribute != null) {
-
-                    // For each parameter
-                    Enumeration<?> parameters = parameterAttribute.getStringValues();
-                    while (parameters.hasMoreElements()) {
-
-                        String parameter = (String) parameters.nextElement();
-
-                        // Parse parameter
-                        int equals = parameter.indexOf('=');
-                        if (equals != -1) {
-
-                            // Parse name
-                            String name = parameter.substring(0, equals);
-                            String value = parameter.substring(equals+1);
-
-                            config.setParameter(name, value);
-
-                        }
-
-                    }
-
-                }
-
-                // Store config by CN
-                configs.put(cn.getStringValue(), config);
-
-            }
-
-            // Disconnect
-            ldapConnection.disconnect();
-            return configs;
-
-        }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while querying for connections.", e);
-        }
-
+    @Override
+    public UserContext updateUserContext(UserContext context,
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+        return context;
     }
 
 }
