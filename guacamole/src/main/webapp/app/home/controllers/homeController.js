@@ -27,19 +27,21 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         function homeController($scope, $injector) {
 
     // Get required types
-    var ConnectionGroup = $injector.get("ConnectionGroup");
+    var ConnectionGroup = $injector.get('ConnectionGroup');
             
     // Get required services
-    var authenticationService  = $injector.get("authenticationService");
-    var connectionGroupService = $injector.get("connectionGroupService");
-    
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var dataSourceService      = $injector.get('dataSourceService');
+
     /**
-     * The root connection group, or null if the connection group hierarchy has
-     * not yet been loaded.
+     * Map of data source identifier to the root connection group of that data
+     * source, or null if the connection group hierarchy has not yet been
+     * loaded.
      *
-     * @type ConnectionGroup
+     * @type Object.<String, ConnectionGroup>
      */
-    $scope.rootConnectionGroup = null;
+    $scope.rootConnectionGroups = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -54,10 +56,14 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
 
     };
 
-    // Retrieve root group and all descendants
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-    .success(function rootGroupRetrieved(rootConnectionGroup) {
-        $scope.rootConnectionGroup = rootConnectionGroup;
+    // Retrieve root groups and all descendants
+    dataSourceService.apply(
+        connectionGroupService.getConnectionGroupTree,
+        authenticationService.getAvailableDataSources(),
+        ConnectionGroup.ROOT_IDENTIFIER
+    )
+    .then(function rootGroupsRetrieved(rootConnectionGroups) {
+        $scope.rootConnectionGroups = rootConnectionGroups;
     });
 
 }]);

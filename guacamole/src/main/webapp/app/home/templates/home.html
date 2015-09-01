@@ -30,14 +30,14 @@
             <guac-user-menu></guac-user-menu>
         </div>
         <div class="recent-connections">
-            <guac-recent-connections root-group="rootConnectionGroup"></guac-recent-connections>
+            <guac-recent-connections root-groups="rootConnectionGroups"></guac-recent-connections>
         </div>
 
         <!-- All connections for this user -->
         <h2 class="header">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
         <div class="all-connections">
             <guac-group-list
-                connection-group="rootConnectionGroup"
+                connection-groups="rootConnectionGroups"
                 connection-template="'app/home/templates/connection.html'"
                 connection-group-template="'app/home/templates/connectionGroup.html'"
                 page-size="20"></guac-group-list>
