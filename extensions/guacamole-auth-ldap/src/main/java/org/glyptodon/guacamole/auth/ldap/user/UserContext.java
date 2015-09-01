@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.novell.ldap.LDAPConnection;
 import java.util.Collection;
 import java.util.Collections;
+import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
 import org.glyptodon.guacamole.auth.ldap.connection.ConnectionService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.form.Form;
@@ -55,11 +56,6 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(UserContext.class);
-
-    /**
-     * The identifier reserved for the root connection group.
-     */
-    private static final String ROOT_CONNECTION_GROUP = "ROOT";
 
     /**
      * Service for retrieving Guacamole connections from the LDAP server.
@@ -141,7 +137,8 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
 
         // Root group contains only connections
         rootGroup = new SimpleConnectionGroup(
-            ROOT_CONNECTION_GROUP, ROOT_CONNECTION_GROUP,
+            LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP,
+            LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP,
             connectionDirectory.getIdentifiers(),
             Collections.<String>emptyList()
         );

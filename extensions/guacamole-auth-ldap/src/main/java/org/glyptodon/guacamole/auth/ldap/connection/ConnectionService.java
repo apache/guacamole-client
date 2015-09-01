@@ -31,6 +31,7 @@ import com.novell.ldap.LDAPSearchResults;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
 import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -153,7 +154,9 @@ public class ConnectionService {
 
                 // Store connection using cn for both identifier and name
                 String name = cn.getStringValue();
-                connections.put(name, new SimpleConnection(name, name, config));
+                Connection connection = new SimpleConnection(name, name, config);
+                connection.setParentIdentifier(LDAPAuthenticationProvider.ROOT_CONNECTION_GROUP);
+                connections.put(name, connection);
 
             }
 
