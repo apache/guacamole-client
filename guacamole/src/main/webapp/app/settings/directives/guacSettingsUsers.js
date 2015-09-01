@@ -204,34 +204,42 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                 if (!canManageUsers())
                     $location.path('/');
 
-            });
+                var userPromise;
 
-            // Retrieve all users for whom we have UPDATE or DELETE permission
-            dataSourceService.apply(userService.getUsers, dataSources, [
-                PermissionSet.ObjectPermissionType.UPDATE,
-                PermissionSet.ObjectPermissionType.DELETE
-            ])
-            .then(function usersReceived(userArrays) {
+                // If users can be created, list all readable users
+                if ($scope.canCreateUsers())
+                    userPromise = dataSourceService.apply(userService.getUsers, dataSources);
 
-                var addedUsers = {};
-                $scope.manageableUsers = [];
+                // Otherwise, list only updateable/deletable users
+                else
+                    userPromise = dataSourceService.apply(userService.getUsers, dataSources, [
+                        PermissionSet.ObjectPermissionType.UPDATE,
+                        PermissionSet.ObjectPermissionType.DELETE
+                    ]);
 
-                // For each user in each data source
-                angular.forEach(dataSources, function addUserList(dataSource) {
-                    angular.forEach(userArrays[dataSource], function addUser(user) {
+                userPromise.then(function usersReceived(userArrays) {
 
-                        // Do not add the same user twice
-                        if (addedUsers[user.username])
-                            return;
+                    var addedUsers = {};
+                    $scope.manageableUsers = [];
 
-                        // Add user to overall list
-                        addedUsers[user.username] = user;
-                        $scope.manageableUsers.push(new ManageableUser ({
-                            'dataSource' : dataSource,
-                            'user'       : user
-                        }));
+                    // For each user in each data source
+                    angular.forEach(dataSources, function addUserList(dataSource) {
+                        angular.forEach(userArrays[dataSource], function addUser(user) {
 
+                            // Do not add the same user twice
+                            if (addedUsers[user.username])
+                                return;
+
+                            // Add user to overall list
+                            addedUsers[user.username] = user;
+                            $scope.manageableUsers.push(new ManageableUser ({
+                                'dataSource' : dataSource,
+                                'user'       : user
+                            }));
+
+                        });
                     });
+
                 });
 
             });

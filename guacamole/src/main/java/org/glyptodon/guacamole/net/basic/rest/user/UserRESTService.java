@@ -169,7 +169,7 @@ public class UserRESTService {
 
         // Filter users, if requested
         Collection<String> userIdentifiers = userDirectory.getIdentifiers();
-        if (!isAdmin && permissions != null) {
+        if (!isAdmin && permissions != null && !permissions.isEmpty()) {
             ObjectPermissionSet userPermissions = self.getUserPermissions();
             userIdentifiers = userPermissions.getAccessibleObjects(permissions, userIdentifiers);
         }
