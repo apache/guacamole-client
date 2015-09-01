@@ -143,7 +143,9 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      * @param {Function} [countActiveConnections]
      *     A getter which returns the current number of active connections for
      *     the given connection. If omitted, the number of active connections
-     *     known at the time this function was called is used instead.
+     *     known at the time this function was called is used instead. This
+     *     function will be passed, in order, the data source identifier and
+     *     the connection in question.
      *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection.
@@ -169,7 +171,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
                 // Use getter, if provided
                 if (countActiveConnections)
-                    return countActiveConnections(connection);
+                    return countActiveConnections(dataSource, connection);
 
                 return connection.activeConnections;
 
@@ -201,13 +203,16 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
      * @param {Function} [countActiveConnections]
      *     A getter which returns the current number of active connections for
      *     the given connection. If omitted, the number of active connections
-     *     known at the time this function was called is used instead.
+     *     known at the time this function was called is used instead. This
+     *     function will be passed, in order, the data source identifier and
+     *     the connection group in question.
      *
      * @param {Function} [countActiveConnectionGroups]
      *     A getter which returns the current number of active connections for
      *     the given connection group. If omitted, the number of active
      *     connections known at the time this function was called is used
-     *     instead.
+     *     instead. This function will be passed, in order, the data source
+     *     identifier and the connection group in question.
      *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection group,
@@ -257,7 +262,7 @@ angular.module('groupList').factory('GroupListItem', ['ConnectionGroup', functio
 
                 // Use getter, if provided
                 if (countActiveConnectionGroups)
-                    return countActiveConnectionGroups(connectionGroup);
+                    return countActiveConnectionGroups(dataSource, connectionGroup);
 
                 return connectionGroup.activeConnections;
 
