@@ -33,11 +33,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var PermissionSet    = $injector.get('PermissionSet');
 
     // Get required services
-    var $q                     = $injector.get('$q');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get('connectionGroupService');
-    var dataSourceService      = $injector.get('dataSourceService');
-    var permissionService      = $injector.get('permissionService');
+    var $q                       = $injector.get('$q');
+    var authenticationService    = $injector.get('authenticationService');
+    var connectionGroupService   = $injector.get('connectionGroupService');
+    var dataSourceService        = $injector.get('dataSourceService');
+    var permissionService        = $injector.get('permissionService');
+    var translationStringService = $injector.get('translationStringService');
     
     var service = {};
     
@@ -167,12 +168,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
         
         var pages = [];
         
-        var canManageUsers = false;
-        var canManageConnections = false;
-        var canManageSessions = false;
+        var canManageUsers = [];
+        var canManageConnections = [];
+        var canManageSessions = [];
 
         // Inspect the contents of each provided permission set
-        angular.forEach(permissionSets, function inspectPermissions(permissions) {
+        angular.forEach(permissionSets, function inspectPermissions(permissions, dataSource) {
 
             permissions = angular.copy(permissions);
 
@@ -187,8 +188,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 authenticationService.getCurrentUsername());
 
             // Determine whether the current user needs access to the user management UI
-            canManageUsers = canManageUsers ||
-
+            if (
                     // System permissions
                        PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
                     || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
@@ -200,11 +200,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
 
                     // Permission to administer users
-                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+            )
+                canManageUsers.push(dataSource);
 
             // Determine whether the current user needs access to the connection management UI
-            canManageConnections = canManageConnections ||
-
+            if (
                     // System permissions
                        PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
                     || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
@@ -220,18 +221,21 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
                     // Permission to administer connections or connection groups
                     || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
-                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+            )
+                canManageConnections.push(dataSource);
 
             // Determine whether the current user needs access to the session management UI
-            canManageSessions = canManageSessions ||
-
+            if (
                     // A user must be a system administrator to manage sessions
-                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            )
+                canManageSessions.push(dataSource);
 
         });
 
         // If user can manage sessions, add link to sessions management page
-        if (canManageSessions) {
+        if (canManageSessions.length) {
             pages.push(new PageDefinition({
                 name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
                 url  : '/settings/sessions'
@@ -239,20 +243,23 @@ angular.module('navigation').factory('userPageService', ['$injector',
         }
         
         // If user can manage users, add link to user management page
-        if (canManageUsers) {
+        if (canManageUsers.length) {
             pages.push(new PageDefinition({
                 name : 'USER_MENU.ACTION_MANAGE_USERS',
                 url  : '/settings/users'
             }));
         }
 
-        // If user can manage connections, add link to connections management page
-        if (canManageConnections) {
+        // If user can manage connections, add links for connection management pages
+        angular.forEach(canManageConnections, function addConnectionManagementLink(dataSource) {
             pages.push(new PageDefinition({
-                name : 'USER_MENU.ACTION_MANAGE_CONNECTIONS',
-                url  : '/settings/connections'
+                name : [
+                    'USER_MENU.ACTION_MANAGE_CONNECTIONS',
+                    translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME'
+                ],
+                url  : '/settings/' + encodeURIComponent(dataSource) + '/connections'
             }));
-        }
+        });
 
         // Add link to user preferences (always accessible)
         pages.push(new PageDefinition({

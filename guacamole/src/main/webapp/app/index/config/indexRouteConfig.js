@@ -123,7 +123,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Management screen
-        .when('/settings/:tab', {
+        .when('/settings/:dataSource?/:tab', {
             title         : 'APP.NAME',
             bodyClassName : 'settings',
             templateUrl   : 'app/settings/templates/settings.html',
@@ -132,7 +132,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Connection editor
-        .when('/manage/connections/:id?', {
+        .when('/manage/:dataSource/connections/:id?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnection.html',
@@ -141,7 +141,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Connection group editor
-        .when('/manage/connectionGroups/:id?', {
+        .when('/manage/:dataSource/connectionGroups/:id?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageConnectionGroup.html',

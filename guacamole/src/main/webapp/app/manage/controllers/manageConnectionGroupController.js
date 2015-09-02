@@ -52,6 +52,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     };
 
     /**
+     * The unique identifier of the data source containing the connection group
+     * being edited.
+     *
+     * @type String
+     */
+    var dataSource = $routeParams.dataSource;
+
+    /**
      * The identifier of the connection group being edited. If a new connection
      * group is being created, this will not be defined.
      *
@@ -123,13 +131,14 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     };
     
     // Pull connection group attribute schema
-    schemaService.getConnectionGroupAttributes().success(function attributesReceived(attributes) {
+    schemaService.getConnectionGroupAttributes(dataSource)
+    .success(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
     // Query the user's permissions for the current connection group
-    permissionService.getPermissions(authenticationService.getCurrentUsername())
-            .success(function permissionsReceived(permissions) {
+    permissionService.getPermissions(dataSource, authenticationService.getCurrentUsername())
+    .success(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;
                         
@@ -150,14 +159,19 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
 
 
     // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
+    connectionGroupService.getConnectionGroupTree(
+        dataSource,
+        ConnectionGroup.ROOT_IDENTIFIER,
+        [PermissionSet.ObjectPermissionType.ADMINISTER]
+    )
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });
 
     // If we are editing an existing connection group, pull its data
     if (identifier) {
-        connectionGroupService.getConnectionGroup(identifier).success(function connectionGroupReceived(connectionGroup) {
+        connectionGroupService.getConnectionGroup(dataSource, identifier)
+        .success(function connectionGroupReceived(connectionGroup) {
             $scope.connectionGroup = connectionGroup;
         });
     }
@@ -187,7 +201,7 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/connections');
+        $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
     };
    
     /**
@@ -197,9 +211,9 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     $scope.saveConnectionGroup = function saveConnectionGroup() {
 
         // Save the connection
-        connectionGroupService.saveConnectionGroup($scope.connectionGroup)
+        connectionGroupService.saveConnectionGroup(dataSource, $scope.connectionGroup)
         .success(function savedConnectionGroup() {
-            $location.path('/settings/connections');
+            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
         })
 
         // Notify of any errors
@@ -247,9 +261,9 @@ angular.module('manage').controller('manageConnectionGroupController', ['$scope'
     var deleteConnectionGroupImmediately = function deleteConnectionGroupImmediately() {
 
         // Delete the connection group
-        connectionGroupService.deleteConnectionGroup($scope.connectionGroup)
+        connectionGroupService.deleteConnectionGroup(dataSource, $scope.connectionGroup)
         .success(function deletedConnectionGroup() {
-            $location.path('/settings/connections');
+            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
         })
 
         // Notify of any errors

@@ -41,13 +41,18 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             var PermissionSet   = $injector.get('PermissionSet');
 
             // Required services
-            var $location              = $injector.get('$location');
+            var $routeParams           = $injector.get('$routeParams');
             var authenticationService  = $injector.get('authenticationService');
             var connectionGroupService = $injector.get('connectionGroupService');
+            var dataSourceService      = $injector.get('dataSourceService');
             var guacNotification       = $injector.get('guacNotification');
             var permissionService      = $injector.get('permissionService');
 
-            // Identifier of the current user
+            /**
+             * The identifier of the current user.
+             *
+             * @type String
+             */
             var currentUsername = authenticationService.getCurrentUsername();
 
             /**
@@ -63,11 +68,18 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             };
 
             /**
+             * The identifier of the currently-selected data source.
+             *
+             * @type String
+             */
+            $scope.dataSource = $routeParams.dataSource;
+
+            /**
              * The root connection group of the connection group hierarchy.
              *
-             * @type ConnectionGroup
+             * @type Object.<String, ConnectionGroup>
              */
-            $scope.rootGroup = null;
+            $scope.rootGroups = null;
 
             /**
              * Whether the current user can manage connections. If the current
@@ -98,7 +110,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              * All permissions associated with the current user, or null if the
              * user's permissions have not yet been loaded.
              *
-             * @type PermissionSet
+             * @type Object.<String, PermissionSet>
              */
             $scope.permissions = null;
 
@@ -111,20 +123,25 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.isLoaded = function isLoaded() {
 
-                return $scope.rootGroup                 !== null
-                    && $scope.permissions               !== null
-                    && $scope.canManageConnections      !== null
-                    && $scope.canCreateConnections      !== null
-                    && $scope.canCreateConnectionGroups !== null;
+                return $scope.rootGroup   !== null
+                    && $scope.permissions !== null;
 
             };
 
+            $scope.canManageConnections = true;
+            $scope.canCreateConnections = true;
+            $scope.canCreateConnectionGroups = true;
+
             // Retrieve current permissions
-            permissionService.getPermissions(currentUsername)
-            .success(function permissionsRetrieved(permissions) {
+            dataSourceService.apply(
+                permissionService.getPermissions,
+                [$scope.dataSource],
+                currentUsername
+            )
+            .then(function permissionsRetrieved(permissions) {
 
                 $scope.permissions = permissions;
-                                
+/*
                 // Ignore permission to update root group
                 PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
 
@@ -154,14 +171,18 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 // Return to home if there's nothing to do here
                 if (!$scope.canManageConnections)
                     $location.path('/');
-                
+*/
             });
             
             // Retrieve all connections for which we have UPDATE or DELETE permission
-            connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, 
-                [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE])
-            .success(function connectionGroupReceived(rootGroup) {
-                $scope.rootGroup = rootGroup;
+            dataSourceService.apply(
+                connectionGroupService.getConnectionGroupTree,
+                [$scope.dataSource],
+                ConnectionGroup.ROOT_IDENTIFIER,
+                [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE]
+            )
+            .then(function connectionGroupsReceived(rootGroups) {
+                $scope.rootGroups = rootGroups;
             });
             
         }]

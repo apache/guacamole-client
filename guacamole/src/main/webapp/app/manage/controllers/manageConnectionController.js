@@ -55,7 +55,15 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
             guacNotification.showStatus(false);
         }
     };
-    
+
+    /**
+     * The unique identifier of the data source containing the connection being
+     * edited.
+     *
+     * @type String
+     */
+    var dataSource = $routeParams.dataSource;
+
     /**
      * The identifier of the original connection from which this connection is
      * being cloned. Only valid if this is a new connection.
@@ -178,20 +186,24 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
     // Pull connection attribute schema
-    schemaService.getConnectionAttributes().success(function attributesReceived(attributes) {
+    schemaService.getConnectionAttributes(dataSource)
+    .success(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
     // Pull connection group hierarchy
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER, 
-        [PermissionSet.ObjectPermissionType.ADMINISTER])
+    connectionGroupService.getConnectionGroupTree(
+        dataSource,
+        ConnectionGroup.ROOT_IDENTIFIER,
+        [PermissionSet.ObjectPermissionType.ADMINISTER]
+    )
     .success(function connectionGroupReceived(rootGroup) {
         $scope.rootGroup = rootGroup;
     });
     
     // Query the user's permissions for the current connection
-    permissionService.getPermissions(authenticationService.getCurrentUsername())
-            .success(function permissionsReceived(permissions) {
+    permissionService.getPermissions(dataSource, authenticationService.getCurrentUsername())
+    .success(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;
                         
@@ -220,7 +232,8 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     });
    
     // Get protocol metadata
-    schemaService.getProtocols().success(function protocolsReceived(protocols) {
+    schemaService.getProtocols(dataSource)
+    .success(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
 
@@ -233,12 +246,14 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     if (identifier) {
 
         // Pull data from existing connection
-        connectionService.getConnection(identifier).success(function connectionRetrieved(connection) {
+        connectionService.getConnection(dataSource, identifier)
+        .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
         });
 
         // Pull connection history
-        connectionService.getConnectionHistory(identifier).success(function historyReceived(historyEntries) {
+        connectionService.getConnectionHistory(dataSource, identifier)
+        .success(function historyReceived(historyEntries) {
 
             // Wrap all history entries for sake of display
             $scope.historyEntryWrappers = [];
@@ -249,7 +264,8 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         });
 
         // Pull connection parameters
-        connectionService.getConnectionParameters(identifier).success(function parametersReceived(parameters) {
+        connectionService.getConnectionParameters(dataSource, identifier)
+        .success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
     }
@@ -258,7 +274,8 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     else if (cloneSourceIdentifier) {
 
         // Pull data from cloned connection
-        connectionService.getConnection(cloneSourceIdentifier).success(function connectionRetrieved(connection) {
+        connectionService.getConnection(dataSource, cloneSourceIdentifier)
+        .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
             
             // Clear the identifier field because this connection is new
@@ -269,7 +286,8 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.historyEntryWrappers = [];
         
         // Pull connection parameters from cloned connection
-        connectionService.getConnectionParameters(cloneSourceIdentifier).success(function parametersReceived(parameters) {
+        connectionService.getConnectionParameters(dataSource, cloneSourceIdentifier)
+        .success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
     }
@@ -332,7 +350,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/connections');
+        $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
     };
     
     /**
@@ -340,7 +358,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * which is prepopulated with the data from the connection currently being edited. 
      */
     $scope.cloneConnection = function cloneConnection() {
-        $location.path('/manage/connections').search('clone', identifier);
+        $location.path('/manage/' + encodeURIComponent(dataSource) + '/connections').search('clone', identifier);
     };
             
     /**
@@ -352,9 +370,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.connection.parameters = $scope.parameters;
 
         // Save the connection
-        connectionService.saveConnection($scope.connection)
+        connectionService.saveConnection(dataSource, $scope.connection)
         .success(function savedConnection() {
-            $location.path('/settings/connections');
+            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
         })
 
         // Notify of any errors
@@ -402,9 +420,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var deleteConnectionImmediately = function deleteConnectionImmediately() {
 
         // Delete the connection
-        connectionService.deleteConnection($scope.connection)
+        connectionService.deleteConnection(dataSource, $scope.connection)
         .success(function deletedConnection() {
-            $location.path('/settings/connections');
+            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
         })
 
         // Notify of any errors
