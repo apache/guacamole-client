@@ -30,37 +30,46 @@ angular.module('navigation').factory('PageDefinition', [function definePageDefin
      * an arbitrary, human-readable name.
      *
      * @constructor
-     * @param {String} name
-     *     The the name of the page, which should be a translation table key.
-     *
-     * @param {String} url
-     *     The URL of the page.
-     * 
-     * @param {String} [className='']
-     *     The CSS class name to associate with this page, if any.
+     * @param {PageDefinition|Object} template
+     *     The object whose properties should be copied within the new
+     *     PageDefinition.
      */
-    var PageDefinition = function PageDefinition(name, url, className) {
+    var PageDefinition = function PageDefinition(template) {
 
         /**
          * The the name of the page, which should be a translation table key.
+         * Alternatively, this may also be a list of names, where the final
+         * name represents the page and earlier names represent categorization.
+         * Those categorical names may be rendered hierarchically as a system
+         * of menus, tabs, etc.
          *
-         * @type String
+         * @type String|String[]
          */
-        this.name = name;
+        this.name = template.name;
 
         /**
          * The URL of the page.
          *
          * @type String
          */
-        this.url = url;
+        this.url = template.url;
 
         /**
-         * The CSS class name to associate with this page, if any.
+         * The CSS class name to associate with this page, if any. This will be
+         * an empty string by default.
          *
          * @type String
          */
-        this.className = className || '';
+        this.className = template.className || '';
+
+        /**
+         * A numeric value denoting the relative sort order when compared to
+         * other sibling PageDefinitions. If unspecified, sort order is
+         * determined by the system using the PageDefinition.
+         *
+         * @type Number
+         */
+        this.weight = template.weight;
 
     };
 

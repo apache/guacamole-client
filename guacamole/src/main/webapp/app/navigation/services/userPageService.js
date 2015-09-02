@@ -42,30 +42,15 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var service = {};
     
     /**
-     * Construct a new PageDefinition object with the given name and url.
-     *
-     * @constructor
-     * @param {String} name
-     *     The i18n key for the name of the page.
-     * 
-     * @param {String} url
-     *     The URL of the page.
-     */
-    var PageDefinition = function PageDefinition(name, url) {
-        this.name = name;
-        this.url  = url;
-    };
-            
-    /**
      * The home page to assign to a user if they can navigate to more than one
      * page.
      * 
      * @type PageDefinition
      */
-    var SYSTEM_HOME_PAGE = new PageDefinition(
-        'USER_MENU.ACTION_NAVIGATE_HOME',
-        '/'
-    );
+    var SYSTEM_HOME_PAGE = new PageDefinition({
+        name : 'USER_MENU.ACTION_NAVIGATE_HOME',
+        url  : '/'
+    });
 
     /**
      * Returns an appropriate home page for the current user.
@@ -101,14 +86,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
                 // Only one connection present, use as home page
                 if (connection) {
-                    homePage = new PageDefinition(
-                        connection.name,
-                        '/client/' + ClientIdentifier.toString({
+                    homePage = new PageDefinition({
+                        name : connection.name,
+                        url  : '/client/' + ClientIdentifier.toString({
                             dataSource : dataSource,
                             type       : ClientIdentifier.Types.CONNECTION,
                             id         : connection.identifier
                         })
-                    );
+                    });
                 }
 
                 // Only one balancing group present, use as home page
@@ -116,14 +101,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
                         && connectionGroup.type === ConnectionGroup.Type.BALANCING
                         && _.isEmpty(connectionGroup.childConnections)
                         && _.isEmpty(connectionGroup.childConnectionGroups)) {
-                    homePage = new PageDefinition(
-                        connectionGroup.name,
-                        '/client/' + ClientIdentifier.toString({
+                    homePage = new PageDefinition({
+                        name : connectionGroup.name,
+                        url  : '/client/' + ClientIdentifier.toString({
                             dataSource : dataSource,
                             type       : ClientIdentifier.Types.CONNECTION_GROUP,
                             id         : connectionGroup.identifier
                         })
-                    );
+                    });
                 }
 
             }
@@ -247,33 +232,33 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // If user can manage sessions, add link to sessions management page
         if (canManageSessions) {
-            pages.push(new PageDefinition(
-                'USER_MENU.ACTION_MANAGE_SESSIONS',
-                '/settings/sessions'
-            ));
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
+                url  : '/settings/sessions'
+            }));
         }
         
         // If user can manage users, add link to user management page
         if (canManageUsers) {
-            pages.push(new PageDefinition(
-                'USER_MENU.ACTION_MANAGE_USERS',
-                '/settings/users'
-            ));
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_USERS',
+                url  : '/settings/users'
+            }));
         }
 
         // If user can manage connections, add link to connections management page
         if (canManageConnections) {
-            pages.push(new PageDefinition(
-                'USER_MENU.ACTION_MANAGE_CONNECTIONS',
-                '/settings/connections'
-            ));
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_CONNECTIONS',
+                url  : '/settings/connections'
+            }));
         }
 
         // Add link to user preferences (always accessible)
-        pages.push(new PageDefinition(
-            'USER_MENU.ACTION_MANAGE_PREFERENCES',
-            '/settings/preferences'
-        ));
+        pages.push(new PageDefinition({
+            name : 'USER_MENU.ACTION_MANAGE_PREFERENCES',
+            url  : '/settings/preferences'
+        }));
 
         return pages;
     };
@@ -338,10 +323,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Add generic link to the first-available settings page
         if (settingsPages.length) {
-            pages.push(new PageDefinition(
-                'USER_MENU.ACTION_MANAGE_SETTINGS',
-                settingsPages[0].url
-            ));
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_SETTINGS',
+                url  : settingsPages[0].url
+            }));
         }
         
         return pages;

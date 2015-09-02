@@ -353,11 +353,11 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             var linked = dataSource in users;
 
             // Add page entry
-            $scope.accountPages.push(new PageDefinition(
-                translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
-                linked ? 'linked' : 'unlinked'
-            ));
+            $scope.accountPages.push(new PageDefinition({
+                name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
+                className : linked ? 'linked' : 'unlinked'
+            }));
 
         });
 

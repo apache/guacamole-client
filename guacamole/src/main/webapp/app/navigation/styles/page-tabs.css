@@ -20,46 +20,39 @@
  * THE SOFTWARE.
  */
 
-.manage-user .username.header {
-    margin-bottom: 0;
+.page-tabs .page-list ul {
+    margin: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.0125);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.manage-user .username.header h2 {
-    text-transform: none;
+.page-tabs .page-list ul + ul {
+    font-size: 0.75em;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href],
-.manage-user .page-tabs .page-list li.linked   a[href] {
-    padding-right: 2.5em;
-    position: relative;
+.page-tabs .page-list li {
+    display: inline-block;
+    list-style: none;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href]:before,
-.manage-user .page-tabs .page-list li.linked   a[href]:before {
-    content: ' ';
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    top: 0;
-    width: 2.5em;
-    background-size: 1.25em;
-    background-repeat: no-repeat;
-    background-position: center;
+.page-tabs .page-list li a[href] {
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 0.75em 1em;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href]:before {
-    background-image: url('images/plus.png');
+.page-tabs .page-list li a[href]:visited {
+    color: black;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href] {
-    opacity: 0.5;
+.page-tabs .page-list li a[href]:hover {
+    background-color: #CDA;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href]:hover,
-.manage-user .page-tabs .page-list li.unlinked a[href].current {
-    opacity: 1;
-}
-
-.manage-user .page-tabs .page-list li.linked a[href]:before {
-    background-image: url('images/checkmark.png');
+.page-tabs .page-list li a[href].current,
+.page-tabs .page-list li a[href].current:hover {
+    background: rgba(0,0,0,0.3);
+    cursor: default;
 }
