@@ -24,13 +24,11 @@ package org.glyptodon.guacamole.net.basic;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.glyptodon.guacamole.net.basic.rest.clipboard.ClipboardRESTService;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.io.GuacamoleReader;
 import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -235,28 +233,6 @@ public class TunnelRequestService {
             private final long connectionStartTime = System.currentTimeMillis();
 
             @Override
-            public GuacamoleReader acquireReader() {
-
-                // Monitor instructions which pertain to server-side events, if necessary
-                try {
-                    if (environment.getProperty(ClipboardRESTService.INTEGRATION_ENABLED, false)) {
-
-                        ClipboardState clipboard = session.getClipboardState();
-                        return new MonitoringGuacamoleReader(clipboard, super.acquireReader());
-
-                    }
-                }
-                catch (GuacamoleException e) {
-                    logger.warn("Clipboard integration failed to initialize: {}", e.getMessage());
-                    logger.debug("Error setting up clipboard integration.", e);
-                }
-
-                // Pass through by default.
-                return super.acquireReader();
-
-            }
-
-            @Override
             public void close() throws GuacamoleException {
 
                 long connectionEndTime = System.currentTimeMillis();
@@ -268,13 +244,13 @@ public class TunnelRequestService {
                     // Connection identifiers
                     case CONNECTION:
                         logger.info("User \"{}\" disconnected from connection \"{}\". Duration: {} milliseconds",
-                                session.getUserContext().self().getIdentifier(), id, duration);
+                                session.getAuthenticatedUser().getIdentifier(), id, duration);
                         break;
 
                     // Connection group identifiers
                     case CONNECTION_GROUP:
                         logger.info("User \"{}\" disconnected from connection group \"{}\". Duration: {} milliseconds",
-                                session.getUserContext().self().getIdentifier(), id, duration);
+                                session.getAuthenticatedUser().getIdentifier(), id, duration);
                         break;
 
                     // Type is guaranteed to be one of the above

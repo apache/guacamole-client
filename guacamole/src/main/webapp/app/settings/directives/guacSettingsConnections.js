@@ -48,7 +48,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             var permissionService      = $injector.get('permissionService');
 
             // Identifier of the current user
-            var currentUserID = authenticationService.getCurrentUserID();
+            var currentUsername = authenticationService.getCurrentUsername();
 
             /**
              * An action to be provided along with the object sent to
@@ -120,7 +120,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             };
 
             // Retrieve current permissions
-            permissionService.getPermissions(currentUserID)
+            permissionService.getPermissions(currentUsername)
             .success(function permissionsRetrieved(permissions) {
 
                 $scope.permissions = permissions;

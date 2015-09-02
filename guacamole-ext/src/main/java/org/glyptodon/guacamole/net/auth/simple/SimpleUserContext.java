@@ -30,6 +30,7 @@ import java.util.UUID;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.ActiveConnection;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -50,7 +51,12 @@ public class SimpleUserContext implements UserContext {
      * The unique identifier of the root connection group.
      */
     private static final String ROOT_IDENTIFIER = "ROOT";
-    
+
+    /**
+     * The AuthenticationProvider that created this UserContext.
+     */
+    private final AuthenticationProvider authProvider;
+
     /**
      * Reference to the user whose permissions dictate the configurations
      * accessible within this UserContext.
@@ -84,24 +90,35 @@ public class SimpleUserContext implements UserContext {
      * Creates a new SimpleUserContext which provides access to only those
      * configurations within the given Map. The username is assigned
      * arbitrarily.
-     * 
-     * @param configs A Map of all configurations for which the user associated
-     *                with this UserContext has read access.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider creating this UserContext.
+     *
+     * @param configs
+     *     A Map of all configurations for which the user associated with this
+     *     UserContext has read access.
      */
-    public SimpleUserContext(Map<String, GuacamoleConfiguration> configs) {
-        this(UUID.randomUUID().toString(), configs);
+    public SimpleUserContext(AuthenticationProvider authProvider,
+            Map<String, GuacamoleConfiguration> configs) {
+        this(authProvider, UUID.randomUUID().toString(), configs);
     }
 
     /**
      * Creates a new SimpleUserContext for the user with the given username
      * which provides access to only those configurations within the given Map.
-      * 
-     * @param username The username of the user associated with this
-     *                 UserContext.
-     * @param configs A Map of all configurations for which the user associated
-     *                with this UserContext has read access.
+     *
+     * @param authProvider
+     *     The AuthenticationProvider creating this UserContext.
+     *
+     * @param username
+     *     The username of the user associated with this UserContext.
+     *
+     * @param configs
+     *     A Map of all configurations for which the user associated with
+     *     this UserContext has read access.
      */
-    public SimpleUserContext(String username, Map<String, GuacamoleConfiguration> configs) {
+    public SimpleUserContext(AuthenticationProvider authProvider,
+            String username, Map<String, GuacamoleConfiguration> configs) {
 
         Collection<String> connectionIdentifiers = new ArrayList<String>(configs.size());
         Collection<String> connectionGroupIdentifiers = Collections.singleton(ROOT_IDENTIFIER);
@@ -138,12 +155,20 @@ public class SimpleUserContext implements UserContext {
         this.userDirectory = new SimpleUserDirectory(self);
         this.connectionDirectory = new SimpleConnectionDirectory(connections);
         this.connectionGroupDirectory = new SimpleConnectionGroupDirectory(Collections.singleton(this.rootGroup));
-        
+
+        // Associate provided AuthenticationProvider
+        this.authProvider = authProvider;
+
     }
 
     @Override
     public User self() {
         return self;
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authProvider;
     }
 
     @Override

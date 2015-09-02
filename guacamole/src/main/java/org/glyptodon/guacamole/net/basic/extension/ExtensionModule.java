@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.extension;
 
+import com.google.inject.Provides;
 import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
@@ -91,10 +92,10 @@ public class ExtensionModule extends ServletModule {
     private final Environment environment;
 
     /**
-     * The currently-bound authentication provider, if any. At the moment, we
-     * only support one authentication provider loaded at any one time.
+     * All currently-bound authentication providers, if any.
      */
-    private Class<? extends AuthenticationProvider> boundAuthenticationProvider = null;
+    private final List<AuthenticationProvider> boundAuthenticationProviders =
+            new ArrayList<AuthenticationProvider>();
 
     /**
      * Service for adding and retrieving language resources.
@@ -179,40 +180,24 @@ public class ExtensionModule extends ServletModule {
     /**
      * Binds the given AuthenticationProvider class such that any service
      * requiring access to the AuthenticationProvider can obtain it via
-     * injection.
+     * injection, along with any other bound AuthenticationProviders.
      *
      * @param authenticationProvider
      *     The AuthenticationProvider class to bind.
      */
     private void bindAuthenticationProvider(Class<? extends AuthenticationProvider> authenticationProvider) {
 
-        // Choose auth provider for binding if not already chosen
-        if (boundAuthenticationProvider == null)
-            boundAuthenticationProvider = authenticationProvider;
-
-        // If an auth provider is already chosen, skip and warn
-        else {
-            logger.debug("Ignoring AuthenticationProvider \"{}\".", authenticationProvider);
-            logger.warn("Only one authentication extension may be used at a time. Please "
-                      + "make sure that only one authentication extension is present "
-                      + "within the GUACAMOLE_HOME/" + EXTENSIONS_DIRECTORY + " "
-                      + "directory, and that you are not also specifying the deprecated "
-                      + "\"auth-provider\" property within guacamole.properties.");
-            return;
-        }
-
         // Bind authentication provider
-        logger.debug("Binding AuthenticationProvider \"{}\".", authenticationProvider);
-        bind(AuthenticationProvider.class).toInstance(new AuthenticationProviderFacade(authenticationProvider));
+        logger.debug("[{}] Binding AuthenticationProvider \"{}\".",
+                boundAuthenticationProviders.size(), authenticationProvider.getName());
+        boundAuthenticationProviders.add(new AuthenticationProviderFacade(authenticationProvider));
 
     }
 
     /**
      * Binds each of the the given AuthenticationProvider classes such that any
      * service requiring access to the AuthenticationProvider can obtain it via
-     * injection. Note that, as multiple simultaneous authentication providers
-     * are not currently supported, attempting to bind more than one
-     * authentication provider will result in warnings being logged.
+     * injection.
      *
      * @param authProviders
      *     The AuthenticationProvider classes to bind.
@@ -223,6 +208,18 @@ public class ExtensionModule extends ServletModule {
         for (Class<AuthenticationProvider> authenticationProvider : authProviders)
             bindAuthenticationProvider(authenticationProvider);
 
+    }
+
+    /**
+     * Returns a list of all currently-bound AuthenticationProvider instances.
+     *
+     * @return
+     *     A List of all currently-bound AuthenticationProvider. The List is
+     *     not modifiable.
+     */
+    @Provides
+    public List<AuthenticationProvider> getAuthenticationProviders() {
+        return Collections.unmodifiableList(boundAuthenticationProviders);
     }
 
     /**
@@ -415,11 +412,8 @@ public class ExtensionModule extends ServletModule {
         // Load all extensions
         loadExtensions(javaScriptResources, cssResources);
 
-        // Bind basic auth if nothing else chosen/provided
-        if (boundAuthenticationProvider == null) {
-            logger.info("Using default, \"basic\", XML-driven authentication.");
-            bindAuthenticationProvider(BasicFileAuthenticationProvider.class);
-        }
+        // Always bind basic auth last
+        bindAuthenticationProvider(BasicFileAuthenticationProvider.class);
 
         // Dynamically generate app.js and app.css from extensions
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));

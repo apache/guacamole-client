@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,18 +22,15 @@
 
 package org.glyptodon.guacamole.net.basic;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
-import org.glyptodon.guacamole.net.auth.Credentials;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.UserContext;
-import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,19 +48,15 @@ public class GuacamoleSession {
     private static final Logger logger = LoggerFactory.getLogger(GuacamoleSession.class);
 
     /**
-     * The credentials provided when the user authenticated.
+     * The user associated with this session.
      */
-    private Credentials credentials;
+    private AuthenticatedUser authenticatedUser;
     
     /**
-     * The user context associated with this session.
+     * All UserContexts associated with this session. Each
+     * AuthenticationProvider may provide its own UserContext.
      */
-    private UserContext userContext;
-
-    /**
-     * The current clipboard state.
-     */
-    private final ClipboardState clipboardState = new ClipboardState();
+    private List<UserContext> userContexts;
 
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
@@ -76,80 +69,110 @@ public class GuacamoleSession {
     private long lastAccessedTime;
     
     /**
-     * Creates a new Guacamole session associated with the given user context.
+     * Creates a new Guacamole session associated with the given
+     * AuthenticatedUser and UserContexts.
      *
      * @param environment
      *     The environment of the Guacamole server associated with this new
      *     session.
      *
-     * @param credentials
-     *     The credentials provided by the user during login.
+     * @param authenticatedUser
+     *     The authenticated user to associate this session with.
      *
-     * @param userContext
-     *     The user context to associate this session with.
+     * @param userContexts
+     *     The List of UserContexts to associate with this session.
      *
      * @throws GuacamoleException
      *     If an error prevents the session from being created.
      */
-    public GuacamoleSession(Environment environment, Credentials credentials,
-            UserContext userContext) throws GuacamoleException {
+    public GuacamoleSession(Environment environment,
+            AuthenticatedUser authenticatedUser,
+            List<UserContext> userContexts)
+            throws GuacamoleException {
         this.lastAccessedTime = System.currentTimeMillis();
-        this.credentials = credentials;
-        this.userContext = userContext;
+        this.authenticatedUser = authenticatedUser;
+        this.userContexts = userContexts;
     }
 
     /**
-     * Returns the credentials used when the user associated with this session
-     * authenticated.
+     * Returns the authenticated user associated with this session.
      *
      * @return
-     *     The credentials used when the user associated with this session
-     *     authenticated.
+     *     The authenticated user associated with this session.
      */
-    public Credentials getCredentials() {
-        return credentials;
+    public AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
     }
 
     /**
-     * Replaces the credentials associated with this session with the given
-     * credentials.
+     * Replaces the authenticated user associated with this session with the
+     * given authenticated user.
      *
-     * @param credentials
-     *     The credentials to associate with this session.
+     * @param authenticatedUser
+     *     The authenticated user to associated with this session.
      */
-    public void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
+    public void setAuthenticatedUser(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
     }
-    
+
     /**
      * Returns the UserContext associated with this session.
      *
      * @return The UserContext associated with this session.
      */
     public UserContext getUserContext() {
-        return userContext;
+
+        // Warn of deprecation
+        logger.debug(
+            "\n****************************************************************"
+          + "\n"
+          + "\n       !!!!  PLEASE DO NOT USE getUserContext() !!!!"
+          + "\n"
+          + "\n getUserContext() has been replaced by getUserContexts(), which"
+          + "\n properly handles multiple authentication providers. All use of"
+          + "\n the old getUserContext() must be removed before GUAC-586 can"
+          + "\n be considered complete."
+          + "\n"
+          + "\n****************************************************************"
+        );
+
+        // Return the UserContext associated with the AuthenticationProvider
+        // that authenticated the current user.
+        String authProviderIdentifier = authenticatedUser.getAuthenticationProvider().getIdentifier();
+        for (UserContext userContext : userContexts) {
+            if (userContext.getAuthenticationProvider().getIdentifier().equals(authProviderIdentifier))
+                return userContext;
+        }
+
+        // If not found, return null
+        return null;
+
     }
 
     /**
-     * Replaces the user context associated with this session with the given
-     * user context.
+     * Returns a list of all UserContexts associated with this session. Each
+     * AuthenticationProvider currently loaded by Guacamole may provide its own
+     * UserContext for any successfully-authenticated user.
      *
-     * @param userContext
-     *     The user context to associate with this session.
+     * @return
+     *     An unmodifiable list of all UserContexts associated with this
+     *     session.
      */
-    public void setUserContext(UserContext userContext) {
-        this.userContext = userContext;
+    public List<UserContext> getUserContexts() {
+        return Collections.unmodifiableList(userContexts);
+    }
+
+    /**
+     * Replaces all UserContexts associated with this session with the given
+     * List of UserContexts.
+     *
+     * @param userContexts
+     *     The List of UserContexts to associate with this session.
+     */
+    public void setUserContexts(List<UserContext> userContexts) {
+        this.userContexts = userContexts;
     }
     
-    /**
-     * Returns the ClipboardState associated with this session.
-     *
-     * @return The ClipboardState associated with this session.
-     */
-    public ClipboardState getClipboardState() {
-        return clipboardState;
-    }
-
     /**
      * Returns whether this session has any associated active tunnels.
      *

@@ -119,7 +119,8 @@ public class LocalEnvironment implements Environment {
 
         }
         catch (IOException e) {
-            throw new GuacamoleServerException("Error reading guacamole.properties", e);
+            logger.warn("The guacamole.properties file within GUACAMOLE_HOME cannot be read: {}", e.getMessage());
+            logger.debug("Error reading guacamole.properties.", e);
         }
 
         // Read all protocols
@@ -190,11 +191,8 @@ public class LocalEnvironment implements Environment {
      *
      * @return
      *     A map of all available protocols.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading the various protocol JSON files.
      */
-    private Map<String, ProtocolInfo> readProtocols() throws GuacamoleException {
+    private Map<String, ProtocolInfo> readProtocols() {
 
         // Map of all available protocols
         Map<String, ProtocolInfo> protocols = new HashMap<String, ProtocolInfo>();

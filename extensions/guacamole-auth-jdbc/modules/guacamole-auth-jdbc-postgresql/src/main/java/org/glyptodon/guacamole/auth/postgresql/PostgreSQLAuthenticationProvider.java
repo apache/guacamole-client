@@ -31,9 +31,10 @@ import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.ConfigurableGuacamoleTunnelService;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
-import org.glyptodon.guacamole.auth.jdbc.user.UserContextService;
+import org.glyptodon.guacamole.auth.jdbc.user.AuthenticationProviderService;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,25 +185,50 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
             new PostgreSQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(environment, getTunnelService(environment))
+            new JDBCAuthenticationProviderModule(this, environment,
+                    getTunnelService(environment))
 
         );
 
     }
 
     @Override
-    public UserContext getUserContext(Credentials credentials)
+    public String getIdentifier() {
+        return "postgresql";
+    }
+
+    @Override
+    public AuthenticatedUser authenticateUser(Credentials credentials)
+            throws GuacamoleException {
+
+        // Create AuthenticatedUser based on credentials, if valid
+        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
+        return authProviderService.authenticateUser(this, credentials);
+
+    }
+
+    @Override
+    public AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException {
+
+        // No need to update authenticated users
+        return authenticatedUser;
+
+    }
+
+    @Override
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
         // Create UserContext based on credentials, if valid
-        UserContextService userContextService = injector.getInstance(UserContextService.class);
-        return userContextService.getUserContext(credentials);
+        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
+        return authProviderService.getUserContext(authenticatedUser);
 
     }
 
     @Override
     public UserContext updateUserContext(UserContext context,
-        Credentials credentials) throws GuacamoleException {
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // No need to update the context
         return context;

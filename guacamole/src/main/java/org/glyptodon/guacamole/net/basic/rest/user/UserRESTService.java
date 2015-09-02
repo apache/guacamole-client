@@ -41,11 +41,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
-import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.Permission;
@@ -120,12 +120,6 @@ public class UserRESTService {
      */
     @Inject
     private ObjectRetrievalService retrievalService;
-    
-    /**
-     * The authentication provider used to authenticating a user.
-     */
-    @Inject
-    private AuthenticationProvider authProvider;
     
     /**
      * Gets a list of users in the system, filtering the returned list by the
@@ -337,8 +331,16 @@ public class UserRESTService {
         credentials.setRequest(request);
         credentials.setSession(request.getSession(true));
         
-        // Verify that the old password was correct 
-        if (authProvider.getUserContext(credentials) == null) {
+        // Verify that the old password was correct
+        try {
+            if (userContext.getAuthenticationProvider().authenticateUser(credentials) == null) {
+                throw new APIException(APIError.Type.PERMISSION_DENIED,
+                        "Permission denied.");
+            }
+        }
+
+        // Pass through any credentials exceptions as simple permission denied
+        catch (GuacamoleCredentialsException e) {
             throw new APIException(APIError.Type.PERMISSION_DENIED,
                     "Permission denied.");
         }

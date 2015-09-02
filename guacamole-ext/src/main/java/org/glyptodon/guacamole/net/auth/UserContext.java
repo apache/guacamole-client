@@ -44,6 +44,16 @@ public interface UserContext {
     User self();
 
     /**
+     * Returns the AuthenticationProvider which created this UserContext, which
+     * may not be the same AuthenticationProvider that authenticated the user
+     * associated with this UserContext.
+     *
+     * @return
+     *     The AuthenticationProvider that created this UserContext.
+     */
+    AuthenticationProvider getAuthenticationProvider();
+
+    /**
      * Retrieves a Directory which can be used to view and manipulate other
      * users, but only as allowed by the permissions given to the user of this
      * UserContext.

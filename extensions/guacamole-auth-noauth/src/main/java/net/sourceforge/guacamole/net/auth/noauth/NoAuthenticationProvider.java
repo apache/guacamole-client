@@ -122,6 +122,11 @@ public class NoAuthenticationProvider extends SimpleAuthenticationProvider {
         environment = new LocalEnvironment();
     }
 
+    @Override
+    public String getIdentifier() {
+        return "noauth";
+    }
+
     /**
      * Retrieves the configuration file, as defined within guacamole.properties.
      *

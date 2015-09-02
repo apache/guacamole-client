@@ -190,7 +190,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     });
     
     // Query the user's permissions for the current connection
-    permissionService.getPermissions(authenticationService.getCurrentUserID())
+    permissionService.getPermissions(authenticationService.getCurrentUsername())
             .success(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;

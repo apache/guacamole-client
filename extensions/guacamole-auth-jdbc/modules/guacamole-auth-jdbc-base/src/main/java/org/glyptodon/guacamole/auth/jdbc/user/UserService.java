@@ -40,6 +40,7 @@ import org.glyptodon.guacamole.auth.jdbc.permission.UserPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.PasswordField;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
@@ -265,18 +266,22 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * the necessary additional parameters to reset the user's password, the
      * password is reset.
      *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     retrieved.
+     *
      * @param credentials
      *     The credentials to use when locating the user.
      *
      * @return
-     *     The existing ModeledUser object if the credentials given are valid,
-     *     null otherwise.
+     *     An AuthenticatedUser containing the existing ModeledUser object if
+     *     the credentials given are valid, null otherwise.
      *
      * @throws GuacamoleException
      *     If the provided credentials to not conform to expectations.
      */
-    public ModeledUser retrieveUser(Credentials credentials)
-            throws GuacamoleException {
+    public AuthenticatedUser retrieveAuthenticatedUser(AuthenticationProvider authenticationProvider,
+            Credentials credentials) throws GuacamoleException {
 
         // Get username and password
         String username = credentials.getUsername();
@@ -298,7 +303,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new AuthenticatedUser(user, credentials));
+        user.setCurrentUser(new AuthenticatedUser(authenticationProvider, user, credentials));
 
         // Verify user account is still valid as of today
         if (!user.isAccountValid())
@@ -343,6 +348,40 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         }
 
         // Return now-authenticated user
+        return user.getCurrentUser();
+
+    }
+
+    /**
+     * Retrieves the user corresponding to the given AuthenticatedUser from the
+     * database.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser to retrieve the corresponding ModeledUser of.
+     *
+     * @return
+     *     The ModeledUser which corresponds to the given AuthenticatedUser, or
+     *     null if no such user exists.
+     */
+    public ModeledUser retrieveUser(org.glyptodon.guacamole.net.auth.AuthenticatedUser authenticatedUser) {
+
+        // If we already queried this user, return that rather than querying again
+        if (authenticatedUser instanceof AuthenticatedUser)
+            return ((AuthenticatedUser) authenticatedUser).getUser();
+
+        // Get username
+        String username = authenticatedUser.getIdentifier();
+
+        // Retrieve corresponding user model, if such a user exists
+        UserModel userModel = userMapper.selectOne(username);
+        if (userModel == null)
+            return null;
+
+        // Create corresponding user object, set up cyclic reference
+        ModeledUser user = getObjectInstance(null, userModel);
+        user.setCurrentUser(new AuthenticatedUser(authenticatedUser.getAuthenticationProvider(), user, authenticatedUser.getCredentials()));
+
+        // Return already-authenticated user
         return user;
 
     }

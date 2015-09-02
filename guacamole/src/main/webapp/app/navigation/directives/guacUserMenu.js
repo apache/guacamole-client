@@ -78,7 +78,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              *
              * @type String
              */
-            $scope.username = authenticationService.getCurrentUserID();
+            $scope.username = authenticationService.getCurrentUsername();
             
             /**
              * The available main pages for the current user.

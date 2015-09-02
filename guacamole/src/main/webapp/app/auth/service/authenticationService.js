@@ -57,7 +57,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
     /**
      * The unique identifier of the local cookie which stores the user's
-     * current authentication token and user ID.
+     * current authentication token and username.
      *
      * @type String
      */
@@ -68,7 +68,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * and given arbitrary parameters, returning a promise that succeeds only
      * if the authentication operation was successful. The resulting
      * authentication data can be retrieved later via getCurrentToken() or
-     * getCurrentUserID().
+     * getCurrentUsername().
      * 
      * The provided parameters can be virtually any object, as each property
      * will be sent as an HTTP parameter in the authentication request.
@@ -99,8 +99,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             // Store auth data
             $cookieStore.put(AUTH_COOKIE_ID, {
-                authToken : data.authToken,
-                userID    : data.userID
+                authToken  : data.authToken,
+                username   : data.username,
+                dataSource : data.dataSource
             });
 
             // Process is complete
@@ -174,7 +175,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * its properties will be included as parameters in the update request.
      * This function returns a promise that succeeds only if the authentication
      * operation was successful. The resulting authentication data can be
-     * retrieved later via getCurrentToken() or getCurrentUserID().
+     * retrieved later via getCurrentToken() or getCurrentUsername().
      * 
      * If there is no current auth token, this function behaves identically to
      * authenticate(), and makes a general authentication request.
@@ -209,7 +210,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * with a username and password, ignoring any currently-stored token, 
      * returning a promise that succeeds only if the login operation was
      * successful. The resulting authentication data can be retrieved later
-     * via getCurrentToken() or getCurrentUserID().
+     * via getCurrentToken() or getCurrentUsername().
      * 
      * @param {String} username
      *     The username to log in with.
@@ -254,19 +255,19 @@ angular.module('auth').factory('authenticationService', ['$injector',
     };
 
     /**
-     * Returns the user ID of the current user. If the current user is not
-     * logged in, this ID may not be valid.
+     * Returns the username of the current user. If the current user is not
+     * logged in, this value may not be valid.
      *
      * @returns {String}
-     *     The user ID of the current user, or null if no authentication data
+     *     The username of the current user, or null if no authentication data
      *     is present.
      */
-    service.getCurrentUserID = function getCurrentUserID() {
+    service.getCurrentUsername = function getCurrentUsername() {
 
-        // Return user ID, if available
+        // Return username, if available
         var authData = $cookieStore.get(AUTH_COOKIE_ID);
         if (authData)
-            return authData.userID;
+            return authData.username;
 
         // No auth data present
         return null;
@@ -287,6 +288,46 @@ angular.module('auth').factory('authenticationService', ['$injector',
         var authData = $cookieStore.get(AUTH_COOKIE_ID);
         if (authData)
             return authData.authToken;
+
+        // No auth data present
+        return null;
+
+    };
+
+    /**
+     * Returns the identifier of the data source that authenticated the current
+     * user. If the current user is not logged in, this value may not be valid.
+     *
+     * @returns {String}
+     *     The identifier of the data source that authenticated the current
+     *     user, or null if no authentication data is present.
+     */
+    service.getDataSource = function getDataSource() {
+
+        // Return data source, if available
+        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        if (authData)
+            return authData.dataSource;
+
+        // No auth data present
+        return null;
+
+    };
+
+    /**
+     * Returns the identifiers of all data sources available to the current
+     * user. If the current user is not logged in, this value may not be valid.
+     *
+     * @returns {String[]}
+     *     The identifiers of all data sources availble to the current user,
+     *     or null if no authentication data is present.
+     */
+    service.getAvailableDataSources = function getAvailableDataSources() {
+
+        // Return data sources, if available
+        var authData = $cookieStore.get(AUTH_COOKIE_ID);
+        if (authData)
+            return authData.availableDataSources;
 
         // No auth data present
         return null;

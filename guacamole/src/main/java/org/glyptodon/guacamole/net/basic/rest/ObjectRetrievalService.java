@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -29,6 +30,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup;
 
 /**
@@ -38,6 +40,43 @@ import org.glyptodon.guacamole.net.basic.rest.connectiongroup.APIConnectionGroup
  * automatically.
  */
 public class ObjectRetrievalService {
+
+    /**
+     * Retrieves a single UserContext from the given GuacamoleSession, which
+     * may contain multiple UserContexts.
+     *
+     * @param session
+     *     The GuacamoleSession to retrieve the UserContext from.
+     *
+     * @param identifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext being retrieved. Only one UserContext per
+     *     AuthenticationProvider can exist.
+     *
+     * @return
+     *     The UserContext that was created by the AuthenticationProvider
+     *     having the given identifier.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the UserContext, or if the
+     *     UserContext does not exist.
+     */
+    public UserContext retrieveUserContext(GuacamoleSession session,
+            String identifier) throws GuacamoleException {
+
+        // Get list of UserContexts
+        List<UserContext> userContexts = session.getUserContexts();
+
+        // Locate and return the UserContext associated with the
+        // AuthenticationProvider having the given identifier, if any
+        for (UserContext userContext : userContexts) {
+            if (userContext.getAuthenticationProvider().getIdentifier().equals(identifier))
+                return userContext;
+        }
+
+        throw new GuacamoleResourceNotFoundException("Session not associated with authentication provider \"" + identifier + "\".");
+
+    }
 
     /**
      * Retrieves a single user from the given user context.

@@ -48,7 +48,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             var userService            = $injector.get('userService');
 
             // Identifier of the current user
-            var currentUserID = authenticationService.getCurrentUserID();
+            var currentUsername = authenticationService.getCurrentUsername();
 
             /**
              * An action to be provided along with the object sent to
@@ -118,7 +118,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             // Retrieve current permissions
-            permissionService.getPermissions(currentUserID)
+            permissionService.getPermissions(currentUsername)
             .success(function permissionsRetrieved(permissions) {
 
                 $scope.permissions = permissions;
@@ -147,7 +147,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
 
                 // Display only other users, not self
                 $scope.users = users.filter(function isNotSelf(user) {
-                    return user.username !== currentUserID;
+                    return user.username !== currentUsername;
                 });
 
             });
