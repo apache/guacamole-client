@@ -223,6 +223,24 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
                 // Add all page definitions
                 angular.forEach(pages, addPage);
 
+                // Filter to only relevant levels
+                $scope.levels = $scope.levels.filter(function isRelevant(level) {
+
+                    // Determine relevancy by counting the number of pages
+                    var pageCount = 0;
+                    for (var name in level) {
+
+                        // Level is relevant if it has two or more pages
+                        if (++pageCount === 2)
+                            return true;
+
+                    }
+
+                    // Otherwise, the level is not relevant
+                    return false;
+
+                });
+
             });
 
         }] // end controller
