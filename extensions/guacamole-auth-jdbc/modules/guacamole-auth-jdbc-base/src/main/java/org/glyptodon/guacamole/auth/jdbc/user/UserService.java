@@ -354,15 +354,14 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
     /**
      * Retrieves the user corresponding to the given AuthenticatedUser from the
-     * database. If no such user exists, a placeholder entry will be created
-     * first.
+     * database.
      *
      * @param authenticatedUser
      *     The AuthenticatedUser to retrieve the corresponding ModeledUser of.
      *
      * @return
-     *     The ModeledUser which corresponds to the given AuthenticatedUser,
-     *     created first if necessary.
+     *     The ModeledUser which corresponds to the given AuthenticatedUser, or
+     *     null if no such user exists.
      */
     public ModeledUser retrieveUser(org.glyptodon.guacamole.net.auth.AuthenticatedUser authenticatedUser) {
 
