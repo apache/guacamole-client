@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author Michael Jumper
  */
-public class HTTPTunnelRequest implements TunnelRequest {
+public class HTTPTunnelRequest extends TunnelRequest {
 
     /**
      * The wrapped HttpServletRequest.

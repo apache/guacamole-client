@@ -159,7 +159,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Client view
-        .when('/client/:type/:id/:params?', {
+        .when('/client/:id/:params?', {
             bodyClassName : 'client',
             templateUrl   : 'app/client/templates/client.html',
             controller    : 'clientController',

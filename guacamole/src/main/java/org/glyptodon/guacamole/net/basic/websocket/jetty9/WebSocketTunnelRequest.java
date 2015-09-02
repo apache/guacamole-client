@@ -33,7 +33,7 @@ import org.glyptodon.guacamole.net.basic.TunnelRequest;
  *
  * @author Michael Jumper
  */
-public class WebSocketTunnelRequest implements TunnelRequest {
+public class WebSocketTunnelRequest extends TunnelRequest {
 
     /**
      * All parameters passed via HTTP to the WebSocket handshake.

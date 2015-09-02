@@ -158,7 +158,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var RECONNECT_ACTION = {
         name     : "CLIENT.ACTION_RECONNECT",
         callback : function reconnectCallback() {
-            $scope.client = guacClientManager.replaceManagedClient(uniqueId, $routeParams.params);
+            $scope.client = guacClientManager.replaceManagedClient($routeParams.id, $routeParams.params);
             guacNotification.showStatus(false);
         }
     };
@@ -219,13 +219,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$on('guacClientClipboard', function clientClipboardListener(event, client, mimetype, clipboardData) {
        $scope.clipboardData = clipboardData; 
     });
-            
-    /*
-     * Parse the type, name, and id out of the url paramteres, 
-     * as well as any extra parameters if set.
+
+    /**
+     * The client which should be attached to the client UI.
+     *
+     * @type ManagedClient
      */
-    var uniqueId = $routeParams.type + '/' + $routeParams.id;
-    $scope.client = guacClientManager.getManagedClient(uniqueId, $routeParams.params);
+    $scope.client = guacClientManager.getManagedClient($routeParams.id, $routeParams.params);
 
     var keysCurrentlyPressed = {};
 

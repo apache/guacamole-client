@@ -27,7 +27,8 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         function homeController($scope, $injector) {
 
     // Get required types
-    var ConnectionGroup = $injector.get('ConnectionGroup');
+    var ConnectionGroup  = $injector.get('ConnectionGroup');
+    var ClientIdentifier = $injector.get('ClientIdentifier');
             
     // Get required services
     var authenticationService  = $injector.get('authenticationService');
@@ -53,6 +54,51 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.isLoaded = function isLoaded() {
 
         return $scope.rootConnectionGroup !== null;
+
+    };
+
+    /**
+     * Object passed to the guacGroupList directive, providing context-specific
+     * functions or data.
+     */
+    $scope.context = {
+
+        /**
+         * Returns the unique string identifier which must be used when
+         * connecting to a connection or connection group represented by the
+         * given GroupListItem.
+         *
+         * @param {GroupListItem} item
+         *     The GroupListItem to determine the client identifier of.
+         *
+         * @returns {String}
+         *     The client identifier associated with the connection or
+         *     connection group represented by the given GroupListItem, or null
+         *     if the GroupListItem cannot have an associated client
+         *     identifier.
+         */
+        getClientIdentifier : function getClientIdentifier(item) {
+
+            // If the item is a connection, generate a connection identifier
+            if (item.isConnection)
+                return ClientIdentifier.toString({
+                    dataSource : item.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION,
+                    id         : item.identifier
+                });
+
+            // If the item is a connection, generate a connection group identifier
+            if (item.isConnectionGroup)
+                return ClientIdentifier.toString({
+                    dataSource : item.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                    id         : item.identifier
+                });
+
+            // Otherwise, no such identifier can exist
+            return null;
+
+        }
 
     };
 

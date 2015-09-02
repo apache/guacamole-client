@@ -116,40 +116,6 @@ public class GuacamoleSession {
     }
 
     /**
-     * Returns the UserContext associated with this session.
-     *
-     * @return The UserContext associated with this session.
-     */
-    public UserContext getUserContext() {
-
-        // Warn of deprecation
-        logger.debug(
-            "\n****************************************************************"
-          + "\n"
-          + "\n       !!!!  PLEASE DO NOT USE getUserContext() !!!!"
-          + "\n"
-          + "\n getUserContext() has been replaced by getUserContexts(), which"
-          + "\n properly handles multiple authentication providers. All use of"
-          + "\n the old getUserContext() must be removed before GUAC-586 can"
-          + "\n be considered complete."
-          + "\n"
-          + "\n****************************************************************"
-        );
-
-        // Return the UserContext associated with the AuthenticationProvider
-        // that authenticated the current user.
-        String authProviderIdentifier = authenticatedUser.getAuthenticationProvider().getIdentifier();
-        for (UserContext userContext : userContexts) {
-            if (userContext.getAuthenticationProvider().getIdentifier().equals(authProviderIdentifier))
-                return userContext;
-        }
-
-        // If not found, return null
-        return null;
-
-    }
-
-    /**
      * Returns a list of all UserContexts associated with this session. Each
      * AuthenticationProvider currently loaded by Guacamole may provide its own
      * UserContext for any successfully-authenticated user.

@@ -48,6 +48,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
 
             // Required types
             var ActiveConnection = $injector.get('ActiveConnection');
+            var ClientIdentifier = $injector.get('ClientIdentifier');
             var RecentConnection = $injector.get('RecentConnection');
 
             // Required services
@@ -104,7 +105,11 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             var addVisibleConnection = function addVisibleConnection(dataSource, connection) {
 
                 // Add given connection to set of visible objects
-                visibleObjects['c/' + connection.identifier] = connection;
+                visibleObjects[ClientIdentifier.toString({
+                    dataSource : dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION,
+                    id         : connection.identifier
+                })] = connection;
 
             };
 
@@ -123,7 +128,11 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             var addVisibleConnectionGroup = function addVisibleConnectionGroup(dataSource, connectionGroup) {
 
                 // Add given connection group to set of visible objects
-                visibleObjects['g/' + connectionGroup.identifier] = connectionGroup;
+                visibleObjects[ClientIdentifier.toString({
+                    dataSource : dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                    id         : connectionGroup.identifier
+                })] = connectionGroup;
 
                 // Add all child connections
                 if (connectionGroup.childConnections)

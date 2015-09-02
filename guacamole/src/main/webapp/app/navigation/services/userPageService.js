@@ -27,9 +27,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
         function userPageService($injector) {
 
     // Get required types
-    var ConnectionGroup = $injector.get('ConnectionGroup');
-    var PageDefinition  = $injector.get('PageDefinition');
-    var PermissionSet   = $injector.get('PermissionSet');
+    var ClientIdentifier = $injector.get('ClientIdentifier');
+    var ConnectionGroup  = $injector.get('ConnectionGroup');
+    var PageDefinition   = $injector.get('PageDefinition');
+    var PermissionSet    = $injector.get('PermissionSet');
 
     // Get required services
     var $q                     = $injector.get('$q');
@@ -102,7 +103,11 @@ angular.module('navigation').factory('userPageService', ['$injector',
                 if (connection) {
                     homePage = new PageDefinition(
                         connection.name,
-                        '/client/c/' + encodeURIComponent(connection.identifier)
+                        '/client/' + ClientIdentifier.toString({
+                            dataSource : dataSource,
+                            type       : ClientIdentifier.Types.CONNECTION,
+                            id         : connection.identifier
+                        })
                     );
                 }
 
@@ -113,7 +118,11 @@ angular.module('navigation').factory('userPageService', ['$injector',
                         && _.isEmpty(connectionGroup.childConnectionGroups)) {
                     homePage = new PageDefinition(
                         connectionGroup.name,
-                        '/client/g/' + encodeURIComponent(connectionGroup.identifier)
+                        '/client/' + ClientIdentifier.toString({
+                            dataSource : dataSource,
+                            type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                            id         : connectionGroup.identifier
+                        })
                     );
                 }
 

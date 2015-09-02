@@ -23,4 +23,8 @@
 /**
  * Module for generating and implementing user navigation options.
  */
-angular.module('navigation', ['notification', 'rest']);
+angular.module('navigation', [
+    'auth',
+    'notification',
+    'rest'
+]);
