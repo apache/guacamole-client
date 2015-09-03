@@ -69,8 +69,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * creation.
      */
     private static final ObjectPermission.Type[] IMPLICIT_USER_PERMISSIONS = {
-        ObjectPermission.Type.READ,
-        ObjectPermission.Type.UPDATE
+        ObjectPermission.Type.READ
     };
 
     /**
