@@ -246,9 +246,9 @@ public class ObjectRetrievalService {
 
     /**
      * Retrieves a single connection group from the given GuacamoleSession. If
-     * the given identifier the REST API root identifier, the root connection
-     * group will be returned. The underlying authentication provider may
-     * additionally use a different identifier for root.
+     * the given identifier is the REST API root identifier, the root
+     * connection group will be returned. The underlying authentication
+     * provider may additionally use a different identifier for root.
      *
      * @param session
      *     The GuacamoleSession to retrieve the connection group from.
@@ -263,7 +263,7 @@ public class ObjectRetrievalService {
      *
      * @return
      *     The connection group having the given identifier, or the root
-     *     connection group if the identifier the root identifier.
+     *     connection group if the identifier is the root identifier.
      *
      * @throws GuacamoleException 
      *     If an error occurs while retrieving the connection group, or if the
