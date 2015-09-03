@@ -91,6 +91,11 @@ public class ConnectionService {
             // Pull the current user DN from the LDAP connection
             String userDN = ldapConnection.getAuthenticationDN();
 
+            // getConnections() will only be called after a connection has been
+            // authenticated (via non-anonymous bind), thus userDN cannot
+            // possibly be null
+            assert(userDN != null);
+
             // Find all Guacamole connections for the given user
             LDAPSearchResults results = ldapConnection.search(
                 confService.getConfigurationBaseDN(),

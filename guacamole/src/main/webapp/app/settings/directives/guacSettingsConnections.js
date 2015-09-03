@@ -41,6 +41,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             var PermissionSet   = $injector.get('PermissionSet');
 
             // Required services
+            var $location              = $injector.get('$location');
             var $routeParams           = $injector.get('$routeParams');
             var authenticationService  = $injector.get('authenticationService');
             var connectionGroupService = $injector.get('connectionGroupService');
@@ -82,35 +83,10 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             $scope.rootGroups = null;
 
             /**
-             * Whether the current user can manage connections. If the current
-             * permissions have not yet been loaded, this will be null.
-             *
-             * @type Boolean
-             */
-            $scope.canManageConnections = null;
-
-            /**
-             * Whether the current user can create new connections. If the
-             * current permissions have not yet been loaded, this will be null.
-             *
-             * @type Boolean
-             */
-            $scope.canCreateConnections = null;
-
-            /**
-             * Whether the current user can create new connection groups. If
-             * the current permissions have not yet been loaded, this will be
-             * null.
-             *
-             * @type Boolean
-             */
-            $scope.canCreateConnectionGroups = null;
-
-            /**
              * All permissions associated with the current user, or null if the
              * user's permissions have not yet been loaded.
              *
-             * @type Object.<String, PermissionSet>
+             * @type PermissionSet
              */
             $scope.permissions = null;
 
@@ -130,11 +106,11 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
             /**
              * Returns whether the current user can create new connections
-             * within at least one data source.
+             * within the current data source.
              *
              * @return {Boolean}
              *     true if the current user can create new connections within
-             *     at least one data source, false otherwise.
+             *     the current data source, false otherwise.
              */
             $scope.canCreateConnections = function canCreateConnections() {
 
@@ -142,18 +118,10 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 if (!$scope.permissions)
                     return false;
 
-                // For each data source
-                for (var dataSource in $scope.permissions) {
-
-                    // Retrieve corresponding permission set
-                    var permissionSet = $scope.permissions[dataSource];
-
-                    // Can create connections if adminstrator or have explicit permission
-                    if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
-                     || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_CONNECTION))
-                        return true;
-
-                }
+                // Can create connections if adminstrator or have explicit permission
+                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                 || PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION))
+                     return true;
 
                 // No data sources allow connection creation
                 return false;
@@ -162,11 +130,11 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
             /**
              * Returns whether the current user can create new connection
-             * groups within at least one data source.
+             * groups within the current data source.
              *
              * @return {Boolean}
              *     true if the current user can create new connection groups
-             *     within at least one data source, false otherwise.
+             *     within the current data source, false otherwise.
              */
             $scope.canCreateConnectionGroups = function canCreateConnectionGroups() {
 
@@ -174,18 +142,10 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 if (!$scope.permissions)
                     return false;
 
-                // For each data source
-                for (var dataSource in $scope.permissions) {
-
-                    // Retrieve corresponding permission set
-                    var permissionSet = $scope.permissions[dataSource];
-
-                    // Can create connections groups if adminstrator or have explicit permission
-                    if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
-                     || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP))
-                        return true;
-
-                }
+                // Can create connections groups if adminstrator or have explicit permission
+                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                 || PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP))
+                     return true;
 
                 // No data sources allow connection group creation
                 return false;
@@ -195,14 +155,14 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             /**
              * Returns whether the current user can create new connections or
              * connection groups or make changes to existing connections or
-             * connection groups within at least one data source. The
+             * connection groups within the current data source. The
              * connection management interface as a whole is useless if this
              * function returns false.
              *
              * @return {Boolean}
              *     true if the current user can create new connections/groups
-             *     or make changes to existing connections/groups within at
-             *     least one data source, false otherwise.
+             *     or make changes to existing connections/groups within the
+             *     current data source, false otherwise.
              */
             $scope.canManageConnections = function canManageConnections() {
 
@@ -214,26 +174,15 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                 if ($scope.canCreateConnections() || $scope.canCreateConnectionGroups())
                     return true;
 
-                // Ignore permission to update root group
-                PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+                // Can manage connections if granted explicit update or delete
+                if (PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                 || PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.DELETE))
+                    return true;
 
-                // For each data source
-                for (var dataSource in $scope.permissions) {
-
-                    // Retrieve corresponding permission set
-                    var permissionSet = $scope.permissions[dataSource];
-
-                    // Can manage connections if granted explicit update or delete
-                    if (PermissionSet.hasConnectionPermission(permissionSet, PermissionSet.ObjectPermissionType.UPDATE)
-                     || PermissionSet.hasConnectionPermission(permissionSet, PermissionSet.ObjectPermissionType.DELETE))
-                        return true;
-
-                    // Can manage connections groups if granted explicit update or delete
-                    if (PermissionSet.hasConnectionGroupPermission(permissionSet, PermissionSet.ObjectPermissionType.UPDATE)
-                     || PermissionSet.hasConnectionGroupPermission(permissionSet, PermissionSet.ObjectPermissionType.DELETE))
-                        return true;
-
-                }
+                // Can manage connections groups if granted explicit update or delete
+                if (PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                 || PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.DELETE))
+                    return true;
 
                 // No data sources allow management of connections or groups
                 return false;
@@ -241,13 +190,19 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             };
 
             // Retrieve current permissions
-            dataSourceService.apply(
-                permissionService.getPermissions,
-                [$scope.dataSource],
-                currentUsername
-            )
-            .then(function permissionsRetrieved(permissions) {
+            permissionService.getPermissions($scope.dataSource, currentUsername)
+            .success(function permissionsRetrieved(permissions) {
+
+                // Store retrieved permissions
                 $scope.permissions = permissions;
+
+                // Ignore permission to update root group
+                PermissionSet.removeConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+
+                // Return to home if there's nothing to do here
+                if (!$scope.canManageConnections())
+                    $location.path('/');
+
             });
             
             // Retrieve all connections for which we have UPDATE or DELETE permission

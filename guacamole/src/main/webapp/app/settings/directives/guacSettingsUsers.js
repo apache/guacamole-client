@@ -194,7 +194,11 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             // Retrieve current permissions
-            dataSourceService.apply(permissionService.getPermissions, dataSources, currentUsername)
+            dataSourceService.apply(
+                permissionService.getPermissions,
+                dataSources,
+                currentUsername
+            )
             .then(function permissionsRetrieved(permissions) {
 
                 // Store retrieved permissions
@@ -230,6 +234,12 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                             if (addedUsers[user.username])
                                 return;
 
+                            // Link to default creation data source if we cannot manage this user
+                            if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.ADMINISTER)
+                             && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.UPDATE, user.username)
+                             && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.DELETE, user.username))
+                                dataSource = getDefaultDataSource();
+
                             // Add user to overall list
                             addedUsers[user.username] = user;
                             $scope.manageableUsers.push(new ManageableUser ({
@@ -249,7 +259,9 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              * username specified.
              */
             $scope.newUser = function newUser() {
-                $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent($scope.newUsername));
+                var username = $scope.newUsername.trim();
+                if (username)
+                    $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent(username));
             };
             
         }]

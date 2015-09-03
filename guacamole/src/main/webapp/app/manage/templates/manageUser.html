@@ -91,13 +91,13 @@ THE SOFTWARE.
             </div>
         </div>
 
-    </div>
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <button ng-show="canSaveUser()" ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
+            <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
+            <button ng-show="canDeleteUser()" ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
+        </div>
 
-    <!-- Form action buttons -->
-    <div class="action-buttons">
-        <button ng-show="canSaveUser()" ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
-        <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
-        <button ng-show="canDeleteUser()" ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
     </div>
 
 </div>
