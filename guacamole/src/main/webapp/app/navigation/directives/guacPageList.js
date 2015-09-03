@@ -138,7 +138,7 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
                             name      : name,
                             url       : isCurrentPage ? currentURL : page.url,
                             className : page.className,
-                            weight    : page.weight || weight
+                            weight    : page.weight || (weight + i)
                         });
                     }
 

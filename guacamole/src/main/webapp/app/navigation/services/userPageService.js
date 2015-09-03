@@ -54,6 +54,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
     });
 
     /**
+     * The identifiers of all data sources currently available to the
+     * authenticated user.
+     *
+     * @type String[]
+     */
+    var dataSources = authenticationService.getAvailableDataSources();
+
+    /**
      * Returns an appropriate home page for the current user.
      *
      * @param {Object.<String, ConnectionGroup>} rootGroups
@@ -176,9 +184,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
         var canManageSessions = [];
 
         // Inspect the contents of each provided permission set
-        angular.forEach(permissionSets, function inspectPermissions(permissions, dataSource) {
+        angular.forEach(dataSources, function inspectPermissions(dataSource) {
 
-            permissions = angular.copy(permissions);
+            // Copy permissions for current data source
+            var permissions = angular.copy(permissionSets[dataSource]);
 
             // Ignore permission to update root group
             PermissionSet.removeConnectionGroupPermission(permissions,
