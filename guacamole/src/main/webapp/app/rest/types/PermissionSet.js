@@ -191,6 +191,10 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      */
     var hasPermission = function hasPermission(permMap, type, identifier) {
 
+        // No permission if no permission map at all
+        if (!permMap)
+            return false;
+
         // If no identifier given, search ignoring the identifier
         if (!identifier)
             return containsPermission(permMap, type);
@@ -303,6 +307,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     true if the permission is present (granted), false otherwise.
      */
     PermissionSet.hasSystemPermission = function hasSystemPermission(permSet, type) {
+        if (!permSet.systemPermissions) return false;
         return permSet.systemPermissions.indexOf(type) !== -1;
     };
 
@@ -323,6 +328,8 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     already present in the given permission set.
      */
     PermissionSet.addSystemPermission = function addSystemPermission(permSet, type) {
+
+        permSet.systemPermissions = permSet.systemPermissions || [];
 
         // Add permission, if it doesn't already exist
         if (permSet.systemPermissions.indexOf(type) === -1) {
@@ -351,6 +358,8 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     present in the given permission set.
      */
     PermissionSet.removeSystemPermission = function removeSystemPermission(permSet, type) {
+
+        permSet.systemPermissions = permSet.systemPermissions || [];
 
         // Remove permission, if it exists
         var permLocation = permSet.systemPermissions.indexOf(type);
@@ -463,6 +472,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     already present in the given permission set.
      */
     PermissionSet.addConnectionPermission = function addConnectionPermission(permSet, type, identifier) {
+        permSet.connectionPermissions = permSet.connectionPermissions || {};
         return addObjectPermission(permSet.connectionPermissions, type, identifier);
     };
 
@@ -486,6 +496,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     present in the given permission set.
      */
     PermissionSet.removeConnectionPermission = function removeConnectionPermission(permSet, type, identifier) {
+        permSet.connectionPermissions = permSet.connectionPermissions || {};
         return removeObjectPermission(permSet.connectionPermissions, type, identifier);
     };
 
@@ -511,6 +522,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     already present in the given permission set.
      */
     PermissionSet.addConnectionGroupPermission = function addConnectionGroupPermission(permSet, type, identifier) {
+        permSet.connectionGroupPermissions = permSet.connectionGroupPermissions || {};
         return addObjectPermission(permSet.connectionGroupPermissions, type, identifier);
     };
 
@@ -535,6 +547,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     present in the given permission set.
      */
     PermissionSet.removeConnectionGroupPermission = function removeConnectionGroupPermission(permSet, type, identifier) {
+        permSet.connectionGroupPermissions = permSet.connectionGroupPermissions || {};
         return removeObjectPermission(permSet.connectionGroupPermissions, type, identifier);
     };
 
@@ -560,6 +573,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     already present in the given permission set.
      */
     PermissionSet.addActiveConnectionPermission = function addActiveConnectionPermission(permSet, type, identifier) {
+        permSet.activeConnectionPermissions = permSet.activeConnectionPermissions || {};
         return addObjectPermission(permSet.activeConnectionPermissions, type, identifier);
     };
 
@@ -584,6 +598,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     present in the given permission set.
      */
     PermissionSet.removeActiveConnectionPermission = function removeActiveConnectionPermission(permSet, type, identifier) {
+        permSet.activeConnectionPermissions = permSet.activeConnectionPermissions || {};
         return removeObjectPermission(permSet.activeConnectionPermissions, type, identifier);
     };
 
@@ -607,6 +622,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     already present in the given permission set.
      */
     PermissionSet.addUserPermission = function addUserPermission(permSet, type, identifier) {
+        permSet.userPermissions = permSet.userPermissions || {};
         return addObjectPermission(permSet.userPermissions, type, identifier);
     };
 
@@ -630,6 +646,7 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
      *     present in the given permission set.
      */
     PermissionSet.removeUserPermission = function removeUserPermission(permSet, type, identifier) {
+        permSet.userPermissions = permSet.userPermissions || {};
         return removeObjectPermission(permSet.userPermissions, type, identifier);
     };
 
