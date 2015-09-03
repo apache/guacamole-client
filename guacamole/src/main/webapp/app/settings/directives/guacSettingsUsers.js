@@ -249,7 +249,9 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              * username specified.
              */
             $scope.newUser = function newUser() {
-                $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent($scope.newUsername));
+                var username = $scope.newUsername.trim();
+                if (username)
+                    $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent(username));
             };
             
         }]
