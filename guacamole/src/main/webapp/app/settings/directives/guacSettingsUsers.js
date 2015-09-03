@@ -194,7 +194,11 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             // Retrieve current permissions
-            dataSourceService.apply(permissionService.getPermissions, dataSources, currentUsername)
+            dataSourceService.apply(
+                permissionService.getPermissions,
+                dataSources,
+                currentUsername
+            )
             .then(function permissionsRetrieved(permissions) {
 
                 // Store retrieved permissions
@@ -229,6 +233,12 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                             // Do not add the same user twice
                             if (addedUsers[user.username])
                                 return;
+
+                            // Link to default creation data source if we cannot manage this user
+                            if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.ADMINISTER)
+                             && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.UPDATE, user.username)
+                             && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.DELETE, user.username))
+                                dataSource = getDefaultDataSource();
 
                             // Add user to overall list
                             addedUsers[user.username] = user;
