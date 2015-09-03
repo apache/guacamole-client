@@ -31,44 +31,47 @@ angular.module('settings').factory('ActiveConnectionWrapper', [
      * properties, such as a checked option.
      * 
      * @constructor
-     * @param {String} name
-     *     The display name of the active connection.
-     *     
-     * @param {String} startDate
-     *     The date and time this session began, pre-formatted for display.
-     *
-     * @param {ActiveConnection} activeConnection
-     *     The ActiveConnection to wrap.
+     * @param {ActiveConnectionWrapper|Object} template
+     *     The object whose properties should be copied within the new
+     *     ActiveConnectionWrapper.
      */
-    var ActiveConnectionWrapper = function ActiveConnectionWrapper(name, startDate, activeConnection) {
+    var ActiveConnectionWrapper = function ActiveConnectionWrapper(template) {
+
+        /**
+         * The identifier of the data source associate dwith the
+         * ActiveConnection wrapped by this ActiveConnectionWrapper.
+         *
+         * @type String
+         */
+        this.dataSource = template.dataSource;
 
         /**
          * The display name of this connection.
          *
          * @type String
          */
-        this.name = name;
+        this.name = template.name;
 
         /**
          * The date and time this session began, pre-formatted for display.
          *
          * @type String
          */
-        this.startDate = startDate;
+        this.startDate = template.startDate;
 
         /**
          * The wrapped ActiveConnection.
          *
          * @type ActiveConnection
          */
-        this.activeConnection = activeConnection;
+        this.activeConnection = template.activeConnection;
 
         /**
          * A flag indicating that the active connection has been selected.
          *
          * @type Boolean
          */
-        this.checked = false;
+        this.checked = template.checked || false;
 
     };
 

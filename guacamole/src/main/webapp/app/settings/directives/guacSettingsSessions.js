@@ -44,9 +44,20 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             // Required services
             var $filter                 = $injector.get('$filter');
             var $translate              = $injector.get('$translate');
+            var $q                      = $injector.get('$q');
             var activeConnectionService = $injector.get('activeConnectionService');
+            var authenticationService   = $injector.get('authenticationService');
             var connectionGroupService  = $injector.get('connectionGroupService');
+            var dataSourceService       = $injector.get('dataSourceService');
             var guacNotification        = $injector.get('guacNotification');
+
+            /**
+             * The identifiers of all data sources accessible by the current
+             * user.
+             *
+             * @type String[]
+             */
+            var dataSources = authenticationService.getAvailableDataSources();
 
             /**
              * The ActiveConnectionWrappers of all active sessions accessible
@@ -83,20 +94,22 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             ];
 
             /**
-             * All active connections, if known, or null if active connections
-             * have not yet been loaded.
+             * All active connections, if known, grouped by corresponding data
+             * source identifier, or null if active connections have not yet
+             * been loaded.
              *
-             * @type ActiveConnection
+             * @type Object.<String, Object.<String, ActiveConnection>>
              */
-            var activeConnections = null;
+            var allActiveConnections = null;
 
             /**
-             * Map of all visible connections by object identifier, or null if
-             * visible connections have not yet been loaded.
+             * Map of all visible connections by data source identifier and
+             * object identifier, or null if visible connections have not yet
+             * been loaded.
              *
-             * @type Object.<String, Connection>
+             * @type Object.<String, Object.<String, Connection>>
              */
-            var connections = null;
+            var allConnections = null;
 
             /**
              * The date format for use for session-related dates.
@@ -107,24 +120,28 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
 
             /**
              * Map of all currently-selected active connection wrappers by
-             * identifier.
+             * data source and identifier.
              * 
-             * @type Object.<String, ActiveConnectionWrapper>
+             * @type Object.<String, Object.<String, ActiveConnectionWrapper>>
              */
-            var selectedWrappers = {};
+            var allSelectedWrappers = {};
 
             /**
              * Adds the given connection to the internal set of visible
              * connections.
-             * 
+             *
+             * @param {String} dataSource
+             *     The identifier of the data source associated with the given
+             *     connection.
+             *
              * @param {Connection} connection
              *     The connection to add to the internal set of visible
              *     connections.
              */
-            var addConnection = function addConnection(connection) {
+            var addConnection = function addConnection(dataSource, connection) {
 
                 // Add given connection to set of visible connections
-                connections[connection.identifier] = connection;
+                allConnections[dataSource][connection.identifier] = connection;
 
             };
 
@@ -132,19 +149,25 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              * Adds all descendant connections of the given connection group to
              * the internal set of connections.
              * 
+             * @param {String} dataSource
+             *     The identifier of the data source associated with the given
+             *     connection group.
+             *
              * @param {ConnectionGroup} connectionGroup
              *     The connection group whose descendant connections should be
              *     added to the internal set of connections.
              */
-            var addDescendantConnections = function addDescendantConnections(connectionGroup) {
+            var addDescendantConnections = function addDescendantConnections(dataSource, connectionGroup) {
 
                 // Add all child connections
-                if (connectionGroup.childConnections)
-                    connectionGroup.childConnections.forEach(addConnection);
+                angular.forEach(connectionGroup.childConnections, function addConnectionForDataSource(connection) {
+                    addConnection(dataSource, connection);
+                });
 
                 // Add all child connection groups
-                if (connectionGroup.childConnectionGroups)
-                    connectionGroup.childConnectionGroups.forEach(addDescendantConnections);
+                angular.forEach(connectionGroup.childConnectionGroups, function addConnectionGroupForDataSource(connectionGroup) {
+                    addDescendantConnections(dataSource, connectionGroup);
+                });
 
             };
 
@@ -153,50 +176,66 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              * within the scope. If required data has not yet finished loading,
              * this function has no effect.
              */
-            var wrapActiveConnections = function wrapActiveConnections() {
+            var wrapAllActiveConnections = function wrapAllActiveConnections() {
 
                 // Abort if not all required data is available
-                if (!activeConnections || !connections || !sessionDateFormat)
+                if (!allActiveConnections || !allConnections || !sessionDateFormat)
                     return;
 
                 // Wrap all active connections for sake of display
                 $scope.wrappers = [];
-                for (var identifier in activeConnections) {
+                angular.forEach(allActiveConnections, function wrapActiveConnections(activeConnections, dataSource) {
+                    angular.forEach(activeConnections, function wrapActiveConnection(activeConnection, identifier) {
 
-                    var activeConnection = activeConnections[identifier];
-                    var connection = connections[activeConnection.connectionIdentifier];
+                        // Retrieve corresponding connection
+                        var connection = allConnections[dataSource][activeConnection.connectionIdentifier];
 
-                    $scope.wrappers.push(new ActiveConnectionWrapper(
-                        connection.name,
-                        $filter('date')(activeConnection.startDate, sessionDateFormat),
-                        activeConnection
-                    )); 
+                        // Add wrapper
+                        $scope.wrappers.push(new ActiveConnectionWrapper({
+                            dataSource       : dataSource,
+                            name             : connection.name,
+                            startDate        : $filter('date')(activeConnection.startDate, sessionDateFormat),
+                            activeConnection : activeConnection
+                        }));
 
-                }
+                    });
+                });
 
             };
 
             // Retrieve all connections 
-            connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-            .success(function connectionGroupReceived(retrievedRootGroup) {
+            dataSourceService.apply(
+                connectionGroupService.getConnectionGroupTree,
+                dataSources,
+                ConnectionGroup.ROOT_IDENTIFIER
+            )
+            .then(function connectionGroupsReceived(rootGroups) {
 
-                // Load connections from retrieved group tree
-                connections = {};
-                addDescendantConnections(retrievedRootGroup);
+                allConnections = {};
+
+                // Load connections from each received root group
+                angular.forEach(rootGroups, function connectionGroupReceived(rootGroup, dataSource) {
+                    allConnections[dataSource] = {};
+                    addDescendantConnections(dataSource, rootGroup);
+                });
 
                 // Attempt to produce wrapped list of active connections
-                wrapActiveConnections();
+                wrapAllActiveConnections();
 
             });
             
             // Query active sessions
-            activeConnectionService.getActiveConnections().success(function sessionsRetrieved(retrievedActiveConnections) {
+            dataSourceService.apply(
+                activeConnectionService.getActiveConnections,
+                dataSources
+            )
+            .then(function sessionsRetrieved(retrievedActiveConnections) {
 
-                // Store received list
-                activeConnections = retrievedActiveConnections;
+                // Store received map of active connections
+                allActiveConnections = retrievedActiveConnections;
 
                 // Attempt to produce wrapped list of active connections
-                wrapActiveConnections();
+                wrapAllActiveConnections();
 
             });
 
@@ -207,7 +246,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 sessionDateFormat = retrievedSessionDateFormat;
 
                 // Attempt to produce wrapped list of active connections
-                wrapActiveConnections();
+                wrapAllActiveConnections();
 
             });
 
@@ -219,10 +258,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              *     to be useful, false otherwise.
              */
             $scope.isLoaded = function isLoaded() {
-
-                return $scope.wrappers          !== null
-                    && $scope.sessionDateFormat !== null;
-
+                return $scope.wrappers !== null;
             };
 
             /**
@@ -259,7 +295,7 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                 className   : "danger",
                 // Handle action
                 callback    : function deleteCallback() {
-                    deleteSessionsImmediately();
+                    deleteAllSessionsImmediately();
                     guacNotification.showStatus(false);
                 }
             };
@@ -268,24 +304,36 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              * Immediately deletes the selected sessions, without prompting the
              * user for confirmation.
              */
-            var deleteSessionsImmediately = function deleteSessionsImmediately() {
+            var deleteAllSessionsImmediately = function deleteAllSessionsImmediately() {
 
-                // Perform deletion
-                activeConnectionService.deleteActiveConnections(Object.keys(selectedWrappers))
-                .success(function activeConnectionsDeleted() {
+                var deletionRequests = [];
+
+                // Perform deletion for each relevant data source
+                angular.forEach(allSelectedWrappers, function deleteSessionsImmediately(selectedWrappers, dataSource) {
+
+                    // Delete sessions, if any are selected
+                    var identifiers = Object.keys(selectedWrappers);
+                    if (identifiers.length)
+                        deletionRequests.push(activeConnectionService.deleteActiveConnections(dataSource, identifiers));
+
+                });
+
+                // Update interface
+                $q.all(deletionRequests)
+                .then(function activeConnectionsDeleted() {
 
                     // Remove deleted connections from wrapper array
                     $scope.wrappers = $scope.wrappers.filter(function activeConnectionStillExists(wrapper) {
-                        return !(wrapper.activeConnection.identifier in selectedWrappers);
+                        return !(wrapper.activeConnection.identifier in (allSelectedWrappers[wrapper.dataSource] || {}));
                     });
 
                     // Clear selection
-                    selectedWrappers = {};
+                    allSelectedWrappers = {};
 
-                })
+                },
 
                 // Notify of any errors
-                .error(function activeConnectionDeletionFailed(error) {
+                function activeConnectionDeletionFailed(error) {
                     guacNotification.showStatus({
                         'className'  : 'error',
                         'title'      : 'SETTINGS_SESSIONS.DIALOG_HEADER_ERROR',
@@ -318,8 +366,10 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
             $scope.canDeleteSessions = function canDeleteSessions() {
 
                 // We can delete sessions if at least one is selected
-                for (var identifier in selectedWrappers)
-                    return true;
+                for (var dataSource in allSelectedWrappers) {
+                    for (var identifier in allSelectedWrappers[dataSource])
+                        return true;
+                }
 
                 return false;
 
@@ -333,6 +383,11 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
              *     The wrapper whose selected status has changed.
              */
             $scope.wrapperSelectionChange = function wrapperSelectionChange(wrapper) {
+
+                // Get selection map for associated data source, creating if necessary
+                var selectedWrappers = allSelectedWrappers[wrapper.dataSource];
+                if (!selectedWrappers)
+                    selectedWrappers = allSelectedWrappers[wrapper.dataSource] = {};
 
                 // Add wrapper to map if selected
                 if (wrapper.checked)
