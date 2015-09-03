@@ -69,3 +69,14 @@
 .manage-user .page-tabs .page-list li.linked a[href]:before {
     background-image: url('images/checkmark.png');
 }
+
+.manage-user .notice.read-only {
+
+    background: #FDA;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 0.25em;
+
+    text-align: center;
+    padding: 1em;
+
+}
