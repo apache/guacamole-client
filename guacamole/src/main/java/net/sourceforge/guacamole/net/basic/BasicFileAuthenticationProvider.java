@@ -206,7 +206,7 @@ public class BasicFileAuthenticationProvider extends SimpleAuthenticationProvide
             return null;
 
         // Validate and return info for given user and pass
-        Authorization auth = getUserMapping().getAuthorization(credentials.getUsername());
+        Authorization auth = userMapping.getAuthorization(credentials.getUsername());
         if (auth != null && auth.validate(credentials.getUsername(), credentials.getPassword()))
             return auth.getConfigurations();
 

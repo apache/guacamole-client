@@ -35,6 +35,7 @@ import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
 import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
@@ -90,6 +91,11 @@ public class ConnectionService {
 
             // Pull the current user DN from the LDAP connection
             String userDN = ldapConnection.getAuthenticationDN();
+
+            // getConnections() will only be called after a connection has been
+            // authenticated (via non-anonymous bind), thus userDN cannot
+            // possibly be null
+            assert(userDN != null);
 
             // Find all Guacamole connections for the given user
             LDAPSearchResults results = ldapConnection.search(
