@@ -21,60 +21,58 @@
  */
 
 /**
- * A service for defining the ActiveConnectionWrapper class.
+ * Provides the PageDefinition class definition.
  */
-angular.module('settings').factory('ActiveConnectionWrapper', [
-    function defineActiveConnectionWrapper() {
+angular.module('navigation').factory('PageDefinition', [function definePageDefinition() {
 
     /**
-     * Wrapper for ActiveConnection which adds display-specific
-     * properties, such as a checked option.
-     * 
+     * Creates a new PageDefinition object which pairs the URL of a page with
+     * an arbitrary, human-readable name.
+     *
      * @constructor
-     * @param {ActiveConnectionWrapper|Object} template
+     * @param {PageDefinition|Object} template
      *     The object whose properties should be copied within the new
-     *     ActiveConnectionWrapper.
+     *     PageDefinition.
      */
-    var ActiveConnectionWrapper = function ActiveConnectionWrapper(template) {
+    var PageDefinition = function PageDefinition(template) {
 
         /**
-         * The identifier of the data source associated with the
-         * ActiveConnection wrapped by this ActiveConnectionWrapper.
+         * The the name of the page, which should be a translation table key.
+         * Alternatively, this may also be a list of names, where the final
+         * name represents the page and earlier names represent categorization.
+         * Those categorical names may be rendered hierarchically as a system
+         * of menus, tabs, etc.
          *
-         * @type String
-         */
-        this.dataSource = template.dataSource;
-
-        /**
-         * The display name of this connection.
-         *
-         * @type String
+         * @type String|String[]
          */
         this.name = template.name;
 
         /**
-         * The date and time this session began, pre-formatted for display.
+         * The URL of the page.
          *
          * @type String
          */
-        this.startDate = template.startDate;
+        this.url = template.url;
 
         /**
-         * The wrapped ActiveConnection.
+         * The CSS class name to associate with this page, if any. This will be
+         * an empty string by default.
          *
-         * @type ActiveConnection
+         * @type String
          */
-        this.activeConnection = template.activeConnection;
+        this.className = template.className || '';
 
         /**
-         * A flag indicating that the active connection has been selected.
+         * A numeric value denoting the relative sort order when compared to
+         * other sibling PageDefinitions. If unspecified, sort order is
+         * determined by the system using the PageDefinition.
          *
-         * @type Boolean
+         * @type Number
          */
-        this.checked = template.checked || false;
+        this.weight = template.weight;
 
     };
 
-    return ActiveConnectionWrapper;
+    return PageDefinition;
 
 }]);

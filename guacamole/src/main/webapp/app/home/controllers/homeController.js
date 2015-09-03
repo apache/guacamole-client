@@ -27,19 +27,22 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         function homeController($scope, $injector) {
 
     // Get required types
-    var ConnectionGroup = $injector.get("ConnectionGroup");
+    var ConnectionGroup  = $injector.get('ConnectionGroup');
+    var ClientIdentifier = $injector.get('ClientIdentifier');
             
     // Get required services
-    var authenticationService  = $injector.get("authenticationService");
-    var connectionGroupService = $injector.get("connectionGroupService");
-    
+    var authenticationService  = $injector.get('authenticationService');
+    var connectionGroupService = $injector.get('connectionGroupService');
+    var dataSourceService      = $injector.get('dataSourceService');
+
     /**
-     * The root connection group, or null if the connection group hierarchy has
-     * not yet been loaded.
+     * Map of data source identifier to the root connection group of that data
+     * source, or null if the connection group hierarchy has not yet been
+     * loaded.
      *
-     * @type ConnectionGroup
+     * @type Object.<String, ConnectionGroup>
      */
-    $scope.rootConnectionGroup = null;
+    $scope.rootConnectionGroups = null;
 
     /**
      * Returns whether critical data has completed being loaded.
@@ -54,10 +57,59 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
 
     };
 
-    // Retrieve root group and all descendants
-    connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-    .success(function rootGroupRetrieved(rootConnectionGroup) {
-        $scope.rootConnectionGroup = rootConnectionGroup;
+    /**
+     * Object passed to the guacGroupList directive, providing context-specific
+     * functions or data.
+     */
+    $scope.context = {
+
+        /**
+         * Returns the unique string identifier which must be used when
+         * connecting to a connection or connection group represented by the
+         * given GroupListItem.
+         *
+         * @param {GroupListItem} item
+         *     The GroupListItem to determine the client identifier of.
+         *
+         * @returns {String}
+         *     The client identifier associated with the connection or
+         *     connection group represented by the given GroupListItem, or null
+         *     if the GroupListItem cannot have an associated client
+         *     identifier.
+         */
+        getClientIdentifier : function getClientIdentifier(item) {
+
+            // If the item is a connection, generate a connection identifier
+            if (item.isConnection)
+                return ClientIdentifier.toString({
+                    dataSource : item.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION,
+                    id         : item.identifier
+                });
+
+            // If the item is a connection, generate a connection group identifier
+            if (item.isConnectionGroup)
+                return ClientIdentifier.toString({
+                    dataSource : item.dataSource,
+                    type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                    id         : item.identifier
+                });
+
+            // Otherwise, no such identifier can exist
+            return null;
+
+        }
+
+    };
+
+    // Retrieve root groups and all descendants
+    dataSourceService.apply(
+        connectionGroupService.getConnectionGroupTree,
+        authenticationService.getAvailableDataSources(),
+        ConnectionGroup.ROOT_IDENTIFIER
+    )
+    .then(function rootGroupsRetrieved(rootConnectionGroups) {
+        $scope.rootConnectionGroups = rootConnectionGroups;
     });
 
 }]);

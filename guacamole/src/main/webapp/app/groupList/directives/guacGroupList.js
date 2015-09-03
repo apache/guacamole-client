@@ -32,11 +32,12 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
         scope: {
 
             /**
-             * The connection group to display.
+             * The connection groups to display as a map of data source
+             * identifier to corresponding root group.
              *
-             * @type ConnectionGroup|Object 
+             * @type Object.<String, ConnectionGroup>
              */
-            connectionGroup : '=',
+            connectionGroups : '=',
 
             /**
              * Arbitrary object which shall be made available to the connection
@@ -92,42 +93,37 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
             // Required services
             var activeConnectionService = $injector.get('activeConnectionService');
+            var dataSourceService       = $injector.get('dataSourceService');
 
             // Required types
             var GroupListItem = $injector.get('GroupListItem');
 
             /**
-             * The number of active connections associated with a given
-             * connection identifier. If this information is unknown, or there
-             * are no active connections for a given identifier, no number will
-             * be stored.
+             * Map of data source identifier to the number of active
+             * connections associated with a given connection identifier.
+             * If this information is unknown, or there are no active
+             * connections for a given identifier, no number will be stored.
              *
-             * @type Object.<String, Number>
+             * @type Object.<String, Object.<String, Number>>
              */
             var connectionCount = {};
 
-            // Count active connections by connection identifier
-            activeConnectionService.getActiveConnections()
-            .success(function activeConnectionsRetrieved(activeConnections) {
-
-                // Count each active connection by identifier
-                angular.forEach(activeConnections, function addActiveConnection(activeConnection) {
-
-                    // If counter already exists, increment
-                    var identifier = activeConnection.connectionIdentifier;
-                    if (connectionCount[identifier])
-                        connectionCount[identifier]++;
-
-                    // Otherwise, initialize counter to 1
-                    else
-                        connectionCount[identifier] = 1;
-
-                });
-
-            });
+            /**
+             * A list of all items which should appear at the root level. As
+             * connections and connection groups from multiple data sources may
+             * be included in a guacGroupList, there may be multiple root
+             * items, even if the root connection group is shown.
+             *
+             * @type GroupListItem[]
+             */
+            $scope.rootItems = [];
 
             /**
              * Returns the number of active usages of a given connection.
+             *
+             * @param {String} dataSource
+             *     The identifier of the data source containing the given
+             *     connection.
              *
              * @param {Connection} connection
              *     The connection whose active connections should be counted.
@@ -136,8 +132,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              *     The number of currently-active usages of the given
              *     connection.
              */
-            var countActiveConnections = function countActiveConnections(connection) {
-                return connectionCount[connection.identifier];
+            var countActiveConnections = function countActiveConnections(dataSource, connection) {
+                return connectionCount[dataSource][connection.identifier];
             };
 
             /**
@@ -173,29 +169,66 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             };
 
             // Set contents whenever the connection group is assigned or changed
-            $scope.$watch("connectionGroup", function setContents(connectionGroup) {
+            $scope.$watch('connectionGroups', function setContents(connectionGroups) {
 
-                if (connectionGroup) {
+                // Reset stored data
+                var dataSources = [];
+                $scope.rootItems = [];
+                connectionCount = {};
 
-                    // Create item hierarchy, including connections only if they will be visible
-                    var rootItem = GroupListItem.fromConnectionGroup(connectionGroup,
-                        !!$scope.connectionTemplate, countActiveConnections);
+                // If connection groups are given, add them to the interface
+                if (connectionGroups) {
 
-                    // If root group is to be shown, wrap that group as the child of a fake root group
-                    if ($scope.showRootGroup)
-                        $scope.rootItem = new GroupListItem({
-                            isConnectionGroup : true,
-                            isBalancing       : false,
-                            children          : [ rootItem ]
+                    // Add each provided connection group
+                    angular.forEach(connectionGroups, function addConnectionGroup(connectionGroup, dataSource) {
+
+                        // Prepare data source for active connection counting
+                        dataSources.push(dataSource);
+                        connectionCount[dataSource] = {};
+
+                        // Create root item for current connection group
+                        var rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
+                            !!$scope.connectionTemplate, countActiveConnections);
+
+                        // If root group is to be shown, add it as a root item
+                        if ($scope.showRootGroup)
+                            $scope.rootItems.push(rootItem);
+
+                        // Otherwise, add its children as root items
+                        else {
+                            angular.forEach(rootItem.children, function addRootItem(child) {
+                                $scope.rootItems.push(child);
+                            });
+                        }
+
+                    });
+
+                    // Count active connections by connection identifier
+                    dataSourceService.apply(
+                        activeConnectionService.getActiveConnections,
+                        dataSources
+                    )
+                    .then(function activeConnectionsRetrieved(activeConnectionMap) {
+
+                        // Within each data source, count each active connection by identifier
+                        angular.forEach(activeConnectionMap, function addActiveConnections(activeConnections, dataSource) {
+                            angular.forEach(activeConnections, function addActiveConnection(activeConnection) {
+
+                                // If counter already exists, increment
+                                var identifier = activeConnection.connectionIdentifier;
+                                if (connectionCount[dataSource][identifier])
+                                    connectionCount[dataSource][identifier]++;
+
+                                // Otherwise, initialize counter to 1
+                                else
+                                    connectionCount[dataSource][identifier] = 1;
+
+                            });
                         });
 
-                    // If not wrapped, only the descendants of the root will be shown
-                    else
-                        $scope.rootItem = rootItem;
+                    });
 
                 }
-                else
-                    $scope.rootItem = null;
 
             });
 

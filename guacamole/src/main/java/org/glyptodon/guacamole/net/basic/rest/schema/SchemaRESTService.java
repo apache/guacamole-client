@@ -28,6 +28,7 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -36,7 +37,9 @@ import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.UserContext;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
+import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.protocols.ProtocolInfo;
 
@@ -46,7 +49,7 @@ import org.glyptodon.guacamole.protocols.ProtocolInfo;
  *
  * @author Michael Jumper
  */
-@Path("/schema")
+@Path("/schema/{dataSource}")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SchemaRESTService {
@@ -58,11 +61,21 @@ public class SchemaRESTService {
     private AuthenticationService authenticationService;
 
     /**
+     * Service for convenient retrieval of objects.
+     */
+    @Inject
+    private ObjectRetrievalService retrievalService;
+
+    /**
      * Retrieves the possible attributes of a user object.
      *
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext dictating the available user attributes.
      *
      * @return
      *     A collection of forms which describe the possible attributes of a
@@ -74,10 +87,13 @@ public class SchemaRESTService {
     @GET
     @Path("/users/attributes")
     @AuthProviderRESTExposure
-    public Collection<Form> getUserAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getUserAttributes(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier)
+            throws GuacamoleException {
 
         // Retrieve all possible user attributes
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         return userContext.getUserAttributes();
 
     }
@@ -89,6 +105,10 @@ public class SchemaRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext dictating the available connection attributes.
+     *
      * @return
      *     A collection of forms which describe the possible attributes of a
      *     connection object.
@@ -99,10 +119,13 @@ public class SchemaRESTService {
     @GET
     @Path("/connections/attributes")
     @AuthProviderRESTExposure
-    public Collection<Form> getConnectionAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getConnectionAttributes(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier)
+            throws GuacamoleException {
 
         // Retrieve all possible connection attributes
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         return userContext.getConnectionAttributes();
 
     }
@@ -114,6 +137,11 @@ public class SchemaRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext dictating the available connection group
+     *     attributes.
+     *
      * @return
      *     A collection of forms which describe the possible attributes of a
      *     connection group object.
@@ -124,10 +152,13 @@ public class SchemaRESTService {
     @GET
     @Path("/connectionGroups/attributes")
     @AuthProviderRESTExposure
-    public Collection<Form> getConnectionGroupAttributes(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Collection<Form> getConnectionGroupAttributes(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier)
+            throws GuacamoleException {
 
         // Retrieve all possible connection group attributes
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         return userContext.getConnectionGroupAttributes();
 
     }
@@ -139,6 +170,13 @@ public class SchemaRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext dictating the protocols available. Currently, the
+     *     UserContext actually does not dictate this, the the same set of
+     *     protocols will be retrieved for all users, though the identifier
+     *     given here will be validated.
+     *
      * @return
      *     A map of protocol information, where each key is the unique name
      *     associated with that protocol.
@@ -149,10 +187,13 @@ public class SchemaRESTService {
     @GET
     @Path("/protocols")
     @AuthProviderRESTExposure
-    public Map<String, ProtocolInfo> getProtocols(@QueryParam("token") String authToken) throws GuacamoleException {
+    public Map<String, ProtocolInfo> getProtocols(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier)
+            throws GuacamoleException {
 
-        // Verify the given auth token is valid
-        authenticationService.getUserContext(authToken);
+        // Verify the given auth token and auth provider identifier are valid
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Get and return a map of all protocols.
         Environment env = new LocalEnvironment();

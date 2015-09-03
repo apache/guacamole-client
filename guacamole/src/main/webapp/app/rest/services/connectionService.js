@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,7 +48,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      *     // Do something with the connection
      * });
      */
-    service.getConnection = function getConnection(id) {
+    service.getConnection = function getConnection(dataSource, id) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -59,7 +59,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/connections/' + encodeURIComponent(id),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id),
             params  : httpParameters
         });
 
@@ -77,7 +77,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      *     A promise which will resolve with an array of
      *     @link{ConnectionHistoryEntry} objects upon success.
      */
-    service.getConnectionHistory = function getConnectionHistory(id) {
+    service.getConnectionHistory = function getConnectionHistory(dataSource, id) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -87,7 +87,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         // Retrieve connection history
         return $http({
             method  : 'GET',
-            url     : 'api/connections/' + encodeURIComponent(id) + '/history',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/history',
             params  : httpParameters
         });
  
@@ -105,7 +105,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      *     A promise which will resolve with an map of parameter name/value
      *     pairs upon success.
      */
-    service.getConnectionParameters = function getConnectionParameters(id) {
+    service.getConnectionParameters = function getConnectionParameters(dataSource, id) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -116,7 +116,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         return $http({
             cache   : cacheService.connections,
             method  : 'GET',
-            url     : 'api/connections/' + encodeURIComponent(id) + '/parameters',
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters',
             params  : httpParameters
         });
  
@@ -135,7 +135,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
-    service.saveConnection = function saveConnection(connection) {
+    service.saveConnection = function saveConnection(dataSource, connection) {
         
         // Build HTTP parameters set
         var httpParameters = {
@@ -146,7 +146,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         if (!connection.identifier) {
             return $http({
                 method  : 'POST',
-                url     : 'api/connections',
+                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections',
                 params  : httpParameters,
                 data    : connection
             })
@@ -162,7 +162,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         else {
             return $http({
                 method  : 'PUT',
-                url     : 'api/connections/' + encodeURIComponent(connection.identifier),
+                url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
                 params  : httpParameters,
                 data    : connection
             })
@@ -185,7 +185,7 @@ angular.module('rest').factory('connectionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteConnection = function deleteConnection(connection) {
+    service.deleteConnection = function deleteConnection(dataSource, connection) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -195,7 +195,7 @@ angular.module('rest').factory('connectionService', ['$injector',
         // Delete connection
         return $http({
             method  : 'DELETE',
-            url     : 'api/connections/' + encodeURIComponent(connection.identifier),
+            url     : 'api/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
             params  : httpParameters
         })
 

@@ -37,12 +37,13 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
         controller: ['$scope', '$injector', function settingsUsersController($scope, $injector) {
 
             // Required types
+            var ManageableUser  = $injector.get('ManageableUser');
             var PermissionSet   = $injector.get('PermissionSet');
-            var User            = $injector.get('User');
 
             // Required services
             var $location              = $injector.get('$location');
             var authenticationService  = $injector.get('authenticationService');
+            var dataSourceService      = $injector.get('dataSourceService');
             var guacNotification       = $injector.get('guacNotification');
             var permissionService      = $injector.get('permissionService');
             var userService            = $injector.get('userService');
@@ -63,27 +64,19 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             };
 
             /**
-             * All visible users.
+             * The identifiers of all data sources accessible by the current
+             * user.
              *
-             * @type User[]
+             * @type String[]
              */
-            $scope.users = null;
+            var dataSources = authenticationService.getAvailableDataSources();
 
             /**
-             * Whether the current user can manage users. If the current
-             * permissions have not yet been loaded, this will be null.
+             * All visible users, along with their corresponding data sources.
              *
-             * @type Boolean
+             * @type ManageableUser[]
              */
-            $scope.canManageUsers = null;
-
-            /**
-             * Whether the current user can create new users. If the current
-             * permissions have not yet been loaded, this will be null.
-             *
-             * @type Boolean
-             */
-            $scope.canCreateUsers = null;
+            $scope.manageableUsers = null;
 
             /**
              * The name of the new user to create, if any, when user creation
@@ -94,10 +87,11 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             $scope.newUsername = "";
 
             /**
-             * All permissions associated with the current user, or null if the
+             * Map of data source identifiers to all permissions associated
+             * with the current user within that data source, or null if the
              * user's permissions have not yet been loaded.
              *
-             * @type PermissionSet
+             * @type Object.<String, PermissionSet>
              */
             $scope.permissions = null;
 
@@ -110,80 +104,152 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              */
             $scope.isLoaded = function isLoaded() {
 
-                return $scope.users                     !== null
-                    && $scope.permissions               !== null
-                    && $scope.canManageUsers            !== null
-                    && $scope.canCreateUsers            !== null;
+                return $scope.manageableUsers !== null
+                    && $scope.permissions     !== null;
+
+            };
+
+            /**
+             * Returns the identifier of the data source that should be used by
+             * default when creating a new user.
+             *
+             * @return {String}
+             *     The identifier of the data source that should be used by
+             *     default when creating a new user, or null if user creation
+             *     is not allowed.
+             */
+            var getDefaultDataSource = function getDefaultDataSource() {
+
+                // Abort if permissions have not yet loaded
+                if (!$scope.permissions)
+                    return null;
+
+                // For each data source
+                for (var dataSource in $scope.permissions) {
+
+                    // Retrieve corresponding permission set
+                    var permissionSet = $scope.permissions[dataSource];
+
+                    // Can create users if adminstrator or have explicit permission
+                    if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
+                     || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_USER))
+                        return dataSource;
+
+                }
+
+                // No data sources allow user creation
+                return null;
+
+            };
+
+            /**
+             * Returns whether the current user can create new users within at
+             * least one data source.
+             *
+             * @return {Boolean}
+             *     true if the current user can create new users within at
+             *     least one data source, false otherwise.
+             */
+            $scope.canCreateUsers = function canCreateUsers() {
+                return getDefaultDataSource() !== null;
+            };
+
+            /**
+             * Returns whether the current user can create new users or make
+             * changes to existing users within at least one data source. The
+             * user management interface as a whole is useless if this function
+             * returns false.
+             *
+             * @return {Boolean}
+             *     true if the current user can create new users or make
+             *     changes to existing users within at least one data source,
+             *     false otherwise.
+             */
+            var canManageUsers = function canManageUsers() {
+
+                // Abort if permissions have not yet loaded
+                if (!$scope.permissions)
+                    return false;
+
+                // Creating users counts as management
+                if ($scope.canCreateUsers())
+                    return true;
+
+                // For each data source
+                for (var dataSource in $scope.permissions) {
+
+                    // Retrieve corresponding permission set
+                    var permissionSet = $scope.permissions[dataSource];
+
+                    // Can manage users if granted explicit update or delete
+                    if (PermissionSet.hasUserPermission(permissionSet, PermissionSet.ObjectPermissionType.UPDATE)
+                     || PermissionSet.hasUserPermission(permissionSet, PermissionSet.ObjectPermissionType.DELETE))
+                        return true;
+
+                }
+
+                // No data sources allow management of users
+                return false;
 
             };
 
             // Retrieve current permissions
-            permissionService.getPermissions(currentUsername)
-            .success(function permissionsRetrieved(permissions) {
+            dataSourceService.apply(permissionService.getPermissions, dataSources, currentUsername)
+            .then(function permissionsRetrieved(permissions) {
 
+                // Store retrieved permissions
                 $scope.permissions = permissions;
 
-                // Determine whether the current user can create new users
-                $scope.canCreateUsers =
-                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER);
-
-                // Determine whether the current user can manage other users
-                $scope.canManageUsers =
-                       $scope.canCreateUsers
-                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
-                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE);
-
                 // Return to home if there's nothing to do here
-                if (!$scope.canManageUsers)
+                if (!canManageUsers())
                     $location.path('/');
-                
-            });
 
-            // Retrieve all users for whom we have UPDATE or DELETE permission
-            userService.getUsers([PermissionSet.ObjectPermissionType.UPDATE, 
-                PermissionSet.ObjectPermissionType.DELETE])
-            .success(function usersReceived(users) {
+                var userPromise;
 
-                // Display only other users, not self
-                $scope.users = users.filter(function isNotSelf(user) {
-                    return user.username !== currentUsername;
+                // If users can be created, list all readable users
+                if ($scope.canCreateUsers())
+                    userPromise = dataSourceService.apply(userService.getUsers, dataSources);
+
+                // Otherwise, list only updateable/deletable users
+                else
+                    userPromise = dataSourceService.apply(userService.getUsers, dataSources, [
+                        PermissionSet.ObjectPermissionType.UPDATE,
+                        PermissionSet.ObjectPermissionType.DELETE
+                    ]);
+
+                userPromise.then(function usersReceived(userArrays) {
+
+                    var addedUsers = {};
+                    $scope.manageableUsers = [];
+
+                    // For each user in each data source
+                    angular.forEach(dataSources, function addUserList(dataSource) {
+                        angular.forEach(userArrays[dataSource], function addUser(user) {
+
+                            // Do not add the same user twice
+                            if (addedUsers[user.username])
+                                return;
+
+                            // Add user to overall list
+                            addedUsers[user.username] = user;
+                            $scope.manageableUsers.push(new ManageableUser ({
+                                'dataSource' : dataSource,
+                                'user'       : user
+                            }));
+
+                        });
+                    });
+
                 });
 
             });
 
             /**
-             * Creates a new user having the username specified in the user
-             * creation interface.
+             * Navigates to an interface for creating a new user having the
+             * username specified.
              */
             $scope.newUser = function newUser() {
-
-                // Create user skeleton
-                var user = new User({
-                    username: $scope.newUsername || ''
-                });
-
-                // Create specified user
-                userService.createUser(user)
-
-                // Add user to visible list upon success
-                .success(function userCreated() {
-                    $scope.users.push(user);
-                })
-
-                // Notify of any errors
-                .error(function userCreationFailed(error) {
-                    guacNotification.showStatus({
-                        'className'  : 'error',
-                        'title'      : 'SETTINGS_USERS.DIALOG_HEADER_ERROR',
-                        'text'       : error.message,
-                        'actions'    : [ ACKNOWLEDGE_ACTION ]
-                    });
-                });
-
-                // Reset username
-                $scope.newUsername = "";
-
+                $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent($scope.newUsername));
             };
             
         }]

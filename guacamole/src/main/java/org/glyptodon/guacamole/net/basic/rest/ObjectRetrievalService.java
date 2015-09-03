@@ -25,6 +25,7 @@ package org.glyptodon.guacamole.net.basic.rest;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -48,9 +49,9 @@ public class ObjectRetrievalService {
      * @param session
      *     The GuacamoleSession to retrieve the UserContext from.
      *
-     * @param identifier
+     * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider that created the
-     *     UserContext being retrieved. Only one UserContext per
+     *     UserContext being retrieved. Only one UserContext per User per
      *     AuthenticationProvider can exist.
      *
      * @return
@@ -62,7 +63,7 @@ public class ObjectRetrievalService {
      *     UserContext does not exist.
      */
     public UserContext retrieveUserContext(GuacamoleSession session,
-            String identifier) throws GuacamoleException {
+            String authProviderIdentifier) throws GuacamoleException {
 
         // Get list of UserContexts
         List<UserContext> userContexts = session.getUserContexts();
@@ -70,11 +71,17 @@ public class ObjectRetrievalService {
         // Locate and return the UserContext associated with the
         // AuthenticationProvider having the given identifier, if any
         for (UserContext userContext : userContexts) {
-            if (userContext.getAuthenticationProvider().getIdentifier().equals(identifier))
+
+            // Get AuthenticationProvider associated with current UserContext
+            AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
+
+            // If AuthenticationProvider identifier matches, done
+            if (authProvider.getIdentifier().equals(authProviderIdentifier))
                 return userContext;
+
         }
 
-        throw new GuacamoleResourceNotFoundException("Session not associated with authentication provider \"" + identifier + "\".");
+        throw new GuacamoleResourceNotFoundException("Session not associated with authentication provider \"" + authProviderIdentifier + "\".");
 
     }
 
@@ -110,6 +117,35 @@ public class ObjectRetrievalService {
     }
 
     /**
+     * Retrieves a single user from the given GuacamoleSession.
+     *
+     * @param session
+     *     The GuacamoleSession to retrieve the user from.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext from which the user should be retrieved. Only one
+     *     UserContext per User per AuthenticationProvider can exist.
+     *
+     * @param identifier
+     *     The identifier of the user to retrieve.
+     *
+     * @return
+     *     The user having the given identifier.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the user, or if the
+     *     user does not exist.
+     */
+    public User retrieveUser(GuacamoleSession session, String authProviderIdentifier,
+            String identifier) throws GuacamoleException {
+
+        UserContext userContext = retrieveUserContext(session, authProviderIdentifier);
+        return retrieveUser(userContext, identifier);
+
+    }
+
+    /**
      * Retrieves a single connection from the given user context.
      *
      * @param userContext
@@ -137,6 +173,36 @@ public class ObjectRetrievalService {
             throw new GuacamoleResourceNotFoundException("No such connection: \"" + identifier + "\"");
 
         return connection;
+
+    }
+
+    /**
+     * Retrieves a single connection from the given GuacamoleSession.
+     *
+     * @param session
+     *     The GuacamoleSession to retrieve the connection from.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext from which the connection should be retrieved. Only one
+     *     UserContext per User per AuthenticationProvider can exist.
+     *
+     * @param identifier
+     *     The identifier of the connection to retrieve.
+     *
+     * @return
+     *     The connection having the given identifier.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the connection, or if the
+     *     connection does not exist.
+     */
+    public Connection retrieveConnection(GuacamoleSession session,
+            String authProviderIdentifier, String identifier)
+            throws GuacamoleException {
+
+        UserContext userContext = retrieveUserContext(session, authProviderIdentifier);
+        return retrieveConnection(userContext, identifier);
 
     }
 
@@ -175,6 +241,39 @@ public class ObjectRetrievalService {
             throw new GuacamoleResourceNotFoundException("No such connection group: \"" + identifier + "\"");
 
         return connectionGroup;
+
+    }
+
+    /**
+     * Retrieves a single connection group from the given GuacamoleSession. If
+     * the given identifier is the REST API root identifier, the root
+     * connection group will be returned. The underlying authentication
+     * provider may additionally use a different identifier for root.
+     *
+     * @param session
+     *     The GuacamoleSession to retrieve the connection group from.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider that created the
+     *     UserContext from which the connection group should be retrieved.
+     *     Only one UserContext per User per AuthenticationProvider can exist.
+     *
+     * @param identifier
+     *     The identifier of the connection group to retrieve.
+     *
+     * @return
+     *     The connection group having the given identifier, or the root
+     *     connection group if the identifier is the root identifier.
+     *
+     * @throws GuacamoleException 
+     *     If an error occurs while retrieving the connection group, or if the
+     *     connection group does not exist.
+     */
+    public ConnectionGroup retrieveConnectionGroup(GuacamoleSession session,
+            String authProviderIdentifier, String identifier) throws GuacamoleException {
+
+        UserContext userContext = retrieveUserContext(session, authProviderIdentifier);
+        return retrieveConnectionGroup(userContext, identifier);
 
     }
 

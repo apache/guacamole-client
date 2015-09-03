@@ -99,9 +99,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
             // Store auth data
             $cookieStore.put(AUTH_COOKIE_ID, {
-                authToken  : data.authToken,
-                username   : data.username,
-                dataSource : data.dataSource
+                'authToken'            : data.authToken,
+                'username'             : data.username,
+                'dataSource'           : data.dataSource,
+                'availableDataSources' : data.availableDataSources
             });
 
             // Process is complete
@@ -320,7 +321,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *
      * @returns {String[]}
      *     The identifiers of all data sources availble to the current user,
-     *     or null if no authentication data is present.
+     *     or an empty array if no authentication data is present.
      */
     service.getAvailableDataSources = function getAvailableDataSources() {
 
@@ -330,7 +331,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             return authData.availableDataSources;
 
         // No auth data present
-        return null;
+        return [];
 
     };
 

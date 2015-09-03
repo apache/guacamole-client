@@ -27,91 +27,104 @@ angular.module('navigation').factory('userPageService', ['$injector',
         function userPageService($injector) {
 
     // Get required types
-    var ConnectionGroup = $injector.get('ConnectionGroup');
-    var PermissionSet   = $injector.get('PermissionSet');
+    var ClientIdentifier = $injector.get('ClientIdentifier');
+    var ConnectionGroup  = $injector.get('ConnectionGroup');
+    var PageDefinition   = $injector.get('PageDefinition');
+    var PermissionSet    = $injector.get('PermissionSet');
 
     // Get required services
-    var $q                     = $injector.get('$q');
-    var authenticationService  = $injector.get('authenticationService');
-    var connectionGroupService = $injector.get("connectionGroupService");
-    var permissionService      = $injector.get("permissionService");
+    var $q                       = $injector.get('$q');
+    var authenticationService    = $injector.get('authenticationService');
+    var connectionGroupService   = $injector.get('connectionGroupService');
+    var dataSourceService        = $injector.get('dataSourceService');
+    var permissionService        = $injector.get('permissionService');
+    var translationStringService = $injector.get('translationStringService');
     
     var service = {};
     
     /**
-     * Construct a new Page object with the given name and url.
-     * @constructor
-     * 
-     * @param {String} name
-     *     The i18n key for the name of the page.
-     * 
-     * @param {String} url
-     *     The url to the page.
-     *     
-     * @returns {PageDefinition} 
-     *     The newly created PageDefinition object.
-     */
-    var Page = function Page(name, url) {
-        this.name = name;
-        this.url  = url;
-    };
-            
-    /**
      * The home page to assign to a user if they can navigate to more than one
      * page.
      * 
-     * @type Page
+     * @type PageDefinition
      */
-    var SYSTEM_HOME_PAGE = new Page(
-        'USER_MENU.ACTION_NAVIGATE_HOME',
-        '/'
-    );
+    var SYSTEM_HOME_PAGE = new PageDefinition({
+        name : 'USER_MENU.ACTION_NAVIGATE_HOME',
+        url  : '/'
+    });
 
     /**
      * Returns an appropriate home page for the current user.
      *
-     * @param {ConnectionGroup} rootGroup
-     *     The root of the connection group tree for the current user.
+     * @param {Object.<String, ConnectionGroup>} rootGroups
+     *     A map of all root connection groups visible to the current user,
+     *     where each key is the identifier of the corresponding data source.
      *
-     * @returns {Page}
+     * @returns {PageDefinition}
      *     The user's home page.
      */
-    var generateHomePage = function generateHomePage(rootGroup) {
+    var generateHomePage = function generateHomePage(rootGroups) {
 
-        // Get children
-        var connections      = rootGroup.childConnections      || [];
-        var connectionGroups = rootGroup.childConnectionGroups || [];
+        var homePage = null;
 
-        // Use main connection list screen as home if multiple connections
-        // are available
-        if (connections.length + connectionGroups.length === 1) {
+        // Determine whether a connection or balancing group should serve as
+        // the home page
+        for (var dataSource in rootGroups) {
 
-            var connection      = connections[0];
-            var connectionGroup = connectionGroups[0];
+            // Get corresponding root group
+            var rootGroup = rootGroups[dataSource];
 
-            // Only one connection present, use as home page
-            if (connection) {
-                return new Page(
-                    connection.name,
-                    '/client/c/' + connection.identifier
-                );
+            // Get children
+            var connections      = rootGroup.childConnections      || [];
+            var connectionGroups = rootGroup.childConnectionGroups || [];
+
+            // If exactly one connection or balancing group is available, use
+            // that as the home page
+            if (homePage === null && connections.length + connectionGroups.length === 1) {
+
+                var connection      = connections[0];
+                var connectionGroup = connectionGroups[0];
+
+                // Only one connection present, use as home page
+                if (connection) {
+                    homePage = new PageDefinition({
+                        name : connection.name,
+                        url  : '/client/' + ClientIdentifier.toString({
+                            dataSource : dataSource,
+                            type       : ClientIdentifier.Types.CONNECTION,
+                            id         : connection.identifier
+                        })
+                    });
+                }
+
+                // Only one balancing group present, use as home page
+                if (connectionGroup
+                        && connectionGroup.type === ConnectionGroup.Type.BALANCING
+                        && _.isEmpty(connectionGroup.childConnections)
+                        && _.isEmpty(connectionGroup.childConnectionGroups)) {
+                    homePage = new PageDefinition({
+                        name : connectionGroup.name,
+                        url  : '/client/' + ClientIdentifier.toString({
+                            dataSource : dataSource,
+                            type       : ClientIdentifier.Types.CONNECTION_GROUP,
+                            id         : connectionGroup.identifier
+                        })
+                    });
+                }
+
             }
 
-            // Only one connection present, use as home page
-            if (connectionGroup
-                    && connectionGroup.type === ConnectionGroup.Type.BALANCING
-                    && _.isEmpty(connectionGroup.childConnections)
-                    && _.isEmpty(connectionGroup.childConnectionGroups)) {
-                return new Page(
-                    connectionGroup.name,
-                    '/client/g/' + connectionGroup.identifier
-                );
+            // Otherwise, a connection or balancing group cannot serve as the
+            // home page
+            else {
+                homePage = null;
+                break;
             }
 
-        }
+        } // end for each data source
 
-        // Resolve promise with default home page
-        return SYSTEM_HOME_PAGE;
+        // Use default home page if no other is available
+        return homePage || SYSTEM_HOME_PAGE;
 
     };
 
@@ -126,10 +139,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        // Resolve promise using home page derived from root connection group
-        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-        .success(function rootConnectionGroupRetrieved(rootGroup) {
-            deferred.resolve(generateHomePage(rootGroup));
+        // Resolve promise using home page derived from root connection groups
+        dataSourceService.apply(
+            connectionGroupService.getConnectionGroupTree,
+            authenticationService.getAvailableDataSources(),
+            ConnectionGroup.ROOT_IDENTIFIER
+        )
+        .then(function rootConnectionGroupsRetrieved(rootGroups) {
+            deferred.resolve(generateHomePage(rootGroups));
         });
 
         return deferred.promise;
@@ -140,94 +157,115 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * Returns all settings pages that the current user can visit. This can
      * include any of the various manage pages.
      * 
-     * @param {PermissionSet} permissions
-     *     The permissions for the current user.
+     * @param {Object.<String, PermissionSet>} permissionSets
+     *     A map of all permissions granted to the current user, where each
+     *     key is the identifier of the corresponding data source.
      * 
      * @returns {Page[]} 
      *     An array of all settings pages that the current user can visit.
      */
-    var generateSettingsPages = function generateSettingsPages(permissions) {
+    var generateSettingsPages = function generateSettingsPages(permissionSets) {
         
         var pages = [];
         
-        permissions = angular.copy(permissions);
+        var canManageUsers = [];
+        var canManageConnections = [];
+        var canManageSessions = [];
 
-        // Ignore permission to update root group
-        PermissionSet.removeConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+        // Inspect the contents of each provided permission set
+        angular.forEach(permissionSets, function inspectPermissions(permissions, dataSource) {
 
-        // Ignore permission to update self
-        PermissionSet.removeUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE, authenticationService.getCurrentUsername());
+            permissions = angular.copy(permissions);
 
-        // Determine whether the current user needs access to the user management UI
-        var canManageUsers =
+            // Ignore permission to update root group
+            PermissionSet.removeConnectionGroupPermission(permissions,
+                PermissionSet.ObjectPermissionType.UPDATE,
+                ConnectionGroup.ROOT_IDENTIFIER);
 
-                // System permissions
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
+            // Ignore permission to update self
+            PermissionSet.removeUserPermission(permissions,
+                PermissionSet.ObjectPermissionType.UPDATE,
+                authenticationService.getCurrentUsername());
 
-                // Permission to update users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.UPDATE)
+            // Determine whether the current user needs access to the user management UI
+            if (
+                    // System permissions
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_USER)
 
-                // Permission to delete users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.DELETE)
+                    // Permission to update users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
 
-                // Permission to administer users
-                || PermissionSet.hasUserPermission(permissions,            PermissionSet.ObjectPermissionType.ADMINISTER);
+                    // Permission to delete users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
 
-        // Determine whether the current user needs access to the connection management UI
-        var canManageConnections =
+                    // Permission to administer users
+                    || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+            )
+                canManageUsers.push(dataSource);
 
-                // System permissions
-                   PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
-                || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
+            // Determine whether the current user needs access to the connection management UI
+            if (
+                    // System permissions
+                       PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION)
+                    || PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)
 
-                // Permission to update connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
+                    // Permission to update connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.UPDATE)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.UPDATE)
 
-                // Permission to delete connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
+                    // Permission to delete connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.DELETE)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.DELETE)
 
-                // Permission to administer connections or connection groups
-                || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
-                || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER);
+                    // Permission to administer connections or connection groups
+                    || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
+                    || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
+            )
+                canManageConnections.push(dataSource);
 
-        var canManageSessions = 
+            // Determine whether the current user needs access to the session management UI
+            if (
+                    // A user must be a system administrator to manage sessions
+                    PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
+            )
+                canManageSessions.push(dataSource);
 
-                // A user must be a system administrator to manage sessions
-                PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+        });
 
         // If user can manage sessions, add link to sessions management page
-        if (canManageSessions) {
-            pages.push(new Page(
-                'USER_MENU.ACTION_MANAGE_SESSIONS',
-                '/settings/sessions'
-            ));
+        if (canManageSessions.length) {
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_SESSIONS',
+                url  : '/settings/sessions'
+            }));
         }
         
         // If user can manage users, add link to user management page
-        if (canManageUsers) {
-            pages.push(new Page(
-                'USER_MENU.ACTION_MANAGE_USERS',
-                '/settings/users'
-            ));
+        if (canManageUsers.length) {
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_USERS',
+                url  : '/settings/users'
+            }));
         }
 
-        // If user can manage connections, add link to connections management page
-        if (canManageConnections) {
-            pages.push(new Page(
-                'USER_MENU.ACTION_MANAGE_CONNECTIONS',
-                '/settings/connections'
-            ));
-        }
+        // If user can manage connections, add links for connection management pages
+        angular.forEach(canManageConnections, function addConnectionManagementLink(dataSource) {
+            pages.push(new PageDefinition({
+                name : [
+                    'USER_MENU.ACTION_MANAGE_CONNECTIONS',
+                    translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME'
+                ],
+                url  : '/settings/' + encodeURIComponent(dataSource) + '/connections'
+            }));
+        });
 
         // Add link to user preferences (always accessible)
-        pages.push(new Page(
-            'USER_MENU.ACTION_MANAGE_PREFERENCES',
-            '/settings/preferences'
-        ));
+        pages.push(new PageDefinition({
+            name : 'USER_MENU.ACTION_MANAGE_PREFERENCES',
+            url  : '/settings/preferences'
+        }));
 
         return pages;
     };
@@ -245,10 +283,15 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        // Retrieve current permissions, resolving main pages if possible
+        // Retrieve current permissions
+        dataSourceService.apply(
+            permissionService.getPermissions,
+            authenticationService.getAvailableDataSources(),
+            authenticationService.getCurrentUsername() 
+        )
+
         // Resolve promise using settings pages derived from permissions
-        permissionService.getPermissions(authenticationService.getCurrentUsername())
-        .success(function permissionsRetrieved(permissions) {
+        .then(function permissionsRetrieved(permissions) {
             deferred.resolve(generateSettingsPages(permissions));
         });
         
@@ -261,21 +304,23 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * include the home page, manage pages, etc. In the case that there are no 
      * applicable pages of this sort, it may return a client page.
      * 
-     * @param {ConnectionGroup} rootGroup
-     *     The root of the connection group tree for the current user.
+     * @param {Object.<String, ConnectionGroup>} rootGroups
+     *     A map of all root connection groups visible to the current user,
+     *     where each key is the identifier of the corresponding data source.
      *     
-     * @param {PermissionSet} permissions
-     *     The permissions for the current user.
+     * @param {Object.<String, PermissionSet>} permissions
+     *     A map of all permissions granted to the current user, where each
+     *     key is the identifier of the corresponding data source.
      * 
      * @returns {Page[]} 
      *     An array of all main pages that the current user can visit.
      */
-    var generateMainPages = function generateMainPages(rootGroup, permissions) {
+    var generateMainPages = function generateMainPages(rootGroups, permissions) {
         
         var pages = [];
 
         // Get home page and settings pages
-        var homePage = generateHomePage(rootGroup);
+        var homePage = generateHomePage(rootGroups);
         var settingsPages = generateSettingsPages(permissions);
 
         // Only include the home page in the list of main pages if the user
@@ -285,10 +330,10 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         // Add generic link to the first-available settings page
         if (settingsPages.length) {
-            pages.push(new Page(
-                'USER_MENU.ACTION_MANAGE_SETTINGS',
-                settingsPages[0].url
-            ));
+            pages.push(new PageDefinition({
+                name : 'USER_MENU.ACTION_MANAGE_SETTINGS',
+                url  : settingsPages[0].url
+            }));
         }
         
         return pages;
@@ -308,7 +353,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var deferred = $q.defer();
 
-        var rootGroup   = null;
+        var rootGroups  = null;
         var permissions = null;
 
         /**
@@ -316,20 +361,30 @@ angular.module('navigation').factory('userPageService', ['$injector',
          * insufficient data is available, this function does nothing.
          */
         var resolveMainPages = function resolveMainPages() {
-            if (rootGroup && permissions)
-                deferred.resolve(generateMainPages(rootGroup, permissions));
+            if (rootGroups && permissions)
+                deferred.resolve(generateMainPages(rootGroups, permissions));
         };
 
         // Retrieve root group, resolving main pages if possible
-        connectionGroupService.getConnectionGroupTree(ConnectionGroup.ROOT_IDENTIFIER)
-        .success(function rootConnectionGroupRetrieved(retrievedRootGroup) {
-            rootGroup = retrievedRootGroup;
+        dataSourceService.apply(
+            connectionGroupService.getConnectionGroupTree,
+            authenticationService.getAvailableDataSources(),
+            ConnectionGroup.ROOT_IDENTIFIER
+        )
+        .then(function rootConnectionGroupsRetrieved(retrievedRootGroups) {
+            rootGroups = retrievedRootGroups;
             resolveMainPages();
         });
 
-        // Retrieve current permissions, resolving main pages if possible
-        permissionService.getPermissions(authenticationService.getCurrentUsername())
-        .success(function permissionsRetrieved(retrievedPermissions) {
+        // Retrieve current permissions
+        dataSourceService.apply(
+            permissionService.getPermissions,
+            authenticationService.getAvailableDataSources(),
+            authenticationService.getCurrentUsername()
+        )
+
+        // Resolving main pages if possible
+        .then(function permissionsRetrieved(retrievedPermissions) {
             permissions = retrievedPermissions;
             resolveMainPages();
         });

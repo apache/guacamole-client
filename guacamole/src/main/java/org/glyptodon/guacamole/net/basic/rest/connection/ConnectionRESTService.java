@@ -48,6 +48,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -60,7 +61,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Path("/connections")
+@Path("/data/{dataSource}/connections")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionRESTService {
@@ -89,6 +90,10 @@ public class ConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection to be retrieved.
+     *
      * @param connectionID
      *     The identifier of the connection to retrieve.
      *
@@ -102,12 +107,14 @@ public class ConnectionRESTService {
     @Path("/{connectionID}")
     @AuthProviderRESTExposure
     public APIConnection getConnection(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID) throws GuacamoleException {
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionID") String connectionID)
+            throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
         
         // Retrieve the requested connection
-        return new APIConnection(retrievalService.retrieveConnection(userContext, connectionID));
+        return new APIConnection(retrievalService.retrieveConnection(session, authProviderIdentifier, connectionID));
 
     }
 
@@ -117,6 +124,11 @@ public class ConnectionRESTService {
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection whose parameters are to be
+     *     retrieved.
      *
      * @param connectionID
      *     The identifier of the connection.
@@ -131,9 +143,12 @@ public class ConnectionRESTService {
     @Path("/{connectionID}/parameters")
     @AuthProviderRESTExposure
     public Map<String, String> getConnectionParameters(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID) throws GuacamoleException {
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionID") String connectionID)
+            throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         User self = userContext.self();
 
         // Retrieve permission sets
@@ -163,6 +178,11 @@ public class ConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection whose history is to be
+     *     retrieved.
+     *
      * @param connectionID
      *     The identifier of the connection.
      *
@@ -177,12 +197,14 @@ public class ConnectionRESTService {
     @Path("/{connectionID}/history")
     @AuthProviderRESTExposure
     public List<APIConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID) throws GuacamoleException {
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionID") String connectionID)
+            throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
-        
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+
         // Retrieve the requested connection
-        Connection connection = retrievalService.retrieveConnection(userContext, connectionID);
+        Connection connection = retrievalService.retrieveConnection(session, authProviderIdentifier, connectionID);
 
         // Retrieve the requested connection's history
         List<APIConnectionRecord> apiRecords = new ArrayList<APIConnectionRecord>();
@@ -201,6 +223,10 @@ public class ConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection to be deleted.
+     *
      * @param connectionID
      *     The identifier of the connection to delete.
      *
@@ -210,10 +236,13 @@ public class ConnectionRESTService {
     @DELETE
     @Path("/{connectionID}")
     @AuthProviderRESTExposure
-    public void deleteConnection(@QueryParam("token") String authToken, @PathParam("connectionID") String connectionID) 
+    public void deleteConnection(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionID") String connectionID)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Get the connection directory
         Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
@@ -231,6 +260,10 @@ public class ConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the connection is to be created.
+     *
      * @param connection
      *     The connection to create.
      *
@@ -244,9 +277,11 @@ public class ConnectionRESTService {
     @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
     public String createConnection(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             APIConnection connection) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         
         // Validate that connection data was provided
         if (connection == null)
@@ -270,6 +305,10 @@ public class ConnectionRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection to be updated.
+     *
      * @param connectionID
      *     The identifier of the connection to update.
      *
@@ -283,9 +322,12 @@ public class ConnectionRESTService {
     @Path("/{connectionID}")
     @AuthProviderRESTExposure
     public void updateConnection(@QueryParam("token") String authToken, 
-            @PathParam("connectionID") String connectionID, APIConnection connection) throws GuacamoleException {
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionID") String connectionID,
+            APIConnection connection) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         
         // Validate that connection data was provided
         if (connection == null)

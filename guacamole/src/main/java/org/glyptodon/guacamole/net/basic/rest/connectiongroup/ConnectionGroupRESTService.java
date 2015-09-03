@@ -40,6 +40,7 @@ import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -51,7 +52,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @author James Muehlner
  */
-@Path("/connectionGroups")
+@Path("/data/{dataSource}/connectionGroups")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionGroupRESTService {
@@ -80,6 +81,10 @@ public class ConnectionGroupRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      * 
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection group to be retrieved.
+     *
      * @param connectionGroupID
      *     The ID of the connection group to retrieve.
      * 
@@ -92,13 +97,15 @@ public class ConnectionGroupRESTService {
     @GET
     @Path("/{connectionGroupID}")
     @AuthProviderRESTExposure
-    public APIConnectionGroup getConnectionGroup(@QueryParam("token") String authToken, 
-            @PathParam("connectionGroupID") String connectionGroupID) throws GuacamoleException {
+    public APIConnectionGroup getConnectionGroup(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionGroupID") String connectionGroupID)
+            throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
 
         // Retrieve the requested connection group
-        return new APIConnectionGroup(retrievalService.retrieveConnectionGroup(userContext, connectionGroupID));
+        return new APIConnectionGroup(retrievalService.retrieveConnectionGroup(session, authProviderIdentifier, connectionGroupID));
 
     }
 
@@ -108,6 +115,10 @@ public class ConnectionGroupRESTService {
      * @param authToken
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
+     *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection group to be retrieved.
      *
      * @param connectionGroupID
      *     The ID of the connection group to retrieve.
@@ -129,11 +140,13 @@ public class ConnectionGroupRESTService {
     @Path("/{connectionGroupID}/tree")
     @AuthProviderRESTExposure
     public APIConnectionGroup getConnectionGroupTree(@QueryParam("token") String authToken, 
+            @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionGroupID") String connectionGroupID,
             @QueryParam("permission") List<ObjectPermission.Type> permissions)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Retrieve the requested tree, filtering by the given permissions
         ConnectionGroup treeRoot = retrievalService.retrieveConnectionGroup(userContext, connectionGroupID);
@@ -151,6 +164,10 @@ public class ConnectionGroupRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection group to be deleted.
+     *
      * @param connectionGroupID
      *     The identifier of the connection group to delete.
      *
@@ -161,9 +178,12 @@ public class ConnectionGroupRESTService {
     @Path("/{connectionGroupID}")
     @AuthProviderRESTExposure
     public void deleteConnectionGroup(@QueryParam("token") String authToken, 
-            @PathParam("connectionGroupID") String connectionGroupID) throws GuacamoleException {
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionGroupID") String connectionGroupID)
+            throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         
         // Get the connection group directory
         Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
@@ -183,6 +203,10 @@ public class ConnectionGroupRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext in which the connection group is to be created.
+     *
      * @param connectionGroup
      *     The connection group to create.
      * 
@@ -196,9 +220,11 @@ public class ConnectionGroupRESTService {
     @Produces(MediaType.TEXT_PLAIN)
     @AuthProviderRESTExposure
     public String createConnectionGroup(@QueryParam("token") String authToken,
+            @PathParam("dataSource") String authProviderIdentifier,
             APIConnectionGroup connectionGroup) throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
 
         // Validate that connection group data was provided
         if (connectionGroup == null)
@@ -222,6 +248,10 @@ public class ConnectionGroupRESTService {
      *     The authentication token that is used to authenticate the user
      *     performing the operation.
      *
+     * @param authProviderIdentifier
+     *     The unique identifier of the AuthenticationProvider associated with
+     *     the UserContext containing the connection group to be updated.
+     *
      * @param connectionGroupID
      *     The identifier of the existing connection group to update.
      *
@@ -235,10 +265,13 @@ public class ConnectionGroupRESTService {
     @Path("/{connectionGroupID}")
     @AuthProviderRESTExposure
     public void updateConnectionGroup(@QueryParam("token") String authToken, 
-            @PathParam("connectionGroupID") String connectionGroupID, APIConnectionGroup connectionGroup) 
+            @PathParam("dataSource") String authProviderIdentifier,
+            @PathParam("connectionGroupID") String connectionGroupID,
+            APIConnectionGroup connectionGroup)
             throws GuacamoleException {
 
-        UserContext userContext = authenticationService.getUserContext(authToken);
+        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+        UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
         
         // Validate that connection group data was provided
         if (connectionGroup == null)

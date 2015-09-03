@@ -25,24 +25,25 @@
     <p>{{'SETTINGS_USERS.HELP_USERS' | translate}}</p>
 
     <!-- Form action buttons -->
-    <div class="action-buttons" ng-show="canCreateUsers">
+    <div class="action-buttons" ng-show="canCreateUsers()">
         <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
         <button class="add-user" ng-click="newUser()">{{'SETTINGS_USERS.ACTION_NEW_USER' | translate}}</button>
     </div>
 
     <!-- List of users this user has access to -->
     <div class="user-list">
-        <div ng-repeat="user in userPage" class="user list-item">
-            <a ng-href="#/manage/users/{{user.username}}">
+        <div ng-repeat="manageableUser in manageableUserPage" class="user list-item">
+            <a ng-href="#/manage/{{manageableUser.dataSource}}/users/{{manageableUser.user.username}}">
                 <div class="caption">
                     <div class="icon user"></div>
-                    <span class="name">{{user.username}}</span>
+                    <span class="name">{{manageableUser.user.username}}</span>
                 </div>
             </a>
         </div>
     </div>
 
     <!-- Pager controls for user list -->
-    <guac-pager page="userPage" page-size="25" items="users | orderBy : 'username'"></guac-pager>
+    <guac-pager page="manageableUserPage" page-size="25"
+                items="manageableUsers | orderBy : 'user.username'"></guac-pager>
 
 </div>

@@ -39,12 +39,18 @@ angular.module('rest').factory('schemaService', ['$injector',
      * @link{Form} objects if successful. Each element of the array describes
      * a logical grouping of possible attributes.
      *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the users whose
+     *     available attributes are to be retrieved. This identifier
+     *     corresponds to an AuthenticationProvider within the Guacamole web
+     *     application.
+     *
      * @returns {Promise.<Form[]>}
      *     A promise which will resolve with an array of @link{Form}
      *     objects, where each @link{Form} describes a logical grouping of
      *     possible attributes.
      */
-    service.getUserAttributes = function getUserAttributes() {
+    service.getUserAttributes = function getUserAttributes(dataSource) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -55,7 +61,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/schema/users/attributes',
+            url     : 'api/schema/' + encodeURIComponent(dataSource) + '/users/attributes',
             params  : httpParameters
         });
 
@@ -67,12 +73,18 @@ angular.module('rest').factory('schemaService', ['$injector',
      * @link{Form} objects if successful. Each element of the array describes
      * a logical grouping of possible attributes.
      *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connections
+     *     whose available attributes are to be retrieved. This identifier
+     *     corresponds to an AuthenticationProvider within the Guacamole web
+     *     application.
+     *
      * @returns {Promise.<Form[]>}
      *     A promise which will resolve with an array of @link{Form}
      *     objects, where each @link{Form} describes a logical grouping of
      *     possible attributes.
      */
-    service.getConnectionAttributes = function getConnectionAttributes() {
+    service.getConnectionAttributes = function getConnectionAttributes(dataSource) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -83,7 +95,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/schema/connections/attributes',
+            url     : 'api/schema/' + encodeURIComponent(dataSource) + '/connections/attributes',
             params  : httpParameters
         });
 
@@ -95,12 +107,18 @@ angular.module('rest').factory('schemaService', ['$injector',
      * of @link{Form} objects if successful. Each element of the array
      * a logical grouping of possible attributes.
      *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the connection
+     *     groups whose available attributes are to be retrieved. This
+     *     identifier corresponds to an AuthenticationProvider within the
+     *     Guacamole web application.
+     *
      * @returns {Promise.<Form[]>}
      *     A promise which will resolve with an array of @link{Form}
      *     objects, where each @link{Form} describes a logical grouping of
      *     possible attributes.
      */
-    service.getConnectionGroupAttributes = function getConnectionGroupAttributes() {
+    service.getConnectionGroupAttributes = function getConnectionGroupAttributes(dataSource) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -111,7 +129,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/schema/connectionGroups/attributes',
+            url     : 'api/schema/' + encodeURIComponent(dataSource) + '/connectionGroups/attributes',
             params  : httpParameters
         });
 
@@ -122,11 +140,16 @@ angular.module('rest').factory('schemaService', ['$injector',
      * a promise that provides a map of @link{Protocol} objects by protocol
      * name if successful.
      *
+     * @param {String} dataSource
+     *     The unique identifier of the data source defining available
+     *     protocols. This identifier corresponds to an AuthenticationProvider
+     *     within the Guacamole web application.
+     *
      * @returns {Promise.<Object.<String, Protocol>>}
      *     A promise which will resolve with a map of @link{Protocol}
      *     objects by protocol name upon success.
      */
-    service.getProtocols = function getProtocols() {
+    service.getProtocols = function getProtocols(dataSource) {
 
         // Build HTTP parameters set
         var httpParameters = {
@@ -137,7 +160,7 @@ angular.module('rest').factory('schemaService', ['$injector',
         return $http({
             cache   : cacheService.schema,
             method  : 'GET',
-            url     : 'api/schema/protocols',
+            url     : 'api/schema/' + encodeURIComponent(dataSource) + '/protocols',
             params  : httpParameters
         });
 

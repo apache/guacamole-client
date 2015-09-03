@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,47 +20,39 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
+.page-tabs .page-list ul {
+    margin: 0;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.0125);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
 
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+.page-tabs .page-list ul + ul {
+    font-size: 0.75em;
+}
 
-/**
- * HTTP-specific implementation of TunnelRequest.
- *
- * @author Michael Jumper
- */
-public class HTTPTunnelRequest extends TunnelRequest {
+.page-tabs .page-list li {
+    display: inline-block;
+    list-style: none;
+}
 
-    /**
-     * The wrapped HttpServletRequest.
-     */
-    private final HttpServletRequest request;
+.page-tabs .page-list li a[href] {
+    display: block;
+    color: black;
+    text-decoration: none;
+    padding: 0.75em 1em;
+}
 
-    /**
-     * Creates a TunnelRequest implementation which delegates parameter and
-     * session retrieval to the given HttpServletRequest.
-     *
-     * @param request The HttpServletRequest to wrap.
-     */
-    public HTTPTunnelRequest(HttpServletRequest request) {
-        this.request = request;
-    }
+.page-tabs .page-list li a[href]:visited {
+    color: black;
+}
 
-    @Override
-    public String getParameter(String name) {
-        return request.getParameter(name);
-    }
+.page-tabs .page-list li a[href]:hover {
+    background-color: #CDA;
+}
 
-    @Override
-    public List<String> getParameterValues(String name) {
-
-        String[] values = request.getParameterValues(name);
-        if (values == null)
-            return null;
-        
-        return Arrays.asList(values);
-    }
-    
+.page-tabs .page-list li a[href].current,
+.page-tabs .page-list li a[href].current:hover {
+    background: rgba(0,0,0,0.3);
+    cursor: default;
 }

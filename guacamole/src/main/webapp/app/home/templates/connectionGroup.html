@@ -21,6 +21,6 @@
        THE SOFTWARE.
     -->
 
-    <a ng-show="item.isBalancing" ng-href="#/client/g/{{item.identifier}}">{{item.name}}</a>
+    <a ng-show="item.isBalancing" ng-href="#/client/{{context.getClientIdentifier(item)}}">{{item.name}}</a>
     <span ng-show="!item.isBalancing">{{item.name}}</span>
 </span>

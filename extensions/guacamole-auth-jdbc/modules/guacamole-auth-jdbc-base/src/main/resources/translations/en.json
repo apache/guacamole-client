@@ -33,6 +33,14 @@
 
     },
 
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_DISABLED"            : "Login disabled:",

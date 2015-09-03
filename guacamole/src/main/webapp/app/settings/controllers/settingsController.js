@@ -46,17 +46,6 @@ angular.module('manage').controller('settingsController', ['$scope', '$injector'
      */
     $scope.activeTab = $routeParams.tab;
 
-    /**
-     * Returns whether the list of all available settings tabs should be shown.
-     *
-     * @returns {Boolean}
-     *     true if the list of available settings tabs should be shown, false
-     *     otherwise.
-     */
-    $scope.showAvailableTabs = function showAvailableTabs() {
-        return !!$scope.settingsPages && $scope.settingsPages.length > 1;
-    };
-
     // Retrieve settings pages
     userPageService.getSettingsPages()
     .then(function settingsPagesRetrieved(pages) {

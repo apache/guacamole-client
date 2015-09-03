@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,47 +20,37 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic;
-
-import java.util.Arrays;
-import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-
 /**
- * HTTP-specific implementation of TunnelRequest.
- *
- * @author Michael Jumper
+ * A service for defining the ManageableUser class.
  */
-public class HTTPTunnelRequest extends TunnelRequest {
+angular.module('manage').factory('ManageableUser', [function defineManageableUser() {
 
     /**
-     * The wrapped HttpServletRequest.
-     */
-    private final HttpServletRequest request;
-
-    /**
-     * Creates a TunnelRequest implementation which delegates parameter and
-     * session retrieval to the given HttpServletRequest.
+     * A pairing of an @link{User} with the identifier of its corresponding
+     * data source.
      *
-     * @param request The HttpServletRequest to wrap.
+     * @constructor
+     * @param {Object|ManageableUser} template
      */
-    public HTTPTunnelRequest(HttpServletRequest request) {
-        this.request = request;
-    }
+    var ManageableUser = function ManageableUser(template) {
 
-    @Override
-    public String getParameter(String name) {
-        return request.getParameter(name);
-    }
+        /**
+         * The unique identifier of the data source containing this user.
+         *
+         * @type String
+         */
+        this.dataSource = template.dataSource;
 
-    @Override
-    public List<String> getParameterValues(String name) {
+        /**
+         * The @link{User} object represented by this ManageableUser and
+         * contained within the associated data source.
+         *
+         * @type User
+         */
+        this.user = template.user;
 
-        String[] values = request.getParameterValues(name);
-        if (values == null)
-            return null;
-        
-        return Arrays.asList(values);
-    }
-    
-}
+    };
+
+    return ManageableUser;
+
+}]);
