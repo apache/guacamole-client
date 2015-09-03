@@ -186,8 +186,13 @@ angular.module('navigation').factory('userPageService', ['$injector',
         // Inspect the contents of each provided permission set
         angular.forEach(dataSources, function inspectPermissions(dataSource) {
 
-            // Copy permissions for current data source
-            var permissions = angular.copy(permissionSets[dataSource]);
+            // Get permissions for current data source, skipping if non-existent
+            var permissions = permissionSets[dataSource];
+            if (!permissions)
+                return;
+
+            // Do not modify original object
+            permissions = angular.copy(permissions);
 
             // Ignore permission to update root group
             PermissionSet.removeConnectionGroupPermission(permissions,
