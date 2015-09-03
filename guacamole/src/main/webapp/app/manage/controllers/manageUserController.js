@@ -215,7 +215,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
                 PermissionSet.SystemPermissionType.ADMINISTER))
             return true;
 
-        // Otherwise, can only modify permissions if we have explicit ADMINSTER permission
+        // Otherwise, can only modify permissions if we have explicit
+        // ADMINISTER permission
         return PermissionSet.hasUserPermission($scope.permissions,
             PermissionSet.ObjectPermissionType.ADMINISTER, username);
 
