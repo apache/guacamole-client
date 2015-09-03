@@ -78,9 +78,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
             var connections      = rootGroup.childConnections      || [];
             var connectionGroups = rootGroup.childConnectionGroups || [];
 
+            // Calculate total number of root-level objects
+            var totalRootObjects = connections.length + connectionGroups.length;
+
             // If exactly one connection or balancing group is available, use
             // that as the home page
-            if (homePage === null && connections.length + connectionGroups.length === 1) {
+            if (homePage === null && totalRootObjects === 1) {
 
                 var connection      = connections[0];
                 var connectionGroup = connectionGroups[0];
@@ -116,7 +119,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
             // Otherwise, a connection or balancing group cannot serve as the
             // home page
-            else {
+            else if (totalRootObjects >= 1) {
                 homePage = null;
                 break;
             }
