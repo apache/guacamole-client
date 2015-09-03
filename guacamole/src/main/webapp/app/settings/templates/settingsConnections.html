@@ -28,11 +28,11 @@
     <div class="action-buttons">
 
         <a class="add-connection button"
-           ng-show="canCreateConnections"
+           ng-show="canCreateConnections()"
            href="#/manage/{{dataSource}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>
 
         <a class="add-connection-group button"
-           ng-show="canCreateConnectionGroups"
+           ng-show="canCreateConnectionGroups()"
            href="#/manage/{{dataSource}}/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
 
     </div>
