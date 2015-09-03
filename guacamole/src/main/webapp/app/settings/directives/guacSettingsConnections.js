@@ -140,7 +140,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
                 // Abort if permissions have not yet loaded
                 if (!$scope.permissions)
-                    return null;
+                    return false;
 
                 // For each data source
                 for (var dataSource in $scope.permissions) {
@@ -151,12 +151,12 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                     // Can create connections if adminstrator or have explicit permission
                     if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
                      || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_CONNECTION))
-                        return dataSource;
+                        return true;
 
                 }
 
                 // No data sources allow connection creation
-                return null;
+                return false;
 
             };
 
@@ -172,7 +172,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
 
                 // Abort if permissions have not yet loaded
                 if (!$scope.permissions)
-                    return null;
+                    return false;
 
                 // For each data source
                 for (var dataSource in $scope.permissions) {
@@ -183,12 +183,12 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
                     // Can create connections groups if adminstrator or have explicit permission
                     if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
                      || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP))
-                        return dataSource;
+                        return true;
 
                 }
 
                 // No data sources allow connection group creation
-                return null;
+                return false;
 
             };
 
