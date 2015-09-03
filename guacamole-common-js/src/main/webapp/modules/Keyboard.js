@@ -39,6 +39,13 @@ Guacamole.Keyboard = function(element) {
     var guac_keyboard = this;
 
     /**
+     * Flag indicating whether the browser is running on Mac
+     *
+     * @type Boolean
+     */
+    var is_mac = (navigator && navigator.platform && navigator.platform.match(/^mac/i));
+
+    /**
      * Fired whenever the user presses a key with the element associated
      * with this Guacamole.Keyboard in focus.
      * 
@@ -187,8 +194,7 @@ Guacamole.Keyboard = function(element) {
             this.keysym = keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
 
         // Determine whether default action for Alt+combinations must be prevented
-        var prevent_alt =  !guac_keyboard.modifiers.ctrl
-                        && !(navigator && navigator.platform && navigator.platform.match(/^mac/i));
+        var prevent_alt =  !guac_keyboard.modifiers.ctrl && !is_mac;
 
         // Determine whether default action for Ctrl+combinations must be prevented
         var prevent_ctrl = !guac_keyboard.modifiers.alt;
@@ -325,6 +331,7 @@ Guacamole.Keyboard = function(element) {
     var keycodeKeysyms = {
         8:   [0xFF08], // backspace
         9:   [0xFF09], // tab
+        12:  [0xFF0B, 0xFF0B, 0xFF0B, 0xFFB5], // clear       / KP 5
         13:  [0xFF0D], // enter
         16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
         17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
@@ -333,19 +340,34 @@ Guacamole.Keyboard = function(element) {
         20:  [0xFFE5], // caps lock
         27:  [0xFF1B], // escape
         32:  [0x0020], // space
-        33:  [0xFF55], // page up
-        34:  [0xFF56], // page down
-        35:  [0xFF57], // end
-        36:  [0xFF50], // home
-        37:  [0xFF51], // left arrow
-        38:  [0xFF52], // up arrow
-        39:  [0xFF53], // right arrow
-        40:  [0xFF54], // down arrow
-        45:  [0xFF63], // insert
-        46:  [0xFFFF], // delete
+        33:  [0xFF55, 0xFF55, 0xFF55, 0xFFB9], // page up     / KP 9
+        34:  [0xFF56, 0xFF56, 0xFF56, 0xFFB3], // page down   / KP 3
+        35:  [0xFF57, 0xFF57, 0xFF57, 0xFFB1], // end         / KP 1
+        36:  [0xFF50, 0xFF50, 0xFF50, 0xFFB7], // home        / KP 7
+        37:  [0xFF51, 0xFF51, 0xFF51, 0xFFB4], // left arrow  / KP 4
+        38:  [0xFF52, 0xFF52, 0xFF52, 0xFFB8], // up arrow    / KP 8
+        39:  [0xFF53, 0xFF53, 0xFF53, 0xFFB6], // right arrow / KP 6
+        40:  [0xFF54, 0xFF54, 0xFF54, 0xFFB2], // down arrow  / KP 2
+        45:  [0xFF63, 0xFF63, 0xFF63, 0xFFB0], // insert      / KP 0
+        46:  [0xFFFF, 0xFFFF, 0xFFFF, 0xFFAE], // delete      / KP decimal
         91:  [0xFFEB], // left window key (hyper_l)
         92:  [0xFF67], // right window key (menu key?)
         93:  null,     // select key
+        96:  [0xFFB0], // KP 0
+        97:  [0xFFB1], // KP 1
+        98:  [0xFFB2], // KP 2
+        99:  [0xFFB3], // KP 3
+        100: [0xFFB4], // KP 4
+        101: [0xFFB5], // KP 5
+        102: [0xFFB6], // KP 6
+        103: [0xFFB7], // KP 7
+        104: [0xFFB8], // KP 8
+        105: [0xFFB9], // KP 9
+        106: [0xFFAA], // KP multiply
+        107: [0xFFAB], // KP add
+        109: [0xFFAD], // KP subtract
+        110: [0xFFAE], // KP decimal
+        111: [0xFFAF], // KP divide
         112: [0xFFBE], // f1
         113: [0xFFBF], // f2
         114: [0xFFC0], // f3
@@ -583,13 +605,19 @@ Guacamole.Keyboard = function(element) {
             typedCharacter = String.fromCharCode(parseInt(hex, 16));
         }
 
-        // If single character, use that as typed character
-        else if (identifier.length === 1)
+        // If single character and not keypad, use that as typed character
+        else if (identifier.length === 1 && location !== 3)
             typedCharacter = identifier;
 
         // Otherwise, look up corresponding keysym
-        else
+        else {
+            // Clear on Mac maps to NumLock
+            if (identifier === "Clear" && is_mac) {
+                identifier = "NumLock";
+            }
+
             return get_keysym(keyidentifier_keysym[identifier], location);
+        }
 
         // Alter case if necessary
         if (shifted === true)
@@ -625,6 +653,12 @@ Guacamole.Keyboard = function(element) {
     }
 
     function keysym_from_keycode(keyCode, location) {
+
+        // Map Clear on Mac to NumLock
+        if (keyCode === 12 && is_mac) {
+            keyCode = 144;
+        }
+
         return get_keysym(keycodeKeysyms[keyCode], location);
     }
 
@@ -826,6 +860,9 @@ Guacamole.Keyboard = function(element) {
             last_event = handled_event;
             handled_event = interpret_event();
         } while (handled_event !== null);
+
+        if (!last_event)
+            return false;
 
         return last_event.defaultPrevented;
 
