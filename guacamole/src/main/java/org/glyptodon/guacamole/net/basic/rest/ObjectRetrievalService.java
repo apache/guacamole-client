@@ -51,7 +51,7 @@ public class ObjectRetrievalService {
      *
      * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider that created the
-     *     UserContext being retrieved. Only one UserContext per
+     *     UserContext being retrieved. Only one UserContext per User per
      *     AuthenticationProvider can exist.
      *
      * @return
@@ -125,7 +125,7 @@ public class ObjectRetrievalService {
      * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider that created the
      *     UserContext from which the user should be retrieved. Only one
-     *     UserContext per AuthenticationProvider can exist.
+     *     UserContext per User per AuthenticationProvider can exist.
      *
      * @param identifier
      *     The identifier of the user to retrieve.
@@ -185,7 +185,7 @@ public class ObjectRetrievalService {
      * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider that created the
      *     UserContext from which the connection should be retrieved. Only one
-     *     UserContext per AuthenticationProvider can exist.
+     *     UserContext per User per AuthenticationProvider can exist.
      *
      * @param identifier
      *     The identifier of the connection to retrieve.
@@ -256,7 +256,7 @@ public class ObjectRetrievalService {
      * @param authProviderIdentifier
      *     The unique identifier of the AuthenticationProvider that created the
      *     UserContext from which the connection group should be retrieved.
-     *     Only one UserContext per AuthenticationProvider can exist.
+     *     Only one UserContext per User per AuthenticationProvider can exist.
      *
      * @param identifier
      *     The identifier of the connection group to retrieve.
