@@ -28,14 +28,16 @@
     text-transform: none;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href],
-.manage-user .page-tabs .page-list li.linked   a[href] {
+.manage-user .page-tabs .page-list li.read-only a[href],
+.manage-user .page-tabs .page-list li.unlinked  a[href],
+.manage-user .page-tabs .page-list li.linked    a[href] {
     padding-right: 2.5em;
     position: relative;
 }
 
-.manage-user .page-tabs .page-list li.unlinked a[href]:before,
-.manage-user .page-tabs .page-list li.linked   a[href]:before {
+.manage-user .page-tabs .page-list li.read-only a[href]:before,
+.manage-user .page-tabs .page-list li.unlinked  a[href]:before,
+.manage-user .page-tabs .page-list li.linked    a[href]:before {
     content: ' ';
     position: absolute;
     right: 0;
@@ -45,6 +47,10 @@
     background-size: 1.25em;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+.manage-user .page-tabs .page-list li.read-only a[href]:before {
+    background-image: url('images/lock.png');
 }
 
 .manage-user .page-tabs .page-list li.unlinked a[href]:before {

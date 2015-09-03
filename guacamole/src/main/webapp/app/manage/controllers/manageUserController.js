@@ -393,13 +393,25 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         angular.forEach(dataSources, function addAccountPage(dataSource) {
 
             // Determine whether data source contains this user
-            var linked = $scope.userExists(dataSource);
+            var linked   = $scope.userExists(dataSource);
+            var readOnly = $scope.isReadOnly(dataSource);
+
+            // Account is not relevant if it does not exist and cannot be
+            // created
+            if (!linked && readOnly)
+                return;
+
+            // Determine class name based on read-only / linked status
+            var className;
+            if (readOnly)    className = 'read-only';
+            else if (linked) className = 'linked';
+            else             className = 'unlinked';
 
             // Add page entry
             $scope.accountPages.push(new PageDefinition({
                 name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
                 url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
-                className : linked ? 'linked' : 'unlinked'
+                className : className
             }));
 
         });
