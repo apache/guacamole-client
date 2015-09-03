@@ -38,7 +38,7 @@ angular.module('settings').factory('ActiveConnectionWrapper', [
     var ActiveConnectionWrapper = function ActiveConnectionWrapper(template) {
 
         /**
-         * The identifier of the data source associate dwith the
+         * The identifier of the data source associated with the
          * ActiveConnection wrapped by this ActiveConnectionWrapper.
          *
          * @type String
