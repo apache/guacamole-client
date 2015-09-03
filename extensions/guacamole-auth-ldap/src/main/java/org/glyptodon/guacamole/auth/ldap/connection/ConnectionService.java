@@ -35,7 +35,6 @@ import net.sourceforge.guacamole.net.auth.ldap.LDAPAuthenticationProvider;
 import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleServerException;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
