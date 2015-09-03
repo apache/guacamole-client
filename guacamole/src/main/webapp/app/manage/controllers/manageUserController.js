@@ -243,8 +243,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the current user can save the user being edited,
-     * creating or updating that user, depending on whether the user already
+     * Returns whether the current user can save the user being edited. Saving
+     * will create or update that user depending on whether the user already
      * exists.
      *
      * @returns {Boolean}
