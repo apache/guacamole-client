@@ -15,7 +15,7 @@
     <parent>
         <groupId>org.glyptodon.guacamole</groupId>
         <artifactId>guacamole-auth-jdbc</artifactId>
-        <version>0.9.7</version>
+        <version>0.9.8</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>org.glyptodon.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-base</artifactId>
-            <version>0.9.7</version>
+            <version>0.9.8</version>
         </dependency>
 
     </dependencies>
