@@ -77,11 +77,16 @@ Guacamole.Client = function(tunnel) {
      */
     var layers = {};
     
+    /**
+     * All audio channels currentl in use by the client. Initially, this will
+     * be empty, but channels may be allocated by the server upon request.
+     *
+     * @type Object.<Number, Guacamole.AudioChannel>
+     */
+    var audioChannels = {};
+
     // No initial parsers
     var parsers = [];
-
-    // No initial audio channels 
-    var audio_channels = [];
 
     // No initial streams 
     var streams = [];
@@ -495,6 +500,27 @@ Guacamole.Client = function(tunnel) {
     this.onsync = null;
 
     /**
+     * Returns the audio channel having the given index, creating a new channel
+     * if necessary.
+     *
+     * @param {Number} index
+     *     The index of the audio channel to retrieve.
+     *
+     * @returns {Guacamole.AudioChannel}
+     *     The audio channel having the given index.
+     */
+    var getAudioChannel = function getAudioChannel(index) {
+
+        // Get audio channel, creating it first if necessary
+        var audio_channel = audioChannels[index];
+        if (!audio_channel)
+            audio_channel = audioChannels[index] = new Guacamole.AudioChannel();
+
+        return audio_channel;
+
+    };
+
+    /**
      * Returns the layer with the given index, creating it if necessary.
      * Positive indices refer to visible layers, an index of zero refers to
      * the default layer, and negative indices refer to buffers.
@@ -537,18 +563,6 @@ Guacamole.Client = function(tunnel) {
         }
 
         return parser;
-
-    }
-
-    function getAudioChannel(index) {
-
-        var audio_channel = audio_channels[index];
-
-        // If audio channel not yet created, create it
-        if (audio_channel == null)
-            audio_channel = audio_channels[index] = new Guacamole.AudioChannel();
-
-        return audio_channel;
 
     }
 
@@ -1097,11 +1111,21 @@ Guacamole.Client = function(tunnel) {
             var timestamp = parseInt(parameters[0]);
 
             // Flush display, send sync when done
-            display.flush(function __send_sync_response() {
+            display.flush(function displaySyncComplete() {
+
+                // Synchronize all audio channels
+                for (var index in audioChannels) {
+                    var audioChannel = audioChannels[index];
+                    if (audioChannel)
+                        audioChannel.sync();
+                }
+
+                // Send sync response to server
                 if (timestamp !== currentTimestamp) {
                     tunnel.sendMessage("sync", timestamp);
                     currentTimestamp = timestamp;
                 }
+
             });
 
             // If received first update, no longer waiting.
