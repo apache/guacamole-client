@@ -24,46 +24,86 @@ var Guacamole = Guacamole || {};
 
 /**
  * Abstract audio channel which queues and plays arbitrary audio data.
+ *
  * @constructor
  */
-Guacamole.AudioChannel = function() {
+Guacamole.AudioChannel = function AudioChannel() {
 
     /**
      * Reference to this AudioChannel.
+     *
      * @private
+     * @type Guacamole.AudioChannel
      */
     var channel = this;
 
     /**
-     * When the next packet should play.
+     * The earliest possible time that the next packet could play without
+     * overlapping an already-playing packet, in milliseconds.
+     *
      * @private
+     * @type Number
      */
-    var next_packet_time = 0;
+    var nextPacketTime = Guacamole.AudioChannel.getTimestamp();
+
+    /**
+     * The last time that sync() was called, in milliseconds. If sync() has
+     * never been called, this will be the time the Guacamole.AudioChannel
+     * was created.
+     *
+     * @type Number
+     */
+    var lastSync = nextPacketTime;
+
+    /**
+     * Notifies this Guacamole.AudioChannel that all audio up to the current
+     * point in time has been given via play(), and that any difference in time
+     * between queued audio packets and the current time can be considered
+     * latency.
+     */
+    this.sync = function sync() {
+
+        // Calculate elapsed time since last sync
+        var now = Guacamole.AudioChannel.getTimestamp();
+        var elapsed = now - lastSync;
+
+        // Reschedule future playback time such that playback latency is
+        // bounded within the duration of the last audio frame
+        nextPacketTime = Math.min(nextPacketTime, now + elapsed);
+
+        // Record sync time
+        lastSync = now;
+
+    };
 
     /**
      * Queues up the given data for playing by this channel once all previously
      * queued data has been played. If no data has been queued, the data will
      * play immediately.
      * 
-     * @param {String} mimetype The mimetype of the data provided.
-     * @param {Number} duration The duration of the data provided, in
-     *                          milliseconds.
-     * @param {Blob} data The blob data to play.
+     * @param {String} mimetype
+     *     The mimetype of the audio data provided.
+     *
+     * @param {Number} duration
+     *     The duration of the data provided, in milliseconds.
+     *
+     * @param {Blob} data
+     *     The blob of audio data to play.
      */
-    this.play = function(mimetype, duration, data) {
+    this.play = function play(mimetype, duration, data) {
 
-        var packet =
-            new Guacamole.AudioChannel.Packet(mimetype, data);
+        var packet = new Guacamole.AudioChannel.Packet(mimetype, data);
 
-        var now = Guacamole.AudioChannel.getTimestamp();
+        // Determine exactly when packet CAN play
+        var packetTime = Guacamole.AudioChannel.getTimestamp();
+        if (nextPacketTime < packetTime)
+            nextPacketTime = packetTime;
 
-        // If underflow is detected, reschedule new packets relative to now.
-        if (next_packet_time < now)
-            next_packet_time = now;
+        // Schedule packet
+        packet.play(nextPacketTime);
 
-        // Schedule next packet
-        packet.play(next_packet_time);
-        next_packet_time += duration;
+        // Update timeline
+        nextPacketTime += duration;
 
     };
 
