@@ -933,13 +933,18 @@ Guacamole.Keyboard = function(element) {
         // Keyup event
         else if (first instanceof KeyupEvent) {
 
+            // Release specific key if known
             var keysym = first.keysym;
             if (keysym) {
                 guac_keyboard.release(keysym);
                 first.defaultPrevented = true;
             }
-            else
+
+            // Otherwise, fall back to releasing all keys
+            else {
                 guac_keyboard.reset();
+                return first;
+            }
 
             return eventLog.shift();
 
