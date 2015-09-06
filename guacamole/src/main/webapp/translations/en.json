@@ -78,7 +78,7 @@
         "ERROR_UPLOAD_201"     : "Too many files are currently being transferred. Please wait for existing transfers to complete, and then try again.",
         "ERROR_UPLOAD_202"     : "The file cannot be transferred because the remote desktop server is taking too long to respond. Please try again or or contact your system administrator.",
         "ERROR_UPLOAD_203"     : "The remote desktop server encountered an error during transfer. Please try again or contact your system administrator.",
-        "ERROR_UPLOAD_204"     : "The destination for the file transfer does not exist. Please check that the destionation exists and try again.",
+        "ERROR_UPLOAD_204"     : "The destination for the file transfer does not exist. Please check that the destination exists and try again.",
         "ERROR_UPLOAD_205"     : "The destination for the file transfer is currently locked. Please wait for any in-progress tasks to complete and try again.",
         "ERROR_UPLOAD_301"     : "You do not have permission to upload this file because you are not logged in. Please log in and try again.",
         "ERROR_UPLOAD_303"     : "You do not have permission to upload this file. If you require access, please check your system settings, or check with your system administrator.",
