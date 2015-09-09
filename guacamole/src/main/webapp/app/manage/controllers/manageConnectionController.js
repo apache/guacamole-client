@@ -62,7 +62,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      *
      * @type String
      */
-    var dataSource = $routeParams.dataSource;
+    $scope.selectedDataSource = $routeParams.dataSource;
 
     /**
      * The identifier of the original connection from which this connection is
@@ -186,14 +186,14 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     };
 
     // Pull connection attribute schema
-    schemaService.getConnectionAttributes(dataSource)
+    schemaService.getConnectionAttributes($scope.selectedDataSource)
     .success(function attributesReceived(attributes) {
         $scope.attributes = attributes;
     });
 
     // Pull connection group hierarchy
     connectionGroupService.getConnectionGroupTree(
-        dataSource,
+        $scope.selectedDataSource,
         ConnectionGroup.ROOT_IDENTIFIER,
         [PermissionSet.ObjectPermissionType.ADMINISTER]
     )
@@ -202,7 +202,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     });
     
     // Query the user's permissions for the current connection
-    permissionService.getPermissions(dataSource, authenticationService.getCurrentUsername())
+    permissionService.getPermissions($scope.selectedDataSource, authenticationService.getCurrentUsername())
     .success(function permissionsReceived(permissions) {
                 
         $scope.permissions = permissions;
@@ -232,7 +232,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     });
    
     // Get protocol metadata
-    schemaService.getProtocols(dataSource)
+    schemaService.getProtocols($scope.selectedDataSource)
     .success(function protocolsReceived(protocols) {
         $scope.protocols = protocols;
     });
@@ -246,13 +246,13 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     if (identifier) {
 
         // Pull data from existing connection
-        connectionService.getConnection(dataSource, identifier)
+        connectionService.getConnection($scope.selectedDataSource, identifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
         });
 
         // Pull connection history
-        connectionService.getConnectionHistory(dataSource, identifier)
+        connectionService.getConnectionHistory($scope.selectedDataSource, identifier)
         .success(function historyReceived(historyEntries) {
 
             // Wrap all history entries for sake of display
@@ -264,7 +264,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         });
 
         // Pull connection parameters
-        connectionService.getConnectionParameters(dataSource, identifier)
+        connectionService.getConnectionParameters($scope.selectedDataSource, identifier)
         .success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
@@ -274,7 +274,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     else if (cloneSourceIdentifier) {
 
         // Pull data from cloned connection
-        connectionService.getConnection(dataSource, cloneSourceIdentifier)
+        connectionService.getConnection($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function connectionRetrieved(connection) {
             $scope.connection = connection;
             
@@ -286,7 +286,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.historyEntryWrappers = [];
         
         // Pull connection parameters from cloned connection
-        connectionService.getConnectionParameters(dataSource, cloneSourceIdentifier)
+        connectionService.getConnectionParameters($scope.selectedDataSource, cloneSourceIdentifier)
         .success(function parametersReceived(parameters) {
             $scope.parameters = parameters;
         });
@@ -350,7 +350,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
+        $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
     };
     
     /**
@@ -358,7 +358,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * which is prepopulated with the data from the connection currently being edited. 
      */
     $scope.cloneConnection = function cloneConnection() {
-        $location.path('/manage/' + encodeURIComponent(dataSource) + '/connections').search('clone', identifier);
+        $location.path('/manage/' + encodeURIComponent($scope.selectedDataSource) + '/connections').search('clone', identifier);
     };
             
     /**
@@ -370,9 +370,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         $scope.connection.parameters = $scope.parameters;
 
         // Save the connection
-        connectionService.saveConnection(dataSource, $scope.connection)
+        connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
         .success(function savedConnection() {
-            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
+            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
@@ -420,9 +420,9 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var deleteConnectionImmediately = function deleteConnectionImmediately() {
 
         // Delete the connection
-        connectionService.deleteConnection(dataSource, $scope.connection)
+        connectionService.deleteConnection($scope.selectedDataSource, $scope.connection)
         .success(function deletedConnection() {
-            $location.path('/settings/' + encodeURIComponent(dataSource) + '/connections');
+            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors
