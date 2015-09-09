@@ -125,7 +125,14 @@
 
     },
 
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Standard (XML)"
+    },
+
     "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "DD.MM.YYYY",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
 
         "HELP_SHOW_PASSWORD" : "Passwort anzeigen",
         "HELP_HIDE_PASSWORD" : "Passwort ausblenden"
@@ -238,6 +245,8 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Benutzername:",
         
+        "INFO_READ_ONLY" : "Dieses Benutzerkonto kann nicht bearbeitet werden.",
+        
         "SECTION_HEADER_CONNECTIONS" : "Verbindungen",
         "SECTION_HEADER_EDIT_USER"   : "Ändere Benutzer",
         "SECTION_HEADER_PERMISSIONS" : "Berechtigungen",
@@ -250,8 +259,9 @@
 
         "FIELD_HEADER_CLIENT_NAME"     : "Client-Name:",
         "FIELD_HEADER_COLOR_DEPTH"     : "Farbtiefe:",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
         "FIELD_HEADER_CONSOLE"         : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
+        "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Erstellen Sie automatisch Laufwerk:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Deaktivere Audio:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Deaktivere Authentifizierung:",
         "FIELD_HEADER_DOMAIN"          : "Domäne:",
@@ -263,8 +273,8 @@
         "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Aktiviere Fensterziehen:",
         "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Aktiviere Menüanimationen:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Aktiviere Drucken:",
-        "FIELD_HEADER_ENABLE_SFTP" : "Aktiviere SFTP:",
-        "FIELD_HEADER_ENABLE_THEMING"             : "Aktiviere Thema:",
+        "FIELD_HEADER_ENABLE_SFTP"                : "Aktiviere SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Aktiviere Theming:",
         "FIELD_HEADER_ENABLE_WALLPAPER"           : "Aktiviere Desktophintergrund:",
         "FIELD_HEADER_HEIGHT"          : "Höhe:",
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
@@ -277,6 +287,7 @@
         "FIELD_HEADER_REMOTE_APP"      : "Programm:",
         "FIELD_HEADER_SECURITY"        : "Sicherheitsverfahren:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Tastatur Layout:",
+        "FIELD_HEADER_SFTP_DIRECTORY"  : "Standard-Upload-Verzeichnis:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Hostname:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Passwort:",
@@ -322,6 +333,7 @@
 
     "PROTOCOL_SSH" : {
 
+        "FIELD_HEADER_COLOR_SCHEME" : "Farbschema:",
         "FIELD_HEADER_FONT_NAME"   : "Schriftart Name:",
         "FIELD_HEADER_FONT_SIZE"   : "Schriftart Größe:",
         "FIELD_HEADER_ENABLE_SFTP" : "Aktiviere SFTP:",
@@ -331,6 +343,12 @@
         "FIELD_HEADER_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_PORT"        : "Port:",
         "FIELD_HEADER_PRIVATE_KEY" : "Privater Schlüssel:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grau auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grün auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Weiß auf Schwarz",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -359,6 +377,7 @@
 
     "PROTOCOL_TELNET" : {
 
+        "FIELD_HEADER_COLOR_SCHEME"   : "Farbschema:",
         "FIELD_HEADER_FONT_NAME"      : "Schriftart Name:",
         "FIELD_HEADER_FONT_SIZE"      : "Schriftart Größe:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
@@ -366,6 +385,12 @@
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Reguläre Passwortersetzungen:",
         "FIELD_HEADER_PORT"           : "Port:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grau auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grün auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Weiß auf Schwarz",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -394,6 +419,7 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audioservername:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Codierung:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Farbtiefe:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Ziel Host:",
@@ -404,6 +430,7 @@
         "FIELD_HEADER_PASSWORD"         : "Passwort:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Nur-Lesen:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standard-Upload-Verzeichnis:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Hostname:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Passwort:",
@@ -421,6 +448,12 @@
         "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Lokal",
         "FIELD_OPTION_CURSOR_REMOTE" : "Entfernt",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
 
         "NAME" : "VNC",
 
