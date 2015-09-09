@@ -529,8 +529,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         }
 
         // Ensure connection group is always released if child acquire fails
-        finally {
+        catch (GuacamoleException e) {
             release(user, connectionGroup);
+            throw e;
         }
 
         // Connect to acquired child
