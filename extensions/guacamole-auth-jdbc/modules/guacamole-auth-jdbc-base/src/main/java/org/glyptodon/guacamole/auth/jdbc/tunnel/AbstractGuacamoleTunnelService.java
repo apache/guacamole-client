@@ -522,8 +522,18 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Acquire group
         acquire(user, connectionGroup);
 
-        // Acquire and connect to any child
-        ModeledConnection connection = acquire(user, connections);
+        // Attempt to acquire to any child
+        ModeledConnection connection;
+        try {
+            connection = acquire(user, connections);
+        }
+
+        // Ensure connection group is always released if child acquire fails
+        finally {
+            release(user, connectionGroup);
+        }
+
+        // Connect to acquired child
         return assignGuacamoleTunnel(new ActiveConnectionRecord(user, connectionGroup, connection), info);
 
     }
