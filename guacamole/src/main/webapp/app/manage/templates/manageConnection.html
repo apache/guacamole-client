@@ -42,7 +42,9 @@ THE SOFTWARE.
                 <th>{{'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | translate}}</th>
               
                 <td>
-                    <location-chooser value="connection.parentIdentifier" root-group="rootGroup"></location-chooser>
+                    <location-chooser
+                        data-data-source="selectedDataSource" root-group="rootGroup"
+                        value="connection.parentIdentifier"></location-chooser>
                 </td>
             </tr>
             

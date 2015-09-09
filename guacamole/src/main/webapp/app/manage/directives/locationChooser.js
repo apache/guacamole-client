@@ -34,6 +34,14 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
         scope: {
 
             /**
+             * The identifier of the data source from which the given root
+             * connection group was retrieved.
+             *
+             * @type String
+             */
+            dataSource : '=',
+
+            /**
              * The root connection group of the connection group hierarchy to
              * display.
              *
@@ -104,6 +112,19 @@ angular.module('manage').directive('locationChooser', [function locationChooser(
             $scope.toggleMenu = function toggleMenu() {
                 $scope.menuOpen = !$scope.menuOpen;
             };
+
+            // Update the root group map when data source or root group change
+            $scope.$watchGroup(['dataSource', 'rootGroup'], function updateRootGroups() {
+
+                // Abort if the root group is not set
+                if (!$scope.dataSource || !$scope.rootGroup)
+                    return null;
+
+                // Wrap root group in map
+                $scope.rootGroups = {};
+                $scope.rootGroups[$scope.dataSource] = $scope.rootGroup;
+
+            });
 
             // Expose selection function to group list template
             $scope.groupListContext = {
