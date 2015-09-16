@@ -32,7 +32,7 @@ import org.glyptodon.guacamole.auth.ldap.user.UserContext;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
-import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
+import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -163,7 +163,7 @@ public class AuthenticationProviderService {
         // Attempt bind
         LDAPConnection ldapConnection = bindAs(credentials);
         if (ldapConnection == null)
-            throw new GuacamoleInsufficientCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
+            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
         try {
 
