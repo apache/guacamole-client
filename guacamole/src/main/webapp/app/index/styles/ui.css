@@ -150,6 +150,12 @@ div.section {
     padding: 0.1em;
 }
 
+.list-item .caption:after {
+    clear: right;
+    content: "";
+    display: block;
+}
+
 .list-item .name {
     color: black;
     font-weight: normal;
@@ -185,8 +191,9 @@ div.section {
 
 .caption .activeUserCount {
     font-style: italic;
-    position: absolute;
+    position: relative;
     right: 1em;
+    float: right;
 }
 
 .list-item:not(.selected) .caption:hover {
