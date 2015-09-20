@@ -55,9 +55,14 @@ public class GuacamoleClientInformation {
     private final List<String> audioMimetypes = new ArrayList<String>();
 
     /**
-     * The list of audio mimetypes reported by the client to be supported.
+     * The list of video mimetypes reported by the client to be supported.
      */
     private final List<String> videoMimetypes = new ArrayList<String>();
+
+    /**
+     * The list of image mimetypes reported by the client to be supported.
+     */
+    private final List<String> imageMimetypes = new ArrayList<String>();
 
     /**
      * Returns the optimal screen width requested by the client, in pixels.
@@ -131,6 +136,18 @@ public class GuacamoleClientInformation {
      */
     public List<String> getVideoMimetypes() {
         return videoMimetypes;
+    }
+
+    /**
+     * Returns the list of image mimetypes supported by the client. To add or
+     * removed supported mimetypes, the list returned by this function can be
+     * modified.
+     *
+     * @return
+     *     The set of image mimetypes supported by the client.
+     */
+    public List<String> getImageMimetypes() {
+        return imageMimetypes;
     }
 
 }
