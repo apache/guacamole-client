@@ -65,6 +65,31 @@ angular.module('client').factory('guacImage', ['$injector', function guacImage($
     };
 
     /**
+     * Deferred which tracks the progress and ultimate result of all pending
+     * image format tests.
+     *
+     * @type Deferred
+     */
+    var deferredSupportedMimetypes = $q.defer();
+
+    /**
+     * Array of all promises associated with pending image tests. Each image
+     * test promise MUST be guaranteed to resolve and MUST NOT be rejected.
+     *
+     * @type Promise[]
+     */
+    var pendingTests = [];
+
+    /**
+     * The array of supported image formats. This will be gradually populated
+     * by the various image tests that occur in the background, and will not be
+     * fully populated until all promises within pendingTests are resolved.
+     *
+     * @type String[]
+     */
+    var supported = [];
+
+    /**
      * Return a promise which resolves with to an array of image mimetypes
      * supported by the browser, once those mimetypes are known. The returned
      * promise is guaranteed to resolve successfully.
@@ -74,46 +99,39 @@ angular.module('client').factory('guacImage', ['$injector', function guacImage($
      *     by the browser.
      */
     service.getSupportedMimetypes = function getSupportedMimetypes() {
-
-        var deferred = $q.defer();
-
-        var supported = [];
-        var pendingTests = [];
-
-        // Test each possibly-supported image
-        angular.forEach(testImages, function testImageSupport(data, mimetype) {
-
-            // Add promise for current image test
-            var imageTest = $q.defer();
-            pendingTests.push(imageTest.promise);
-
-            // Attempt to load image
-            var image = new Image();
-            image.src = 'data:' + mimetype + ';base64,' + data;
-
-            // Store as supported depending on whether load was successful
-            image.onload = image.onerror = function imageTestComplete() {
-
-                // Image format is supported if successfully decoded
-                if (image.width === 1 && image.height === 1)
-                    supported.push(mimetype);
-
-                // Test is complete
-                imageTest.resolve();
-
-            };
-
-        });
-
-        // When all image tests are complete, resolve promise with list of
-        // supported formats
-        $q.all(pendingTests).then(function imageTestsCompleted() {
-            deferred.resolve(supported);
-        });
-
-        return deferred.promise;
-
+        return deferredSupportedMimetypes.promise;
     };
+
+    // Test each possibly-supported image
+    angular.forEach(testImages, function testImageSupport(data, mimetype) {
+
+        // Add promise for current image test
+        var imageTest = $q.defer();
+        pendingTests.push(imageTest.promise);
+
+        // Attempt to load image
+        var image = new Image();
+        image.src = 'data:' + mimetype + ';base64,' + data;
+
+        // Store as supported depending on whether load was successful
+        image.onload = image.onerror = function imageTestComplete() {
+
+            // Image format is supported if successfully decoded
+            if (image.width === 1 && image.height === 1)
+                supported.push(mimetype);
+
+            // Test is complete
+            imageTest.resolve();
+
+        };
+
+    });
+
+    // When all image tests are complete, resolve promise with list of
+    // supported formats
+    $q.all(pendingTests).then(function imageTestsCompleted() {
+        deferredSupportedMimetypes.resolve(supported);
+    });
 
     return service;
 
