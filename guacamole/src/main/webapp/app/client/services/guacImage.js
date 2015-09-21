@@ -55,7 +55,12 @@ angular.module('client').factory('guacImage', ['$injector', function guacImage($
          */
         'image/png' :
             'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX///+nxBvI'
-          + 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg=='
+          + 'AAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==',
+
+        /**
+         * Test WebP image, encoded as base64.
+         */
+        'image/webp' : 'UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA=='
 
     };
 
