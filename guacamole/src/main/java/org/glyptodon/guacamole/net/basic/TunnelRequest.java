@@ -93,6 +93,13 @@ public abstract class TunnelRequest {
     public static final String VIDEO_PARAMETER = "GUAC_VIDEO";
 
     /**
+     * The name of the parameter specifying one supported image mimetype. This
+     * will normally appear multiple times within a single tunnel request -
+     * once for each mimetype.
+     */
+    public static final String IMAGE_PARAMETER = "GUAC_IMAGE";
+
+    /**
      * All supported object types that can be used as the destination of a
      * tunnel.
      */
@@ -348,6 +355,18 @@ public abstract class TunnelRequest {
      */
     public List<String> getVideoMimetypes() {
         return getParameterValues(VIDEO_PARAMETER);
+    }
+
+    /**
+     * Returns a list of all image mimetypes declared as supported within the
+     * tunnel request.
+     *
+     * @return
+     *     A list of all image mimetypes declared as supported within the
+     *     tunnel request, or null if no mimetypes were specified.
+     */
+    public List<String> getImageMimetypes() {
+        return getParameterValues(IMAGE_PARAMETER);
     }
 
 }
