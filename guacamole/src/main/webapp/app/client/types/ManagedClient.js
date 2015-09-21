@@ -36,13 +36,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var ManagedFileUpload    = $injector.get('ManagedFileUpload');
 
     // Required services
-    var $window                = $injector.get('$window');
     var $document              = $injector.get('$document');
+    var $q                     = $injector.get('$q');
+    var $window                = $injector.get('$window');
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var connectionService      = $injector.get('connectionService');
     var guacAudio              = $injector.get('guacAudio');
     var guacHistory            = $injector.get('guacHistory');
+    var guacImage              = $injector.get('guacImage');
     var guacVideo              = $injector.get('guacVideo');
         
     /**
@@ -149,10 +151,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     };
 
     /**
-     * Returns the string of connection parameters to be passed to the
-     * Guacamole client during connection. This string generally contains the
-     * desired connection ID, display resolution, and supported audio/video
-     * codecs.
+     * Returns a promise which resolves with the string of connection
+     * parameters to be passed to the Guacamole client during connection. This
+     * string generally contains the desired connection ID, display resolution,
+     * and supported audio/video/image formats. The returned promise is
+     * guaranteed to resolve successfully.
      *
      * @param {ClientIdentifier} identifier
      *     The identifier representing the connection or group to connect to.
@@ -160,11 +163,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * @param {String} [connectionParameters]
      *     Any additional HTTP parameters to pass while connecting.
      * 
-     * @returns {String}
-     *     The string of connection parameters to be passed to the Guacamole
-     *     client.
+     * @returns {Promise.<String>}
+     *     A promise which resolves with the string of connection parameters to
+     *     be passed to the Guacamole client, once the string is ready.
      */
     var getConnectString = function getConnectString(identifier, connectionParameters) {
+
+        var deferred = $q.defer();
 
         // Calculate optimal width/height for display
         var pixel_density = $window.devicePixelRatio || 1;
@@ -183,17 +188,30 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             + "&GUAC_DPI="         + Math.floor(optimal_dpi)
             + (connectionParameters ? '&' + connectionParameters : '');
 
-        // Add audio mimetypes to connect_string
+        // Add audio mimetypes to connect string
         guacAudio.supported.forEach(function(mimetype) {
             connectString += "&GUAC_AUDIO=" + encodeURIComponent(mimetype);
         });
 
-        // Add video mimetypes to connect_string
+        // Add video mimetypes to connect string
         guacVideo.supported.forEach(function(mimetype) {
             connectString += "&GUAC_VIDEO=" + encodeURIComponent(mimetype);
         });
 
-        return connectString;
+        // Add image mimetypes to connect string
+        guacImage.getSupportedMimetypes().then(function supportedMimetypesKnown(mimetypes) {
+
+            // Add each image mimetype
+            angular.forEach(mimetypes, function addImageMimetype(mimetype) {
+                connectString += "&GUAC_IMAGE=" + encodeURIComponent(mimetype);
+            });
+
+            // Connect string is now ready - nothing else is deferred
+            deferred.resolve(connectString);
+
+        });
+
+        return deferred.promise;
 
     };
 
@@ -411,7 +429,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         var clientIdentifier = ClientIdentifier.fromString(id);
 
         // Connect the Guacamole client
-        client.connect(getConnectString(clientIdentifier, connectionParameters));
+        getConnectString(clientIdentifier, connectionParameters)
+        .then(function connectClient(connectString) {
+            client.connect(connectString);
+        });
 
         // If using a connection, pull connection name
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {

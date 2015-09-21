@@ -114,6 +114,11 @@ public class TunnelRequestService {
         if (videoMimetypes != null)
             info.getVideoMimetypes().addAll(videoMimetypes);
 
+        // Add image mimetypes
+        List<String> imageMimetypes = request.getImageMimetypes();
+        if (imageMimetypes != null)
+            info.getImageMimetypes().addAll(imageMimetypes);
+
         return info;
     }
 
