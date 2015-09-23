@@ -42,6 +42,13 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         template = template || {};
 
         /**
+         * The identifier of the connection associated with this history entry.
+         *
+         * @type String
+         */
+        this.connectionIdentifier = template.connectionIdentifier;
+
+        /**
          * The time that usage began, in seconds since 1970-01-01 00:00:00 UTC.
          *
          * @type Number 

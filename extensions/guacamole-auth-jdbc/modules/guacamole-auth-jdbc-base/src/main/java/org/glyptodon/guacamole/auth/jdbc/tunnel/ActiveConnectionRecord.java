@@ -165,6 +165,11 @@ public class ActiveConnectionRecord implements ConnectionRecord {
     }
 
     @Override
+    public String getConnectionIdentifier() {
+        return connection.getIdentifier();
+    }
+
+    @Override
     public Date getStartDate() {
         return startDate;
     }

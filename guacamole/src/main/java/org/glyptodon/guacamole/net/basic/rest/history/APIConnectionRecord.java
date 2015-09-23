@@ -33,6 +33,11 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 public class APIConnectionRecord {
 
     /**
+     * The identifier of the connection associated with this record.
+     */
+    private final String connectionIdentifier;
+
+    /**
      * The date and time the connection began.
      */
     private final Date startDate;
@@ -66,11 +71,23 @@ public class APIConnectionRecord {
      *     The record to copy data from.
      */
     public APIConnectionRecord(ConnectionRecord record) {
+        this.connectionIdentifier = record.getConnectionIdentifier();
         this.startDate  = record.getStartDate();
         this.endDate    = record.getEndDate();
         this.remoteHost = record.getRemoteHost();
         this.username   = record.getUsername();
         this.active     = record.isActive();
+    }
+
+    /**
+     * Returns the identifier of the connection associated with this
+     * record.
+     *
+     * @return
+     *     The identifier of the connection associated with this record.
+     */
+    public String getConnectionIdentifier() {
+        return connectionIdentifier;
     }
 
     /**
