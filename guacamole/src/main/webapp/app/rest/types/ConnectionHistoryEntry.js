@@ -87,6 +87,41 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
 
     };
 
+    /**
+     * All possible predicates for sorting ConnectionHistoryEntry objects using
+     * the REST API. By default, each predicate indicates ascending order. To
+     * indicate descending order, add "-" to the beginning of the predicate.
+     *
+     * @type Object.<String, String>
+     */
+    ConnectionHistoryEntry.SortPredicate = {
+
+        /**
+         * The name of the connection associated with the history entry (not
+         * the connection identifier).
+         */
+        CONNECTION_NAME : 'connection',
+
+        /**
+         * The username of the user associated with the history entry (the user
+         * identifier).
+         */
+        USER_IDENTIFIER : 'username',
+
+        /**
+         * The date and time that the connection associated with the history
+         * entry began (connected).
+         */
+        START_DATE : 'startDate',
+
+        /**
+         * The date and time that the connection associated with the history
+         * entry ended (disconnected).
+         */
+        END_DATE : 'endDate'
+
+    };
+
     return ConnectionHistoryEntry;
 
 }]);
