@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.net.auth;
 
 import java.util.Collection;
-import java.util.Date;
 import org.glyptodon.guacamole.GuacamoleException;
 
 /**
@@ -79,42 +78,9 @@ public interface ConnectionRecordSet {
     Collection<ConnectionRecord> asCollection() throws GuacamoleException;
 
     /**
-     * Returns the subset of connection records to only those that began after
-     * the given date and time.
-     *
-     * @param date
-     *     The date and time after which all connection records within the
-     *     resulting subset should begin.
-     *
-     * @return
-     *     The subset of connection history records which begin after the
-     *     specified date and time.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while restricting the current subset.
-     */
-    ConnectionRecordSet after(Date date) throws GuacamoleException;
-
-    /**
-     * Returns the subset of connection records to only those that ended before
-     * the given date and time.
-     *
-     * @param date
-     *     The date and time before which all connection records within the
-     *     resulting subset should end.
-     *
-     * @return
-     *     The subset of connection history records which end before the
-     *     specified date and time.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while restricting the current subset.
-     */
-    ConnectionRecordSet before(Date date) throws GuacamoleException;
-
-    /**
      * Returns the subset of connection records to only those where the
-     * connection name or user identifier contain the given value.
+     * connection name, user identifier, or any associated date field contain
+     * the given value.
      *
      * @param value
      *     The value which all connection records within the resulting subset

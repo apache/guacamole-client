@@ -24,7 +24,6 @@ package org.glyptodon.guacamole.net.auth.simple;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.ConnectionRecordSet;
@@ -40,18 +39,6 @@ public class SimpleConnectionRecordSet implements ConnectionRecordSet {
     public Collection<ConnectionRecord> asCollection()
             throws GuacamoleException {
         return Collections.<ConnectionRecord>emptyList();
-    }
-
-    @Override
-    public ConnectionRecordSet after(Date date)
-            throws GuacamoleException {
-        return this;
-    }
-
-    @Override
-    public ConnectionRecordSet before(Date date)
-            throws GuacamoleException {
-        return this;
     }
 
     @Override
