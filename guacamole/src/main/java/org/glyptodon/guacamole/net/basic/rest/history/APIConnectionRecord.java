@@ -20,14 +20,14 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest.connection;
+package org.glyptodon.guacamole.net.basic.rest.history;
 
 import java.util.Date;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A connection record which may be exposed through the REST endpoints.
- * 
+ *
  * @author Michael Jumper
  */
 public class APIConnectionRecord {
@@ -47,7 +47,7 @@ public class APIConnectionRecord {
      * The host from which the connection originated, if known.
      */
     private final String remoteHost;
-    
+
     /**
      * The name of the user who used or is using the connection.
      */
@@ -126,5 +126,5 @@ public class APIConnectionRecord {
     public boolean isActive() {
         return active;
     }
-    
+
 }

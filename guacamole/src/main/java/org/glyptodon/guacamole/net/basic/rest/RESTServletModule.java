@@ -31,6 +31,7 @@ import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
 import org.glyptodon.guacamole.net.basic.rest.activeconnection.ActiveConnectionRESTService;
+import org.glyptodon.guacamole.net.basic.rest.history.HistoryRESTService;
 import org.glyptodon.guacamole.net.basic.rest.language.LanguageRESTService;
 import org.glyptodon.guacamole.net.basic.rest.schema.SchemaRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
@@ -59,6 +60,7 @@ public class RESTServletModule extends ServletModule {
         bind(ActiveConnectionRESTService.class);
         bind(ConnectionGroupRESTService.class);
         bind(ConnectionRESTService.class);
+        bind(HistoryRESTService.class);
         bind(LanguageRESTService.class);
         bind(SchemaRESTService.class);
         bind(TokenRESTService.class);
