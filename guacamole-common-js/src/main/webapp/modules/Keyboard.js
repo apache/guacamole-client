@@ -39,13 +39,6 @@ Guacamole.Keyboard = function(element) {
     var guac_keyboard = this;
 
     /**
-     * Flag indicating whether the browser is running on Mac
-     *
-     * @type Boolean
-     */
-    var is_mac = (navigator && navigator.platform && navigator.platform.match(/^mac/i));
-
-    /**
      * Fired whenever the user presses a key with the element associated
      * with this Guacamole.Keyboard in focus.
      * 
@@ -194,7 +187,8 @@ Guacamole.Keyboard = function(element) {
             this.keysym = keysym_from_key_identifier(keyIdentifier, location, guac_keyboard.modifiers.shift);
 
         // Determine whether default action for Alt+combinations must be prevented
-        var prevent_alt =  !guac_keyboard.modifiers.ctrl && !is_mac;
+        var prevent_alt =  !guac_keyboard.modifiers.ctrl
+                        && !(navigator && navigator.platform && navigator.platform.match(/^mac/i));
 
         // Determine whether default action for Ctrl+combinations must be prevented
         var prevent_ctrl = !guac_keyboard.modifiers.alt;
