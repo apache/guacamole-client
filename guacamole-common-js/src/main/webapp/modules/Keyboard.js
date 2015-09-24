@@ -610,14 +610,8 @@ Guacamole.Keyboard = function(element) {
             typedCharacter = identifier;
 
         // Otherwise, look up corresponding keysym
-        else {
-            // Clear on Mac maps to NumLock
-            if (identifier === "Clear" && is_mac) {
-                identifier = "NumLock";
-            }
-
+        else
             return get_keysym(keyidentifier_keysym[identifier], location);
-        }
 
         // Alter case if necessary
         if (shifted === true)
@@ -653,12 +647,6 @@ Guacamole.Keyboard = function(element) {
     }
 
     function keysym_from_keycode(keyCode, location) {
-
-        // Map Clear on Mac to NumLock
-        if (keyCode === 12 && is_mac) {
-            keyCode = 144;
-        }
-
         return get_keysym(keycodeKeysyms[keyCode], location);
     }
 
@@ -860,9 +848,6 @@ Guacamole.Keyboard = function(element) {
             last_event = handled_event;
             handled_event = interpret_event();
         } while (handled_event !== null);
-
-        if (!last_event)
-            return false;
 
         return last_event.defaultPrevented;
 
