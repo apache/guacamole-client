@@ -86,6 +86,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     /**
      * The format of audio this player will decode.
      *
+     * @private
      * @type Guacamole.RawAudioPlayer._Format
      */
     var format = Guacamole.RawAudioPlayer._Format.parse(mimetype);
@@ -94,6 +95,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * An instance of a Web Audio API AudioContext object, or null if the
      * Web Audio API is not supported.
      *
+     * @private
      * @type AudioContext
      */
     var context = (function getAudioContext() {
@@ -122,6 +124,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * N will cause the associated audio to be played back N milliseconds after
      * the function is called.
      *
+     * @private
      * @return {Number}
      *     An arbitrary relative timestamp, in milliseconds.
      */
@@ -146,21 +149,23 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     var nextPacketTime = getTimestamp();
 
     /**
-     * The last time that sync() was called, in milliseconds. If sync() has
-     * never been called, this will be the time the Guacamole.AudioPlayer
-     * was created.
-     *
-     * @type Number
-     */
-    var lastSync = nextPacketTime;
-
-    /**
      * Guacamole.ArrayBufferReader wrapped around the audio input stream
      * provided with this Guacamole.RawAudioPlayer was created.
      *
+     * @private
      * @type Guacamole.ArrayBufferReader
      */
     var reader = new Guacamole.ArrayBufferReader(stream);
+
+    /**
+     * The maximum amount of latency to allow between the buffered data stream
+     * and the playback position, in milliseconds. Initially, this is set to
+     * roughly one third of a second, but it will be recalculated dynamically.
+     *
+     * @private
+     * @type Number
+     */
+    var maxLatency = 300;
 
     // Play each received raw packet of audio immediately
     reader.ondata = function playReceivedAudio(data) {
@@ -170,6 +175,9 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
         // Calculate overall duration (in milliseconds)
         var duration = samples * 1000 / format.rate;
+
+        // Recalculate latency threshold based on packet size
+        maxLatency = duration * 2;
 
         // Determine exactly when packet CAN play
         var packetTime = getTimestamp();
@@ -227,14 +235,10 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
         // Calculate elapsed time since last sync
         var now = getTimestamp();
-        var elapsed = now - lastSync;
 
         // Reschedule future playback time such that playback latency is
-        // bounded within the duration of the last audio frame
-        nextPacketTime = Math.min(nextPacketTime, now + elapsed);
-
-        // Record sync time
-        lastSync = now;
+        // bounded within a reasonable latency threshold
+        nextPacketTime = Math.min(nextPacketTime, now + maxLatency);
 
     };
 
