@@ -635,13 +635,11 @@ Guacamole.Client = function(tunnel) {
             if (guac_client.onaudio)
                 audioPlayer = guac_client.onaudio(stream, mimetype);
 
-            // If unsuccessful, use a default implementation
-            if (!audioPlayer) {
-                if (Guacamole.RawAudioPlayer.isSupportedType(mimetype))
-                    audioPlayer = new Guacamole.RawAudioPlayer(stream, mimetype);
-            }
+            // If unsuccessful, try to use a default implementation
+            if (!audioPlayer)
+                audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
 
-            // If player somehow successfully retrieved, send success response
+            // If we have successfully retrieved an audio player, send success response
             if (audioPlayer) {
                 audioPlayers[stream_index] = audioPlayer;
                 guac_client.sendAck(stream_index, "OK", 0x0000);
