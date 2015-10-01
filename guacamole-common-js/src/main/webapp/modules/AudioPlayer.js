@@ -45,28 +45,6 @@ Guacamole.AudioPlayer = function AudioPlayer() {
 };
 
 /**
- * Returns a base timestamp which can be used for scheduling future audio
- * playback. Scheduling playback for the value returned by this function plus
- * N will cause the associated audio to be played back N milliseconds after
- * the function is called.
- *
- * @return {Number}
- *     An arbitrary relative timestamp, in milliseconds.
- */
-Guacamole.AudioPlayer.getTimestamp = function() {
-
-    // If we have high-resolution timers, use those
-    if (window.performance) {
-        var now = performance.now || performance.webkitNow();
-        return now();
-    }
-
-    // Fallback to millisecond-resolution system time
-    return Date.now();
-
-};
-
-/**
  * Determines whether the given mimetype is supported by any built-in
  * implementation of Guacamole.AudioPlayer, and thus will be properly handled
  * by Guacamole.AudioPlayer.getInstance().
@@ -183,34 +161,15 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     })();
 
     /**
-     * Returns a base timestamp which can be used for scheduling future audio
-     * playback. Scheduling playback for the value returned by this function plus
-     * N will cause the associated audio to be played back N milliseconds after
-     * the function is called.
-     *
-     * @private
-     * @return {Number}
-     *     An arbitrary relative timestamp, in milliseconds.
-     */
-    var getTimestamp = function getTimestamp() {
-
-        // If we have an audio context, use its timestamp
-        if (context)
-            return context.currentTime * 1000;
-
-        // Otherwise, use the internal timestamp implementation
-        return Guacamole.AudioPlayer.getTimestamp();
-
-    };
-
-    /**
      * The earliest possible time that the next packet could play without
-     * overlapping an already-playing packet, in milliseconds.
+     * overlapping an already-playing packet, in seconds. Note that while this
+     * value is in seconds, it is not an integer value and has microsecond
+     * resolution.
      *
      * @private
      * @type Number
      */
-    var nextPacketTime = getTimestamp();
+    var nextPacketTime = context.currentTime;
 
     /**
      * Guacamole.ArrayBufferReader wrapped around the audio input stream
@@ -223,13 +182,13 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
     /**
      * The maximum amount of latency to allow between the buffered data stream
-     * and the playback position, in milliseconds. Initially, this is set to
+     * and the playback position, in seconds. Initially, this is set to
      * roughly one third of a second, but it will be recalculated dynamically.
      *
      * @private
      * @type Number
      */
-    var maxLatency = 300;
+    var maxLatency = 0.3;
 
     // Play each received raw packet of audio immediately
     reader.ondata = function playReceivedAudio(data) {
@@ -237,14 +196,14 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
         // Calculate total number of samples
         var samples = data.byteLength / format.channels / format.bytesPerSample;
 
-        // Calculate overall duration (in milliseconds)
-        var duration = samples * 1000 / format.rate;
+        // Calculate overall duration (in seconds)
+        var duration = samples / format.rate;
 
         // Recalculate latency threshold based on packet size
         maxLatency = duration * 2;
 
         // Determine exactly when packet CAN play
-        var packetTime = getTimestamp();
+        var packetTime = context.currentTime;
         if (nextPacketTime < packetTime)
             nextPacketTime = packetTime;
 
@@ -287,7 +246,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
         // Schedule packet
         source.buffer = audioBuffer;
-        source.start(nextPacketTime / 1000);
+        source.start(nextPacketTime);
 
         // Update timeline
         nextPacketTime += duration;
@@ -298,7 +257,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     this.sync = function sync() {
 
         // Calculate elapsed time since last sync
-        var now = getTimestamp();
+        var now = context.currentTime;
 
         // Reschedule future playback time such that playback latency is
         // bounded within a reasonable latency threshold
