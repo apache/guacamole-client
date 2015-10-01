@@ -183,7 +183,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     /**
      * The maximum amount of latency to allow between the buffered data stream
      * and the playback position, in seconds. Initially, this is set to
-     * roughly one third of a second, but it will be recalculated dynamically.
+     * roughly one third of a second.
      *
      * @private
      * @type Number
@@ -198,9 +198,6 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
 
         // Calculate overall duration (in seconds)
         var duration = samples / format.rate;
-
-        // Recalculate latency threshold based on packet size
-        maxLatency = duration * 2;
 
         // Determine exactly when packet CAN play
         var packetTime = context.currentTime;
