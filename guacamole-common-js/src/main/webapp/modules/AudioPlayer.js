@@ -332,8 +332,8 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
         // Otherwise, split the packet into two new packets according to the
         // calculated optimal split length
         return [
-            data.slice(0, optimalSplitLength),
-            data.slice(optimalSplitLength)
+            new SampleArray(data.buffer.slice(0, optimalSplitLength * format.bytesPerSample)),
+            new SampleArray(data.buffer.slice(optimalSplitLength * format.bytesPerSample))
         ];
 
     };
