@@ -181,6 +181,18 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
     var reader = new Guacamole.ArrayBufferReader(stream);
 
     /**
+     * The minimum size of an audio packet split by splitAudioPacket(), in
+     * seconds. Audio packets smaller than this will not be split, nor will the
+     * split result of a larger packet ever be smaller in size than this
+     * minimum.
+     *
+     * @private
+     * @constant
+     * @type Number
+     */
+    var MIN_SPLIT_SIZE = 0.02;
+
+    /**
      * The maximum amount of latency to allow between the buffered data stream
      * and the playback position, in seconds. Initially, this is set to
      * roughly one third of a second.
@@ -190,31 +202,208 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      */
     var maxLatency = 0.3;
 
-    // Play each received raw packet of audio immediately
-    reader.ondata = function playReceivedAudio(data) {
+    /**
+     * The type of typed array that will be used to represent each audio packet
+     * internally. This will be either Int8Array or Int16Array, depending on
+     * whether the raw audio format is 8-bit or 16-bit.
+     *
+     * @private
+     * @constructor
+     */
+    var SampleArray = (format.bytesPerSample === 1) ? window.Int8Array : window.Int16Array;
+
+    /**
+     * The maximum absolute value of any sample within a raw audio packet
+     * received by this audio player. This depends only on the size of each
+     * sample, and will be 128 for 8-bit audio and 32768 for 16-bit audio.
+     *
+     * @private
+     * @type Number
+     */
+    var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
+
+    /**
+     * The queue of all pending audio packets, as an array of sample arrays.
+     * Audio packets which are pending playback will be added to this queue for
+     * further manipulation prior to scheduling via the Web Audio API. Once an
+     * audio packet leaves this queue and is scheduled via the Web Audio API,
+     * no further modifications can be made to that packet.
+     *
+     * @private
+     * @type SampleArray[]
+     */
+    var packetQueue = [];
+
+    /**
+     * Given an array of audio packets, returns a single audio packet
+     * containing the concatenation of those packets.
+     *
+     * @private
+     * @param {SampleArray[]} packets
+     *     The array of audio packets to concatenate.
+     *
+     * @returns {SampleArray}
+     *     A single audio packet containing the concatenation of all given
+     *     audio packets. If no packets are provided, this will be undefined.
+     */
+    var joinAudioPackets = function joinAudioPackets(packets) {
+
+        // Do not bother joining if one or fewer packets are in the queue
+        if (packets.length <= 1)
+            return packets[0];
+
+        // Determine total sample length of the entire queue
+        var totalLength = 0;
+        packets.forEach(function addPacketLengths(packet) {
+            totalLength += packet.length;
+        });
+
+        // Append each packet within queue
+        var offset = 0;
+        var joined = new SampleArray(totalLength);
+        packets.forEach(function appendPacket(packet) {
+            joined.set(packet, offset);
+            offset += packet.length;
+        });
+
+        return joined;
+
+    };
+
+    /**
+     * Given a single packet of audio data, splits off an arbitrary length of
+     * audio data from the beginning of that packet, returning the split result
+     * as an array of two packets. The split location is determined through an
+     * algorithm intended to minimize the liklihood of audible clicking between
+     * packets. If no such split location is possible, an array containing only
+     * the originally-provided audio packet is returned.
+     *
+     * @private
+     * @param {SampleArray} data
+     *     The audio packet to split.
+     *
+     * @returns {SampleArray[]}
+     *     An array of audio packets containing the result of splitting the
+     *     provided audio packet. If splitting is possible, this array will
+     *     contain two packets. If splitting is not possible, this array will
+     *     contain only the originally-provided packet.
+     */
+    var splitAudioPacket = function splitAudioPacket(data) {
+
+        var minValue = Number.MAX_VALUE;
+        var optimalSplitLength = data.length;
+
+        // Calculate number of whole samples in the provided audio packet AND
+        // in the minimum possible split packet
+        var samples = Math.floor(data.length / format.channels);
+        var minSplitSamples = Math.floor(format.rate * MIN_SPLIT_SIZE);
+
+        // Calculate the beginning of the "end" of the audio packet
+        var start = Math.max(
+            format.channels * minSplitSamples,
+            format.channels * (samples - minSplitSamples)
+        );
+
+        // For all samples at the end of the given packet, find a point where
+        // the perceptible volume across all channels is lowest (and thus is
+        // the optimal point to split)
+        for (var offset = start; offset < data.length; offset += format.channels) {
+
+            // Calculate the sum of all values across all channels (the result
+            // will be proportional to the average volume of a sample)
+            var totalValue = 0;
+            for (var channel = 0; channel < format.channels; channel++) {
+                totalValue += Math.abs(data[offset + channel]);
+            }
+
+            // If this is the smallest average value thus far, set the split
+            // length such that the first packet ends with the current sample
+            if (totalValue <= minValue) {
+                optimalSplitLength = offset + format.channels;
+                minValue = totalValue;
+            }
+
+        }
+
+        // If packet is not split, return the supplied packet untouched
+        if (optimalSplitLength === data.length)
+            return [data];
+
+        // Otherwise, split the packet into two new packets according to the
+        // calculated optimal split length
+        return [
+            data.slice(0, optimalSplitLength),
+            data.slice(optimalSplitLength)
+        ];
+
+    };
+
+    /**
+     * Pushes the given packet of audio data onto the playback queue. Unlike
+     * other private functions within Guacamole.RawAudioPlayer, the type of the
+     * ArrayBuffer packet of audio data here need not be specific to the type
+     * of audio (as with SampleArray). The ArrayBuffer type provided by a
+     * Guacamole.ArrayBufferReader, for example, is sufficient. Any necessary
+     * conversions will be performed automatically internally.
+     *
+     * @private
+     * @param {ArrayBuffer} data
+     *     A raw packet of audio data that should be pushed onto the audio
+     *     playback queue.
+     */
+    var pushAudioPacket = function pushAudioPacket(data) {
+        packetQueue.push(new SampleArray(data));
+    };
+
+    /**
+     * Shifts off and returns a packet of audio data from the beginning of the
+     * playback queue. The length of this audio packet is determined
+     * dynamically according to the click-reduction algorithm implemented by
+     * splitAudioPacket().
+     *
+     * @returns {SampleArray}
+     *     A packet of audio data pulled from the beginning of the playback
+     *     queue.
+     */
+    var shiftAudioPacket = function shiftAudioPacket() {
+
+        // Flatten data in packet queue
+        var data = joinAudioPackets(packetQueue);
+        if (!data)
+            return null;
+
+        // Pull an appropriate amount of data from the front of the queue
+        packetQueue = splitAudioPacket(data);
+        data = packetQueue.shift();
+
+        return data;
+
+    };
+
+    /**
+     * Converts the given audio packet into an AudioBuffer, ready for playback
+     * by the Web Audio API. Unlike the raw audio packets received by this
+     * audio player, AudioBuffers require floating point samples and are split
+     * into isolated planes of channel-specific data.
+     *
+     * @private
+     * @param {SampleArray} data
+     *     The raw audio packet that should be converted into a Web Audio API
+     *     AudioBuffer.
+     *
+     * @returns {AudioBuffer}
+     *     A new Web Audio API AudioBuffer containing the provided audio data,
+     *     converted to the format used by the Web Audio API.
+     */
+    var toAudioBuffer = function toAudioBuffer(data) {
 
         // Calculate total number of samples
-        var samples = data.byteLength / format.channels / format.bytesPerSample;
-
-        // Calculate overall duration (in seconds)
-        var duration = samples / format.rate;
+        var samples = data.length / format.channels;
 
         // Determine exactly when packet CAN play
         var packetTime = context.currentTime;
         if (nextPacketTime < packetTime)
             nextPacketTime = packetTime;
-
-        // Obtain typed array view based on defined bytes per sample
-        var maxValue;
-        var source;
-        if (format.bytesPerSample === 1) {
-            source = new Int8Array(data);
-            maxValue = 128;
-        }
-        else {
-            source = new Int16Array(data);
-            maxValue = 32768;
-        }
 
         // Get audio buffer for specified format
         var audioBuffer = context.createBuffer(format.channels, samples, format.rate);
@@ -227,11 +416,32 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
             // Fill audio buffer with data for channel
             var offset = channel;
             for (var i = 0; i < samples; i++) {
-                audioData[i] = source[offset] / maxValue;
+                audioData[i] = data[offset] / maxSampleValue;
                 offset += format.channels;
             }
 
         }
+
+        return audioBuffer;
+
+    };
+
+    // Defer playback of received audio packets slightly
+    reader.ondata = function playReceivedAudio(data) {
+
+        // Push received samples onto queue
+        pushAudioPacket(new SampleArray(data));
+
+        // Shift off an arbitrary packet of audio data from the queue (this may
+        // be different in size from the packet just pushed)
+        var packet = shiftAudioPacket();
+        if (!packet)
+            return;
+
+        // Determine exactly when packet CAN play
+        var packetTime = context.currentTime;
+        if (nextPacketTime < packetTime)
+            nextPacketTime = packetTime;
 
         // Set up buffer source
         var source = context.createBufferSource();
@@ -242,11 +452,11 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
             source.start = source.noteOn;
 
         // Schedule packet
-        source.buffer = audioBuffer;
+        source.buffer = toAudioBuffer(packet);
         source.start(nextPacketTime);
 
-        // Update timeline
-        nextPacketTime += duration;
+        // Update timeline by duration of scheduled packet
+        nextPacketTime += packet.length / format.channels / format.rate;
 
     };
 
