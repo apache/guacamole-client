@@ -124,8 +124,10 @@ public class HistoryRESTService {
         ConnectionRecordSet history = userContext.getConnectionHistory();
 
         // Restrict to records which contain the specified strings
-        for (String required : requiredContents)
-            history = history.contains(required);
+        for (String required : requiredContents) {
+            if (!required.isEmpty())
+                history = history.contains(required);
+        }
 
         // Sort according to specified ordering
         for (APIConnectionRecordSortPredicate predicate : sortPredicates)
