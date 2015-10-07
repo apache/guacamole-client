@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.connection;
 
 import java.util.List;
+import java.util.Set;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -56,5 +57,26 @@ public interface ConnectionRecordMapper {
      *     The number of rows inserted.
      */
     int insert(@Param("record") ConnectionRecordModel record);
+
+    /**
+     * Searches for up to <code>limit</code> connection records that contain 
+     * the given terms, sorted by the given predicates.
+     * 
+     * @param terms
+     *     The search terms that must match the returned records.
+     * 
+     * @param sortPredicates
+     *     A list of predicates to sort the returned records by, in order of
+     *     priority.
+     *
+     * @param limit 
+     *     The maximum number of records that should be returned.
+     * 
+     * @return
+     *     The results of the search performed with the given parameters. 
+     */
+    List<ConnectionRecordModel> search(@Param("terms") Set<ConnectionRecordSearchTerm> terms,
+            @Param("sortPredicates") List<ConnectionRecordSortPredicate> sortPredicates,
+            @Param("limit") int limit);
     
 }
