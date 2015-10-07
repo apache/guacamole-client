@@ -80,7 +80,10 @@ public interface ConnectionRecordSet {
     /**
      * Returns the subset of connection records to only those where the
      * connection name, user identifier, or any associated date field contain
-     * the given value.
+     * the given value. This function may also affect the contents of the
+     * current ConnectionRecordSet. The contents of the current
+     * ConnectionRecordSet should NOT be relied upon after this function is
+     * called.
      *
      * @param value
      *     The value which all connection records within the resulting subset
@@ -99,7 +102,10 @@ public interface ConnectionRecordSet {
     /**
      * Returns the subset of connection history records containing only the
      * first <code>limit</code> records. If the subset has fewer than
-     * <code>limit</code> records, then this function has no effect.
+     * <code>limit</code> records, then this function has no effect. This
+     * function may also affect the contents of the current
+     * ConnectionRecordSet. The contents of the current ConnectionRecordSet
+     * should NOT be relied upon after this function is called.
      *
      * @param limit
      *     The maximum number of records that the new subset should contain.
@@ -117,7 +123,9 @@ public interface ConnectionRecordSet {
      * Returns a ConnectionRecordSet containing identically the records within
      * this set, sorted according to the specified criteria. The sort operation
      * performed is guaranteed to be stable with respect to any past call to
-     * sort().
+     * sort(). This function may also affect the contents of the current
+     * ConnectionRecordSet. The contents of the current ConnectionRecordSet
+     * should NOT be relied upon after this function is called.
      *
      * @param property
      *     The property by which the connection records within the resulting
