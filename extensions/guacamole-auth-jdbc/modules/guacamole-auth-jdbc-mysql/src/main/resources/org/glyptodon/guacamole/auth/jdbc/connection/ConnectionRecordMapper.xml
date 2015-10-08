@@ -113,14 +113,20 @@
             )
         </foreach>
 
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="CONNECTION_NAME" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@CONNECTION_NAME"/>
+        <bind name="USER_IDENTIFIER" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@USER_IDENTIFIER"/>
+        <bind name="START_DATE"      value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
+        <bind name="END_DATE"        value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@END_DATE"/>
+
         <!-- Sort predicates -->
         <foreach collection="sortPredicates" item="sortPredicate"
                  open="ORDER BY " separator=", ">
             <choose>
-                <when test="sortPredicate.property == 'CONNECTION_NAME'">guacamole_connection.connection_name</when>
-                <when test="sortPredicate.property == 'USER_IDENTIFIER'">guacamole_user.username</when>
-                <when test="sortPredicate.property == 'START_DATE'">guacamole_connection_history.start_date</when>
-                <when test="sortPredicate.property == 'END_DATE'">guacamole_connection_history.end_date</when>
+                <when test="sortPredicate.property == CONNECTION_NAME">guacamole_connection.connection_name</when>
+                <when test="sortPredicate.property == USER_IDENTIFIER">guacamole_user.username</when>
+                <when test="sortPredicate.property == START_DATE">guacamole_connection_history.start_date</when>
+                <when test="sortPredicate.property == END_DATE">guacamole_connection_history.end_date</when>
                 <otherwise>1</otherwise>
             </choose>
             <if test="sortPredicate.descending">DESC</if>
