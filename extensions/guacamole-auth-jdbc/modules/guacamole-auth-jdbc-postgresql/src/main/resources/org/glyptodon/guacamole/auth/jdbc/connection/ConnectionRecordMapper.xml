@@ -72,4 +72,62 @@
 
     </insert>
 
+    <!-- Search for specific connection records -->
+    <select id="search" resultMap="ConnectionRecordResultMap">
+
+        SELECT
+            guacamole_connection_history.connection_id,
+            guacamole_connection_history.user_id,
+            guacamole_user.username,
+            guacamole_connection_history.start_date,
+            guacamole_connection_history.end_date
+        FROM guacamole_connection_history
+        JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
+        JOIN guacamole_user       ON guacamole_connection_history.user_id       = guacamole_user.user_id
+
+        <!-- Search terms -->
+        <foreach collection="terms" item="term"
+                 open="WHERE " separator=" AND ">
+            <bind name="termPattern" value="'%' + term.term + '%'" />
+            (
+
+                guacamole_connection_history.user_id IN (
+                    SELECT user_id
+                    FROM guacamole_user
+                    WHERE username LIKE #{termPattern,jdbcType=VARCHAR}
+                )
+
+                OR guacamole_connection_history.connection_id IN (
+                    SELECT connection_id
+                    FROM guacamole_connection
+                    WHERE connection_name LIKE #{termPattern,jdbcType=VARCHAR}
+                )
+
+                <if test="term.startDate != null and term.endDate != null">
+                    OR (
+                            (start_date BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                        AND (end_date   BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                    )
+                </if>
+
+            )
+        </foreach>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == 'CONNECTION_NAME'">guacamole_connection.connection_name</when>
+                <when test="sortPredicate.property == 'USER_IDENTIFIER'">guacamole_user.username</when>
+                <when test="sortPredicate.property == 'START_DATE'">guacamole_connection_history.start_date</when>
+                <when test="sortPredicate.property == 'END_DATE'">guacamole_connection_history.end_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+        LIMIT #{limit,jdbcType=INTEGER}
+
+    </select>
+
 </mapper>
