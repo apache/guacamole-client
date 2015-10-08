@@ -43,10 +43,10 @@ public class ConnectionRecordSet extends RestrictedObject
         implements org.glyptodon.guacamole.net.auth.ConnectionRecordSet {
 
     /**
-     * Mapper for accessing connection history.
+     * Service for managing connection objects.
      */
     @Inject
-    private ConnectionRecordMapper connectionRecordMapper;
+    private ConnectionService connectionService;
     
     /**
      * The set of strings that each must occur somewhere within the returned 
@@ -75,22 +75,8 @@ public class ConnectionRecordSet extends RestrictedObject
     @Override
     public Collection<ConnectionRecord> asCollection()
             throws GuacamoleException {
-
-        // Perform the search against the database
-        List<ConnectionRecordModel> searchResults =
-                connectionRecordMapper.search(requiredContents,
-                        connectionRecordSortPredicates, limit);
-
-        List<ConnectionRecord> modeledSearchResults = 
-                new ArrayList<ConnectionRecord>();
-
-        // Convert raw DB records into ConnectionRecords
-        for(ConnectionRecordModel model : searchResults) {
-            modeledSearchResults.add(new ModeledConnectionRecord(model));
-        }
-
-        return modeledSearchResults;
-
+        return connectionService.retrieveHistory(getCurrentUser(),
+                requiredContents, connectionRecordSortPredicates, limit);
     }
 
     @Override
