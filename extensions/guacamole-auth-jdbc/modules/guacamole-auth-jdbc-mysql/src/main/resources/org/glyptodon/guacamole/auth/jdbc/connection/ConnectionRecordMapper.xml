@@ -84,7 +84,83 @@
         FROM guacamole_connection_history
         JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
         JOIN guacamole_user       ON guacamole_connection_history.user_id       = guacamole_user.user_id
-        
+
+        <!-- Search terms -->
+        <foreach collection="terms" item="term"
+                 open="WHERE " separator=" AND ">
+            <bind name="termPattern" value="'%' + term.term + '%'" />
+            (
+
+                guacamole_connection_history.user_id IN (
+                    SELECT user_id
+                    FROM guacamole_user
+                    WHERE username LIKE #{termPattern,jdbcType=VARCHAR}
+                )
+
+                OR guacamole_connection_history.connection_id IN (
+                    SELECT connection_id
+                    FROM guacamole_connection
+                    WHERE connection_name LIKE #{termPattern,jdbcType=VARCHAR}
+                )
+
+                <if test="term.startDate != null and term.endDate != null">
+                    OR (
+                            (start_date BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                        AND (end_date   BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                    )
+                </if>
+
+            )
+        </foreach>
+
+        <!-- Bind sort property enum values for sake of readability -->
+        <bind name="CONNECTION_NAME" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@CONNECTION_NAME"/>
+        <bind name="USER_IDENTIFIER" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@USER_IDENTIFIER"/>
+        <bind name="START_DATE"      value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
+        <bind name="END_DATE"        value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@END_DATE"/>
+
+        <!-- Sort predicates -->
+        <foreach collection="sortPredicates" item="sortPredicate"
+                 open="ORDER BY " separator=", ">
+            <choose>
+                <when test="sortPredicate.property == CONNECTION_NAME">guacamole_connection.connection_name</when>
+                <when test="sortPredicate.property == USER_IDENTIFIER">guacamole_user.username</when>
+                <when test="sortPredicate.property == START_DATE">guacamole_connection_history.start_date</when>
+                <when test="sortPredicate.property == END_DATE">guacamole_connection_history.end_date</when>
+                <otherwise>1</otherwise>
+            </choose>
+            <if test="sortPredicate.descending">DESC</if>
+        </foreach>
+
+        LIMIT #{limit,jdbcType=INTEGER}
+
+    </select>
+
+    <!-- Search for specific connection records -->
+    <select id="searchReadable" resultMap="ConnectionRecordResultMap">
+
+        SELECT
+            guacamole_connection_history.connection_id,
+            guacamole_connection_history.user_id,
+            guacamole_user.username,
+            guacamole_connection_history.start_date,
+            guacamole_connection_history.end_date
+        FROM guacamole_connection_history
+        JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
+        JOIN guacamole_user       ON guacamole_connection_history.user_id       = guacamole_user.user_id
+
+        <!-- Restrict to readable connections -->
+        JOIN guacamole_connection_permission ON
+                guacamole_connection_history.connection_id = guacamole_connection_permission.connection_id
+            AND guacamole_connection_permission.user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_connection_permission.permission = 'READ'
+
+        <!-- Restrict to readable users -->
+        JOIN guacamole_user_permission ON
+                guacamole_connection_history.user_id = guacamole_user_permission.affected_user_id
+            AND guacamole_user_permission.user_id    = #{user.objectID,jdbcType=INTEGER}
+            AND guacamole_user_permission.permission = 'READ'
+
         <!-- Search terms -->
         <foreach collection="terms" item="term"
                  open="WHERE " separator=" AND ">
