@@ -72,7 +72,7 @@
 
     </insert>
 
-    <!-- Select all connection records from a given connection -->
+    <!-- Search for specific connection records -->
     <select id="search" resultMap="ConnectionRecordResultMap">
 
         SELECT
