@@ -88,19 +88,18 @@
         <!-- Search terms -->
         <foreach collection="terms" item="term"
                  open="WHERE " separator=" AND ">
-            <bind name="termPattern" value="'%' + term.term + '%'" />
             (
 
                 guacamole_connection_history.user_id IN (
                     SELECT user_id
                     FROM guacamole_user
-                    WHERE username LIKE #{termPattern,jdbcType=VARCHAR}
+                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                 )
 
                 OR guacamole_connection_history.connection_id IN (
                     SELECT connection_id
                     FROM guacamole_connection
-                    WHERE connection_name LIKE #{termPattern,jdbcType=VARCHAR}
+                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
@@ -164,19 +163,18 @@
         <!-- Search terms -->
         <foreach collection="terms" item="term"
                  open="WHERE " separator=" AND ">
-            <bind name="termPattern" value="'%' + term.term + '%'" />
             (
 
                 guacamole_connection_history.user_id IN (
                     SELECT user_id
                     FROM guacamole_user
-                    WHERE username LIKE #{termPattern,jdbcType=VARCHAR}
+                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                 )
 
                 OR guacamole_connection_history.connection_id IN (
                     SELECT connection_id
                     FROM guacamole_connection
-                    WHERE connection_name LIKE #{termPattern,jdbcType=VARCHAR}
+                    WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN connection_name) > 0
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
