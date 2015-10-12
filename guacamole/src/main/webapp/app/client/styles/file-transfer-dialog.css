@@ -28,14 +28,94 @@
     z-index: 20;
 
     font-size: 0.8em;
-    padding: 0.5em;
 
     width: 4in;
     max-width: 100%;
+    max-height: 3in;
 
 }
 
 #file-transfer-dialog .transfer-manager {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: column;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: vertical;
+
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: vertical;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: column;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+
+    max-width: inherit;
+    max-height: inherit;
+
     border: 1px solid rgba(0, 0, 0, 0.5);
     box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+
+}
+
+#file-transfer-dialog .transfer-manager .header {
+    -ms-flex: 0 0 auto;
+    -moz-box-flex: 0;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+
+#file-transfer-dialog .transfer-manager .transfer-manager-body {
+
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+
+    overflow: auto;
+
+}
+
+/*
+ * Shrink maximum height if viewport is too small for default 3in dialog.
+ */
+@media all and (max-height: 3in) {
+
+    #file-transfer-dialog {
+        max-height: 1.5in;
+    }
+
+}
+
+/*
+ * If viewport is too small for even the 1.5in dialog, fit all available space.
+ */
+@media all and (max-height: 1.5in) {
+
+    #file-transfer-dialog {
+        height: 100%;
+    }
+
+    #file-transfer-dialog .transfer-manager {
+        position: absolute;
+        left:   0.5em;
+        top:    0.5em;
+        right:  0.5em;
+        bottom: 0.5em;
+    }
+
 }
