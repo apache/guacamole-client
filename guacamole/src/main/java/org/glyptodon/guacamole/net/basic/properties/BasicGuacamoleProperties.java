@@ -24,6 +24,7 @@ package org.glyptodon.guacamole.net.basic.properties;
 
 import org.glyptodon.guacamole.properties.FileGuacamoleProperty;
 import org.glyptodon.guacamole.properties.IntegerGuacamoleProperty;
+import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Properties used by the default Guacamole web application.
@@ -70,6 +71,19 @@ public class BasicGuacamoleProperties {
 
         @Override
         public String getName() { return "api-session-timeout"; }
+
+    };
+
+    /**
+     * Comma-separated list of all allowed languages, where each language is
+     * represented by a language key, such as "en" or "en_US". If specified,
+     * only languages within this list will be listed as available by the REST
+     * service.
+     */
+    public static final StringSetProperty ALLOWED_LANGUAGES = new StringSetProperty() {
+
+        @Override
+        public String getName() { return "allowed-languages"; }
 
     };
 
