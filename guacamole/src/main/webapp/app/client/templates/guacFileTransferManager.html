@@ -27,15 +27,17 @@
         <button ng-click="clearCompletedTransfers()">{{'CLIENT.ACTION_CLEAR_COMPLETED_TRANSFERS' | translate}}</button>
     </div>
 
-    <!-- Sent/received files files -->
-    <div class="transfers">
-        <guac-file-transfer
-            transfer="upload"
-            ng-repeat="upload in client.uploads">
-        </guac-file-transfer><guac-file-transfer
-            transfer="download"
-            ng-repeat="download in client.downloads">
-        </guac-file-transfer>
+    <!-- Sent/received files -->
+    <div class="transfer-manager-body">
+        <div class="transfers">
+            <guac-file-transfer
+                transfer="upload"
+                ng-repeat="upload in client.uploads">
+            </guac-file-transfer><guac-file-transfer
+                transfer="download"
+                ng-repeat="download in client.downloads">
+            </guac-file-transfer>
+        </div>
     </div>
 
 </div>
