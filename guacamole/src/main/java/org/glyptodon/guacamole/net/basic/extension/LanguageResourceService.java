@@ -36,6 +36,9 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
+import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.environment.Environment;
+import org.glyptodon.guacamole.net.basic.properties.BasicGuacamoleProperties;
 import org.glyptodon.guacamole.net.basic.resource.ByteArrayResource;
 import org.glyptodon.guacamole.net.basic.resource.Resource;
 import org.glyptodon.guacamole.net.basic.resource.WebApplicationResource;
@@ -77,6 +80,13 @@ public class LanguageResourceService {
     private static final Pattern LANGUAGE_KEY_PATTERN = Pattern.compile(".*/([a-z]+(_[A-Z]+)?)\\.json");
 
     /**
+     * The set of all language keys which are explicitly listed as allowed
+     * within guacamole.properties, or null if all defined languages should be
+     * allowed.
+     */
+    private final Set<String> allowedLanguages;
+
+    /**
      * Map of all language resources by language key. Language keys are
      * language and country code pairs, separated by an underscore, like
      * "en_US". The country code and underscore SHOULD be omitted in the case
@@ -85,6 +95,35 @@ public class LanguageResourceService {
      * language.
      */
     private final Map<String, Resource> resources = new HashMap<String, Resource>();
+
+    /**
+     * Creates a new service for tracking and parsing available translations
+     * which reads its configuration from the given environment.
+     *
+     * @param environment
+     *     The environment from which the configuration properties of this
+     *     service should be read.
+     */
+    public LanguageResourceService(Environment environment) {
+
+        Set<String> parsedAllowedLanguages;
+
+        // Parse list of available languages from properties
+        try {
+            parsedAllowedLanguages = environment.getProperty(BasicGuacamoleProperties.ALLOWED_LANGUAGES);
+            logger.debug("Available languages will be restricted to: {}", parsedAllowedLanguages);
+        }
+
+        // Warn of failure to parse
+        catch (GuacamoleException e) {
+            parsedAllowedLanguages = null;
+            logger.error("Unable to parse list of allowed languages: {}", e.getMessage());
+            logger.debug("Error parsing list of allowed languages.", e);
+        }
+
+        this.allowedLanguages = parsedAllowedLanguages;
+
+    }
 
     /**
      * Derives a language key from the filename within the given path, if
@@ -185,6 +224,31 @@ public class LanguageResourceService {
     }
 
     /**
+     * Returns whether a language having the given key should be allowed to be
+     * loaded. If language availability restrictions are imposed through
+     * guacamole.properties, this may return false in some cases. By default,
+     * this function will always return true. Note that just because a language
+     * key is allowed to be loaded does not imply that the language key is
+     * valid.
+     *
+     * @param languageKey
+     *     The language key of the language to test.
+     *
+     * @return
+     *     true if the given language key should be allowed to be loaded, false
+     *     otherwise.
+     */
+    private boolean isLanguageAllowed(String languageKey) {
+
+        // If no list is provided, all languages are implicitly available
+        if (allowedLanguages == null)
+            return true;
+
+        return allowedLanguages.contains(languageKey);
+
+    }
+
+    /**
      * Adds or overlays the given language resource, which need not exist in
      * the ServletContext. If a language resource is already defined for the
      * given language key, the strings from the given resource will be overlaid
@@ -201,6 +265,12 @@ public class LanguageResourceService {
      *     "application/json".
      */
     public void addLanguageResource(String key, Resource resource) {
+
+        // Skip loading of language if not allowed
+        if (!isLanguageAllowed(key)) {
+            logger.debug("OMITTING language: \"{}\"", key);
+            return;
+        }
 
         // Merge language resources if already defined
         Resource existing = resources.get(key);

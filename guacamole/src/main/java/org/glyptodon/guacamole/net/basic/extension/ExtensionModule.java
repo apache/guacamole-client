@@ -100,7 +100,7 @@ public class ExtensionModule extends ServletModule {
     /**
      * Service for adding and retrieving language resources.
      */
-    private final LanguageResourceService languageResourceService = new LanguageResourceService();
+    private final LanguageResourceService languageResourceService;
     
     /**
      * Returns the classloader that should be used as the parent classloader
@@ -139,6 +139,7 @@ public class ExtensionModule extends ServletModule {
      */
     public ExtensionModule(Environment environment) {
         this.environment = environment;
+        this.languageResourceService = new LanguageResourceService(environment);
     }
 
     /**
