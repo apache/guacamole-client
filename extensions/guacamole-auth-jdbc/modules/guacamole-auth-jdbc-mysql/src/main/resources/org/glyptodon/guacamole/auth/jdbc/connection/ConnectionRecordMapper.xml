@@ -28,11 +28,12 @@
 
     <!-- Result mapper for system permissions -->
     <resultMap id="ConnectionRecordResultMap" type="org.glyptodon.guacamole.auth.jdbc.connection.ConnectionRecordModel">
-        <result column="connection_id" property="connectionIdentifier" jdbcType="INTEGER"/>
-        <result column="user_id"       property="userID"               jdbcType="INTEGER"/>
-        <result column="username"      property="username"             jdbcType="VARCHAR"/>
-        <result column="start_date"    property="startDate"            jdbcType="TIMESTAMP"/>
-        <result column="end_date"      property="endDate"              jdbcType="TIMESTAMP"/>
+        <result column="connection_id"   property="connectionIdentifier" jdbcType="INTEGER"/>
+        <result column="connection_name" property="connectionName"       jdbcType="VARCHAR"/>
+        <result column="user_id"         property="userID"               jdbcType="INTEGER"/>
+        <result column="username"        property="username"             jdbcType="VARCHAR"/>
+        <result column="start_date"      property="startDate"            jdbcType="TIMESTAMP"/>
+        <result column="end_date"        property="endDate"              jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <!-- Select all connection records from a given connection -->
@@ -40,6 +41,7 @@
 
         SELECT
             connection_id,
+            connection_name,
             guacamole_connection_history.user_id,
             username,
             start_date,
@@ -59,6 +61,7 @@
 
         INSERT INTO guacamole_connection_history (
             connection_id,
+            connection_name,
             user_id,
             start_date,
             end_date
@@ -77,6 +80,7 @@
 
         SELECT
             guacamole_connection_history.connection_id,
+            guacamole_connection.connection_name,
             guacamole_connection_history.user_id,
             guacamole_user.username,
             guacamole_connection_history.start_date,
@@ -140,6 +144,7 @@
 
         SELECT
             guacamole_connection_history.connection_id,
+            guacamole_connection.connection_name,
             guacamole_connection_history.user_id,
             guacamole_user.username,
             guacamole_connection_history.start_date,

@@ -38,6 +38,11 @@ public class APIConnectionRecord {
     private final String connectionIdentifier;
 
     /**
+     * The identifier of the connection associated with this record.
+     */
+    private final String connectionName;
+
+    /**
      * The date and time the connection began.
      */
     private final Date startDate;
@@ -72,11 +77,12 @@ public class APIConnectionRecord {
      */
     public APIConnectionRecord(ConnectionRecord record) {
         this.connectionIdentifier = record.getConnectionIdentifier();
-        this.startDate  = record.getStartDate();
-        this.endDate    = record.getEndDate();
-        this.remoteHost = record.getRemoteHost();
-        this.username   = record.getUsername();
-        this.active     = record.isActive();
+        this.connectionName       = record.getConnectionName();
+        this.startDate            = record.getStartDate();
+        this.endDate              = record.getEndDate();
+        this.remoteHost           = record.getRemoteHost();
+        this.username             = record.getUsername();
+        this.active               = record.isActive();
     }
 
     /**
@@ -88,6 +94,16 @@ public class APIConnectionRecord {
      */
     public String getConnectionIdentifier() {
         return connectionIdentifier;
+    }
+
+    /**
+     * Returns the name of the connection associated with this record.
+     *
+     * @return
+     *     The name of the connection associated with this record.
+     */
+    public String getConnectionName() {
+        return connectionName;
     }
 
     /**

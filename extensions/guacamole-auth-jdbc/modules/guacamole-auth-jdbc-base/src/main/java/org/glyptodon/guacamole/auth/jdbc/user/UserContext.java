@@ -42,7 +42,6 @@ import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
-import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
