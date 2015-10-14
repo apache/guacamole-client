@@ -215,7 +215,7 @@ public class ConnectionRecordSearchTerm {
             startCalendar.clear();
             startCalendar.set(
                 Integer.parseInt(year),
-                parseInt(month, 0),
+                parseInt(month, 1) - 1,
                 parseInt(day,   1)
             );
 

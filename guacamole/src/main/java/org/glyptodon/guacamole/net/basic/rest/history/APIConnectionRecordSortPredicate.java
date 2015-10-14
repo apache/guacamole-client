@@ -50,7 +50,7 @@ public class APIConnectionRecordSortPredicate {
          * The name (not identifier) of the connection associated with the
          * connection record.
          */
-        connection(ConnectionRecordSet.SortableProperty.CONNECTION_NAME),
+        connectionName(ConnectionRecordSet.SortableProperty.CONNECTION_NAME),
 
         /**
          * The username (identifier) of the user associated with the connection

@@ -49,6 +49,13 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         this.connectionIdentifier = template.connectionIdentifier;
 
         /**
+         * The name of the connection associated with this history entry.
+         *
+         * @type String
+         */
+        this.connectionName = template.connectionName;
+
+        /**
          * The time that usage began, in seconds since 1970-01-01 00:00:00 UTC.
          *
          * @type Number 
@@ -107,7 +114,7 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          * The name of the connection associated with the history entry (not
          * the connection identifier).
          */
-        CONNECTION_NAME : 'connection',
+        CONNECTION_NAME : 'connectionName',
 
         /**
          * The username of the user associated with the history entry (the user

@@ -40,19 +40,20 @@
     <select id="select" resultMap="ConnectionRecordResultMap">
 
         SELECT
-            connection_id,
-            connection_name,
-            guacamole_connection_history.user_id,
-            username,
-            start_date,
-            end_date
+            guacamole_connection.connection_id,
+            guacamole_connection.connection_name,
+            guacamole_user.user_id,
+            guacamole_user.username,
+            guacamole_connection_history.start_date,
+            guacamole_connection_history.end_date
         FROM guacamole_connection_history
+        JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
         JOIN guacamole_user ON guacamole_connection_history.user_id = guacamole_user.user_id
         WHERE
-            connection_id = #{identifier,jdbcType=VARCHAR}
+            guacamole_connection.connection_id = #{identifier,jdbcType=VARCHAR}
         ORDER BY
-            start_date DESC,
-            end_date DESC
+            guacamole_connection_history.start_date DESC,
+            guacamole_connection_history.end_date DESC
 
     </select>
 
@@ -61,7 +62,6 @@
 
         INSERT INTO guacamole_connection_history (
             connection_id,
-            connection_name,
             user_id,
             start_date,
             end_date
@@ -108,8 +108,8 @@
 
                 <if test="term.startDate != null and term.endDate != null">
                     OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
+                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
                     )
                 </if>
 
@@ -184,8 +184,8 @@
 
                 <if test="term.startDate != null and term.endDate != null">
                     OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=DATE} AND #{term.endDate,jdbcType=DATE})
+                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
+                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
                     )
                 </if>
 

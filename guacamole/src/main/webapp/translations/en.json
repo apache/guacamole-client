@@ -20,7 +20,9 @@
         "ACTION_NAVIGATE_BACK"      : "Back",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Save",
+        "ACTION_SEARCH"             : "Search",
         "ACTION_UPDATE_PASSWORD"    : "Update Password",
+        "ACTION_VIEW_HISTORY"       : "History",
 
         "DIALOG_HEADER_ERROR" : "Error",
 
@@ -473,6 +475,23 @@
 
     },
 
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "All connection history records are listed here. If you wish to filter the connection records, you can enter a query.",
+
+        "INFO_NO_HISTORY" : "No matching connection history",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
+        "TABLE_HEADER_SESSION_ENDDATE"         : "End Time",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Start Time",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Username"
+
+    },
+
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
@@ -561,10 +580,10 @@
 
         "SECTION_HEADER_SESSIONS" : "Active Sessions",
         
-        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
         
         "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill all selected sessions? The users using these sessions will be immediately disconnected."
 
@@ -578,7 +597,8 @@
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
     }
 
