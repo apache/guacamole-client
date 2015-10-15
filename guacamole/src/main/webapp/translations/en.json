@@ -485,9 +485,9 @@
 
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_CONNECTION_HISTORY" : "All connection history records are listed here. If you wish to filter the connection records, you can enter a query.",
+        "HELP_CONNECTION_HISTORY" : "History records for past connections are listed here and can be sorted by clicking the column headers. To search for specific records, enter a filter string and click \"Search\". Only records which match the provided filter string will be listed.",
 
-        "INFO_NO_HISTORY" : "No matching connection history",
+        "INFO_NO_HISTORY" : "No matching records",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
         "TABLE_HEADER_SESSION_ENDDATE"         : "End time",
