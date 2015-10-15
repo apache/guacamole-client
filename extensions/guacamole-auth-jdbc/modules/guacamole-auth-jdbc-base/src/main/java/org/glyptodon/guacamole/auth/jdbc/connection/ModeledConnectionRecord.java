@@ -52,6 +52,16 @@ public class ModeledConnectionRecord implements ConnectionRecord {
     }
 
     @Override
+    public String getConnectionIdentifier() {
+        return model.getConnectionIdentifier();
+    }
+
+    @Override
+    public String getConnectionName() {
+        return model.getConnectionName();
+    }
+
+    @Override
     public Date getStartDate() {
         return model.getStartDate();
     }

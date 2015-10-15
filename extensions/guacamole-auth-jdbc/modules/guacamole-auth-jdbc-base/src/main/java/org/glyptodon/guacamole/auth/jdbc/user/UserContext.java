@@ -32,6 +32,7 @@ import java.util.Collection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.auth.jdbc.base.RestrictedObject;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
+import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionRecordSet;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.glyptodon.guacamole.form.Form;
@@ -92,6 +93,12 @@ public class UserContext extends RestrictedObject
     @Inject
     private Provider<RootConnectionGroup> rootGroupProvider;
 
+    /**
+     * Provider for creating connection record sets.
+     */
+    @Inject
+    private Provider<ConnectionRecordSet> connectionRecordSetProvider;
+    
     @Override
     public void init(AuthenticatedUser currentUser) {
 
@@ -134,6 +141,14 @@ public class UserContext extends RestrictedObject
     public Directory<ActiveConnection> getActiveConnectionDirectory()
             throws GuacamoleException {
         return activeConnectionDirectory;
+    }
+
+    @Override
+    public ConnectionRecordSet getConnectionHistory()
+            throws GuacamoleException {
+        ConnectionRecordSet connectionRecordSet = connectionRecordSetProvider.get();
+        connectionRecordSet.init(getCurrentUser());
+        return connectionRecordSet;
     }
 
     @Override

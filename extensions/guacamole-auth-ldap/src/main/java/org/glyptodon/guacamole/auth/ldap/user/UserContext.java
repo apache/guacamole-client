@@ -35,10 +35,12 @@ import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.ConnectionGroup;
+import org.glyptodon.guacamole.net.auth.ConnectionRecordSet;
 import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionGroupDirectory;
+import org.glyptodon.guacamole.net.auth.simple.SimpleConnectionRecordSet;
 import org.glyptodon.guacamole.net.auth.simple.SimpleDirectory;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
@@ -192,6 +194,12 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
     public Directory<ActiveConnection> getActiveConnectionDirectory()
             throws GuacamoleException {
         return new SimpleDirectory<ActiveConnection>();
+    }
+
+    @Override
+    public ConnectionRecordSet getConnectionHistory()
+            throws GuacamoleException {
+        return new SimpleConnectionRecordSet();
     }
 
     @Override

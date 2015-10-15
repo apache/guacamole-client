@@ -20,17 +20,27 @@
  * THE SOFTWARE.
  */
 
-package org.glyptodon.guacamole.net.basic.rest.connection;
+package org.glyptodon.guacamole.net.basic.rest.history;
 
 import java.util.Date;
 import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 
 /**
  * A connection record which may be exposed through the REST endpoints.
- * 
+ *
  * @author Michael Jumper
  */
 public class APIConnectionRecord {
+
+    /**
+     * The identifier of the connection associated with this record.
+     */
+    private final String connectionIdentifier;
+
+    /**
+     * The identifier of the connection associated with this record.
+     */
+    private final String connectionName;
 
     /**
      * The date and time the connection began.
@@ -47,7 +57,7 @@ public class APIConnectionRecord {
      * The host from which the connection originated, if known.
      */
     private final String remoteHost;
-    
+
     /**
      * The name of the user who used or is using the connection.
      */
@@ -66,11 +76,34 @@ public class APIConnectionRecord {
      *     The record to copy data from.
      */
     public APIConnectionRecord(ConnectionRecord record) {
-        this.startDate  = record.getStartDate();
-        this.endDate    = record.getEndDate();
-        this.remoteHost = record.getRemoteHost();
-        this.username   = record.getUsername();
-        this.active     = record.isActive();
+        this.connectionIdentifier = record.getConnectionIdentifier();
+        this.connectionName       = record.getConnectionName();
+        this.startDate            = record.getStartDate();
+        this.endDate              = record.getEndDate();
+        this.remoteHost           = record.getRemoteHost();
+        this.username             = record.getUsername();
+        this.active               = record.isActive();
+    }
+
+    /**
+     * Returns the identifier of the connection associated with this
+     * record.
+     *
+     * @return
+     *     The identifier of the connection associated with this record.
+     */
+    public String getConnectionIdentifier() {
+        return connectionIdentifier;
+    }
+
+    /**
+     * Returns the name of the connection associated with this record.
+     *
+     * @return
+     *     The name of the connection associated with this record.
+     */
+    public String getConnectionName() {
+        return connectionName;
     }
 
     /**
@@ -126,5 +159,5 @@ public class APIConnectionRecord {
     public boolean isActive() {
         return active;
     }
-    
+
 }

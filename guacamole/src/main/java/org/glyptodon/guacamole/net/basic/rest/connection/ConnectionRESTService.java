@@ -51,6 +51,7 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.net.basic.rest.history.APIConnectionRecord;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

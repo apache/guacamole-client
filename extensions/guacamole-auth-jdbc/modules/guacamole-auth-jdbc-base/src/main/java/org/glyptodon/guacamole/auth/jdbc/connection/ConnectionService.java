@@ -344,6 +344,43 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
     }
 
     /**
+     * Returns a connection records object which is backed by the given model.
+     *
+     * @param model
+     *     The model object to use to back the returned connection record
+     *     object.
+     *
+     * @return
+     *     A connection record object which is backed by the given model.
+     */
+    protected ConnectionRecord getObjectInstance(ConnectionRecordModel model) {
+        return new ModeledConnectionRecord(model);
+    }
+
+    /**
+     * Returns a list of connection records objects which are backed by the
+     * models in the given list.
+     *
+     * @param models
+     *     The model objects to use to back the connection record objects
+     *     within the returned list.
+     *
+     * @return
+     *     A list of connection record objects which are backed by the models
+     *     in the given list.
+     */
+    protected List<ConnectionRecord> getObjectInstances(List<ConnectionRecordModel> models) {
+
+        // Create new list of records by manually converting each model
+        List<ConnectionRecord> objects = new ArrayList<ConnectionRecord>(models.size());
+        for (ConnectionRecordModel model : models)
+            objects.add(getObjectInstance(model));
+
+        return objects;
+ 
+    }
+
+    /**
      * Retrieves the connection history of the given connection, including any
      * active connections.
      *
@@ -364,7 +401,7 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
             ModeledConnection connection) throws GuacamoleException {
 
         String identifier = connection.getIdentifier();
-        
+
         // Retrieve history only if READ permission is granted
         if (hasObjectPermission(user, identifier, ObjectPermission.Type.READ)) {
 
@@ -377,18 +414,66 @@ public class ConnectionService extends ModeledGroupedDirectoryObjectService<Mode
 
             // Add past connections from model objects
             for (ConnectionRecordModel model : models)
-                records.add(new ModeledConnectionRecord(model));
+                records.add(getObjectInstance(model));
 
             // Return converted history list
             return records;
-            
+
         }
-        
+
         // The user does not have permission to read the history
         throw new GuacamoleSecurityException("Permission denied.");
 
     }
-    
+
+    /**
+     * Retrieves the connection history records matching the given criteria.
+     * Retrieves up to <code>limit</code> connection history records matching
+     * the given terms and sorted by the given predicates. Only history records
+     * associated with data that the given user can read are returned.
+     *
+     * @param user
+     *     The user retrieving the connection history.
+     *
+     * @param requiredContents
+     *     The search terms that must be contained somewhere within each of the
+     *     returned records.
+     *
+     * @param sortPredicates
+     *     A list of predicates to sort the returned records by, in order of
+     *     priority.
+     *
+     * @param limit
+     *     The maximum number of records that should be returned.
+     *
+     * @return
+     *     The connection history of the given connection, including any
+     *     active connections.
+     *
+     * @throws GuacamoleException
+     *     If permission to read the connection history is denied.
+     */
+    public List<ConnectionRecord> retrieveHistory(AuthenticatedUser user,
+            Collection<ConnectionRecordSearchTerm> requiredContents,
+            List<ConnectionRecordSortPredicate> sortPredicates, int limit)
+            throws GuacamoleException {
+
+        List<ConnectionRecordModel> searchResults;
+
+        // Bypass permission checks if the user is a system admin
+        if (user.getUser().isAdministrator())
+            searchResults = connectionRecordMapper.search(requiredContents,
+                    sortPredicates, limit);
+
+        // Otherwise only return explicitly readable history records
+        else
+            searchResults = connectionRecordMapper.searchReadable(user.getUser().getModel(),
+                    requiredContents, sortPredicates, limit);
+
+        return getObjectInstances(searchResults);
+
+    }
+
     /**
      * Connects to the given connection as the given user, using the given
      * client information. If the user does not have permission to read the

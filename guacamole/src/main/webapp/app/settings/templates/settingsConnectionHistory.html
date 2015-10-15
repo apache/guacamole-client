@@ -1,0 +1,74 @@
+<div class="settings section connectionHistory">
+    <!--
+    Copyright 2015 Glyptodon LLC.
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+    -->
+
+    <!-- Connection history -->
+    <p>{{'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | translate}}</p>
+
+    <!-- Search controls -->
+    <form class="filter" ng-submit="search()">
+        <input class="search-string" type="text" placeholder="{{'SETTINGS_CONNECTION_HISTORY.FIELD_PLACEHOLDER_FILTER' | translate}}" ng-model="searchString" />
+        <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | translate}}" />
+    </form>
+
+    <!-- Search results -->
+    <div class="results" ng-class="{loading: !isLoaded()}">
+
+        <!-- List of matching history records -->
+        <table class="sorted history-list">
+            <thead>
+                <tr>
+                    <th guac-sort-order="order" guac-sort-property="'username'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'startDate'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'endDate'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_ENDDATE' | translate}}
+                    </th>
+                    <th guac-sort-order="order" guac-sort-property="'connectionName'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="historyRecord in historyRecordPage" class="history">
+                    <td>{{historyRecord.username}}</td>
+                    <td>{{historyRecord.startDate | date : dateFormat}}</td>
+                    <td>{{historyRecord.endDate | date : dateFormat}}</td>
+                    <td>{{historyRecord.connectionName}}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Text displayed if no history exists -->
+        <p class="placeholder" ng-hide="historyRecordPage.length">
+            {{'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | translate}}
+        </p>
+
+        <!-- Pager for history list -->
+        <guac-pager page="historyRecordPage" page-size="25"
+                    items="historyRecords | orderBy : order.predicate"></guac-pager>
+    </div>
+
+</div>

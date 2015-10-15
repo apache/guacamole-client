@@ -38,6 +38,11 @@ public class ConnectionRecordModel {
     private String connectionIdentifier;
 
     /**
+     * The name of the connection associated with this connection record.
+     */
+    private String connectionName;
+
+    /**
      * The database ID of the user associated with this connection record.
      */
     private Integer userID;
@@ -80,6 +85,32 @@ public class ConnectionRecordModel {
      */
     public void setConnectionIdentifier(String connectionIdentifier) {
         this.connectionIdentifier = connectionIdentifier;
+    }
+
+
+    /**
+     * Returns the name of the connection associated with this connection
+     * record.
+     *
+     * @return
+     *     The name of the connection associated with this connection
+     *     record.
+     */
+    public String getConnectionName() {
+        return connectionName;
+    }
+
+
+    /**
+     * Sets the name of the connection associated with this connection
+     * record.
+     *
+     * @param connectionName
+     *     The name of the connection to associate with this connection
+     *     record.
+     */
+    public void setConnectionName(String connectionName) {
+        this.connectionName = connectionName;
     }
 
     /**

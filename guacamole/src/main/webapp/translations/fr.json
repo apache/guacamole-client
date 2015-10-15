@@ -30,6 +30,8 @@
         "FIELD_HEADER_PASSWORD"       : "Mot de passe:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Répéter mot de passe:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "Filtre",
+
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Actuellement utilisé par {USERS} {USERS, plural, one{utilisateur} other{utilisateurs}}.",
@@ -456,6 +458,12 @@
 
     },
 
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
     "SETTINGS_PREFERENCES" : {
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
@@ -518,7 +526,7 @@
         "DIALOG_HEADER_CONFIRM_DELETE" : "Fermer Sessions",
         "DIALOG_HEADER_ERROR"          : "Erreur",
         
-        "FIELD_PLACEHOLDER_FILTER" : "Filtre",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 

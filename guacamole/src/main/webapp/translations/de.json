@@ -30,6 +30,8 @@
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Wiederhole Passwort:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} Benutzer.",
@@ -456,6 +458,12 @@
 
     },
 
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
     "SETTINGS_PREFERENCES" : {
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
@@ -518,7 +526,7 @@
         "DIALOG_HEADER_CONFIRM_DELETE" : "Beende Sitzung",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
-        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
