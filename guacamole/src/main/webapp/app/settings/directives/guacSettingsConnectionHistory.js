@@ -81,9 +81,9 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
              * @type SortOrder
              */
             $scope.order = new SortOrder([
+                '-startDate',
+                '-endDate',
                 'username',
-                'startDate',
-                'endDate',
                 'connectionName'
             ]);
 
