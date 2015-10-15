@@ -37,7 +37,8 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
         controller: ['$scope', '$injector', function settingsConnectionHistoryController($scope, $injector) {
                 
             // Get required types
-            var SortOrder = $injector.get('SortOrder');
+            var FilterToken = $injector.get('FilterToken');
+            var SortOrder   = $injector.get('SortOrder');
 
             // Get required services
             var $routeParams   = $injector.get('$routeParams');
@@ -118,10 +119,37 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 // Clear current results
                 $scope.historyRecords = null;
 
+                // Tokenize search string
+                var tokens = FilterToken.tokenize($scope.searchString);
+
+                // Transform tokens into list of required string contents
+                var requiredContents = [];
+                angular.forEach(tokens, function addRequiredContents(token) {
+
+                    // Transform depending on token type
+                    switch (token.type) {
+
+                        // For string literals, use parsed token value
+                        case 'LITERAL':
+                            requiredContents.push(token.value);
+
+                        // Ignore whitespace
+                        case 'WHITESPACE':
+                            break;
+
+                        // For all other token types, use the relevant portion
+                        // of the original search string
+                        default:
+                            requiredContents.push(token.consumed);
+
+                    }
+
+                });
+
                 // Fetch history records
                 historyService.getConnectionHistory(
-                    $scope.dataSource, 
-                    $scope.searchString.split(/\s+/),
+                    $scope.dataSource,
+                    requiredContents,
                     $scope.order.predicate
                 )
                 .success(function historyRetrieved(historyRecords) {
