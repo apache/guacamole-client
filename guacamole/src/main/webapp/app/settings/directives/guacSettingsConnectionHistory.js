@@ -53,9 +53,10 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
             $scope.dataSource = $routeParams.dataSource;
 
             /**
-             * The identifier of the currently-selected data source.
+             * All matching connection history records, or null if these
+             * records have not yet been retrieved.
              *
-             * @type String
+             * @type ConnectionHistoryEntry[]
              */
             $scope.historyRecords = null;
 
