@@ -22,12 +22,17 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.QueryParam;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
@@ -45,14 +50,112 @@ import org.slf4j.LoggerFactory;
  */
 public class RESTExceptionWrapper implements MethodInterceptor {
 
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(RESTExceptionWrapper.class);
+
+    /**
+     * Determines whether the given parameter is associated with the HTTP
+     * request parameter of the given name. For a parameter to be associated
+     * with an HTTP request parameter, it must be annotated with either the
+     * <code>@QueryParam</code> or <code>@FormParam</code> annotations.
+     *
+     * @param parameter
+     *     The Java parameter to check.
+     *
+     * @param name
+     *     The name of the HTTP request parameter.
+     *
+     * @return
+     *     true if the given parameter is associated with the HTTP request
+     *     parameter having the given name, false otherwise.
+     */
+    private boolean isRequestParameter(Parameter parameter, String name) {
+
+        // Check if parameter is associated with the HTTP query string
+        QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
+        if (queryParam != null && name.equals(queryParam.value()))
+            return true;
+
+        // Failing that, check whether the parameter is associated with the
+        // HTTP request body
+        FormParam formParam = parameter.getAnnotation(FormParam.class);
+        return formParam != null && name.equals(formParam.value());
+
+    }
+
+    /**
+     * Returns the authentication token that was passed in the given method
+     * invocation. If the given method invocation is not associated with an
+     * HTTP request (it lacks the appropriate JAX-RS annotations) or there is
+     * no authentication token, null is returned.
+     *
+     * @param invocation
+     *     The method invocation whose corresponding authentication token
+     *     should be determined.
+     *
+     * @return
+     *     The authentication token passed in the given method invocation, or
+     *     null if there is no such token.
+     */
+    private String getAuthenticationToken(MethodInvocation invocation) {
+
+        Method method = invocation.getMethod();
+
+        // Iterate through all parameters, looking for the authentication token
+        Parameter[] parameters = method.getParameters();
+        for (int i = 0; i < parameters.length; i++) {
+
+            // Get current parameter
+            Parameter parameter = parameters[i];
+
+            // Only inspect String parameters
+            if (parameter.getType() != String.class)
+                continue;
+
+            // Parameter must be declared as a REST service parameter
+            if (!isRequestParameter(parameter, "token"))
+                continue;
+
+            // The token parameter has been found - return its value
+            Object[] args = invocation.getArguments();
+            return (String) args[i];
+
+        }
+
+        // No token parameter is defined
+        return null;
+
+    }
+
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
 
-        // Get the logger for the intercepted class
-        Logger logger = LoggerFactory.getLogger(invocation.getMethod().getDeclaringClass());
-        
         try {
-            return invocation.proceed();
+
+            // Invoke wrapped method
+            try {
+                return invocation.proceed();
+            }
+
+            // Ensure any associated session is invalidated if unauthorized
+            catch (GuacamoleUnauthorizedException e) {
+
+                // Pull authentication token from request
+                String token = getAuthenticationToken(invocation);
+
+                // If there is an associated auth token, invalidate it
+                if (token != null) {
+                    logger.debug("Implicitly invalidating token \"{}\" due to GuacamoleUnauthorizedException.", token);
+                    // STUB - Does not actually invalidate anything at the moment
+                }
+
+                // Continue with exception processing
+                throw e;
+
+            }
+
         }
 
         // Additional credentials are needed
@@ -138,7 +241,9 @@ public class RESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Unexpected server error.";
 
+            // Ensure internal errors are logged at the debug level
             logger.debug("Unexpected exception in REST endpoint.", e);
+
             throw new APIException(
                 APIError.Type.INTERNAL_ERROR,
                 message
