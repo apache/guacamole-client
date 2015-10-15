@@ -39,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.DatatypeConverter;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
@@ -49,10 +50,7 @@ import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.glyptodon.guacamole.net.basic.rest.APIRequest;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.APIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -464,7 +462,6 @@ public class TokenRESTService {
      *     If an error prevents successful authentication.
      */
     @POST
-    @AuthProviderRESTExposure
     public APIAuthenticationResult createToken(@FormParam("username") String username,
             @FormParam("password") String password,
             @FormParam("token") String token,
@@ -523,16 +520,20 @@ public class TokenRESTService {
      * Invalidates a specific auth token, effectively logging out the associated
      * user.
      * 
-     * @param authToken The token being invalidated.
+     * @param authToken
+     *     The token being invalidated.
+     *
+     * @throws GuacamoleException
+     *     If the specified token does not exist.
      */
     @DELETE
     @Path("/{token}")
-    @AuthProviderRESTExposure
-    public void invalidateToken(@PathParam("token") String authToken) {
+    public void invalidateToken(@PathParam("token") String authToken)
+            throws GuacamoleException {
         
         GuacamoleSession session = tokenSessionMap.remove(authToken);
         if (session == null)
-            throw new APIException(APIError.Type.NOT_FOUND, "No such token.");
+            throw new GuacamoleResourceNotFoundException("No such token.");
 
         session.invalidate();
 

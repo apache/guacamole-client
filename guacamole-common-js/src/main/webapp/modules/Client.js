@@ -78,12 +78,12 @@ Guacamole.Client = function(tunnel) {
     var layers = {};
     
     /**
-     * All audio channels currentl in use by the client. Initially, this will
-     * be empty, but channels may be allocated by the server upon request.
+     * All audio players currently in use by the client. Initially, this will
+     * be empty, but audio players may be allocated by the server upon request.
      *
-     * @type Object.<Number, Guacamole.AudioChannel>
+     * @type Object.<Number, Guacamole.AudioPlayer>
      */
-    var audioChannels = {};
+    var audioPlayers = {};
 
     // No initial parsers
     var parsers = [];
@@ -441,6 +441,25 @@ Guacamole.Client = function(tunnel) {
     this.onerror = null;
 
     /**
+     * Fired when a audio stream is created. The stream provided to this event
+     * handler will contain its own event handlers for received data.
+     *
+     * @event
+     * @param {Guacamole.InputStream} stream
+     *     The stream that will receive audio data from the server.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the audio data which will be received.
+     *
+     * @return {Guacamole.AudioPlayer}
+     *     An object which implements the Guacamole.AudioPlayer interface and
+     *     has been initialied to play the data in the provided stream, or null
+     *     if the built-in audio players of the Guacamole client should be
+     *     used.
+     */
+    this.onaudio = null;
+
+    /**
      * Fired when the clipboard of the remote client is changing.
      * 
      * @event
@@ -498,27 +517,6 @@ Guacamole.Client = function(tunnel) {
      *                           instruction.
      */
     this.onsync = null;
-
-    /**
-     * Returns the audio channel having the given index, creating a new channel
-     * if necessary.
-     *
-     * @param {Number} index
-     *     The index of the audio channel to retrieve.
-     *
-     * @returns {Guacamole.AudioChannel}
-     *     The audio channel having the given index.
-     */
-    var getAudioChannel = function getAudioChannel(index) {
-
-        // Get audio channel, creating it first if necessary
-        var audio_channel = audioChannels[index];
-        if (!audio_channel)
-            audio_channel = audioChannels[index] = new Guacamole.AudioChannel();
-
-        return audio_channel;
-
-    };
 
     /**
      * Returns the layer with the given index, creating it if necessary.
@@ -626,24 +624,30 @@ Guacamole.Client = function(tunnel) {
         "audio": function(parameters) {
 
             var stream_index = parseInt(parameters[0]);
-            var channel = getAudioChannel(parseInt(parameters[1]));
-            var mimetype = parameters[2];
-            var duration = parseFloat(parameters[3]);
+            var mimetype = parameters[1];
 
             // Create stream 
             var stream = streams[stream_index] =
                     new Guacamole.InputStream(guac_client, stream_index);
 
-            // Assemble entire stream as a blob
-            var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+            // Get player instance via callback
+            var audioPlayer = null;
+            if (guac_client.onaudio)
+                audioPlayer = guac_client.onaudio(stream, mimetype);
 
-            // Play blob as audio
-            blob_reader.onend = function() {
-                channel.play(mimetype, duration, blob_reader.getBlob());
-            };
+            // If unsuccessful, try to use a default implementation
+            if (!audioPlayer)
+                audioPlayer = Guacamole.AudioPlayer.getInstance(stream, mimetype);
 
-            // Send success response
-            guac_client.sendAck(stream_index, "OK", 0x0000);
+            // If we have successfully retrieved an audio player, send success response
+            if (audioPlayer) {
+                audioPlayers[stream_index] = audioPlayer;
+                guac_client.sendAck(stream_index, "OK", 0x0000);
+            }
+
+            // Otherwise, mimetype must be unsupported
+            else
+                guac_client.sendAck(stream_index, "BAD TYPE", 0x030F);
 
         },
 
@@ -1113,11 +1117,11 @@ Guacamole.Client = function(tunnel) {
             // Flush display, send sync when done
             display.flush(function displaySyncComplete() {
 
-                // Synchronize all audio channels
-                for (var index in audioChannels) {
-                    var audioChannel = audioChannels[index];
-                    if (audioChannel)
-                        audioChannel.sync();
+                // Synchronize all audio players
+                for (var index in audioPlayers) {
+                    var audioPlayer = audioPlayers[index];
+                    if (audioPlayer)
+                        audioPlayer.sync();
                 }
 
                 // Send sync response to server

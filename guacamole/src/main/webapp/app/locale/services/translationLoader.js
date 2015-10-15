@@ -29,9 +29,10 @@
 angular.module('locale').factory('translationLoader', ['$injector', function translationLoader($injector) {
 
     // Required services
-    var $http        = $injector.get('$http');
-    var $q           = $injector.get('$q');
-    var cacheService = $injector.get('cacheService');
+    var $http           = $injector.get('$http');
+    var $q              = $injector.get('$q');
+    var cacheService    = $injector.get('cacheService');
+    var languageService = $injector.get('languageService');
 
     /**
      * Satisfies a translation request for the given key by searching for the
@@ -62,22 +63,48 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
             return;
         }
 
-        // Attempt to retrieve language
-        $http({
-            cache   : cacheService.languages,
-            method  : 'GET',
-            url     : 'translations/' + encodeURIComponent(currentKey) + '.json'
-        })
-
-        // Resolve promise if translation retrieved successfully
-        .success(function translationFileRetrieved(translation) {
-            deferred.resolve(translation);
-        })
-
-        // Retry with remaining languages if translation file could not be retrieved
-        .error(function translationFileUnretrievable() {
+        /**
+         * Continues trying possible translation files until no possibilities
+         * exist.
+         *
+         * @private
+         */
+        var tryNextTranslation = function tryNextTranslation() {
             satisfyTranslation(deferred, requestedKey, remainingKeys);
-        });
+        };
+
+        // Retrieve list of supported languages
+        languageService.getLanguages()
+
+        // Attempt to retrieve translation if language is supported
+        .success(function retrievedLanguages(languages) {
+
+            // Skip retrieval if language is not supported
+            if (!(currentKey in languages)) {
+                tryNextTranslation();
+                return;
+            }
+
+            // Attempt to retrieve language
+            $http({
+                cache   : cacheService.languages,
+                method  : 'GET',
+                url     : 'translations/' + encodeURIComponent(currentKey) + '.json'
+            })
+
+            // Resolve promise if translation retrieved successfully
+            .success(function translationFileRetrieved(translation) {
+                deferred.resolve(translation);
+            })
+
+            // Retry with remaining languages if translation file could not be
+            // retrieved
+            .error(tryNextTranslation);
+
+        })
+
+        // Retry with remaining languages if translation does not exist
+        .error(tryNextTranslation);
 
     };
 

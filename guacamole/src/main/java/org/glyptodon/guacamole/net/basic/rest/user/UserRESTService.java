@@ -39,8 +39,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
+import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.Directory;
@@ -53,12 +55,9 @@ import org.glyptodon.guacamole.net.auth.permission.Permission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.APIError;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.add;
 import static org.glyptodon.guacamole.net.basic.rest.APIPatch.Operation.remove;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
-import org.glyptodon.guacamole.net.basic.rest.APIException;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -150,7 +149,6 @@ public class UserRESTService {
      *     If an error is encountered while retrieving users.
      */
     @GET
-    @AuthProviderRESTExposure
     public List<APIUser> getUsers(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @QueryParam("permission") List<ObjectPermission.Type> permissions)
@@ -205,7 +203,6 @@ public class UserRESTService {
      */
     @GET
     @Path("/{username}")
-    @AuthProviderRESTExposure
     public APIUser getUser(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username)
@@ -241,7 +238,6 @@ public class UserRESTService {
      */
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    @AuthProviderRESTExposure
     public String createUser(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier, APIUser user)
             throws GuacamoleException {
@@ -285,7 +281,6 @@ public class UserRESTService {
      */
     @PUT
     @Path("/{username}")
-    @AuthProviderRESTExposure
     public void updateUser(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username, APIUser user) 
@@ -299,14 +294,11 @@ public class UserRESTService {
 
         // Validate data and path are sane
         if (!user.getUsername().equals(username))
-            throw new APIException(APIError.Type.BAD_REQUEST,
-                    "Username in path does not match username provided JSON data.");
+            throw new GuacamoleClientException("Username in path does not match username provided JSON data.");
         
         // A user may not use this endpoint to modify himself
-        if (userContext.self().getIdentifier().equals(user.getUsername())) {
-            throw new APIException(APIError.Type.PERMISSION_DENIED,
-                    "Permission denied.");
-        }
+        if (userContext.self().getIdentifier().equals(user.getUsername()))
+            throw new GuacamoleSecurityException("Permission denied.");
 
         // Get the user
         User existingUser = retrievalService.retrieveUser(userContext, username);
@@ -349,7 +341,6 @@ public class UserRESTService {
      */
     @PUT
     @Path("/{username}/password")
-    @AuthProviderRESTExposure
     public void updatePassword(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username,
@@ -369,18 +360,15 @@ public class UserRESTService {
         // Verify that the old password was correct
         try {
             AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
-            if (authProvider.authenticateUser(credentials) == null) {
-                throw new APIException(APIError.Type.PERMISSION_DENIED,
-                        "Permission denied.");
-            }
+            if (authProvider.authenticateUser(credentials) == null)
+                throw new GuacamoleSecurityException("Permission denied.");
         }
 
         // Pass through any credentials exceptions as simple permission denied
         catch (GuacamoleCredentialsException e) {
-            throw new APIException(APIError.Type.PERMISSION_DENIED,
-                    "Permission denied.");
+            throw new GuacamoleSecurityException("Permission denied.");
         }
-        
+
         // Get the user directory
         Directory<User> userDirectory = userContext.getUserDirectory();
         
@@ -414,7 +402,6 @@ public class UserRESTService {
      */
     @DELETE
     @Path("/{username}")
-    @AuthProviderRESTExposure
     public void deleteUser(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username) 
@@ -458,7 +445,6 @@ public class UserRESTService {
      */
     @GET
     @Path("/{username}/permissions")
-    @AuthProviderRESTExposure
     public APIPermissionSet getPermissions(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username) 
@@ -499,11 +485,14 @@ public class UserRESTService {
      *
      * @param permission
      *     The permission being added or removed from the set.
+     *
+     * @throws GuacamoleException
+     *     If the requested patch operation is not supported.
      */
     private <PermissionType extends Permission> void updatePermissionSet(
             APIPatch.Operation operation,
             PermissionSetPatch<PermissionType> permissionSetPatch,
-            PermissionType permission) {
+            PermissionType permission) throws GuacamoleException {
 
         // Add or remove permission based on operation
         switch (operation) {
@@ -520,8 +509,7 @@ public class UserRESTService {
 
             // Unsupported patch operation
             default:
-                throw new APIException(APIError.Type.BAD_REQUEST,
-                        "Unsupported patch operation: \"" + operation + "\"");
+                throw new GuacamoleClientException("Unsupported patch operation: \"" + operation + "\"");
 
         }
 
@@ -553,7 +541,6 @@ public class UserRESTService {
      */
     @PATCH
     @Path("/{username}/permissions")
-    @AuthProviderRESTExposure
     public void patchPermissions(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("username") String username,
@@ -645,7 +632,7 @@ public class UserRESTService {
 
             // Otherwise, the path is not supported
             else
-                throw new APIException(APIError.Type.BAD_REQUEST, "Unsupported patch path: \"" + path + "\"");
+                throw new GuacamoleClientException("Unsupported patch path: \"" + path + "\"");
 
         } // end for each patch operation
         
