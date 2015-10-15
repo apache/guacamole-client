@@ -38,7 +38,6 @@ import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.form.Form;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.glyptodon.guacamole.protocols.ProtocolInfo;
@@ -86,7 +85,6 @@ public class SchemaRESTService {
      */
     @GET
     @Path("/users/attributes")
-    @AuthProviderRESTExposure
     public Collection<Form> getUserAttributes(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier)
             throws GuacamoleException {
@@ -118,7 +116,6 @@ public class SchemaRESTService {
      */
     @GET
     @Path("/connections/attributes")
-    @AuthProviderRESTExposure
     public Collection<Form> getConnectionAttributes(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier)
             throws GuacamoleException {
@@ -151,7 +148,6 @@ public class SchemaRESTService {
      */
     @GET
     @Path("/connectionGroups/attributes")
-    @AuthProviderRESTExposure
     public Collection<Form> getConnectionGroupAttributes(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier)
             throws GuacamoleException {
@@ -186,7 +182,6 @@ public class SchemaRESTService {
      */
     @GET
     @Path("/protocols")
-    @AuthProviderRESTExposure
     public Map<String, ProtocolInfo> getProtocols(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier)
             throws GuacamoleException {

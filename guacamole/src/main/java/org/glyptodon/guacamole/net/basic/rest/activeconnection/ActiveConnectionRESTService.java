@@ -47,7 +47,6 @@ import org.glyptodon.guacamole.net.auth.permission.SystemPermission;
 import org.glyptodon.guacamole.net.auth.permission.SystemPermissionSet;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.APIPatch;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.PATCH;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
@@ -107,7 +106,6 @@ public class ActiveConnectionRESTService {
      *     If an error is encountered while retrieving active connections.
      */
     @GET
-    @AuthProviderRESTExposure
     public Map<String, APIActiveConnection> getActiveConnections(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @QueryParam("permission") List<ObjectPermission.Type> permissions)
@@ -166,7 +164,6 @@ public class ActiveConnectionRESTService {
      *     If an error occurs while deleting the active connections.
      */
     @PATCH
-    @AuthProviderRESTExposure
     public void patchTunnels(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             List<APIPatch<String>> patches) throws GuacamoleException {

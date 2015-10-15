@@ -45,11 +45,11 @@ public class RESTServletModule extends ServletModule {
     @Override
     protected void configureServlets() {
 
-        // Bind @AuthProviderRESTExposure annotation
+        // Automatically translate GuacamoleExceptions for REST methods
         bindInterceptor(
             Matchers.any(),
-            Matchers.annotatedWith(AuthProviderRESTExposure.class),
-            new AuthProviderRESTExceptionWrapper()
+            new RESTMethodMatcher(),
+            new RESTExceptionWrapper()
         );
 
         // Bind convenience services used by the REST API

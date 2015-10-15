@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -34,13 +34,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A method interceptor to wrap some custom exception handling around methods
- * that expose AuthenticationProvider functionality through the REST interface.
- * Translates various types of GuacamoleExceptions into appropriate HTTP responses.
- * 
+ * A method interceptor which wraps custom exception handling around methods
+ * which can throw GuacamoleExceptions and which are exposed through the REST
+ * interface. The various types of GuacamoleExceptions are automatically
+ * translated into appropriate HTTP responses, including JSON describing the
+ * error that occurred.
+ *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class AuthProviderRESTExceptionWrapper implements MethodInterceptor {
+public class RESTExceptionWrapper implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
