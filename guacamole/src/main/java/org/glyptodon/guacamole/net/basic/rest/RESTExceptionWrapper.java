@@ -22,8 +22,8 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.QueryParam;
 import org.aopalliance.intercept.MethodInterceptor;
@@ -56,32 +56,39 @@ public class RESTExceptionWrapper implements MethodInterceptor {
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionWrapper.class);
 
     /**
-     * Determines whether the given parameter is associated with the HTTP
+     * Determines whether the given set of annotations describes an HTTP
      * request parameter of the given name. For a parameter to be associated
      * with an HTTP request parameter, it must be annotated with either the
      * <code>@QueryParam</code> or <code>@FormParam</code> annotations.
      *
-     * @param parameter
-     *     The Java parameter to check.
+     * @param annotations
+     *     The annotations associated with the Java parameter being checked.
      *
      * @param name
      *     The name of the HTTP request parameter.
      *
      * @return
-     *     true if the given parameter is associated with the HTTP request
+     *     true if the given set of annotations describes an HTTP request
      *     parameter having the given name, false otherwise.
      */
-    private boolean isRequestParameter(Parameter parameter, String name) {
+    private boolean isRequestParameter(Annotation[] annotations, String name) {
 
-        // Check if parameter is associated with the HTTP query string
-        QueryParam queryParam = parameter.getAnnotation(QueryParam.class);
-        if (queryParam != null && name.equals(queryParam.value()))
-            return true;
+        // Search annotations for associated HTTP parameters
+        for (Annotation annotation : annotations) {
 
-        // Failing that, check whether the parameter is associated with the
-        // HTTP request body
-        FormParam formParam = parameter.getAnnotation(FormParam.class);
-        return formParam != null && name.equals(formParam.value());
+            // Check if parameter is associated with the HTTP query string
+            if (annotation instanceof QueryParam && name.equals(((QueryParam) annotation).value()))
+                return true;
+
+            // Failing that, check whether the parameter is associated with the
+            // HTTP request body
+            if (annotation instanceof FormParam && name.equals(((FormParam) annotation).value()))
+                return true;
+
+        }
+
+        // No parameter annotations are present
+        return false;
 
     }
 
@@ -103,19 +110,24 @@ public class RESTExceptionWrapper implements MethodInterceptor {
 
         Method method = invocation.getMethod();
 
-        // Iterate through all parameters, looking for the authentication token
-        Parameter[] parameters = method.getParameters();
-        for (int i = 0; i < parameters.length; i++) {
+        // Get the types and annotations associated with each parameter
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        Class<?>[] parameterTypes = method.getParameterTypes();
 
-            // Get current parameter
-            Parameter parameter = parameters[i];
+        // The Java standards require these to be parallel arrays
+        assert(parameterAnnotations.length == parameterTypes.length);
+
+        // Iterate through all parameters, looking for the authentication token
+        for (int i = 0; i < parameterTypes.length; i++) {
 
             // Only inspect String parameters
-            if (parameter.getType() != String.class)
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType != String.class)
                 continue;
 
             // Parameter must be declared as a REST service parameter
-            if (!isRequestParameter(parameter, "token"))
+            Annotation[] annotations = parameterAnnotations[i];
+            if (!isRequestParameter(annotations, "token"))
                 continue;
 
             // The token parameter has been found - return its value
