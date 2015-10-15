@@ -22,7 +22,7 @@
 
 package org.glyptodon.guacamole.net.auth.credentials;
 
-import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 
 /**
  * A security-related exception thrown when access is denied to a user because
@@ -31,7 +31,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
  *
  * @author Michael Jumper
  */
-public class GuacamoleCredentialsException extends GuacamoleSecurityException {
+public class GuacamoleCredentialsException extends GuacamoleUnauthorizedException {
 
     /**
      * Information describing the form of valid credentials.
