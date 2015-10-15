@@ -41,7 +41,6 @@ import org.glyptodon.guacamole.net.auth.Directory;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -96,7 +95,6 @@ public class ConnectionGroupRESTService {
      */
     @GET
     @Path("/{connectionGroupID}")
-    @AuthProviderRESTExposure
     public APIConnectionGroup getConnectionGroup(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionGroupID") String connectionGroupID)
@@ -138,7 +136,6 @@ public class ConnectionGroupRESTService {
      */
     @GET
     @Path("/{connectionGroupID}/tree")
-    @AuthProviderRESTExposure
     public APIConnectionGroup getConnectionGroupTree(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionGroupID") String connectionGroupID,
@@ -176,7 +173,6 @@ public class ConnectionGroupRESTService {
      */
     @DELETE
     @Path("/{connectionGroupID}")
-    @AuthProviderRESTExposure
     public void deleteConnectionGroup(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionGroupID") String connectionGroupID)
@@ -218,7 +214,6 @@ public class ConnectionGroupRESTService {
      */
     @POST
     @Produces(MediaType.TEXT_PLAIN)
-    @AuthProviderRESTExposure
     public String createConnectionGroup(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             APIConnectionGroup connectionGroup) throws GuacamoleException {
@@ -263,7 +258,6 @@ public class ConnectionGroupRESTService {
      */
     @PUT
     @Path("/{connectionGroupID}")
-    @AuthProviderRESTExposure
     public void updateConnectionGroup(@QueryParam("token") String authToken, 
             @PathParam("dataSource") String authProviderIdentifier,
             @PathParam("connectionGroupID") String connectionGroupID,
