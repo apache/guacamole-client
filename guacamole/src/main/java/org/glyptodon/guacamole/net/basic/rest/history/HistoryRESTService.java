@@ -37,7 +37,6 @@ import org.glyptodon.guacamole.net.auth.ConnectionRecord;
 import org.glyptodon.guacamole.net.auth.ConnectionRecordSet;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.AuthProviderRESTExposure;
 import org.glyptodon.guacamole.net.basic.rest.ObjectRetrievalService;
 import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
@@ -110,7 +109,6 @@ public class HistoryRESTService {
      */
     @GET
     @Path("/connections")
-    @AuthProviderRESTExposure
     public List<APIConnectionRecord> getConnectionHistory(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             @QueryParam("contains") List<String> requiredContents,
