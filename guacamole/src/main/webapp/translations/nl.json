@@ -30,6 +30,8 @@
         "FIELD_HEADER_PASSWORD"       : "Wachtwoord:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Nogmaals uw wachtwoord:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
         "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Op dit moment in gebruik door {USERS} {USERS, plural, one{gebruiker} other{gebruikers}}.",
@@ -447,6 +449,12 @@
 
     },
 
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
     "SETTINGS_PREFERENCES" : {
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
@@ -509,7 +517,7 @@
         "DIALOG_HEADER_CONFIRM_DELETE" : "Beeindig Sessie",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
-        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 

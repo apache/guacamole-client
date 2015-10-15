@@ -32,6 +32,8 @@
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
         "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
@@ -479,6 +481,8 @@
 
         "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_CONNECTION_HISTORY" : "All connection history records are listed here. If you wish to filter the connection records, you can enter a query.",
@@ -486,8 +490,8 @@
         "INFO_NO_HISTORY" : "No matching connection history",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
-        "TABLE_HEADER_SESSION_ENDDATE"         : "End Time",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Start Time",
+        "TABLE_HEADER_SESSION_ENDDATE"         : "End time",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Start time",
         "TABLE_HEADER_SESSION_USERNAME"        : "Username"
 
     },
@@ -570,7 +574,7 @@
         "DIALOG_HEADER_CONFIRM_DELETE" : "Kill Sessions",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
         
-        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
         
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
