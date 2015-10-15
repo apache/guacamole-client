@@ -25,10 +25,10 @@
     <p>{{'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | translate}}</p>
 
     <!-- Search controls -->
-    <div class="filter">
+    <form class="filter" ng-submit="search()">
         <input class="search-string" type="text" placeholder="{{'SETTINGS_CONNECTION_HISTORY.FIELD_PLACEHOLDER_FILTER' | translate}}" ng-model="searchString" />
-        <button class="search-button" ng-click="search()">{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | translate}}</button> 
-    </div>
+        <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | translate}}" />
+    </form>
 
     <!-- Search results -->
     <div class="results" ng-class="{loading: !isLoaded()}">
