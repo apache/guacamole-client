@@ -35,6 +35,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,24 @@ public class RESTExceptionWrapper implements MethodInterceptor {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionWrapper.class);
+
+    /**
+     * Singleton instance of TokenSessionMap.
+     */
+    private final TokenSessionMap tokenSessionMap;
+
+    /**
+     * Creates an interceptor which automatically handles GuacamoleExceptions
+     * within the REST services, including implicit invalidation of
+     * authentication tokens.
+     *
+     * @param tokenSessionMap
+     *     The singleton instance of TokenSessionMap to use if management of
+     *     authentication tokens is required to handle a particular error.
+     */
+    public RESTExceptionWrapper(TokenSessionMap tokenSessionMap) {
+        this.tokenSessionMap = tokenSessionMap;
+    }
 
     /**
      * Determines whether the given set of annotations describes an HTTP
@@ -158,10 +177,8 @@ public class RESTExceptionWrapper implements MethodInterceptor {
                 String token = getAuthenticationToken(invocation);
 
                 // If there is an associated auth token, invalidate it
-                if (token != null) {
-                    logger.debug("Implicitly invalidating token \"{}\" due to GuacamoleUnauthorizedException.", token);
-                    // STUB - Does not actually invalidate anything at the moment
-                }
+                if (token != null && tokenSessionMap.remove(token) != null)
+                    logger.debug("Implicitly invalidated token \"{}\" due to GuacamoleUnauthorizedException.", token);
 
                 // Continue with exception processing
                 throw e;
