@@ -22,14 +22,21 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import com.google.inject.Inject;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.QueryParam;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceNotFoundException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,14 +52,128 @@ import org.slf4j.LoggerFactory;
  */
 public class RESTExceptionWrapper implements MethodInterceptor {
 
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(RESTExceptionWrapper.class);
+
+    /**
+     * Service for authenticating users and managing their Guacamole sessions.
+     */
+    @Inject
+    private AuthenticationService authenticationService;
+
+    /**
+     * Determines whether the given set of annotations describes an HTTP
+     * request parameter of the given name. For a parameter to be associated
+     * with an HTTP request parameter, it must be annotated with either the
+     * <code>@QueryParam</code> or <code>@FormParam</code> annotations.
+     *
+     * @param annotations
+     *     The annotations associated with the Java parameter being checked.
+     *
+     * @param name
+     *     The name of the HTTP request parameter.
+     *
+     * @return
+     *     true if the given set of annotations describes an HTTP request
+     *     parameter having the given name, false otherwise.
+     */
+    private boolean isRequestParameter(Annotation[] annotations, String name) {
+
+        // Search annotations for associated HTTP parameters
+        for (Annotation annotation : annotations) {
+
+            // Check if parameter is associated with the HTTP query string
+            if (annotation instanceof QueryParam && name.equals(((QueryParam) annotation).value()))
+                return true;
+
+            // Failing that, check whether the parameter is associated with the
+            // HTTP request body
+            if (annotation instanceof FormParam && name.equals(((FormParam) annotation).value()))
+                return true;
+
+        }
+
+        // No parameter annotations are present
+        return false;
+
+    }
+
+    /**
+     * Returns the authentication token that was passed in the given method
+     * invocation. If the given method invocation is not associated with an
+     * HTTP request (it lacks the appropriate JAX-RS annotations) or there is
+     * no authentication token, null is returned.
+     *
+     * @param invocation
+     *     The method invocation whose corresponding authentication token
+     *     should be determined.
+     *
+     * @return
+     *     The authentication token passed in the given method invocation, or
+     *     null if there is no such token.
+     */
+    private String getAuthenticationToken(MethodInvocation invocation) {
+
+        Method method = invocation.getMethod();
+
+        // Get the types and annotations associated with each parameter
+        Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+        Class<?>[] parameterTypes = method.getParameterTypes();
+
+        // The Java standards require these to be parallel arrays
+        assert(parameterAnnotations.length == parameterTypes.length);
+
+        // Iterate through all parameters, looking for the authentication token
+        for (int i = 0; i < parameterTypes.length; i++) {
+
+            // Only inspect String parameters
+            Class<?> parameterType = parameterTypes[i];
+            if (parameterType != String.class)
+                continue;
+
+            // Parameter must be declared as a REST service parameter
+            Annotation[] annotations = parameterAnnotations[i];
+            if (!isRequestParameter(annotations, "token"))
+                continue;
+
+            // The token parameter has been found - return its value
+            Object[] args = invocation.getArguments();
+            return (String) args[i];
+
+        }
+
+        // No token parameter is defined
+        return null;
+
+    }
+
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
 
-        // Get the logger for the intercepted class
-        Logger logger = LoggerFactory.getLogger(invocation.getMethod().getDeclaringClass());
-        
         try {
-            return invocation.proceed();
+
+            // Invoke wrapped method
+            try {
+                return invocation.proceed();
+            }
+
+            // Ensure any associated session is invalidated if unauthorized
+            catch (GuacamoleUnauthorizedException e) {
+
+                // Pull authentication token from request
+                String token = getAuthenticationToken(invocation);
+
+                // If there is an associated auth token, invalidate it
+                if (authenticationService.destroyGuacamoleSession(token))
+                    logger.debug("Implicitly invalidated session for token \"{}\".", token);
+
+                // Continue with exception processing
+                throw e;
+
+            }
+
         }
 
         // Additional credentials are needed
@@ -138,7 +259,9 @@ public class RESTExceptionWrapper implements MethodInterceptor {
             if (message == null)
                 message = "Unexpected server error.";
 
+            // Ensure internal errors are logged at the debug level
             logger.debug("Unexpected exception in REST endpoint.", e);
+
             throw new APIException(
                 APIError.Type.INTERNAL_ERROR,
                 message

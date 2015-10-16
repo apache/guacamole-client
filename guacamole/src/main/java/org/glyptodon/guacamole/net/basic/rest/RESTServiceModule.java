@@ -26,32 +26,61 @@ import com.google.inject.Scopes;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connectiongroup.ConnectionGroupRESTService;
 import org.glyptodon.guacamole.net.basic.rest.activeconnection.ActiveConnectionRESTService;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthTokenGenerator;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
+import org.glyptodon.guacamole.net.basic.rest.auth.SecureRandomAuthTokenGenerator;
+import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.history.HistoryRESTService;
 import org.glyptodon.guacamole.net.basic.rest.language.LanguageRESTService;
 import org.glyptodon.guacamole.net.basic.rest.schema.SchemaRESTService;
 import org.glyptodon.guacamole.net.basic.rest.user.UserRESTService;
 
 /**
- * A Guice Module to set up the servlet mappings for the Guacamole REST API.
+ * A Guice Module to set up the servlet mappings and authentication-specific
+ * dependency injection for the Guacamole REST API.
  *
  * @author James Muehlner
+ * @author Michael Jumper
  */
-public class RESTServletModule extends ServletModule {
+public class RESTServiceModule extends ServletModule {
+
+    /**
+     * Singleton instance of TokenSessionMap.
+     */
+    private final TokenSessionMap tokenSessionMap;
+
+    /**
+     * Creates a module which handles binding of REST services and related
+     * authentication objects, including the singleton TokenSessionMap.
+     *
+     * @param tokenSessionMap
+     *     An instance of TokenSessionMap to inject as a singleton wherever
+     *     needed.
+     */
+    public RESTServiceModule(TokenSessionMap tokenSessionMap) {
+        this.tokenSessionMap = tokenSessionMap;
+    }
 
     @Override
     protected void configureServlets() {
 
+        // Bind session map
+        bind(TokenSessionMap.class).toInstance(tokenSessionMap);
+
+        // Bind low-level services
+        bind(AuthenticationService.class);
+        bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
+
         // Automatically translate GuacamoleExceptions for REST methods
-        bindInterceptor(
-            Matchers.any(),
-            new RESTMethodMatcher(),
-            new RESTExceptionWrapper()
-        );
+        MethodInterceptor interceptor = new RESTExceptionWrapper();
+        requestInjection(interceptor);
+        bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
 
         // Bind convenience services used by the REST API
         bind(ObjectRetrievalService.class);

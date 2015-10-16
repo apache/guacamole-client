@@ -32,8 +32,7 @@ import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.basic.extension.ExtensionModule;
 import org.glyptodon.guacamole.net.basic.log.LogModule;
-import org.glyptodon.guacamole.net.basic.rest.RESTAuthModule;
-import org.glyptodon.guacamole.net.basic.rest.RESTServletModule;
+import org.glyptodon.guacamole.net.basic.rest.RESTServiceModule;
 import org.glyptodon.guacamole.net.basic.rest.auth.BasicTokenSessionMap;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.slf4j.Logger;
@@ -85,8 +84,7 @@ public class BasicServletContextListener extends GuiceServletContextListener {
             new EnvironmentModule(environment),
             new LogModule(environment),
             new ExtensionModule(environment),
-            new RESTAuthModule(sessionMap),
-            new RESTServletModule(),
+            new RESTServiceModule(sessionMap),
             new TunnelModule()
         );
     }

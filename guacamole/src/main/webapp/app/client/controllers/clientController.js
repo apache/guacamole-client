@@ -33,11 +33,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     var ScrollState        = $injector.get('ScrollState');
 
     // Required services
-    var $location         = $injector.get('$location');
-    var guacClientManager = $injector.get('guacClientManager');
-    var guacNotification  = $injector.get('guacNotification');
-    var preferenceService = $injector.get('preferenceService');
-    var userPageService   = $injector.get('userPageService');
+    var $location             = $injector.get('$location');
+    var authenticationService = $injector.get('authenticationService');
+    var guacClientManager     = $injector.get('guacClientManager');
+    var guacNotification      = $injector.get('guacNotification');
+    var preferenceService     = $injector.get('preferenceService');
+    var userPageService       = $injector.get('userPageService');
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -409,6 +410,30 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.page.title = name;
     });
 
+    /**
+     * Displays a notification at the end of a Guacamole connection, whether
+     * that connection is ending normally or due to an error. As the end of
+     * a Guacamole connection may be due to changes in authentication status,
+     * this will also implicitly peform a re-authentication attempt to check
+     * for such changes, possibly resulting in auth-related events like
+     * guacInvalidCredentials.
+     *
+     * @param {Notification|Boolean|Object} status
+     *     The status notification to show, as would be accepted by
+     *     guacNotification.showStatus().
+     */
+    var notifyConnectionClosed = function notifyConnectionClosed(status) {
+
+        // Re-authenticate to verify auth status at end of connection
+        authenticationService.updateCurrentToken($location.search())
+
+        // If authentication is OK, show the requested status
+        .then(function authenticationCheckSuccessful() {
+            guacNotification.showStatus(status);
+        });
+
+    };
+
     // Show status dialog when connection status changes
     $scope.$watch('client.clientState.connectionState', function clientStateChanged(connectionState) {
 
@@ -448,7 +473,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
             // Show error status
-            guacNotification.showStatus({
+            notifyConnectionClosed({
                 className : "error",
                 title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text      : "CLIENT.ERROR_CLIENT_" + errorName,
@@ -468,7 +493,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             var countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
             // Show error status
-            guacNotification.showStatus({
+            notifyConnectionClosed({
                 className : "error",
                 title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
                 text      : "CLIENT.ERROR_TUNNEL_" + errorName,
@@ -480,7 +505,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
-            guacNotification.showStatus({
+            notifyConnectionClosed({
                 title   : "CLIENT.DIALOG_HEADER_DISCONNECTED",
                 text    : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase(),
                 actions : actions

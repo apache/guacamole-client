@@ -27,6 +27,7 @@ import com.google.inject.Singleton;
 import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.DelegatingGuacamoleTunnel;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.auth.Connection;
@@ -211,6 +212,12 @@ public class TunnelRequestService {
      * @param tunnel
      *     The connected tunnel to wrap and monitor.
      *
+     * @param authToken
+     *     The authentication token associated with the given session. If
+     *     provided, this token will be automatically invalidated (and the
+     *     corresponding session destroyed) if tunnel errors imply that the
+     *     user is no longer authorized.
+     *
      * @param session
      *     The Guacamole session to associate the tunnel with.
      *
@@ -228,9 +235,10 @@ public class TunnelRequestService {
      * @throws GuacamoleException
      *     If an error occurs while obtaining the tunnel.
      */
-    protected GuacamoleTunnel createAssociatedTunnel(final GuacamoleSession session,
-            GuacamoleTunnel tunnel, final TunnelRequest.Type type,
-            final String id) throws GuacamoleException {
+    protected GuacamoleTunnel createAssociatedTunnel(GuacamoleTunnel tunnel,
+            final String authToken,  final GuacamoleSession session,
+            final TunnelRequest.Type type, final String id)
+            throws GuacamoleException {
 
         // Monitor tunnel closure and data
         GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
@@ -268,9 +276,25 @@ public class TunnelRequestService {
 
                 }
 
-                // Close and clean up tunnel
-                session.removeTunnel(getUUID().toString());
-                super.close();
+                try {
+
+                    // Close and clean up tunnel
+                    session.removeTunnel(getUUID().toString());
+                    super.close();
+
+                }
+
+                // Ensure any associated session is invalidated if unauthorized
+                catch (GuacamoleUnauthorizedException e) {
+
+                    // If there is an associated auth token, invalidate it
+                    if (authenticationService.destroyGuacamoleSession(authToken))
+                        logger.debug("Implicitly invalidated session for token \"{}\".", authToken);
+
+                    // Continue with exception processing
+                    throw e;
+
+                }
 
             }
 
@@ -305,13 +329,30 @@ public class TunnelRequestService {
         String authProviderIdentifier   = request.getAuthenticationProviderIdentifier();
         GuacamoleClientInformation info = getClientInformation(request);
 
-        // Create connected tunnel using provided connection ID and client information
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
         UserContext userContext = retrievalService.retrieveUserContext(session, authProviderIdentifier);
-        GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
 
-        // Associate tunnel with session
-        return createAssociatedTunnel(session, tunnel, type, id);
+        try {
+
+            // Create connected tunnel using provided connection ID and client information
+            GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
+
+            // Associate tunnel with session
+            return createAssociatedTunnel(tunnel, authToken, session, type, id);
+
+        }
+
+        // Ensure any associated session is invalidated if unauthorized
+        catch (GuacamoleUnauthorizedException e) {
+
+            // If there is an associated auth token, invalidate it
+            if (authenticationService.destroyGuacamoleSession(authToken))
+                logger.debug("Implicitly invalidated session for token \"{}\".", authToken);
+
+            // Continue with exception processing
+            throw e;
+
+        }
 
     }
 
