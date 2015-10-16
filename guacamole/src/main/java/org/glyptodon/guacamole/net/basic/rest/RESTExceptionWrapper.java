@@ -22,6 +22,7 @@
 
 package org.glyptodon.guacamole.net.basic.rest;
 
+import com.google.inject.Inject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import javax.ws.rs.FormParam;
@@ -35,8 +36,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
-import org.glyptodon.guacamole.net.basic.GuacamoleSession;
-import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
+import org.glyptodon.guacamole.net.basic.rest.auth.AuthenticationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,22 +58,10 @@ public class RESTExceptionWrapper implements MethodInterceptor {
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionWrapper.class);
 
     /**
-     * Singleton instance of TokenSessionMap.
+     * Service for authenticating users and managing their Guacamole sessions.
      */
-    private final TokenSessionMap tokenSessionMap;
-
-    /**
-     * Creates an interceptor which automatically handles GuacamoleExceptions
-     * within the REST services, including implicit invalidation of
-     * authentication tokens.
-     *
-     * @param tokenSessionMap
-     *     The singleton instance of TokenSessionMap to use if management of
-     *     authentication tokens is required to handle a particular error.
-     */
-    public RESTExceptionWrapper(TokenSessionMap tokenSessionMap) {
-        this.tokenSessionMap = tokenSessionMap;
-    }
+    @Inject
+    private AuthenticationService authenticationService;
 
     /**
      * Determines whether the given set of annotations describes an HTTP
@@ -178,11 +166,8 @@ public class RESTExceptionWrapper implements MethodInterceptor {
                 String token = getAuthenticationToken(invocation);
 
                 // If there is an associated auth token, invalidate it
-                GuacamoleSession session = tokenSessionMap.remove(token);
-                if (session != null) {
-                    session.invalidate();
+                if (authenticationService.destroyGuacamoleSession(token))
                     logger.debug("Implicitly invalidated session for token \"{}\".", token);
-                }
 
                 // Continue with exception processing
                 throw e;

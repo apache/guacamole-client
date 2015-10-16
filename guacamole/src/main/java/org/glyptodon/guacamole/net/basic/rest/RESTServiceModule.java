@@ -26,6 +26,7 @@ import com.google.inject.Scopes;
 import com.google.inject.matcher.Matchers;
 import com.google.inject.servlet.ServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
+import org.aopalliance.intercept.MethodInterceptor;
 import org.codehaus.jackson.jaxrs.JacksonJsonProvider;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenRESTService;
 import org.glyptodon.guacamole.net.basic.rest.connection.ConnectionRESTService;
@@ -77,11 +78,9 @@ public class RESTServiceModule extends ServletModule {
         bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
 
         // Automatically translate GuacamoleExceptions for REST methods
-        bindInterceptor(
-            Matchers.any(),
-            new RESTMethodMatcher(),
-            new RESTExceptionWrapper(tokenSessionMap)
-        );
+        MethodInterceptor interceptor = new RESTExceptionWrapper();
+        requestInjection(interceptor);
+        bindInterceptor(Matchers.any(), new RESTMethodMatcher(), interceptor);
 
         // Bind convenience services used by the REST API
         bind(ObjectRetrievalService.class);
