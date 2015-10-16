@@ -212,6 +212,12 @@ public class TunnelRequestService {
      * @param tunnel
      *     The connected tunnel to wrap and monitor.
      *
+     * @param authToken
+     *     The authentication token associated with the given session. If
+     *     provided, this token will be automatically invalidated (and the
+     *     corresponding session destroyed) if tunnel errors imply that the
+     *     user is no longer authorized.
+     *
      * @param session
      *     The Guacamole session to associate the tunnel with.
      *
@@ -230,8 +236,9 @@ public class TunnelRequestService {
      *     If an error occurs while obtaining the tunnel.
      */
     protected GuacamoleTunnel createAssociatedTunnel(GuacamoleTunnel tunnel,
-            final GuacamoleSession session, final TunnelRequest.Type type,
-            final String id) throws GuacamoleException {
+            final String authToken,  final GuacamoleSession session,
+            final TunnelRequest.Type type, final String id)
+            throws GuacamoleException {
 
         // Monitor tunnel closure and data
         GuacamoleTunnel monitoredTunnel = new DelegatingGuacamoleTunnel(tunnel) {
@@ -269,9 +276,25 @@ public class TunnelRequestService {
 
                 }
 
-                // Close and clean up tunnel
-                session.removeTunnel(getUUID().toString());
-                super.close();
+                try {
+
+                    // Close and clean up tunnel
+                    session.removeTunnel(getUUID().toString());
+                    super.close();
+
+                }
+
+                // Ensure any associated session is invalidated if unauthorized
+                catch (GuacamoleUnauthorizedException e) {
+
+                    // If there is an associated auth token, invalidate it
+                    if (authenticationService.destroyGuacamoleSession(authToken))
+                        logger.debug("Implicitly invalidated session for token \"{}\".", authToken);
+
+                    // Continue with exception processing
+                    throw e;
+
+                }
 
             }
 
@@ -315,7 +338,7 @@ public class TunnelRequestService {
             GuacamoleTunnel tunnel = createConnectedTunnel(userContext, type, id, info);
 
             // Associate tunnel with session
-            return createAssociatedTunnel(tunnel, session, type, id);
+            return createAssociatedTunnel(tunnel, authToken, session, type, id);
 
         }
 
