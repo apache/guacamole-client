@@ -35,6 +35,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.GuacamoleUnauthorizedException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.glyptodon.guacamole.net.basic.GuacamoleSession;
 import org.glyptodon.guacamole.net.basic.rest.auth.TokenSessionMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,8 +178,11 @@ public class RESTExceptionWrapper implements MethodInterceptor {
                 String token = getAuthenticationToken(invocation);
 
                 // If there is an associated auth token, invalidate it
-                if (token != null && tokenSessionMap.remove(token) != null)
-                    logger.debug("Implicitly invalidated token \"{}\" due to GuacamoleUnauthorizedException.", token);
+                GuacamoleSession session = tokenSessionMap.remove(token);
+                if (session != null) {
+                    session.invalidate();
+                    logger.debug("Implicitly invalidated session for token \"{}\".", token);
+                }
 
                 // Continue with exception processing
                 throw e;
