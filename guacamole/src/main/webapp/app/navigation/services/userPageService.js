@@ -211,8 +211,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
                     // Permission to administer users
                     || PermissionSet.hasUserPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageUsers.push(dataSource);
+            }
 
             // Determine whether the current user needs access to the connection management UI
             if (
@@ -232,16 +233,18 @@ angular.module('navigation').factory('userPageService', ['$injector',
                     // Permission to administer connections or connection groups
                     || PermissionSet.hasConnectionPermission(permissions,      PermissionSet.ObjectPermissionType.ADMINISTER)
                     || PermissionSet.hasConnectionGroupPermission(permissions, PermissionSet.ObjectPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageConnections.push(dataSource);
+            }
 
             // Determine whether the current user needs access to the session management UI or view connection history
             if (
                     // A user must be a system administrator to manage sessions
                     PermissionSet.hasSystemPermission(permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-            )
+            ) {
                 canManageSessions.push(dataSource);
                 canViewConnectionRecords.push(dataSource);
+            }
 
         });
 
