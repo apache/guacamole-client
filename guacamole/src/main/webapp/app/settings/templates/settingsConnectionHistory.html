@@ -31,7 +31,7 @@
     </form>
 
     <!-- Search results -->
-    <div class="results" ng-class="{loading: !isLoaded()}">
+    <div class="results">
 
         <!-- List of matching history records -->
         <table class="sorted history-list">
@@ -51,7 +51,7 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody ng-class="{loading: !isLoaded()}">
                 <tr ng-repeat="historyRecord in historyRecordPage" class="history">
                     <td>{{historyRecord.username}}</td>
                     <td>{{historyRecord.startDate | date : dateFormat}}</td>
@@ -62,7 +62,7 @@
         </table>
 
         <!-- Text displayed if no history exists -->
-        <p class="placeholder" ng-hide="historyRecordPage.length">
+        <p class="placeholder" ng-show="isHistoryEmpty()">
             {{'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | translate}}
         </p>
 

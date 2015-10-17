@@ -110,7 +110,20 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 return $scope.historyRecords !== null
                     && $scope.dateFormat     !== null;
             };
-            
+
+            /**
+             * Returns whether the search has completed but contains no history
+             * records. This function will return false if there are history
+             * records in the results OR if the search has not yet completed.
+             *
+             * @returns {Boolean}
+             *     true if the search results have been loaded but no history
+             *     records are present, false otherwise.
+             */
+            $scope.isHistoryEmpty = function isHistoryEmpty() {
+                return $scope.isLoaded() && $scope.historyRecords.length === 0;
+            };
+
             /**
              * Query the API for the connection record history, filtered by 
              * searchString, and ordered by order.
