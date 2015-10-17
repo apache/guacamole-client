@@ -242,6 +242,8 @@ CREATE TABLE `guacamole_connection_history` (
   PRIMARY KEY (`history_id`),
   KEY `user_id` (`user_id`),
   KEY `connection_id` (`connection_id`),
+  KEY `start_date` (`start_date`),
+  KEY `end_date` (`end_date`),
 
   CONSTRAINT `guacamole_connection_history_ibfk_1`
     FOREIGN KEY (`user_id`)

@@ -297,4 +297,5 @@ CREATE TABLE guacamole_connection_history (
 
 CREATE INDEX ON guacamole_connection_history(user_id);
 CREATE INDEX ON guacamole_connection_history(connection_id);
-
+CREATE INDEX ON guacamole_connection_history(start_date);
+CREATE INDEX ON guacamole_connection_history(end_date);
