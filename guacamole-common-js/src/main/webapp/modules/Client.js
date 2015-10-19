@@ -85,6 +85,14 @@ Guacamole.Client = function(tunnel) {
      */
     var audioPlayers = {};
 
+    /**
+     * All video players currently in use by the client. Initially, this will
+     * be empty, but video players may be allocated by the server upon request.
+     *
+     * @type Object.<Number, Guacamole.VideoPlayer>
+     */
+    var videoPlayers = {};
+
     // No initial parsers
     var parsers = [];
 
@@ -458,6 +466,30 @@ Guacamole.Client = function(tunnel) {
      *     used.
      */
     this.onaudio = null;
+
+    /**
+     * Fired when a video stream is created. The stream provided to this event
+     * handler will contain its own event handlers for received data.
+     *
+     * @event
+     * @param {Guacamole.InputStream} stream
+     *     The stream that will receive video data from the server.
+     *
+     * @param {Guacamole.Display.VisibleLayer} layer
+     *     The destination layer on which the received video data should be
+     *     played. It is the responsibility of the Guacamole.VideoPlayer
+     *     implementation to play the received data within this layer.
+     *
+     * @param {String} mimetype
+     *     The mimetype of the video data which will be received.
+     *
+     * @return {Guacamole.VideoPlayer}
+     *     An object which implements the Guacamole.VideoPlayer interface and
+     *     has been initialied to play the data in the provided stream, or null
+     *     if the built-in video players of the Guacamole client should be
+     *     used.
+     */
+    this.onvideo = null;
 
     /**
      * Fired when the clipboard of the remote client is changing.
@@ -1197,39 +1229,29 @@ Guacamole.Client = function(tunnel) {
             var stream_index = parseInt(parameters[0]);
             var layer = getLayer(parseInt(parameters[1]));
             var mimetype = parameters[2];
-            var duration = parseFloat(parameters[3]);
 
-            // Create stream 
+            // Create stream
             var stream = streams[stream_index] =
                     new Guacamole.InputStream(guac_client, stream_index);
 
-            // Assemble entire stream as a blob
-            var blob_reader = new Guacamole.BlobReader(stream, mimetype);
+            // Get player instance via callback
+            var videoPlayer = null;
+            if (guac_client.onvideo)
+                videoPlayer = guac_client.onvideo(stream, layer, mimetype);
 
-            // Play video once finished 
-            blob_reader.onend = function() {
+            // If unsuccessful, try to use a default implementation
+            if (!videoPlayer)
+                videoPlayer = Guacamole.VideoPlayer.getInstance(stream, layer, mimetype);
 
-                // Read data from blob from stream
-                var reader = new FileReader();
-                reader.onload = function() {
+            // If we have successfully retrieved an video player, send success response
+            if (videoPlayer) {
+                videoPlayers[stream_index] = videoPlayer;
+                guac_client.sendAck(stream_index, "OK", 0x0000);
+            }
 
-                    var binary = "";
-                    var bytes = new Uint8Array(reader.result);
-
-                    // Produce binary string from bytes in buffer
-                    for (var i=0; i<bytes.byteLength; i++)
-                        binary += String.fromCharCode(bytes[i]);
-
-                    // Play video
-                    layer.play(mimetype, duration, "data:" + mimetype + ";base64," + window.btoa(binary));
-
-                };
-                reader.readAsArrayBuffer(blob_reader.getBlob());
-
-            };
-
-            // Send success response
-            tunnel.sendMessage("ack", stream_index, "OK", 0x0000);
+            // Otherwise, mimetype must be unsupported
+            else
+                guac_client.sendAck(stream_index, "BAD TYPE", 0x030F);
 
         }
 
