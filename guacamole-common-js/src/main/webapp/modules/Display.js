@@ -1183,7 +1183,7 @@ Guacamole.Display.VisibleLayer = function(width, height) {
 
     /**
      * The parent layer container of this layer, if any.
-     * @type Guacamole.Display.LayerContainer
+     * @type Guacamole.Display.VisibleLayer
      */
     this.parent = null;
 
@@ -1275,11 +1275,11 @@ Guacamole.Display.VisibleLayer = function(width, height) {
     };
 
     /**
-     * Moves the upper-left corner of this LayerContainer to the given X and Y
-     * coordinate, sets the Z stacking order, and reparents this LayerContainer
-     * to the given LayerContainer.
+     * Moves the upper-left corner of this VisibleLayer to the given X and Y
+     * coordinate, sets the Z stacking order, and reparents this VisibleLayer
+     * to the given VisibleLayer.
      * 
-     * @param {Guacamole.Display.LayerContainer} parent The parent to set.
+     * @param {Guacamole.Display.VisibleLayer} parent The parent to set.
      * @param {Number} x The X coordinate to move to.
      * @param {Number} y The Y coordinate to move to.
      * @param {Number} z The Z coordinate to move to.
@@ -1378,7 +1378,7 @@ Guacamole.Display.VisibleLayer = function(width, height) {
 
 /**
  * The next identifier to be assigned to the layer container. This identifier
- * uniquely identifies each LayerContainer, but is unrelated to the index of
+ * uniquely identifies each VisibleLayer, but is unrelated to the index of
  * the layer, which exists at the protocol/client level only.
  * 
  * @private
