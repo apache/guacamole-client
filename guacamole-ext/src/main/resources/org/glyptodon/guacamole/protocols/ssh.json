@@ -59,6 +59,16 @@
         },
 
         {
+            "name" : "session",
+            "fields" : [
+                {
+                    "name"  : "command",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
             "name"  : "sftp",
             "fields" : [
                 {
