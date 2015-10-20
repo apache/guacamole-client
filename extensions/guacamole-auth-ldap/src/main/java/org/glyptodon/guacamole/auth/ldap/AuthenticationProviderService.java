@@ -97,8 +97,10 @@ public class AuthenticationProviderService {
         List<String> usernameAttributes = confService.getUsernameAttributes();
 
         // We need exactly one base DN to derive the user DN
-        if (usernameAttributes.size() != 1)
+        if (usernameAttributes.size() != 1) {
+            logger.warn("Cannot directly derive user DN when multiple username attributes are specified");
             return null;
+        }
 
         // Derive user DN from base DN
         return
