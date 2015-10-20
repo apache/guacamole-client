@@ -62,11 +62,14 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The attribute which identifies users. This attribute must be part of
-     * each user's DN such that the concatenation of this attribute and
-     * LDAP_USER_BASE_DN equals the users full DN.
+     * The attribute or attributes which identify users. One of these
+     * attributes must be present within the each Guacamole user's record in
+     * the LDAP directory. If the LDAP authentication will not be given its own
+     * credentials for querying other LDAP users, this list may contain only
+     * one attribute, and the concatenation of that attribute and the value of
+     * LDAP_USER_BASE_DN must equal the user's full DN.
      */
-    public static final StringGuacamoleProperty LDAP_USERNAME_ATTRIBUTE = new StringGuacamoleProperty() {
+    public static final StringListProperty LDAP_USERNAME_ATTRIBUTE = new StringListProperty() {
 
         @Override
         public String getName() { return "ldap-username-attribute"; }

@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 
@@ -77,21 +79,21 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the username attribute which should be used to query and bind
+     * Returns all username attributes which should be used to query and bind
      * users using the LDAP directory. By default, this will be "uid" - a
      * common attribute used for this purpose.
      *
      * @return
-     *     The username attribute which should be used to query and bind users
+     *     The username attributes which should be used to query and bind users
      *     using the LDAP directory.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getUsernameAttribute() throws GuacamoleException {
+    public List<String> getUsernameAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE,
-            "uid"
+            Collections.singletonList("uid")
         );
     }
 

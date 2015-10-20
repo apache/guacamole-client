@@ -65,6 +65,64 @@ public class UserService {
     private ConfigurationService confService;
 
     /**
+     * Adds all Guacamole users accessible to the user currently bound under
+     * the given LDAP connection to the provided map. Only users with the
+     * specified attribute are added. If the same username is encountered
+     * multiple times, warnings about possible ambiguity will be logged.
+     *
+     * @param ldapConnection
+     *     The current connection to the LDAP server, associated with the
+     *     current user.
+     *
+     * @return
+     *     All users accessible to the user currently bound under the given
+     *     LDAP connection, as a map of connection identifier to corresponding
+     *     user object.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs preventing retrieval of users.
+     */
+    private void putAllUsers(Map<String, User> users, LDAPConnection ldapConnection,
+            String usernameAttribute) throws GuacamoleException {
+
+        try {
+
+            // Find all Guacamole users underneath base DN
+            LDAPSearchResults results = ldapConnection.search(
+                confService.getUserBaseDN(),
+                LDAPConnection.SCOPE_SUB,
+                "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
+                null,
+                false
+            );
+
+            // Read all visible users
+            while (results.hasMore()) {
+
+                LDAPEntry entry = results.next();
+
+                // Get username from record
+                LDAPAttribute username = entry.getAttribute(usernameAttribute);
+                if (username == null) {
+                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
+                    continue;
+                }
+
+                // Store user using their username as the identifier
+                String identifier = username.getStringValue();
+                if (users.put(identifier, new SimpleUser(identifier)) != null)
+                    logger.warn("Possibly ambiguous user account: \"{}\".", identifier);
+
+            }
+
+        }
+        catch (LDAPException e) {
+            throw new GuacamoleServerException("Error while querying users.", e);
+        }
+
+    }
+
+    /**
      * Returns all Guacamole users accessible to the user currently bound under
      * the given LDAP connection.
      *
@@ -83,46 +141,13 @@ public class UserService {
     public Map<String, User> getUsers(LDAPConnection ldapConnection)
             throws GuacamoleException {
 
-        try {
+        // Build map of users by querying each username attribute separately
+        Map<String, User> users = new HashMap<String, User>();
+        for (String usernameAttribute : confService.getUsernameAttributes())
+            putAllUsers(users, ldapConnection, usernameAttribute);
 
-            // Get username attribute
-            String usernameAttribute = confService.getUsernameAttribute();
-
-            // Find all Guacamole users underneath base DN
-            LDAPSearchResults results = ldapConnection.search(
-                confService.getUserBaseDN(),
-                LDAPConnection.SCOPE_ONE,
-                "(&(objectClass=*)(" + escapingService.escapeLDAPSearchFilter(usernameAttribute) + "=*))",
-                null,
-                false
-            );
-
-            // Read all visible users
-            Map<String, User> users = new HashMap<String, User>();
-            while (results.hasMore()) {
-
-                LDAPEntry entry = results.next();
-
-                // Get common name (CN)
-                LDAPAttribute username = entry.getAttribute(usernameAttribute);
-                if (username == null) {
-                    logger.warn("Queried user is missing the username attribute \"{}\".", usernameAttribute);
-                    continue;
-                }
-
-                // Store connection using cn for both identifier and name
-                String identifier = username.getStringValue();
-                users.put(identifier, new SimpleUser(identifier));
-
-            }
-
-            // Return map of all connections
-            return users;
-
-        }
-        catch (LDAPException e) {
-            throw new GuacamoleServerException("Error while querying users.", e);
-        }
+        // Return map of all users
+        return users;
 
     }
 
