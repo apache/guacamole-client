@@ -95,8 +95,6 @@ public class AuthenticationProviderService {
 
         // Pull username attributes from properties
         List<String> usernameAttributes = confService.getUsernameAttributes();
-        if (usernameAttributes.isEmpty())
-            return null;
 
         // We need exactly one base DN to derive the user DN
         if (usernameAttributes.size() != 1)

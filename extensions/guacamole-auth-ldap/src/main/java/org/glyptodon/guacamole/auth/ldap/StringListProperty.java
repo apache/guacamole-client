@@ -56,7 +56,11 @@ public abstract class StringListProperty implements GuacamoleProperty<List<Strin
             return null;
 
         // Split string into a list of individual values
-        return Arrays.asList(DELIMITER_PATTERN.split(values));
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(values));
+        if (stringValues.isEmpty())
+            return null;
+
+        return stringValues;
 
     }
 
