@@ -51,8 +51,10 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The base DN of users. All users must be direct children of this DN,
-     * varying only by LDAP_USERNAME_ATTRIBUTE.
+     * The base DN of users. All users must be contained somewhere within the
+     * subtree of this DN. If the LDAP authentication will not be given its own
+     * credentials for querying other LDAP users, all users must be direct
+     * children of this base DN, varying only by LDAP_USERNAME_ATTRIBUTE.
      */
     public static final StringGuacamoleProperty LDAP_USER_BASE_DN = new StringGuacamoleProperty() {
 
