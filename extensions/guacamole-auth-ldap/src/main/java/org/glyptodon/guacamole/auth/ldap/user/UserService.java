@@ -143,8 +143,21 @@ public class UserService {
 
         // Build map of users by querying each username attribute separately
         Map<String, User> users = new HashMap<String, User>();
-        for (String usernameAttribute : confService.getUsernameAttributes())
-            putAllUsers(users, ldapConnection, usernameAttribute);
+        for (String usernameAttribute : confService.getUsernameAttributes()) {
+
+            // Attempt to pull all users with given attribute
+            try {
+                putAllUsers(users, ldapConnection, usernameAttribute);
+            }
+
+            // Log any errors non-fatally
+            catch (GuacamoleException e) {
+                logger.warn("Could not query list of all users for attribute \"{}\": {}",
+                        usernameAttribute, e.getMessage());
+                logger.debug("Error querying list of all users.", e);
+            }
+
+        }
 
         // Return map of all users
         return users;
