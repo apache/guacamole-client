@@ -109,6 +109,12 @@ public class AuthenticationProviderService {
                 confService.getSearchBindPassword()
             );
 
+            // Warn of failure to find
+            if (searchConnection == null) {
+                logger.error("Unable to bind using search DN \"{}\"", searchBindDN);
+                return null;
+            }
+
             try {
 
                 // Retrieve all DNs associated with the given username
