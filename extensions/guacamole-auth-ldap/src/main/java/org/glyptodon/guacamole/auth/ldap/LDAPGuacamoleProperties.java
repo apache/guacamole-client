@@ -65,8 +65,8 @@ public class LDAPGuacamoleProperties {
 
     /**
      * The attribute or attributes which identify users. One of these
-     * attributes must be present within the each Guacamole user's record in
-     * the LDAP directory. If the LDAP authentication will not be given its own
+     * attributes must be present within each Guacamole user's record in the
+     * LDAP directory. If the LDAP authentication will not be given its own
      * credentials for querying other LDAP users, this list may contain only
      * one attribute, and the concatenation of that attribute and the value of
      * LDAP_USER_BASE_DN must equal the user's full DN.
