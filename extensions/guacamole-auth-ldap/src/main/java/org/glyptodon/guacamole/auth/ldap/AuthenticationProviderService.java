@@ -209,6 +209,7 @@ public class AuthenticationProviderService {
             catch (UnsupportedEncodingException e) {
                 logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
                 logger.debug("Support for UTF-8 (as required by Java spec) not found.", e);
+                disconnect(ldapConnection);
                 return null;
             }
 
