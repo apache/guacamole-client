@@ -211,6 +211,9 @@ public class UserService {
         if (usernameAttributes.size() > 1)
             ldapQuery.append(")");
 
+        // Close overall query (AND clause)
+        ldapQuery.append(")");
+
         return ldapQuery.toString();
 
     }
