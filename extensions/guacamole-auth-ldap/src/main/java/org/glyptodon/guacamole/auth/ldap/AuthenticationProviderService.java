@@ -111,13 +111,14 @@ public class AuthenticationProviderService {
     }
 
     /**
-     * Binds to the LDAP server using the provided Guacamole credentials. The
-     * DN of the user is derived using the LDAP configuration properties
-     * provided in guacamole.properties, as is the server hostname and port
-     * information.
+     * Binds to the LDAP server using the provided user DN and password.
      *
-     * @param credentials
-     *     The credentials to use to bind to the LDAP server.
+     * @param userDN
+     *     The DN of the user to bind as, or null to bind anonymously.
+     *
+     * @param password
+     *     The password to use when binding as the specified user, or null to
+     *     attempt to bind without a password.
      *
      * @return
      *     A bound LDAP connection, or null if the connection could not be
@@ -126,26 +127,10 @@ public class AuthenticationProviderService {
      * @throws GuacamoleException
      *     If an error occurs while binding to the LDAP server.
      */
-    private LDAPConnection bindAs(Credentials credentials)
-        throws GuacamoleException {
+    private LDAPConnection bindAs(String userDN, String password)
+            throws GuacamoleException {
 
         LDAPConnection ldapConnection;
-
-        // Get username and password from credentials
-        String username = credentials.getUsername();
-        String password = credentials.getPassword();
-
-        // Require username
-        if (username == null || username.isEmpty()) {
-            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-            return null;
-        }
-
-        // Require password, and do not allow anonymous binding
-        if (password == null || password.isEmpty()) {
-            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
-            return null;
-        }
 
         // Connect to LDAP server
         try {
@@ -163,13 +148,6 @@ public class AuthenticationProviderService {
 
         // Bind using provided credentials
         try {
-
-            // Determine user DN
-            String userDN = getUserBindDN(username);
-            if (userDN == null) {
-                logger.error("Unable to determine DN for user \"{}\".", username);
-                return null;
-            }
 
             // Bind as user
             try {
@@ -195,6 +173,53 @@ public class AuthenticationProviderService {
         }
 
         return ldapConnection;
+        
+    }
+
+    /**
+     * Binds to the LDAP server using the provided Guacamole credentials. The
+     * DN of the user is derived using the LDAP configuration properties
+     * provided in guacamole.properties, as is the server hostname and port
+     * information.
+     *
+     * @param credentials
+     *     The credentials to use to bind to the LDAP server.
+     *
+     * @return
+     *     A bound LDAP connection, or null if the connection could not be
+     *     bound.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while binding to the LDAP server.
+     */
+    private LDAPConnection bindAs(Credentials credentials)
+        throws GuacamoleException {
+
+        // Get username and password from credentials
+        String username = credentials.getUsername();
+        String password = credentials.getPassword();
+
+        // Require username
+        if (username == null || username.isEmpty()) {
+            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
+            return null;
+        }
+
+        // Require password, and do not allow anonymous binding
+        if (password == null || password.isEmpty()) {
+            logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
+            return null;
+        }
+
+        // Determine user DN
+        String userDN = getUserBindDN(username);
+        if (userDN == null) {
+            logger.error("Unable to determine DN for user \"{}\".", username);
+            return null;
+        }
+
+        // Bind using user's DN
+        return bindAs(userDN, password);
 
     }
 
