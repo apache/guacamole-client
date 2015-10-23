@@ -133,4 +133,42 @@ public class ConfigurationService {
         );
     }
 
+    /**
+     * Returns the DN that should be used when searching for the DNs of users
+     * attempting to authenticate. If no such search should be performed, null
+     * is returned.
+     *
+     * @return
+     *     The DN that should be used when searching for the DNs of users
+     *     attempting to authenticate, or null if no such search should be
+     *     performed.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getSearchBindDN() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
+        );
+    }
+
+    /**
+     * Returns the password that should be used when binding to the LDAP server
+     * using the DN returned by getSearchBindDN(). If no password should be
+     * used, null is returned.
+     *
+     * @return
+     *     The password that should be used when binding to the LDAP server
+     *     using the DN returned by getSearchBindDN(), or null if no password
+     *     should be used.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getSearchBindPassword() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD
+        );
+    }
+
 }
