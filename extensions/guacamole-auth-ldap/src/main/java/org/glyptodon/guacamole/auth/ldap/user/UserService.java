@@ -28,7 +28,9 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSearchResults;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
@@ -161,6 +163,109 @@ public class UserService {
 
         // Return map of all users
         return users;
+
+    }
+
+    /**
+     * Generates a properly-escaped LDAP query which finds all objects having
+     * at least one username attribute set to the specified username, where
+     * the possible username attributes are defined within
+     * guacamole.properties.
+     *
+     * @param username
+     *     The username that the resulting LDAP query should search for within
+     *     objects within the LDAP directory.
+     *
+     * @return
+     *     An LDAP query which will search for arbitrary LDAP objects
+     *     containing at least one username attribute set to the specified
+     *     username.
+     *
+     * @throws GuacamoleException
+     *     If the LDAP query cannot be generated because the list of username
+     *     attributes cannot be parsed from guacamole.properties.
+     */
+    private String generateLDAPQuery(String username)
+            throws GuacamoleException {
+
+        List<String> usernameAttributes = confService.getUsernameAttributes();
+
+        // Build LDAP query for users having at least one username attribute
+        // with the specified username as its value
+        StringBuilder ldapQuery = new StringBuilder("(&(objectClass=*)");
+
+        // Include all attributes within OR clause if there are more than one
+        if (usernameAttributes.size() > 1)
+            ldapQuery.append("(|");
+
+        // Add equality comparison for each possible username attribute
+        for (String usernameAttribute : usernameAttributes) {
+            ldapQuery.append("(");
+            ldapQuery.append(escapingService.escapeLDAPSearchFilter(usernameAttribute));
+            ldapQuery.append("=");
+            ldapQuery.append(escapingService.escapeLDAPSearchFilter(username));
+            ldapQuery.append(")");
+        }
+
+        // Close OR clause, if any
+        if (usernameAttributes.size() > 1)
+            ldapQuery.append(")");
+
+        return ldapQuery.toString();
+
+    }
+
+    /**
+     * Returns a list of all DNs corresponding to the users having the given
+     * username. If multiple username attributes are defined, or if uniqueness
+     * is not enforced across the username attribute, it is possible that this
+     * will return multiple DNs.
+     *
+     * @param ldapConnection
+     *     The connection to the LDAP server to use when querying user DNs.
+     *
+     * @param username
+     *     The username of the user whose corresponding user account DNs are
+     *     to be retrieved.
+     *
+     * @return
+     *     A list of all DNs corresponding to the users having the given
+     *     username. If no such DNs exist, this list will be empty.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while querying the user DNs, or if the username
+     *     attribute property cannot be parsed within guacamole.properties.
+     */
+    public List<String> getUserDNs(LDAPConnection ldapConnection,
+            String username) throws GuacamoleException {
+
+        try {
+
+            List<String> userDNs = new ArrayList<String>();
+
+            // Find all Guacamole users underneath base DN and matching the
+            // specified username
+            LDAPSearchResults results = ldapConnection.search(
+                confService.getUserBaseDN(),
+                LDAPConnection.SCOPE_SUB,
+                generateLDAPQuery(username),
+                null,
+                false
+            );
+
+            // Add all DNs for found users
+            while (results.hasMore()) {
+                LDAPEntry entry = results.next();
+                userDNs.add(entry.getDN());
+            }
+
+            // Return all discovered DNs (if any)
+            return userDNs;
+
+        }
+        catch (LDAPException e) {
+            throw new GuacamoleServerException("Error while query user DNs.", e);
+        }
 
     }
 
