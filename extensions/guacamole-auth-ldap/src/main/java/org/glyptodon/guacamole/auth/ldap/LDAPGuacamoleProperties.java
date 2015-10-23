@@ -51,8 +51,10 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The base DN of users. All users must be direct children of this DN,
-     * varying only by LDAP_USERNAME_ATTRIBUTE.
+     * The base DN of users. All users must be contained somewhere within the
+     * subtree of this DN. If the LDAP authentication will not be given its own
+     * credentials for querying other LDAP users, all users must be direct
+     * children of this base DN, varying only by LDAP_USERNAME_ATTRIBUTE.
      */
     public static final StringGuacamoleProperty LDAP_USER_BASE_DN = new StringGuacamoleProperty() {
 
@@ -62,11 +64,14 @@ public class LDAPGuacamoleProperties {
     };
 
     /**
-     * The attribute which identifies users. This attribute must be part of
-     * each user's DN such that the concatenation of this attribute and
-     * LDAP_USER_BASE_DN equals the users full DN.
+     * The attribute or attributes which identify users. One of these
+     * attributes must be present within each Guacamole user's record in the
+     * LDAP directory. If the LDAP authentication will not be given its own
+     * credentials for querying other LDAP users, this list may contain only
+     * one attribute, and the concatenation of that attribute and the value of
+     * LDAP_USER_BASE_DN must equal the user's full DN.
      */
-    public static final StringGuacamoleProperty LDAP_USERNAME_ATTRIBUTE = new StringGuacamoleProperty() {
+    public static final StringListProperty LDAP_USERNAME_ATTRIBUTE = new StringListProperty() {
 
         @Override
         public String getName() { return "ldap-username-attribute"; }
@@ -90,6 +95,32 @@ public class LDAPGuacamoleProperties {
 
         @Override
         public String getName() { return "ldap-hostname"; }
+
+    };
+
+    /**
+     * The DN of the user that the LDAP authentication should bind as when
+     * searching for the user accounts of users attempting to log in. If not
+     * specified, the DNs of users attempting to log in will be derived from
+     * the LDAP_BASE_DN and LDAP_USERNAME_ATTRIBUTE directly.
+     */
+    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_DN = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-search-bind-dn"; }
+
+    };
+
+    /**
+     * The password to provide to the LDAP server when binding as
+     * LDAP_SEARCH_BIND_DN. If LDAP_SEARCH_BIND_DN is not specified, this
+     * property has no effect. If this property is not specified, no password
+     * will be provided when attempting to bind as LDAP_SEARCH_BIND_DN.
+     */
+    public static final StringGuacamoleProperty LDAP_SEARCH_BIND_PASSWORD = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-search-bind-password"; }
 
     };
 

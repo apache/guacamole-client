@@ -25,11 +25,11 @@ package org.glyptodon.guacamole.auth.ldap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPException;
-import java.io.UnsupportedEncodingException;
+import java.util.List;
 import org.glyptodon.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.ldap.user.UserContext;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.ldap.user.UserService;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -50,16 +50,22 @@ public class AuthenticationProviderService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
-     * Service for escaping parts of LDAP queries.
+     * Service for creating and managing connections to LDAP servers.
      */
     @Inject
-    private EscapingService escapingService;
+    private LDAPConnectionService ldapService;
 
     /**
      * Service for retrieving LDAP server configuration information.
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Service for retrieving users and their corresponding LDAP DNs.
+     */
+    @Inject
+    private UserService userService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -72,6 +78,72 @@ public class AuthenticationProviderService {
      */
     @Inject
     private Provider<UserContext> userContextProvider;
+
+    /**
+     * Determines the DN which corresponds to the user having the given
+     * username. The DN will either be derived directly from the user base DN,
+     * or queried from the LDAP server, depending on how LDAP authentication
+     * has been configured.
+     *
+     * @param username
+     *     The username of the user whose corresponding DN should be returned.
+     *
+     * @return
+     *     The DN which corresponds to the user having the given username.
+     *
+     * @throws GuacamoleException
+     *     If required properties are missing, and thus the user DN cannot be
+     *     determined.
+     */
+    private String getUserBindDN(String username)
+            throws GuacamoleException {
+
+        // If a search DN is provided, search the LDAP directory for the DN
+        // corresponding to the given username
+        String searchBindDN = confService.getSearchBindDN();
+        if (searchBindDN != null) {
+
+            // Create an LDAP connection using the search account
+            LDAPConnection searchConnection = ldapService.bindAs(
+                searchBindDN,
+                confService.getSearchBindPassword()
+            );
+
+            // Warn of failure to find
+            if (searchConnection == null) {
+                logger.error("Unable to bind using search DN \"{}\"", searchBindDN);
+                return null;
+            }
+
+            try {
+
+                // Retrieve all DNs associated with the given username
+                List<String> userDNs = userService.getUserDNs(searchConnection, username);
+                if (userDNs.isEmpty())
+                    return null;
+
+                // Warn if multiple DNs exist for the same user
+                if (userDNs.size() != 1) {
+                    logger.warn("Multiple DNs possible for user \"{}\": {}", username, userDNs);
+                    return null;
+                }
+
+                // Return the single possible DN
+                return userDNs.get(0);
+
+            }
+
+            // Always disconnect
+            finally {
+                ldapService.disconnect(searchConnection);
+            }
+
+        }
+
+        // Otherwise, derive user DN from base DN
+        return userService.deriveUserDN(username);
+
+    }
 
     /**
      * Binds to the LDAP server using the provided Guacamole credentials. The
@@ -92,76 +164,64 @@ public class AuthenticationProviderService {
     private LDAPConnection bindAs(Credentials credentials)
         throws GuacamoleException {
 
-        LDAPConnection ldapConnection;
+        // Get username and password from credentials
+        String username = credentials.getUsername();
+        String password = credentials.getPassword();
 
         // Require username
-        if (credentials.getUsername() == null) {
+        if (username == null || username.isEmpty()) {
             logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
             return null;
         }
 
         // Require password, and do not allow anonymous binding
-        if (credentials.getPassword() == null
-                || credentials.getPassword().length() == 0) {
+        if (password == null || password.isEmpty()) {
             logger.debug("Anonymous bind is not currently allowed by the LDAP authentication provider.");
             return null;
         }
 
-        // Connect to LDAP server
-        try {
-            ldapConnection = new LDAPConnection();
-            ldapConnection.connect(
-                confService.getServerHostname(),
-                confService.getServerPort()
-            );
-        }
-        catch (LDAPException e) {
-            logger.error("Unable to connect to LDAP server: {}", e.getMessage());
-            logger.debug("Failed to connect to LDAP server.", e);
+        // Determine user DN
+        String userDN = getUserBindDN(username);
+        if (userDN == null) {
+            logger.debug("Unable to determine DN for user \"{}\".", username);
             return null;
         }
 
-        // Bind using provided credentials
-        try {
-
-            // Construct user DN
-            String userDN =
-                        escapingService.escapeDN(confService.getUsernameAttribute())
-                + "=" + escapingService.escapeDN(credentials.getUsername())
-                + "," + confService.getUserBaseDN();
-
-            // Bind as user
-            try {
-                ldapConnection.bind(LDAPConnection.LDAP_V3, userDN,
-                        credentials.getPassword().getBytes("UTF-8"));
-            }
-            catch (UnsupportedEncodingException e) {
-                logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-                logger.debug("Support for UTF-8 (as required by Java spec) not found.", e);
-                return null;
-            }
-
-            // Disconnect if an error occurs during bind
-            catch (LDAPException e) {
-                ldapConnection.disconnect();
-                throw e;
-            }
-
-        }
-        catch (LDAPException e) {
-            logger.debug("LDAP bind failed.", e);
-            return null;
-        }
-
-        return ldapConnection;
+        // Bind using user's DN
+        return ldapService.bindAs(userDN, password);
 
     }
 
+    /**
+     * Returns an AuthenticatedUser representing the user authenticated by the
+     * given credentials.
+     *
+     * @param credentials
+     *     The credentials to use for authentication.
+     *
+     * @return
+     *     An AuthenticatedUser representing the user authenticated by the
+     *     given credentials.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while authenticating the user, or if access is
+     *     denied.
+     */
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         // Attempt bind
-        LDAPConnection ldapConnection = bindAs(credentials);
+        LDAPConnection ldapConnection;
+        try {
+            ldapConnection = bindAs(credentials);
+        }
+        catch (GuacamoleException e) {
+            logger.error("Cannot bind with LDAP server: {}", e.getMessage());
+            logger.debug("Error binding with LDAP server.", e);
+            ldapConnection = null;
+        }
+
+        // If bind fails, permission to login is denied
         if (ldapConnection == null)
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.USERNAME_PASSWORD);
 
@@ -176,18 +236,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-
-            // Attempt disconnect
-            try {
-                ldapConnection.disconnect();
-            }
-
-            // Warn if disconnect unexpectedly fails
-            catch (LDAPException e) {
-                logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-                logger.debug("LDAP disconnect failed.", e);
-            }
-
+            ldapService.disconnect(ldapConnection);
         }
 
     }
@@ -226,18 +275,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-
-            // Attempt disconnect
-            try {
-                ldapConnection.disconnect();
-            }
-
-            // Warn if disconnect unexpectedly fails
-            catch (LDAPException e) {
-                logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-                logger.debug("LDAP disconnect failed.", e);
-            }
-
+            ldapService.disconnect(ldapConnection);
         }
 
     }

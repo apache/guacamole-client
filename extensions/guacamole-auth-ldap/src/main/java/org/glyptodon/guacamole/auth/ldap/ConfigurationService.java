@@ -23,6 +23,8 @@
 package org.glyptodon.guacamole.auth.ldap;
 
 import com.google.inject.Inject;
+import java.util.Collections;
+import java.util.List;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 
@@ -77,21 +79,21 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the username attribute which should be used to query and bind
+     * Returns all username attributes which should be used to query and bind
      * users using the LDAP directory. By default, this will be "uid" - a
      * common attribute used for this purpose.
      *
      * @return
-     *     The username attribute which should be used to query and bind users
+     *     The username attributes which should be used to query and bind users
      *     using the LDAP directory.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getUsernameAttribute() throws GuacamoleException {
+    public List<String> getUsernameAttributes() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_USERNAME_ATTRIBUTE,
-            "uid"
+            Collections.singletonList("uid")
         );
     }
 
@@ -115,19 +117,58 @@ public class ConfigurationService {
 
     /**
      * Returns the base DN under which all Guacamole configurations
-     * (connections) will be stored within the LDAP directory.
+     * (connections) will be stored within the LDAP directory. If Guacamole
+     * configurations will not be stored within LDAP, null is returned.
      *
      * @return
      *     The base DN under which all Guacamole configurations will be stored
-     *     within the LDAP directory.
+     *     within the LDAP directory, or null if no Guacamole configurations
+     *     will be stored within the LDAP directory.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the configuration
-     *     base DN property is not specified.
+     *     If guacamole.properties cannot be parsed.
      */
     public String getConfigurationBaseDN() throws GuacamoleException {
-        return environment.getRequiredProperty(
+        return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
+        );
+    }
+
+    /**
+     * Returns the DN that should be used when searching for the DNs of users
+     * attempting to authenticate. If no such search should be performed, null
+     * is returned.
+     *
+     * @return
+     *     The DN that should be used when searching for the DNs of users
+     *     attempting to authenticate, or null if no such search should be
+     *     performed.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getSearchBindDN() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN
+        );
+    }
+
+    /**
+     * Returns the password that should be used when binding to the LDAP server
+     * using the DN returned by getSearchBindDN(). If no password should be
+     * used, null is returned.
+     *
+     * @return
+     *     The password that should be used when binding to the LDAP server
+     *     using the DN returned by getSearchBindDN(), or null if no password
+     *     should be used.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getSearchBindPassword() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD
         );
     }
 
