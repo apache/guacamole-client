@@ -25,8 +25,6 @@ package org.glyptodon.guacamole.auth.ldap;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
-import com.novell.ldap.LDAPException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import org.glyptodon.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.ldap.user.UserContext;
@@ -50,6 +48,12 @@ public class AuthenticationProviderService {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+
+    /**
+     * Service for creating and managing connections to LDAP servers.
+     */
+    @Inject
+    private LDAPConnectionService ldapService;
 
     /**
      * Service for retrieving LDAP server configuration information.
@@ -76,28 +80,6 @@ public class AuthenticationProviderService {
     private Provider<UserContext> userContextProvider;
 
     /**
-     * Disconnects the given LDAP connection, logging any failure to do so
-     * appropriately.
-     *
-     * @param ldapConnection
-     *     The LDAP connection to disconnect.
-     */
-    private void disconnect(LDAPConnection ldapConnection) {
-
-        // Attempt disconnect
-        try {
-            ldapConnection.disconnect();
-        }
-
-        // Warn if disconnect unexpectedly fails
-        catch (LDAPException e) {
-            logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-            logger.debug("LDAP disconnect failed.", e);
-        }
-
-    }
-
-    /**
      * Determines the DN which corresponds to the user having the given
      * username. The DN will either be derived directly from the user base DN,
      * or queried from the LDAP server, depending on how LDAP authentication
@@ -122,7 +104,7 @@ public class AuthenticationProviderService {
         if (searchBindDN != null) {
 
             // Create an LDAP connection using the search account
-            LDAPConnection searchConnection = bindAs(
+            LDAPConnection searchConnection = ldapService.bindAs(
                 searchBindDN,
                 confService.getSearchBindPassword()
             );
@@ -147,7 +129,7 @@ public class AuthenticationProviderService {
 
             // Always disconnect
             finally {
-                disconnect(searchConnection);
+                ldapService.disconnect(searchConnection);
             }
 
         }
@@ -155,78 +137,6 @@ public class AuthenticationProviderService {
         // Otherwise, derive user DN from base DN
         return userService.deriveUserDN(username);
 
-    }
-
-    /**
-     * Binds to the LDAP server using the provided user DN and password.
-     *
-     * @param userDN
-     *     The DN of the user to bind as, or null to bind anonymously.
-     *
-     * @param password
-     *     The password to use when binding as the specified user, or null to
-     *     attempt to bind without a password.
-     *
-     * @return
-     *     A bound LDAP connection, or null if the connection could not be
-     *     bound.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while binding to the LDAP server.
-     */
-    private LDAPConnection bindAs(String userDN, String password)
-            throws GuacamoleException {
-
-        LDAPConnection ldapConnection;
-
-        // Connect to LDAP server
-        try {
-            ldapConnection = new LDAPConnection();
-            ldapConnection.connect(
-                confService.getServerHostname(),
-                confService.getServerPort()
-            );
-        }
-        catch (LDAPException e) {
-            logger.error("Unable to connect to LDAP server: {}", e.getMessage());
-            logger.debug("Failed to connect to LDAP server.", e);
-            return null;
-        }
-
-        // Bind using provided credentials
-        try {
-
-            byte[] passwordBytes;
-            try {
-
-                // Convert password into corresponding byte array
-                if (password != null)
-                    passwordBytes = password.getBytes("UTF-8");
-                else
-                    passwordBytes = null;
-
-            }
-            catch (UnsupportedEncodingException e) {
-                logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-                logger.debug("Support for UTF-8 (as required by Java spec) not found.", e);
-                disconnect(ldapConnection);
-                return null;
-            }
-
-            // Bind as user
-            ldapConnection.bind(LDAPConnection.LDAP_V3, userDN, passwordBytes);
-
-        }
-
-        // Disconnect if an error occurs during bind
-        catch (LDAPException e) {
-            logger.debug("LDAP bind failed.", e);
-            disconnect(ldapConnection);
-            return null;
-        }
-
-        return ldapConnection;
-        
     }
 
     /**
@@ -272,7 +182,7 @@ public class AuthenticationProviderService {
         }
 
         // Bind using user's DN
-        return bindAs(userDN, password);
+        return ldapService.bindAs(userDN, password);
 
     }
 
@@ -320,7 +230,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-            disconnect(ldapConnection);
+            ldapService.disconnect(ldapConnection);
         }
 
     }
@@ -359,7 +269,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-            disconnect(ldapConnection);
+            ldapService.disconnect(ldapConnection);
         }
 
     }

@@ -81,6 +81,7 @@ public class LDAPAuthenticationProviderModule extends AbstractModule {
         bind(ConfigurationService.class);
         bind(ConnectionService.class);
         bind(EscapingService.class);
+        bind(LDAPConnectionService.class);
         bind(UserService.class);
 
     }
