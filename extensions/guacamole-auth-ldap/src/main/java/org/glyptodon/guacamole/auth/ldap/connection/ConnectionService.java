@@ -28,6 +28,7 @@ import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPEntry;
 import com.novell.ldap.LDAPException;
 import com.novell.ldap.LDAPSearchResults;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -86,6 +87,11 @@ public class ConnectionService {
     public Map<String, Connection> getConnections(LDAPConnection ldapConnection)
             throws GuacamoleException {
 
+        // Do not return any connections if base DN is not specified
+        String configurationBaseDN = confService.getConfigurationBaseDN();
+        if (configurationBaseDN == null)
+            return Collections.<String, Connection>emptyMap();
+
         try {
 
             // Pull the current user DN from the LDAP connection
@@ -98,7 +104,7 @@ public class ConnectionService {
 
             // Find all Guacamole connections for the given user
             LDAPSearchResults results = ldapConnection.search(
-                confService.getConfigurationBaseDN(),
+                configurationBaseDN,
                 LDAPConnection.SCOPE_SUB,
                 "(&(objectClass=guacConfigGroup)(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
                 null,

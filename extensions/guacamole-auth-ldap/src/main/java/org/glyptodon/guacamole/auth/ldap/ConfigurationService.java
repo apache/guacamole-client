@@ -117,18 +117,19 @@ public class ConfigurationService {
 
     /**
      * Returns the base DN under which all Guacamole configurations
-     * (connections) will be stored within the LDAP directory.
+     * (connections) will be stored within the LDAP directory. If Guacamole
+     * configurations will not be stored within LDAP, null is returned.
      *
      * @return
      *     The base DN under which all Guacamole configurations will be stored
-     *     within the LDAP directory.
+     *     within the LDAP directory, or null if no Guacamole configurations
+     *     will be stored within the LDAP directory.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the configuration
-     *     base DN property is not specified.
+     *     If guacamole.properties cannot be parsed.
      */
     public String getConfigurationBaseDN() throws GuacamoleException {
-        return environment.getRequiredProperty(
+        return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_CONFIG_BASE_DN
         );
     }
