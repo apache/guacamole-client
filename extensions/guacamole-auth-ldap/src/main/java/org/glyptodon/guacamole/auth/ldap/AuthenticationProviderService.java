@@ -27,6 +27,7 @@ import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import org.glyptodon.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.ldap.user.UserContext;
 import org.glyptodon.guacamole.GuacamoleException;
@@ -75,6 +76,28 @@ public class AuthenticationProviderService {
     private Provider<UserContext> userContextProvider;
 
     /**
+     * Disconnects the given LDAP connection, logging any failure to do so
+     * appropriately.
+     *
+     * @param ldapConnection
+     *     The LDAP connection to disconnect.
+     */
+    private void disconnect(LDAPConnection ldapConnection) {
+
+        // Attempt disconnect
+        try {
+            ldapConnection.disconnect();
+        }
+
+        // Warn if disconnect unexpectedly fails
+        catch (LDAPException e) {
+            logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
+            logger.debug("LDAP disconnect failed.", e);
+        }
+
+    }
+
+    /**
      * Determines the DN which corresponds to the user having the given
      * username. The DN will either be derived directly from the user base DN,
      * or queried from the LDAP server, depending on how LDAP authentication
@@ -93,7 +116,43 @@ public class AuthenticationProviderService {
     private String getUserBindDN(String username)
             throws GuacamoleException {
 
-        // Derive user DN from base DN
+        // If a search DN is provided, search the LDAP directory for the DN
+        // corresponding to the given username
+        String searchBindDN = confService.getSearchBindDN();
+        if (searchBindDN != null) {
+
+            // Create an LDAP connection using the search account
+            LDAPConnection searchConnection = bindAs(
+                searchBindDN,
+                confService.getSearchBindPassword()
+            );
+
+            try {
+
+                // Retrieve all DNs associated with the given username
+                List<String> userDNs = userService.getUserDNs(searchConnection, username);
+                if (userDNs.isEmpty())
+                    return null;
+
+                // Warn if multiple DNs exist for the same user
+                if (userDNs.size() != 1) {
+                    logger.warn("Multiple DNs possible for user \"{}\": {}", username, userDNs);
+                    return null;
+                }
+
+                // Return the single possible DN
+                return userDNs.get(0);
+
+            }
+
+            // Always disconnect
+            finally {
+                disconnect(searchConnection);
+            }
+
+        }
+
+        // Otherwise, derive user DN from base DN
         return userService.deriveUserDN(username);
 
     }
@@ -137,10 +196,15 @@ public class AuthenticationProviderService {
         // Bind using provided credentials
         try {
 
-            // Bind as user
+            byte[] passwordBytes;
             try {
-                ldapConnection.bind(LDAPConnection.LDAP_V3, userDN,
-                        password.getBytes("UTF-8"));
+
+                // Convert password into corresponding byte array
+                if (password != null)
+                    passwordBytes = password.getBytes("UTF-8");
+                else
+                    passwordBytes = null;
+
             }
             catch (UnsupportedEncodingException e) {
                 logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
@@ -148,15 +212,15 @@ public class AuthenticationProviderService {
                 return null;
             }
 
-            // Disconnect if an error occurs during bind
-            catch (LDAPException e) {
-                ldapConnection.disconnect();
-                throw e;
-            }
+            // Bind as user
+            ldapConnection.bind(LDAPConnection.LDAP_V3, userDN, passwordBytes);
 
         }
+
+        // Disconnect if an error occurs during bind
         catch (LDAPException e) {
             logger.debug("LDAP bind failed.", e);
+            disconnect(ldapConnection);
             return null;
         }
 
@@ -202,7 +266,7 @@ public class AuthenticationProviderService {
         // Determine user DN
         String userDN = getUserBindDN(username);
         if (userDN == null) {
-            logger.error("Unable to determine DN for user \"{}\".", username);
+            logger.debug("Unable to determine DN for user \"{}\".", username);
             return null;
         }
 
@@ -255,18 +319,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-
-            // Attempt disconnect
-            try {
-                ldapConnection.disconnect();
-            }
-
-            // Warn if disconnect unexpectedly fails
-            catch (LDAPException e) {
-                logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-                logger.debug("LDAP disconnect failed.", e);
-            }
-
+            disconnect(ldapConnection);
         }
 
     }
@@ -305,18 +358,7 @@ public class AuthenticationProviderService {
 
         // Always disconnect
         finally {
-
-            // Attempt disconnect
-            try {
-                ldapConnection.disconnect();
-            }
-
-            // Warn if disconnect unexpectedly fails
-            catch (LDAPException e) {
-                logger.warn("Unable to disconnect from LDAP server: {}", e.getMessage());
-                logger.debug("LDAP disconnect failed.", e);
-            }
-
+            disconnect(ldapConnection);
         }
 
     }
