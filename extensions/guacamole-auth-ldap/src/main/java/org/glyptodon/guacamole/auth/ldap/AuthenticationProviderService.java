@@ -27,10 +27,10 @@ import com.google.inject.Provider;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
 import org.glyptodon.guacamole.auth.ldap.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.ldap.user.UserContext;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.ldap.user.UserService;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.credentials.CredentialsInfo;
 import org.glyptodon.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -51,16 +51,16 @@ public class AuthenticationProviderService {
     private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
-     * Service for escaping parts of LDAP queries.
-     */
-    @Inject
-    private EscapingService escapingService;
-
-    /**
      * Service for retrieving LDAP server configuration information.
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Service for retrieving users and their corresponding LDAP DNs.
+     */
+    @Inject
+    private UserService userService;
 
     /**
      * Provider for AuthenticatedUser objects.
@@ -93,20 +93,8 @@ public class AuthenticationProviderService {
     private String getUserBindDN(String username)
             throws GuacamoleException {
 
-        // Pull username attributes from properties
-        List<String> usernameAttributes = confService.getUsernameAttributes();
-
-        // We need exactly one base DN to derive the user DN
-        if (usernameAttributes.size() != 1) {
-            logger.warn("Cannot directly derive user DN when multiple username attributes are specified");
-            return null;
-        }
-
         // Derive user DN from base DN
-        return
-                    escapingService.escapeDN(usernameAttributes.get(0))
-            + "=" + escapingService.escapeDN(username)
-            + "," + confService.getUserBaseDN();
+        return userService.deriveUserDN(username);
 
     }
 

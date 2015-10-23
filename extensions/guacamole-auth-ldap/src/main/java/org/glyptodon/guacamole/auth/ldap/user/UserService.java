@@ -269,4 +269,40 @@ public class UserService {
 
     }
 
+    /**
+     * Determines the DN which corresponds to the user having the given
+     * username. The DN will either be derived directly from the user base DN,
+     * or queried from the LDAP server, depending on how LDAP authentication
+     * has been configured.
+     *
+     * @param username
+     *     The username of the user whose corresponding DN should be returned.
+     *
+     * @return
+     *     The DN which corresponds to the user having the given username.
+     *
+     * @throws GuacamoleException
+     *     If required properties are missing, and thus the user DN cannot be
+     *     determined.
+     */
+    public String deriveUserDN(String username)
+            throws GuacamoleException {
+
+        // Pull username attributes from properties
+        List<String> usernameAttributes = confService.getUsernameAttributes();
+
+        // We need exactly one base DN to derive the user DN
+        if (usernameAttributes.size() != 1) {
+            logger.warn("Cannot directly derive user DN when multiple username attributes are specified");
+            return null;
+        }
+
+        // Derive user DN from base DN
+        return
+                    escapingService.escapeDN(usernameAttributes.get(0))
+            + "=" + escapingService.escapeDN(username)
+            + "," + confService.getUserBaseDN();
+
+    }
+
 }
