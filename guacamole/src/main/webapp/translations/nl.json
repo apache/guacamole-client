@@ -20,7 +20,9 @@
         "ACTION_NAVIGATE_BACK"      : "Terug",
         "ACTION_NAVIGATE_HOME"      : "Home",
         "ACTION_SAVE"               : "Opslaan",
+        "ACTION_SEARCH"             : "Zoeken",
         "ACTION_UPDATE_PASSWORD"    : "Wijzig Wachtwoord",
+        "ACTION_VIEW_HISTORY"       : "Gebruikgeschiedenis",
 
         "DIALOG_HEADER_ERROR" : "Fout",
 
@@ -110,6 +112,7 @@
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
         "SECTION_HEADER_CLIPBOARD"      : "Klembord",
+        "SECTION_HEADER_DEVICES"        : "Apparaten",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_FILE_TRANSFERS" : "Bestandsoverdrachten",
         "SECTION_HEADER_INPUT_METHOD"   : "Invoer methode",
@@ -127,7 +130,14 @@
 
     },
 
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Standaard (XML)"
+    },
+
     "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
 
         "HELP_SHOW_PASSWORD" : "Klik om wachtwoord te tonen",
         "HELP_HIDE_PASSWORD" : "Klik om wachtwoord te verbergen"
@@ -239,7 +249,9 @@
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Gebruikersnaam:",
-        
+
+        "INFO_READ_ONLY" : "Sorry, maar dit gebruikers account kan niet gewijzigd worden",
+
         "SECTION_HEADER_CONNECTIONS" : "Verbindingen",
         "SECTION_HEADER_EDIT_USER"   : "Bewerk Gebruiker",
         "SECTION_HEADER_PERMISSIONS" : "Rechten",
@@ -254,14 +266,21 @@
         "FIELD_HEADER_COLOR_DEPTH"     : "Kleurdiepte:",
         "FIELD_HEADER_CONSOLE"         : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "Support audio in console:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automatisch genereren station:",
         "FIELD_HEADER_DISABLE_AUDIO"   : "Uitschakelen geluid:",
         "FIELD_HEADER_DISABLE_AUTH"    : "Uitschakelen authenticatie:",
         "FIELD_HEADER_DOMAIN"          : "Domein:",
         "FIELD_HEADER_DPI"             : "Resolutie (DPI):",
         "FIELD_HEADER_DRIVE_PATH"      : "Station map:",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Inschakelen bureaublad compositie (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"    : "Inschakelen station:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Inschakelen font smoothing (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Inschakelen verslepen compleet venster:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Inschakelen menu animaties:",
         "FIELD_HEADER_ENABLE_PRINTING" : "Printen mogelijk maken:",
-        "FIELD_HEADER_ENABLE_SFTP"     : "SFTP mogelijk maken:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Inschakelen SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Inschakelen thema's:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Inschakelen achtergrond:",
         "FIELD_HEADER_HEIGHT"          : "Hoogte:",
         "FIELD_HEADER_HOSTNAME"        : "Servernaam:",
         "FIELD_HEADER_IGNORE_CERT"     : "Negeer server certificaat:",
@@ -273,6 +292,7 @@
         "FIELD_HEADER_REMOTE_APP"      : "Programma:",
         "FIELD_HEADER_SECURITY"        : "Beveiligings modus:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Toetsenbord lay-out:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standaard upload map:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
@@ -307,9 +327,10 @@
 
         "SECTION_HEADER_AUTHENTICATION"     : "Authenticatie",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "Basis Instellingen",
-        "SECTION_HEADER_DEVICE_REDIRECTION" : "Device Redirection",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Apparaat Verbindingen",
         "SECTION_HEADER_DISPLAY"            : "Scherm",
         "SECTION_HEADER_NETWORK"            : "Netwerk",
+        "SECTION_HEADER_PERFORMANCE"        : "Prestatie instellingen",
         "SECTION_HEADER_REMOTEAPP"          : "ExterneApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
@@ -317,6 +338,8 @@
 
     "PROTOCOL_SSH" : {
 
+        "FIELD_HEADER_COLOR_SCHEME" : "Kleuren combinatie:",
+        "FIELD_HEADER_COMMAND"     : "Uitvoeren opdracht:",
         "FIELD_HEADER_FONT_NAME"   : "Fontnaam:",
         "FIELD_HEADER_FONT_SIZE"   : "Fontgrootte:",
         "FIELD_HEADER_ENABLE_SFTP" : "SFTP mogelijk maken:",
@@ -326,6 +349,12 @@
         "FIELD_HEADER_PASSPHRASE"  : "Wachtwoordzin:",
         "FIELD_HEADER_PORT"        : "Poort:",
         "FIELD_HEADER_PRIVATE_KEY" : "Persoonlijke sleutel:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -348,12 +377,14 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authenticatie",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_NETWORK"        : "Netwerk",
+        "SECTION_HEADER_SESSION"        : "Sessie / Omgeving",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
 
     "PROTOCOL_TELNET" : {
 
+        "FIELD_HEADER_COLOR_SCHEME"   : "Kleuren combinatie:",
         "FIELD_HEADER_FONT_NAME"      : "Fontnaam:",
         "FIELD_HEADER_FONT_SIZE"      : "Fontgrootte:",
         "FIELD_HEADER_HOSTNAME"       : "Servernaam:",
@@ -361,6 +392,12 @@
         "FIELD_HEADER_PASSWORD"       : "Wachtwoord:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Wachtwoord reguliere expressie:",
         "FIELD_HEADER_PORT"           : "Poort:",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Zwart op wit",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grijs op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Groen op zwart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Wit op zwart",
 
         "FIELD_OPTION_FONT_SIZE_8"     : "8",
         "FIELD_OPTION_FONT_SIZE_9"     : "9",
@@ -389,16 +426,18 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server naam:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encodering:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Kleurdiepte:",
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Externe server:",
         "FIELD_HEADER_DEST_PORT"        : "Externe poort:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Inschakelen geluid:",
-        "FIELD_HEADER_ENABLE_SFTP"      : "SFTP mogelijk maken:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Inschakelen SFTP:",
         "FIELD_HEADER_HOSTNAME"         : "Servernaam:",
         "FIELD_HEADER_PASSWORD"         : "Wachtwoord:",
         "FIELD_HEADER_PORT"             : "Poort:",
         "FIELD_HEADER_READ_ONLY"        : "Alleen lezen:",
+        "FIELD_HEADER_SFTP_DIRECTORY"   : "Standaard upload map:",
         "FIELD_HEADER_SFTP_HOSTNAME"    : "Servernaam:",
         "FIELD_HEADER_SFTP_PASSPHRASE"  : "Wachtwoordzin:",
         "FIELD_HEADER_SFTP_PASSWORD"    : "Wachtwoord:",
@@ -416,6 +455,12 @@
         "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Lokaal",
         "FIELD_OPTION_CURSOR_REMOTE" : "Extern",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
 
         "NAME" : "VNC",
 
@@ -435,6 +480,25 @@
 
     },
 
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "De gebruikgeschiedenis van verbindingen wordt hier onder getoond en kan gesorteerd worden door op de titel van de kolom te klikken. Voer een zoekterm in en klik op \"Zoeken\", om op specifieke resultaten te zoeken. Alleen de resultaten die voldoen aan de zoekterm zullen dan getoond worden.",
+
+        "INFO_NO_HISTORY" : "Geen resultaten gevonden",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindingsnaam",
+        "TABLE_HEADER_SESSION_ENDDATE"         : "Eindtijd",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Starttijd",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam"
+
+    },
+
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
@@ -444,15 +508,10 @@
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "HELP_CONNECTIONS"   : "Klik of tik op een verbinding hieronder om die verbinding te beheren. Afhankelijk van uw toegangsniveau kunnen verbindingen worden toegevoegd en verwijderd en hun eigenschappen (protocol, hostname, port, etc.) worden gewijzigd. ",
+
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "SECTION_HEADER_CONNECTIONS"     : "Verbindingen"
-
-    },
-
-    "SETTINGS_CONNECTION_HISTORY" : {
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
 
     },
 
@@ -479,7 +538,7 @@
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"             : "Selecteer hier onder een andere taal om alle text in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geinstalleerd zijn.",
+        "HELP_LANGUAGE"             : "Selecteer onderstaand een andere taal om alle text in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geinstalleerd zijn.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "Als u uw wachtwoord wilt wijzigen, voer dan uw huidige wachtwoord en uw nieuwe wachtwoord hieronder in en klik op \"Wijzig Wachtwoord\". Deze wijziging zal meteen actief zijn.",
@@ -527,12 +586,12 @@
         "INFO_NO_SESSIONS" : "Geen actieve sessies",
 
         "SECTION_HEADER_SESSIONS" : "Actieve Sessies",
-        
-        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Actief sinds",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Servernaam",
+
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindingnaam",
-        
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Servernaam",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Actief sinds",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
+
         "TEXT_CONFIRM_DELETE" : "Weet u zeker dat u alle geselecteerde sessies wilt beeindigen? De gebruikers van deze sessies zullen ogenblikkelijk hun verbinding met deze sessies verliezen."
 
     },
@@ -545,7 +604,8 @@
         "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
         "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
         "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
     }
 
