@@ -170,8 +170,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Action which replaces the current client with a newly-connected client.
      */
     var RECONNECT_ACTION = {
-        name     : "CLIENT.ACTION_RECONNECT",
-        callback : function reconnectCallback() {
+        name      : "CLIENT.ACTION_RECONNECT",
+        className : "reconnect button",
+        callback  : function reconnectCallback() {
             $scope.client = guacClientManager.replaceManagedClient($routeParams.id, $routeParams.params);
             guacNotification.showStatus(false);
         }
