@@ -131,6 +131,19 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
+     * Action which logs out from Guacamole entirely.
+     */
+    var LOGOUT_ACTION = {
+        name      : "CLIENT.ACTION_LOGOUT",
+        className : "logout button",
+        callback  : function logoutCallback() {
+            authenticationService.logout()['finally'](function logoutComplete() {
+                $location.url('/');
+            });
+        }
+    };
+
+    /**
      * Action which returns the user to the home screen. If the home page has
      * not yet been determined, this will be null.
      */
@@ -157,8 +170,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * Action which replaces the current client with a newly-connected client.
      */
     var RECONNECT_ACTION = {
-        name     : "CLIENT.ACTION_RECONNECT",
-        callback : function reconnectCallback() {
+        name      : "CLIENT.ACTION_RECONNECT",
+        className : "reconnect button",
+        callback  : function reconnectCallback() {
             $scope.client = guacClientManager.replaceManagedClient($routeParams.id, $routeParams.params);
             guacNotification.showStatus(false);
         }
@@ -447,9 +461,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Build array of available actions
         var actions;
         if (NAVIGATE_HOME_ACTION)
-            actions = [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION ];
+            actions = [ NAVIGATE_HOME_ACTION, RECONNECT_ACTION, LOGOUT_ACTION ];
         else
-            actions = [ RECONNECT_ACTION ];
+            actions = [ RECONNECT_ACTION, LOGOUT_ACTION ];
 
         // Get any associated status code
         var status = $scope.client.clientState.statusCode;

@@ -79,30 +79,22 @@ input[type="submit"]:disabled, button:disabled, button.danger:disabled {
     opacity: 0.75;
 }
 
-.button.logout,
-button.logout,
-.button.manage,
-button.manage,
-.button.back,
-button.back,
-.button.home,
-button.home,
-.button.change-password,
-button.change-password {
+.button.logout,          button.logout,
+.button.reconnect,       button.reconnect,
+.button.manage,          button.manage,
+.button.back,            button.back,
+.button.home,            button.home,
+.button.change-password, button.change-password {
     position: relative;
     padding-left: 1.8em;
 }
 
-.button.logout::before,
-button.logout::before,
-.button.manage::before,
-button.manage::before,
-.button.back::before,
-button.back::before,
-.button.home::before,
-button.home::before,
-.button.change-password::before,
-button.change-password::before {
+.button.logout::before,          button.logout::before,
+.button.reconnect::before,       button.reconnect::before,
+.button.manage::before,          button.manage::before,
+.button.back::before,            button.back::before,
+.button.home::before,            button.home::before,
+.button.change-password::before, button.change-password::before {
     content: ' ';
     position: absolute;
     left: 0;
@@ -117,6 +109,11 @@ button.change-password::before {
 .button.logout::before,
 button.logout::before {
     background-image: url('images/action-icons/guac-logout.png');
+}
+
+.button.reconnect::before,
+button.reconnect::before {
+    background-image: url('images/circle-arrows.png');
 }
 
 .button.manage::before,
