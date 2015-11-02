@@ -20,7 +20,9 @@
         "ACTION_NAVIGATE_BACK"      : "Zurück",
         "ACTION_NAVIGATE_HOME"      : "Startseite",
         "ACTION_SAVE"               : "Speichern",
+        "ACTION_SEARCH"             : "Suche",
         "ACTION_UPDATE_PASSWORD"    : "Aktualisiere Passwort",
+        "ACTION_VIEW_HISTORY"       : "Verlauf",
 
         "DIALOG_HEADER_ERROR" : "Fehler",
 
@@ -29,6 +31,8 @@
         
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Wiederhole Passwort:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
 
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
@@ -334,6 +338,7 @@
     "PROTOCOL_SSH" : {
 
         "FIELD_HEADER_COLOR_SCHEME" : "Farbschema:",
+        "FIELD_HEADER_COMMAND"     : "Befehl ausführen:",
         "FIELD_HEADER_FONT_NAME"   : "Schriftart Name:",
         "FIELD_HEADER_FONT_SIZE"   : "Schriftart Größe:",
         "FIELD_HEADER_ENABLE_SFTP" : "Aktiviere SFTP:",
@@ -371,6 +376,7 @@
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_NETWORK"        : "Netzwerk",
+        "SECTION_HEADER_SESSION"        : "Sitzung / Umgebung",
         "SECTION_HEADER_SFTP"           : "SFTP"
 
     },
@@ -470,6 +476,25 @@
     "SETTINGS" : {
 
         "SECTION_HEADER_SETTINGS" : "Einstellungen"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Die letzten Verbindungen werden hier historisch aufgelistet und können durch Klicken auf die Spaltenüberschriften sortiert werden. Zum Aufsuchen von bestimmten Datensätzen, geben Sie eine Filterzeichenfolge ein und klicken Sie auf \"Suchen\". Nur Datensätze, die die vorgesehenen Filterzeichenfolge entsprechen, werden aufgelistet.",
+
+        "INFO_NO_HISTORY" : "Keine passenden Datensätze",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
+        "TABLE_HEADER_SESSION_ENDDATE"         : "Endzeit",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Startzeit",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername"
 
     },
 
