@@ -198,6 +198,20 @@
         },
 
         {
+            "name"  : "preconnection-pdu",
+            "fields" : [
+                {
+                    "name"  : "preconnection-id",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "preconnection-blob",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
             "name"  : "sftp",
             "fields" : [
                 {

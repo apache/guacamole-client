@@ -287,6 +287,8 @@
         "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
         "FIELD_HEADER_PASSWORD"        : "Password:",
         "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP source ID:",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Parameters:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Working directory:",
         "FIELD_HEADER_REMOTE_APP"      : "Program:",
@@ -331,6 +333,7 @@
         "SECTION_HEADER_DISPLAY"            : "Display",
         "SECTION_HEADER_NETWORK"            : "Network",
         "SECTION_HEADER_PERFORMANCE"        : "Performance",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
         "SECTION_HEADER_SFTP"               : "SFTP"
 
