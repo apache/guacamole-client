@@ -36,6 +36,7 @@ import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.auth.ldap.LDAPGuacamoleProperties;
 import org.glyptodon.guacamole.net.auth.User;
 import org.glyptodon.guacamole.net.auth.simple.SimpleUser;
 import org.slf4j.Logger;
@@ -296,7 +297,11 @@ public class UserService {
 
         // We need exactly one base DN to derive the user DN
         if (usernameAttributes.size() != 1) {
-            logger.warn("Cannot directly derive user DN when multiple username attributes are specified");
+            logger.warn(String.format("Cannot directly derive user DN when "
+                      + "multiple username attributes are specified. Please "
+                      + "define an LDAP search DN using the \"%s\" property "
+                      + "in your \"guacamole.properties\".",
+                      LDAPGuacamoleProperties.LDAP_SEARCH_BIND_DN.getName()));
             return null;
         }
 
