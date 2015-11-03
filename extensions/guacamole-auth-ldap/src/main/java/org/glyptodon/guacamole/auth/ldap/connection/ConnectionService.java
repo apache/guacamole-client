@@ -37,9 +37,12 @@ import org.glyptodon.guacamole.auth.ldap.ConfigurationService;
 import org.glyptodon.guacamole.auth.ldap.EscapingService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleServerException;
+import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.glyptodon.guacamole.net.auth.Connection;
 import org.glyptodon.guacamole.net.auth.simple.SimpleConnection;
 import org.glyptodon.guacamole.protocol.GuacamoleConfiguration;
+import org.glyptodon.guacamole.token.StandardTokens;
+import org.glyptodon.guacamole.token.TokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +75,10 @@ public class ConnectionService {
      * Returns all Guacamole connections accessible to the user currently bound
      * under the given LDAP connection.
      *
+     * @param user
+     *     The AuthenticatedUser object associated with the user who is
+     *     currently authenticated with Guacamole.
+     *
      * @param ldapConnection
      *     The current connection to the LDAP server, associated with the
      *     current user.
@@ -84,8 +91,8 @@ public class ConnectionService {
      * @throws GuacamoleException
      *     If an error occurs preventing retrieval of connections.
      */
-    public Map<String, Connection> getConnections(LDAPConnection ldapConnection)
-            throws GuacamoleException {
+    public Map<String, Connection> getConnections(AuthenticatedUser user,
+            LDAPConnection ldapConnection) throws GuacamoleException {
 
         // Do not return any connections if base DN is not specified
         String configurationBaseDN = confService.getConfigurationBaseDN();
@@ -110,6 +117,10 @@ public class ConnectionService {
                 null,
                 false
             );
+
+            // Build token filter containing credential tokens
+            TokenFilter tokenFilter = new TokenFilter();
+            StandardTokens.addStandardTokens(tokenFilter, user.getCredentials());
 
             // Produce connections for each readable configuration
             Map<String, Connection> connections = new HashMap<String, Connection>();
@@ -162,6 +173,9 @@ public class ConnectionService {
                     }
 
                 }
+
+                // Filter the configuration, substituting all defined tokens
+                tokenFilter.filterValues(config.getParameters());
 
                 // Store connection using cn for both identifier and name
                 String name = cn.getStringValue();

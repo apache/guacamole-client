@@ -134,7 +134,7 @@ public class UserContext implements org.glyptodon.guacamole.net.auth.UserContext
 
         // Query all accessible connections
         connectionDirectory = new SimpleDirectory<Connection>(
-            connectionService.getConnections(ldapConnection)
+            connectionService.getConnections(user, ldapConnection)
         );
 
         // Root group contains only connections
