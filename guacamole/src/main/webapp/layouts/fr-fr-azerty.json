@@ -31,6 +31,43 @@
 
         "Space" : " ",
 
+        "Back" : [{
+            "title"  : "⟵",
+            "keysym" : 65288
+        }],
+        "Tab" : [{
+            "title"  : "↹",
+            "keysym" : 65289
+        }],
+        "Enter" : [{
+            "title"  : "Entrée",
+            "keysym" : 65293
+        }],
+        "Home" : [{
+            "title"  : "Origine",
+            "keysym" : 65360
+        }],
+        "PgUp" : [{
+            "title"  : "Pg préc.",
+            "keysym" : 65365
+        }],
+        "PgDn" : [{
+            "title"  : "Pg suiv.",
+            "keysym" : 65366
+        }],
+        "End" : [{
+            "title"  : "Fin",
+            "keysym" : 65367
+        }],
+        "Ins" : [{
+            "title"  : "Inser",
+            "keysym" : 65379
+        }],
+        "Del" : [{
+            "title"  : "Suppr",
+            "keysym" : 65535
+        }],
+
         "Left" : [{
             "title"  : "←",
             "keysym" : 65361
