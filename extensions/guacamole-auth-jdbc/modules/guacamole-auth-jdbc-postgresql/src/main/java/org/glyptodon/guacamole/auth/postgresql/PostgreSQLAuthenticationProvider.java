@@ -29,11 +29,8 @@ import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.glyptodon.guacamole.net.auth.Credentials;
 import org.glyptodon.guacamole.net.auth.UserContext;
 import org.glyptodon.guacamole.auth.jdbc.JDBCAuthenticationProviderModule;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.ConfigurableGuacamoleTunnelService;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticationProviderService;
-import org.glyptodon.guacamole.environment.Environment;
-import org.glyptodon.guacamole.environment.LocalEnvironment;
 import org.glyptodon.guacamole.net.auth.AuthenticatedUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,112 +56,6 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
     private final Injector injector;
 
     /**
-     * Returns the appropriate tunnel service given the Guacamole environment.
-     * The service is configured based on configuration options that dictate
-     * the default concurrent usage policy.
-     *
-     * @param environment
-     *     The environment of the Guacamole server.
-     *
-     * @return
-     *     A tunnel service implementation configured according to the
-     *     concurrent usage policy options set in the Guacamole environment.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while reading the configuration options.
-     */
-    private GuacamoleTunnelService getTunnelService(Environment environment)
-                throws GuacamoleException {
-
-        // Tunnel service default configuration
-        int connectionDefaultMaxConnections;
-        int connectionDefaultMaxConnectionsPerUser;
-        int connectionGroupDefaultMaxConnections;
-        int connectionGroupDefaultMaxConnectionsPerUser;
-
-        // Read legacy concurrency-related properties
-        Boolean disallowSimultaneous = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS);
-        Boolean disallowDuplicate    = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS);
-
-        // Legacy "simultaneous" property dictates only the maximum number of
-        // connections per connection
-        if (disallowSimultaneous != null) {
-
-            // Translate legacy property
-            if (disallowSimultaneous) {
-                connectionDefaultMaxConnections      = 1;
-                connectionGroupDefaultMaxConnections = 0;
-            }
-            else {
-                connectionDefaultMaxConnections      = 0;
-                connectionGroupDefaultMaxConnections = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_SIMULTANEOUS_CONNECTIONS.getName(), disallowSimultaneous,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS.getName(),           connectionDefaultMaxConnections,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName(),     connectionGroupDefaultMaxConnections);
-
-        }
-
-        // If legacy property is not specified, use new property
-        else {
-            connectionDefaultMaxConnections      = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS, 0);
-            connectionGroupDefaultMaxConnections = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS, 0);
-        }
-
-        // Legacy "duplicate" property dictates whether connections and groups
-        // may be used concurrently only by different users
-        if (disallowDuplicate != null) {
-
-            // Translate legacy property
-            if (disallowDuplicate) {
-                connectionDefaultMaxConnectionsPerUser      = 1;
-                connectionGroupDefaultMaxConnectionsPerUser = 1;
-            }
-            else {
-                connectionDefaultMaxConnectionsPerUser      = 0;
-                connectionGroupDefaultMaxConnectionsPerUser = 0;
-            }
-
-            // Warn of deprecation
-            logger.warn("The \"{}\" property is deprecated. Use \"{}\" and \"{}\" instead.",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS.getName());
-
-            // Inform of new equivalent
-            logger.info("To achieve the same result of setting \"{}\" to \"{}\", set \"{}\" to \"{}\" and \"{}\" to \"{}\".",
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DISALLOW_DUPLICATE_CONNECTIONS.getName(),         disallowDuplicate,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER.getName(),       connectionDefaultMaxConnectionsPerUser,
-                    PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER.getName(), connectionGroupDefaultMaxConnectionsPerUser);
-
-        }
-
-        // If legacy property is not specified, use new property
-        else {
-            connectionDefaultMaxConnectionsPerUser      = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_CONNECTIONS_PER_USER, 1);
-            connectionGroupDefaultMaxConnectionsPerUser = environment.getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER, 1);
-        }
-
-        // Return service configured for specified default limits
-        return new ConfigurableGuacamoleTunnelService(
-            connectionDefaultMaxConnections,
-            connectionDefaultMaxConnectionsPerUser,
-            connectionGroupDefaultMaxConnections,
-            connectionGroupDefaultMaxConnectionsPerUser
-        );
-
-    }
-    
-    /**
      * Creates a new PostgreSQLAuthenticationProvider that reads and writes
      * authentication data to a PostgreSQL database defined by properties in
      * guacamole.properties.
@@ -176,7 +67,7 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
     public PostgreSQLAuthenticationProvider() throws GuacamoleException {
 
         // Get local environment
-        Environment environment = new LocalEnvironment();
+        PostgreSQLEnvironment environment = new PostgreSQLEnvironment();
 
         // Set up Guice injector.
         injector = Guice.createInjector(
@@ -185,8 +76,7 @@ public class PostgreSQLAuthenticationProvider implements AuthenticationProvider 
             new PostgreSQLAuthenticationProviderModule(environment),
 
             // Configure JDBC authentication core
-            new JDBCAuthenticationProviderModule(this, environment,
-                    getTunnelService(environment))
+            new JDBCAuthenticationProviderModule(this, environment)
 
         );
 
