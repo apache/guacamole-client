@@ -50,9 +50,10 @@ public class ConfigurableGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
     
     /**
-     * The configuration for the current JDBC environment.
+     * The Guacamole server environment.
      */
-    @Inject JDBCEnvironment jdbcEnvironment;
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Set of all currently-active user/connection pairs (seats).
@@ -150,12 +151,12 @@ public class ConfigurableGuacamoleTunnelService
             // Determine per-user limits on this connection
             Integer connectionMaxConnectionsPerUser = connection.getModel().getMaxConnectionsPerUser();
             if (connectionMaxConnectionsPerUser == null)
-                connectionMaxConnectionsPerUser = jdbcEnvironment.getDefaultMaxConnectionsPerUser();
+                connectionMaxConnectionsPerUser = environment.getDefaultMaxConnectionsPerUser();
 
             // Determine overall limits on this connection
             Integer connectionMaxConnections = connection.getModel().getMaxConnections();
             if (connectionMaxConnections == null)
-                connectionMaxConnections = jdbcEnvironment.getDefaultMaxConnections();
+                connectionMaxConnections = environment.getDefaultMaxConnections();
 
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
@@ -202,12 +203,12 @@ public class ConfigurableGuacamoleTunnelService
         // Determine per-user limits on this connection group
         Integer connectionGroupMaxConnectionsPerUser = connectionGroup.getModel().getMaxConnectionsPerUser();
         if (connectionGroupMaxConnectionsPerUser == null)
-            connectionGroupMaxConnectionsPerUser = jdbcEnvironment.getDefaultMaxGroupConnectionsPerUser();
+            connectionGroupMaxConnectionsPerUser = environment.getDefaultMaxGroupConnectionsPerUser();
 
         // Determine overall limits on this connection group
         Integer connectionGroupMaxConnections = connectionGroup.getModel().getMaxConnections();
         if (connectionGroupMaxConnections == null)
-            connectionGroupMaxConnections = jdbcEnvironment.getDefaultMaxGroupConnections();
+            connectionGroupMaxConnections = environment.getDefaultMaxGroupConnections();
 
         // Attempt to aquire connection group according to per-user limits
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
