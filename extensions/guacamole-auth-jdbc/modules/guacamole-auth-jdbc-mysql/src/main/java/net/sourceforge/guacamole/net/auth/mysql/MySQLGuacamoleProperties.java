@@ -28,6 +28,7 @@ import org.glyptodon.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Properties used by the MySQL Authentication plugin.
+ *
  * @author James Muehlner
  */
 public class MySQLGuacamoleProperties {
@@ -38,7 +39,8 @@ public class MySQLGuacamoleProperties {
     private MySQLGuacamoleProperties() {}
 
     /**
-     * The URL of the MySQL server hosting the guacamole authentication tables.
+     * The hostname of the MySQL server hosting the Guacamole authentication 
+     * tables.
      */
     public static final StringGuacamoleProperty MYSQL_HOSTNAME = new StringGuacamoleProperty() {
 
@@ -48,7 +50,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The port of the MySQL server hosting the guacamole authentication tables.
+     * The port number of the MySQL server hosting the Guacamole authentication 
+     * tables.
      */
     public static final IntegerGuacamoleProperty MYSQL_PORT = new IntegerGuacamoleProperty() {
 
@@ -58,7 +61,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The name of the MySQL database containing the guacamole authentication tables.
+     * The name of the MySQL database containing the Guacamole authentication 
+     * tables.
      */
     public static final StringGuacamoleProperty MYSQL_DATABASE = new StringGuacamoleProperty() {
 
@@ -68,7 +72,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The username used to authenticate to the MySQL database containing the guacamole authentication tables.
+     * The username that should be used when authenticating with the MySQL
+     * database containing the Guacamole authentication tables.
      */
     public static final StringGuacamoleProperty MYSQL_USERNAME = new StringGuacamoleProperty() {
 
@@ -78,7 +83,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * The password used to authenticate to the MySQL database containing the guacamole authentication tables.
+     * The password that should be used when authenticating with the MySQL
+     * database containing the Guacamole authentication tables.
      */
     public static final StringGuacamoleProperty MYSQL_PASSWORD = new StringGuacamoleProperty() {
 
@@ -88,7 +94,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * Whether or not multiple users accessing the same connection at the same time should be disallowed.
+     * Whether or not multiple users accessing the same connection at the same 
+     * time should be disallowed.
      */
     public static final BooleanGuacamoleProperty MYSQL_DISALLOW_SIMULTANEOUS_CONNECTIONS = new BooleanGuacamoleProperty() {
 
@@ -98,7 +105,8 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
-     * Whether or not the same user accessing the same connection or connection group at the same time should be disallowed.
+     * Whether or not the same user accessing the same connection or connection 
+     * group at the same time should be disallowed.
      */
     public static final BooleanGuacamoleProperty MYSQL_DISALLOW_DUPLICATE_CONNECTIONS = new BooleanGuacamoleProperty() {
 

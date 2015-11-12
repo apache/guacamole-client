@@ -27,7 +27,6 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.environment.Environment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -59,16 +58,16 @@ public class MySQLAuthenticationProviderModule implements Module {
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public MySQLAuthenticationProviderModule(Environment environment)
+    public MySQLAuthenticationProviderModule(MySQLEnvironment environment)
             throws GuacamoleException {
 
         // Set the MySQL-specific properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME));
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PORT)));
-        myBatisProperties.setProperty("JDBC.schema", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_DATABASE));
-        myBatisProperties.setProperty("JDBC.username", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_USERNAME));
-        myBatisProperties.setProperty("JDBC.password", environment.getRequiredProperty(MySQLGuacamoleProperties.MYSQL_PASSWORD));
+        myBatisProperties.setProperty("JDBC.host", environment.getMySQLHostname());
+        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getMySQLPort()));
+        myBatisProperties.setProperty("JDBC.schema", environment.getMySQLDatabase());
+        myBatisProperties.setProperty("JDBC.username", environment.getMySQLUsername());
+        myBatisProperties.setProperty("JDBC.password", environment.getMySQLPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");

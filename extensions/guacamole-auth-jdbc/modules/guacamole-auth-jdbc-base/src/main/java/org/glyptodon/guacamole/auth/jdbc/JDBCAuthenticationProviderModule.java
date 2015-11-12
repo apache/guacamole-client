@@ -62,7 +62,6 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
-import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -80,12 +79,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
     /**
      * The environment of the Guacamole server.
      */
-    private final Environment environment;
-
-    /**
-     * The service to use to provide GuacamoleTunnels for each connection.
-     */
-    private final GuacamoleTunnelService tunnelService;
+    private final JDBCEnvironment environment;
 
     /**
      * The AuthenticationProvider which is using this module to configure
@@ -104,16 +98,11 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
      *
      * @param environment
      *     The environment to use to configure injected classes.
-     * 
-     * @param tunnelService
-     *     The tunnel service to use to provide tunnels sockets for connections.
      */
     public JDBCAuthenticationProviderModule(AuthenticationProvider authProvider,
-            Environment environment,
-            GuacamoleTunnelService tunnelService) {
+            JDBCEnvironment environment) {
         this.authProvider = authProvider;
         this.environment = environment;
-        this.tunnelService = tunnelService;
     }
 
     @Override
@@ -140,7 +129,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ActiveConnectionDirectory.class);
         bind(ActiveConnectionPermissionSet.class);
         bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
+        bind(JDBCEnvironment.class).toInstance(environment);
         bind(ConnectionDirectory.class);
         bind(ConnectionGroupDirectory.class);
         bind(ConnectionGroupPermissionSet.class);
@@ -168,9 +157,6 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(SystemPermissionService.class);
         bind(UserPermissionService.class);
         bind(UserService.class);
-        
-        // Bind provided tunnel service
-        bind(GuacamoleTunnelService.class).toInstance(tunnelService);
         
     }
 

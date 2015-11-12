@@ -23,6 +23,7 @@
 package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.common.collect.ConcurrentHashMultiset;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceConflictException;
+import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
@@ -46,6 +48,11 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 @Singleton
 public class ConfigurableGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
+    
+    /**
+     * The configuration for the current JDBC environment.
+     */
+    @Inject JDBCEnvironment jdbcEnvironment;
 
     /**
      * Set of all currently-active user/connection pairs (seats).
@@ -66,66 +73,6 @@ public class ConfigurableGuacamoleTunnelService
      * Set of all currently-active connection groups.
      */
     private final ConcurrentHashMultiset<String> activeGroups = ConcurrentHashMultiset.<String>create();
-
-    /**
-     * The maximum number of connections allowed per connection by default, or
-     * zero if no default limit applies.
-     */
-    private final int connectionDefaultMaxConnections;
-
-    /**
-     * The maximum number of connections a user may have to any one connection
-     * by default, or zero if no default limit applies.
-     */
-    private final int connectionDefaultMaxConnectionsPerUser;
-
-    /**
-     * The maximum number of connections allowed per connection group by
-     * default, or zero if no default limit applies.
-     */
-    private final int connectionGroupDefaultMaxConnections;
-
-    /**
-     * The maximum number of connections a user may have to any one connection
-     * group by default, or zero if no default limit applies.
-     */
-    private final int connectionGroupDefaultMaxConnectionsPerUser;
-
-    /**
-     * Creates a new ConfigurableGuacamoleTunnelService which applies the given
-     * limitations when new connections are acquired.
-     *
-     * @param connectionDefaultMaxConnections
-     *     The maximum number of connections allowed per connection by default,
-     *     or zero if no default limit applies.
-     *
-     * @param connectionDefaultMaxConnectionsPerUser
-     *     The maximum number of connections a user may have to any one
-     *     connection by default, or zero if no default limit applies.
-     *
-     * @param connectionGroupDefaultMaxConnections
-     *     The maximum number of connections allowed per connection group by
-     *     default, or zero if no default limit applies.
-     *
-     * @param connectionGroupDefaultMaxConnectionsPerUser
-     *     The maximum number of connections a user may have to any one
-     *     connection group by default, or zero if no default limit applies.
-     */
-    public ConfigurableGuacamoleTunnelService(
-            int connectionDefaultMaxConnections,
-            int connectionDefaultMaxConnectionsPerUser,
-            int connectionGroupDefaultMaxConnections,
-            int connectionGroupDefaultMaxConnectionsPerUser) {
-
-        // Set default connection limits
-        this.connectionDefaultMaxConnections        = connectionDefaultMaxConnections;
-        this.connectionDefaultMaxConnectionsPerUser = connectionDefaultMaxConnectionsPerUser;
-
-        // Set default connection group limits
-        this.connectionGroupDefaultMaxConnections        = connectionGroupDefaultMaxConnections;
-        this.connectionGroupDefaultMaxConnectionsPerUser = connectionGroupDefaultMaxConnectionsPerUser;
-
-    }
 
     /**
      * Attempts to add a single instance of the given value to the given
@@ -203,12 +150,12 @@ public class ConfigurableGuacamoleTunnelService
             // Determine per-user limits on this connection
             Integer connectionMaxConnectionsPerUser = connection.getModel().getMaxConnectionsPerUser();
             if (connectionMaxConnectionsPerUser == null)
-                connectionMaxConnectionsPerUser = connectionDefaultMaxConnectionsPerUser;
+                connectionMaxConnectionsPerUser = jdbcEnvironment.getDefaultMaxConnectionsPerUser();
 
             // Determine overall limits on this connection
             Integer connectionMaxConnections = connection.getModel().getMaxConnections();
             if (connectionMaxConnections == null)
-                connectionMaxConnections = connectionDefaultMaxConnections;
+                connectionMaxConnections = jdbcEnvironment.getDefaultMaxConnections();
 
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
@@ -255,12 +202,12 @@ public class ConfigurableGuacamoleTunnelService
         // Determine per-user limits on this connection group
         Integer connectionGroupMaxConnectionsPerUser = connectionGroup.getModel().getMaxConnectionsPerUser();
         if (connectionGroupMaxConnectionsPerUser == null)
-            connectionGroupMaxConnectionsPerUser = connectionGroupDefaultMaxConnectionsPerUser;
+            connectionGroupMaxConnectionsPerUser = jdbcEnvironment.getDefaultMaxGroupConnectionsPerUser();
 
         // Determine overall limits on this connection group
         Integer connectionGroupMaxConnections = connectionGroup.getModel().getMaxConnections();
         if (connectionGroupMaxConnections == null)
-            connectionGroupMaxConnections = connectionGroupDefaultMaxConnections;
+            connectionGroupMaxConnections = jdbcEnvironment.getDefaultMaxGroupConnections();
 
         // Attempt to aquire connection group according to per-user limits
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
