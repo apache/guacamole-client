@@ -27,7 +27,6 @@ import com.google.inject.Module;
 import com.google.inject.name.Names;
 import java.util.Properties;
 import org.glyptodon.guacamole.GuacamoleException;
-import org.glyptodon.guacamole.environment.Environment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 
 /**
@@ -60,16 +59,16 @@ public class PostgreSQLAuthenticationProviderModule implements Module {
      *     If a required property is missing, or an error occurs while parsing
      *     a property.
      */
-    public PostgreSQLAuthenticationProviderModule(Environment environment)
+    public PostgreSQLAuthenticationProviderModule(PostgreSQLEnvironment environment)
             throws GuacamoleException {
 
         // Set the PostgreSQL-specific properties for MyBatis.
         myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_HOSTNAME));
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PORT)));
-        myBatisProperties.setProperty("JDBC.schema", environment.getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_DATABASE));
-        myBatisProperties.setProperty("JDBC.username", environment.getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_USERNAME));
-        myBatisProperties.setProperty("JDBC.password", environment.getRequiredProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_PASSWORD));
+        myBatisProperties.setProperty("JDBC.host", environment.getPostgreSQLHostname());
+        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getPostgreSQLPort()));
+        myBatisProperties.setProperty("JDBC.schema", environment.getPostgreSQLDatabase());
+        myBatisProperties.setProperty("JDBC.username", environment.getPostgreSQLUsername());
+        myBatisProperties.setProperty("JDBC.password", environment.getPostgreSQLPassword());
         myBatisProperties.setProperty("JDBC.autoCommit", "false");
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");

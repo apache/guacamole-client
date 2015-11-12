@@ -45,6 +45,7 @@ import org.glyptodon.guacamole.auth.jdbc.connection.ParameterModel;
 import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
+import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.net.GuacamoleSocket;
@@ -72,7 +73,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * The environment of the Guacamole server.
      */
     @Inject
-    private Environment environment;
+    private JDBCEnvironment environment;
  
     /**
      * Mapper for accessing connections.
