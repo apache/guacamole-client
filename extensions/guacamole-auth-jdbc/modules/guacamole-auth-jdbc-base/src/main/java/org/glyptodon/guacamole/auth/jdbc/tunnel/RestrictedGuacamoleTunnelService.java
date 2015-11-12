@@ -23,7 +23,6 @@
 package org.glyptodon.guacamole.auth.jdbc.tunnel;
 
 import com.google.common.collect.ConcurrentHashMultiset;
-import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -33,7 +32,6 @@ import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
 import org.glyptodon.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleResourceConflictException;
-import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 
 
@@ -46,14 +44,8 @@ import org.glyptodon.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
  * @author Michael Jumper
  */
 @Singleton
-public class ConfigurableGuacamoleTunnelService
+public class RestrictedGuacamoleTunnelService
     extends AbstractGuacamoleTunnelService {
-    
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private JDBCEnvironment environment;
 
     /**
      * Set of all currently-active user/connection pairs (seats).
@@ -148,23 +140,14 @@ public class ConfigurableGuacamoleTunnelService
         // Return the first unreserved connection
         for (ModeledConnection connection : sortedConnections) {
 
-            // Determine per-user limits on this connection
-            Integer connectionMaxConnectionsPerUser = connection.getModel().getMaxConnectionsPerUser();
-            if (connectionMaxConnectionsPerUser == null)
-                connectionMaxConnectionsPerUser = environment.getDefaultMaxConnectionsPerUser();
-
-            // Determine overall limits on this connection
-            Integer connectionMaxConnections = connection.getModel().getMaxConnections();
-            if (connectionMaxConnections == null)
-                connectionMaxConnections = environment.getDefaultMaxConnections();
-
             // Attempt to aquire connection according to per-user limits
             Seat seat = new Seat(username, connection.getIdentifier());
-            if (tryAdd(activeSeats, seat, connectionMaxConnectionsPerUser)) {
+            if (tryAdd(activeSeats, seat,
+                    connection.getMaxConnectionsPerUser())) {
 
                 // Attempt to aquire connection according to overall limits
                 if (tryAdd(activeConnections, connection.getIdentifier(),
-                        connectionMaxConnections))
+                        connection.getMaxConnections()))
                     return connection;
 
                 // Acquire failed - retry with next connection
@@ -200,24 +183,14 @@ public class ConfigurableGuacamoleTunnelService
         // Get username
         String username = user.getUser().getIdentifier();
 
-        // Determine per-user limits on this connection group
-        Integer connectionGroupMaxConnectionsPerUser = connectionGroup.getModel().getMaxConnectionsPerUser();
-        if (connectionGroupMaxConnectionsPerUser == null)
-            connectionGroupMaxConnectionsPerUser = environment.getDefaultMaxGroupConnectionsPerUser();
-
-        // Determine overall limits on this connection group
-        Integer connectionGroupMaxConnections = connectionGroup.getModel().getMaxConnections();
-        if (connectionGroupMaxConnections == null)
-            connectionGroupMaxConnections = environment.getDefaultMaxGroupConnections();
-
         // Attempt to aquire connection group according to per-user limits
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
         if (tryAdd(activeGroupSeats, seat,
-                connectionGroupMaxConnectionsPerUser)) {
+                connectionGroup.getMaxConnectionsPerUser())) {
 
             // Attempt to aquire connection group according to overall limits
             if (tryAdd(activeGroups, connectionGroup.getIdentifier(),
-                    connectionGroupMaxConnections))
+                    connectionGroup.getMaxConnections()))
                 return;
 
             // Acquire failed

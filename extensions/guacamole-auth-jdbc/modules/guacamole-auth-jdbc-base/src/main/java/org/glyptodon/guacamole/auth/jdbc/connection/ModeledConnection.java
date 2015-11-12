@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import org.glyptodon.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.auth.jdbc.JDBCEnvironment;
 import org.glyptodon.guacamole.auth.jdbc.base.ModeledGroupedDirectoryObject;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.form.Form;
@@ -87,6 +88,12 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
     public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
         CONCURRENCY_LIMITS
     ));
+
+    /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Service for managing connections.
@@ -197,6 +204,55 @@ public class ModeledConnection extends ModeledGroupedDirectoryObject<ConnectionM
             logger.warn("Not setting maximum connections per user: {}", e.getMessage());
             logger.debug("Unable to parse numeric attribute.", e);
         }
+
+    }
+
+    /**
+     * Returns the maximum number of connections that should be allowed to this
+     * connection overall. If no limit applies, zero is returned.
+     *
+     * @return
+     *     The maximum number of connections that should be allowed to this
+     *     connection overall, or zero if no limit applies.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the concurrency limit properties
+     *     specified within guacamole.properties.
+     */
+    public int getMaxConnections() throws GuacamoleException {
+
+        // Pull default from environment if connection limit is unset
+        Integer value = getModel().getMaxConnections();
+        if (value == null)
+            return environment.getDefaultMaxConnections();
+
+        // Otherwise use defined value
+        return value;
+
+    }
+
+    /**
+     * Returns the maximum number of connections that should be allowed to this
+     * connection for any individual user. If no limit applies, zero is
+     * returned.
+     *
+     * @return
+     *     The maximum number of connections that should be allowed to this
+     *     connection for any individual user, or zero if no limit applies.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the concurrency limit properties
+     *     specified within guacamole.properties.
+     */
+    public int getMaxConnectionsPerUser() throws GuacamoleException {
+
+        // Pull default from environment if per-user connection limit is unset
+        Integer value = getModel().getMaxConnectionsPerUser();
+        if (value == null)
+            return environment.getDefaultMaxConnectionsPerUser();
+
+        // Otherwise use defined value
+        return value;
 
     }
 

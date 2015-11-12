@@ -62,7 +62,7 @@ import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermis
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionPermissionSet;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.ActiveConnectionService;
 import org.glyptodon.guacamole.auth.jdbc.activeconnection.TrackedActiveConnection;
-import org.glyptodon.guacamole.auth.jdbc.tunnel.ConfigurableGuacamoleTunnelService;
+import org.glyptodon.guacamole.auth.jdbc.tunnel.RestrictedGuacamoleTunnelService;
 import org.glyptodon.guacamole.net.auth.AuthenticationProvider;
 import org.mybatis.guice.MyBatisModule;
 import org.mybatis.guice.datasource.builtin.PooledDataSourceProvider;
@@ -153,7 +153,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(ConnectionGroupService.class);
         bind(ConnectionPermissionService.class);
         bind(ConnectionService.class);
-        bind(GuacamoleTunnelService.class).to(ConfigurableGuacamoleTunnelService.class);
+        bind(GuacamoleTunnelService.class).to(RestrictedGuacamoleTunnelService.class);
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
         bind(SystemPermissionService.class);
