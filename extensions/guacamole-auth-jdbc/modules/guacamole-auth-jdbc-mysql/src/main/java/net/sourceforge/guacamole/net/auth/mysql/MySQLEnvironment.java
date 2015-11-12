@@ -41,7 +41,18 @@ public class MySQLEnvironment extends JDBCEnvironment {
     private static final Logger logger = LoggerFactory.getLogger(MySQLEnvironment.class);
     
     /**
-     * Constructs a new MysqlEnvironment.
+     * The default host to connect to, if MYSQL_HOSTNAME is not specified.
+     */
+    private static final String DEFAULT_HOSTNAME = "localhost";
+
+    /**
+     * The default port to connect to, if MYSQL_PORT is not specified.
+     */
+    private static final int DEFAULT_PORT = 3306;
+
+    /**
+     * Constructs a new MySQLEnvironment, providing access to MySQL-specific
+     * configuration options.
      * 
      * @throws GuacamoleException 
      *     If an error occurs while setting up the underlying JDBCEnvironment.
@@ -238,7 +249,10 @@ public class MySQLEnvironment extends JDBCEnvironment {
      *     If an error occurs while retrieving the property value.
      */
     public String getMySQLHostname() throws GuacamoleException {
-        return getProperty(MySQLGuacamoleProperties.MYSQL_HOSTNAME, "localhost");
+        return getProperty(
+            MySQLGuacamoleProperties.MYSQL_HOSTNAME,
+            DEFAULT_HOSTNAME
+        );
     }
     
     /**
@@ -253,7 +267,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
      *     If an error occurs while retrieving the property value.
      */
     public int getMySQLPort() throws GuacamoleException {
-        return getProperty(MySQLGuacamoleProperties.MYSQL_PORT, 3306);
+        return getProperty(MySQLGuacamoleProperties.MYSQL_PORT, DEFAULT_PORT);
     }
     
     /**
