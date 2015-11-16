@@ -164,7 +164,9 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                 historyService.getConnectionHistory(
                     $scope.dataSource,
                     requiredContents,
-                    $scope.order.predicate
+                    $scope.order.predicate.filter(function isSupportedPredicate(predicate) {
+                        return predicate === 'startDate' || predicate === '-startDate';
+                    })
                 )
                 .success(function historyRetrieved(historyRecords) {
 

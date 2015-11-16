@@ -47,28 +47,10 @@ public class APIConnectionRecordSortPredicate {
     public enum SortableProperty {
 
         /**
-         * The name (not identifier) of the connection associated with the
-         * connection record.
-         */
-        connectionName(ConnectionRecordSet.SortableProperty.CONNECTION_NAME),
-
-        /**
-         * The username (identifier) of the user associated with the connection
-         * record.
-         */
-        username(ConnectionRecordSet.SortableProperty.USER_IDENTIFIER),
-
-        /**
          * The date that the connection associated with the connection record
          * began (connected).
          */
-        startDate(ConnectionRecordSet.SortableProperty.START_DATE),
-
-        /**
-         * The date that the connection associated with the connection record
-         * ended (disconnected).
-         */
-        endDate(ConnectionRecordSet.SortableProperty.END_DATE);
+        startDate(ConnectionRecordSet.SortableProperty.START_DATE);
 
         /**
          * The ConnectionRecordSet.SortableProperty that this property name

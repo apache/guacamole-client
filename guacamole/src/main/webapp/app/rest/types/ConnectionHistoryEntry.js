@@ -111,28 +111,10 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
     ConnectionHistoryEntry.SortPredicate = {
 
         /**
-         * The name of the connection associated with the history entry (not
-         * the connection identifier).
-         */
-        CONNECTION_NAME : 'connectionName',
-
-        /**
-         * The username of the user associated with the history entry (the user
-         * identifier).
-         */
-        USER_IDENTIFIER : 'username',
-
-        /**
          * The date and time that the connection associated with the history
          * entry began (connected).
          */
-        START_DATE : 'startDate',
-
-        /**
-         * The date and time that the connection associated with the history
-         * entry ended (disconnected).
-         */
-        END_DATE : 'endDate'
+        START_DATE : 'startDate'
 
     };
 
