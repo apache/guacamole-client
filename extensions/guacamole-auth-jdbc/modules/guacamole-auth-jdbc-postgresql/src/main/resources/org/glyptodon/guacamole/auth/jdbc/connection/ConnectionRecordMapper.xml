@@ -107,10 +107,7 @@
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
-                    OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                    )
+                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
                 </if>
 
             )
@@ -177,10 +174,7 @@
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
-                    OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                    )
+                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
                 </if>
 
             )
