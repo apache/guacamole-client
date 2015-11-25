@@ -68,7 +68,7 @@ angular.module('manage').factory('HistoryEntryWrapper', ['$injector',
         if (historyEntry.active)
             this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_ACTIVE_NOW';
 
-        // If connection is not active, inform use if end date is not known
+        // If connection is not active, inform user if end date is not known
         else if (!historyEntry.endDate)
             this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_DURATION_UNKNOWN';
 

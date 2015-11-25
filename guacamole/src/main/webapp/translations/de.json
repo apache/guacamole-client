@@ -38,7 +38,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} Benutzer.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}"
 
     },
 
@@ -202,7 +204,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Dauer",
 
         "TEXT_CONFIRM_DELETE"   : "Dieser Löschvorgang ist unumkehrbar. Soll diese Verbindung wirklich gelöscht werden?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
@@ -480,25 +482,6 @@
 
     },
 
-    "SETTINGS_CONNECTION_HISTORY" : {
-
-        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
-
-        "HELP_CONNECTION_HISTORY" : "Die letzten Verbindungen werden hier historisch aufgelistet und können durch Klicken auf die Spaltenüberschriften sortiert werden. Zum Aufsuchen von bestimmten Datensätzen, geben Sie eine Filterzeichenfolge ein und klicken Sie auf \"Suchen\". Nur Datensätze, die die vorgesehenen Filterzeichenfolge entsprechen, werden aufgelistet.",
-
-        "INFO_NO_HISTORY" : "Keine passenden Datensätze",
-
-        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
-        "TABLE_HEADER_SESSION_ENDDATE"         : "Endzeit",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Startzeit",
-        "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername"
-
-    },
-
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
@@ -517,7 +500,23 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Die letzten Verbindungen werden hier historisch aufgelistet und können durch Klicken auf die Spaltenüberschriften sortiert werden. Zum Aufsuchen von bestimmten Datensätzen, geben Sie eine Filterzeichenfolge ein und klicken Sie auf \"Suchen\". Nur Datensätze, die die vorgesehenen Filterzeichenfolge entsprechen, werden aufgelistet.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Keine passenden Datensätze",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
+        "TABLE_HEADER_SESSION_DURATION"        : "Dauer",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Startzeit",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 

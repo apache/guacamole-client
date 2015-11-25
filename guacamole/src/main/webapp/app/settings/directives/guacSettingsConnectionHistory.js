@@ -37,8 +37,9 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
         controller: ['$scope', '$injector', function settingsConnectionHistoryController($scope, $injector) {
                 
             // Get required types
-            var FilterToken = $injector.get('FilterToken');
-            var SortOrder   = $injector.get('SortOrder');
+            var ConnectionHistoryEntryWrapper = $injector.get('ConnectionHistoryEntryWrapper');
+            var FilterToken                   = $injector.get('FilterToken');
+            var SortOrder                     = $injector.get('SortOrder');
 
             // Get required services
             var $routeParams   = $injector.get('$routeParams');
@@ -53,12 +54,12 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
             $scope.dataSource = $routeParams.dataSource;
 
             /**
-             * All matching connection history records, or null if these
-             * records have not yet been retrieved.
+             * All wrapped matching connection history entries, or null if these
+             * entries have not yet been retrieved.
              *
-             * @type ConnectionHistoryEntry[]
+             * @type ConnectionHistoryEntryWrapper[]
              */
-            $scope.historyRecords = null;
+            $scope.historyEntryWrappers = null;
 
             /**
              * The search terms to use when filtering the history records.
@@ -82,7 +83,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
              */
             $scope.order = new SortOrder([
                 '-startDate',
-                '-endDate',
+                '-duration',
                 'username',
                 'connectionName'
             ]);
@@ -107,8 +108,8 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
              * 
              */
             $scope.isLoaded = function isLoaded() {
-                return $scope.historyRecords !== null
-                    && $scope.dateFormat     !== null;
+                return $scope.historyEntryWrappers !== null
+                    && $scope.dateFormat           !== null;
             };
 
             /**
@@ -121,7 +122,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
              *     records are present, false otherwise.
              */
             $scope.isHistoryEmpty = function isHistoryEmpty() {
-                return $scope.isLoaded() && $scope.historyRecords.length === 0;
+                return $scope.isLoaded() && $scope.historyEntryWrappers.length === 0;
             };
 
             /**
@@ -131,7 +132,7 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
             $scope.search = function search() {
 
                 // Clear current results
-                $scope.historyRecords = null;
+                $scope.historyEntryWrappers = null;
 
                 // Tokenize search string
                 var tokens = FilterToken.tokenize($scope.searchString);
@@ -168,10 +169,13 @@ angular.module('settings').directive('guacSettingsConnectionHistory', [function 
                         return predicate === 'startDate' || predicate === '-startDate';
                     })
                 )
-                .success(function historyRetrieved(historyRecords) {
+                .success(function historyRetrieved(historyEntries) {
 
-                    // Store retrieved permissions
-                    $scope.historyRecords = historyRecords;
+                    // Wrap all history entries for sake of display
+                    $scope.historyEntryWrappers = [];
+                    angular.forEach(historyEntries, function wrapHistoryEntry(historyEntry) {
+                       $scope.historyEntryWrappers.push(new ConnectionHistoryEntryWrapper(historyEntry)); 
+                    });
 
                 });
 

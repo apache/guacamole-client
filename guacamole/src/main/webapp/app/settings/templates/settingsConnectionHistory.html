@@ -43,8 +43,8 @@
                     <th guac-sort-order="order" guac-sort-property="'startDate'">
                         {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | translate}}
                     </th>
-                    <th guac-sort-order="order" guac-sort-property="'endDate'">
-                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_ENDDATE' | translate}}
+                    <th guac-sort-order="order" guac-sort-property="'duration'">
+                        {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | translate}}
                     </th>
                     <th guac-sort-order="order" guac-sort-property="'connectionName'">
                         {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
@@ -52,11 +52,12 @@
                 </tr>
             </thead>
             <tbody ng-class="{loading: !isLoaded()}">
-                <tr ng-repeat="historyRecord in historyRecordPage" class="history">
-                    <td>{{historyRecord.username}}</td>
-                    <td>{{historyRecord.startDate | date : dateFormat}}</td>
-                    <td>{{historyRecord.endDate | date : dateFormat}}</td>
-                    <td>{{historyRecord.connectionName}}</td>
+                <tr ng-repeat="historyEntryWrapper in historyEntryWrapperPage" class="history">
+                    <td>{{historyEntryWrapper.username}}</td>
+                    <td>{{historyEntryWrapper.startDate | date : dateFormat}}</td>
+                    <td translate="{{historyEntryWrapper.readableDurationText}}"
+                        translate-values="{VALUE: historyEntryWrapper.readableDuration.value, UNIT: historyEntryWrapper.readableDuration.unit}"></td>
+                    <td>{{historyEntryWrapper.connectionName}}</td>
                 </tr>
             </tbody>
         </table>
@@ -67,8 +68,8 @@
         </p>
 
         <!-- Pager for history list -->
-        <guac-pager page="historyRecordPage" page-size="25"
-                    items="historyRecords | orderBy : order.predicate"></guac-pager>
+        <guac-pager page="historyEntryWrapperPage" page-size="25"
+                    items="historyEntryWrappers | orderBy : order.predicate"></guac-pager>
     </div>
 
 </div>

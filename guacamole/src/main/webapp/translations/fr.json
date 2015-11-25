@@ -36,7 +36,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Actuellement utilisé par {USERS} {USERS, plural, one{utilisateur} other{utilisateurs}}.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{secondes}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{heure} other{heures}}} day{{VALUE, plural, one{jour} other{jours}}} other{}}"
 
     },
 
@@ -193,7 +195,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Durée",
 
         "TEXT_CONFIRM_DELETE"   : "Les connexions ne pourront être restaurées une fois supprimées. Êtes-vous certains de vouloir supprimer cette connexion ?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{secondes}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{heure} other{heures}}} day{{VALUE, plural, one{jour} other{jours}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
@@ -461,7 +463,18 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nom de connexion",
+        "TABLE_HEADER_SESSION_DURATION"        : "Durée",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Ouvert depuis",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Identifiant",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 

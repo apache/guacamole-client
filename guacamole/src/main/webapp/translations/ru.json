@@ -35,7 +35,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Подключено пользователей {USERS}.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} other{сек}}} minute{{VALUE, plural, one{минута} other{мин}}} hour{{VALUE, plural, one{час} other{ч}}} day{{VALUE, plural, one{день} other{дн}}} other{}}"
 
     },
 
@@ -190,7 +192,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Продолжительность",
 
         "TEXT_CONFIRM_DELETE"   : "Подключения не могут быть восстановлены после удаления. Вы уверены, что хотите удалить подключение?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} other{сек}}} minute{{VALUE, plural, one{минута} other{мин}}} hour{{VALUE, plural, one{час} other{ч}}} day{{VALUE, plural, one{день} other{дн}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
@@ -429,7 +431,18 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Название подключения",
+        "TABLE_HEADER_SESSION_DURATION"        : "Продолжительность",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Время начала",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Имя пользователя",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 

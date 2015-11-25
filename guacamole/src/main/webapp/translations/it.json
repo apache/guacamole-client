@@ -192,8 +192,7 @@
         "TABLE_HEADER_HISTORY_START"    : "Start Time",
         "TABLE_HEADER_HISTORY_DURATION" : "Durata",
 
-        "TEXT_CONFIRM_DELETE"   : "Le Connessioni non possono essere ripristinate dopo la loro eliminazione. Sei sicuro di volere eliminare questa connessione?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+        "TEXT_CONFIRM_DELETE"   : "Le Connessioni non possono essere ripristinate dopo la loro eliminazione. Sei sicuro di volere eliminare questa connessione?"
 
     },
 
@@ -461,7 +460,16 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome della connessione",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Start Time",
+        "TABLE_HEADER_SESSION_DURATION"        : "Durata",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Username"
 
     },
 
