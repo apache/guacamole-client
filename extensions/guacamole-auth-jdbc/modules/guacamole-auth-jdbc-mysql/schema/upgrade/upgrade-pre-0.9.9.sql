@@ -26,3 +26,4 @@
 
 ALTER TABLE guacamole_connection_history ADD KEY (start_date);
 ALTER TABLE guacamole_connection_history ADD KEY (end_date);
+ALTER TABLE guacamole_connection_history ADD KEY search_index (start_date, connection_id, user_id);

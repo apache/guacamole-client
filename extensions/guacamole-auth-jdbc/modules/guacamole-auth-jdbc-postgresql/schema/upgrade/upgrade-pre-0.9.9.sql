@@ -26,3 +26,4 @@
 
 CREATE INDEX ON guacamole_connection_history(start_date);
 CREATE INDEX ON guacamole_connection_history(end_date);
+CREATE INDEX guacamole_connection_history_search_index ON guacamole_connection_history(start_date, connection_id, user_id);
