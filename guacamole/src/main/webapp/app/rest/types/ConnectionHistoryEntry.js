@@ -118,6 +118,75 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
 
     };
 
+    /**
+     * Value/unit pair representing the length of time that a connection was
+     * used.
+     * 
+     * @constructor
+     * @param {Number} milliseconds
+     *     The number of milliseconds that the associated connection was used.
+     */
+    ConnectionHistoryEntry.Duration = function Duration(milliseconds) {
+
+        /**
+         * The provided duration in seconds.
+         *
+         * @type Number
+         */
+        var seconds = milliseconds / 1000;
+
+        /**
+         * Rounds the given value to the nearest tenth.
+         *
+         * @param {Number} value The value to round.
+         * @returns {Number} The given value, rounded to the nearest tenth.
+         */
+        var round = function round(value) {
+            return Math.round(value * 10) / 10;
+        };
+
+        // Days
+        if (seconds >= 86400) {
+            this.value = round(seconds / 86400);
+            this.unit  = 'day';
+        }
+
+        // Hours
+        else if (seconds >= 3600) {
+            this.value = round(seconds / 3600);
+            this.unit  = 'hour';
+        }
+
+        // Minutes
+        else if (seconds >= 60) {
+            this.value = round(seconds / 60);
+            this.unit  = 'minute';
+        }
+        
+        // Seconds
+        else {
+
+            /**
+             * The number of seconds (or minutes, or hours, etc.) that the
+             * connection was used. The units associated with this value are
+             * represented by the unit property.
+             *
+             * @type Number
+             */
+            this.value = round(seconds);
+
+            /**
+             * The units associated with the value of this duration. Valid
+             * units are 'second', 'minute', 'hour', and 'day'.
+             *
+             * @type String
+             */
+            this.unit = 'second';
+
+        }
+
+    };
+
     return ConnectionHistoryEntry;
 
 }]);

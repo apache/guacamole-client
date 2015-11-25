@@ -23,8 +23,11 @@
 /**
  * A service for defining the HistoryEntryWrapper class.
  */
-angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
-    function defineHistoryEntryWrapper(HistoryEntryDuration) {
+angular.module('manage').factory('HistoryEntryWrapper', ['$injector',
+    function defineHistoryEntryWrapper($injector) {
+
+    // Required types
+    var ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
 
     /**
      * Wrapper for ConnectionHistoryEntry which adds display-specific
@@ -47,7 +50,7 @@ angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
          * An object providing value and unit properties, denoting the duration
          * and its corresponding units.
          *
-         * @type HistoryEntryDuration
+         * @type ConnectionHistoryEntry.Duration
          */
         this.duration = null;
 
@@ -71,7 +74,7 @@ angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
 
         // Set the duration if the necessary information is present
         if (historyEntry.endDate && historyEntry.startDate)
-            this.duration = new HistoryEntryDuration(historyEntry.endDate - historyEntry.startDate);
+            this.duration = new ConnectionHistoryEntry.Duration(historyEntry.endDate - historyEntry.startDate);
 
     };
 
