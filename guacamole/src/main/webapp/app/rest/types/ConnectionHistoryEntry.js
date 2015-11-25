@@ -111,28 +111,79 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
     ConnectionHistoryEntry.SortPredicate = {
 
         /**
-         * The name of the connection associated with the history entry (not
-         * the connection identifier).
-         */
-        CONNECTION_NAME : 'connectionName',
-
-        /**
-         * The username of the user associated with the history entry (the user
-         * identifier).
-         */
-        USER_IDENTIFIER : 'username',
-
-        /**
          * The date and time that the connection associated with the history
          * entry began (connected).
          */
-        START_DATE : 'startDate',
+        START_DATE : 'startDate'
+
+    };
+
+    /**
+     * Value/unit pair representing the length of time that a connection was
+     * used.
+     * 
+     * @constructor
+     * @param {Number} milliseconds
+     *     The number of milliseconds that the associated connection was used.
+     */
+    ConnectionHistoryEntry.Duration = function Duration(milliseconds) {
 
         /**
-         * The date and time that the connection associated with the history
-         * entry ended (disconnected).
+         * The provided duration in seconds.
+         *
+         * @type Number
          */
-        END_DATE : 'endDate'
+        var seconds = milliseconds / 1000;
+
+        /**
+         * Rounds the given value to the nearest tenth.
+         *
+         * @param {Number} value The value to round.
+         * @returns {Number} The given value, rounded to the nearest tenth.
+         */
+        var round = function round(value) {
+            return Math.round(value * 10) / 10;
+        };
+
+        // Days
+        if (seconds >= 86400) {
+            this.value = round(seconds / 86400);
+            this.unit  = 'day';
+        }
+
+        // Hours
+        else if (seconds >= 3600) {
+            this.value = round(seconds / 3600);
+            this.unit  = 'hour';
+        }
+
+        // Minutes
+        else if (seconds >= 60) {
+            this.value = round(seconds / 60);
+            this.unit  = 'minute';
+        }
+        
+        // Seconds
+        else {
+
+            /**
+             * The number of seconds (or minutes, or hours, etc.) that the
+             * connection was used. The units associated with this value are
+             * represented by the unit property.
+             *
+             * @type Number
+             */
+            this.value = round(seconds);
+
+            /**
+             * The units associated with the value of this duration. Valid
+             * units are 'second', 'minute', 'hour', and 'day'.
+             *
+             * @type String
+             */
+            this.unit = 'second';
+
+        }
 
     };
 

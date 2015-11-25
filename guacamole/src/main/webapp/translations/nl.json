@@ -38,7 +38,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Op dit moment in gebruik door {USERS} {USERS, plural, one{gebruiker} other{gebruikers}}.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{seconden}}} minute{{VALUE, plural, one{minuut} other{minuten}}} hour{{VALUE, plural, one{uur} other{uren}}} day{{VALUE, plural, one{dag} other{dagen}}} other{}}"
 
     },
 
@@ -202,7 +204,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Tijdsduur",
 
         "TEXT_CONFIRM_DELETE"   : "Verbindingen kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze verbinding wilt verwijderen?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{seconde} other{seconden}}} minute{{VALUE, plural, one{minuut} other{minuten}}} hour{{VALUE, plural, one{uur} other{uren}}} day{{VALUE, plural, one{dag} other{dagen}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
@@ -490,12 +492,15 @@
 
         "HELP_CONNECTION_HISTORY" : "De gebruikgeschiedenis van verbindingen wordt hier onder getoond en kan gesorteerd worden door op de titel van de kolom te klikken. Voer een zoekterm in en klik op \"Zoeken\", om op specifieke resultaten te zoeken. Alleen de resultaten die voldoen aan de zoekterm zullen dan getoond worden.",
 
-        "INFO_NO_HISTORY" : "Geen resultaten gevonden",
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Geen resultaten gevonden",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindingsnaam",
-        "TABLE_HEADER_SESSION_ENDDATE"         : "Eindtijd",
+        "TABLE_HEADER_SESSION_DURATION"        : "Tijdsduur",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Starttijd",
-        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam"
+        "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 

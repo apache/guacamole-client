@@ -40,28 +40,10 @@ public interface ConnectionRecordSet {
     enum SortableProperty {
 
         /**
-         * The name (not identifier) of the connection associated with the
-         * connection record.
-         */
-        CONNECTION_NAME,
-
-        /**
-         * The identifier (username) of the user that used the connection
-         * associated with the connection record.
-         */
-        USER_IDENTIFIER,
-
-        /**
          * The date and time when the connection associated with the
          * connection record began.
          */
-        START_DATE,
-
-        /**
-         * The date and time when the connection associated with the
-         * connection record ended.
-         */
-        END_DATE
+        START_DATE
 
     };
 

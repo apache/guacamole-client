@@ -61,7 +61,7 @@ public class HistoryRESTService {
     /**
      * The maximum number of history records to return in any one response.
      */
-    private static final int MAXIMUM_HISTORY_SIZE = 10000;
+    private static final int MAXIMUM_HISTORY_SIZE = 1000;
 
     /**
      * A service for authenticating users from auth tokens.

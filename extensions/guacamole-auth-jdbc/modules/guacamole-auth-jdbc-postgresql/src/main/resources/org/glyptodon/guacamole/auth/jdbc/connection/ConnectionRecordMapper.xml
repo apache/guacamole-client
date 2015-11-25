@@ -86,8 +86,8 @@
             guacamole_connection_history.start_date,
             guacamole_connection_history.end_date
         FROM guacamole_connection_history
-        JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
-        JOIN guacamole_user       ON guacamole_connection_history.user_id       = guacamole_user.user_id
+        LEFT JOIN guacamole_connection ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
+        LEFT JOIN guacamole_user       ON guacamole_connection_history.user_id       = guacamole_user.user_id
 
         <!-- Search terms -->
         <foreach collection="terms" item="term"
@@ -107,29 +107,20 @@
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
-                    OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                    )
+                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
                 </if>
 
             )
         </foreach>
 
         <!-- Bind sort property enum values for sake of readability -->
-        <bind name="CONNECTION_NAME" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@CONNECTION_NAME"/>
-        <bind name="USER_IDENTIFIER" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@USER_IDENTIFIER"/>
         <bind name="START_DATE"      value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
-        <bind name="END_DATE"        value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@END_DATE"/>
 
         <!-- Sort predicates -->
         <foreach collection="sortPredicates" item="sortPredicate"
                  open="ORDER BY " separator=", ">
             <choose>
-                <when test="sortPredicate.property == CONNECTION_NAME">guacamole_connection.connection_name</when>
-                <when test="sortPredicate.property == USER_IDENTIFIER">guacamole_user.username</when>
                 <when test="sortPredicate.property == START_DATE">guacamole_connection_history.start_date</when>
-                <when test="sortPredicate.property == END_DATE">guacamole_connection_history.end_date</when>
                 <otherwise>1</otherwise>
             </choose>
             <if test="sortPredicate.descending">DESC</if>
@@ -150,8 +141,8 @@
             guacamole_connection_history.start_date,
             guacamole_connection_history.end_date
         FROM guacamole_connection_history
-        JOIN guacamole_connection            ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
-        JOIN guacamole_user                  ON guacamole_connection_history.user_id       = guacamole_user.user_id
+        LEFT JOIN guacamole_connection            ON guacamole_connection_history.connection_id = guacamole_connection.connection_id
+        LEFT JOIN guacamole_user                  ON guacamole_connection_history.user_id       = guacamole_user.user_id
 
         <!-- Restrict to readable connections -->
         JOIN guacamole_connection_permission ON
@@ -183,29 +174,20 @@
                 )
 
                 <if test="term.startDate != null and term.endDate != null">
-                    OR (
-                            (start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                        AND (end_date   BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP})
-                    )
+                    OR start_date BETWEEN #{term.startDate,jdbcType=TIMESTAMP} AND #{term.endDate,jdbcType=TIMESTAMP}
                 </if>
 
             )
         </foreach>
 
         <!-- Bind sort property enum values for sake of readability -->
-        <bind name="CONNECTION_NAME" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@CONNECTION_NAME"/>
-        <bind name="USER_IDENTIFIER" value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@USER_IDENTIFIER"/>
         <bind name="START_DATE"      value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@START_DATE"/>
-        <bind name="END_DATE"        value="@org.glyptodon.guacamole.net.auth.ConnectionRecordSet$SortableProperty@END_DATE"/>
 
         <!-- Sort predicates -->
         <foreach collection="sortPredicates" item="sortPredicate"
                  open="ORDER BY " separator=", ">
             <choose>
-                <when test="sortPredicate.property == CONNECTION_NAME">guacamole_connection.connection_name</when>
-                <when test="sortPredicate.property == USER_IDENTIFIER">guacamole_user.username</when>
                 <when test="sortPredicate.property == START_DATE">guacamole_connection_history.start_date</when>
-                <when test="sortPredicate.property == END_DATE">guacamole_connection_history.end_date</when>
                 <otherwise>1</otherwise>
             </choose>
             <if test="sortPredicate.descending">DESC</if>

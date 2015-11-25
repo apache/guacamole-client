@@ -23,8 +23,11 @@
 /**
  * A service for defining the HistoryEntryWrapper class.
  */
-angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
-    function defineHistoryEntryWrapper(HistoryEntryDuration) {
+angular.module('manage').factory('HistoryEntryWrapper', ['$injector',
+    function defineHistoryEntryWrapper($injector) {
+
+    // Required types
+    var ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
 
     /**
      * Wrapper for ConnectionHistoryEntry which adds display-specific
@@ -47,7 +50,7 @@ angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
          * An object providing value and unit properties, denoting the duration
          * and its corresponding units.
          *
-         * @type HistoryEntryDuration
+         * @type ConnectionHistoryEntry.Duration
          */
         this.duration = null;
 
@@ -65,13 +68,13 @@ angular.module('manage').factory('HistoryEntryWrapper', ['HistoryEntryDuration',
         if (historyEntry.active)
             this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_ACTIVE_NOW';
 
-        // If connection is not active, inform use if end date is not known
+        // If connection is not active, inform user if end date is not known
         else if (!historyEntry.endDate)
             this.durationText = 'MANAGE_CONNECTION.INFO_CONNECTION_DURATION_UNKNOWN';
 
         // Set the duration if the necessary information is present
         if (historyEntry.endDate && historyEntry.startDate)
-            this.duration = new HistoryEntryDuration(historyEntry.endDate - historyEntry.startDate);
+            this.duration = new ConnectionHistoryEntry.Duration(historyEntry.endDate - historyEntry.startDate);
 
     };
 

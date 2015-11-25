@@ -38,7 +38,9 @@
 
         "INFO_ACTIVE_USER_COUNT" : "Currently in use by {USERS} {USERS, plural, one{user} other{users}}.",
 
-        "NAME" : "Guacamole ${project.version}"
+        "NAME" : "Guacamole ${project.version}",
+
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
 
     },
 
@@ -202,7 +204,7 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Duration",
 
         "TEXT_CONFIRM_DELETE"   : "Connections cannot be restored after they have been deleted. Are you sure you want to delete this connection?",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{second} other{seconds}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{hour} other{hours}}} day{{VALUE, plural, one{day} other{days}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
@@ -493,12 +495,15 @@
 
         "HELP_CONNECTION_HISTORY" : "History records for past connections are listed here and can be sorted by clicking the column headers. To search for specific records, enter a filter string and click \"Search\". Only records which match the provided filter string will be listed.",
 
-        "INFO_NO_HISTORY" : "No matching records",
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "No matching records",
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Connection name",
-        "TABLE_HEADER_SESSION_ENDDATE"         : "End time",
+        "TABLE_HEADER_SESSION_DURATION"        : "Duration",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Start time",
-        "TABLE_HEADER_SESSION_USERNAME"        : "Username"
+        "TABLE_HEADER_SESSION_USERNAME"        : "Username",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
 
     },
 
