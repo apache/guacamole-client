@@ -82,7 +82,8 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var selectedDataSource = $routeParams.dataSource;
 
     /**
-     * The username of the user being edited.
+     * The username of the user being edited. If a new user is
+     * being created, this will not be defined.
      *
      * @type String
      */
@@ -290,6 +291,22 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
+     * Returns whether the current user can edit the username of the user being
+     * edited within the given data source.
+     *
+     * @param {String} [dataSource]
+     *     The identifier of the data source to check. If omitted, this will
+     *     default to the currently-selected data source.
+     *
+     * @returns {Boolean}
+     *     true if the current user can edit the username of the user being
+     *     edited, false otherwise.
+     */
+    $scope.canEditUsername = function canEditUsername(dataSource) {
+        return !username;
+    };
+
+    /**
      * Returns whether the current user can save the user being edited within
      * the given data source. Saving will create or update that user depending
      * on whether the user already exists.
@@ -423,31 +440,47 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         $scope.attributes = attributes;
     });
 
-    // Pull user data
-    dataSourceService.apply(userService.getUser, dataSources, username)
-    .then(function usersReceived(users) {
+    // Pull user data and permissions if we are editing an existing user
+    if (username) {
 
-        // Get user for currently-selected data source
-        $scope.users = users;
-        $scope.user  = users[selectedDataSource];
+        // Pull user data
+        dataSourceService.apply(userService.getUser, dataSources, username)
+        .then(function usersReceived(users) {
 
-        // Create skeleton user if user does not exist
-        if (!$scope.user)
-            $scope.user = new User({
-                'username' : username
-            });
+            // Get user for currently-selected data source
+            $scope.users = users;
+            $scope.user  = users[selectedDataSource];
 
-    });
+            // Create skeleton user if user does not exist
+            if (!$scope.user)
+                $scope.user = new User({
+                    'username' : username
+                });
 
-    // Pull user permissions
-    permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
-        $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
-    })
+        });
 
-    // If permissions cannot be retrieved, use empty permissions
-    .error(function permissionRetrievalFailed() {
+        // Pull user permissions
+        permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
+            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+        })
+
+        // If permissions cannot be retrieved, use empty permissions
+        .error(function permissionRetrievalFailed() {
+            $scope.permissionFlags = new PermissionFlagSet();
+        });
+    }
+
+    // Use skeleton data if we are creating a new user
+    else {
+
+        // No users exist regardless of data source if there is no username
+        $scope.users = {};
+
+        // Use skeleton user object with no associated permissions
+        $scope.user = new User();
         $scope.permissionFlags = new PermissionFlagSet();
-    });
+
+    }
 
     // Retrieve all connections for which we have ADMINISTER permission
     dataSourceService.apply(

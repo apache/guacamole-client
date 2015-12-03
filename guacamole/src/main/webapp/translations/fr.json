@@ -525,6 +525,8 @@
 
         "DIALOG_HEADER_ERROR"           : "Erreur",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_USERS" : "Cliquer ou appuyer sur un utilisateur en dessous pour le gérer. Selon vos permissions, les utilisateurs peuvent être ajoutés, supprimés, leur mot de passe changé.",
 
         "SECTION_HEADER_USERS"       : "Utilisateur"

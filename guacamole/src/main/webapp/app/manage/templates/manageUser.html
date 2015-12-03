@@ -24,7 +24,7 @@ THE SOFTWARE.
 
     <!-- User header and data source tabs -->
     <div class="username header">
-        <h2>{{user.username}}</h2>
+        <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
     <div class="page-tabs">
@@ -42,6 +42,13 @@ THE SOFTWARE.
         <!-- User password section -->
         <div class="section">
             <table class="properties">
+                <tr>
+                    <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | translate}}</th>
+                    <td>
+                        <input ng-show="canEditUsername()" ng-model="user.username" type="text"/>
+                        <span  ng-hide="canEditUsername()">{{user.username}}</span>
+                    </td>
+                </tr>
                 <tr>
                     <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | translate}}</th>
                     <td><input ng-model="user.password" type="password" /></td>

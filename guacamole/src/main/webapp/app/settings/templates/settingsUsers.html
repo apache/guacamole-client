@@ -24,10 +24,21 @@
     <!-- User management -->
     <p>{{'SETTINGS_USERS.HELP_USERS' | translate}}</p>
 
-    <!-- Form action buttons -->
-    <div class="action-buttons" ng-show="canCreateUsers()">
-        <input type="text" ng-model="newUsername" class="name username" autocorrect="off" autocapitalize="off"/>
-        <button class="add-user" ng-click="newUser()">{{'SETTINGS_USERS.ACTION_NEW_USER' | translate}}</button>
+
+    <!-- User management toolbar -->
+    <div class="toolbar">
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <a class="add-user button" ng-show="canCreateUsers()"
+               href="#/manage/{{getDefaultDataSource()}}/users/">{{'SETTINGS_USERS.ACTION_NEW_USER' | translate}}</a>
+        </div>
+
+        <!-- User filter -->
+        <guac-filter filtered-items="filteredManageableUsers" items="manageableUsers"
+                     placeholder="'SETTINGS_USERS.FIELD_PLACEHOLDER_FILTER' | translate"
+                     properties="filteredUserProperties"></guac-filter>
+
     </div>
 
     <!-- List of users this user has access to -->
@@ -44,6 +55,6 @@
 
     <!-- Pager controls for user list -->
     <guac-pager page="manageableUserPage" page-size="25"
-                items="manageableUsers | orderBy : 'user.username'"></guac-pager>
+                items="filteredManageableUsers | orderBy : 'user.username'"></guac-pager>
 
 </div>

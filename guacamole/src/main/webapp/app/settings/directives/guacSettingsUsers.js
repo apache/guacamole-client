@@ -96,6 +96,15 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
             $scope.permissions = null;
 
             /**
+             * Array of all user properties that are filterable.
+             *
+             * @type String[]
+             */
+            $scope.filteredUserProperties = [
+                'user.username'
+            ];
+
+            /**
              * Returns whether critical data has completed being loaded.
              *
              * @returns {Boolean}
@@ -118,7 +127,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              *     default when creating a new user, or null if user creation
              *     is not allowed.
              */
-            var getDefaultDataSource = function getDefaultDataSource() {
+            $scope.getDefaultDataSource = function getDefaultDataSource() {
 
                 // Abort if permissions have not yet loaded
                 if (!$scope.permissions)
@@ -151,7 +160,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
              *     least one data source, false otherwise.
              */
             $scope.canCreateUsers = function canCreateUsers() {
-                return getDefaultDataSource() !== null;
+                return $scope.getDefaultDataSource() !== null;
             };
 
             /**
@@ -238,7 +247,7 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                             if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.ADMINISTER)
                              && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.UPDATE, user.username)
                              && !PermissionSet.hasUserPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.DELETE, user.username))
-                                dataSource = getDefaultDataSource();
+                                dataSource = $scope.getDefaultDataSource();
 
                             // Add user to overall list
                             addedUsers[user.username] = user;
@@ -253,16 +262,6 @@ angular.module('settings').directive('guacSettingsUsers', [function guacSettings
                 });
 
             });
-
-            /**
-             * Navigates to an interface for creating a new user having the
-             * username specified.
-             */
-            $scope.newUser = function newUser() {
-                var username = $scope.newUsername.trim();
-                if (username)
-                    $location.url('/manage/' + encodeURIComponent(getDefaultDataSource()) + '/users/' + encodeURIComponent(username));
-            };
             
         }]
     };

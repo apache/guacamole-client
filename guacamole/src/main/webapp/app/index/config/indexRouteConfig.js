@@ -150,7 +150,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // User editor
-        .when('/manage/:dataSource/users/:id', {
+        .when('/manage/:dataSource/users/:id?', {
             title         : 'APP.NAME',
             bodyClassName : 'manage',
             templateUrl   : 'app/manage/templates/manageUser.html',

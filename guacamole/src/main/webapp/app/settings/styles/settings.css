@@ -34,3 +34,45 @@
     text-align: center;
     margin: 1em 0;
 }
+
+.settings .toolbar {
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: center;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-orient: horizontal;
+
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: center;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+
+.settings .toolbar .action-buttons {
+    margin-right: 0.25em;
+}
+
+.settings .toolbar .filter {
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
