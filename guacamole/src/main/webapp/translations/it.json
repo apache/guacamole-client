@@ -520,6 +520,8 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
         "SECTION_HEADER_USERS"       : "Utenti"
