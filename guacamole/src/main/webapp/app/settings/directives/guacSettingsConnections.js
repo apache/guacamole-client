@@ -91,6 +91,25 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             $scope.permissions = null;
 
             /**
+             * Array of all connection properties that are filterable.
+             *
+             * @type String[]
+             */
+            $scope.filteredConnectionProperties = [
+                'name',
+                'protocol'
+            ];
+
+            /**
+             * Array of all connection group properties that are filterable.
+             *
+             * @type String[]
+             */
+            $scope.filteredConnectionGroupProperties = [
+                'name'
+            ];
+
+            /**
              * Returns whether critical data has completed being loaded.
              *
              * @returns {Boolean}

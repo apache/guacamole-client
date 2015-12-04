@@ -24,16 +24,28 @@
     <!-- Connection management -->
     <p>{{'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | translate}}</p>
 
-    <!-- Form action buttons -->
-    <div class="action-buttons">
+    <!-- Connection management toolbar -->
+    <div class="toolbar">
 
-        <a class="add-connection button"
-           ng-show="canCreateConnections()"
-           href="#/manage/{{dataSource}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>
+        <!-- Form action buttons -->
+        <div class="action-buttons">
 
-        <a class="add-connection-group button"
-           ng-show="canCreateConnectionGroups()"
-           href="#/manage/{{dataSource}}/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+            <a class="add-connection button"
+               ng-show="canCreateConnections()"
+               href="#/manage/{{dataSource}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>
+
+            <a class="add-connection-group button"
+               ng-show="canCreateConnectionGroups()"
+               href="#/manage/{{dataSource}}/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+
+        </div>
+
+        <!-- Connection filter -->
+        <guac-group-list-filter connection-groups="rootGroups"
+            filtered-connection-groups="filteredRootGroups"
+            placeholder="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | translate"
+            connection-properties="filteredConnectionProperties"
+            connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
 
     </div>
 
@@ -41,7 +53,7 @@
     <div class="connection-list">
         <guac-group-list
             page-size="25"
-            connection-groups="rootGroups"
+            connection-groups="filteredRootGroups"
             connection-template="'app/settings/templates/connection.html'"
             connection-group-template="'app/settings/templates/connectionGroup.html'"/>
     </div>

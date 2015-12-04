@@ -450,6 +450,8 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "HELP_CONNECTIONS"   : "Fai click o tap sulla connessione qui sotto per gestire quella connessione. In base al tuo livello di accesso, le connessioni possono essere craete, eliminate, e le relative proprietà (protocol, hostname, port, etc.) possono essere cambiate.",
         
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
