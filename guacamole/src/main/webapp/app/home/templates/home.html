@@ -1,5 +1,5 @@
 <!--
-   Copyright (C) 2014 Glyptodon LLC
+   Copyright (C) 2015 Glyptodon LLC
 
    Permission is hereby granted, free of charge, to any person obtaining a copy
    of this software and associated documentation files (the "Software"), to deal
@@ -34,11 +34,18 @@
         </div>
 
         <!-- All connections for this user -->
-        <h2 class="header">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
+        <div class="header">
+            <h2>{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | translate}}</h2>
+            <guac-group-list-filter connection-groups="rootConnectionGroups"
+                filtered-connection-groups="filteredRootConnectionGroups"
+                placeholder="'HOME.FIELD_PLACEHOLDER_FILTER' | translate"
+                connection-properties="filteredConnectionProperties"
+                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+        </div>
         <div class="all-connections">
             <guac-group-list
                 context="context"
-                connection-groups="rootConnectionGroups"
+                connection-groups="filteredRootConnectionGroups"
                 connection-template="'app/home/templates/connection.html'"
                 connection-group-template="'app/home/templates/connectionGroup.html'"
                 page-size="20"></guac-group-list>
