@@ -148,6 +148,8 @@
 
     "HOME" : {
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Geen recente verbindingen.",
@@ -511,6 +513,8 @@
         "ACTION_NEW_CONNECTION_GROUP" : "Nieuwe Verbindingsgroep",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_CONNECTIONS"   : "Klik of tik op een verbinding hieronder om die verbinding te beheren. Afhankelijk van uw toegangsniveau kunnen verbindingen worden toegevoegd en verwijderd en hun eigenschappen (protocol, hostname, port, etc.) worden gewijzigd. ",
 

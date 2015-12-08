@@ -139,6 +139,8 @@
 
     "HOME" : {
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Pas de connexion récente.",
@@ -452,6 +454,8 @@
         "ACTION_NEW_CONNECTION_GROUP" : "Nouveau Groupe",
 
         "DIALOG_HEADER_ERROR"          : "Erreur",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_CONNECTIONS"   : "Cliquer ou appuyer sur une connexion en dessous pour la gérer. Selon vos permissions, les connexions peuvent être ajoutées, supprimées, leur propriétés (protocole, nom d'hôte, port, etc) changées.",
         

@@ -45,6 +45,24 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.rootConnectionGroups = null;
 
     /**
+     * Array of all connection properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionProperties = [
+        'name'
+    ];
+
+    /**
+     * Array of all connection group properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionGroupProperties = [
+        'name'
+    ];
+
+    /**
      * Returns whether critical data has completed being loaded.
      *
      * @returns {Boolean}

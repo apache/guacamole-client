@@ -137,6 +137,8 @@
 
     "HOME" : {
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Нет недавних подключения.",
@@ -420,6 +422,8 @@
         "ACTION_NEW_CONNECTION_GROUP" : "Новая группа",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_CONNECTIONS"   : "Нажмите на подключение, чтобы управлять им. В зависимости от прав доступа возможно добавление и удаление подключений, а также изменение их свойств (протокол, название сервера, порт и пр.).",
 

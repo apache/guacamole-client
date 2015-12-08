@@ -53,3 +53,18 @@ div.recent-connections div.connection {
     max-width: 75%;
     overflow: hidden;
 }
+
+.connection-list-ui .header .filter {
+    margin: 0;
+    padding: 0.75em 0.5em;
+}
+
+.connection-list-ui .header .filter input {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -khtml-border-radius: 0;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: transparent;
+}
