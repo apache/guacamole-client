@@ -36,7 +36,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
-    var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var dataSourceService        = $injector.get('dataSourceService');
