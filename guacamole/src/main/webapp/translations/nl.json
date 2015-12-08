@@ -254,6 +254,8 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Gebruikersnaam:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "INFO_READ_ONLY" : "Sorry, maar dit gebruikers account kan niet gewijzigd worden",
 
         "SECTION_HEADER_CONNECTIONS" : "Verbindingen",

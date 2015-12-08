@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2015 Glyptodon LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+h1 {
+    
+    margin: 0;
+    padding: 0.5em;
+
+    font-size: 2em;
+    vertical-align: middle;
+    text-align: center;
+
+}
+
+h2 {
+    font-size: 1.25em;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 0.75em 0.5em;
+    margin: 0;
+}
+
+.header {
+
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+    background: rgba(0, 0, 0, 0.04);
+
+    margin-bottom: 1em;
+    margin-top: 0;
+    border-top: none;
+    width: 100%;
+
+    /* IE10 */
+    display: -ms-flexbox;
+    -ms-flex-align: stretch;
+    -ms-flex-direction: row;
+
+    /* Ancient Mozilla */
+    display: -moz-box;
+    -moz-box-align: stretch;
+    -moz-box-orient: horizontal;
+    
+    /* Ancient WebKit */
+    display: -webkit-box;
+    -webkit-box-align: stretch;
+    -webkit-box-orient: horizontal;
+
+    /* Old WebKit */
+    display: -webkit-flex;
+    -webkit-align-items: stretch;
+    -webkit-flex-direction: row;
+
+    /* W3C */
+    display: flex;
+    align-items: stretch;
+    flex-direction: row;
+
+}
+
+.header ~ * .header,
+.header ~ .header {
+    margin-top: 1em;
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+.header h2 {
+    -ms-flex: 1 1 auto;
+    -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto;
+}
+
+.header .filter {
+    margin: 0;
+    padding: 0.75em 0.5em;
+}
+
+.header .filter input {
+    -moz-border-radius: 0;
+    -webkit-border-radius: 0;
+    -khtml-border-radius: 0;
+    border-radius: 0;
+    border: none;
+    border-left: 1px solid rgba(0, 0, 0, 0.125);
+    background-color: transparent;
+}

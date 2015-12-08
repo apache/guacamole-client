@@ -36,7 +36,6 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     // Required services
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
-    var $q                       = $injector.get('$q');
     var authenticationService    = $injector.get('authenticationService');
     var connectionGroupService   = $injector.get('connectionGroupService');
     var dataSourceService        = $injector.get('dataSourceService');
@@ -120,7 +119,26 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * @type Object.<String, ConnectionGroup>
      */
     $scope.rootGroups = null;
-    
+
+    /**
+     * Array of all connection properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionProperties = [
+        'name',
+        'protocol'
+    ];
+
+    /**
+     * Array of all connection group properties that are filterable.
+     *
+     * @type String[]
+     */
+    $scope.filteredConnectionGroupProperties = [
+        'name'
+    ];
+
     /**
      * A map of data source identifiers to the set of all permissions
      * associated with the current user under that data source, or null if the
