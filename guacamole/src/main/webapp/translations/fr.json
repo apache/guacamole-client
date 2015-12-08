@@ -245,6 +245,8 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Identifiant:",
         
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "SECTION_HEADER_CONNECTIONS" : "Connexions",
         "SECTION_HEADER_EDIT_USER"   : "Modifier Utilisateur",
         "SECTION_HEADER_PERMISSIONS" : "Permissions",

@@ -242,6 +242,8 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Имя пользователя:",
 
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "SECTION_HEADER_CONNECTIONS" : "Подключения",
         "SECTION_HEADER_EDIT_USER"   : "Редактировать пользователя",
         "SECTION_HEADER_PERMISSIONS" : "Разрешения",

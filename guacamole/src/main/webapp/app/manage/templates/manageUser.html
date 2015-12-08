@@ -87,11 +87,18 @@ THE SOFTWARE.
 
         <!-- Connection permissions section -->
         <div class="connection-permissions" ng-show="canChangePermissions()">
-            <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
+            <div class="header">
+                <h2>{{'MANAGE_USER.SECTION_HEADER_CONNECTIONS' | translate}}</h2>
+                <guac-group-list-filter connection-groups="rootGroups"
+                    filtered-connection-groups="filteredRootGroups"
+                    placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
+                    connection-properties="filteredConnectionProperties"
+                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+            </div>
             <div class="section">
                 <guac-group-list
                     context="groupListContext"
-                    connection-groups="rootGroups"
+                    connection-groups="filteredRootGroups"
                     connection-template="'app/manage/templates/connectionPermission.html'"
                     connection-group-template="'app/manage/templates/connectionGroupPermission.html'"
                     page-size="20"/>
