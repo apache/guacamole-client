@@ -116,12 +116,18 @@ public class LDAPConnectionService {
         // Obtain appropriately-configured LDAPConnection instance
         LDAPConnection ldapConnection = createLDAPConnection();
 
-        // Connect to LDAP server
         try {
+
+            // Connect to LDAP server
             ldapConnection.connect(
                 confService.getServerHostname(),
                 confService.getServerPort()
             );
+
+            // Explicitly start TLS if requested
+            if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS)
+                ldapConnection.startTLS();
+
         }
         catch (LDAPException e) {
             logger.error("Unable to connect to LDAP server: {}", e.getMessage());
