@@ -61,8 +61,9 @@ public class ConfigurationService {
 
     /**
      * Returns the port of the LDAP server configured with
-     * guacamole.properties. By default, this will be 389 - the standard LDAP
-     * port.
+     * guacamole.properties. The default value depends on which encryption
+     * method is being used. For unencrypted LDAP and STARTTLS, this will be
+     * 389. For LDAPS (LDAP over SSL) this will be 636.
      *
      * @return
      *     The port of the LDAP server, as configured with
@@ -74,7 +75,7 @@ public class ConfigurationService {
     public int getServerPort() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_PORT,
-            389
+            getEncryptionMethod().DEFAULT_PORT
         );
     }
 
@@ -169,6 +170,24 @@ public class ConfigurationService {
     public String getSearchBindPassword() throws GuacamoleException {
         return environment.getProperty(
             LDAPGuacamoleProperties.LDAP_SEARCH_BIND_PASSWORD
+        );
+    }
+
+    /**
+     * Returns the encryption method that should be used when connecting to the
+     * LDAP server. By default, no encryption is used.
+     *
+     * @return
+     *     The encryption method that should be used when connecting to the
+     *     LDAP server.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD,
+            EncryptionMethod.NONE
         );
     }
 

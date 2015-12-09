@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -121,6 +121,18 @@ public class LDAPGuacamoleProperties {
 
         @Override
         public String getName() { return "ldap-search-bind-password"; }
+
+    };
+
+    /**
+     * The encryption method to use when connecting to the LDAP server, if any.
+     * The chosen method will also dictate the default port if not already
+     * explicitly specified via LDAP_PORT.
+     */
+    public static final EncryptionMethodProperty LDAP_ENCRYPTION_METHOD = new EncryptionMethodProperty() {
+
+        @Override
+        public String getName() { return "ldap-encryption-method"; }
 
     };
 

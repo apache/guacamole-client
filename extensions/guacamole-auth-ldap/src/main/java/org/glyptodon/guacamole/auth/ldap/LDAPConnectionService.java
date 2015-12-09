@@ -25,8 +25,11 @@ package org.glyptodon.guacamole.auth.ldap;
 import com.google.inject.Inject;
 import com.novell.ldap.LDAPConnection;
 import com.novell.ldap.LDAPException;
+import com.novell.ldap.LDAPJSSESecureSocketFactory;
+import com.novell.ldap.LDAPJSSEStartTLSFactory;
 import java.io.UnsupportedEncodingException;
 import org.glyptodon.guacamole.GuacamoleException;
+import org.glyptodon.guacamole.GuacamoleUnsupportedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +52,48 @@ public class LDAPConnectionService {
     private ConfigurationService confService;
 
     /**
+     * Creates a new instance of LDAPConnection, configured as required to use
+     * whichever encryption method is requested within guacamole.properties.
+     *
+     * @return
+     *     A new LDAPConnection instance which has already been configured to
+     *     use the encryption method requested within guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while parsing guacamole.properties, or if the
+     *     requested encryption method is actually not implemented (a bug).
+     */
+    private LDAPConnection createLDAPConnection() throws GuacamoleException {
+
+        // Map encryption method to proper connection and socket factory
+        EncryptionMethod encryptionMethod = confService.getEncryptionMethod();
+        switch (encryptionMethod) {
+
+            // Unencrypted LDAP connection
+            case NONE:
+                logger.debug("Connection to LDAP server without encryption.");
+                return new LDAPConnection();
+
+            // LDAP over SSL (LDAPS)
+            case SSL:
+                logger.debug("Connecting to LDAP server using SSL/TLS.");
+                return new LDAPConnection(new LDAPJSSESecureSocketFactory());
+
+            // LDAP + STARTTLS
+            case STARTTLS:
+                logger.debug("Connecting to LDAP server using STARTTLS.");
+                return new LDAPConnection(new LDAPJSSEStartTLSFactory());
+
+            // The encryption method, though known, is not actually
+            // implemented. If encountered, this would be a bug.
+            default:
+                throw new GuacamoleUnsupportedException("Unimplemented encryption method: " + encryptionMethod);
+
+        }
+
+    }
+
+    /**
      * Binds to the LDAP server using the provided user DN and password.
      *
      * @param userDN
@@ -68,15 +113,21 @@ public class LDAPConnectionService {
     public LDAPConnection bindAs(String userDN, String password)
             throws GuacamoleException {
 
-        LDAPConnection ldapConnection;
+        // Obtain appropriately-configured LDAPConnection instance
+        LDAPConnection ldapConnection = createLDAPConnection();
 
-        // Connect to LDAP server
         try {
-            ldapConnection = new LDAPConnection();
+
+            // Connect to LDAP server
             ldapConnection.connect(
                 confService.getServerHostname(),
                 confService.getServerPort()
             );
+
+            // Explicitly start TLS if requested
+            if (confService.getEncryptionMethod() == EncryptionMethod.STARTTLS)
+                ldapConnection.startTLS();
+
         }
         catch (LDAPException e) {
             logger.error("Unable to connect to LDAP server: {}", e.getMessage());
