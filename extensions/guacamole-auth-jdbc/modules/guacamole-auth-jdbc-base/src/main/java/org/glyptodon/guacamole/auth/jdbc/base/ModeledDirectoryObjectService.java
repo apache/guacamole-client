@@ -32,6 +32,7 @@ import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.glyptodon.guacamole.auth.jdbc.permission.ObjectPermissionModel;
 import org.glyptodon.guacamole.auth.jdbc.user.UserModel;
+import org.glyptodon.guacamole.net.auth.Identifiable;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -54,7 +55,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  *     database.
  */
 public abstract class ModeledDirectoryObjectService<InternalType extends ModeledDirectoryObject<ModelType>,
-        ExternalType, ModelType extends ObjectModel>
+        ExternalType extends Identifiable, ModelType extends ObjectModel>
     implements DirectoryObjectService<InternalType, ExternalType> {
 
     /**
@@ -383,6 +384,9 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         
         // Create object
         getObjectMapper().insert(model);
+
+        // Set identifier on original object
+        object.setIdentifier(model.getIdentifier());
 
         // Add implicit permissions
         getPermissionMapper().insert(getImplicitPermissions(user, model));

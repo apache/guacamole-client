@@ -145,8 +145,8 @@ angular.module('rest').factory('connectionGroupService', ['$injector',
             })
 
             // Set the identifier on the new connection group and clear the cache
-            .success(function connectionGroupCreated(identifier){
-                connectionGroup.identifier = identifier;
+            .success(function connectionGroupCreated(newConnectionGroup){
+                connectionGroup.identifier = newConnectionGroup.identifier;
                 cacheService.connections.removeAll();
             });
         }
