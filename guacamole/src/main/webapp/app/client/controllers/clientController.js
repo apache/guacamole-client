@@ -441,8 +441,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Re-authenticate to verify auth status at end of connection
         authenticationService.updateCurrentToken($location.search())
 
-        // If authentication is OK, show the requested status
-        .then(function authenticationCheckSuccessful() {
+        // Show the requested status once the authentication check has finished
+        ['finally'](function authenticationCheckComplete() {
             guacNotification.showStatus(status);
         });
 
