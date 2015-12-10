@@ -21,22 +21,8 @@
 --
 
 --
--- Explicitly add permission for each user to READ and UPDATE him/herself
+-- Explicitly add permission for each user to READ him/herself
 --
-
-INSERT INTO guacamole_user_permission
-      (user_id, affected_user_id, permission)
-SELECT user_id, user_id,          'UPDATE'
-FROM guacamole_user
-WHERE
-    user_id NOT IN (
-        SELECT user_id
-        FROM guacamole_user_permission
-        WHERE
-            user_id = affected_user_id
-            AND permission = 'UPDATE'
-    );
-
 
 INSERT INTO guacamole_user_permission
       (user_id, affected_user_id, permission)
