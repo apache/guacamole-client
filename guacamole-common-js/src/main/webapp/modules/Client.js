@@ -691,7 +691,8 @@ Guacamole.Client = function(tunnel) {
             var stream = streams[stream_index];
 
             // Write data
-            stream.onblob(data);
+            if (stream && stream.onblob)
+                stream.onblob(data);
 
         },
 
@@ -890,7 +891,7 @@ Guacamole.Client = function(tunnel) {
             var stream = streams[stream_index];
 
             // Signal end of stream
-            if (stream.onend)
+            if (stream && stream.onend)
                 stream.onend();
 
         },
