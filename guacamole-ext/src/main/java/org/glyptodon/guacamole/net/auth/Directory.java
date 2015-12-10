@@ -28,16 +28,15 @@ import org.glyptodon.guacamole.GuacamoleException;
 
 /**
  * Provides access to a collection of all objects with associated identifiers,
- * and allows user manipulation and removal. Objects stored within a
- * Directory are not necessarily returned to the use as references to
- * the stored objects, thus updating an object requires calling an update
- * function.
+ * and allows user manipulation and removal. Objects returned by a Directory
+ * are not necessarily backed by the stored objects, thus updating an object
+ * always requires calling the update() function.
  *
  * @author Michael Jumper
  * @param <ObjectType>
  *     The type of objects stored within this Directory.
  */
-public interface Directory<ObjectType> {
+public interface Directory<ObjectType extends Identifiable> {
 
     /**
      * Returns the object having the given identifier. Note that changes to
@@ -91,12 +90,16 @@ public interface Directory<ObjectType> {
     Set<String> getIdentifiers() throws GuacamoleException;
 
     /**
-     * Adds the given object to the overall set.
+     * Adds the given object to the overall set. If a new identifier is
+     * created for the added object, that identifier will be automatically
+     * assigned via setIdentifier().
      *
-     * @param object The object to add.
+     * @param object
+     *     The object to add.
      *
-     * @throws GuacamoleException If an error occurs while adding the object , or
-     *                            if adding the object is not allowed.
+     * @throws GuacamoleException
+     *     If an error occurs while adding the object, or if adding the object
+     *     is not allowed.
      */
     void add(ObjectType object)
             throws GuacamoleException;

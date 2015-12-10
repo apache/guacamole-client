@@ -30,6 +30,7 @@ import java.util.Set;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.net.auth.Directory;
+import org.glyptodon.guacamole.net.auth.Identifiable;
 
 /**
  * An extremely simple read-only implementation of a Directory which provides
@@ -40,7 +41,8 @@ import org.glyptodon.guacamole.net.auth.Directory;
  * @param <ObjectType>
  *     The type of objects stored within this SimpleDirectory.
  */
-public class SimpleDirectory<ObjectType> implements Directory<ObjectType> {
+public class SimpleDirectory<ObjectType extends Identifiable>
+        implements Directory<ObjectType> {
 
     /**
      * The Map of objects to provide access to.

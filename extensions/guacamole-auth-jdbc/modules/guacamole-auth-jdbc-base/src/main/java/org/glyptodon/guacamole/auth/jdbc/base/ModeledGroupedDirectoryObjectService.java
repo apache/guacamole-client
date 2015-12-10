@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.GuacamoleSecurityException;
 import org.glyptodon.guacamole.auth.jdbc.user.AuthenticatedUser;
+import org.glyptodon.guacamole.net.auth.Identifiable;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermission;
 import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
 
@@ -50,7 +51,7 @@ import org.glyptodon.guacamole.net.auth.permission.ObjectPermissionSet;
  *     database.
  */
 public abstract class ModeledGroupedDirectoryObjectService<InternalType extends ModeledGroupedDirectoryObject<ModelType>,
-        ExternalType, ModelType extends GroupedObjectModel>
+        ExternalType extends Identifiable, ModelType extends GroupedObjectModel>
         extends ModeledDirectoryObjectService<InternalType, ExternalType, ModelType> {
 
     /**

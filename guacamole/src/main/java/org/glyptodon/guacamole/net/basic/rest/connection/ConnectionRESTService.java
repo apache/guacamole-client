@@ -249,8 +249,8 @@ public class ConnectionRESTService {
     }
 
     /**
-     * Creates a new connection and returns the identifier of the new
-     * connection.
+     * Creates a new connection and returns the new connection, with identifier
+     * field populated.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
@@ -264,14 +264,13 @@ public class ConnectionRESTService {
      *     The connection to create.
      *
      * @return
-     *     The identifier of the new connection.
+     *     The new connection.
      *
      * @throws GuacamoleException
      *     If an error occurs while creating the connection.
      */
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    public String createConnection(@QueryParam("token") String authToken,
+    public APIConnection createConnection(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             APIConnection connection) throws GuacamoleException {
 
@@ -286,8 +285,8 @@ public class ConnectionRESTService {
         Directory<Connection> connectionDirectory = userContext.getConnectionDirectory();
         connectionDirectory.add(new APIConnectionWrapper(connection));
 
-        // Return the new connection identifier
-        return connection.getIdentifier();
+        // Return the new connection
+        return connection;
 
     }
   

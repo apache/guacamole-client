@@ -152,8 +152,8 @@ angular.module('rest').factory('connectionService', ['$injector',
             })
 
             // Set the identifier on the new connection and clear the cache
-            .success(function connectionCreated(identifier){
-                connection.identifier = identifier;
+            .success(function connectionCreated(newConnection){
+                connection.identifier = newConnection.identifier;
                 cacheService.connections.removeAll();
             });
         }
