@@ -190,10 +190,8 @@ public class ConnectionGroupRESTService {
     }
     
     /**
-     * Creates a new connection group and returns the identifier of the new connection group.
-     * If a parentID is provided, the connection group will be created in the
-     * connection group with the parentID. Otherwise, the root connection group
-     * will be used.
+     * Creates a new connection group and returns the new connection group,
+     * with identifier field populated.
      * 
      * @param authToken
      *     The authentication token that is used to authenticate the user
@@ -207,14 +205,14 @@ public class ConnectionGroupRESTService {
      *     The connection group to create.
      * 
      * @return
-     *     The identifier of the new connection group.
+     *     The new connection group.
      *
      * @throws GuacamoleException
      *     If an error occurs while creating the connection group.
      */
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    public String createConnectionGroup(@QueryParam("token") String authToken,
+    public APIConnectionGroup createConnectionGroup(
+            @QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier,
             APIConnectionGroup connectionGroup) throws GuacamoleException {
 
@@ -229,8 +227,8 @@ public class ConnectionGroupRESTService {
         Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
         connectionGroupDirectory.add(new APIConnectionGroupWrapper(connectionGroup));
 
-        // Return the new connection group identifier
-        return connectionGroup.getIdentifier();
+        // Return the new connection group
+        return connectionGroup;
 
     }
     

@@ -217,7 +217,7 @@ public class UserRESTService {
     }
     
     /**
-     * Creates a new user and returns the username.
+     * Creates a new user and returns the user that was created.
      *
      * @param authToken
      *     The authentication token that is used to authenticate the user
@@ -234,11 +234,10 @@ public class UserRESTService {
      *     If a problem is encountered while creating the user.
      *
      * @return
-     *     The username of the newly created user.
+     *     The newly created user.
      */
     @POST
-    @Produces(MediaType.TEXT_PLAIN)
-    public String createUser(@QueryParam("token") String authToken,
+    public APIUser createUser(@QueryParam("token") String authToken,
             @PathParam("dataSource") String authProviderIdentifier, APIUser user)
             throws GuacamoleException {
 
@@ -255,7 +254,7 @@ public class UserRESTService {
         // Create the user
         userDirectory.add(new APIUserWrapper(user));
 
-        return user.getUsername();
+        return user;
 
     }
     
