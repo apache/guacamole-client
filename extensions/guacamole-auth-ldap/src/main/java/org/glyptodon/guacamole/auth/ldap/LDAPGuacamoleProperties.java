@@ -62,6 +62,17 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-user-base-dn"; }
 
     };
+    
+    /**
+     * The base DN of role based access control (RBAC) groups. 
+     * All groups should be under this DN.
+     */
+    public static final StringGuacamoleProperty LDAP_GROUP_BASE_DN = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-group-base-dn"; }
+
+    };
 
     /**
      * The attribute or attributes which identify users. One of these

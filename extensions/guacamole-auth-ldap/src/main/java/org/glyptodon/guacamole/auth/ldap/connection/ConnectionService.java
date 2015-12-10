@@ -96,8 +96,9 @@ public class ConnectionService {
 
         // Do not return any connections if base DN is not specified
         String configurationBaseDN = confService.getConfigurationBaseDN();
-        if (configurationBaseDN == null)
+        if (configurationBaseDN == null) {
             return Collections.<String, Connection>emptyMap();
+        }
 
         try {
 
@@ -109,11 +110,17 @@ public class ConnectionService {
             // possibly be null
             assert(userDN != null);
 
-            // Find all Guacamole connections for the given user
+            // Get the search filter for finding connections associated to the userDN
+            String connectionSearchFilter = getConnectionSearchFilter(userDN, ldapConnection);
+            
+            // Find all Guacamole connections for the given user by
+            // looking for direct membership in the guacConfigGroup
+            // and possibly any groups the user is a member of that are
+            // referred to in the seeAlso attribute of the guacConfigGroup.
             LDAPSearchResults results = ldapConnection.search(
                 configurationBaseDN,
                 LDAPConnection.SCOPE_SUB,
-                "(&(objectClass=guacConfigGroup)(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
+                connectionSearchFilter,
                 null,
                 false
             );
@@ -188,11 +195,70 @@ public class ConnectionService {
             // Return map of all connections
             return connections;
 
-        }
-        catch (LDAPException e) {
+        } catch (LDAPException e) {
             throw new GuacamoleServerException("Error while querying for connections.", e);
         }
 
     }
+    
+    /**
+     * Returns the connection search filter for the given userDN.
+     *
+     * @param userDN
+     *     DN of the user to search for associated guacConfigGroup connections.
+     *
+     * @param ldapConnection
+     *     LDAP connection to use for searching for associated groups.
+     *
+     * @return
+     *     Search filter for finding guacConfigGroup associated with the userDN.
+     *
+     * @throws LDAPException
+     *     If an error occurs preventing retrieval of user groups.
+     *     
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the group base DN. 
+     */
+    private String getConnectionSearchFilter(String userDN, LDAPConnection ldapConnection) throws LDAPException, GuacamoleException {
+        
+        // Create a search filter for the connection search
+        StringBuilder connectionSearchFilter = new StringBuilder();
+
+        // Add the prefix to the search filter, prefix filter searches for guacConfigGroups with the userDN as the member attribute value
+        connectionSearchFilter.append("(&(objectClass=guacConfigGroup)(|(member=");
+        connectionSearchFilter.append(escapingService.escapeLDAPSearchFilter(userDN));
+        connectionSearchFilter.append(")");
+
+        // If group base DN is specified search for user groups
+        String groupBaseDN = confService.getGroupBaseDN();
+
+        if (groupBaseDN != null) {
+
+            // Get all groups the user is a member of starting at the groupBaseDN, excluding guacConfigGroups
+            LDAPSearchResults userRoleGroupResults = ldapConnection.search(
+                groupBaseDN,
+                LDAPConnection.SCOPE_SUB,
+                "(&(!(objectClass=guacConfigGroup))(member=" + escapingService.escapeLDAPSearchFilter(userDN) + "))",
+                null,
+                false
+            );
+
+            // Append the additional user groups to the LDAP filter
+            // Now the filter will also look for guacConfigGroups that refer 
+            // to groups the user is a member of
+            // The guacConfig group uses the seeAlso attribute to refer 
+            // to these other groups
+            while (userRoleGroupResults.hasMore()) {
+                LDAPEntry entry = userRoleGroupResults.next();
+                connectionSearchFilter.append("(seeAlso=").append(escapingService.escapeLDAPSearchFilter(entry.getDN())).append(")");
+            }
+        }
+        
+        // Complete the search filter.
+        connectionSearchFilter.append("))");  
+        
+        return connectionSearchFilter.toString();
+    }
 
 }
+
