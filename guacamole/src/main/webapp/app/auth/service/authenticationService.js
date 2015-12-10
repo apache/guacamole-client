@@ -155,6 +155,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // If authentication fails, propogate failure to returned promise
         .error(function authenticationFailed(error) {
 
+            // Ensure error object exists, even if the error response is not
+            // coming from the authentication REST endpoint
+            error = new Error(error);
+
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS)
                 $rootScope.$broadcast('guacInvalidCredentials', parameters, error);

@@ -884,12 +884,23 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         /**
          * Fails the currently-attached tunnel, attaching a new tunnel if
          * possible.
-         * 
+         *
          * @private
-         * @return {Guacamole.Tunnel} The next tunnel, or null if there are no
-         *                            more tunnels to try.
+         * @param {Guacamole.Status} [status]
+         *     An object representing the failure that occured in the
+         *     currently-attached tunnel, if known.
+         *
+         * @return {Guacamole.Tunnel}
+         *     The next tunnel, or null if there are no more tunnels to try or
+         *     if no more tunnels should be tried.
          */
-        function fail_tunnel() {
+        var failTunnel = function failTunnel(status) {
+
+            // Do not attempt to continue using next tunnel on server timeout
+            if (status && status.code === Guacamole.Status.Code.UPSTREAM_TIMEOUT) {
+                tunnels = [];
+                return null;
+            }
 
             // Get next tunnel
             var next_tunnel = tunnels.shift();
@@ -904,7 +915,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
             return next_tunnel;
 
-        }
+        };
 
         /**
          * Use the current tunnel from this point forward. Do not try any more
@@ -933,7 +944,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
 
                 // If closed, mark failure, attempt next tunnel
                 case Guacamole.Tunnel.State.CLOSED:
-                    if (!fail_tunnel() && chained_tunnel.onstatechange)
+                    if (!failTunnel() && chained_tunnel.onstatechange)
                         chained_tunnel.onstatechange(state);
                     break;
                 
@@ -957,7 +968,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
         tunnel.onerror = function(status) {
 
             // Mark failure, attempt next tunnel
-            if (!fail_tunnel() && chained_tunnel.onerror)
+            if (!failTunnel(status) && chained_tunnel.onerror)
                 chained_tunnel.onerror(status);
 
         };
