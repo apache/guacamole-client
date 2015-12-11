@@ -92,25 +92,24 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     }
 
     @Override
-    public StreamInbound createWebSocketInbound(String protocol, HttpServletRequest request) {
-
-        // Get tunnel
-        final GuacamoleTunnel tunnel;
-
-        try {
-            tunnel = doConnect(request);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
-            logger.debug("Error connecting WebSocket tunnel.", e);
-            return null;
-        }
+    public StreamInbound createWebSocketInbound(String protocol,
+            final HttpServletRequest request) {
 
         // Return new WebSocket which communicates through tunnel
         return new StreamInbound() {
 
+            /**
+             * The GuacamoleTunnel associated with the connected WebSocket. If
+             * the WebSocket has not yet been connected, this will be null.
+             */
+            private GuacamoleTunnel tunnel = null;
+
             @Override
             protected void onTextData(Reader reader) throws IOException {
+
+                // Ignore inbound messages if there is no associated tunnel
+                if (tunnel == null)
+                    return;
 
                 GuacamoleWriter writer = tunnel.acquireWriter();
 
@@ -136,6 +135,16 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
             @Override
             public void onOpen(final WsOutbound outbound) {
+
+                try {
+                    tunnel = doConnect(request);
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
+                    logger.debug("Error connecting WebSocket tunnel.", e);
+                    closeConnection(outbound, e.getStatus());
+                    return;
+                }
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {

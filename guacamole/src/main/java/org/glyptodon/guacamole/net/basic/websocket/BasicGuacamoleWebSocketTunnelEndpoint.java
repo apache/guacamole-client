@@ -31,6 +31,7 @@ import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
+import org.glyptodon.guacamole.net.basic.TunnelRequest;
 import org.glyptodon.guacamole.net.basic.TunnelRequestService;
 import org.glyptodon.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
 
@@ -41,16 +42,16 @@ import org.glyptodon.guacamole.websocket.GuacamoleWebSocketTunnelEndpoint;
 public class BasicGuacamoleWebSocketTunnelEndpoint extends GuacamoleWebSocketTunnelEndpoint {
 
     /**
-     * Unique string which shall be used to store the GuacamoleTunnel
+     * Unique string which shall be used to store the TunnelRequest
      * associated with a WebSocket connection.
      */
-    private static final String TUNNEL_USER_PROPERTY = "WS_GUAC_TUNNEL";
+    private static final String TUNNEL_REQUEST_PROPERTY = "WS_GUAC_TUNNEL_REQUEST";
 
     /**
-     * Unique string which shall be used to store any GuacamoleException that
-     * occurs while retrieving the tunnel during the handshake.
+     * Unique string which shall be used to store the TunnelRequestService to
+     * be used for processing TunnelRequests.
      */
-    private static final String ERROR_USER_PROPERTY = "WS_GUAC_TUNNEL_ERROR";
+    private static final String TUNNEL_REQUEST_SERVICE_PROPERTY = "WS_GUAC_TUNNEL_REQUEST_SERVICE";
 
     /**
      * Configurator implementation which stores the requested GuacamoleTunnel
@@ -70,52 +71,49 @@ public class BasicGuacamoleWebSocketTunnelEndpoint extends GuacamoleWebSocketTun
          * service provider to retrieve the necessary service to handle new
          * connections requests.
          * 
-         * @param tunnelRequestServiceProvider The tunnel request service
-         *                                     provider to use for all new
-         *                                     connections.
+         * @param tunnelRequestServiceProvider
+         *     The tunnel request service provider to use for all new
+         *     connections.
          */
         public Configurator(Provider<TunnelRequestService> tunnelRequestServiceProvider) {
             this.tunnelRequestServiceProvider = tunnelRequestServiceProvider;
         }
         
         @Override
-        public void modifyHandshake(ServerEndpointConfig config, HandshakeRequest request, HandshakeResponse response) {
+        public void modifyHandshake(ServerEndpointConfig config,
+                HandshakeRequest request, HandshakeResponse response) {
 
             super.modifyHandshake(config, request, response);
             
-            // Attempt tunnel creation
+            // Store tunnel request and tunnel request service for retrieval
+            // upon WebSocket open
             Map<String, Object> userProperties = config.getUserProperties();
             userProperties.clear();
-            try {
-
-                // Get tunnel request service
-                TunnelRequestService tunnelRequestService = tunnelRequestServiceProvider.get();
-                
-                // Store new tunnel within user properties
-                GuacamoleTunnel tunnel = tunnelRequestService.createTunnel(new WebSocketTunnelRequest(request));
-                if (tunnel != null)
-                    userProperties.put(TUNNEL_USER_PROPERTY, tunnel);
-
-            }
-            catch (GuacamoleException e) {
-                userProperties.put(ERROR_USER_PROPERTY, e);
-            }
+            userProperties.put(TUNNEL_REQUEST_PROPERTY, new WebSocketTunnelRequest(request));
+            userProperties.put(TUNNEL_REQUEST_SERVICE_PROPERTY, tunnelRequestServiceProvider.get());
 
         }
         
     }
     
     @Override
-    protected GuacamoleTunnel createTunnel(Session session, EndpointConfig config) throws GuacamoleException {
+    protected GuacamoleTunnel createTunnel(Session session,
+            EndpointConfig config) throws GuacamoleException {
 
-        // Throw any error that occurred during tunnel creation
         Map<String, Object> userProperties = config.getUserProperties();
-        GuacamoleException tunnelError = (GuacamoleException) userProperties.get(ERROR_USER_PROPERTY);
-        if (tunnelError != null)
-            throw tunnelError;
 
-        // Return created tunnel, if any
-        return (GuacamoleTunnel) userProperties.get(TUNNEL_USER_PROPERTY);
+        // Get original tunnel request
+        TunnelRequest tunnelRequest = (TunnelRequest) userProperties.get(TUNNEL_REQUEST_PROPERTY);
+        if (tunnelRequest == null)
+            return null;
+
+        // Get tunnel request service
+        TunnelRequestService tunnelRequestService = (TunnelRequestService) userProperties.get(TUNNEL_REQUEST_SERVICE_PROPERTY);
+        if (tunnelRequestService == null)
+            return null;
+
+        // Create and return tunnel
+        return tunnelRequestService.createTunnel(tunnelRequest);
 
     }
 

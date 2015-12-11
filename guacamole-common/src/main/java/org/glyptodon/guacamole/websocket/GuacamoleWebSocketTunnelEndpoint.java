@@ -207,6 +207,10 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
     @OnMessage
     public void onMessage(String message) {
 
+        // Ignore inbound messages if there is no associated tunnel
+        if (tunnel == null)
+            return;
+
         GuacamoleWriter writer = tunnel.acquireWriter();
 
         try {

@@ -185,6 +185,10 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
     @Override
     public void onWebSocketText(String message) {
 
+        // Ignore inbound messages if there is no associated tunnel
+        if (tunnel == null)
+            return;
+
         GuacamoleWriter writer = tunnel.acquireWriter();
 
         try {

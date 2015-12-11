@@ -70,25 +70,24 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     }
 
     @Override
-    public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
-
-        // Get tunnel
-        final GuacamoleTunnel tunnel;
-
-        try {
-            tunnel = doConnect(request);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
-            logger.debug("Error connecting WebSocket tunnel.", e);
-            return null;
-        }
+    public WebSocket doWebSocketConnect(final HttpServletRequest request, String protocol) {
 
         // Return new WebSocket which communicates through tunnel
         return new WebSocket.OnTextMessage() {
 
+            /**
+             * The GuacamoleTunnel associated with the connected WebSocket. If
+             * the WebSocket has not yet been connected, this will be null.
+             */
+            private GuacamoleTunnel tunnel = null;
+
             @Override
             public void onMessage(String string) {
+
+                // Ignore inbound messages if there is no associated tunnel
+                if (tunnel == null)
+                    return;
+
                 GuacamoleWriter writer = tunnel.acquireWriter();
 
                 // Write message received
@@ -103,10 +102,21 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                 }
 
                 tunnel.releaseWriter();
+
             }
 
             @Override
             public void onOpen(final Connection connection) {
+
+                try {
+                    tunnel = doConnect(request);
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
+                    logger.debug("Error connecting WebSocket tunnel.", e);
+                    closeConnection(connection, e.getStatus());
+                    return;
+                }
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {
