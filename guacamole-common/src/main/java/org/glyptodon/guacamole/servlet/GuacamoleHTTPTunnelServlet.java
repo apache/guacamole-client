@@ -28,8 +28,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -62,8 +60,7 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     /**
      * Map of absolutely all active tunnels using HTTP, indexed by tunnel UUID.
      */
-    private final ConcurrentMap<String, GuacamoleTunnel> tunnels =
-            new ConcurrentHashMap<String, GuacamoleTunnel>();
+    private final GuacamoleHTTPTunnelMap tunnels = new GuacamoleHTTPTunnelMap();
 
     /**
      * The prefix of the query string which denotes a tunnel read operation.
@@ -510,6 +507,11 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
             tunnel.releaseWriter();
         }
 
+    }
+
+    @Override
+    public void destroy() {
+        tunnels.shutdown();
     }
 
 }
