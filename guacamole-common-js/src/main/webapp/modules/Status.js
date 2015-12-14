@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,10 +26,13 @@ var Guacamole = Guacamole || {};
  * A Guacamole status. Each Guacamole status consists of a status code, defined
  * by the protocol, and an optional human-readable message, usually only
  * included for debugging convenience.
- * 
- * @param {Number} code The Guacamole status code, as defined by
- *                      Guacamole.Status.Code.
- * @param {String} [message] An optional human-readable message.
+ *
+ * @constructor
+ * @param {Number} code
+ *     The Guacamole status code, as defined by Guacamole.Status.Code.
+ *
+ * @param {String} [message]
+ *     An optional human-readable message.
  */
 Guacamole.Status = function(code, message) {
 
@@ -101,16 +104,16 @@ Guacamole.Status.Code = {
     "SERVER_BUSY": 0x0201,
 
     /**
-     * The operation was unsuccessful due to an error or otherwise unexpected
-     * condition of the upstream server.
+     * The operation could not be performed because the upstream server is not
+     * responding.
      *
      * @type {Number}
      */
     "UPSTREAM_TIMEOUT": 0x0202,
 
     /**
-     * The operation could not be performed because the upstream server is not
-     * responding.
+     * The operation was unsuccessful due to an error or otherwise unexpected
+     * condition of the upstream server.
      *
      * @type {Number}
      */
