@@ -39,18 +39,16 @@ Guacamole.Object = function guacamoleObject(client, index) {
      * Reference to this Guacamole.Object.
      *
      * @private
-     * @type Guacamole.Object
+     * @type {Guacamole.Object}
      */
     var guacObject = this;
 
     /**
-     * The callbacks associated with all pending input stream requests, if the
-     * default onbody handling is in use.
+     * Map of stream name to corresponding queue of callbacks. The queue of
+     * callbacks is guaranteed to be in order of request.
      *
      * @private
-     * @type Object.<String, Function[]>
-     *     Map of stream name to corresponding queue of callbacks. The queue of
-     *     callbacks is guaranteed to be in order of request.
+     * @type {Object.<String, Function[]>}
      */
     var bodyCallbacks = {};
 
@@ -112,7 +110,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
     /**
      * The index of this object.
      *
-     * @type Number
+     * @type {Number}
      */
     this.index = index;
 
@@ -200,7 +198,7 @@ Guacamole.Object = function guacamoleObject(client, index) {
  * the root stream MUST be a JSON map of stream name to mimetype.
  *
  * @constant
- * @type String
+ * @type {String}
  */
 Guacamole.Object.ROOT_STREAM = '/';
 
@@ -210,6 +208,6 @@ Guacamole.Object.ROOT_STREAM = '/';
  * have this mimetype.
  *
  * @constant
- * @type String
+ * @type {String}
  */
 Guacamole.Object.STREAM_INDEX_MIMETYPE = 'application/vnd.glyptodon.guacamole.stream-index+json';

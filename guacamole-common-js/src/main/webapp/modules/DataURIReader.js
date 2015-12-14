@@ -43,7 +43,7 @@ Guacamole.DataURIReader = function(stream, mimetype) {
     /**
      * Current data URI.
      *
-     * @type String
+     * @type {String}
      */
     var uri = 'data:' + mimetype + ';base64,';
 

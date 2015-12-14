@@ -36,13 +36,13 @@ Guacamole.IntegerPool = function() {
 
     /**
      * Array of available integers.
-     * @type Number[]
+     * @type {Number[]}
      */
     var pool = [];
 
     /**
      * The next integer to return if no more integers remain.
-     * @type Number
+     * @type {Number}
      */
     this.next_int = 0;
 

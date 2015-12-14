@@ -81,7 +81,7 @@ Guacamole.Client = function(tunnel) {
      * All audio players currently in use by the client. Initially, this will
      * be empty, but audio players may be allocated by the server upon request.
      *
-     * @type Object.<Number, Guacamole.AudioPlayer>
+     * @type {Object.<Number, Guacamole.AudioPlayer>}
      */
     var audioPlayers = {};
 
@@ -89,7 +89,7 @@ Guacamole.Client = function(tunnel) {
      * All video players currently in use by the client. Initially, this will
      * be empty, but video players may be allocated by the server upon request.
      *
-     * @type Object.<Number, Guacamole.VideoPlayer>
+     * @type {Object.<Number, Guacamole.VideoPlayer>}
      */
     var videoPlayers = {};
 
@@ -103,7 +103,7 @@ Guacamole.Client = function(tunnel) {
      * All current objects. The index of each object is dictated by the
      * Guacamole server.
      *
-     * @type Guacamole.Object[]
+     * @type {Guacamole.Object[]}
      */
     var objects = [];
 

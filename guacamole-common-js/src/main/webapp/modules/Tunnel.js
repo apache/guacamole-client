@@ -51,15 +51,16 @@ Guacamole.Tunnel = function() {
      * Send the given message through the tunnel to the service on the other
      * side. All messages are guaranteed to be received in the order sent.
      * 
-     * @param {...} elements The elements of the message to send to the
-     *                       service on the other side of the tunnel.
+     * @param {...*} elements
+     *     The elements of the message to send to the service on the other side
+     *     of the tunnel.
      */
     this.sendMessage = function(elements) {};
 
     /**
      * The current state of this tunnel.
      * 
-     * @type Number
+     * @type {Number}
      */
     this.state = Guacamole.Tunnel.State.CONNECTING;
 
@@ -68,7 +69,7 @@ Guacamole.Tunnel = function() {
      * milliseconds. If data is not received within this amount of time,
      * the tunnel is closed with an error. The default value is 15000.
      * 
-     * @type Number
+     * @type {Number}
      */
     this.receiveTimeout = 15000;
 
@@ -110,14 +111,14 @@ Guacamole.Tunnel.State = {
      * A connection is in pending. It is not yet known whether connection was
      * successful.
      * 
-     * @type Number
+     * @type {Number}
      */
     "CONNECTING": 0,
 
     /**
      * Connection was successful, and data is being received.
      * 
-     * @type Number
+     * @type {Number}
      */
     "OPEN": 1,
 
@@ -126,7 +127,7 @@ Guacamole.Tunnel.State = {
      * tunnel may have been explicitly closed by either side, or an error may
      * have occurred.
      * 
-     * @type Number
+     * @type {Number}
      */
     "CLOSED": 2
 
@@ -832,9 +833,10 @@ Guacamole.WebSocketTunnel.prototype = new Guacamole.Tunnel();
  * 
  * @constructor
  * @augments Guacamole.Tunnel
- * @param {...} tunnel_chain The tunnels to use, in order of priority.
+ * @param {...*} tunnelChain
+ *     The tunnels to use, in order of priority.
  */
-Guacamole.ChainedTunnel = function(tunnel_chain) {
+Guacamole.ChainedTunnel = function(tunnelChain) {
 
     /**
      * Reference to this chained tunnel.
@@ -861,7 +863,7 @@ Guacamole.ChainedTunnel = function(tunnel_chain) {
      * has yet been committed.
      *
      * @private
-     * @type Guacamole.Tunnel
+     * @type {Guacamole.Tunnel}
      */
     var committedTunnel = null;
 

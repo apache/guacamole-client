@@ -38,7 +38,7 @@ Guacamole.JSONReader = function guacamoleJSONReader(stream) {
      * Reference to this Guacamole.JSONReader.
      *
      * @private
-     * @type Guacamole.JSONReader
+     * @type {Guacamole.JSONReader}
      */
     var guacReader = this;
 
@@ -46,7 +46,7 @@ Guacamole.JSONReader = function guacamoleJSONReader(stream) {
      * Wrapped Guacamole.StringReader.
      *
      * @private
-     * @type Guacamole.StringReader
+     * @type {Guacamole.StringReader}
      */
     var stringReader = new Guacamole.StringReader(stream);
 
@@ -54,7 +54,7 @@ Guacamole.JSONReader = function guacamoleJSONReader(stream) {
      * All JSON read thus far.
      *
      * @private
-     * @type String
+     * @type {String}
      */
     var json = '';
 

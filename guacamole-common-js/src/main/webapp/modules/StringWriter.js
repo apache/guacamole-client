@@ -41,7 +41,7 @@ Guacamole.StringWriter = function(stream) {
     /**
      * Wrapped Guacamole.ArrayBufferWriter.
      * @private
-     * @type Guacamole.ArrayBufferWriter
+     * @type {Guacamole.ArrayBufferWriter}
      */
     var array_writer = new Guacamole.ArrayBufferWriter(stream);
 

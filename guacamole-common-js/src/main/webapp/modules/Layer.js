@@ -210,20 +210,20 @@ Guacamole.Layer = function(width, height) {
      *     layer.autosize = true;
      * });
      * 
-     * @type Boolean
+     * @type {Boolean}
      * @default false
      */
     this.autosize = false;
 
     /**
      * The current width of this layer.
-     * @type Number
+     * @type {Number}
      */
     this.width = width;
 
     /**
      * The current height of this layer.
-     * @type Number
+     * @type {Number}
      */
     this.height = height;
 
