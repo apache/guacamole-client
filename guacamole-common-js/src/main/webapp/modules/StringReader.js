@@ -48,13 +48,16 @@ Guacamole.StringReader = function(stream) {
 
     /**
      * The number of bytes remaining for the current codepoint.
-     * 
+     *
+     * @private
      * @type {Number}
      */
     var bytes_remaining = 0;
 
     /**
      * The current codepoint value, as calculated from bytes read so far.
+     *
+     * @private
      * @type {Number}
      */
     var codepoint = 0;

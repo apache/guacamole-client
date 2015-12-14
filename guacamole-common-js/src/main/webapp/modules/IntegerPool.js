@@ -31,11 +31,15 @@ Guacamole.IntegerPool = function() {
 
     /**
      * Reference to this integer pool.
+     *
+     * @private
      */
     var guac_pool = this;
 
     /**
      * Array of available integers.
+     *
+     * @private
      * @type {Number[]}
      */
     var pool = [];

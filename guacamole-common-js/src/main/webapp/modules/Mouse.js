@@ -119,6 +119,8 @@ Guacamole.Mouse = function(element) {
      * Cumulative scroll delta amount. This value is accumulated through scroll
      * events and results in scroll button clicks if it exceeds a certain
      * threshold.
+     *
+     * @private
      */
     var scroll_delta = 0;
 
@@ -789,6 +791,8 @@ Guacamole.Mouse.Touchscreen = function(element) {
     /**
      * Whether a gesture is known to be in progress. If false, touch events
      * will be ignored.
+     *
+     * @private
      */
     var gesture_in_progress = false;
 
@@ -806,11 +810,15 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
     /**
      * The timeout associated with the delayed, cancellable click release.
+     *
+     * @private
      */
     var click_release_timeout = null;
 
     /**
      * The timeout associated with long-press for right click.
+     *
+     * @private
      */
     var long_press_timeout = null;
 

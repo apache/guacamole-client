@@ -361,6 +361,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * dynamically according to the click-reduction algorithm implemented by
      * splitAudioPacket().
      *
+     * @private
      * @returns {SampleArray}
      *     A packet of audio data pulled from the beginning of the playback
      *     queue.

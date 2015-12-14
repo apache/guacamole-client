@@ -36,6 +36,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
     /**
      * Reference to this Guacamole.OnScreenKeyboard.
      *
+     * @private
      * @type {Guacamole.OnScreenKeyboard}
      */
     var osk = this;
@@ -55,6 +56,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * pressed, it may not be in this map at all, but all pressed keys will
      * have a corresponding mapping to true.
      *
+     * @private
      * @type {Object.<String, Boolean>}
      */
     var pressed = {};
@@ -214,6 +216,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * Returns whether all modifiers having the given names are currently
      * active.
      *
+     * @private
      * @param {String[]} names
      *     The names of all modifiers to test.
      *
@@ -242,6 +245,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * given name, where that Key object's requirements (such as pressed
      * modifiers) are all currently satisfied.
      *
+     * @private
      * @param {String} keyName
      *     The name of the key to retrieve.
      *
@@ -279,6 +283,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * element with the "guac-keyboard-pressed" CSS class. If the key is
      * already pressed, this function has no effect.
      *
+     * @private
      * @param {String} keyName
      *     The name of the key to press.
      *
@@ -346,6 +351,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
      * "guac-keyboard-pressed" CSS class from the associated element. If the
      * key is already released, this function has no effect.
      *
+     * @private
      * @param {String} keyName
      *     The name of the key to release.
      *
@@ -705,6 +711,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
              * key. Touch events will result in mouse events being ignored for
              * touchMouseThreshold events.
              *
+             * @private
              * @param {TouchEvent} e
              *     The touch event being handled.
              */
@@ -719,6 +726,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
              * key. Touch events will result in mouse events being ignored for
              * touchMouseThreshold events.
              *
+             * @private
              * @param {TouchEvent} e
              *     The touch event being handled.
              */
@@ -733,6 +741,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
              * key. If mouse events are currently being ignored, this handler
              * does nothing.
              *
+             * @private
              * @param {MouseEvent} e
              *     The touch event being handled.
              */
@@ -747,6 +756,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
              * key. If mouse events are currently being ignored, this handler
              * does nothing.
              *
+             * @private
              * @param {MouseEvent} e
              *     The touch event being handled.
              */
