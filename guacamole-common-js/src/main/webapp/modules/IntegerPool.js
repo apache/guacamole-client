@@ -31,18 +31,22 @@ Guacamole.IntegerPool = function() {
 
     /**
      * Reference to this integer pool.
+     *
+     * @private
      */
     var guac_pool = this;
 
     /**
      * Array of available integers.
-     * @type Number[]
+     *
+     * @private
+     * @type {Number[]}
      */
     var pool = [];
 
     /**
      * The next integer to return if no more integers remain.
-     * @type Number
+     * @type {Number}
      */
     this.next_int = 0;
 

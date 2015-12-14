@@ -42,20 +42,23 @@ Guacamole.StringReader = function(stream) {
     /**
      * Wrapped Guacamole.ArrayBufferReader.
      * @private
-     * @type Guacamole.ArrayBufferReader
+     * @type {Guacamole.ArrayBufferReader}
      */
     var array_reader = new Guacamole.ArrayBufferReader(stream);
 
     /**
      * The number of bytes remaining for the current codepoint.
-     * 
-     * @type Number
+     *
+     * @private
+     * @type {Number}
      */
     var bytes_remaining = 0;
 
     /**
      * The current codepoint value, as calculated from bytes read so far.
-     * @type Number
+     *
+     * @private
+     * @type {Number}
      */
     var codepoint = 0;
 

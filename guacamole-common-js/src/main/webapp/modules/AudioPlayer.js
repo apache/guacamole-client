@@ -129,7 +129,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * The format of audio this player will decode.
      *
      * @private
-     * @type Guacamole.RawAudioPlayer._Format
+     * @type {Guacamole.RawAudioPlayer._Format}
      */
     var format = Guacamole.RawAudioPlayer._Format.parse(mimetype);
 
@@ -138,7 +138,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * Web Audio API is not supported.
      *
      * @private
-     * @type AudioContext
+     * @type {AudioContext}
      */
     var context = (function getAudioContext() {
 
@@ -167,7 +167,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * resolution.
      *
      * @private
-     * @type Number
+     * @type {Number}
      */
     var nextPacketTime = context.currentTime;
 
@@ -176,7 +176,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * provided with this Guacamole.RawAudioPlayer was created.
      *
      * @private
-     * @type Guacamole.ArrayBufferReader
+     * @type {Guacamole.ArrayBufferReader}
      */
     var reader = new Guacamole.ArrayBufferReader(stream);
 
@@ -188,7 +188,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      *
      * @private
      * @constant
-     * @type Number
+     * @type {Number}
      */
     var MIN_SPLIT_SIZE = 0.02;
 
@@ -198,7 +198,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * roughly one third of a second.
      *
      * @private
-     * @type Number
+     * @type {Number}
      */
     var maxLatency = 0.3;
 
@@ -218,7 +218,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * sample, and will be 128 for 8-bit audio and 32768 for 16-bit audio.
      *
      * @private
-     * @type Number
+     * @type {Number}
      */
     var maxSampleValue = (format.bytesPerSample === 1) ? 128 : 32768;
 
@@ -230,7 +230,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * no further modifications can be made to that packet.
      *
      * @private
-     * @type SampleArray[]
+     * @type {SampleArray[]}
      */
     var packetQueue = [];
 
@@ -361,6 +361,7 @@ Guacamole.RawAudioPlayer = function RawAudioPlayer(stream, mimetype) {
      * dynamically according to the click-reduction algorithm implemented by
      * splitAudioPacket().
      *
+     * @private
      * @returns {SampleArray}
      *     A packet of audio data pulled from the beginning of the playback
      *     queue.
@@ -493,21 +494,21 @@ Guacamole.RawAudioPlayer._Format = function _Format(template) {
      * The number of bytes in each sample of audio data. This value is
      * independent of the number of channels.
      *
-     * @type Number
+     * @type {Number}
      */
     this.bytesPerSample = template.bytesPerSample;
 
     /**
      * The number of audio channels (ie: 1 for mono, 2 for stereo).
      *
-     * @type Number
+     * @type {Number}
      */
     this.channels = template.channels;
 
     /**
      * The number of samples per second, per channel.
      *
-     * @type Number
+     * @type {Number}
      */
     this.rate = template.rate;
 

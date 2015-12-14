@@ -69,11 +69,17 @@ Guacamole.Client = function(tunnel) {
 
     /**
      * The underlying Guacamole display.
+     *
+     * @private
+     * @type {Guacamole.Display}
      */
     var display = new Guacamole.Display();
 
     /**
      * All available layers and buffers
+     *
+     * @private
+     * @type {Object.<Number, (Guacamole.Display.VisibleLayer|Guacamole.Layer)>}
      */
     var layers = {};
     
@@ -81,7 +87,8 @@ Guacamole.Client = function(tunnel) {
      * All audio players currently in use by the client. Initially, this will
      * be empty, but audio players may be allocated by the server upon request.
      *
-     * @type Object.<Number, Guacamole.AudioPlayer>
+     * @private
+     * @type {Object.<Number, Guacamole.AudioPlayer>}
      */
     var audioPlayers = {};
 
@@ -89,7 +96,8 @@ Guacamole.Client = function(tunnel) {
      * All video players currently in use by the client. Initially, this will
      * be empty, but video players may be allocated by the server upon request.
      *
-     * @type Object.<Number, Guacamole.VideoPlayer>
+     * @private
+     * @type {Object.<Number, Guacamole.VideoPlayer>}
      */
     var videoPlayers = {};
 
@@ -103,7 +111,8 @@ Guacamole.Client = function(tunnel) {
      * All current objects. The index of each object is dictated by the
      * Guacamole server.
      *
-     * @type Guacamole.Object[]
+     * @private
+     * @type {Guacamole.Object[]}
      */
     var objects = [];
 
@@ -554,11 +563,15 @@ Guacamole.Client = function(tunnel) {
      * Returns the layer with the given index, creating it if necessary.
      * Positive indices refer to visible layers, an index of zero refers to
      * the default layer, and negative indices refer to buffers.
-     * 
-     * @param {Number} index The index of the layer to retrieve.
-     * @return {Guacamole.Display.VisibleLayer|Guacamole.Layer} The layer having the given index.
+     *
+     * @private
+     * @param {Number} index
+     *     The index of the layer to retrieve.
+     *
+     * @return {Guacamole.Display.VisibleLayer|Guacamole.Layer}
+     *     The layer having the given index.
      */
-    function getLayer(index) {
+    var getLayer = function getLayer(index) {
 
         // Get layer, create if necessary
         var layer = layers[index];
@@ -579,7 +592,7 @@ Guacamole.Client = function(tunnel) {
 
         return layer;
 
-    }
+    };
 
     function getParser(index) {
 

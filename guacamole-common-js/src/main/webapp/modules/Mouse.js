@@ -66,7 +66,7 @@ Guacamole.Mouse = function(element) {
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
      * 
-     * @type Guacamole.Mouse.State
+     * @type {Guacamole.Mouse.State}
      */
     this.currentState = new Guacamole.Mouse.State(
         0, 0, 
@@ -119,6 +119,8 @@ Guacamole.Mouse = function(element) {
      * Cumulative scroll delta amount. This value is accumulated through scroll
      * events and results in scroll button clicks if it exceeds a certain
      * threshold.
+     *
+     * @private
      */
     var scroll_delta = 0;
 
@@ -336,7 +338,7 @@ Guacamole.Mouse = function(element) {
      * coordinates.
      *
      * @private
-     * @type Boolean
+     * @type {Boolean}
      */
     var CSS3_CURSOR_SUPPORTED = (function() {
 
@@ -419,31 +421,31 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
 
     /**
      * The current X position of the mouse pointer.
-     * @type Number
+     * @type {Number}
      */
     this.x = x;
 
     /**
      * The current Y position of the mouse pointer.
-     * @type Number
+     * @type {Number}
      */
     this.y = y;
 
     /**
      * Whether the left mouse button is currently pressed.
-     * @type Boolean
+     * @type {Boolean}
      */
     this.left = left;
 
     /**
      * Whether the middle mouse button is currently pressed.
-     * @type Boolean
+     * @type {Boolean}
      */
     this.middle = middle;
 
     /**
      * Whether the right mouse button is currently pressed.
-     * @type Boolean
+     * @type {Boolean}
      */
     this.right = right;
 
@@ -451,7 +453,7 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
      * Whether the up mouse button is currently pressed. This is the fourth
      * mouse button, associated with upward scrolling of the mouse scroll
      * wheel.
-     * @type Boolean
+     * @type {Boolean}
      */
     this.up = up;
 
@@ -459,7 +461,7 @@ Guacamole.Mouse.State = function(x, y, left, middle, right, up, down) {
      * Whether the down mouse button is currently pressed. This is the fifth 
      * mouse button, associated with downward scrolling of the mouse scroll
      * wheel.
-     * @type Boolean
+     * @type {Boolean}
      */
     this.down = down;
 
@@ -542,7 +544,7 @@ Guacamole.Mouse.Touchpad = function(element) {
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
      * 
-     * @type Guacamole.Mouse.State
+     * @type {Guacamole.Mouse.State}
      */
     this.currentState = new Guacamole.Mouse.State(
         0, 0, 
@@ -789,6 +791,8 @@ Guacamole.Mouse.Touchscreen = function(element) {
     /**
      * Whether a gesture is known to be in progress. If false, touch events
      * will be ignored.
+     *
+     * @private
      */
     var gesture_in_progress = false;
 
@@ -806,11 +810,15 @@ Guacamole.Mouse.Touchscreen = function(element) {
 
     /**
      * The timeout associated with the delayed, cancellable click release.
+     *
+     * @private
      */
     var click_release_timeout = null;
 
     /**
      * The timeout associated with long-press for right click.
+     *
+     * @private
      */
     var long_press_timeout = null;
 
@@ -843,7 +851,7 @@ Guacamole.Mouse.Touchscreen = function(element) {
      * mouse events fire. This state object is also passed in as a parameter to
      * the handler of any mouse events.
      *
-     * @type Guacamole.Mouse.State
+     * @type {Guacamole.Mouse.State}
      */
     this.currentState = new Guacamole.Mouse.State(
         0, 0,

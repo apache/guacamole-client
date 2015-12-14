@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,14 +20,10 @@
  * THE SOFTWARE.
  */
 
-var Guacamole = Guacamole || {};
-
 /**
- * The unique ID of this version of the Guacamole JavaScript API. This ID will
- * be the version string of the guacamole-common-js Maven project, and can be
- * used in downstream applications as a sanity check that the proper version
- * of the APIs is being used (in case an older version is cached, for example).
+ * The namespace used by the Guacamole JavaScript API. Absolutely all classes
+ * defined by the Guacamole JavaScript API will be within this namespace.
  *
- * @type {String}
+ * @namespace
  */
-Guacamole.API_VERSION = "0.9.5";
+var Guacamole = Guacamole || {};

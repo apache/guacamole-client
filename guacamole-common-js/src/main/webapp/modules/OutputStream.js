@@ -39,7 +39,7 @@ Guacamole.OutputStream = function(client, index) {
 
     /**
      * The index of this stream.
-     * @type Number
+     * @type {Number}
      */
     this.index = index;
 
