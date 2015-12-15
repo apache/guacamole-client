@@ -213,14 +213,17 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * result of this connection request (whether some sort of credentials must
      * be specified, for example).
      *
-     * @param request The TunnelRequest associated with the connection
-     *                request received. Any parameters specified along with
-     *                the connection request can be read from this object.
-     * @return A newly constructed GuacamoleTunnel if successful,
-     *         null otherwise.
-     * @throws GuacamoleException If an error occurs while constructing the
-     *                            GuacamoleTunnel, or if the conditions
-     *                            required for connection are not met.
+     * @param request
+     *     The TunnelRequest associated with the connection request received.
+     *     Any parameters specified along with the connection request can be
+     *     read from this object.
+     *
+     * @return
+     *     A newly constructed GuacamoleTunnel if successful, null otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while constructing the GuacamoleTunnel, or if the
+     *     conditions required for connection are not met.
      */
     protected abstract GuacamoleTunnel doConnect(TunnelRequest request)
             throws GuacamoleException;

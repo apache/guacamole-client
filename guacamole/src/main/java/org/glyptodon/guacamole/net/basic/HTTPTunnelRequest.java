@@ -38,7 +38,7 @@ public class HTTPTunnelRequest extends TunnelRequest {
 
     /**
      * A copy of the parameters obtained from the HttpServletRequest used to
-     * construct the HttpTunnelRequest.
+     * construct the HTTPTunnelRequest.
      */
     private final Map<String, List<String>> parameterMap =
             new HashMap<String, List<String>>();
