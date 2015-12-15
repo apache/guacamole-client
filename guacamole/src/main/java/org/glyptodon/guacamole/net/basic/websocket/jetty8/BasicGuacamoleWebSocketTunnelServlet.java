@@ -24,11 +24,10 @@ package org.glyptodon.guacamole.net.basic.websocket.jetty8;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.net.GuacamoleTunnel;
 import org.glyptodon.guacamole.net.basic.TunnelRequestService;
-import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.basic.TunnelRequest;
 
 /**
  * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
@@ -45,9 +44,9 @@ public class BasicGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunn
     private TunnelRequestService tunnelRequestService;
  
     @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request)
+    protected GuacamoleTunnel doConnect(TunnelRequest request)
             throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
+        return tunnelRequestService.createTunnel(request);
     }
 
 }

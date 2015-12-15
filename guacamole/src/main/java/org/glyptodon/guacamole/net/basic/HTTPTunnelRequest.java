@@ -22,8 +22,11 @@
 
 package org.glyptodon.guacamole.net.basic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -34,33 +37,54 @@ import javax.servlet.http.HttpServletRequest;
 public class HTTPTunnelRequest extends TunnelRequest {
 
     /**
-     * The wrapped HttpServletRequest.
+     * A copy of the parameters obtained from the HttpServletRequest used to
+     * construct the HttpTunnelRequest.
      */
-    private final HttpServletRequest request;
+    private final Map<String, List<String>> parameterMap =
+            new HashMap<String, List<String>>();
 
     /**
-     * Creates a TunnelRequest implementation which delegates parameter and
-     * session retrieval to the given HttpServletRequest.
+     * Creates a HTTPTunnelRequest which copies and exposes the parameters
+     * from the given HttpServletRequest.
      *
-     * @param request The HttpServletRequest to wrap.
+     * @param request
+     *     The HttpServletRequest to copy parameter values from.
      */
+    @SuppressWarnings("unchecked") // getParameterMap() is defined as returning Map<String, String[]>
     public HTTPTunnelRequest(HttpServletRequest request) {
-        this.request = request;
+
+        // For each parameter
+        for (Map.Entry<String, String[]> mapEntry : ((Map<String, String[]>)
+                request.getParameterMap()).entrySet()) {
+
+            // Get parameter name and corresponding values
+            String parameterName = mapEntry.getKey();
+            List<String> parameterValues = Arrays.asList(mapEntry.getValue());
+
+            // Store copy of all values in our own map
+            parameterMap.put(
+                parameterName,
+                new ArrayList<String>(parameterValues)
+            );
+
+        }
+
     }
 
     @Override
     public String getParameter(String name) {
-        return request.getParameter(name);
+        List<String> values = getParameterValues(name);
+
+        // Return the first value from the list if available
+        if (values != null && !values.isEmpty())
+            return values.get(0);
+
+        return null;
     }
 
     @Override
     public List<String> getParameterValues(String name) {
-
-        String[] values = request.getParameterValues(name);
-        if (values == null)
-            return null;
-        
-        return Arrays.asList(values);
+        return parameterMap.get(name);
     }
     
 }

@@ -33,6 +33,8 @@ import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
+import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.basic.TunnelRequest;
 import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +72,9 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     }
 
     @Override
-    public WebSocket doWebSocketConnect(final HttpServletRequest request, String protocol) {
+    public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
+
+        final TunnelRequest tunnelRequest = new HTTPTunnelRequest(request);
 
         // Return new WebSocket which communicates through tunnel
         return new WebSocket.OnTextMessage() {
@@ -109,7 +113,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
             public void onOpen(final Connection connection) {
 
                 try {
-                    tunnel = doConnect(request);
+                    tunnel = doConnect(tunnelRequest);
                 }
                 catch (GuacamoleException e) {
                     logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
@@ -209,7 +213,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * result of this connection request (whether some sort of credentials must
      * be specified, for example).
      *
-     * @param request The HttpServletRequest associated with the connection
+     * @param request The TunnelRequest associated with the connection
      *                request received. Any parameters specified along with
      *                the connection request can be read from this object.
      * @return A newly constructed GuacamoleTunnel if successful,
@@ -218,7 +222,7 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      *                            GuacamoleTunnel, or if the conditions
      *                            required for connection are not met.
      */
-    protected abstract GuacamoleTunnel doConnect(HttpServletRequest request)
+    protected abstract GuacamoleTunnel doConnect(TunnelRequest request)
             throws GuacamoleException;
 
 }
