@@ -33,6 +33,8 @@ import org.eclipse.jetty.websocket.WebSocket.Connection;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
+import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.basic.TunnelRequest;
 import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,23 +74,24 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String protocol) {
 
-        // Get tunnel
-        final GuacamoleTunnel tunnel;
-
-        try {
-            tunnel = doConnect(request);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
-            logger.debug("Error connecting WebSocket tunnel.", e);
-            return null;
-        }
+        final TunnelRequest tunnelRequest = new HTTPTunnelRequest(request);
 
         // Return new WebSocket which communicates through tunnel
         return new WebSocket.OnTextMessage() {
 
+            /**
+             * The GuacamoleTunnel associated with the connected WebSocket. If
+             * the WebSocket has not yet been connected, this will be null.
+             */
+            private GuacamoleTunnel tunnel = null;
+
             @Override
             public void onMessage(String string) {
+
+                // Ignore inbound messages if there is no associated tunnel
+                if (tunnel == null)
+                    return;
+
                 GuacamoleWriter writer = tunnel.acquireWriter();
 
                 // Write message received
@@ -103,10 +106,21 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
                 }
 
                 tunnel.releaseWriter();
+
             }
 
             @Override
             public void onOpen(final Connection connection) {
+
+                try {
+                    tunnel = doConnect(tunnelRequest);
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
+                    logger.debug("Error connecting WebSocket tunnel.", e);
+                    closeConnection(connection, e.getStatus());
+                    return;
+                }
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {
@@ -199,16 +213,19 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * result of this connection request (whether some sort of credentials must
      * be specified, for example).
      *
-     * @param request The HttpServletRequest associated with the connection
-     *                request received. Any parameters specified along with
-     *                the connection request can be read from this object.
-     * @return A newly constructed GuacamoleTunnel if successful,
-     *         null otherwise.
-     * @throws GuacamoleException If an error occurs while constructing the
-     *                            GuacamoleTunnel, or if the conditions
-     *                            required for connection are not met.
+     * @param request
+     *     The TunnelRequest associated with the connection request received.
+     *     Any parameters specified along with the connection request can be
+     *     read from this object.
+     *
+     * @return
+     *     A newly constructed GuacamoleTunnel if successful, null otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while constructing the GuacamoleTunnel, or if the
+     *     conditions required for connection are not met.
      */
-    protected abstract GuacamoleTunnel doConnect(HttpServletRequest request)
+    protected abstract GuacamoleTunnel doConnect(TunnelRequest request)
             throws GuacamoleException;
 
 }

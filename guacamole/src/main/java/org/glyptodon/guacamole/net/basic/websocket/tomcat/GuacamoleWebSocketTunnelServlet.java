@@ -38,6 +38,8 @@ import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
 import org.glyptodon.guacamole.GuacamoleClientException;
 import org.glyptodon.guacamole.GuacamoleConnectionClosedException;
+import org.glyptodon.guacamole.net.basic.HTTPTunnelRequest;
+import org.glyptodon.guacamole.net.basic.TunnelRequest;
 import org.glyptodon.guacamole.protocol.GuacamoleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,25 +94,26 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
     }
 
     @Override
-    public StreamInbound createWebSocketInbound(String protocol, HttpServletRequest request) {
+    public StreamInbound createWebSocketInbound(String protocol,
+            HttpServletRequest request) {
 
-        // Get tunnel
-        final GuacamoleTunnel tunnel;
-
-        try {
-            tunnel = doConnect(request);
-        }
-        catch (GuacamoleException e) {
-            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
-            logger.debug("Error connecting WebSocket tunnel.", e);
-            return null;
-        }
+        final TunnelRequest tunnelRequest = new HTTPTunnelRequest(request);
 
         // Return new WebSocket which communicates through tunnel
         return new StreamInbound() {
 
+            /**
+             * The GuacamoleTunnel associated with the connected WebSocket. If
+             * the WebSocket has not yet been connected, this will be null.
+             */
+            private GuacamoleTunnel tunnel = null;
+
             @Override
             protected void onTextData(Reader reader) throws IOException {
+
+                // Ignore inbound messages if there is no associated tunnel
+                if (tunnel == null)
+                    return;
 
                 GuacamoleWriter writer = tunnel.acquireWriter();
 
@@ -136,6 +139,16 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
             @Override
             public void onOpen(final WsOutbound outbound) {
+
+                try {
+                    tunnel = doConnect(tunnelRequest);
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
+                    logger.debug("Error connecting WebSocket tunnel.", e);
+                    closeConnection(outbound, e.getStatus());
+                    return;
+                }
 
                 // Do not start connection if tunnel does not exist
                 if (tunnel == null) {
@@ -233,16 +246,20 @@ public abstract class GuacamoleWebSocketTunnelServlet extends WebSocketServlet {
      * result of this connection request (whether some sort of credentials must
      * be specified, for example).
      *
-     * @param request The HttpServletRequest associated with the connection
-     *                request received. Any parameters specified along with
-     *                the connection request can be read from this object.
-     * @return A newly constructed GuacamoleTunnel if successful,
-     *         null otherwise.
-     * @throws GuacamoleException If an error occurs while constructing the
-     *                            GuacamoleTunnel, or if the conditions
-     *                            required for connection are not met.
+     * @param request
+     *     The TunnelRequest associated with the connection request received.
+     *     Any parameters specified along with the connection request can be
+     *     read from this object.
+     *
+     * @return
+     *     A newly constructed GuacamoleTunnel if successful, null otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while constructing the GuacamoleTunnel, or if the
+     *     conditions required for connection are not met.
      */
-    protected abstract GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException;
+    protected abstract GuacamoleTunnel doConnect(TunnelRequest request)
+            throws GuacamoleException;
 
 }
 
