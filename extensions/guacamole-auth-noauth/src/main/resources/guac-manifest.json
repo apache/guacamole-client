@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "0.9.8",
+    "guacamoleVersion" : "0.9.9",
 
     "name"      : "Disabled Authentication",
     "namespace" : "guac-noauth",
