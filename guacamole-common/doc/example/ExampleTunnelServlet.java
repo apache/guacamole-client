@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Glyptodon LLC
+ * Copyright (C) 2015 Glyptodon LLC
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
  */
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import net.sourceforge.guacamole.GuacamoleException;
 import net.sourceforge.guacamole.properties.GuacamoleProperties;
 import net.sourceforge.guacamole.net.GuacamoleSocket;
@@ -29,7 +28,6 @@ import net.sourceforge.guacamole.net.GuacamoleTunnel;
 import net.sourceforge.guacamole.net.InetGuacamoleSocket;
 import net.sourceforge.guacamole.protocol.GuacamoleConfiguration;
 import net.sourceforge.guacamole.protocol.ConfiguredGuacamoleSocket;
-import net.sourceforge.guacamole.servlet.GuacamoleSession;
 import net.sourceforge.guacamole.servlet.GuacamoleHTTPTunnelServlet;
 
 public class ExampleTunnelServlet extends GuacamoleHTTPTunnelServlet {
@@ -37,8 +35,6 @@ public class ExampleTunnelServlet extends GuacamoleHTTPTunnelServlet {
     @Override
     protected GuacamoleTunnel doConnect(HttpServletRequest request)
         throws GuacamoleException {
-
-        HttpSession httpSession = request.getSession(true);
 
         String hostname = GuacamoleProperties.getProperty(
             GuacamoleProperties.GUACD_HOSTNAME);
@@ -57,12 +53,8 @@ public class ExampleTunnelServlet extends GuacamoleHTTPTunnelServlet {
                 config
         );
 
+        // Create and return tunnel
         GuacamoleTunnel tunnel = new GuacamoleTunnel(socket);
-
-        // Attach tunnel
-        GuacamoleSession session = new GuacamoleSession(httpSession);
-        session.attachTunnel(tunnel);
-
         return tunnel;
 
     }
