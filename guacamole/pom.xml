@@ -79,6 +79,7 @@
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
+                                <include>index.html</include>
                             </includes>
                         </resource>
                     </webResources>
