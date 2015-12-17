@@ -42,6 +42,7 @@ textarea {
     max-width: none;
     width: 30em;
     height: 10em;
-    white-space: nowrap;
+    white-space: pre;
+    word-wrap: normal;
     overflow: auto;
 }
