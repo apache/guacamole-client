@@ -128,7 +128,7 @@
         "TEXT_RECONNECT_COUNTDOWN"        : "opnieuw verbinden over {REMAINING} {REMAINING, plural, one{seconde} other{seconden}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
-        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+        "URL_OSK_LAYOUT" : "layouts/nl-nl-qwerty.json"
 
     },
 
