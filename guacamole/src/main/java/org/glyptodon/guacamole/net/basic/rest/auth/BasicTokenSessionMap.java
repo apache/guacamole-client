@@ -22,10 +22,10 @@
 
 package org.glyptodon.guacamole.net.basic.rest.auth;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -57,8 +57,8 @@ public class BasicTokenSessionMap implements TokenSessionMap {
     /**
      * Keeps track of the authToken to GuacamoleSession mapping.
      */
-    private final Map<String, GuacamoleSession> sessionMap =
-            Collections.synchronizedMap(new LinkedHashMap<String, GuacamoleSession>(16, 0.75f, true));
+    private final ConcurrentMap<String, GuacamoleSession> sessionMap =
+            new ConcurrentHashMap<String, GuacamoleSession>();
 
     /**
      * Create a new BasicTokenGuacamoleSessionMap configured using the given
@@ -89,9 +89,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
 
     /**
      * Task which iterates through all active sessions, evicting those sessions
-     * which are beyond the session timeout. This is a fairly easy thing to do,
-     * since the session storage structure guarantees that sessions are always
-     * in descending order of age.
+     * which are beyond the session timeout.
      */
     private class SessionEvictionTask implements Runnable {
 
@@ -114,11 +112,11 @@ public class BasicTokenSessionMap implements TokenSessionMap {
         @Override
         public void run() {
 
-            // Get current time
-            long now = System.currentTimeMillis();
+            // Get start time of session check time
+            long sessionCheckStart = System.currentTimeMillis();
 
             logger.debug("Checking for expired sessions...");
-            
+
             // For each session, remove sesions which have expired
             Iterator<Map.Entry<String, GuacamoleSession>> entries = sessionMap.entrySet().iterator();
             while (entries.hasNext()) {
@@ -131,7 +129,7 @@ public class BasicTokenSessionMap implements TokenSessionMap {
                     continue;
 
                 // Get elapsed time since last access
-                long age = now - session.getLastAccessedTime();
+                long age = sessionCheckStart - session.getLastAccessedTime();
 
                 // If session is too old, evict it and check the next one
                 if (age >= sessionTimeout) {
@@ -140,13 +138,11 @@ public class BasicTokenSessionMap implements TokenSessionMap {
                     session.invalidate();
                 }
 
-                // Otherwise, no other sessions can possibly be old enough
-                else
-                    break;
-                
             }
 
-            logger.debug("Session check complete.");
+            // Log completion and duration
+            logger.debug("Session check completed in {} ms.",
+                    System.currentTimeMillis() - sessionCheckStart);
             
         }
 

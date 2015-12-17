@@ -22,10 +22,10 @@
 
 package org.glyptodon.guacamole.servlet;
 
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -65,8 +65,8 @@ class GuacamoleHTTPTunnelMap {
     /**
      * Map of all tunnels that are using HTTP, indexed by tunnel UUID.
      */
-    private final Map<String, GuacamoleHTTPTunnel> tunnelMap =
-            Collections.synchronizedMap(new LinkedHashMap<String, GuacamoleHTTPTunnel>(16, 0.75f, true));
+    private final ConcurrentMap<String, GuacamoleHTTPTunnel> tunnelMap =
+            new ConcurrentHashMap<String, GuacamoleHTTPTunnel>();
 
     /**
      * Creates a new GuacamoleHTTPTunnelMap which automatically closes and
@@ -124,9 +124,12 @@ class GuacamoleHTTPTunnelMap {
 
                 // If tunnel is too old, close and remove it
                 if (age >= tunnelTimeout) {
+
+                    // Remove old entry
                     logger.debug("HTTP tunnel \"{}\" has timed out.", entry.getKey());
                     entries.remove();
 
+                    // Attempt to close tunnel
                     try {
                         tunnel.close();
                     }
@@ -136,14 +139,9 @@ class GuacamoleHTTPTunnelMap {
 
                 }
 
-                // Otherwise, this tunnel has been recently used, as have all
-                // other tunnels following this one within tunnelMap
-                else
-                    break;
+            } // end for each tunnel
 
-            }
-
-        }
+        } // end timeout task run()
 
     }
 
