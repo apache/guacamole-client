@@ -151,6 +151,10 @@ public class BasicTokenSessionMap implements TokenSessionMap {
     @Override
     public GuacamoleSession get(String authToken) {
         
+        // There are no null auth tokens
+        if (authToken == null)
+            return null;
+
         // Update the last access time and return the GuacamoleSession
         GuacamoleSession session = sessionMap.get(authToken);
         if (session != null)
@@ -167,7 +171,14 @@ public class BasicTokenSessionMap implements TokenSessionMap {
 
     @Override
     public GuacamoleSession remove(String authToken) {
+
+        // There are no null auth tokens
+        if (authToken == null)
+            return null;
+
+        // Attempt to retrieve only if non-null
         return sessionMap.remove(authToken);
+
     }
 
     @Override
