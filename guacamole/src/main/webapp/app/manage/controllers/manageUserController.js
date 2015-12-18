@@ -445,7 +445,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             // Add page entry
             $scope.accountPages.push(new PageDefinition({
                 name      : translationStringService.canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
+                url       : '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username || ''),
                 className : className
             }));
 
