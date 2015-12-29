@@ -350,7 +350,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
+        $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
     };
     
     /**
@@ -372,7 +372,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
         // Save the connection
         connectionService.saveConnection($scope.selectedDataSource, $scope.connection)
         .success(function savedConnection() {
-            $location.path('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
+            $location.url('/settings/' + encodeURIComponent($scope.selectedDataSource) + '/connections');
         })
 
         // Notify of any errors

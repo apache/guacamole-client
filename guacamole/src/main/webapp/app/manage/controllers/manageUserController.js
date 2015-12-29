@@ -97,6 +97,18 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var username = $routeParams.id;
 
     /**
+     * The string value representing the user currently being edited within the
+     * permission flag set. Note that his may not match the user's actual
+     * username - it is a marker that is (1) guaranteed to be associated with
+     * the current user's permissions in the permission set and (2) guaranteed
+     * not to collide with any user that does not represent the current user
+     * within the permission set.
+     *
+     * @type String
+     */
+    var selfUsername = '';
+
+    /**
      * All user accounts associated with the same username as the account being
      * created or edited, as a map of data source identifier to the User object
      * within that data source.
@@ -522,6 +534,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         });
 
+        // The current user will be associated with username of the existing
+        // user in the retrieved permission set
+        $scope.selfUsername = username;
+
         // Pull user permissions
         permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
@@ -545,8 +561,13 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         });
 
+        // The current user will be associated with cloneSourceUsername in the
+        // retrieved permission set
+        $scope.selfUsername = cloneSourceUsername;
+
         // Pull user permissions
-        permissionService.getPermissions(selectedDataSource, cloneSourceUsername).success(function gotPermissions(permissions) {
+        permissionService.getPermissions(selectedDataSource, cloneSourceUsername)
+        .success(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
             permissionsAdded = permissions;
         })
@@ -905,7 +926,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/users');
+        $location.url('/settings/users');
     };
 
     /**
@@ -941,10 +962,27 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         saveUserPromise.success(function savedUser() {
 
+            // Move permission flags if username differs from marker
+            if ($scope.selfUsername !== $scope.user.username) {
+
+                // Rename added permission
+                if (permissionsAdded.userPermissions[$scope.selfUsername]) {
+                    permissionsAdded.userPermissions[$scope.user.username] = permissionsAdded.userPermissions[$scope.selfUsername];
+                    delete permissionsAdded.userPermissions[$scope.selfUsername];
+                }
+
+                // Rename removed permission
+                if (permissionsRemoved.userPermissions[$scope.selfUsername]) {
+                    permissionsRemoved.userPermissions[$scope.user.username] = permissionsRemoved.userPermissions[$scope.selfUsername];
+                    delete permissionsRemoved.userPermissions[$scope.selfUsername];
+                }
+                
+            }
+
             // Upon success, save any changed permissions
             permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
             .success(function patchedUserPermissions() {
-                $location.path('/settings/users');
+                $location.url('/settings/users');
             })
 
             // Notify of any errors

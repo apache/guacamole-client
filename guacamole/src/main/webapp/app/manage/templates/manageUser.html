@@ -78,8 +78,8 @@ THE SOFTWARE.
                     </tr>
                     <tr>
                         <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[user.username]"
-                                                   ng-change="userPermissionChanged('UPDATE', user.username)"/></td>
+                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[selfUsername]"
+                                                   ng-change="userPermissionChanged('UPDATE', selfUsername)"/></td>
                     </tr>
                 </table>
             </div>
