@@ -106,7 +106,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      *
      * @type String
      */
-    var selfUsername = '';
+    $scope.selfUsername = '';
 
     /**
      * All user accounts associated with the same username as the account being
@@ -383,17 +383,16 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
-     * Returns whether the current user can save the user being edited within
-     * the given data source. Saving will create or update that user depending
-     * on whether the user already exists.
+     * Returns whether the current user can clone the user being edited within
+     * the given data source.
      *
      * @param {String} [dataSource]
      *     The identifier of the data source to check. If omitted, this will
      *     default to the currently-selected data source.
      *
      * @returns {Boolean}
-     *     true if the current user can save changes to the user being edited,
-     *     false otherwise.
+     *     true if the current user can clone the user being edited, false
+     *     otherwise.
      */
     $scope.canCloneUser = function canCloneUser(dataSource) {
 
