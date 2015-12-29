@@ -81,6 +81,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var selectedDataSource = $routeParams.dataSource;
 
     /**
+     * The username of the original user from which this user is
+     * being cloned. Only valid if this is a new user.
+     *
+     * @type String
+     */
+    var cloneSourceUsername = $location.search().clone;
+
+    /**
      * The username of the user being edited. If a new user is
      * being created, this will not be defined.
      *
@@ -363,6 +371,43 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
+     * Returns whether the current user can save the user being edited within
+     * the given data source. Saving will create or update that user depending
+     * on whether the user already exists.
+     *
+     * @param {String} [dataSource]
+     *     The identifier of the data source to check. If omitted, this will
+     *     default to the currently-selected data source.
+     *
+     * @returns {Boolean}
+     *     true if the current user can save changes to the user being edited,
+     *     false otherwise.
+     */
+    $scope.canCloneUser = function canCloneUser(dataSource) {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Use currently-selected data source if unspecified
+        dataSource = dataSource || selectedDataSource;
+
+        // If we are not editing an existing user, we cannot clone
+        if (!username)
+            return false;
+
+        // The administrator can always clone users
+        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // Otherwise we need explicit CREATE_USER permission
+        return PermissionSet.hasSystemPermission($scope.permissions[dataSource],
+            PermissionSet.SystemPermissionType.CREATE_USER);
+
+    };
+
+    /**
      * Returns whether the current user can delete the user being edited from
      * the given data source.
      *
@@ -480,6 +525,30 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         // Pull user permissions
         permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+        })
+
+        // If permissions cannot be retrieved, use empty permissions
+        .error(function permissionRetrievalFailed() {
+            $scope.permissionFlags = new PermissionFlagSet();
+        });
+    }
+
+    // If we are cloning an existing user, pull his/her data instead
+    else if (cloneSourceUsername) {
+
+        dataSourceService.apply(userService.getUser, dataSources, cloneSourceUsername)
+        .then(function usersReceived(users) {
+
+            // Get user for currently-selected data source
+            $scope.users = {};
+            $scope.user  = users[selectedDataSource];
+
+        });
+
+        // Pull user permissions
+        permissionService.getPermissions(selectedDataSource, cloneSourceUsername).success(function gotPermissions(permissions) {
+            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+            permissionsAdded = permissions;
         })
 
         // If permissions cannot be retrieved, use empty permissions
@@ -837,6 +906,14 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     $scope.cancel = function cancel() {
         $location.path('/settings/users');
+    };
+
+    /**
+     * Cancels all pending edits, opening an edit page for a new user
+     * which is prepopulated with the data from the user currently being edited.
+     */
+    $scope.cloneUser = function cloneUser() {
+        $location.path('/manage/' + encodeURIComponent(selectedDataSource) + '/users').search('clone', username);
     };
             
     /**
