@@ -78,8 +78,8 @@ THE SOFTWARE.
                     </tr>
                     <tr>
                         <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | translate}}</th>
-                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[user.username]"
-                                                   ng-change="userPermissionChanged('UPDATE', user.username)"/></td>
+                        <td><input type="checkbox" ng-model="permissionFlags.userPermissions.UPDATE[selfUsername]"
+                                                   ng-change="userPermissionChanged('UPDATE', selfUsername)"/></td>
                     </tr>
                 </table>
             </div>
@@ -108,6 +108,7 @@ THE SOFTWARE.
         <!-- Form action buttons -->
         <div class="action-buttons">
             <button ng-show="canSaveUser()" ng-click="saveUser()">{{'MANAGE_USER.ACTION_SAVE' | translate}}</button>
+            <button ng-show="canCloneUser()" ng-click="cloneUser()">{{'MANAGE_USER.ACTION_CLONE' | translate}}</button>
             <button ng-click="cancel()">{{'MANAGE_USER.ACTION_CANCEL' | translate}}</button>
             <button ng-show="canDeleteUser()" ng-click="deleteUser()" class="danger">{{'MANAGE_USER.ACTION_DELETE' | translate}}</button>
         </div>

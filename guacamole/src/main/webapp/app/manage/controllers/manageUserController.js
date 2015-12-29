@@ -81,12 +81,32 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var selectedDataSource = $routeParams.dataSource;
 
     /**
+     * The username of the original user from which this user is
+     * being cloned. Only valid if this is a new user.
+     *
+     * @type String
+     */
+    var cloneSourceUsername = $location.search().clone;
+
+    /**
      * The username of the user being edited. If a new user is
      * being created, this will not be defined.
      *
      * @type String
      */
     var username = $routeParams.id;
+
+    /**
+     * The string value representing the user currently being edited within the
+     * permission flag set. Note that his may not match the user's actual
+     * username - it is a marker that is (1) guaranteed to be associated with
+     * the current user's permissions in the permission set and (2) guaranteed
+     * not to collide with any user that does not represent the current user
+     * within the permission set.
+     *
+     * @type String
+     */
+    $scope.selfUsername = '';
 
     /**
      * All user accounts associated with the same username as the account being
@@ -363,6 +383,42 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     };
 
     /**
+     * Returns whether the current user can clone the user being edited within
+     * the given data source.
+     *
+     * @param {String} [dataSource]
+     *     The identifier of the data source to check. If omitted, this will
+     *     default to the currently-selected data source.
+     *
+     * @returns {Boolean}
+     *     true if the current user can clone the user being edited, false
+     *     otherwise.
+     */
+    $scope.canCloneUser = function canCloneUser(dataSource) {
+
+        // Do not check if permissions are not yet loaded
+        if (!$scope.permissions)
+            return false;
+
+        // Use currently-selected data source if unspecified
+        dataSource = dataSource || selectedDataSource;
+
+        // If we are not editing an existing user, we cannot clone
+        if (!username)
+            return false;
+
+        // The administrator can always clone users
+        if (PermissionSet.hasSystemPermission($scope.permissions[dataSource],
+                PermissionSet.SystemPermissionType.ADMINISTER))
+            return true;
+
+        // Otherwise we need explicit CREATE_USER permission
+        return PermissionSet.hasSystemPermission($scope.permissions[dataSource],
+            PermissionSet.SystemPermissionType.CREATE_USER);
+
+    };
+
+    /**
      * Returns whether the current user can delete the user being edited from
      * the given data source.
      *
@@ -477,9 +533,42 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         });
 
+        // The current user will be associated with username of the existing
+        // user in the retrieved permission set
+        $scope.selfUsername = username;
+
         // Pull user permissions
         permissionService.getPermissions(selectedDataSource, username).success(function gotPermissions(permissions) {
             $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+        })
+
+        // If permissions cannot be retrieved, use empty permissions
+        .error(function permissionRetrievalFailed() {
+            $scope.permissionFlags = new PermissionFlagSet();
+        });
+    }
+
+    // If we are cloning an existing user, pull his/her data instead
+    else if (cloneSourceUsername) {
+
+        dataSourceService.apply(userService.getUser, dataSources, cloneSourceUsername)
+        .then(function usersReceived(users) {
+
+            // Get user for currently-selected data source
+            $scope.users = {};
+            $scope.user  = users[selectedDataSource];
+
+        });
+
+        // The current user will be associated with cloneSourceUsername in the
+        // retrieved permission set
+        $scope.selfUsername = cloneSourceUsername;
+
+        // Pull user permissions
+        permissionService.getPermissions(selectedDataSource, cloneSourceUsername)
+        .success(function gotPermissions(permissions) {
+            $scope.permissionFlags = PermissionFlagSet.fromPermissionSet(permissions);
+            permissionsAdded = permissions;
         })
 
         // If permissions cannot be retrieved, use empty permissions
@@ -836,7 +925,15 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      * Cancels all pending edits, returning to the management page.
      */
     $scope.cancel = function cancel() {
-        $location.path('/settings/users');
+        $location.url('/settings/users');
+    };
+
+    /**
+     * Cancels all pending edits, opening an edit page for a new user
+     * which is prepopulated with the data from the user currently being edited.
+     */
+    $scope.cloneUser = function cloneUser() {
+        $location.path('/manage/' + encodeURIComponent(selectedDataSource) + '/users').search('clone', username);
     };
             
     /**
@@ -864,10 +961,27 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
 
         saveUserPromise.success(function savedUser() {
 
+            // Move permission flags if username differs from marker
+            if ($scope.selfUsername !== $scope.user.username) {
+
+                // Rename added permission
+                if (permissionsAdded.userPermissions[$scope.selfUsername]) {
+                    permissionsAdded.userPermissions[$scope.user.username] = permissionsAdded.userPermissions[$scope.selfUsername];
+                    delete permissionsAdded.userPermissions[$scope.selfUsername];
+                }
+
+                // Rename removed permission
+                if (permissionsRemoved.userPermissions[$scope.selfUsername]) {
+                    permissionsRemoved.userPermissions[$scope.user.username] = permissionsRemoved.userPermissions[$scope.selfUsername];
+                    delete permissionsRemoved.userPermissions[$scope.selfUsername];
+                }
+                
+            }
+
             // Upon success, save any changed permissions
             permissionService.patchPermissions(selectedDataSource, $scope.user.username, permissionsAdded, permissionsRemoved)
             .success(function patchedUserPermissions() {
-                $location.path('/settings/users');
+                $location.url('/settings/users');
             })
 
             // Notify of any errors

@@ -237,6 +237,7 @@
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
