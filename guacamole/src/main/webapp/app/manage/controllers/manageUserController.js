@@ -404,7 +404,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         dataSource = dataSource || selectedDataSource;
 
         // If we are not editing an existing user, we cannot clone
-        if (!username)
+        if (!$scope.userExists(selectedDataSource))
             return false;
 
         // The administrator can always clone users
