@@ -492,6 +492,10 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
             if (!linked && readOnly)
                 return;
 
+            // Only the selected data source is relevant when cloning
+            if (cloneSourceUsername && dataSource !== selectedDataSource)
+                return;
+
             // Determine class name based on read-only / linked status
             var className;
             if (readOnly)    className = 'read-only';
