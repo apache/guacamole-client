@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.oauth;
 
 import com.google.inject.AbstractModule;
+import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.environment.Environment;
 import org.glyptodon.guacamole.environment.LocalEnvironment;

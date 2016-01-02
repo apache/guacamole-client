@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth;
+package org.apache.guacamole.auth.oauth.conf;
 
 import com.google.inject.Inject;
 import org.glyptodon.guacamole.GuacamoleException;

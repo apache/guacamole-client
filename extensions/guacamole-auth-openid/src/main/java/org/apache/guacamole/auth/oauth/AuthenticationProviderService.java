@@ -24,6 +24,8 @@ import com.google.inject.Provider;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.oauth.user.AuthenticatedUser;
+import org.apache.guacamole.auth.oauth.conf.ConfigurationService;
+import org.apache.guacamole.auth.oauth.form.OAuthCodeField;
 import org.glyptodon.guacamole.GuacamoleException;
 import org.glyptodon.guacamole.form.Field;
 import org.glyptodon.guacamole.net.auth.Credentials;

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.oauth;
+package org.apache.guacamole.auth.oauth.form;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
