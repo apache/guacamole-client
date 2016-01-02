@@ -65,7 +65,7 @@ public class OAuthCodeField extends Field {
             String redirectURI) {
 
         // Init base field properties
-        super(OAUTH_CODE_PARAMETER_NAME, "OAUTH_CODE");
+        super(OAUTH_CODE_PARAMETER_NAME, "GUAC_OAUTH_CODE");
 
         // Build authorization URI from given values
         try {

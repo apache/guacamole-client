@@ -7,6 +7,15 @@
 
     "authProviders" : [
         "org.apache.guacamole.auth.oauth.OAuthAuthenticationProvider"
-    ]
+    ],
+
+    "js" : [
+        "oauthModule.js",
+        "oauthConfig.js"
+    ],
+
+    "resources" : {
+        "oauthCodeField.html" : "text/html"
+    }
 
 }
