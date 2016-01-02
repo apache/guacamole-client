@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "0.9.9",
+
+    "name"      : "OAuth Authentication Extension",
+    "namespace" : "guac-oauth",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.oauth.OAuthAuthenticationProvider"
+    ]
+
+}
